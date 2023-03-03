@@ -5,7 +5,6 @@ import { UserService } from '@src/modules/user';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserMigrationService } from './user-migration.service';
 import { SchoolMigrationService } from './school-migration.service';
-import { SchoolMigrationFlags } from './dto/school-migration-flags';
 import { SchoolService } from '../../school';
 
 @Injectable()
@@ -14,54 +13,65 @@ export class MigrationCheckService {
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-
 		private readonly schoolService: SchoolService
 	) {}
 
-	async checkMigration(
+	async getMigrationData(
 		externalId: string,
 		systemId: string,
 		officialSchoolNumber?: string
 	): Promise<string | undefined> {
 		let redirect: string;
-		const shouldMigrate: boolean = await this.shouldUserMigrate(externalId, systemId, officialSchoolNumber);
-		if (shouldMigrate) {
+		let shouldMigrate = false;
+
+		const existingUser: UserDO | null = await this.userService.findByExternalId(externalId, systemId);
+
+		if (officialSchoolNumber) {
+			if (!existingUser) {
+				// we do not know anything about the user, so wie need to check the school
+				const schouldNonExistingUserMigrate = await this.schoolMigrationService.isSchoolInMigration(
+					officialSchoolNumber
+				);
+
+				shouldMigrate = schouldNonExistingUserMigrate;
+			} else if (existingUser) {
+				const shouldExistingUserMigrate: boolean = await this.shouldExistingUserMigrate(
+					existingUser,
+					officialSchoolNumber
+				);
+
+				shouldMigrate = shouldExistingUserMigrate;
+			}
+		}
+
+		if (shouldMigrate && officialSchoolNumber) {
 			redirect = await this.userMigrationService.getMigrationRedirect(systemId, officialSchoolNumber);
 			return redirect;
 		}
 		return undefined;
 	}
 
-	private async shouldUserMigrate(
-		externalUserId: string,
-		systemId: EntityId,
-		officialSchoolNumber?: string
-	): Promise<boolean> {
+	private async shouldExistingUserMigrate(existingUser: UserDO, officialSchoolNumber: string): Promise<boolean> {
 		let isSchoolInMigration: boolean;
 		let shouldMigrate = false;
-		let hasMigrated = false;
 
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
-		if (existingUser) {
-			const school: SchoolDO = await this.schoolService.getSchoolById(existingUser.schoolId);
+		if (school && school.officialSchoolNumber && school.oauthMigrationPossible) {
+			isSchoolInMigration = await this.schoolMigrationService.isSchoolInMigration(school.officialSchoolNumber);
 
-			if (school.officialSchoolNumber && school.oauthMigrationPossible && existingUser.lastLoginSystemChange) {
-				isSchoolInMigration = await this.schoolMigrationService.isSchoolInMigration(school.officialSchoolNumber);
-				hasMigrated = this.compareMigrationDates(school.oauthMigrationPossible, existingUser.lastLoginSystemChange);
-
+			if (existingUser.lastLoginSystemChange) {
+				const hasMigrated = this.userHasMigrated(school.oauthMigrationPossible, existingUser.lastLoginSystemChange);
 				shouldMigrate = !hasMigrated && isSchoolInMigration;
+			} else {
+				shouldMigrate = isSchoolInMigration;
 			}
-		} else if (officialSchoolNumber) {
-			isSchoolInMigration = await this.schoolMigrationService.isSchoolInMigration(officialSchoolNumber);
-
-			shouldMigrate = isSchoolInMigration;
 		}
 
 		return shouldMigrate;
 	}
 
-	private compareMigrationDates(migrationPossible: Date, lastLoginSystemChange: Date): boolean {
+	private userHasMigrated(migrationPossible: Date, lastLoginSystemChange: Date): boolean {
 		if (migrationPossible < lastLoginSystemChange) {
 			return true;
 		}

@@ -72,23 +72,24 @@ export class OAuthService {
 		);
 
 		// TODO: rename?
-		const migrationRedirect: string | undefined = await this.migrationCheckService.checkMigration(
+		const migrationData: string | undefined = await this.migrationCheckService.getMigrationData(
 			data.externalUser.externalId,
 			system.id,
 			data.externalSchool?.officialSchoolNumber
 		);
-		if (!migrationRedirect) {
-			return { user: undefined, redirect };
-		}
-
-		// TODO if user !found then return
 
 		redirect = this.getPostLoginRedirectUrl(
 			oauthConfig.provider,
 			queryToken.id_token,
 			oauthConfig.logoutEndpoint,
-			migrationRedirect
+			migrationData
 		);
+
+		if (!migrationData) {
+			return { user: undefined, redirect };
+		}
+
+		// TODO if user !found then return
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
