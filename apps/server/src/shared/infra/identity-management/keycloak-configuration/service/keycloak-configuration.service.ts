@@ -20,6 +20,7 @@ enum ConfigureAction {
 
 const flowAlias = 'Direct Broker Flow';
 const defaultIdpMapperName = 'oidc-username-idp-mapper';
+const oidcUserAttributeMapperName = 'OIDC User Attribute Mapper';
 
 @Injectable()
 export class KeycloakConfigurationService {
@@ -226,7 +227,7 @@ export class KeycloakConfigurationService {
 	private async updateOrCreateIdpDefaultMapper(idpAlias: string) {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const allMappers = await kc.identityProviders.findMappers({ alias: idpAlias });
-		const defaultMapper = allMappers.find((mapper) => mapper.name === defaultIdpMapperName);
+		const defaultMapper = allMappers.find((mapper) => mapper.name === oidcUserAttributeMapperName);
 		if (defaultMapper?.id) {
 			await kc.identityProviders.updateMapper(
 				{ alias: idpAlias, id: defaultMapper.id },
@@ -248,7 +249,7 @@ export class KeycloakConfigurationService {
 	private getIdpMapperConfiguration(idpAlias: string, id?: string): IdentityProviderMapperRepresentation {
 		return {
 			id,
-			name: 'OIDC User Attribute Mapper',
+			name: oidcUserAttributeMapperName,
 			identityProviderAlias: idpAlias,
 			identityProviderMapper: 'oidc-user-attribute-idp-mapper',
 			config: {
