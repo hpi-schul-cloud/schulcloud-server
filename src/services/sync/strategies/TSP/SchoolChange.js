@@ -25,7 +25,12 @@ const invalidateUser = async (app, user) => {
 const deleteUser = (app, user) => {
 	const userService = app.service('usersModel');
 	const accountService = app.service('nest-account-service');
-	return Promise.all([userService.remove({ _id: user._id }), accountService.deleteByUserId(user._id.toString())]);
+	const teamsService = app.service('/teams');
+	return Promise.all([
+		userService.remove({ _id: user._id }),
+		accountService.deleteByUserId(user._id.toString()),
+		teamsService.updateMany({ 'userIds.userId': { $in: [user._id] } }, { $pull: { userIds: { userId: user._id } } })
+	]);
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
