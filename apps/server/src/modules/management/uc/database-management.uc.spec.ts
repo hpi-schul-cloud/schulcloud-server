@@ -86,7 +86,7 @@ describe('DatabaseManagementService', () => {
 		type: 'oidc',
 		alias: 'oidc',
 		oidcConfig: {
-			clientId: 'encryptedClientId',
+			clientId: 'ClientId',
 			clientSecret: 'encryptedClientSecret',
 		},
 	};
@@ -589,7 +589,7 @@ describe('DatabaseManagementService', () => {
 						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
 					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
-						clientId: 'OIDC_CLIENT_ID_encrypted',
+						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
 				});

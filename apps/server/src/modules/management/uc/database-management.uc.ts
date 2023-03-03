@@ -281,7 +281,6 @@ export class DatabaseManagementUc {
 			}
 			if (system.oidcConfig) {
 				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
-				system.oidcConfig.clientId = this.defaultEncryptionService.encrypt(system.oidcConfig.clientId);
 			}
 			if (system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(
@@ -320,7 +319,6 @@ export class DatabaseManagementUc {
 			}
 			if (system.oidcConfig) {
 				system.oidcConfig.clientSecret = defaultSecretReplacementHintText;
-				system.oidcConfig.clientId = defaultSecretReplacementHintText;
 			}
 			if (system.ldapConfig) {
 				system.ldapConfig.searchUserPassword = defaultSecretReplacementHintText;
