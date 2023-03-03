@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 
-export class BoardColumnUrlParams {
+export class ColumnUrlParams {
 	@IsMongoId()
 	@ApiProperty({
 		description: 'The id of the board.',

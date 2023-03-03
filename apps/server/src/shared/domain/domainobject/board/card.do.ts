@@ -2,13 +2,13 @@ import { EntityId } from '@shared/domain/types';
 import { ContentElement } from './content-element.do';
 
 export class Card implements CardProps {
-	id?: EntityId;
+	id: EntityId;
 
 	title: string;
 
 	height: number;
 
-	elements: AnyElement[];
+	elements: ContentElement[];
 
 	createdAt: Date;
 
@@ -25,7 +25,7 @@ export class Card implements CardProps {
 }
 
 interface CardProps {
-	id?: EntityId;
+	id: EntityId;
 
 	title: string;
 

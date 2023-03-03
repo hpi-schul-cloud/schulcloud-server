@@ -2,10 +2,10 @@ import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nes
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardResponseMapper } from '../mapper';
+import { BoardResponseMapper } from './mapper';
 import { BoardUc } from '../uc/board.uc';
 import {
-	BoardColumnUrlParams,
+	ColumnUrlParams,
 	BoardResponse,
 	BoardUrlParams,
 	MoveCardBodyParams,
@@ -17,14 +17,14 @@ import {
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
-	constructor(private readonly boardUC: BoardUc) {}
+	constructor(private readonly boardUc: BoardUc) {}
 
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.boardUC.findBoard(currentUser.userId, urlParams.boardId);
+		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
 		const response = BoardResponseMapper.mapToResponse(board);
 
@@ -42,7 +42,7 @@ export class BoardController {
 
 	@Put('/:boardId/columns/:columnId/position')
 	moveColumn(
-		@Param() urlParams: BoardColumnUrlParams,
+		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
@@ -60,7 +60,7 @@ export class BoardController {
 
 	@Put(':boardId/columns/:columnId/title')
 	renameColumn(
-		@Param() urlParams: BoardColumnUrlParams,
+		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {

@@ -31,6 +31,7 @@ import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { AccountApiModule } from '../account/account-api.module';
+import { BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -69,6 +70,7 @@ const serverModules = [
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,
+	BoardModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BoardSkeletonCardReponse {
-	constructor({ cardId, height }: BoardSkeletonCardReponse) {
+export class CardSkeletonResponse {
+	constructor({ cardId, height }: CardSkeletonResponse) {
 		this.cardId = cardId;
 		this.height = height;
 	}

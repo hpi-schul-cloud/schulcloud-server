@@ -2,7 +2,7 @@ import { EntityId } from '@shared/domain/types';
 import { Card } from './card.do';
 
 export class Column implements ColumnProps {
-	id?: EntityId;
+	id: EntityId;
 
 	title: string;
 
@@ -22,7 +22,7 @@ export class Column implements ColumnProps {
 }
 
 interface ColumnProps {
-	id?: EntityId;
+	id: EntityId;
 
 	title: string;
 

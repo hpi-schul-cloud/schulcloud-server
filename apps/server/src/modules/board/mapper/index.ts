@@ -1,2 +1,2 @@
 export * from './any-board-do-builder';
-export * from './board-response.mapper';
+export * from '../controller/mapper/board-response.mapper';

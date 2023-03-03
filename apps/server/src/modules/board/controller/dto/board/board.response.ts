@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { BoardColumnResponse } from './board-column.response';
+import { ColumnResponse } from './column.response';
 import { TimestampsResponse } from './timestamps.response';
 
 export class BoardResponse {
@@ -21,9 +21,9 @@ export class BoardResponse {
 	title: string;
 
 	@ApiProperty({
-		type: [BoardColumnResponse],
+		type: [ColumnResponse],
 	})
-	columns: BoardColumnResponse[];
+	columns: ColumnResponse[];
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;
