@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { FeathersJwtProvider } from '@src/modules/authorization';
-import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { SchoolService } from '@src/modules/school';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { AuthorizationParams } from '../controller/dto';
+import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 
@@ -45,11 +46,12 @@ export class OauthUc {
 	}
 
 	async migrate(currentUserId: string, query: AuthorizationParams, targetSystemId: string): Promise<MigrationDto> {
-		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, targetSystemId);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, query.code, query.error);
+
 		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			targetSystemId
+			targetSystemId,
+			tokenDto.idToken,
+			tokenDto.accessToken
 		);
 
 		if (data.externalSchool) {
@@ -78,11 +80,12 @@ export class OauthUc {
 	private async process(query: AuthorizationParams, systemId: string): Promise<OAuthProcessDto> {
 		this.logger.debug(`Oauth process started for systemId ${systemId}`);
 
-		const authCode: string = this.oauthService.checkAuthorizationCode(query);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, query.code, query.error);
 
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
-			authCode
+			tokenDto.idToken,
+			tokenDto.accessToken
 		);
 
 		let jwtResponse = '';

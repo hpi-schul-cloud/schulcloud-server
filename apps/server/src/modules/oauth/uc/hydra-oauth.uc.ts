@@ -1,13 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { OauthConfig } from '@shared/domain';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { OauthConfig } from '@shared/domain';
+import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
-import { OAuthService } from '../service/oauth.service';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthTokenDto } from '../interface';
 import { HydraSsoService } from '../service/hydra.service';
+import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
 export class HydraOauthUc {
@@ -23,12 +24,24 @@ export class HydraOauthUc {
 
 	private readonly HYDRA_PUBLIC_URI: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
 
-	async getOauthToken(query: AuthorizationParams, oauthClientId: string): Promise<OauthTokenResponse> {
-		const hydraOauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
-		const authCode: string = this.oauthService.checkAuthorizationCode(query);
-		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(authCode, hydraOauthConfig);
-		await this.oauthService.validateToken(queryToken.id_token, hydraOauthConfig);
-		return queryToken;
+	async getOauthToken(query: AuthorizationParams, oauthClientId: string): Promise<OAuthTokenDto> {
+		if (query.error || !query.code) {
+			throw new OAuthSSOError(
+				'Authorization Query Object has no authorization code or error',
+				query.error || 'sso_auth_code_step'
+			);
+		}
+		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+
+		const oauthTokens: OAuthTokenDto = await this.oauthService.requestToken(
+			query.code,
+			hydraOauthConfig,
+			hydraOauthConfig.redirectUri
+		);
+
+		await this.oauthService.validateToken(oauthTokens.idToken, hydraOauthConfig);
+
+		return oauthTokens;
 	}
 
 	protected validateStatus = (status: number): boolean => status === 200 || status === 302;

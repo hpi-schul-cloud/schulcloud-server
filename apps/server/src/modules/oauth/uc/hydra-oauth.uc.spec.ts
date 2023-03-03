@@ -1,18 +1,18 @@
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpModule } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { OauthConfig } from '@shared/domain';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
-import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { OauthConfig } from '@shared/domain';
+import { Logger } from '@src/core/logger';
+import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
+import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
+import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
+import { OauthTokenResponse } from '../service/dto/oauth-token.response';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);

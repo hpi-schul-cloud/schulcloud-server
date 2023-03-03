@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
+import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
-import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
+import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
 
 export type PathParams = { systemId?: string };
 
@@ -27,10 +27,15 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		if (!request.params.systemId) {
 			throw new BadRequestException(request.params.systemId, 'No SystemId provided!');
 		}
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
 			request.params.systemId,
 			request.query.code,
 			request.query.error
+		);
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
+			request.params.systemId,
+			tokenDto.idToken,
+			tokenDto.accessToken
 		);
 		request.query = { ...request.params, redirect };
 

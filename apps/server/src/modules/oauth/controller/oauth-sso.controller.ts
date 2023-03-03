@@ -10,14 +10,14 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Logger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { CookieOptions, Request, Response } from 'express';
 import { UserMigrationMapper } from '@src/modules/user-login-migration/mapper/user-migration.mapper';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { CookieOptions, Request, Response } from 'express';
+import { OAuthTokenDto } from '../interface';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
 import { UserMigrationResponse } from './dto/user-migration.response';
@@ -57,7 +57,7 @@ export class OauthSSOController {
 	async getHydraOauthToken(
 		@Query() query: AuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
-	): Promise<OauthTokenResponse> {
+	): Promise<OAuthTokenDto> {
 		const oauthToken = this.hydraUc.getOauthToken(query, oauthClientId);
 		return oauthToken;
 	}

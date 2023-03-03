@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Page } from '@shared/domain/interface/page';
+import { Logger } from '@src/core/logger';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { SchoolMigrationFlags } from './dto/school-migration-flags';
 
 @Injectable()
 export class SchoolMigrationService {
@@ -77,16 +76,6 @@ export class SchoolMigrationService {
 			user.outdatedSince = school.oauthMigrationFinished;
 		});
 		await this.userService.saveAll(notMigratedUsers.data);
-	}
-
-	// TODO: maybe get name
-	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		let isPossible = false;
-		if (school) {
-			isPossible = !!school.oauthMigrationPossible;
-		}
-		return isPossible;
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {

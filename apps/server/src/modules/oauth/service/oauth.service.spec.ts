@@ -2,31 +2,31 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { OauthConfigDto } from '@src/modules/system/service';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-login-migration';
 import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { OauthConfigDto } from '@src/modules/system/service';
+import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
-import { OAuthService } from './oauth.service';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import { OauthAdapterService } from './oauth-adapter.service';
+import { OAuthService } from './oauth.service';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -174,7 +174,7 @@ describe('OAuthService', () => {
 		beforeEach(() => {
 			const { tokenResponse } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendTokenRequest.mockResolvedValue(tokenResponse);
+			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(tokenResponse);
 		});
 
 		describe('when it requests a token', () => {
@@ -419,7 +419,7 @@ describe('OAuthService', () => {
 				const { query, system, oauthTokenResponse } = setupMigration();
 				systemService.findOAuthById.mockResolvedValue(system);
 				userMigrationService.getMigrationRedirectUri.mockReturnValue('mockRedirect');
-				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
+				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
 
 				const response = await service.authorizeForMigration(query, 'systemId');
 
@@ -507,7 +507,7 @@ describe('OAuthService', () => {
 			provisioningService.provisionData.mockResolvedValue(provisioningDto);
 			jest.spyOn(jwt, 'decode').mockImplementation((): JwtPayload => decodedJwtMock);
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
+			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
 
 			return {
 				query,
@@ -586,7 +586,7 @@ describe('OAuthService', () => {
 					officialSchoolNumber: 'officialSchoolNumber',
 				});
 
-				userMigrationService.getMigrationRedirect.mockResolvedValueOnce(migrationRedirect);
+				userMigrationService.getMigrationConsentPageRedirect.mockResolvedValueOnce(migrationRedirect);
 
 				return {
 					...setupData,

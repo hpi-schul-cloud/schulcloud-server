@@ -1,23 +1,21 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { UserService } from '@src/modules/user';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { MigrationCheckService } from '@src/modules/user-login-migration/service/migration-check.service';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserService } from '@src/modules/user';
+import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthTokenDto } from '../interface';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
@@ -36,103 +34,92 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async authenticateUser(
-		systemId: string,
-		authCode?: string,
-		errorCode?: string
-	): Promise<{ user?: UserDO; redirect: string }> {
-		let redirect: string;
-		if (errorCode) {
-			redirect = this.createErrorRedirect(errorCode);
-			return { user: undefined, redirect };
-		}
-		if (!authCode) {
+	async authenticateUser(systemId: string, authCode?: string, errorCode?: string): Promise<OAuthTokenDto> {
+		if (errorCode || !authCode) {
 			throw new OAuthSSOError(
 				'Authorization Query Object has no authorization code or error',
 				errorCode || 'sso_auth_code_step'
 			);
 		}
 
-		const system = await this.systemService.findOAuthById(systemId);
-		if (!system.id) {
-			// unreachable. System loaded from DB always has an ID
-			throw new UnauthorizedException(`System with id "${systemId}" does not exist.`);
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		if (!system.oauthConfig) {
+			throw new UnauthorizedException(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
 		}
+		const { oauthConfig } = system;
 
-		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
+		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, oauthConfig.redirectUri);
 
-		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig);
+		await this.validateToken(oauthTokens.idToken, oauthConfig);
 
-		await this.validateToken(queryToken.id_token, oauthConfig);
+		return oauthTokens;
+	}
 
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			system.id
-		);
+	async provisionUser(
+		systemId: string,
+		idToken: string,
+		accessToken: string
+	): Promise<{ user?: UserDO; redirect: string }> {
+		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
-		// TODO: rename?
-		const migrationRedirect: string | undefined = await this.migrationCheckService.checkMigration(
-			data.externalUser.externalId,
-			system.id,
-			data.externalSchool?.officialSchoolNumber
-		);
-		if (!migrationRedirect) {
-			return { user: undefined, redirect };
+		let migrationConsentRedirect: string | undefined;
+		if (data.externalSchool?.officialSchoolNumber) {
+			const shouldUserMigrate: boolean = await this.migrationCheckService.shouldUserMigrate(
+				data.externalUser.externalId,
+				systemId,
+				data.externalSchool.officialSchoolNumber
+			);
+
+			if (shouldUserMigrate) {
+				migrationConsentRedirect = await this.userMigrationService.getMigrationConsentPageRedirect(
+					data.externalSchool.officialSchoolNumber,
+					systemId
+				);
+
+				const existingUser: UserDO | null = await this.userService.findByExternalId(
+					data.externalUser.externalId,
+					systemId
+				);
+				if (!existingUser) {
+					return { user: undefined, redirect: migrationConsentRedirect };
+				}
+			}
 		}
-
-		// TODO if user !found then return
-
-		redirect = this.getPostLoginRedirectUrl(
-			oauthConfig.provider,
-			queryToken.id_token,
-			oauthConfig.logoutEndpoint,
-			migrationRedirect
-		);
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
-		const user: UserDO = await this.findUser(queryToken.id_token, provisioningDto.externalUserId, system.id);
+		const user: UserDO = await this.findUser(idToken, provisioningDto.externalUserId, systemId);
 
-		return { user, redirect };
+		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect);
+
+		return { user, redirect: postLoginRedirect };
 	}
 
-	/**
-	 * @deprecated not needed after change of oauth login to authentication module
-	 *
-	 * @query query input that has either a code or an error
-	 * @return authorization code or throws an error
-	 */
-	checkAuthorizationCode(query: AuthorizationParams): string {
-		if (query.code) {
-			return query.code;
-		}
+	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {
+		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
-		throw new OAuthSSOError(
-			'Authorization Query Object has no authorization code or error',
-			query.error || 'sso_auth_code_step'
+		const responseToken: OauthTokenResponse = await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
+			oauthConfig.tokenEndpoint,
+			payload
 		);
+
+		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken);
+		return tokenDto;
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig, migrationRedirect?: string): Promise<OauthTokenResponse> {
-		const payload: TokenRequestPayload = this.buildTokenRequestPayload(code, oauthConfig, migrationRedirect);
-		const responseToken = this.oauthAdapterService.sendTokenRequest(payload);
-		return responseToken;
-	}
-
-	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
-		const publicKey = await this.oauthAdapterService.getPublicKey(oauthConfig);
-		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
+	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<JwtPayload> {
+		const publicKey: string = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
+		const decodedJWT: string | JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
 
-		if (typeof verifiedJWT === 'string') {
+		if (typeof decodedJWT === 'string') {
 			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
 		}
 
-		return verifiedJWT as IJwt;
+		return decodedJWT;
 	}
 
 	async findUser(idToken: string, externalUserId: string, systemId: EntityId): Promise<UserDO> {
@@ -161,30 +148,14 @@ export class OAuthService {
 		return '';
 	}
 
-	async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
-		const authCode: string = this.checkAuthorizationCode(query);
-
-		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
-		if (!system.id) {
-			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
-		}
-		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
-
-		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
-		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig, migrationRedirect);
-
-		await this.validateToken(queryToken.id_token, oauthConfig);
-
-		return queryToken;
-	}
-
-	getPostLoginRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
+	async getPostLoginRedirectUrl(idToken: string, systemId: string, postLoginRedirect?: string): Promise<string> {
 		const clientUrl: string = Configuration.get('HOST') as string;
 		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
+		const system: SystemDto = await this.systemService.findOAuthById(systemId);
 
 		let redirect: string;
-		if (provider === 'iserv') {
-			const iservLogoutUrl: URL = new URL(logoutEndpoint);
+		if (system.oauthConfig?.provider === 'iserv') {
+			const iservLogoutUrl: URL = new URL(system.oauthConfig.logoutEndpoint);
 			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
 			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
 			redirect = iservLogoutUrl.toString();
@@ -217,30 +188,20 @@ export class OAuthService {
 		return oauthResponse;
 	}
 
-	private extractOauthConfigFromSystem(system: SystemDto): OauthConfig {
-		const { oauthConfig } = system;
-		if (oauthConfig == null) {
-			this.logger.warn(
-				`SSO Oauth process couldn't be started, because of missing oauthConfig of system: ${system.id ?? 'undefined'}`
-			);
-			throw new UnauthorizedException('Requested system has no oauth configured', 'sso_internal_error');
-		}
-		return oauthConfig;
-	}
-
 	private buildTokenRequestPayload(
 		code: string,
 		oauthConfig: OauthConfig,
-		migrationRedirect?: string
-	): TokenRequestPayload {
+		redirectUri: string
+	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code,
-			migrationRedirect
-		);
+		const tokenRequestPayload: AuthenticationCodeGrantTokenRequest =
+			TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
+				oauthConfig.clientId,
+				decryptedClientSecret,
+				code,
+				redirectUri
+			);
 
 		return tokenRequestPayload;
 	}

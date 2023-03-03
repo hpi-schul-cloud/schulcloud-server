@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { MikroORM } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { accountFactory, setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 import { UserMigrationService } from './user-migration.service';
@@ -99,7 +99,7 @@ describe('UserMigrationService', () => {
 		};
 	};
 
-	describe('getMigrationRedirect is called', () => {
+	describe('getMigrationConsentPageRedirect is called', () => {
 		describe('when finding the migration systems', () => {
 			it('should return a url to the migration endpoint', async () => {
 				const { school, officialSchoolNumber } = setup();
@@ -117,7 +117,7 @@ describe('UserMigrationService', () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				systemService.findOAuth.mockResolvedValue([iservSystem, sanisSystem]);
 
-				const result: string = await service.getMigrationRedirect(officialSchoolNumber, 'iservId');
+				const result: string = await service.getMigrationConsentPageRedirect(officialSchoolNumber, 'iservId');
 
 				expect(result).toEqual(
 					'http://this.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=false'
@@ -130,7 +130,10 @@ describe('UserMigrationService', () => {
 				const { officialSchoolNumber } = setup();
 				systemService.findOAuth.mockResolvedValue([]);
 
-				const promise: Promise<string> = service.getMigrationRedirect(officialSchoolNumber, 'unknownSystemId');
+				const promise: Promise<string> = service.getMigrationConsentPageRedirect(
+					officialSchoolNumber,
+					'unknownSystemId'
+				);
 
 				await expect(promise).rejects.toThrow(InternalServerErrorException);
 			});
