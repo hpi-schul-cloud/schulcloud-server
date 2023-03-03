@@ -198,6 +198,7 @@ describe('KeycloakConfigurationService Unit', () => {
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.updateMapper).toBeCalledTimes(1);
 		});
+		//TODO Add client protocol mapper test, create / update cases
 	});
 
 	describe('configureClient', () => {

@@ -19,8 +19,8 @@ enum ConfigureAction {
 }
 
 const flowAlias = 'Direct Broker Flow';
-const defaultIdpMapperName = 'oidc-username-idp-mapper';
 const oidcUserAttributeMapperName = 'OIDC User Attribute Mapper';
+const oidcExternalSubMapperName = 'External Sub Mapper';
 
 @Injectable()
 export class KeycloakConfigurationService {
@@ -120,13 +120,10 @@ export class KeycloakConfigurationService {
 		let defaultClientInternalId = (await kc.clients.find({ clientId: this.kcAdmin.getClientId() }))[0]?.id;
 		if (!defaultClientInternalId) {
 			({ id: defaultClientInternalId } = await kc.clients.create(cr));
-			await kc.clients.addProtocolMapper(
-				{ id: defaultClientInternalId },
-				this.getExternalSubClientMapperConfiguration()
-			);
 		} else {
 			await kc.clients.update({ id: defaultClientInternalId }, cr);
 		}
+		await this.addClientProtocolMappers(defaultClientInternalId);
 	}
 
 	public async configureIdentityProviders(): Promise<number> {
@@ -166,6 +163,23 @@ export class KeycloakConfigurationService {
 				editUsernameAllowed: true,
 			}
 		);
+	}
+
+	private async addClientProtocolMappers(defaultClientInternalId: string) {
+		const kc = await this.kcAdmin.callKcAdminClient();
+		const allMappers = await kc.clients.listProtocolMappers({ id: defaultClientInternalId });
+		const defaultMapper = allMappers.find((mapper) => mapper.name === oidcExternalSubMapperName);
+		if (defaultMapper?.id) {
+			await kc.clients.updateProtocolMapper(
+				{ id: defaultClientInternalId, mapperId: defaultMapper?.id },
+				{...this.getExternalSubClientMapperConfiguration(), id: defaultMapper?.id }
+			);
+		} else {
+			await kc.clients.addProtocolMapper(
+				{ id: defaultClientInternalId },
+				this.getExternalSubClientMapperConfiguration()
+			);
+		}
 	}
 
 	/**
@@ -263,7 +277,7 @@ export class KeycloakConfigurationService {
 
 	private getExternalSubClientMapperConfiguration(): ProtocolMapperRepresentation {
 		return {
-			name: 'External Sub Mapper',
+			name: oidcExternalSubMapperName,
 			protocol: 'openid-connect',
 			protocolMapper: 'oidc-usermodel-attribute-mapper',
 			config: {
