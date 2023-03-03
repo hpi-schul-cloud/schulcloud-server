@@ -316,19 +316,25 @@
 			"properties": {
 				"S3_ENDPOINT": {
 					"type": "string",
-					"format": "uri"
+					"format": "uri",
+					"description": "The URI of the S3 provider"
 				},
 				"S3_REGION": {
-					"type": "string"
+					"type": "string",
+					"default": "de",
+					"description": "Region name of bucket"
 				},
 				"S3_BUCKET": {
-					"type": "string"
+					"type": "string",
+					"description": "Bucket name"
 				},
 				"S3_ACCESS_KEY": {
-					"type": "string"
+					"type": "string",
+					"description": "Access Key to S3"
 				},
 				"S3_SECRET_KEY": {
-					"type": "string"
+					"type": "string",
+					"description": "Secret key to S3"
 				}
 			}
 		},
