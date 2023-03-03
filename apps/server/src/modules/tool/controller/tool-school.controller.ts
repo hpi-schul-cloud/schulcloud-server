@@ -4,6 +4,7 @@ import {
 	ApiFoundResponse,
 	ApiResponse,
 	ApiOkResponse,
+	ApiBadRequestResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
@@ -72,7 +73,7 @@ export class ToolSchoolController {
 	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: SchoolExternalToolResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
-	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
