@@ -91,6 +91,12 @@ export class TaskCardParams {
 	})
 	courseId?: string;
 
+	@IsString()
+	@ApiProperty({
+		description: 'The title of the card',
+	})
+	title!: string;
+
 	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
