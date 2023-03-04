@@ -4,13 +4,14 @@ import { CardElementResponse } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
-	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate }: TaskCardResponse) {
+	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate, title }: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
 		this.cardElements = cardElements;
 		this.task = task;
 		this.visibleAtDate = visibleAtDate;
 		this.dueDate = dueDate;
+		this.title = title;
 	}
 
 	@ApiProperty({
@@ -18,6 +19,11 @@ export class TaskCardResponse {
 		pattern: '[a-f0-9]{24}',
 	})
 	id: string;
+
+	@ApiProperty({
+		description: 'The title of the task card',
+	})
+	title: string;
 
 	@ApiProperty({
 		description: 'Array of card elements',

@@ -55,6 +55,7 @@ export class TaskCardUc {
 			task: taskWithStatusVo.task,
 			visibleAtDate: new Date(),
 			dueDate: defaultDueDate,
+			title: '',
 		};
 
 		if (params.visibleAtDate) {

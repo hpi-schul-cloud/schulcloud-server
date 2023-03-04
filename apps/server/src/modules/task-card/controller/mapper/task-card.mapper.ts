@@ -27,6 +27,7 @@ export class TaskCardMapper {
 			task: taskResponse,
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
+			title: card.title,
 		});
 
 		if (card.course) {
