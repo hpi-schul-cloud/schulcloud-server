@@ -1,5 +1,4 @@
-import { BoardNode, BoardNodeType, Column, ColumnBoard } from '@shared/domain';
-import { AnyBoardDo } from '../types/any-board-do';
+import { BoardNode, BoardNodeType, Column, ColumnBoard, AnyBoardDo } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 
 export class ColumnBoardBuilder extends BoardDoBuilder {

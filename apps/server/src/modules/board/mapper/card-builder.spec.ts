@@ -1,4 +1,4 @@
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { boardNodeFactory } from '@shared/testing';
 import { CardBuilder } from './card-builder';
 
 describe('CardBuilder', () => {

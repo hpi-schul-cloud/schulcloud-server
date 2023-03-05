@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode } from '@shared/domain';
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { boardNodeFactory, cardPayloadFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
@@ -15,7 +15,10 @@ export class BoardManagementUc {
 		await this.em.persistAndFlush(columns);
 
 		const columnCards = columns.map((column) =>
-			boardNodeFactory.asCard().buildList(this.generateRandomNumber(1, 3), { parent: column })
+			boardNodeFactory.asCard().buildList(this.generateRandomNumber(1, 3), {
+				parent: column,
+				payload: cardPayloadFactory.build({ height: this.generateRandomNumber(50, 250) }),
+			})
 		);
 		const cards = ([] as BoardNode[]).concat(...columnCards);
 		await this.em.persistAndFlush(cards);

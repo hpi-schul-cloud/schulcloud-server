@@ -1,6 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BoardNode, BoardNodeType } from '@shared/domain';
-import { AnyBoardDo } from '../types/any-board-do';
+import { BoardNode, BoardNodeType, AnyBoardDo } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 import { CardBuilder } from './card-builder';
 import { ColumnBoardBuilder } from './column-board-builder';
@@ -40,12 +39,10 @@ export class AnyBoardDoBuilder extends BoardDoBuilder {
 			if (parentId) {
 				const children: AnyBoardDo[] = childrenMap[boardNode.id] ?? [];
 				const domainObject = this.build(boardNode, children);
-				if (domainObject) {
-					if (childrenMap[parentId] === undefined) {
-						childrenMap[parentId] = [];
-					}
-					childrenMap[parentId].push(domainObject);
+				if (childrenMap[parentId] === undefined) {
+					childrenMap[parentId] = [];
 				}
+				childrenMap[parentId].push(domainObject);
 			}
 		}
 

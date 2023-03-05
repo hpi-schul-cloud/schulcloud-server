@@ -1,6 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { BoardNode, BoardNodeType } from '@shared/domain';
-import { AnyBoardDo } from '../types';
+import { BoardNode, BoardNodeType, AnyBoardDo } from '@shared/domain';
 
 export abstract class BoardDoBuilder {
 	abstract build(boardNode: BoardNode, children: AnyBoardDo[]): AnyBoardDo;

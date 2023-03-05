@@ -3,7 +3,7 @@ export * from './all-entities';
 export * from './base.entity';
 export * from './board.entity';
 export * from './boardelement.entity';
-export * from './boardnode.entity';
+export * from './boardnode';
 export * from './cardElement.entity';
 export * from './course.entity';
 export * from './coursegroup.entity';

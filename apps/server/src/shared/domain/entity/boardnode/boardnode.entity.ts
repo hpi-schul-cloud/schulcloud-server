@@ -1,22 +1,17 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '../types';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { EntityId } from '../../types';
+import { BaseEntityWithTimestamps } from '../base.entity';
+import { BoardNodeType, CardPayload, ColumnPayload, ColumnBoardPayload, ContentElementPlayload } from './payload';
 
-export enum BoardNodeType {
-	BOARD = 'board',
-	COLUMN = 'column',
-	CARD = 'card',
-	ELEMENT = 'element',
-}
+export const BOARD_NODE_PAYLOAD_CLASSES = [ColumnBoardPayload, ColumnPayload, CardPayload, ContentElementPlayload];
+
+export type AnyBoardNodePayload = ColumnBoardPayload | ColumnPayload | CardPayload | ContentElementPlayload;
 
 export interface BoardNodeProperties {
-	type: BoardNodeType;
 	parent?: BoardNode;
 	position?: number;
-	// we could use polymorphic embeddables here
-	// see: https://mikro-orm.io/docs/embeddables#polymorphic-embeddables
-	// data: BoardNodeData
+	payload: AnyBoardNodePayload;
 }
 
 @Entity({ tableName: 'boardnodes' })
@@ -26,18 +21,15 @@ export class BoardNode extends BaseEntityWithTimestamps {
 		if (props.parent && props.parent.id == null) {
 			throw new InternalServerErrorException('Cannot create board node with a parent having no id');
 		}
-		this.type = props.type;
 		this.path = props.parent
 			? `${props.parent.path}${props.parent.id}${BoardNode.PATH_SEPERATOR}`
 			: BoardNode.PATH_SEPERATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
+		this.payload = props.payload;
 	}
 
 	static PATH_SEPERATOR = ',';
-
-	@Enum(() => BoardNodeType)
-	type: BoardNodeType;
 
 	@Property({ nullable: false })
 	path: string;
@@ -47,6 +39,15 @@ export class BoardNode extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: false })
 	position: number;
+
+	// we use polymorphic embeddables without prefix here
+	// see: https://mikro-orm.io/docs/embeddables#polymorphic-embeddables
+	@Embedded(() => BOARD_NODE_PAYLOAD_CLASSES, { prefix: false })
+	payload: AnyBoardNodePayload;
+
+	get type(): BoardNodeType {
+		return this.payload.type;
+	}
 
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;

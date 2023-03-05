@@ -1,4 +1,4 @@
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { boardNodeFactory } from '@shared/testing';
 import { ElementBuilder } from './element-builder';
 
 describe('ElementBuilder', () => {

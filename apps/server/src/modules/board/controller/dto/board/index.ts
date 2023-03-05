@@ -1,5 +1,6 @@
 export * from './card.url.params';
 export * from './card-skeleton.response';
+export * from './column.response';
 export * from './column.url.params';
 export * from './board.response';
 export * from './board.url.params';

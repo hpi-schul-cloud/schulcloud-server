@@ -1,5 +1,4 @@
-import { BoardNode, BoardNodeType, Card, ContentElement } from '@shared/domain';
-import { AnyBoardDo } from '../types/any-board-do';
+import { AnyBoardDo, BoardNode, BoardNodeType, Card, CardPayload, ContentElement } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 
 export class CardBuilder extends BoardDoBuilder {
@@ -8,10 +7,11 @@ export class CardBuilder extends BoardDoBuilder {
 
 		const elements = children.filter((c) => c.constructor.name === 'ContentElement') as ContentElement[];
 
+		const payload = boardNode.payload as CardPayload;
 		const column = new Card({
 			id: boardNode.id,
-			title: '',
-			height: 150,
+			title: payload.name,
+			height: payload.height,
 			elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

@@ -1,9 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNodeType } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { cleanupCollections, boardNodeFactory } from '@shared/testing';
 import { AnyBoardDoBuilder } from '../mapper';
 import { BoardNodeRepo } from './board-node.repo';
 import { ColumnBoardRepo } from './column-board.repo';
@@ -32,13 +30,13 @@ describe('ColumnBoardRepo', () => {
 	});
 
 	const setup = async () => {
-		const boardNode = boardNodeFactory.build({ type: BoardNodeType.BOARD });
+		const boardNode = boardNodeFactory.asBoard().build();
 		await em.persistAndFlush(boardNode);
-		const columnNodes = boardNodeFactory.buildList(2, { parent: boardNode, type: BoardNodeType.COLUMN });
+		const columnNodes = boardNodeFactory.asColumn().buildList(2, { parent: boardNode });
 		await em.persistAndFlush(columnNodes);
-		const cardNodes = boardNodeFactory.buildList(2, { parent: columnNodes[0], type: BoardNodeType.CARD });
+		const cardNodes = boardNodeFactory.asCard().buildList(2, { parent: columnNodes[0] });
 		await em.persistAndFlush(cardNodes);
-		const elementNodes = boardNodeFactory.buildList(2, { parent: cardNodes[1], type: BoardNodeType.ELEMENT });
+		const elementNodes = boardNodeFactory.asElement().buildList(2, { parent: cardNodes[1] });
 		await em.persistAndFlush(elementNodes);
 		em.clear();
 

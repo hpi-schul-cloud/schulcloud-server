@@ -1,6 +1,5 @@
-import { BoardNodeType, Card } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { Card } from '@shared/domain';
+import { setupEntities, boardNodeFactory } from '@shared/testing';
 import { AnyBoardDoBuilder } from './any-board-do-builder';
 import { CardBuilder } from './card-builder';
 
@@ -51,9 +50,9 @@ describe('CardBuilder', () => {
 
 		it('should sort children according to position attribute', () => {
 			const card = boardNodeFactory.asCard().buildWithId();
-			const element1 = boardNodeFactory.buildWithId({ parent: card, position: 3, type: BoardNodeType.ELEMENT });
-			const element2 = boardNodeFactory.buildWithId({ parent: card, position: 1, type: BoardNodeType.ELEMENT });
-			const element3 = boardNodeFactory.buildWithId({ parent: card, position: 2, type: BoardNodeType.ELEMENT });
+			const element1 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 3 });
+			const element2 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 1 });
+			const element3 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 2 });
 
 			const domainObject = new AnyBoardDoBuilder().buildTree(card, [element1, element2, element3]) as Card;
 

@@ -25,7 +25,7 @@ import { Team, TeamUser } from './team.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 import { CardElement, TitleCardElement, RichTextCardElement } from './cardElement.entity';
-import { BoardNode } from './boardnode.entity';
+import { BoardNode } from './boardnode/boardnode.entity';
 
 export const ALL_ENTITIES = [
 	Account,

@@ -1,8 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
-import { boardNodeFactory } from '@shared/testing/factory/boardnode.factory';
+import { cleanupCollections, boardNodeFactory } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 
 describe('BoardNodeRepo', () => {

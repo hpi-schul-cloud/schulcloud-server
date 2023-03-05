@@ -1,6 +1,5 @@
 import { ColumnBoard } from '@shared/domain';
-import { BoardResponse, CardSkeletonResponse } from '../dto';
-import { ColumnResponse } from '../dto/board/column.response';
+import { BoardResponse, CardSkeletonResponse, ColumnResponse } from '../dto';
 
 export class BoardResponseMapper {
 	static mapToResponse(board: ColumnBoard): BoardResponse {
