@@ -1,10 +1,10 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BoardNode, BoardNodeType, AnyBoardDo } from '@shared/domain';
+import { AnyBoardDo, BoardNode, BoardNodeType } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 import { CardBuilder } from './card-builder';
 import { ColumnBoardBuilder } from './column-board-builder';
 import { ColumnBuilder } from './column-builder';
-import { ElementBuilder } from './element-builder';
+import { TextElementBuilder } from './text-element-builder';
 
 @Injectable()
 export class AnyBoardDoBuilder extends BoardDoBuilder {
@@ -12,10 +12,10 @@ export class AnyBoardDoBuilder extends BoardDoBuilder {
 
 	constructor() {
 		super();
-		this.builders.set(BoardNodeType.BOARD, new ColumnBoardBuilder());
+		this.builders.set(BoardNodeType.COLUMN_BOARD, new ColumnBoardBuilder());
 		this.builders.set(BoardNodeType.COLUMN, new ColumnBuilder());
 		this.builders.set(BoardNodeType.CARD, new CardBuilder());
-		this.builders.set(BoardNodeType.ELEMENT, new ElementBuilder());
+		this.builders.set(BoardNodeType.TEXT_ELEMENT, new TextElementBuilder());
 	}
 
 	public build(boardNode: BoardNode, children: AnyBoardDo[] = []): AnyBoardDo {

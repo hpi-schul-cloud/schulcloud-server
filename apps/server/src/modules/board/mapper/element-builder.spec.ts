@@ -1,5 +1,5 @@
 import { boardNodeFactory } from '@shared/testing';
-import { ElementBuilder } from './element-builder';
+import { ElementBuilder } from './text-element-builder';
 
 describe('ElementBuilder', () => {
 	describe('when converting a boardnode', () => {

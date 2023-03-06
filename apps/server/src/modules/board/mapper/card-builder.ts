@@ -1,11 +1,11 @@
-import { AnyBoardDo, BoardNode, BoardNodeType, Card, CardPayload, ContentElement } from '@shared/domain';
+import { AnyBoardDo, BoardNode, BoardNodeType, Card, CardPayload, TextElement } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 
 export class CardBuilder extends BoardDoBuilder {
 	public build(boardNode: BoardNode, children: AnyBoardDo[] = []): Card {
 		this.ensureBoardNodeType(boardNode, BoardNodeType.CARD);
 
-		const elements = children.filter((c) => c.constructor.name === 'ContentElement') as ContentElement[];
+		const elements = children.filter((c) => c.constructor.name === 'TextElement') as TextElement[];
 
 		const payload = boardNode.payload as CardPayload;
 		const card = new Card({

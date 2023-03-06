@@ -26,7 +26,7 @@ export class BoardManagementUc {
 		await this.em.persistAndFlush(cards);
 
 		const cardElements = cards.map((card) =>
-			boardNodeFactory.asElement().buildList(this.generateRandomNumber(2, 8), { parent: card })
+			boardNodeFactory.asTextElement().buildList(this.generateRandomNumber(2, 8), { parent: card })
 		);
 		const elements = ([] as BoardNode[]).concat(...cardElements);
 		await this.em.persistAndFlush(elements);

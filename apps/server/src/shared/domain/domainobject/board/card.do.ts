@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { ContentElement } from './content-element.do';
+import { TextElement } from './text-element.do';
 
 export class Card implements CardProps {
 	id: EntityId;
@@ -8,7 +8,7 @@ export class Card implements CardProps {
 
 	height: number;
 
-	elements: ContentElement[];
+	elements: TextElement[]; // TODO: AnyContentElement
 
 	createdAt: Date;
 
@@ -31,7 +31,7 @@ interface CardProps {
 
 	height: number;
 
-	elements: ContentElement[];
+	elements: TextElement[]; // TODO: AnyContentElement
 
 	createdAt: Date;
 

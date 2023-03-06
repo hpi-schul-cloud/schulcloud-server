@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ContentElementResponse {
-	constructor({ id }: ContentElementResponse) {
+export class TextElementResponse {
+	constructor({ id, text }: TextElementResponse) {
 		this.id = id;
-		// this.type = type;
+		this.text = text;
 	}
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	id: string;
 
-	// @ApiProperty({ enum: ContentElementType })
-	// type: ContentElementType;
+	@ApiProperty()
+	text: string;
 }

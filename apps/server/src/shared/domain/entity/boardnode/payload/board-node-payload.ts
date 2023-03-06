@@ -1,10 +1,11 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
 
 export enum BoardNodeType {
-	BOARD = 'board',
+	COLUMN_BOARD = 'column-board',
 	COLUMN = 'column',
 	CARD = 'card',
-	ELEMENT = 'element',
+	CONTENT_ELEMENT = 'content-element',
+	TEXT_ELEMENT = 'text-element',
 }
 
 @Embeddable({ discriminatorColumn: 'type' })

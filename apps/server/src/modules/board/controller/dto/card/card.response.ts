@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { ContentElementResponse } from './content-element.response';
+import { TextElementResponse } from './content-element.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
 export class CardResponse {
@@ -25,9 +25,9 @@ export class CardResponse {
 	height: number;
 
 	@ApiProperty({
-		type: [ContentElementResponse],
+		type: [TextElementResponse],
 	})
-	elements: ContentElementResponse[];
+	elements: TextElementResponse[];
 
 	@ApiProperty()
 	visibilitySettings: VisibilitySettingsResponse;

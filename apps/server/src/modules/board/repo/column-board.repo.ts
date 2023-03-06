@@ -13,7 +13,7 @@ export class ColumnBoardRepo {
 	) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, { id: boardId, type: BoardNodeType.BOARD });
+		const boardNode = await this.em.findOneOrFail(BoardNode, { id: boardId, type: BoardNodeType.COLUMN_BOARD });
 		const descendants = await this.boardNodeRepo.findDescendants(boardNode, 3);
 		const domainObject = this.domainObjectBuilder.buildTree(boardNode, descendants);
 

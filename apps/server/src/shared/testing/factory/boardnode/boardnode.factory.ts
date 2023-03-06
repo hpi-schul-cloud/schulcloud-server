@@ -5,7 +5,7 @@ import {
 	cardPayloadFactory,
 	columnBoardPayloadFactory,
 	columnPayloadFactory,
-	contentElementPayloadFactory,
+	textElementPayloadFactory,
 } from './payload';
 
 class BoardNodeFactory extends BaseFactory<BoardNode, BoardNodeProperties> {
@@ -30,9 +30,9 @@ class BoardNodeFactory extends BaseFactory<BoardNode, BoardNodeProperties> {
 		return this.params(params);
 	}
 
-	asElement(): this {
+	asTextElement(): this {
 		const params: DeepPartial<BoardNodeProperties> = {
-			payload: contentElementPayloadFactory.build(),
+			payload: textElementPayloadFactory.build(),
 		};
 		return this.params(params);
 	}

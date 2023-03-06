@@ -1,5 +1,5 @@
 import { Card } from '@shared/domain';
-import { CardResponse, ContentElementResponse } from '../dto';
+import { CardResponse, TextElementResponse } from '../dto';
 
 export class CardResponseMapper {
 	static mapToResponse(card: Card): CardResponse {
@@ -9,8 +9,9 @@ export class CardResponseMapper {
 			height: card.height,
 			elements: card.elements.map(
 				(element) =>
-					new ContentElementResponse({
+					new TextElementResponse({
 						id: element.id,
+						text: element.text,
 					})
 			),
 			visibilitySettings: {},
