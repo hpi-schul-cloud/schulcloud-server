@@ -71,6 +71,7 @@ export class OAuthService {
 			);
 
 			if (shouldUserMigrate) {
+				// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 				migrationConsentRedirect = await this.userMigrationService.getMigrationConsentPageRedirect(
 					data.externalSchool.officialSchoolNumber,
 					systemId
@@ -96,6 +97,7 @@ export class OAuthService {
 			);
 		}
 
+		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect);
 
 		return { user, redirect: postLoginRedirect };
