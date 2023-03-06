@@ -15,101 +15,31 @@ const ES_METADATASET =
 const ES_ENDPOINTS = {
 	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
-	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queriesV2/-home-/${ES_METADATASET}/ngsearch/`,
+	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch`,
 };
-
-const basicAuthorizationHeaders = {
-	Authorization: `Basic ${Buffer.from(`${Configuration.get('ES_USER')}:${Configuration.get('ES_PASSWORD')}`).toString(
-		'base64'
-	)}`,
-};
-
-/* Instace-specific configuration, which we should try in the future to provide via configuration or some other means.
-	Permissions should be in-sync with Edu-Sharing permissions for the corresponding Edu-Sharing user.
-*/
-const edusharingInstancePermissions = [
-	{
-		name: 'LowerSaxony',
-		alias: 'n21', // or abbreviation
-		privateGroups: ['GROUP_LowerSaxony-private'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
-	},
-	{
-		name: 'Brandenburg',
-		alias: 'brb',
-		privateGroups: ['GROUP_Brandenburg-private'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
-	},
-	{
-		name: 'Thuringia',
-		alias: 'thr',
-		privateGroups: ['GROUP_Thuringia-private'],
-		publicGroups: ['GROUP_public', 'GROUP_Thuringia-public'],
-	},
-	{
-		// same for BossCloud, Open, and International.
-		name: 'HPIBossCloud',
-		alias: 'default', // open, int
-		privateGroups: ['GROUP_HPIBossCloud'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
-	},
-];
-
-// bug in edu-sharing limits session to 5 min instead of 1h
-const eduSharingCookieValidity = 240000; // 4 min
-let eduSharingCookieExpires = new Date();
 
 class EduSharingConnector {
 	setup(app) {
 		this.app = app;
 	}
 
-	// gets cookie (JSESSION) for authentication when fetching images
-	async getCookie() {
-		const options = {
-			uri: ES_ENDPOINTS.AUTH,
-			method: 'GET',
-			headers: basicAuthorizationHeaders,
-			resolveWithFullResponse: true,
-			json: true,
+	async getBasicAuthHeaders(schoolId) {
+		const county = await getCounty(schoolId);
+		let user = Configuration.get('ES_USER');
+		if (county && county.countyId && county.countyId >= 3000 && county.countyId < 4000) {
+			// county id 3XXX -> Lower Saxony
+			user = `LowerSaxonyCounty${county.countyId}`;
+		}
+		const password = Configuration.get('ES_PASSWORD');
+		const credentials = Buffer.from(`${user}:${password}`).toString('base64');
+		return {
+			Authorization: `Basic ${credentials}`,
 		};
-
-		try {
-			const result = await request.get(options);
-
-			if (result.statusCode !== 200 || result.body.isValidLogin !== true) {
-				throw Error('authentication error with edu sharing');
-			}
-
-			for (const cookie of result.headers['set-cookie']) {
-				if (cookie.startsWith('JSESSIONID')) {
-					return cookie;
-				}
-			}
-			throw new GeneralError('Cookie not found in response headers');
-		} catch (err) {
-			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
-			throw new GeneralError('Edu-Sharing Request failed');
-		}
-	}
-
-	async authorize() {
-		const now = new Date();
-		// should relogin if cookie expired
-		if (now >= eduSharingCookieExpires) {
-			try {
-				this.eduSharingCookie = await this.getCookie();
-				eduSharingCookieExpires = new Date(now.getTime() + eduSharingCookieValidity);
-			} catch (err) {
-				logger.error(`Edu-Sharing failed to authorise request`, err);
-				throw new GeneralError('Edu-Sharing Request failed');
-			}
-		}
 	}
 
 	async eduSharingRequest(options, retried = false) {
 		try {
-			await this.authorize();
+			// await this.authorize(); TODO: replace
 			if (options.method.toUpperCase() === 'GET') {
 				return await request.get(options);
 			}
@@ -126,31 +56,17 @@ class EduSharingConnector {
 			if (retried === true) {
 				throw new GeneralError('Edu-Sharing Request failed');
 			} else {
-				eduSharingCookieExpires = new Date();
 				const response = await this.eduSharingRequest(options, true);
 				return response;
 			}
 		}
 	}
 
-	async checkNodePermission(node, schoolId) {
-		const counties = node.properties['ccm:ph_invited'];
-		const isPublic = counties.some((county) => county.endsWith('public'));
-		if (counties.length > 1 && !isPublic) {
-			const county = await getCounty(schoolId);
-			const permission = counties.includes(`GROUP_county-${county.countyId}`);
-			return permission;
-		}
-		return true;
-	}
-
-	async getImage(url) {
+	async getImage(schoolId, url) {
 		const options = {
 			uri: url,
 			method: 'GET',
-			headers: {
-				cookie: this.eduSharingCookie,
-			},
+			headers: await this.getBasicAuthHeaders(schoolId),
 			encoding: null, // necessary to get the image as binary value
 			resolveWithFullResponse: true,
 			// edu-sharing returns 302 to an error page instead of 403,
@@ -177,23 +93,16 @@ class EduSharingConnector {
 		}
 
 		const criteria = [];
-		criteria.push({ property: 'ngsearchword', values: ['*'] });
+		criteria.push({ property: 'ngsearchword', values: [''] });
 		criteria.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(criteria, 0, 1);
+		const response = await this.searchEduSharing(schoolId, criteria, 0, 1);
 
 		if (!response.data || response.data.length !== 1) {
 			throw new NotFound('Item not found');
-		}
-
-		if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
-			const permission = await this.checkNodePermission(response.data[0], schoolId);
-			if (!permission) {
-				throw new Forbidden('This content is not available for your school');
-			}
 		}
 
 		return response.data[0];
@@ -211,37 +120,7 @@ class EduSharingConnector {
 			return new EduSharingResponse();
 		}
 
-		/* Providing the appropriate permissions, i.e., which items we are allowed to access, by specifying 
-			the necessary groups. */
-
-		const countyGroups = []; // County permissions.
-		const county = await getCounty(schoolId);
-		if (county && county.countyId) {
-			countyGroups.push(`GROUP_county-${county.countyId}`);
-		}
-
-		let instancePermissions = edusharingInstancePermissions.find(
-			(element) => Configuration.get('ES_USER').includes(element.name) // e.g., if ES_USER includes 'LowerSaxony'
-		);
-		if (typeof instancePermissions === 'undefined') {
-			instancePermissions = edusharingInstancePermissions.find(
-				(element) => element.alias === 'default' // default permissions
-			);
-		}
-
-		// Private: from its own state, public: from all states
-		const groups = [
-			...(countyGroups.length > 0 ? countyGroups : instancePermissions.privateGroups),
-			...instancePermissions.publicGroups,
-		];
-
 		const criteria = [];
-		if (groups.length) {
-			criteria.push({
-				property: 'ccm:ph_invited',
-				values: groups,
-			});
-		}
 
 		if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
 			criteria.push({
@@ -251,12 +130,13 @@ class EduSharingConnector {
 		}
 
 		if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
+			// causes 500 responses from server; remove?
 			criteria.push({
 				property: 'ccm:hpi_lom_general_aggregationlevel',
 				values: ['1'],
 			});
 		} else if (collection) {
-			criteria.push({ property: 'ngsearchword', values: ['*'] });
+			criteria.push({ property: 'ngsearchword', values: [''] });
 			criteria.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
@@ -265,11 +145,11 @@ class EduSharingConnector {
 			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criteria, skipCount, maxItems, sortProperties);
+		const response = await this.searchEduSharing(schoolId, criteria, skipCount, maxItems, sortProperties);
 		return response;
 	}
 
-	async searchEduSharing(criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
+	async searchEduSharing(schoolId, criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
 		const searchEndpoint = ES_ENDPOINTS.SEARCH;
 		const url = `${searchEndpoint}?${[
 			`contentType=FILES`,
@@ -283,8 +163,8 @@ class EduSharingConnector {
 		const facets = ['cclom:general_keyword'];
 
 		const body = JSON.stringify({
-			criterias: criteria,
-			facettes: facets,
+			criteria,
+			facets,
 		});
 
 		const options = {
@@ -293,7 +173,7 @@ class EduSharingConnector {
 			headers: {
 				Accept: 'application/json',
 				'Content-type': 'application/json',
-				...basicAuthorizationHeaders,
+				...(await this.getBasicAuthHeaders(schoolId)),
 			},
 			body,
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
@@ -301,12 +181,14 @@ class EduSharingConnector {
 
 		try {
 			const response = await this.eduSharingRequest(options);
-			logger.debug(response);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.nodes) {
 				const promises = parsed.nodes.map(async (node) => {
 					if (node.preview && node.preview.url) {
-						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
+						node.preview.url = await this.getImage(
+							schoolId,
+							`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`
+						);
 					}
 
 					// workaround for Edu-Sharing bug, where keywords are like "['a,b,c', 'd \n']"
