@@ -57,14 +57,12 @@ export class TaskCardMapper {
 	}
 
 	static mapToDomain(params: TaskCardParams): ITaskCardCRUD {
-		const title = params.cardElements.filter((element) => element.content instanceof TitleCardElementParam);
-		if (title.length !== 1) {
+		if (params.title.length !== 1) {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
-		const titleValue = title[0].content as TitleCardElementParam;
 		const dto: ITaskCardCRUD = {
-			title: titleValue.value,
+			title: params.title,
 		};
 
 		if (params.courseId) {

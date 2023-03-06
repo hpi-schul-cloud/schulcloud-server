@@ -51,7 +51,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	draggable = true;
 
 	@Property()
-	title: string;
+	title!: string;
 
 	@Property()
 	visibleAtDate: Date;
