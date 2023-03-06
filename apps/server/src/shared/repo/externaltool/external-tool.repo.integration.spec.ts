@@ -25,7 +25,7 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '../../domain/domainobject/page';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

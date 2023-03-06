@@ -7,7 +7,7 @@ import { UserService } from '@src/modules/user';
 import { Logger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { SchoolMigrationService } from './school-migration.service';
 import { OAuthMigrationError } from '../error/oauth-migration.error';

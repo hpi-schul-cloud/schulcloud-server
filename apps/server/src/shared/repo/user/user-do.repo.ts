@@ -16,7 +16,7 @@ import { EntityName, FilterQuery, QueryOrderMap, Reference } from '@mikro-orm/co
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityNotFoundError } from '@shared/common';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
-import { Page } from '@src/shared/domain/interface/page';
+import { Page } from '../../domain/domainobject/page';
 import { UserScope } from './user.scope';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeGreaterThan(query.lastLoginSystemChangeGreaterThan)
-			.whereOutdatedSinceEquals(query.outdatedSinceEquals)
+			.withOutdatedSince(query.outdatedSince)
 			.allowEmptyQuery(true);
 
 		order._id = order._id ?? SortOrder.asc;

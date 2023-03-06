@@ -16,7 +16,7 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
-	whereOutdatedSinceEquals(date?: Date): UserScope {
+	withOutdatedSince(date?: Date): UserScope {
 		if (date) {
 			this.addQuery({ outdatedSince: { $eq: date } });
 		}

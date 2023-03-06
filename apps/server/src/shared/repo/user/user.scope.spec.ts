@@ -73,7 +73,7 @@ describe('UserScope', () => {
 	describe('whereOutdatedSinceEquals is called', () => {
 		it('should return scope with added query where outdatedSinceEquals is given', () => {
 			const date: Date = new Date();
-			scope.whereOutdatedSinceEquals(date);
+			scope.withOutdatedSince(date);
 
 			expect(scope.query).toEqual({
 				outdatedSince: {

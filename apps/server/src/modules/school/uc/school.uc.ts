@@ -29,6 +29,7 @@ export class SchoolUc {
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
+		// TODO: Please think about the mandatory (validation?) and move this to a private function with a describing name
 		const shouldRestartMigration =
 			!!school.oauthMigrationFinished &&
 			oauthMigrationPossible &&
