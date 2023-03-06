@@ -3,16 +3,15 @@ import {
 	CardElement,
 	CardElementResponse,
 	CardRichTextElementResponse,
-	CardTitleElementResponse,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement } from '@shared/domain/entity/cardElement.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { ITaskCardCRUD } from '../../interface';
-import { RichTextCardElementParam, TaskCardParams, TaskCardResponse, TitleCardElementParam } from '../dto';
+import { RichTextCardElementParam, TaskCardParams, TaskCardResponse } from '../dto';
 
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
@@ -41,11 +40,6 @@ export class TaskCardMapper {
 	private mapElements(cardElements: CardElement[]): CardElementResponse[] {
 		const cardElementsResponse: CardElementResponse[] = [];
 		cardElements.forEach((element) => {
-			if (element.cardElementType === CardElementType.Title) {
-				const content = new CardTitleElementResponse(element as TitleCardElement);
-				const response = { id: element.id, cardElementType: element.cardElementType, content };
-				cardElementsResponse.push(response);
-			}
 			if (element.cardElementType === CardElementType.RichText) {
 				const content = new CardRichTextElementResponse(element as RichTextCardElement);
 				const response = { id: element.id, cardElementType: element.cardElementType, content };
