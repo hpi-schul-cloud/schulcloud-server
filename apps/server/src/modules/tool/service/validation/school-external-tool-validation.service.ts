@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { CustomParameterScope, CustomParameterType, EntityId } from '@shared/domain';
+import { CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { isNaN } from 'lodash';
@@ -19,29 +19,13 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 export class SchoolExternalToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCreate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
+	async validate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
 		this.checkForDuplicateParameters(schoolExternalToolDO);
 		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
 		);
 		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
 		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
-	}
-
-	async validateUpdate(schoolExternalToolId: string, schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
-		this.checkIdMatch(schoolExternalToolId, schoolExternalToolDO.id);
-		this.checkForDuplicateParameters(schoolExternalToolDO);
-		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
-			schoolExternalToolDO.toolId
-		);
-		this.checkVersionMatch(schoolExternalToolDO.toolVersion, loadedExternalTool.version);
-		this.checkCustomParameterEntries(loadedExternalTool, schoolExternalToolDO);
-	}
-
-	private checkIdMatch(schoolExternalToolId: EntityId, schoolExternalToolDOId: string | undefined): void {
-		if (schoolExternalToolId !== schoolExternalToolDOId) {
-			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
-		}
 	}
 
 	private checkForDuplicateParameters(schoolExternalToolDO: SchoolExternalToolDO): void {

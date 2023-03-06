@@ -192,12 +192,12 @@ describe('SchoolExternalToolUc', () => {
 		});
 
 		describe('when userId and schoolExternalTool are given', () => {
-			it('should call schoolExternalToolValidationService.validateCreate()', async () => {
+			it('should call schoolExternalToolValidationService.validate()', async () => {
 				const { user, tool } = setup();
 
 				await uc.createSchoolExternalTool(user.id, tool);
 
-				expect(schoolExternalToolValidationService.validateCreate).toHaveBeenCalledWith(tool);
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(tool);
 			});
 
 			it('should call schoolExternalToolService.createSchoolExternalTool', async () => {
@@ -242,20 +242,21 @@ describe('SchoolExternalToolUc', () => {
 
 	describe('updateSchoolExternalTool is called', () => {
 		const setupUpdate = () => {
-			const { tool } = setup();
+			const { tool, user } = setup();
 			const updatedTool: SchoolExternalToolDO = { ...tool };
 			updatedTool.parameters[0].value = 'updatedValue';
 
 			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);
 			return {
 				updatedTool,
+				schoolExternalToolId: updatedTool.id as EntityId,
+				user,
 			};
 		};
 
 		describe('when checks permission', () => {
 			it('should check the permissions of the user', async () => {
-				const { updatedTool } = setupUpdate();
-				const { user, schoolExternalToolId } = setup();
+				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
 				await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
@@ -271,28 +272,22 @@ describe('SchoolExternalToolUc', () => {
 			});
 		});
 		describe('when userId, schoolExternalToolId and schoolExternalTool are given', () => {
-			it('should call schoolExternalToolValidationService.validateUpdate()', async () => {
-				const { updatedTool } = setupUpdate();
-				const { user, schoolExternalToolId } = setup();
+			it('should call schoolExternalToolValidationService.validate()', async () => {
+				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
 				await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
-				expect(schoolExternalToolValidationService.validateUpdate).toHaveBeenCalledWith(
-					schoolExternalToolId,
-					updatedTool
-				);
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
 			});
 			it('should call the service to update the tool', async () => {
-				const { updatedTool } = setupUpdate();
-				const { user, schoolExternalToolId } = setup();
+				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
 				await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
 				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
 			});
 			it('should return a schoolExternalToolDO', async () => {
-				const { updatedTool } = setupUpdate();
-				const { user, schoolExternalToolId } = setup();
+				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
 				const result: SchoolExternalToolDO = await uc.updateSchoolExternalTool(
 					user.id,

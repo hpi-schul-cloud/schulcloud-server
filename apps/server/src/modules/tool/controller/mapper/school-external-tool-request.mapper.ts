@@ -7,7 +7,6 @@ import { SchoolExternalTool } from '../../uc/dto/school-external-tool.types';
 export class SchoolExternalToolRequestMapper {
 	mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalTool {
 		return {
-			id: request.id,
 			toolId: request.toolId,
 			schoolId: request.schoolId,
 			toolVersion: request.version,

@@ -272,7 +272,6 @@ describe('ToolSchoolController (API)', () => {
 			const paramEntry = { name: 'name', value: 'Updatedvalue' };
 			const randomTestId = new ObjectId().toString();
 			const postParams: SchoolExternalToolPostParams = {
-				id: randomTestId,
 				toolId: randomTestId,
 				schoolId: randomTestId,
 				version: 1,
@@ -286,7 +285,6 @@ describe('ToolSchoolController (API)', () => {
 			currentUser = mapUserToCurrentUser(adminUser);
 			const paramEntry = { name: 'name', value: 'Updatedvalue' };
 			const postParams: SchoolExternalToolPostParams = {
-				id: schoolExternalTool.id,
 				toolId: externalTool.id,
 				schoolId: school.id,
 				version: 1,

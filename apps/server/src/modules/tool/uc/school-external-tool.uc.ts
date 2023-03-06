@@ -33,7 +33,7 @@ export class SchoolExternalToolUc {
 	): Promise<SchoolExternalToolDO> {
 		await this.ensureSchoolPermission(userId, schoolExternalTool.schoolId);
 
-		await this.schoolExternalToolValidationService.validateCreate(schoolExternalTool);
+		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const createdSchoolExternalTool: SchoolExternalToolDO = await this.schoolExternalToolService.saveSchoolExternalTool(
 			schoolExternalTool
@@ -78,9 +78,14 @@ export class SchoolExternalToolUc {
 		schoolExternalTool: SchoolExternalTool
 	): Promise<SchoolExternalToolDO> {
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
-		await this.schoolExternalToolValidationService.validateUpdate(schoolExternalToolId, schoolExternalTool);
+		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
-		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
+		const updated: SchoolExternalToolDO = new SchoolExternalToolDO({
+			...schoolExternalTool,
+			id: schoolExternalToolId,
+		});
+
+		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
 	}
 

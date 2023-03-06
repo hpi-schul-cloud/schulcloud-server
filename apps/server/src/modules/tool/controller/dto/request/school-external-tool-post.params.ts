@@ -4,12 +4,6 @@ import { IsArray, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } fr
 import { CustomParameterEntryParam } from './custom-parameter-entry.params';
 
 export class SchoolExternalToolPostParams {
-	@ApiPropertyOptional()
-	@IsString()
-	@IsOptional()
-	@IsMongoId()
-	id?: string;
-
 	@ApiProperty()
 	@IsString()
 	@IsMongoId()
