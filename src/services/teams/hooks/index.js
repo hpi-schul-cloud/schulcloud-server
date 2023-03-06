@@ -625,7 +625,10 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 		const userId = bsonIdToString(hook.params.account.userId);
 		const { userIds } = hook.result;
 		const user = {
-			...userIds.find((u) => isSameId(u.userId._id || u.userId, userId)),
+			...userIds.find((u) => {
+				const id = (u.userId || {})._id || u.userId;
+				return isSameId(id, userId);
+			}),
 		};
 		if (isUndefined([user, user.role], 'OR')) {
 			logger.warning(
