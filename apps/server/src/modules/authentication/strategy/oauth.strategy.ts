@@ -4,6 +4,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
+import { OAuthProcessDto } from '@src/modules/oauth/service/dto/oauth-process.dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { ICurrentUser } from '../interface';
@@ -27,19 +28,26 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		if (!request.params.systemId) {
 			throw new BadRequestException(request.params.systemId, 'No SystemId provided!');
 		}
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
-			request.params.systemId,
-			request.query.code,
-			request.query.error
-		);
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
-			request.params.systemId,
-			tokenDto.idToken,
-			tokenDto.accessToken
-		);
-		request.query = { ...request.params, redirect };
+		try {
+			const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
+				request.params.systemId,
+				request.query.code,
+				request.query.error
+			);
+			const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
+				request.params.systemId,
+				tokenDto.idToken,
+				tokenDto.accessToken
+			);
+			request.query = { ...request.params, redirect };
 
-		return this.loadICurrentUser(request.params.systemId, user);
+			const currentUser: ICurrentUser | unknown = await this.loadICurrentUser(request.params.systemId, user);
+			return currentUser;
+		} catch (error) {
+			const errorDto: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error);
+			request.query = { ...request.params, redirect: errorDto.redirect };
+			return {};
+		}
 	}
 
 	private async loadICurrentUser(systemId: string, user?: UserDO): Promise<ICurrentUser | unknown> {

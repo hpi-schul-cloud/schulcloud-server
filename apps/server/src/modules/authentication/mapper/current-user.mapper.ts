@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { Role, User } from '@shared/domain';
+import { EntityId, Role, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ICurrentUser } from '../interface';
 
@@ -55,7 +55,8 @@ export class CurrentUserMapper {
 				updatedAt: user.updatedAt,
 				firstName: user.firstName,
 				lastName: user.lastName,
-				roles: user.roleIds.map((role: string) => {
+				roles: user.roleIds.map((role: EntityId) => {
+					// TODO use correct mapping to role name
 					return { id: role, name: role };
 				}),
 				schoolId: user.schoolId,

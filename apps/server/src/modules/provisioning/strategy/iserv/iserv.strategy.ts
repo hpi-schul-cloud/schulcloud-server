@@ -47,7 +47,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		if (!ldapUser) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken.email as string | undefined);
 			throw new OAuthSSOError(
-				`Failed to find user with Id ${idToken.uuid as string} ${additionalInfo}`,
+				`Failed to find user with Id ${idToken.uuid as string}${additionalInfo}`,
 				'sso_user_notfound'
 			);
 		}
@@ -74,8 +74,10 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
 			const usersWithEmail: User[] = await this.userService.findByEmail(email);
-			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
+			if (usersWithEmail.length > 0) {
+				const user: User = usersWithEmail[0];
+				return ` [schoolId: ${user.school.id}, currentLdapId: ${user.externalId ?? ''}]`;
+			}
 		}
 		return '';
 	}

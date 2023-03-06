@@ -6,13 +6,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
-import { OauthTokenResponse } from '../service/dto/oauth-token.response';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthTokenDto } from '../interface';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -24,12 +24,12 @@ describe('HydraOauthUc', () => {
 
 	let hydraOauthService: DeepMocked<HydraSsoService>;
 	let oauthService: DeepMocked<OAuthService>;
-	const oauthTokenResponse: OauthTokenResponse = {
-		access_token: 'accessTockenMock',
-		refresh_token: 'refreshTokenMock',
-		id_token: 'idTokenMock',
+	const oauthTokenDto: OAuthTokenDto = {
+		accessToken: 'accessTockenMock',
+		refreshToken: 'refreshTokenMock',
+		idToken: 'idTokenMock',
 	};
-	const defaultDecodedJWT: IJwt = {
+	const defaultDecodedJWT = {
 		sub: 'subMock',
 	};
 
@@ -102,13 +102,22 @@ describe('HydraOauthUc', () => {
 			const code = 'kdjiqwjdjnq';
 
 			hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+			oauthService.requestToken.mockResolvedValue(oauthTokenDto);
 			oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
 			const oauthToken = await uc.getOauthToken({ code }, '4566456');
 
-			expect(oauthToken).toEqual(oauthTokenResponse);
+			expect(oauthToken).toEqual(oauthTokenDto);
+		});
+
+		it('should throw error', async () => {
+			const error = 'kdjiqwjdjnq';
+
+			const func = () => uc.getOauthToken({ error }, '4566456');
+
+			await expect(func).rejects.toThrow(
+				new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
+			);
 		});
 	});
 

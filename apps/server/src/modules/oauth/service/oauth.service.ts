@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, User } from '@shared/domain';
+import { OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
@@ -36,7 +36,7 @@ export class OAuthService {
 
 	async authenticateUser(systemId: string, authCode?: string, errorCode?: string): Promise<OAuthTokenDto> {
 		if (errorCode || !authCode) {
-			throw new OAuthSSOError(
+			throw new UnauthorizedException(
 				'Authorization Query Object has no authorization code or error',
 				errorCode || 'sso_auth_code_step'
 			);
@@ -88,7 +88,13 @@ export class OAuthService {
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
-		const user: UserDO = await this.findUser(idToken, provisioningDto.externalUserId, systemId);
+		const user: UserDO | null = await this.userService.findByExternalId(provisioningDto.externalUserId, systemId);
+		if (!user) {
+			throw new OAuthSSOError(
+				`Provisioning of user with externalId: ${provisioningDto.externalUserId} failed`,
+				'sso_user_notfound'
+			);
+		}
 
 		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect);
 
@@ -122,32 +128,6 @@ export class OAuthService {
 		return decodedJWT;
 	}
 
-	async findUser(idToken: string, externalUserId: string, systemId: EntityId): Promise<UserDO> {
-		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
-
-		if (!decodedToken?.sub) {
-			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
-		}
-
-		this.logger.debug(`provisioning is running for user with sub: ${decodedToken.sub} and system with id: ${systemId}`);
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		if (!user) {
-			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
-			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
-		}
-
-		return user;
-	}
-
-	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
-		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
-			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-		}
-		return '';
-	}
-
 	async getPostLoginRedirectUrl(idToken: string, systemId: string, postLoginRedirect?: string): Promise<string> {
 		const clientUrl: string = Configuration.get('HOST') as string;
 		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
@@ -168,7 +148,7 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getOAuthErrorResponse(error: unknown, provider: string): OAuthProcessDto {
+	getOAuthErrorResponse(error: unknown, provider?: string): OAuthProcessDto {
 		this.logger.error(error);
 
 		let errorCode: string;

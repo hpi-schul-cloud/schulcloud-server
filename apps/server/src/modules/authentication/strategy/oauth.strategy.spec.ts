@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
@@ -8,7 +8,10 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { OauthStrategy } from './oauth.strategy';
+import { OAuthProcessDto } from '../../oauth/service/dto/oauth-process.dto';
+import { ICurrentUser } from '../interface';
+import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
+import { OauthStrategy, PathParams } from './oauth.strategy';
 
 describe('OauthStrategy', () => {
 	let module: TestingModule;
@@ -94,6 +97,11 @@ describe('OauthStrategy', () => {
 
 	describe('when no account is found for user ID', () => {
 		it('should throw Unauthorized', async () => {
+			const request: { params: PathParams; query: OauthAuthorizationParams } = {
+				params: { systemId },
+				query: { code: 'some Code' },
+			};
+
 			oauthService.authenticateUser.mockResolvedValueOnce(
 				new OAuthTokenDto({
 					idToken: 'idToken',
@@ -106,9 +114,16 @@ describe('OauthStrategy', () => {
 				redirect: '/mock-redirect',
 			});
 			accountService.findByUserId.mockResolvedValueOnce(null);
-			await expect(strategy.validate({ params: { systemId }, query: { code: 'some Code' } })).rejects.toThrow(
-				UnauthorizedException
+			oauthService.getOAuthErrorResponse.mockReturnValue(
+				new OAuthProcessDto({
+					redirect: 'errorRedirect',
+				})
 			);
+
+			const result: ICurrentUser | unknown = await strategy.validate(request);
+
+			expect(result).toEqual({});
+			expect(request.query.redirect).toEqual('errorRedirect');
 		});
 	});
 
