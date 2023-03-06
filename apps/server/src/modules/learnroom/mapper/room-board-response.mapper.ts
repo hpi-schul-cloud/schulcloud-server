@@ -47,6 +47,7 @@ export class RoomBoardResponseMapper {
 			createdAt: boardTask.createdAt,
 			updatedAt: boardTask.updatedAt,
 			status: boardTaskStatus,
+			taskCard: boardTask.taskCard,
 		});
 
 		const taskCourse = boardTask.course as Course;
