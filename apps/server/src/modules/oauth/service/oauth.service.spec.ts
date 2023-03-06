@@ -468,8 +468,8 @@ describe('OAuthService', () => {
 			});
 		});
 
-		describe('when provisioning an existing user that should migrate', () => {
-			it('should throw', async () => {
+		describe('when the user cannot be found after provisioning', () => {
+			it('should throw an error', async () => {
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
