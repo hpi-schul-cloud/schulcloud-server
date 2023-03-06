@@ -172,7 +172,7 @@ export class KeycloakConfigurationService {
 		if (defaultMapper?.id) {
 			await kc.clients.updateProtocolMapper(
 				{ id: defaultClientInternalId, mapperId: defaultMapper?.id },
-				{...this.getExternalSubClientMapperConfiguration(), id: defaultMapper?.id }
+				{ ...this.getExternalSubClientMapperConfiguration(), id: defaultMapper?.id }
 			);
 		} else {
 			await kc.clients.addProtocolMapper(
