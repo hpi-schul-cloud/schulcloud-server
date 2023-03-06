@@ -1,22 +1,12 @@
-import { Embedded, Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardNodeType, CardPayload, ColumnBoardPayload, ColumnPayload, TextElementPayload } from './payload';
+import { BoardNodeType } from './types/board-node-type';
 
 const PATH_SEPARATOR = ',';
 
-export const BOARD_NODE_PAYLOAD_CLASSES = [ColumnBoardPayload, ColumnPayload, CardPayload, TextElementPayload];
-
-export type AnyBoardNodePayload = ColumnBoardPayload | ColumnPayload | CardPayload | TextElementPayload;
-
-export interface BoardNodeProperties {
-	parent?: BoardNode;
-	position?: number;
-	payload: AnyBoardNodePayload;
-}
-
-@Entity({ tableName: 'boardnodes' })
+@Entity({ tableName: 'boardnodes', discriminatorColumn: 'type' })
 export class BoardNode extends BaseEntityWithTimestamps {
 	constructor(props: BoardNodeProperties) {
 		super();
@@ -26,7 +16,6 @@ export class BoardNode extends BaseEntityWithTimestamps {
 		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
-		this.payload = props.payload;
 	}
 
 	@Property({ nullable: false })
@@ -38,14 +27,8 @@ export class BoardNode extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	position: number;
 
-	// we use polymorphic embeddables without prefix here
-	// see: https://mikro-orm.io/docs/embeddables#polymorphic-embeddables
-	@Embedded(() => BOARD_NODE_PAYLOAD_CLASSES, { prefix: false })
-	payload: AnyBoardNodePayload;
-
-	get type(): BoardNodeType {
-		return this.payload.type;
-	}
+	@Enum(() => BoardNodeType)
+	type!: BoardNodeType;
 
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
@@ -68,4 +51,9 @@ export class BoardNode extends BaseEntityWithTimestamps {
 	static joinPath(path: string, id: EntityId) {
 		return `${path}${id}${PATH_SEPARATOR}`;
 	}
+}
+
+export interface BoardNodeProperties {
+	parent?: BoardNode;
+	position?: number;
 }

@@ -26,17 +26,17 @@ import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 import { CardElement, TitleCardElement, RichTextCardElement } from './cardElement.entity';
 import { BoardNode } from './boardnode/boardnode.entity';
-import { CardPayload, ColumnBoardPayload, ColumnPayload, TextElementPayload } from './boardnode';
+import { CardNode, ColumnBoardNode, ColumnNode, TextElementNode } from './boardnode';
 
 export const ALL_ENTITIES = [
 	Account,
 	Board,
 	BoardElement,
 	BoardNode,
-	CardPayload,
-	ColumnBoardPayload,
-	ColumnPayload,
-	TextElementPayload,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	TextElementNode,
 	Course,
 	CourseExternalTool,
 	CourseGroup,

@@ -1,10 +1,10 @@
-import { boardNodeFactory } from '@shared/testing';
+import { cardNodeFactory, columnNodeFactory } from '@shared/testing';
 import { ColumnBuilder } from './column-builder';
 
 describe('ColumnBuilder', () => {
 	describe('when converting a boardnode', () => {
 		it('should build a Column-DO when a boardNode of type COLUMN is given', () => {
-			const boardNode = boardNodeFactory.asColumn().build();
+			const boardNode = columnNodeFactory.build();
 
 			const domainObject = new ColumnBuilder().build(boardNode);
 
@@ -12,7 +12,7 @@ describe('ColumnBuilder', () => {
 		});
 
 		it('should throw error if the boardNode is not of type COLUMN', () => {
-			const boardNode = boardNodeFactory.asCard().build();
+			const boardNode = cardNodeFactory.build();
 
 			expect(() => {
 				new ColumnBuilder().build(boardNode);

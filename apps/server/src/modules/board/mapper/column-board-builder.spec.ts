@@ -1,7 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, boardNodeFactory } from '@shared/testing';
+import {
+	cardNodeFactory,
+	cleanupCollections,
+	columnBoardNodeFactory,
+	columnNodeFactory,
+	textElementNodeFactory,
+} from '@shared/testing';
 import { ColumnBoardBuilder } from './column-board-builder';
 
 describe('ColumnBoardBuilder', () => {
@@ -24,13 +30,13 @@ describe('ColumnBoardBuilder', () => {
 	});
 
 	const setup = async () => {
-		const root = boardNodeFactory.build();
+		const root = columnBoardNodeFactory.build();
 		await em.persistAndFlush(root);
-		const level1 = boardNodeFactory.asColumn().buildList(2, { parent: root });
+		const level1 = columnNodeFactory.buildList(2, { parent: root });
 		await em.persistAndFlush(level1);
-		const level2 = boardNodeFactory.asCard().buildList(2, { parent: level1[0] });
+		const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
 		await em.persistAndFlush(level2);
-		const level3 = boardNodeFactory.asElement().buildList(2, { parent: level2[1] });
+		const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
 		await em.persistAndFlush(level3);
 		em.clear();
 

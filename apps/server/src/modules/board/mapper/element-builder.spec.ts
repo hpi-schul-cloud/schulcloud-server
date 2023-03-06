@@ -1,21 +1,21 @@
-import { boardNodeFactory } from '@shared/testing';
-import { ElementBuilder } from './text-element-builder';
+import { columnBoardNodeFactory, textElementNodeFactory } from '@shared/testing';
+import { TextElementBuilder } from './text-element-builder';
 
-describe('ElementBuilder', () => {
+describe('TextElementBuilder', () => {
 	describe('when converting a boardnode', () => {
 		it('should build a ContentElement-DO when a boardNode of type ELEMENT is given', () => {
-			const boardNode = boardNodeFactory.asElement().build();
+			const boardNode = textElementNodeFactory.build();
 
-			const domainObject = new ElementBuilder().build(boardNode);
+			const domainObject = new TextElementBuilder().build(boardNode);
 
-			expect(domainObject.constructor.name).toBe('ContentElement');
+			expect(domainObject.constructor.name).toBe('TextElement');
 		});
 
 		it('should throw error if the boardNode is not of type ELEMENT', () => {
-			const boardNode = boardNodeFactory.asColumn().build();
+			const boardNode = columnBoardNodeFactory.build();
 
 			expect(() => {
-				new ElementBuilder().build(boardNode);
+				new TextElementBuilder().build(boardNode);
 			}).toThrowError();
 		});
 	});

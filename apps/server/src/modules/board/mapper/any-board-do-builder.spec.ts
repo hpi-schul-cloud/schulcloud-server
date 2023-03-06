@@ -1,5 +1,5 @@
 import { Card } from '@shared/domain';
-import { setupEntities, boardNodeFactory } from '@shared/testing';
+import { cardNodeFactory, columnBoardNodeFactory, setupEntities, textElementNodeFactory } from '@shared/testing';
 import { AnyBoardDoBuilder } from './any-board-do-builder';
 import { CardBuilder } from './card-builder';
 
@@ -10,7 +10,7 @@ describe('CardBuilder', () => {
 
 	describe('when converting a boardnode', () => {
 		it('should build a Card-DO when a boardNode of type CARD is given', () => {
-			const boardNode = boardNodeFactory.asCard().build();
+			const boardNode = cardNodeFactory.build();
 
 			const domainObject = new CardBuilder().build(boardNode);
 
@@ -18,7 +18,7 @@ describe('CardBuilder', () => {
 		});
 
 		it('should throw error if the boardNode is not of type CARD', () => {
-			const boardNode = boardNodeFactory.asColumn().build();
+			const boardNode = columnBoardNodeFactory.build();
 
 			expect(() => {
 				new CardBuilder().build(boardNode);
@@ -28,9 +28,9 @@ describe('CardBuilder', () => {
 
 	describe('when converting a card-boardnode and some of its descendants', () => {
 		it('should have the children correctly assigned in the card', () => {
-			const card = boardNodeFactory.asCard().buildWithId();
-			const childElement1 = boardNodeFactory.asElement().build({ parent: card });
-			const childElement2 = boardNodeFactory.asElement().build({ parent: card });
+			const card = cardNodeFactory.buildWithId();
+			const childElement1 = textElementNodeFactory.build({ parent: card });
+			const childElement2 = textElementNodeFactory.build({ parent: card });
 
 			const domainObject = new AnyBoardDoBuilder().buildTree(card, [childElement1, childElement2]) as Card;
 
@@ -38,10 +38,10 @@ describe('CardBuilder', () => {
 		});
 
 		it('should not assign elements that are not part of the tree independent', () => {
-			const card = boardNodeFactory.asCard().buildWithId();
-			const independenElement = boardNodeFactory.asElement().build();
-			const element1 = boardNodeFactory.asElement().build({ parent: card });
-			const element2 = boardNodeFactory.asElement().build({ parent: card });
+			const card = cardNodeFactory.buildWithId();
+			const independenElement = textElementNodeFactory.build();
+			const element1 = textElementNodeFactory.build({ parent: card });
+			const element2 = textElementNodeFactory.build({ parent: card });
 
 			const domainObject = new AnyBoardDoBuilder().buildTree(card, [element1, independenElement, element2]) as Card;
 
@@ -49,10 +49,10 @@ describe('CardBuilder', () => {
 		});
 
 		it('should sort children according to position attribute', () => {
-			const card = boardNodeFactory.asCard().buildWithId();
-			const element1 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 3 });
-			const element2 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 1 });
-			const element3 = boardNodeFactory.asElement().buildWithId({ parent: card, position: 2 });
+			const card = cardNodeFactory.buildWithId();
+			const element1 = textElementNodeFactory.buildWithId({ parent: card, position: 3 });
+			const element2 = textElementNodeFactory.buildWithId({ parent: card, position: 1 });
+			const element3 = textElementNodeFactory.buildWithId({ parent: card, position: 2 });
 
 			const domainObject = new AnyBoardDoBuilder().buildTree(card, [element1, element2, element3]) as Card;
 
