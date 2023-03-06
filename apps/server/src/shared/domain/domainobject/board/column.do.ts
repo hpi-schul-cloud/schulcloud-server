@@ -4,7 +4,7 @@ import { Card } from './card.do';
 export class Column implements ColumnProps {
 	id: EntityId;
 
-	title: string;
+	title?: string;
 
 	cards: Card[];
 
@@ -24,7 +24,7 @@ export class Column implements ColumnProps {
 interface ColumnProps {
 	id: EntityId;
 
-	title: string;
+	title?: string;
 
 	cards: Card[];
 
