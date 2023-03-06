@@ -71,16 +71,18 @@ export class TaskCardMapper {
 			dto.dueDate = params.dueDate;
 		}
 
-		params.cardElements.forEach((element) => {
-			if (element.content instanceof RichTextCardElementParam) {
-				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
-				if (!dto.text) {
-					dto.text = [richText];
-				} else {
-					dto.text.push(richText);
+		if (params.cardElements) {
+			params.cardElements.forEach((element) => {
+				if (element.content instanceof RichTextCardElementParam) {
+					const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
+					if (!dto.text) {
+						dto.text = [richText];
+					} else {
+						dto.text.push(richText);
+					}
 				}
-			}
-		});
+			});
+		}
 
 		return dto;
 	}

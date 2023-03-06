@@ -88,6 +88,7 @@ export class TaskCardParams {
 	@ApiPropertyOptional({ description: 'Due date of the card' })
 	dueDate?: Date;
 
+	@IsOptional()
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CardElementParams)
@@ -95,5 +96,5 @@ export class TaskCardParams {
 		description: 'Card elements array',
 		type: [CardElementParams],
 	})
-	cardElements!: CardElementParams[];
+	cardElements?: CardElementParams[];
 }
