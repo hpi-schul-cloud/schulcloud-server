@@ -37,7 +37,7 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
-
+		// TODO remove create title card element
 		const title = new TitleCardElement(params.title);
 		cardElements.unshift(title);
 
