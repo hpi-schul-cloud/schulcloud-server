@@ -296,7 +296,6 @@ describe('SchoolExternalToolUc', () => {
 				);
 
 				expect(result).toEqual(updatedTool);
-				expect(result.parameters[0].value).toEqual(updatedTool.parameters[0].value);
 			});
 		});
 	});
