@@ -3,13 +3,12 @@ import { DecodeHtmlEntities } from '@shared/controller';
 import { BoardTaskStatusResponse } from './board-task-status.response';
 
 export class BoardTaskResponse {
-	constructor({ id, name, createdAt, updatedAt, status, taskCard }: BoardTaskResponse) {
+	constructor({ id, name, createdAt, updatedAt, status }: BoardTaskResponse) {
 		this.id = id;
 		this.name = name;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 		this.status = status;
-		this.taskCard = taskCard;
 	}
 
 	@ApiProperty()
@@ -45,6 +44,6 @@ export class BoardTaskResponse {
 	@ApiProperty()
 	status: BoardTaskStatusResponse;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	taskCard?: string;
 }
