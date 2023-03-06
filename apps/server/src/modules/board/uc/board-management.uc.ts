@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode } from '@shared/domain';
-import { boardNodeFactory, cardPayloadFactory, textElementPayloadFactory } from '@shared/testing';
+import { boardNodeFactory, cardPayloadFactory, columnPayloadFactory, textElementPayloadFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
@@ -11,38 +11,55 @@ export class BoardManagementUc {
 		const board = boardNodeFactory.asBoard().build();
 		await this.em.persistAndFlush(board);
 
-		const columns = boardNodeFactory.asColumn().buildList(6, { parent: board });
+		const columns = this.createColumns(3, board);
 		await this.em.persistAndFlush(columns);
 
-		const columnCards = columns.map((column) => {
-			const cards: BoardNode[] = [];
-			for (let i = 0; i < this.generateRandomNumber(5, 10); i += 1) {
-				const node = boardNodeFactory
-					.asCard()
-					.build({ parent: column, payload: cardPayloadFactory.build({ height: this.generateRandomNumber(50, 250) }) });
-				cards.push(node);
-			}
-			return cards;
-		});
-
-		const cards = ([] as BoardNode[]).concat(...columnCards);
+		const cardsPerColumn = columns.map((column) => this.createCards(this.random(5, 10), column));
+		const cards = cardsPerColumn.flat();
 		await this.em.persistAndFlush(cards);
 
-		const cardElements = cards.map((card, i) => {
-			const elements: BoardNode[] = [];
-			for (let j = 0; j < this.generateRandomNumber(5, 10); j += 1) {
-				const node = boardNodeFactory
-					.asTextElement()
-					.build({ parent: card, payload: textElementPayloadFactory.build({ text: `<p>text ${j + 1}</p>` }) });
-				elements.push(node);
-			}
-			return elements;
-		});
-		const elements = ([] as BoardNode[]).concat(...cardElements);
+		const elementsPerCard = cards.map((card) => this.createElements(this.random(2, 5), card));
+		const elements = elementsPerCard.flat();
 		await this.em.persistAndFlush(elements);
 	}
 
-	private generateRandomNumber(min: number, max: number): number {
+	private createColumns(amount: number, parent: BoardNode): BoardNode[] {
+		return this.generateArray(amount, (i) =>
+			boardNodeFactory.asColumn().build({
+				parent,
+				payload: columnPayloadFactory.build({ title: `Column ${i + 1}` }),
+			})
+		);
+	}
+
+	private createCards(amount: number, parent: BoardNode): BoardNode[] {
+		return this.generateArray(amount, (i) =>
+			boardNodeFactory.asCard().build({
+				parent,
+				payload: cardPayloadFactory.build({
+					title: `Card ${i + 1}`,
+					height: this.random(50, 250),
+				}),
+			})
+		);
+	}
+
+	private createElements(amount: number, parent: BoardNode): BoardNode[] {
+		return this.generateArray(amount, (i) =>
+			boardNodeFactory.asTextElement().build({
+				parent,
+				payload: textElementPayloadFactory.build({
+					text: `<p>text ${i + 1}</p>`,
+				}),
+			})
+		);
+	}
+
+	private generateArray<T>(length: number, fn: (i: number) => T) {
+		return [...Array(length).keys()].map((_, i) => fn(i));
+	}
+
+	private random(min: number, max: number): number {
 		return Math.floor(Math.random() * (max + min - 1) + min);
 	}
 }
