@@ -4,6 +4,6 @@ import { BaseFactory } from '../../base.factory';
 export const columnPayloadFactory = BaseFactory.define<ColumnPayload, ColumnPayloadProps>(
 	ColumnPayload,
 	({ sequence }) => {
-		return { name: `column #${sequence}` };
+		return { name: `column #${sequence}`, title: 'Column' };
 	}
 );

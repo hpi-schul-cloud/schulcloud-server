@@ -1,4 +1,4 @@
-import { BoardNode, BoardNodeType, Card, Column, AnyBoardDo } from '@shared/domain';
+import { AnyBoardDo, BoardNode, BoardNodeType, Card, Column, ColumnPayload } from '@shared/domain';
 import { BoardDoBuilder } from './board-do-builder';
 
 export class ColumnBuilder extends BoardDoBuilder {
@@ -7,9 +7,10 @@ export class ColumnBuilder extends BoardDoBuilder {
 
 		const cards = children.filter((c) => c.constructor.name === 'Card') as Card[];
 
+		const { title } = boardNode.payload as ColumnPayload;
 		const column = new Column({
 			id: boardNode.id,
-			title: '',
+			title,
 			cards,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

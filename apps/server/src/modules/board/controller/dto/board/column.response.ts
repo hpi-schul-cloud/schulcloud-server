@@ -16,7 +16,7 @@ export class ColumnResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title: string;
+	title?: string;
 
 	@ApiProperty({
 		type: [CardSkeletonResponse],
