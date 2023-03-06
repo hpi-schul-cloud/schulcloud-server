@@ -193,12 +193,11 @@ describe('KeycloakConfigurationService Unit', () => {
 		});
 		it('should update a mapper for an updated identity provider', async () => {
 			kcApiClientIdentityProvidersMock.findMappers.mockResolvedValue([
-				{ id: '1', identityProviderAlias: idps[0].alias, name: 'oidc-username-idp-mapper' },
+				{ id: '1', identityProviderAlias: idps[0].alias, name: 'OIDC User Attribute Mapper' },
 			]);
 			await service.configureIdentityProviders();
 			expect(kcApiClientIdentityProvidersMock.updateMapper).toBeCalledTimes(1);
 		});
-		//TODO Add client protocol mapper test, create / update cases
 	});
 
 	describe('configureClient', () => {
@@ -220,6 +219,10 @@ describe('KeycloakConfigurationService Unit', () => {
 			httpServiceMock.get.mockReturnValue(of(response));
 		});
 
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
 		it('should create client if client not exists', async () => {
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(kcApiClientMock.create).toBeCalledTimes(1);
@@ -239,6 +242,19 @@ describe('KeycloakConfigurationService Unit', () => {
 			kcApiClientMock.find.mockResolvedValueOnce([{ id: 'old_client_id' }]);
 			await expect(service.configureClient()).resolves.not.toThrow();
 			expect(kcApiClientMock.create).toBeCalledTimes(0);
+		});
+		// TODO Add client protocol mapper test, create / update cases
+		it('should add a mapper to a newly created identity provider', async () => {
+			kcApiClientMock.listProtocolMappers.mockResolvedValue([]);
+
+			await service.configureClient();
+			expect(kcApiClientMock.addProtocolMapper).toBeCalledTimes(1);
+		});
+		it('should update a mapper for an updated identity provider', async () => {
+			kcApiClientMock.listProtocolMappers.mockResolvedValue([{ id: '1', name: 'External Sub Mapper' }]);
+			await service.configureClient();
+			expect(kcApiClientMock.updateProtocolMapper).toBeCalledTimes(1);
+			expect(kcApiClientMock.addProtocolMapper).not.toBeCalled();
 		});
 	});
 
