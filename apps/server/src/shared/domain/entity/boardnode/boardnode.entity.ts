@@ -2,13 +2,13 @@ import { Embedded, Entity, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardNodeType, CardPayload, ColumnBoardPayload, ColumnPayload, ContentElementPlayload } from './payload';
+import { BoardNodeType, CardPayload, ColumnBoardPayload, ColumnPayload, TextElementPayload } from './payload';
 
 const PATH_SEPARATOR = ',';
 
-export const BOARD_NODE_PAYLOAD_CLASSES = [ColumnBoardPayload, ColumnPayload, CardPayload, ContentElementPlayload];
+export const BOARD_NODE_PAYLOAD_CLASSES = [ColumnBoardPayload, ColumnPayload, CardPayload, TextElementPayload];
 
-export type AnyBoardNodePayload = ColumnBoardPayload | ColumnPayload | CardPayload | ContentElementPlayload;
+export type AnyBoardNodePayload = ColumnBoardPayload | ColumnPayload | CardPayload | TextElementPayload;
 
 export interface BoardNodeProperties {
 	parent?: BoardNode;

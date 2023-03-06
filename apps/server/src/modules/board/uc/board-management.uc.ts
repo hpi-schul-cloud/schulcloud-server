@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode } from '@shared/domain';
-import { boardNodeFactory, cardPayloadFactory } from '@shared/testing';
+import { boardNodeFactory, cardPayloadFactory, textElementPayloadFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
@@ -15,19 +15,29 @@ export class BoardManagementUc {
 		await this.em.persistAndFlush(columns);
 
 		const columnCards = columns.map((column) => {
-			const buildCard = () =>
-				boardNodeFactory
+			const cards: BoardNode[] = [];
+			for (let i = 0; i < this.generateRandomNumber(5, 10); i += 1) {
+				const node = boardNodeFactory
 					.asCard()
 					.build({ parent: column, payload: cardPayloadFactory.build({ height: this.generateRandomNumber(50, 250) }) });
-			return Array<BoardNode>(this.generateRandomNumber(5, 10)).fill(buildCard());
+				cards.push(node);
+			}
+			return cards;
 		});
 
 		const cards = ([] as BoardNode[]).concat(...columnCards);
 		await this.em.persistAndFlush(cards);
 
-		const cardElements = cards.map((card) =>
-			boardNodeFactory.asTextElement().buildList(this.generateRandomNumber(2, 8), { parent: card })
-		);
+		const cardElements = cards.map((card, i) => {
+			const elements: BoardNode[] = [];
+			for (let j = 0; j < this.generateRandomNumber(5, 10); j += 1) {
+				const node = boardNodeFactory
+					.asTextElement()
+					.build({ parent: card, payload: textElementPayloadFactory.build({ text: `<p>text ${j + 1}</p>` }) });
+				elements.push(node);
+			}
+			return elements;
+		});
 		const elements = ([] as BoardNode[]).concat(...cardElements);
 		await this.em.persistAndFlush(elements);
 	}
