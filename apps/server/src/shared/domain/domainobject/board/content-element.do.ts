@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 
 export class ContentElement implements ContentElementProps {
-	id?: EntityId;
+	id: EntityId;
 
 	createdAt: Date;
 
@@ -15,7 +15,7 @@ export class ContentElement implements ContentElementProps {
 }
 
 interface ContentElementProps {
-	id?: EntityId;
+	id: EntityId;
 
 	createdAt: Date;
 

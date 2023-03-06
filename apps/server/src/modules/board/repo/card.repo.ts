@@ -20,5 +20,17 @@ export class CardRepo {
 		return domainObject as Card;
 	}
 
-	// TODO findManyByIds()
+	async findByIds(ids: string[]): Promise<Card[]> {
+		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids }, type: BoardNodeType.CARD });
+
+		const childrenMap = await this.boardNodeRepo.findChildrenOfMany(boardNodes);
+
+		const domainObjects = boardNodes.map((boardNode) => {
+			const children = childrenMap[boardNode.pathOfChildren];
+			const domainObject = this.domainObjectBuilder.buildTree(boardNode, children);
+			return domainObject;
+		});
+
+		return domainObjects as Card[];
+	}
 }

@@ -8,7 +8,7 @@ export class CardBuilder extends BoardDoBuilder {
 		const elements = children.filter((c) => c.constructor.name === 'ContentElement') as ContentElement[];
 
 		const payload = boardNode.payload as CardPayload;
-		const column = new Card({
+		const card = new Card({
 			id: boardNode.id,
 			title: payload.name,
 			height: payload.height,
@@ -16,6 +16,6 @@ export class CardBuilder extends BoardDoBuilder {
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
-		return column;
+		return card;
 	}
 }

@@ -2,7 +2,9 @@ import { Embedded, Entity, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardNodeType, CardPayload, ColumnPayload, ColumnBoardPayload, ContentElementPlayload } from './payload';
+import { BoardNodeType, CardPayload, ColumnBoardPayload, ColumnPayload, ContentElementPlayload } from './payload';
+
+const PATH_SEPARATOR = ',';
 
 export const BOARD_NODE_PAYLOAD_CLASSES = [ColumnBoardPayload, ColumnPayload, CardPayload, ContentElementPlayload];
 
@@ -21,15 +23,11 @@ export class BoardNode extends BaseEntityWithTimestamps {
 		if (props.parent && props.parent.id == null) {
 			throw new InternalServerErrorException('Cannot create board node with a parent having no id');
 		}
-		this.path = props.parent
-			? `${props.parent.path}${props.parent.id}${BoardNode.PATH_SEPERATOR}`
-			: BoardNode.PATH_SEPERATOR;
+		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
 		this.payload = props.payload;
 	}
-
-	static PATH_SEPERATOR = ',';
 
 	@Property({ nullable: false })
 	path: string;
@@ -55,11 +53,19 @@ export class BoardNode extends BaseEntityWithTimestamps {
 	}
 
 	get ancestorIds(): EntityId[] {
-		const parentIds = this.path.split(BoardNode.PATH_SEPERATOR).filter((id) => id !== '');
+		const parentIds = this.path.split(PATH_SEPARATOR).filter((id) => id !== '');
 		return parentIds;
+	}
+
+	get pathOfChildren(): string {
+		return BoardNode.joinPath(this.path, this.id);
 	}
 
 	hasParent() {
 		return this.ancestorIds.length > 0;
+	}
+
+	static joinPath(path: string, id: EntityId) {
+		return `${path}${id}${PATH_SEPARATOR}`;
 	}
 }

@@ -4,9 +4,10 @@ import { ContentElementResponse } from './content-element.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
 export class CardResponse {
-	constructor({ id, title, elements, visibilitySettings }: CardResponse) {
+	constructor({ id, title, height, elements, visibilitySettings }: CardResponse) {
 		this.id = id;
 		this.title = title;
+		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
 	}
@@ -19,6 +20,9 @@ export class CardResponse {
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
 	title?: string;
+
+	@ApiProperty()
+	height: number;
 
 	@ApiProperty({
 		type: [ContentElementResponse],
