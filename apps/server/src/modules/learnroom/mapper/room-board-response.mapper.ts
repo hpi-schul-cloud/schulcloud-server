@@ -50,7 +50,7 @@ export class RoomBoardResponseMapper {
 		});
 
 		if (boardTask.taskCard) {
-			mappedTask.taskCard = boardTask.taskCard;
+			mappedTask.taskCardId = boardTask.taskCard;
 		}
 
 		const taskCourse = boardTask.course as Course;
