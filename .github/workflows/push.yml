@@ -3,6 +3,10 @@ name: push workflow
 
 on:
   push:
+    branches-ignore:
+      - dependabot/**
+  pull_request:
+    types: [labeled]
 
 permissions:
   contents: read
