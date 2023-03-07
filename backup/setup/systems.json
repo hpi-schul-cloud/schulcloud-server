@@ -48,7 +48,7 @@
 			"url": "ldap://127.0.0.1:389",
 			"rootPath": "o=schoolOne0,dc=de,dc=example,dc=org",
 			"searchUser": "cn=admin,dc=example,dc=org",
-			"searchUserPassword": "U2FsdGVkX18uLlHEmRLtHQ+qVJcm0dmasM3IzE6p5WE=",
+			"searchUserPassword": "admin",
 			"provider": "general",
 			"federalState": {
 			  "$oid": "0000b186816abba584714c53"
