@@ -254,7 +254,7 @@ describe('SchoolExternalToolUc', () => {
 			};
 		};
 
-		describe('when checks permission', () => {
+		describe('when userId, schoolExternalToolId and schoolExternalTool are given', () => {
 			it('should check the permissions of the user', async () => {
 				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
@@ -270,8 +270,7 @@ describe('SchoolExternalToolUc', () => {
 					}
 				);
 			});
-		});
-		describe('when userId, schoolExternalToolId and schoolExternalTool are given', () => {
+
 			it('should call schoolExternalToolValidationService.validate()', async () => {
 				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
@@ -279,6 +278,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
 			});
+
 			it('should call the service to update the tool', async () => {
 				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
@@ -286,6 +286,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
 			});
+
 			it('should return a schoolExternalToolDO', async () => {
 				const { updatedTool, schoolExternalToolId, user } = setupUpdate();
 
