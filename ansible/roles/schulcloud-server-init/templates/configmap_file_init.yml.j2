@@ -1,518 +1,518 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-	name: api-init-file
-	namespace: {{ NAMESPACE }}
-	labels:
-		app: api-deployment
+  name: api-init-file
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-deployment
 data:
-	update.sh: |
-		#! /bin/bash
-		# necessary for secret handling and legacy indexes
-		git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
-		cd /schulcloud-server
-		git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-		npm install
-		until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
-		  do
-		    sleep 1
-		  done
-		mongo $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
-		sleep 3
-		if [[ $(mongo --quiet --eval "db.isMaster().setName") != rs0 ]]
-		then
-		    echo "replicaset config failed :("
-		else
-		    echo "gg, hacky mongo replicaset"
-		fi
-		curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
-		IDM_ACTIVE={{ WITH_ERWINIDM }}
-		if [[ ${IDM_ACTIVE,,} == true ]]
-		then
-		  curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
-		else
-		  echo "Skip IDM initialization"
-		fi
+  update.sh: |
+    #! /bin/bash
+    # necessary for secret handling and legacy indexes
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    npm install
+    until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
+      do
+        sleep 1
+      done
+    mongo $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
+    sleep 3
+    if [[ $(mongo --quiet --eval "db.isMaster().setName") != rs0 ]]
+    then
+        echo "replicaset config failed :("
+    else
+        echo "gg, hacky mongo replicaset"
+    fi
+    curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
+    IDM_ACTIVE={{ WITH_ERWINIDM }}
+    if [[ ${IDM_ACTIVE,,} == true ]]
+    then
+      curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
+    else
+      echo "Skip IDM initialization"
+    fi
 
-		# Below is a series of a MongoDB-data initializations, meant for the development and testing
-		# purposes on various dev environments - most of them will only work there.
+    # Below is a series of a MongoDB-data initializations, meant for the development and testing
+    # purposes on various dev environments - most of them will only work there.
 
-		# Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
-		SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-		mongo $DATABASE__URL --eval 'db.systems.insert([
-		{
-		  "type" : "ldap",
-		  "alias" : "schoolOne0",
-		  "ldapConfig" : {
-		    "active" : true,
-		    "federalState": ObjectId("0000b186816abba584714c56"),
-		    "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
-		    "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
-		    "searchUser" : "cn=admin,dc=example,dc=org",
-		    "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
-		    "provider" : "general",
-		    "providerOptions" : {
-		      "schoolName" : "School One 0",
-		      "userPathAdditions" : "ou=users",
-		      "classPathAdditions" : "ou=groups",
-		      "roleType" : "group",
-		      "userAttributeNameMapping" : {
-		        "givenName" : "givenName",
-		        "sn" : "sn",
-		        "uuid" : "uuid",
-		        "dn" : "dn",
-		        "uid" : "uid",
-		        "mail" : "mail",
-		        "role" : "memberOf"
-		      },
-		      "roleAttributeNameMapping" : {
-		        "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
-		        "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
-		        "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
-		        "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
-		      },
-		      "classAttributeNameMapping" : {
-		        "description" : "description",
-		        "dn" : "dn",
-		        "uniqueMember" : "member"
-		      }
-		    }
-		  }
-		},
-		{
-		  "type" : "ldap",
-		  "alias" : "schoolOne1",
-		  "ldapConfig" : {
-		    "active" : true,
-		    "federalState": ObjectId("0000b186816abba584714c54"),
-		    "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
-		    "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
-		    "searchUser" : "cn=admin,dc=example,dc=org",
-		    "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
-		    "provider" : "general",
-		    "providerOptions" : {
-		      "schoolName" : "School One 1",
-		      "userPathAdditions" : "ou=users",
-		      "roleType" : "group",
-		      "userAttributeNameMapping" : {
-		        "givenName" : "givenName",
-		        "sn" : "sn",
-		        "uuid" : "uuid",
-		        "dn" : "dn",
-		        "uid" : "uid",
-		        "mail" : "mail",
-		        "role" : "memberOf"
-		      },
-		      "roleAttributeNameMapping" : {
-		        "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
-		        "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
-		        "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
-		        "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
-		      },
-		      "classAttributeNameMapping" : {
-		        "dn" : "dn"
-		      }
-		    }
-		  }
-		}]);'
+    # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
+    SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
+    mongo $DATABASE__URL --eval 'db.systems.insert([
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne0",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c56"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne0,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 0",
+          "userPathAdditions" : "ou=users",
+          "classPathAdditions" : "ou=groups",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "description" : "description",
+            "dn" : "dn",
+            "uniqueMember" : "member"
+          }
+        }
+      }
+    },
+    {
+      "type" : "ldap",
+      "alias" : "schoolOne1",
+      "ldapConfig" : {
+        "active" : true,
+        "federalState": ObjectId("0000b186816abba584714c54"),
+        "url" : "ldap://sc-openldap-single-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "o=schoolOne1,dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "general",
+        "providerOptions" : {
+          "schoolName" : "School One 1",
+          "userPathAdditions" : "ou=users",
+          "roleType" : "group",
+          "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uuid",
+            "dn" : "dn",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "memberOf"
+          },
+          "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
+          },
+          "classAttributeNameMapping" : {
+            "dn" : "dn"
+          }
+        }
+      }
+    }]);'
 
-		# AWS S3 storage configuration (stored in the 'storageproviders' collection).
-		mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
-		                                   "isShared" : true,
-		                                   "region" : "eu-central-1",
-		                                   "type" : "S3",
-		                                   "endpointUrl" : "https://storage-{{ DOMAIN }}",
-		                                   "accessKeyId" : "'$AWS_ACCESS_KEY'",
-		                                   "secretAccessKey" : "'$AWS_SECRET_ACCESS_KEY_AES'",
-		                                   "maxBuckets" : 999999,
-		                                   "freeBuckets" : 999999,
-		                                   "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
-		                                   "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
-		                                 } );'
+    # AWS S3 storage configuration (stored in the 'storageproviders' collection).
+    mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
+                                       "isShared" : true,
+                                       "region" : "eu-central-1",
+                                       "type" : "S3",
+                                       "endpointUrl" : "https://storage-{{ DOMAIN }}",
+                                       "accessKeyId" : "'$AWS_ACCESS_KEY'",
+                                       "secretAccessKey" : "'$AWS_SECRET_ACCESS_KEY_AES'",
+                                       "maxBuckets" : 999999,
+                                       "freeBuckets" : 999999,
+                                       "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
+                                       "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
+                                     } );'
 
-		# IServ & Sanis configurations (stored in the 'systems' collection + some related documents in other collections).
-		ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
-		ISERV_SYSTEM_ID=0000d186816abba584714c92
-		SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
-		SANIS_SYSTEM_ID=0000d186816abba584714c93
-		if [[ $SC_THEME == "n21" ]]; then
-		  mongo $DATABASE__URL --eval 'db.schools.updateOne(
-		      {
-		        "_id": ObjectId("5f2987e020834114b8efd6f7")
-		      },
-		      {
-		        $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'") ] }
-		      }
-		  );'
-		  mongo $DATABASE__URL --eval 'db.schools.updateOne(
-		      {
-		        "_id": ObjectId("5f2987e020834114b8efd6f8")
-		      },
-		      {
-		        $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'"),
-		        ObjectId("'$SANIS_SYSTEM_ID'") ] }
-		      }
-		  );'
-		  mongo $DATABASE__URL --eval 'db.systems.insert([
-		  {
-		        "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
-		        "alias" : "Schulserver",
-		        "displayName" : "Schulserver",
-		        "ldapConfig" : {
-		          "active" : true,
-		          "federalState": ObjectId("0000b186816abba584714c58"),
-		          "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
-		          "rootPath" : "dc=de,dc=example,dc=org",
-		          "searchUser" : "cn=admin,dc=example,dc=org",
-		          "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
-		          "provider" : "iserv-idm",
-		          "providerOptions" : {
-		            "userAttributeNameMapping" : {},
-		            "roleAttributeNameMapping" : {},
-		            "classAttributeNameMapping" : {}
-		          }
-		        },
-		        "type" : "ldap",
-		        "provisioningStrategy": "iserv",
-		        "oauthConfig": {
-		          "clientId": "'$ISERV_CLIENT_ID'",
-		          "clientSecret": "'$ISERV_CLIENT_SECRET'",
-		          "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
-		          "grantType": "authorization_code",
-		          "scope": "openid uuid",
-		          "responseType": "code",
-		          "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$ISERV_SYSTEM_ID'",
-		          "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
-		          "provider": "iserv",
-		          "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
-		          "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
-		          "issuer": "https://iserv.n21.dbildungscloud.de"
-		        }
-		      },
-		      {
-		        "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
-		        "alias" : "SANIS",
-		        "displayName" : "SANIS",
-		        "type" : "oauth",
-		        "provisioningStrategy": "sanis",
-		        "provisioningUrl": "https://api-dienste.stage.niedersachsen-login.schule/v1/person-info",
-		        "oauthConfig": {
-		          "clientId": "'$SANIS_CLIENT_ID'",
-		          "clientSecret": "'$SANIS_CLIENT_SECRET'",
-		          "tokenEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/token",
-		          "grantType": "authorization_code",
-		          "scope": "openid",
-		          "responseType": "code",
-		          "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
-		          "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
-		          "provider": "sanis",
-		          "logoutEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
-		          "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
-		          "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS"
-		        }
-		      }
-		  ]);'
-		  mongo $DATABASE__URL --eval 'db.accounts.insert ([
-		      {
-		        "_id": ObjectId("632d776240633294deaa1837"),
-		        "username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
-		        "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "userId": ObjectId("632d765840633294deaa1833"),
-		        "__v": 0,
-		        "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
-		      },
-		      {
-		        "_id": ObjectId("632d7a9540633294deaa183e"),
-		        "username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
-		        "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "userId": ObjectId("632d77a940633294deaa183a"),
-		        "__v": 0,
-		        "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+    # IServ & Sanis configurations (stored in the 'systems' collection + some related documents in other collections).
+    ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
+    ISERV_SYSTEM_ID=0000d186816abba584714c92
+    SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
+    SANIS_SYSTEM_ID=0000d186816abba584714c93
+    if [[ $SC_THEME == "n21" ]]; then
+      mongo $DATABASE__URL --eval 'db.schools.updateOne(
+          {
+            "_id": ObjectId("5f2987e020834114b8efd6f7")
+          },
+          {
+            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'") ] }
+          }
+      );'
+      mongo $DATABASE__URL --eval 'db.schools.updateOne(
+          {
+            "_id": ObjectId("5f2987e020834114b8efd6f8")
+          },
+          {
+            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'"),
+            ObjectId("'$SANIS_SYSTEM_ID'") ] }
+          }
+      );'
+      mongo $DATABASE__URL --eval 'db.systems.insert([
+      {
+            "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
+            "alias" : "Schulserver",
+            "displayName" : "Schulserver",
+            "ldapConfig" : {
+              "active" : true,
+              "federalState": ObjectId("0000b186816abba584714c58"),
+              "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+              "rootPath" : "dc=de,dc=example,dc=org",
+              "searchUser" : "cn=admin,dc=example,dc=org",
+              "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+              "provider" : "iserv-idm",
+              "providerOptions" : {
+                "userAttributeNameMapping" : {},
+                "roleAttributeNameMapping" : {},
+                "classAttributeNameMapping" : {}
+              }
+            },
+            "type" : "ldap",
+            "provisioningStrategy": "iserv",
+            "oauthConfig": {
+              "clientId": "'$ISERV_CLIENT_ID'",
+              "clientSecret": "'$ISERV_CLIENT_SECRET'",
+              "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
+              "grantType": "authorization_code",
+              "scope": "openid uuid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$ISERV_SYSTEM_ID'",
+              "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
+              "provider": "iserv",
+              "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
+              "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
+              "issuer": "https://iserv.n21.dbildungscloud.de"
+            }
+          },
+          {
+            "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
+            "alias" : "SANIS",
+            "displayName" : "SANIS",
+            "type" : "oauth",
+            "provisioningStrategy": "sanis",
+            "provisioningUrl": "https://api-dienste.stage.niedersachsen-login.schule/v1/person-info",
+            "oauthConfig": {
+              "clientId": "'$SANIS_CLIENT_ID'",
+              "clientSecret": "'$SANIS_CLIENT_SECRET'",
+              "tokenEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth/'$SANIS_SYSTEM_ID'",
+              "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
+              "provider": "sanis",
+              "logoutEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
+              "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
+              "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS"
+            }
+          }
+      ]);'
+      mongo $DATABASE__URL --eval 'db.accounts.insert ([
+          {
+            "_id": ObjectId("632d776240633294deaa1837"),
+            "username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d765840633294deaa1833"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+          },
+          {
+            "_id": ObjectId("632d7a9540633294deaa183e"),
+            "username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
 
-		      },
-		      {
-		        "_id": ObjectId("0000d213816abba58471abcd"),
-		        "username": "max.mustermann@iserv.n21.dbildungscloud.de",
-		        "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "userId": ObjectId("0000d213816abba584711234"),
-		        "__v": 0,
-		        "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
-		      }
-		  ]);'
-		  mongo $DATABASE__URL --eval 'db.users.insert ([
-		      {
-		        "_id": ObjectId("632d765840633294deaa1833"),
-		        "__v": 0,
-		        "firstName": "Iserv",
-		        "lastName": "Testlehrer",
-		        "email": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
-		        "ldapId": "5fee8bdf-ad12-442c-9674-1770ce9f810b",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "preferences": {
-		          "firstLogin": true
-		        },
-		        "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-		        "roles": [
-		          ObjectId("0000d186816abba584714c98")
-		        ]
-		      },
-		      {
-		        "_id": ObjectId("632d77a940633294deaa183a"),
-		        "__v": 0,
-		        "firstName": "Iserv",
-		        "lastName": "Testschueler",
-		        "email": "iserv.testschueler@iserv.n21.dbildungscloud.de",
-		        "ldapId": "7c5ca4fd-f564-4dd9-98e4-07eaf7ec4480",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "preferences": {
-		          "firstLogin": true
-		        },
-		        "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-		        "roles": [
-		            ObjectId("0000d186816abba584714c99")
-		        ]
-		      },
-		      {
-		        "_id": ObjectId("0000d213816abba584711234"),
-		        "__v": 0,
-		        "firstName": "Max",
-		        "lastName": "Mustermann",
-		        "email": "max.mustermann@iserv.n21.dbildungscloud.de",
-		        "ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
-		        "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-		        "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-		        "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-		        "preferences": {
-		            "firstLogin": true
-		        },
-		        "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-		        "roles": [
-		            ObjectId("0000d186816abba584714c96")
-		        ]
-		      }
-		  ]);'
-		fi
+          },
+          {
+            "_id": ObjectId("0000d213816abba58471abcd"),
+            "username": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "userId": ObjectId("0000d213816abba584711234"),
+            "__v": 0,
+            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
+          }
+      ]);'
+      mongo $DATABASE__URL --eval 'db.users.insert ([
+          {
+            "_id": ObjectId("632d765840633294deaa1833"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testlehrer",
+            "email": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
+            "ldapId": "5fee8bdf-ad12-442c-9674-1770ce9f810b",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+              ObjectId("0000d186816abba584714c98")
+            ]
+          },
+          {
+            "_id": ObjectId("632d77a940633294deaa183a"),
+            "__v": 0,
+            "firstName": "Iserv",
+            "lastName": "Testschueler",
+            "email": "iserv.testschueler@iserv.n21.dbildungscloud.de",
+            "ldapId": "7c5ca4fd-f564-4dd9-98e4-07eaf7ec4480",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+              "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c99")
+            ]
+          },
+          {
+            "_id": ObjectId("0000d213816abba584711234"),
+            "__v": 0,
+            "firstName": "Max",
+            "lastName": "Mustermann",
+            "email": "max.mustermann@iserv.n21.dbildungscloud.de",
+            "ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
+            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
+            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
+            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
+            "preferences": {
+                "firstLogin": true
+            },
+            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
+            "roles": [
+                ObjectId("0000d186816abba584714c96")
+            ]
+          }
+      ]);'
+    fi
 
-		# ========== Start of the Bettermarks tool configuration section.
+    # ========== Start of the Bettermarks tool configuration section.
 
-		# This is currently performed only for the following 4 namespaces:
-		#   - 'nbc-bettermarks-test',
-		#   - 'nbc-main',
-		#   - 'brb-bettermarks-test',
-		#   - 'brb-main';
-		# the first two being the testing environments for the nbc instances
-		# and the last two being the testing environments for the brb instances.
+    # This is currently performed only for the following 4 namespaces:
+    #   - 'nbc-bettermarks-test',
+    #   - 'nbc-main',
+    #   - 'brb-bettermarks-test',
+    #   - 'brb-main';
+    # the first two being the testing environments for the nbc instances
+    # and the last two being the testing environments for the brb instances.
 
-		# The Bettermarks URL (entrypoint) and client secret can be shared among the different environments,
-		# but to not complicate the current configuration, they are configured separately for each environment.
+    # The Bettermarks URL (entrypoint) and client secret can be shared among the different environments,
+    # but to not complicate the current configuration, they are configured separately for each environment.
 
-		# Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
-		NS=$K8S_NAMESPACE
+    # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
+    NS=$K8S_NAMESPACE
 
-		if [ -n "$NS" ]; then
-		    # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
-		    if [ "$NS" = "nbc-bettermarks-test" ]; then
-		        BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
-		        BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
-		    elif [ "$NS" = "nbc-main" ]; then
-		        BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
-		        BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
-		    elif [ "$NS" = "brb-bettermarks-test" ]; then
-		        BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
-		        BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
-		    elif [ "$NS" = "brb-main" ]; then
-		        BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
-		        BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
-		    else
-		        # Print some friendly message for any other namespace that's not supported.
-		        echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
-		    fi
+    if [ -n "$NS" ]; then
+        # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
+        if [ "$NS" = "nbc-bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
+        elif [ "$NS" = "nbc-main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
+        elif [ "$NS" = "brb-bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
+        elif [ "$NS" = "brb-main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
+        else
+            # Print some friendly message for any other namespace that's not supported.
+            echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
+        fi
 
-		    # Perform the final Bettermarks config data init if client secret and URL has been properly set.
-		    if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
-		        # Add document to the 'ltitools' collection with Bettermarks tool configuration.
-		        mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
-		            {
-		              "name": "bettermarks",
-		              "isTemplate": true
-		            },
-		            {
-		              "roles": [],
-		              "privacy_permission": "anonymous",
-		              "openNewTab": true,
-		              "name": "bettermarks",
-		              "url": "'$BETTERMARKS_URL'",
-		              "key": null,
-		              "secret": "'$BETTERMARKS_CLIENT_SECRET'",
-		              "logo_url": "'$BETTERMARKS_LOGO_URL'",
-		              "oAuthClientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
-		              "isLocal": true,
-		              "resource_link_id": null,
-		              "lti_version": null,
-		              "lti_message_type": null,
-		              "isTemplate": true,
-		              "skipConsent": false,
-		              "customs": [],
-		              "createdAt": new Date(),
-		              "updatedAt": new Date(),
-		              "__v": 0,
-		              "isHidden": false,
-		              "frontchannel_logout_uri": null
-		            },
-		            {
-		              "upsert": true
-		            }
-		        );'
+        # Perform the final Bettermarks config data init if client secret and URL has been properly set.
+        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
+            # Add document to the 'ltitools' collection with Bettermarks tool configuration.
+            mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
+                {
+                  "name": "bettermarks",
+                  "isTemplate": true
+                },
+                {
+                  "roles": [],
+                  "privacy_permission": "anonymous",
+                  "openNewTab": true,
+                  "name": "bettermarks",
+                  "url": "'$BETTERMARKS_URL'",
+                  "key": null,
+                  "secret": "'$BETTERMARKS_CLIENT_SECRET'",
+                  "logo_url": "'$BETTERMARKS_LOGO_URL'",
+                  "oAuthClientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
+                  "isLocal": true,
+                  "resource_link_id": null,
+                  "lti_version": null,
+                  "lti_message_type": null,
+                  "isTemplate": true,
+                  "skipConsent": false,
+                  "customs": [],
+                  "createdAt": new Date(),
+                  "updatedAt": new Date(),
+                  "__v": 0,
+                  "isHidden": false,
+                  "frontchannel_logout_uri": null
+                },
+                {
+                  "upsert": true
+                }
+            );'
 
-		        # The two steps below (Hydra call and MongoDB insert) were added to automate the actions performed inside
-		        # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
+            # The two steps below (Hydra call and MongoDB insert) were added to automate the actions performed inside
+            # the server when Bettermarks' OAuth client configuration is added manually in SuperHero Dashboard.
 
-		        # Add Bettermarks' OAuth client configuration in Hydra.
-		        curl --retry 360 --retry-connrefused --retry-delay 10 \
-		              -H 'X-Forwarded-Proto: https' \
-		              -X POST $HYDRA_URI/clients \
-		              -d '{
-		                    "client_name": "bettermarks",
-		                    "client_id": "bettermarks",
-		                    "client_secret": "'$BETTERMARKS_CLIENT_SECRET'",
-		                    "scope":"openid offline",
-		                    "token_endpoint_auth_method":"client_secret_post",
-		                    "redirect_uris": [
-		                      "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
-		                      "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
-		                      "https://acc.bettermarks.com/auth/callback",
-		                      "https://school.bettermarks.loc/auth/callback",
-		                      "https://acc.bettermarks.com/auth/oidc/callback"
-		                    ],
-		                    "subject_type":"pairwise"
-		                  }'
+            # Add Bettermarks' OAuth client configuration in Hydra.
+            curl --retry 360 --retry-connrefused --retry-delay 10 \
+                  -H 'X-Forwarded-Proto: https' \
+                  -X POST $HYDRA_URI/clients \
+                  -d '{
+                        "client_name": "bettermarks",
+                        "client_id": "bettermarks",
+                        "client_secret": "'$BETTERMARKS_CLIENT_SECRET'",
+                        "scope":"openid offline",
+                        "token_endpoint_auth_method":"client_secret_post",
+                        "redirect_uris": [
+                          "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
+                          "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
+                          "https://acc.bettermarks.com/auth/callback",
+                          "https://school.bettermarks.loc/auth/callback",
+                          "https://acc.bettermarks.com/auth/oidc/callback"
+                        ],
+                        "subject_type":"pairwise"
+                      }'
 
-		        # Add Bettermarks' tools configuration as an external tool
-		        # (stored in the 'external_tools' collection) that uses OAuth.
-		        mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
-		            {
-		              "name": "bettermarks",
-		              "config_type": "oauth2"
-		            },
-		            {
-		              "name": "bettermarks",
-		              "url": "'$BETTERMARKS_URL'",
-		              "logoUrl": "'$BETTERMARKS_LOGO_URL'",
-		              "config_type": "oauth2",
-		              "config_baseUrl": "'$BETTERMARKS_URL'",
-		              "config_clientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
-		              "config_skipConsent": false,
-		              "parameters": [],
-		              "isHidden": false,
-		              "openNewTab": true,
-		              "createdAt": new Date(),
-		              "updatedAt": new Date(),
-		              "version": 1
-		            },
-		            {
-		              "upsert": true
-		            }
-		        );'
+            # Add Bettermarks' tools configuration as an external tool
+            # (stored in the 'external_tools' collection) that uses OAuth.
+            mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+                {
+                  "name": "bettermarks",
+                  "config_type": "oauth2"
+                },
+                {
+                  "name": "bettermarks",
+                  "url": "'$BETTERMARKS_URL'",
+                  "logoUrl": "'$BETTERMARKS_LOGO_URL'",
+                  "config_type": "oauth2",
+                  "config_baseUrl": "'$BETTERMARKS_URL'",
+                  "config_clientId": "'$BETTERMARKS_OAUTH_CLIENT_ID'",
+                  "config_skipConsent": false,
+                  "parameters": [],
+                  "isHidden": false,
+                  "openNewTab": true,
+                  "createdAt": new Date(),
+                  "updatedAt": new Date(),
+                  "version": 1
+                },
+                {
+                  "upsert": true
+                }
+            );'
 
-		        echo "Bettermarks config data init performed successfully."
-		    fi
-		fi
+            echo "Bettermarks config data init performed successfully."
+        fi
 
-		# ========== End of the Bettermarks tool configuration section.
+      # ========== Start of the Nextcloud configuration section.
+      # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
+      if [ -n "$NEXTCLOUD_CLIENT_SECRET" && -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
+           # Add document to the 'ltitools' collection
+           mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
+               {
+                 "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
+                 "isTemplate": true
+               },
+               {
+                 "roles": [],
+                 "privacy_permission": "anonymous",
+                 "openNewTab": true,
+                 "name": "nextcloud",
+                 "url": "'$NEXTCLOUD_BASE_URL'",
+                 "key": null,
+                 "secret": "'$NEXTCLOUD_CLIENT_SECRET'",
+                 "logo_url": "",
+                 "oAuthClientId": "'$NEXTCLOUD_CLIENT_ID'",
+                 "isLocal": true,
+                 "resource_link_id": null,
+                 "lti_version": null,
+                 "lti_message_type": null,
+                 "isTemplate": true,
+                 "skipConsent": true,
+                 "customs": [],
+                 "createdAt": new Date(),
+                 "updatedAt": new Date(),
+                 "__v": 0,
+                 "isHidden": true,
+                 "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout"
+               },
+               {
+                 "upsert": true
+               }
+           );'
 
-		# ========== Start of the Nextcloud configuration section.
-		# This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
-		if [ -n "$FEATURE_NEXTCLOUD_TEAM_FILES_ENABLED" ] && [ -n "$NEXTCLOUD_CLIENT_SECRET" ]; then
-		       # Add document to the 'ltitools' collection
-		       mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
-		           {
-		             "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-		             "isTemplate": true
-		           },
-		           {
-		             "roles": [],
-		             "privacy_permission": "anonymous",
-		             "openNewTab": true,
-		             "name": "nextcloud",
-		             "url": "'$NEXTCLOUD_BASE_URL'",
-		             "key": null,
-		             "secret": "'$NEXTCLOUD_CLIENT_SECRET'",
-		             "logo_url": "",
-		             "oAuthClientId": "'$NEXTCLOUD_CLIENT_ID'",
-		             "isLocal": true,
-		             "resource_link_id": null,
-		             "lti_version": null,
-		             "lti_message_type": null,
-		             "isTemplate": true,
-		             "skipConsent": true,
-		             "customs": [],
-		             "createdAt": new Date(),
-		             "updatedAt": new Date(),
-		             "__v": 0,
-		             "isHidden": true,
-		             "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout"
-		           },
-		           {
-		             "upsert": true
-		           }
-		       );'
+           # Add Nextcloud client in hydra
+           curl --retry 360 --retry-connrefused --retry-delay 10 \
+                 -H 'X-Forwarded-Proto: https' \
+                 -X POST $HYDRA_URI/clients \
+                 -d '{
+                       "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
+                       "client_id": "nextcloud",
+                       "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
+                       "scope": "'$NEXTCLOUD_SCOPES'",
+                       "token_endpoint_auth_method": "client_secret_post",
+                       "redirect_uris": [
+                         "'$NEXTCLOUD_BASE_URL'apps/user_oidc/code",
+                         "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
+                       ],
+                       "subject_type":"pairwise"
+                     }'
 
-		       # Add Nextcloud client in hydra
-		       curl --retry 360 --retry-connrefused --retry-delay 10 \
-		             -H 'X-Forwarded-Proto: https' \
-		             -X POST $HYDRA_URI/clients \
-		             -d '{
-		                   "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-		                   "client_id": "nextcloud",
-		                   "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
-		                   "scope": "'$NEXTCLOUD_SCOPES'",
-		                   "token_endpoint_auth_method": "client_secret_post",
-		                   "redirect_uris": [
-		                     "'$NEXTCLOUD_BASE_URL'apps/user_oidc/code",
-		                     "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
-		                   ],
-		                   "subject_type":"pairwise"
-		                 }'
+           # Add Nextcloud' tools configuration as an external tool
+           # (stored in the 'external_tools' collection) that uses OAuth.
+           mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+               {
+                 "name": "nextcloud",
+                 "config_type": "oauth2"
+               },
+               {
+                 "name": "nextcloud",
+                 "url": "'$NEXTCLOUD_BASE_URL'",
+                 "logoUrl": "",
+                 "config_type": "oauth2",
+                 "config_baseUrl": "'$NEXTCLOUD_BASE_URL'",
+                 "config_clientId": "'$NEXTCLOUD_CLIENT_ID'",
+                 "config_skipConsent": true,
+                 "parameters": [],
+                 "isHidden": true,
+                 "openNewTab": true,
+                 "createdAt": new Date(),
+                 "updatedAt": new Date(),
+                 "version": 1
+               },
+               {
+                 "upsert": true
+               }
+           );'
 
-		       # Add Nextcloud' tools configuration as an external tool
-		       # (stored in the 'external_tools' collection) that uses OAuth.
-		       mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
-		           {
-		             "name": "nextcloud",
-		             "config_type": "oauth2"
-		           },
-		           {
-		             "name": "nextcloud",
-		             "url": "'$NEXTCLOUD_BASE_URL'",
-		             "logoUrl": "",
-		             "config_type": "oauth2",
-		             "config_baseUrl": "'$NEXTCLOUD_BASE_URL'",
-		             "config_clientId": "'$NEXTCLOUD_CLIENT_ID'",
-		             "config_skipConsent": true,
-		             "parameters": [],
-		             "isHidden": true,
-		             "openNewTab": true,
-		             "createdAt": new Date(),
-		             "updatedAt": new Date(),
-		             "version": 1
-		           },
-		           {
-		             "upsert": true
-		           }
-		       );'
+           echo "Nextcloud config data init performed successfully."
+      fi
+    fi
 
-		       echo "Nextcloud config data init performed successfully."
-		   fi
+    # ========== End of the Bettermarks tool configuration section.
 
-		# Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
-		npm run syncIndexes
+    # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
+    npm run syncIndexes
