@@ -433,6 +433,7 @@ data:
     # ========== Start of the Nextcloud configuration section.
     # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
+         echo "Inserting nextcloud to ltitools..."
          # Add document to the 'ltitools' collection
          mongo $DATABASE__URL --eval 'db.ltitools.update(
              {
@@ -466,9 +467,11 @@ data:
                "upsert": true
              }
          );'
+         echo "Inserted nextcloud to ltitools."
 
          # Add Nextcloud client in hydra
-         curl --retry 360 --retry-connrefused --retry-delay 10 \
+         echo "POSTing nextcloud to hydra..."
+         curl --retry 10 --retry-connrefused --retry-delay 10 \
                -H 'X-Forwarded-Proto: https' \
                -X POST $HYDRA_URI/clients \
                -d '{
@@ -477,15 +480,21 @@ data:
                      "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
                      "scope": "'$NEXTCLOUD_SCOPES'",
                      "token_endpoint_auth_method": "client_secret_post",
+                     "grant_types": ["authorization_code", "refresh_token"],
+                     "response_types": ["code", "token", "id_token"],
                      "redirect_uris": [
                        "'$NEXTCLOUD_BASE_URL'apps/user_oidc/code",
                        "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
                      ],
-                     "subject_type":"pairwise"
+                     "client_uri": "'$NEXTCLOUD_BASE_URL'",
+                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'/apps/schulcloud/logout",
+                     "subject_type": "pairwise"
                    }'
+         echo "POSTed nextcloud to hydra."
 
          # Add Nextcloud' tools configuration as an external tool
          # (stored in the 'external_tools' collection) that uses OAuth.
+         echo "Inserting nextcloud to external_tools..."
          mongo $DATABASE__URL --eval 'db.external_tools.update(
              {
                "name": "nextcloud",
@@ -510,6 +519,7 @@ data:
                "upsert": true
              }
          );'
+         echo "Inserted nextcloud to external_tools."
 
          echo "Nextcloud config data init performed successfully."
     fi
