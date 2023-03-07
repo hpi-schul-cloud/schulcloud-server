@@ -17,6 +17,7 @@ import {
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -198,6 +199,39 @@ describe('TaskService', () => {
 
 				lessonRepo.findById.mockRestore();
 			});
+			it('should throw if not all users do not belong to course', async () => {
+				course = courseFactory.studentsWithId(2).buildWithId();
+				const someUser = userFactory.buildWithId();
+
+				await expect(async () => {
+					await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [someUser.id] });
+				}).rejects.toThrow(BadRequestException);
+			});
+			/*
+			it('should set users', async () => {
+				// const studentId1 = new ObjectId().toHexString();
+				// const studentId2 = new ObjectId().toHexString();
+				// const studentId3 = new ObjectId().toHexString();
+				// const studentIds = [studentId1, studentId2, studentId3];
+
+				const studentId1 = userFactory.build();
+				const studentId2 = userFactory.build();
+				const studentId3 = userFactory.build();
+				const studentIds = [studentId1.id, studentId2.id, studentId3.id];
+
+				// const spy = jest.spyOn(course, 'getStudentIds').mockReturnValueOnce(studentIds);
+
+				course = courseFactory.buildWithId();
+
+				// userRepo.findById.mockResolvedValue(user).mockResolvedValue(studentId1);
+
+				const taskMock = {
+					studentId1,
+				};
+				await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [studentId1.id] });
+				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+			});
+			*/
 			it('should save the task', async () => {
 				const taskMock = {
 					name: 'test',
@@ -309,6 +343,18 @@ describe('TaskService', () => {
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name, lessonId: lesson.id });
 
 				lessonRepo.findById.mockRestore();
+			});
+			it('should throw if not all users do not belong to course', async () => {
+				const someUser = userFactory.buildWithId();
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					usersIds: [someUser.id],
+				};
+
+				await expect(async () => {
+					await taskService.update(user.id, task.id, params);
+				}).rejects.toThrow(BadRequestException);
 			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();

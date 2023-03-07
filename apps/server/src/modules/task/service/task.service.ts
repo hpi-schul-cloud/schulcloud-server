@@ -12,7 +12,7 @@ import {
 	Task,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
@@ -21,6 +21,7 @@ import { SubmissionService } from './submission.service';
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
+		private readonly userRepo: UserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
@@ -60,6 +61,7 @@ export class TaskService {
 			school: user.school,
 			creator: user,
 		};
+
 		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
@@ -70,6 +72,16 @@ export class TaskService {
 			const course = await this.courseRepo.findById(params.courseId);
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			taskParams.course = course;
+
+			if (params.usersIds) {
+				const courseUsers = course.getStudentIds();
+				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
+				if (!isAllUsersInCourse) {
+					throw new BadRequestException('Users do not belong to course');
+				}
+				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
+				taskParams.users = users;
+			}
 		}
 
 		if (params.lessonId) {
@@ -124,6 +136,16 @@ export class TaskService {
 			const course = await this.courseRepo.findById(params.courseId);
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			task.course = course;
+
+			if (params.usersIds) {
+				const courseUsers = course.getStudentIds();
+				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
+				if (!isAllUsersInCourse) {
+					throw new BadRequestException('Users do not belong to course');
+				}
+				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
+				task.users.set(users);
+			}
 		}
 
 		if (params.lessonId) {

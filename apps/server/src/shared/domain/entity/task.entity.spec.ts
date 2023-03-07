@@ -7,6 +7,7 @@ import {
 	schoolFactory,
 	setupEntities,
 	submissionFactory,
+	taskCardFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
@@ -871,6 +872,40 @@ describe('Task Entity', () => {
 			const schoolId = task.getSchoolId();
 
 			expect(schoolId).toEqual(school.id);
+		});
+	});
+
+	describe('getUsersList', () => {
+		describe('when has no users assigned', () => {
+			it('should return an empty array', () => {
+				const task = taskFactory.build();
+
+				expect(task.getUsersList()).toEqual([]);
+			});
+		});
+
+		describe('when task card has several users', () => {
+			it('should return the correct list of users', () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const user3 = userFactory.buildWithId();
+				const user4 = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ teachers: [user1] });
+				const task = taskFactory.isPublished().buildWithId({ creator: user2, course, users: [user3, user4] });
+
+				const usersList = [
+					{
+						id: user3.id,
+						name: `${user3.firstName} ${user3.lastName}`,
+					},
+					{
+						id: user4.id,
+						name: `${user4.firstName} ${user4.lastName}`,
+					},
+				];
+
+				expect(task.getUsersList()).toEqual(usersList);
+			});
 		});
 	});
 });

@@ -2,6 +2,7 @@ import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property }
 import { InternalServerErrorException } from '@nestjs/common';
 import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
+import { UsersList } from '@src/modules/task/controller/dto';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
@@ -89,6 +90,10 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	submissions = new Collection<Submission>(this);
 
 	@Index()
+	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	users = new Collection<User>(this);
+
+	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
 	finished = new Collection<User>(this);
 
@@ -106,6 +111,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.school = props.school;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
+		this.users.set(props.users || []);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 		this.teamSubmissions = props.teamSubmissions || false;
@@ -129,6 +135,21 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		const finishedIds = finishedObjectIds.map((id): string => id.toString());
 
 		return finishedIds;
+	}
+
+	public getUsersList(): UsersList[] {
+		const users = this.users.getItems();
+		if (users) {
+			const usersList: UsersList[] = users.map((user) => {
+				return {
+					id: user.id,
+					name: `${user.firstName} ${user.lastName}`,
+				};
+			});
+			return usersList;
+		}
+
+		return [];
 	}
 
 	private getParent(): ITaskParent | User {
