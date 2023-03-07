@@ -3,6 +3,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { FwuRepo } from '../repo/fwu.repo';
 
 @Injectable()
 export class FwuUc {
@@ -11,6 +12,7 @@ export class FwuUc {
 	}
 
 	async get(path: string): Promise<Uint8Array> {
+		const fwuRepo = new FwuRepo();
 		const client = new S3Client({
 			endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT') as string,
 			credentials: {
@@ -25,13 +27,8 @@ export class FwuUc {
 			Bucket: Configuration.get('FWU_CONTENT__S3_BUCKET') as string,
 			Key: path.toString(),
 		});
-		const response = await client.send(request);
-		if (response.$metadata.httpStatusCode !== 200) {
-			// eslint-disable-next-line no-console
-			console.log(`S3 request failed for: ${path}`);
-			return Promise.reject(response.$metadata.httpStatusCode);
-		}
-		const readableStream = response.Body as NodeJS.ReadableStream;
+		const response = fwuRepo.getFwuConentFromS3(client, request, path);
+		const readableStream = (await response).Body as NodeJS.ReadableStream;
 		return new Promise<Uint8Array>((resolve, reject) => {
 			const chunks = [new Uint8Array()];
 			readableStream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
