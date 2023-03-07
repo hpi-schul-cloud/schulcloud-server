@@ -471,7 +471,6 @@ data:
 
          # Add Nextcloud client in hydra
          echo "POSTing nextcloud to hydra..."
-         echo $NEXTCLOUD_SCOPES
          curl --retry 10 --retry-connrefused --retry-delay 10 \
                -H 'X-Forwarded-Proto: https' \
                -X POST $HYDRA_URI/clients \
@@ -479,7 +478,7 @@ data:
                      "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                      "client_id": "nextcloud",
                      "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
-                     "scope": $NEXTCLOUD_SCOPES,
+                     "scope": "'"$NEXTCLOUD_SCOPES"'",
                      "token_endpoint_auth_method": "client_secret_post",
                      "grant_types": ["authorization_code", "refresh_token"],
                      "response_types": ["code", "token", "id_token"],
