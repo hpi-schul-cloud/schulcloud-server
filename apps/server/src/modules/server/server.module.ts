@@ -28,7 +28,7 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
-import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
+import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { AccountApiModule } from '../account/account-api.module';
 import { ServerController } from './controller/server.controller';
