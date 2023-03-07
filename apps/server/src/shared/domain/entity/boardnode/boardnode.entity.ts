@@ -1,13 +1,15 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
+import { AnyBoardDo } from '@shared/domain/domainobject';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
+import type { BoardDoBuilder } from './board-do.builder';
 import { BoardNodeType } from './types/board-node-type';
 
 const PATH_SEPARATOR = ',';
 
 @Entity({ tableName: 'boardnodes', discriminatorColumn: 'type' })
-export class BoardNode extends BaseEntityWithTimestamps {
+export abstract class BoardNode extends BaseEntityWithTimestamps {
 	constructor(props: BoardNodeProperties) {
 		super();
 		if (props.parent && props.parent.id == null) {
@@ -47,6 +49,8 @@ export class BoardNode extends BaseEntityWithTimestamps {
 	hasParent() {
 		return this.ancestorIds.length > 0;
 	}
+
+	abstract useDoBuilder(builder: BoardDoBuilder): AnyBoardDo;
 
 	static joinPath(path: string, id: EntityId) {
 		return `${path}${id}${PATH_SEPARATOR}`;

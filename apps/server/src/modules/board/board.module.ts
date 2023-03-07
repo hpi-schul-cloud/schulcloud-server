@@ -3,7 +3,6 @@ import { ConsoleWriterModule } from '@shared/infra/console';
 import { BoardManagementConsole } from './console/board-management.console';
 import { BoardController } from './controller/board.controller';
 import { CardController } from './controller/card.controller';
-import { AnyBoardDoBuilder } from './mapper';
 import { BoardNodeRepo, CardRepo, ColumnBoardRepo } from './repo';
 import { BoardManagementUc, BoardUc, CardUc } from './uc';
 
@@ -18,7 +17,6 @@ import { BoardManagementUc, BoardUc, CardUc } from './uc';
 		CardUc,
 		BoardNodeRepo,
 		ColumnBoardRepo,
-		AnyBoardDoBuilder,
 	],
 	exports: [],
 })

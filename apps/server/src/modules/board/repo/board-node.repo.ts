@@ -6,10 +6,10 @@ import { BoardNode } from '@shared/domain';
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findDescendants(node: BoardNode, depth?: number) {
+	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
-		const descendants = this.em.find(BoardNode, {
+		const descendants = await this.em.find(BoardNode, {
 			path: { $re: `^${node.path}` },
 			level: levelQuery,
 		});

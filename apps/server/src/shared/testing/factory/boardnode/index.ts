@@ -1,4 +1,3 @@
-export * from './boardnode.factory';
 export * from './column-board-node.factory';
 export * from './column-node.factory';
 export * from './card-node.factory';
