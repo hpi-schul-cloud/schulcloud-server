@@ -49,7 +49,7 @@
 		"migration-persist": "npm run nest:start:console -- database export --collection migrations --override",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
 		"nest:prebuild": "rimraf dist",
-		"nest:build": "npm run esbuild:bundle && nest build &&  npm run copy:bundled-files",
+		"nest:build": "npm run esbuild:bundle:pre && nest build && npm run esbuild:bundle:post",
 		"nest:build:all": "npm run nest:build",
 		"nest:docs:serve": "npx @compodoc/compodoc -p tsconfig.json -s -w -a apps/assets --includes apps/server/doc -d docs",
 		"nest:docs:build": "npx @compodoc/compodoc -p tsconfig.json -w -a apps/assets --includes apps/server/doc -d docs",
@@ -82,8 +82,8 @@
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"esbuild:bundle": "esbuild apps/server/src/shared/infra/identity-management/keycloak-admin-client-cjs-index.ts --platform=node --format=cjs --bundle --outdir=node_modules/@keycloak/keycloak-admin-client-cjs",
-		"copy:bundled-files": "cp -R ./dist/apps/server/shared/infra/identity-management/keycloak-admin-client-cjs-index.d.ts ./node_modules/@keycloak/keycloak-admin-client-cjs",
+		"esbuild:bundle:pre": "node ./scripts/commonjs-to-esmodules-bundler/esmodules-bundler.js",
+		"esbuild:bundle:post": "node ./scripts/commonjs-to-esmodules-bundler/copy-declaration.js",
 		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/files-storage-client/filesStorageApi/v3"
 	},
 	"dependencies": {
