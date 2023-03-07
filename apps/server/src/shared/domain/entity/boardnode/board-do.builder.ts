@@ -10,7 +10,7 @@ import { BoardNodeType } from './types/board-node-type';
 export class BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
 
-	constructor(descendants: BoardNode[]) {
+	constructor(descendants: BoardNode[] = []) {
 		for (const boardNode of descendants) {
 			this.childrenMap[boardNode.path] ||= [];
 			this.childrenMap[boardNode.path].push(boardNode);
@@ -18,7 +18,7 @@ export class BoardDoBuilder {
 	}
 
 	public buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard {
-		this.ensureBoardNodeType(this.childrenMap[boardNode.pathOfChildren], BoardNodeType.COLUMN);
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.COLUMN);
 
 		const columns = this.buildChildren<Column>(boardNode);
 
@@ -34,7 +34,7 @@ export class BoardDoBuilder {
 	}
 
 	public buildColumn(boardNode: ColumnNode): Column {
-		this.ensureBoardNodeType(this.childrenMap[boardNode.pathOfChildren], BoardNodeType.CARD);
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.CARD);
 
 		const cards = this.buildChildren<Card>(boardNode);
 
@@ -49,7 +49,7 @@ export class BoardDoBuilder {
 	}
 
 	public buildCard(boardNode: CardNode): Card {
-		this.ensureBoardNodeType(this.childrenMap[boardNode.pathOfChildren], BoardNodeType.TEXT_ELEMENT);
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.TEXT_ELEMENT);
 
 		const elements = this.buildChildren<TextElement>(boardNode);
 
@@ -75,8 +75,14 @@ export class BoardDoBuilder {
 	}
 
 	buildChildren<T extends AnyBoardDo>(boardNode: BoardNode): T[] {
-		const children = this.childrenMap[boardNode.pathOfChildren].map((node) => node.useDoBuilder(this));
+		const children = this.getChildren(boardNode).map((node) => node.useDoBuilder(this));
 		return children as T[];
+	}
+
+	getChildren(boardNode: BoardNode): BoardNode[] {
+		const children = this.childrenMap[boardNode.pathOfChildren] || [];
+		const sortedChildren = children.sort((a, b) => a.position - b.position);
+		return sortedChildren;
 	}
 
 	ensureBoardNodeType(boardNode: BoardNode | BoardNode[], type: BoardNodeType | BoardNodeType[]) {
