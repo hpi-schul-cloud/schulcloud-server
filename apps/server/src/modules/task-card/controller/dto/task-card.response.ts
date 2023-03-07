@@ -25,7 +25,7 @@ export class TaskCardResponse {
 	})
 	title: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Array of card elements',
 		type: [CardElementResponse],
 	})
