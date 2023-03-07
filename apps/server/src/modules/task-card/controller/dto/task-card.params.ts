@@ -94,7 +94,7 @@ export class TaskCardParams {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CardElementParams)
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Card elements array',
 		type: [CardElementParams],
 	})
