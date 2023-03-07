@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
-import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams } from '../controller/dto';
+import { setupEntities, taskCardFactory, taskFactory } from '@shared/testing';
+import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -28,6 +28,9 @@ const createExpectedResponse = (
 			content: task.description,
 			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 		};
+	}
+	if (task.taskCard) {
+		expected.taskCardId = task.taskCard;
 	}
 	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
@@ -78,6 +81,38 @@ describe('task.mapper', () => {
 
 			const result = TaskMapper.mapToResponse({ task, status });
 			const expected = createExpectedResponse(task, status, descriptions);
+
+			expect(spy).toHaveBeenCalled();
+			expect(result).toStrictEqual(expected);
+		});
+
+		it('should map task with status, its task card and description values', () => {
+			const taskCard = taskCardFactory.buildWithId();
+
+			const linkedTask = taskCard.task;
+			linkedTask.taskCard = taskCard.id;
+
+			const descriptions: TaskParentDescriptions = {
+				courseName: 'course #1',
+				courseId: 'course ID #1',
+				color: '#F0F0F0',
+				lessonName: 'a task description',
+				lessonHidden: false,
+			};
+
+			const spy = jest.spyOn(linkedTask, 'getParentData').mockReturnValue(descriptions);
+
+			const status = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 0,
+				isDraft: false,
+				isFinished: false,
+				isSubstitutionTeacher: false,
+			};
+
+			const result = TaskMapper.mapToResponse({ task: linkedTask, status });
+			const expected = createExpectedResponse(linkedTask, status, descriptions);
 
 			expect(spy).toHaveBeenCalled();
 			expect(result).toStrictEqual(expected);

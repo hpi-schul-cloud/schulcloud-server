@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
+import { courseFactory, setupEntities, taskCardFactory, taskFactory } from '@shared/testing';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -58,6 +58,33 @@ describe('room board response mapper', () => {
 				title: 'boardTitle',
 				courseName: course.name,
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
+			};
+
+			const result = mapper.mapToResponse(board);
+
+			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+		});
+
+		it('should map tasks with status and its task card on board to response', () => {
+			const course = courseFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId({ course });
+			const linkedTask = taskCard.task;
+			linkedTask.course = course;
+			linkedTask.taskCard = taskCard.id;
+			const status = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 0,
+				isDraft: false,
+				isFinished: false,
+				isSubstitutionTeacher: false,
+			};
+			const board = {
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				courseName: course.name,
+				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
 			};
 
 			const result = mapper.mapToResponse(board);
