@@ -434,7 +434,7 @@ data:
     # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" && -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
          # Add document to the 'ltitools' collection
-         mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
+         mongo $DATABASE__URL --eval 'db.ltitools.update(
              {
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
@@ -443,7 +443,7 @@ data:
                "roles": [],
                "privacy_permission": "anonymous",
                "openNewTab": true,
-               "name": "nextcloud",
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "url": "'$NEXTCLOUD_BASE_URL'",
                "key": null,
                "secret": "'$NEXTCLOUD_CLIENT_SECRET'",
@@ -486,7 +486,7 @@ data:
 
          # Add Nextcloud' tools configuration as an external tool
          # (stored in the 'external_tools' collection) that uses OAuth.
-         mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+         mongo $DATABASE__URL --eval 'db.external_tools.update(
              {
                "name": "nextcloud",
                "config_type": "oauth2"
