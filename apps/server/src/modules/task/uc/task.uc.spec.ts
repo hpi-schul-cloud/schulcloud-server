@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Course, ITaskStatus, Lesson, Permission, Task, User } from '@shared/domain';
+import { Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
@@ -88,7 +89,7 @@ describe('TaskUC', () => {
 	});
 
 	afterEach(() => {
-		jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	const setUserRepoMock = {
@@ -137,7 +138,7 @@ describe('TaskUC', () => {
 		},
 	};
 
-	/* 	it('should be defined', () => {
+	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
 
@@ -366,7 +367,7 @@ describe('TaskUC', () => {
 					const task = taskFactory.finished(user).build({ course });
 
 					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllForTeacherOrSubstituteTeacher([course]);
+					setCourseRepoMock.findAllByUserId([course]);
 					setLessonRepoMock.findAllByCourseIds([]);
 					authorizationService.hasPermission.mockReturnValue(true);
 					setTaskRepoMock.findAllFinishedByParentIds([task]);
@@ -404,10 +405,10 @@ describe('TaskUC', () => {
 				await expect(() => service.findAllFinished(user.id)).rejects.toThrow(UnauthorizedException);
 			});
 		});
-	}); */
+	});
 
 	describe('findAll', () => {
-		/* describe('without permissions', () => {
+		describe('without permissions', () => {
 			const setup = () => {
 				const permissions = [];
 				const user = setupUser(permissions);
@@ -431,7 +432,7 @@ describe('TaskUC', () => {
 					Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
 				]);
 			});
-		}); */
+		});
 
 		describe('as a student', () => {
 			const setup = () => {
@@ -447,38 +448,39 @@ describe('TaskUC', () => {
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
-				const findAllMock = taskRepo.findAllByParentIds.mockResolvedValueOnce([[], 0]);
+				taskRepo.findAllByParentIds.mockResolvedValueOnce([[], 0]);
 
-				return { user, course, lesson, paginationParams, findAllMock };
+				return { user, course, lesson, paginationParams };
 			};
 
-			it.only('should return a counted result', async () => {
+			it('should return a counted result', async () => {
 				const { user, paginationParams } = setup();
 
 				const [result, count] = await service.findAll(user.id, paginationParams);
 
+				expect(taskRepo.findAllByParentIds).toHaveBeenCalledTimes(1);
 				expect(Array.isArray(result)).toBeTruthy();
 				expect(count).toEqual(0);
 			});
 
-			/* it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
-				const { user, course, lesson, paginationParams, findAllMock } = setup();
+			it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
+				const { user, course, lesson, paginationParams } = setup();
 
 				await service.findAll(user.id, paginationParams);
 
-				expect(findAllMock).toHaveBeenCalledTimes(1);
-				expect(findAllMock.mock.calls[0][0]).toEqual({
+				expect(taskRepo.findAllByParentIds).toHaveBeenCalledTimes(1);
+				expect(taskRepo.findAllByParentIds.mock.calls[0][0]).toEqual({
 					creatorId: user.id,
 					courseIds: [course.id],
 					lessonIds: [lesson.id],
 				});
-				expect(findAllMock.mock.calls[0][1]?.finished).toEqual({ userId: user.id, value: false });
-				expect(findAllMock.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
-				expect(findAllMock.mock.calls[0][2]).toEqual({
+				expect(taskRepo.findAllByParentIds.mock.calls[0][1]?.finished).toEqual({ userId: user.id, value: false });
+				expect(taskRepo.findAllByParentIds.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
+				expect(taskRepo.findAllByParentIds.mock.calls[0][2]).toEqual({
 					order: { dueDate: 'asc' },
 					pagination: { skip: paginationParams.skip, limit: paginationParams.limit },
 				});
-			}); */
+			});
 		});
 	});
 
