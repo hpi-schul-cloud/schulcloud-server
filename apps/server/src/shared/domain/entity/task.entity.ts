@@ -2,7 +2,7 @@ import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property }
 import { InternalServerErrorException } from '@nestjs/common';
 import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { UsersList } from '@src/modules/task/controller/dto';
+import type { UsersList } from '@src/modules/task/controller/dto/task.response';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
