@@ -624,12 +624,11 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 	if (hasKey(hook.result, 'userIds')) {
 		const userId = bsonIdToString(hook.params.account.userId);
 		const { userIds } = hook.result;
-		const user = {
-			...userIds.find((u) => {
-				const id = (u.userId || {})._id || u.userId;
-				return isSameId(id, userId);
-			}),
-		};
+		const user = userIds.find((u) => {
+			const id = (u.userId || {})._id || u.userId;
+			return isSameId(id, userId);
+		});
+
 		if (isUndefined([user, user.role], 'OR')) {
 			logger.warning(
 				'Can not execute addCurrentUser for unknown user. ' +
