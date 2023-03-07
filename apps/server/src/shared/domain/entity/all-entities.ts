@@ -24,7 +24,7 @@ import { TaskCard } from './task-card.entity';
 import { Team, TeamUser } from './team.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
-import { CardElement, RichTextCardElement } from './cardElement.entity';
+import { CardElement, RichTextCardElement } from './card-element.entity';
 
 export const ALL_ENTITIES = [
 	Account,

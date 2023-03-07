@@ -7,7 +7,7 @@ import {
 	TaskCard,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CardElementType, RichTextCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { ITaskCardCRUD } from '../../interface';

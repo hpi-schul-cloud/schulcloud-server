@@ -1,7 +1,7 @@
 import { Cascade, Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 import { CardType, ICard, ICardCProps } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { CardElement } from './cardElement.entity';
+import { CardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';

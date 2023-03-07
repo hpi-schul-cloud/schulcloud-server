@@ -3,7 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Actions, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/card-element.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
 import {
 	CardElementRepo,
