@@ -19,10 +19,9 @@ import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
+import { OAuthProcessDto, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 

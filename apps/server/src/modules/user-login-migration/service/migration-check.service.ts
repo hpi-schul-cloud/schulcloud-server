@@ -11,9 +11,10 @@ export class MigrationCheckService {
 
 	async shouldUserMigrate(externalUserId: string, systemId: EntityId, officialSchoolNumber: string): Promise<boolean> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (school) {
+			const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+
 			if (user && user.lastLoginSystemChange && school.oauthMigrationPossible) {
 				const hasMigrated: boolean = user.lastLoginSystemChange > school.oauthMigrationPossible;
 				return !hasMigrated;

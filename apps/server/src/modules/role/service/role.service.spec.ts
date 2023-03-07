@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, RoleName } from '@shared/domain';
 import { RoleRepo } from '@shared/repo';
 import { roleFactory } from '@shared/testing';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { RoleService } from '@src/modules/role/service/role.service';
+import { RoleDto } from './dto/role.dto';
+import { RoleService } from './role.service';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('RoleService', () => {

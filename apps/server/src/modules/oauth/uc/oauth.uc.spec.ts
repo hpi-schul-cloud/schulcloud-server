@@ -21,7 +21,7 @@ import { SchoolMigrationService } from '@src/modules/user-login-migration/servic
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
+import { OAuthProcessDto } from '../service/dto';
 import { OAuthService } from '../service/oauth.service';
 import resetAllMocks = jest.resetAllMocks;
 

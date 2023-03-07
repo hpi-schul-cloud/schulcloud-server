@@ -1,6 +1,6 @@
-import { AuthenticationCodeGrantTokenRequest } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
+import { AuthenticationCodeGrantTokenRequest } from '../service/dto';
 import { TokenRequestMapper } from './token-request.mapper';
 
 describe('TokenRequestMapper', () => {

@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
-import { Logger } from '../../../core/logger';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
 const publicKey = 'publicKey';

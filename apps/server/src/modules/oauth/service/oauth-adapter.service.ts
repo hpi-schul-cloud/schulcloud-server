@@ -1,13 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
 import { Logger } from '@src/core/logger';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { AxiosResponse } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { AuthenticationCodeGrantTokenRequest } from './dto/authentication-code-grant-token.request';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
 export class OauthAdapterService {

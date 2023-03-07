@@ -5,7 +5,6 @@ import { OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { SystemService } from '@src/modules/system';
@@ -16,7 +15,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
+import { AuthenticationCodeGrantTokenRequest, OAuthProcessDto, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
