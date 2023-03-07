@@ -1,12 +1,16 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { CACHE_REDIS_STORE } from '@shared/infra/redis';
+import { Cache, Store } from 'cache-manager';
 import jwtWhitelist = require('../../../../../../src/services/authentication/logic/whitelist');
 
 const { ensureTokenIsWhitelisted, addTokenToWhitelist, createRedisIdentifierFromJwtData } = jwtWhitelist;
 
 @Injectable()
 export class JwtValidationAdapter {
-	constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+	constructor(
+		@Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+		@Inject(CACHE_REDIS_STORE) private readonly redisStore?: Store
+	) {}
 
 	/**
 	 * When validating a jwt it must be added to a whitelist, here we check this.
@@ -26,7 +30,9 @@ export class JwtValidationAdapter {
 	}
 
 	async removeFromWhitelist(accountId: string, jti: string): Promise<void> {
-		const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);
-		await this.cacheManager.del(redisIdentifier);
+		if (this.redisStore) {
+			const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);
+			await this.cacheManager.del(redisIdentifier);
+		}
 	}
 }
