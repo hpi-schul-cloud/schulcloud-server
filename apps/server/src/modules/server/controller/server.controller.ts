@@ -6,6 +6,7 @@ import { AuthenticationService } from '../../authentication';
 export class ServerController {
 	constructor(private readonly authserv: AuthenticationService) {}
 
+	// TODO REMOVE
 	@Get('test')
 	@Authenticate('jwt')
 	async getTest(@JWT() jwt: string): Promise<string> {

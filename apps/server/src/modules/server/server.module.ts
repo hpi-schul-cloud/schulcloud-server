@@ -33,6 +33,7 @@ import { UserApiModule } from '@src/modules/user/user-api.module';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import { Store } from 'cache-manager';
 import { AccountApiModule } from '../account/account-api.module';
+import { AuthenticationModule } from '../authentication';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -105,6 +106,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			imports: [RedisModule],
 			isGlobal: true,
 		}),
+		AuthenticationModule, // TODO REMOVE
 	],
 	controllers: [ServerController],
 })
