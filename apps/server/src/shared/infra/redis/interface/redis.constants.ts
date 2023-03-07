@@ -1,1 +1,0 @@
-export const CACHE_REDIS_STORE = Symbol('INFRA:CACHE_REDIS_STORE');

@@ -86,6 +86,10 @@ describe('UserMigrationService', () => {
 		Configuration.reset(configBefore);
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	const setup = () => {
 		const officialSchoolNumber = '3';
 		const school: SchoolDO = new SchoolDO({
@@ -406,7 +410,9 @@ describe('UserMigrationService', () => {
 			});
 
 			it('should call methods of migration ', async () => {
-				const { migratedUserDO, migratedAccount, targetSystemId } = setupMigrationData();
+				const { migratedUserDO, migratedAccount, targetSystemId, notMigratedUser, accountDto } = setupMigrationData();
+				userService.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 

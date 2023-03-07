@@ -1,13 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { CacheModule, DynamicModule, Module, NotFoundException } from '@nestjs/common';
+import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
+import { CacheWrapperModule, CacheWrapperTestModule } from '@shared/infra/cache';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { CACHE_REDIS_STORE, RedisModule } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
@@ -31,7 +31,6 @@ import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { UserApiModule } from '@src/modules/user/user-api.module';
 import { VideoConferenceModule } from '@src/modules/video-conference';
-import { Store } from 'cache-manager';
 import { AccountApiModule } from '../account/account-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
@@ -97,14 +96,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 			// debug: true, // use it for locally debugging of queries
 		}),
-		CacheModule.registerAsync({
-			useFactory: (redisStore?: Store) => {
-				return { store: redisStore };
-			},
-			inject: [CACHE_REDIS_STORE],
-			imports: [RedisModule],
-			isGlobal: true,
-		}),
+		CacheWrapperModule,
 	],
 	controllers: [ServerController],
 })
@@ -123,9 +115,7 @@ export class ServerModule {}
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
-		CacheModule.registerAsync({
-			isGlobal: true,
-		}),
+		CacheWrapperTestModule,
 	],
 	controllers: [ServerController],
 })
@@ -137,9 +127,7 @@ export class ServerTestModule {
 				...serverModules,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
-				CacheModule.registerAsync({
-					isGlobal: true,
-				}),
+				CacheWrapperTestModule,
 			],
 			controllers: [ServerController],
 		};

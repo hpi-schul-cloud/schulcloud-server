@@ -3,11 +3,11 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { getMockRes } from '@jest-mock/express';
 import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Logger } from '@src/core/logger';
+import { AuthenticationService, ICurrentUser } from '@src/modules/authentication';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { Request } from 'express';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { Request } from 'express';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OauthUc } from '../uc';
 import { AuthorizationParams, SystemUrlParams } from './dto';
@@ -63,6 +63,10 @@ describe('OAuthController', () => {
 				{
 					provide: HydraOauthUc,
 					useValue: createMock<HydraOauthUc>(),
+				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
 				},
 			],
 		}).compile();
@@ -210,7 +214,7 @@ describe('OAuthController', () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrate.mockResolvedValue({ redirect: `${mockHost}/migration/succeed` });
 
-				await controller.migrateUser(currentUser, query, res, systemParams);
+				await controller.migrateUser('jwt', currentUser, query, res, systemParams);
 
 				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/migration/succeed`);
 			});
@@ -221,7 +225,7 @@ describe('OAuthController', () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrate.mockResolvedValue({ redirect: `${mockHost}/dashboard` });
 
-				await controller.migrateUser(currentUser, query, res, systemParams);
+				await controller.migrateUser('jwt', currentUser, query, res, systemParams);
 
 				expect(res.redirect).toHaveBeenCalledWith(`${mockHost}/dashboard`);
 			});
@@ -232,7 +236,7 @@ describe('OAuthController', () => {
 				const { currentUser, res, query, systemParams } = migrationSetup();
 				oauthUc.migrate.mockResolvedValue(new MigrationDto({}));
 
-				await expect(controller.migrateUser(currentUser, query, res, systemParams)).rejects.toThrow(
+				await expect(controller.migrateUser('jwt', currentUser, query, res, systemParams)).rejects.toThrow(
 					new InternalServerErrorException(
 						`Migration of ${currentUser.userId} to system ${systemParams.systemId} failed.`
 					)
