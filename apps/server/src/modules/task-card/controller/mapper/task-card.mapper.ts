@@ -16,19 +16,18 @@ import { RichTextCardElementParam, TaskCardParams, TaskCardResponse } from '../d
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
 		const taskResponse: TaskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
-		const cardElements = card.getCardElements();
-		const cardElementsResponse = this.mapElements(cardElements);
 
 		const dto = new TaskCardResponse({
 			id: card.id,
 			draggable: card.draggable || true,
-			cardElements: cardElementsResponse,
 			task: taskResponse,
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
 			title: card.title,
 		});
-
+		if (card.cardElements.length) {
+			dto.cardElements = this.getCardElementResponse(card);
+		}
 		if (card.course) {
 			dto.courseId = card.course.id;
 			dto.courseName = card.course.name;
@@ -47,6 +46,12 @@ export class TaskCardMapper {
 			}
 		});
 
+		return cardElementsResponse;
+	}
+
+	private getCardElementResponse(card: TaskCard): CardElementResponse[] {
+		const cardElements = card.getCardElements();
+		const cardElementsResponse = this.mapElements(cardElements);
 		return cardElementsResponse;
 	}
 

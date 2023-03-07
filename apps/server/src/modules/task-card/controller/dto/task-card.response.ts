@@ -7,11 +7,11 @@ export class TaskCardResponse {
 	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate, title }: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
-		this.cardElements = cardElements;
 		this.task = task;
 		this.visibleAtDate = visibleAtDate;
 		this.dueDate = dueDate;
 		this.title = title;
+		this.cardElements = cardElements;
 	}
 
 	@ApiProperty({
@@ -29,7 +29,7 @@ export class TaskCardResponse {
 		description: 'Array of card elements',
 		type: [CardElementResponse],
 	})
-	cardElements: CardElementResponse[];
+	cardElements?: CardElementResponse[];
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
