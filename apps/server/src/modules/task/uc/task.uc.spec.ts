@@ -1,23 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
+import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory,
+	lessonFactory,
+	roleFactory,
+	setupEntities,
+	submissionFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
-
-const mockStatus: ITaskStatus = {
-	submitted: 1,
-	graded: 1,
-	maxSubmissions: 1,
-	isDraft: false,
-	isSubstitutionTeacher: false,
-	isFinished: false,
-};
 
 describe('TaskUC', () => {
 	let module: TestingModule;
@@ -383,6 +382,7 @@ describe('TaskUC', () => {
 					await service.findAllFinished(user.id);
 
 					expect(spy).toHaveBeenCalled();
+					spy.mockRestore();
 				});
 			});
 		});
@@ -438,9 +438,15 @@ describe('TaskUC', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
+				const user2 = setupUser([]);
 				const paginationParams = new PaginationParams();
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
+				const task1 = taskFactory.build({ course });
+				const task2 = taskFactory.build({ course });
+				const task3 = taskFactory.build({ course });
+				task2.submissions.add(submissionFactory.submitted().build({ task: task2, student: user, graded: true }));
+				task3.submissions.add(submissionFactory.submitted().build({ task: task3, student: user2, graded: true }));
 
 				setAuthorizationServiceMock.getUserWithPermissions(user);
 				authorizationService.hasAllPermissions.mockReturnValue(true);
@@ -448,9 +454,9 @@ describe('TaskUC', () => {
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
-				taskRepo.findAllByParentIds.mockResolvedValueOnce([[], 0]);
+				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task1, task2, task3], 3]);
 
-				return { user, course, lesson, paginationParams };
+				return { user, course, lesson, task1, paginationParams };
 			};
 
 			it('should return a counted result', async () => {
@@ -460,7 +466,7 @@ describe('TaskUC', () => {
 
 				expect(taskRepo.findAllByParentIds).toHaveBeenCalledTimes(1);
 				expect(Array.isArray(result)).toBeTruthy();
-				expect(count).toEqual(0);
+				expect(count).toEqual(3);
 			});
 
 			it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
@@ -481,53 +487,33 @@ describe('TaskUC', () => {
 					pagination: { skip: paginationParams.skip, limit: paginationParams.limit },
 				});
 			});
-		});
-	});
 
-	/*
 			it('should find current tasks by permitted parent ids ordered by dueDate', async () => {
-				const spy = setTaskRepoMock.findAllByParentIds([]);
-				const course = courseFactory.buildWithId();
-				const lesson = lessonFactory.buildWithId({ course, hidden: false });
+				const { user, course, lesson, paginationParams } = setup();
 
-				const mockRestore = findAllMock({
-					lessons: [lesson],
-					courses: [course],
-				});
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-				const paginationParams = new PaginationParams();
 				await service.findAll(user.id, paginationParams);
 
-				expect(spy).toHaveBeenCalledTimes(1);
-				expect(spy.mock.calls[0][0]).toEqual({
+				expect(taskRepo.findAllByParentIds).toHaveBeenCalledTimes(1);
+				expect(taskRepo.findAllByParentIds.mock.calls[0][0]).toEqual({
 					creatorId: user.id,
 					courseIds: [course.id],
 					lessonIds: [lesson.id],
 				});
-				expect(spy.mock.calls[0][1]?.finished).toEqual({ userId: user.id, value: false });
-				expect(spy.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
-				expect(spy.mock.calls[0][2]).toEqual({
+				expect(taskRepo.findAllByParentIds.mock.calls[0][1]?.finished).toEqual({ userId: user.id, value: false });
+				expect(taskRepo.findAllByParentIds.mock.calls[0][1]?.afterDueDateOrNone).toBeDefined();
+				expect(taskRepo.findAllByParentIds.mock.calls[0][2]).toEqual({
 					order: { dueDate: 'asc' },
 					pagination: { skip: paginationParams.skip, limit: paginationParams.limit },
 				});
-
-				spy.mockRestore();
-				mockRestore();
 			});
 
 			it('should return well formed task with course and status', async () => {
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
+				const { user, task1, paginationParams } = setup();
 
-				const mockRestore = findAllMock({
-					tasks: [task],
-				});
-
-				const paginationParams = new PaginationParams();
 				const [result] = await service.findAll(user.id, paginationParams);
+
 				expect(result[0]).toEqual({
-					task,
+					task: task1,
 					status: {
 						submitted: 0,
 						maxSubmissions: 1,
@@ -538,169 +524,102 @@ describe('TaskUC', () => {
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
-
-				mockRestore();
 			});
 
 			it('should find a list of tasks', async () => {
-				const course = courseFactory.build();
+				const { user, paginationParams } = setup();
+
+				const [result, count] = await service.findAll(user.id, paginationParams);
+
+				expect(count).toEqual(3);
+				expect(result.length).toEqual(3);
+			});
+
+			it('should compute submitted and graded status for task', async () => {
+				const { user, paginationParams } = setup();
+
+				const [result] = await service.findAll(user.id, paginationParams);
+
+				expect(result.length).toEqual(3);
+				expect(result[1].status).toEqual({
+					graded: 1,
+					submitted: 1,
+					maxSubmissions: 1,
+					isDraft: false,
+					isFinished: false,
+					isSubstitutionTeacher: false,
+				});
+			});
+		});
+
+		describe('as a substitution teacher', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
+				const user = setupUser(permissions);
+				const paginationParams = new PaginationParams();
+				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const lesson = lessonFactory.buildWithId({ course, hidden: false });
+				const task = taskFactory.build({ course });
+
+				setAuthorizationServiceMock.getUserWithPermissions(user);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				setCourseRepoMock.findAllForTeacherOrSubstituteTeacher([course]);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task], 1]);
+
+				return { user, paginationParams };
+			};
+
+			it('should mark substitution teacher in status', async () => {
+				const { user, paginationParams } = setup();
+
+				const [result] = await service.findAll(user.id, paginationParams);
+
+				expect(result[0].status.isSubstitutionTeacher).toBe(true);
+			});
+		});
+
+		describe('as a teacher', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
+				const user = setupUser(permissions);
+				const paginationParams = new PaginationParams();
+				const course = courseFactory.buildWithId();
+				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
 				const task3 = taskFactory.build({ course });
+				task2.submissions.add(
+					submissionFactory.submitted().build({ task: task2, student: user, teamMembers: [user], graded: true })
+				);
 
-				const mockRestore = findAllMock({
-					tasks: [task1, task2, task3],
-				});
-
-				const paginationParams = new PaginationParams();
-				const [result, count] = await service.findAll(user.id, paginationParams);
-				expect(count).toEqual(3);
-				expect(result.length).toEqual(3);
-
-				mockRestore();
-			});
-
-			it('should compute submitted status for task', async () => {
-				const student = user;
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.submitted().build({ task, student }));
-
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 0,
-					submitted: 1,
-					maxSubmissions: 1,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should only count the submissions of the given user', async () => {
-				const student1 = user;
-				const student2 = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.submitted().build({ task, student: student1 }));
-				task.submissions.add(submissionFactory.submitted().build({ task, student: student2 }));
-
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 0,
-					submitted: 1,
-					maxSubmissions: 1,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should compute graded status for task', async () => {
-				const student = user;
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission = submissionFactory.submitted().build({ task, student });
-				task.submissions.add(submission);
-
-				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(spyGraded).toBeCalled();
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 1,
-					submitted: 1,
-					maxSubmissions: 1,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-				spyGraded.mockRestore();
-			});
-
-			it('should only count the graded submissions of the given user', async () => {
-				const student1 = user;
-				const student2 = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
-				task.submissions.add(submission1, submission2);
-
-				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
-				jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 1,
-					submitted: 1,
-					maxSubmissions: 1,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-		});
-		
-		describe('as a teacher', () => {
-			beforeEach(() => {
-				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
-				user = setupUser(permissions);
+				setAuthorizationServiceMock.getUserWithPermissions(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-			});
+				setCourseRepoMock.findAllForTeacherOrSubstituteTeacher([course]);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task1, task2, task3], 3]);
+
+				return { user, course, lesson, task1, paginationParams };
+			};
 
 			it('should return a counted result', async () => {
-				const mockRestore = findAllMock({});
+				const { user, paginationParams } = setup();
 
-				const paginationParams = new PaginationParams();
 				const [result, count] = await service.findAll(user.id, paginationParams);
-				expect(Array.isArray(result)).toBeTruthy();
-				expect(count).toEqual(0);
 
-				mockRestore();
+				expect(Array.isArray(result)).toBeTruthy();
+				expect(count).toEqual(3);
 			});
 
 			it('should find all tasks by permitted parent ids ordered by newest first', async () => {
-				const course = courseFactory.buildWithId();
-				const lesson = lessonFactory.buildWithId({ course, hidden: false });
-				const tasks = [];
-				const mockRestore = findAllMock({
-					tasks,
-					lessons: [lesson],
-					courses: [course],
-				});
-				const spy = setTaskRepoMock.findAllByParentIds(tasks);
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				const { user, course, lesson, paginationParams } = setup();
 
-				const paginationParams = new PaginationParams();
 				await service.findAll(user.id, paginationParams);
 
 				const notFinished = { userId: user.id, value: false };
@@ -710,134 +629,43 @@ describe('TaskUC', () => {
 					{ order: { dueDate: 'desc' }, pagination: { skip: paginationParams.skip, limit: paginationParams.limit } },
 				];
 
-				expect(spy).toHaveBeenCalledWith(...expectedParams);
-
-				mockRestore();
+				expect(taskRepo.findAllByParentIds).toHaveBeenCalledWith(...expectedParams);
 			});
 
 			it('should return well formed task with course and status', async () => {
-				const course = courseFactory.build();
-				const task = taskFactory.draft().build({ course });
+				const { user, course, task1, paginationParams } = setup();
 
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
 				const [result] = await service.findAll(user.id, paginationParams);
+
 				expect(result[0]).toEqual({
-					task,
+					task: task1,
 					status: {
 						submitted: 0,
 						maxSubmissions: course.getStudentIds().length,
 						graded: 0,
-						isDraft: true,
+						isDraft: false,
 						isFinished: false,
 						isSubstitutionTeacher: false,
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
-
-				mockRestore();
-			});
-
-			it('should mark substitution teacher in status', async () => {
-				const userData = user;
-				const course = courseFactory.build({ substitutionTeachers: [userData] });
-				const task = taskFactory.build({ course });
-
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(userData.id, paginationParams);
-				expect(result[0].status.isSubstitutionTeacher).toBe(true);
-
-				mockRestore();
 			});
 
 			it('should find a list of tasks', async () => {
-				const course = courseFactory.build();
-				const task1 = taskFactory.build({ course });
-				const task2 = taskFactory.build({ course });
-				const task3 = taskFactory.build({ course });
+				const { user, paginationParams } = setup();
 
-				const mockRestore = findAllMock({
-					tasks: [task1, task2, task3],
-				});
-
-				const paginationParams = new PaginationParams();
 				const [result, count] = await service.findAll(user.id, paginationParams);
+
 				expect(count).toEqual(3);
 				expect(result.length).toEqual(3);
-
-				mockRestore();
 			});
 
-			it('should compute submitted status for task', async () => {
-				const student = user;
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.submitted().build({ task, student }));
+			it('should compute submitted, graded and maxSubmissions status for task', async () => {
+				const { user, paginationParams, course } = setup();
 
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
 				const [result] = await service.findAll(user.id, paginationParams);
 
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 0,
-					submitted: 1,
-					maxSubmissions: course.getStudentIds().length,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should count all student ids of submissions', async () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
-				task.submissions.add(submission1, submission2);
-
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 0,
-					submitted: 2,
-					maxSubmissions: course.getStudentIds().length,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should compute graded status for task', async () => {
-				const student = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission = submissionFactory.submitted().build({ task, student });
-				task.submissions.add(submission);
-
-				const spyGraded = jest.spyOn(submission, 'isGraded').mockImplementation(() => true);
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(spyGraded).toBeCalled();
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
+				expect(result[1].status).toEqual({
 					graded: 1,
 					submitted: 1,
 					maxSubmissions: course.getStudentIds().length,
@@ -845,196 +673,155 @@ describe('TaskUC', () => {
 					isFinished: false,
 					isSubstitutionTeacher: false,
 				});
-
-				mockRestore();
-				spyGraded.mockRestore();
 			});
-
-			it('should count all student ids of graded submissions', async () => {
-				const student1 = user;
-				const student2 = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
-				task.submissions.add(submission1, submission2);
-
-				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
-				jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result] = await service.findAll(user.id, paginationParams);
-
-				expect(result.length).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 2,
-					submitted: 2,
-					maxSubmissions: course.getStudentIds().length,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should count only unique student ids of graded submissions', async () => {
-				const student1 = user;
-				const student2 = userFactory.build();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission2 = submissionFactory.submitted().build({ task, student: student2 });
-				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
-
-				task.submissions.add(submission1, submission2, submission3);
-
-				jest.spyOn(submission1, 'isGraded').mockImplementation(() => true);
-				jest.spyOn(submission2, 'isGraded').mockImplementation(() => true);
-				jest.spyOn(submission3, 'isGraded').mockImplementation(() => true);
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result, total] = await service.findAll(user.id, paginationParams);
-
-				expect(total).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 2,
-					submitted: 2,
-					maxSubmissions: course.getStudentIds().length,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-
-			it('should count only unique student ids of submissions', async () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-				const course = courseFactory.build();
-				const task = taskFactory.build({ course });
-				const submission1 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission2 = submissionFactory.submitted().build({ task, student: student1 });
-				const submission3 = submissionFactory.submitted().build({ task, student: student2 });
-
-				task.submissions.add(submission1, submission2, submission3);
-
-				const mockRestore = findAllMock({ tasks: [task] });
-
-				const paginationParams = new PaginationParams();
-				const [result, total] = await service.findAll(user.id, paginationParams);
-
-				expect(total).toEqual(1);
-				expect(result[0].status).toEqual({
-					graded: 0,
-					submitted: 2,
-					maxSubmissions: course.getStudentIds().length,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
-
-				mockRestore();
-			});
-		}); 
+		});
 	});
-	
 
 	describe('changeFinishedForUser', () => {
-		let task: Task;
+		const mockStatus: ITaskStatus = {
+			submitted: 1,
+			graded: 1,
+			maxSubmissions: 1,
+			isDraft: false,
+			isSubstitutionTeacher: false,
+			isFinished: false,
+		};
 
-		beforeEach(() => {
-			user = userFactory.buildWithId();
-			task = taskFactory.buildWithId({ creator: user });
-			userRepo.findById.mockResolvedValue(user);
-			taskRepo.findById.mockResolvedValue(task);
-			taskRepo.save.mockResolvedValue();
-		});
+		describe('without permission for task', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
 
-		it('should check for permission to finish the task', async () => {
-			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-				action: Actions.read,
-				requiredPermissions: [],
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
+
+				return { user2, task };
+			};
+
+			it('should throw ForbiddenException when not permitted', async () => {
+				const { user2, task } = setup();
+
+				await expect(async () => {
+					await service.changeFinishedForUser(user2.id, task.id, true);
+				}).rejects.toThrow(ForbiddenException);
 			});
 		});
 
-		it('should throw ForbiddenException when not permitted', async () => {
-			const user2 = userFactory.buildWithId();
-			task = taskFactory.buildWithId({ creator: user2 });
-			taskRepo.findById.mockResolvedValue(task);
-			authorizationService.checkPermission.mockImplementation(() => {
-				throw new ForbiddenException();
-			});
-			await expect(async () => {
+		describe('without any dashboard permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				task.finishForUser = jest.fn();
+				task.restoreForUser = jest.fn();
+				taskRepo.save.mockResolvedValue();
+				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
+
+				return { user, task };
+			};
+
+			it('should check for permission to finish the task', async () => {
+				const { user, task } = setup();
+
 				await service.changeFinishedForUser(user.id, task.id, true);
-			}).rejects.toThrow(ForbiddenException);
-		});
 
-		it('should finish the task for the user', async () => {
-			task.finishForUser = jest.fn();
-			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(task.finishForUser).toBeCalled();
-		});
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.read,
+					requiredPermissions: [],
+				});
+			});
 
-		it('should restore the task for the user', async () => {
-			task.restoreForUser = jest.fn();
-			await service.changeFinishedForUser(user.id, task.id, false);
-			expect(task.restoreForUser).toBeCalled();
-		});
+			it('should finish the task for the user', async () => {
+				const { user, task } = setup();
 
-		it('should save the task', async () => {
-			await service.changeFinishedForUser(user.id, task.id, true);
-			expect(taskRepo.save).toBeCalledWith(task);
-		});
+				await service.changeFinishedForUser(user.id, task.id, true);
 
-		it('should return the task and its status', async () => {
-			const result = await service.changeFinishedForUser(user.id, task.id, true);
-			expect(result.task).toEqual(task);
-			expect(result.status).toBeDefined();
+				expect(task.finishForUser).toBeCalled();
+			});
+
+			it('should restore the task for the user', async () => {
+				const { user, task } = setup();
+
+				await service.changeFinishedForUser(user.id, task.id, false);
+
+				expect(task.restoreForUser).toBeCalled();
+			});
+
+			it('should save the task', async () => {
+				const { user, task } = setup();
+
+				await service.changeFinishedForUser(user.id, task.id, true);
+
+				expect(taskRepo.save).toBeCalledWith(task);
+			});
+
+			it('should return the task and its status', async () => {
+				const { user, task } = setup();
+
+				const result = await service.changeFinishedForUser(user.id, task.id, true);
+
+				expect(result.task).toEqual(task);
+				expect(result.status).toBeDefined();
+			});
 		});
 
 		describe('with teacherDashboard permission', () => {
-			beforeEach(() => {
+			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
-				user = setupUser(permissions);
-				task = taskFactory.buildWithId({ creator: user });
-				userRepo.findById.mockResolvedValue(user);
-				taskRepo.findById.mockResolvedValue(task);
-				taskRepo.save.mockResolvedValue();
-			});
+				const user = setupUser(permissions);
+				const task = taskFactory.buildWithId({ creator: user });
 
-			it('should create teacher status', async () => {
-				task.createTeacherStatusForUser = jest.fn();
-				await service.changeFinishedForUser(user.id, task.id, true);
-				expect(task.createTeacherStatusForUser).toBeCalled();
-			});
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				task.finishForUser = jest.fn();
+				task.restoreForUser = jest.fn();
+				taskRepo.save.mockResolvedValue();
+				authorizationService.hasOneOfPermissions.mockReturnValueOnce(true);
+				task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
+
+				return { user, task };
+			};
 
 			it('should return task and teacher status', async () => {
-				task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				const { user, task } = setup();
+
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
+
+				expect(task.createTeacherStatusForUser).toBeCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
 			});
 		});
 
 		describe('with studentDashboard permission', () => {
-			it('should create teacher status', async () => {
-				task.createStudentStatusForUser = jest.fn();
-				authorizationService.hasPermission.mockReturnValue(true);
-				authorizationService.hasOneOfPermissions.mockReturnValue(false);
-				await service.changeFinishedForUser(user.id, task.id, true);
-				expect(task.createStudentStatusForUser).toBeCalled();
-			});
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
+				const user = setupUser(permissions);
+				const task = taskFactory.buildWithId({ creator: user });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				task.finishForUser = jest.fn();
+				task.restoreForUser = jest.fn();
+				taskRepo.save.mockResolvedValue();
+				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
+				task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
+
+				return { user, task };
+			};
 
 			it('should return task and student status', async () => {
-				task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
-				authorizationService.hasPermission.mockReturnValue(true);
-				authorizationService.hasOneOfPermissions.mockReturnValue(false);
+				const { user, task } = setup();
+
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
+
+				expect(task.createStudentStatusForUser).toBeCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
 			});
@@ -1042,65 +829,84 @@ describe('TaskUC', () => {
 	});
 
 	describe('revertPublished', () => {
-		let task: Task;
+		describe('without write permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
 
-		beforeEach(() => {
-			user = userFactory.buildWithId();
-			task = taskFactory.buildWithId({ creator: user });
-			userRepo.findById.mockResolvedValue(user);
-			taskRepo.findById.mockResolvedValue(task);
-			taskRepo.save.mockResolvedValue();
-		});
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
 
-		it('should check for permission to revert the task', async () => {
-			await service.revertPublished(user.id, task.id);
-			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-				action: Actions.write,
-				requiredPermissions: [],
+				return { user, task };
+			};
+
+			it('should throw ForbiddenException when not permitted', async () => {
+				const { user, task } = setup();
+
+				await expect(async () => {
+					await service.revertPublished(user.id, task.id);
+				}).rejects.toThrow(ForbiddenException);
+
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
 			});
 		});
 
-		it('should throw ForbiddenException when not permitted', async () => {
-			const user2 = userFactory.buildWithId();
-			task = taskFactory.buildWithId({ creator: user2 });
-			taskRepo.findById.mockResolvedValue(task);
-			authorizationService.checkPermission.mockImplementation(() => {
-				throw new ForbiddenException();
-			});
-			await expect(async () => {
+		describe('with write permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValue(task);
+				task.unpublish = jest.fn();
+				taskRepo.save.mockResolvedValue();
+				task.createTeacherStatusForUser = jest.fn().mockImplementation(() => {
+					return {};
+				});
+
+				return { user, task };
+			};
+
+			it('should call unpublish method in task entity', async () => {
+				const { user, task } = setup();
+
 				await service.revertPublished(user.id, task.id);
-			}).rejects.toThrow(ForbiddenException);
-		});
 
-		it('should call unpublish method in task entity', async () => {
-			task.unpublish = jest.fn();
-			await service.revertPublished(user.id, task.id);
-			expect(task.unpublish).toBeCalled();
-		});
+				expect(task.unpublish).toBeCalled();
+			});
 
-		it('should set the private property of unpublished task correctly', async () => {
-			expect(task.private).toEqual(false);
-			await service.revertPublished(user.id, task.id);
-			expect(task.private).toEqual(true);
-		});
+			it('should save the task', async () => {
+				const { user, task } = setup();
 
-		it('should save the task', async () => {
-			await service.revertPublished(user.id, task.id);
-			expect(taskRepo.save).toBeCalledWith(task);
-		});
+				await service.revertPublished(user.id, task.id);
 
-		it('should create teacher status', async () => {
-			task.createTeacherStatusForUser = jest.fn();
-			await service.revertPublished(user.id, task.id);
-			expect(task.createTeacherStatusForUser).toBeCalled();
-		});
+				expect(taskRepo.save).toBeCalledWith(task);
+			});
 
-		it('should return the task and its status', async () => {
-			const result = await service.revertPublished(user.id, task.id);
-			expect(result.task).toEqual(task);
-			expect(result.status).toBeDefined();
+			it('should create teacher status', async () => {
+				const { user, task } = setup();
+
+				await service.revertPublished(user.id, task.id);
+
+				expect(task.createTeacherStatusForUser).toBeCalled();
+			});
+
+			it('should return the task and its status', async () => {
+				const { user, task } = setup();
+
+				const result = await service.revertPublished(user.id, task.id);
+
+				expect(result.task).toEqual(task);
+				expect(result.status).toBeDefined();
+			});
 		});
-	});
+	}); /*
 
 	describe('delete task', () => {
 		let task: Task;
