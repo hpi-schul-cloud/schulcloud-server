@@ -1,7 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { AnyBoardDo } from '@shared/domain/domainobject';
 import { BoardDoBuilder } from './board-do.builder';
-import { BoardNode, BoardNodeProperties } from './boardnode.entity';
+import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
@@ -9,7 +9,7 @@ export class ColumnBoardNode extends BoardNode {
 	@Property()
 	title: string;
 
-	constructor(props: ColumnBoardNodeProperties) {
+	constructor(props: ColumnBoardNodeProps) {
 		super(props);
 		this.type = BoardNodeType.COLUMN_BOARD;
 		this.title = props.title;
@@ -21,6 +21,6 @@ export class ColumnBoardNode extends BoardNode {
 	}
 }
 
-export interface ColumnBoardNodeProperties extends BoardNodeProperties {
+export interface ColumnBoardNodeProps extends BoardNodeProps {
 	title: string;
 }
