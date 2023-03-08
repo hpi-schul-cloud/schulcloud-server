@@ -139,7 +139,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	public getUsersList(): UsersList[] {
 		const users = this.users.getItems();
-		if (users) {
+		if (users.length) {
 			const usersList: UsersList[] = users.map((user) => {
 				return {
 					id: user.id,

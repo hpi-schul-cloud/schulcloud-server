@@ -1209,21 +1209,26 @@ describe('Task Controller (API)', () => {
 			expect((response.body as TaskResponse).id).toEqual(task.id);
 		});
 		it('POST should create a draft task', async () => {
-			const user = setup(Permission.HOMEWORK_CREATE);
-			const course = courseFactory.build({ teachers: [user] });
+			const teacher = setup(Permission.HOMEWORK_CREATE);
+			const student = setup(Permission.HOMEWORK_VIEW);
 
-			await em.persistAndFlush([user, course]);
+			const course = courseFactory.build({ teachers: [teacher], students: [student] });
+
+			await em.persistAndFlush([teacher, student, course]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer())
 				.post(`/tasks`)
 				.set('Accept', 'application/json')
-				.send({ name: 'test', courseId: course.id })
+				.send({ name: 'test', courseId: course.id, usersIds: [student.id] })
 				.expect(201);
 
 			expect((response.body as TaskResponse).status.isDraft).toEqual(true);
+			expect((response.body as TaskResponse).users).toEqual([
+				{ id: student.id, name: `${student.firstName} ${student.lastName}` },
+			]);
 		});
 		it('PATCH :id should update a task', async () => {
 			const user = setup(Permission.HOMEWORK_EDIT);

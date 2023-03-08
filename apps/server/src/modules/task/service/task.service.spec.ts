@@ -17,7 +17,6 @@ import {
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -209,29 +208,19 @@ describe('TaskService', () => {
 			});
 			/*
 			it('should set users', async () => {
-				// const studentId1 = new ObjectId().toHexString();
-				// const studentId2 = new ObjectId().toHexString();
-				// const studentId3 = new ObjectId().toHexString();
-				// const studentIds = [studentId1, studentId2, studentId3];
+				user = userFactory.buildWithId();
+				course = courseFactory.studentsWithId(2).buildWithId();
+				courseRepo.findById.mockResolvedValue(course);
+				const students = course.students.getItems();
 
-				const studentId1 = userFactory.build();
-				const studentId2 = userFactory.build();
-				const studentId3 = userFactory.build();
-				const studentIds = [studentId1.id, studentId2.id, studentId3.id];
-
-				// const spy = jest.spyOn(course, 'getStudentIds').mockReturnValueOnce(studentIds);
-
-				course = courseFactory.buildWithId();
-
-				// userRepo.findById.mockResolvedValue(user).mockResolvedValue(studentId1);
+				userRepo.findById.mockResolvedValue(user).mockResolvedValueOnce(user).mockResolvedValueOnce(students[0]);
 
 				const taskMock = {
-					studentId1,
+					users: [students[0].id],
 				};
-				await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [studentId1.id] });
+				await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [students[0].id] });
 				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
-			});
-			*/
+			}); */
 			it('should save the task', async () => {
 				const taskMock = {
 					name: 'test',
