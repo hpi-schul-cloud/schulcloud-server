@@ -1,35 +1,81 @@
-import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
+import { OauthConfigDto } from '@src/modules/system/service';
 import qs from 'qs';
+import { lastValueFrom } from 'rxjs';
 import { IdentityManagementOauthService } from '../../identity-management-oauth.service';
-import { KeycloakSystemService } from './keycloak-system.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()
 export class KeycloakIdentityManagementOauthService extends IdentityManagementOauthService {
-	constructor(private readonly kcSystemService: KeycloakSystemService, private readonly httpService: HttpService) {
+	private _oauthConfigCache: OauthConfigDto | undefined;
+
+	constructor(
+		private readonly kcAdminService: KeycloakAdministrationService,
+		private readonly configService: ConfigService,
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService
+	) {
 		super();
 	}
 
+	async getOauthConfig(): Promise<OauthConfigDto> {
+		if (this._oauthConfigCache) {
+			return this._oauthConfigCache;
+		}
+		const wellKnownUrl = this.kcAdminService.getWellKnownUrl();
+		const response = (await lastValueFrom(this.httpService.get<Record<string, unknown>>(wellKnownUrl))).data;
+		const scDomain = this.configService.get<string>('SC_DOMAIN') || '';
+		const redirectUri =
+			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
+		this._oauthConfigCache = new OauthConfigDto({
+			clientId: this.kcAdminService.getClientId(),
+			clientSecret: this.oAuthEncryptionService.encrypt(await this.kcAdminService.getClientSecret()),
+			alias: 'keycloak',
+			provider: 'oauth',
+			redirectUri,
+			responseType: 'code',
+			grantType: 'authorization_code',
+			scope: 'openid profile email',
+			issuer: response.issuer as string,
+			tokenEndpoint: response.token_endpoint as string,
+			authEndpoint: response.authorization_endpoint as string,
+			logoutEndpoint: response.end_session_endpoint as string,
+			jwksEndpoint: response.jwks_uri as string,
+		});
+		return this._oauthConfigCache;
+	}
+
+	resetOauthConfigCache(): void {
+		this._oauthConfigCache = undefined;
+	}
+
+	async isOauthConfigAvailable(): Promise<boolean> {
+		if (this._oauthConfigCache) {
+			return true;
+		}
+		return this.kcAdminService.testKcConnection();
+	}
+
 	async resourceOwnerPasswordGrant(username: string, password: string): Promise<string | undefined> {
-		const url = await this.kcSystemService.getTokenEndpoint();
-		const clientId = await this.kcSystemService.getClientId();
-		const clientSecret = await this.kcSystemService.getClientSecret();
+		const { clientId, clientSecret, tokenEndpoint } = await this.getOauthConfig();
 		const data = {
 			username,
 			password,
 			grant_type: 'password',
 			client_id: clientId,
-			client_secret: clientSecret,
+			client_secret: this.oAuthEncryptionService.decrypt(clientSecret),
 		};
 		try {
-			const response = await firstValueFrom(
+			const response = await lastValueFrom(
 				this.httpService.request<{ access_token: string }>({
 					method: 'post',
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded',
 					},
-					url,
+					url: tokenEndpoint,
 					data: qs.stringify(data),
 				})
 			);

@@ -1,17 +1,18 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolService } from '@src/modules/school';
+import { EntityNotFoundError } from '@shared/common';
+import { SystemDto, SystemService } from '@src/modules/system/service';
+import { SystemTypeEnum } from '@src/shared/domain/types';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { SchoolService } from '@src/modules/school';
-import { SystemDto, SystemService } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
+import { UserService } from '@src/modules/user/service/user.service';
+import { PageContentDto } from './dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from './dto/migration.dto';
-import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
 export class UserMigrationService {
@@ -44,7 +45,7 @@ export class UserMigrationService {
 
 	async getMigrationRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();
+		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
 			(system: SystemDto): boolean => system.alias === 'SANIS'
 		);

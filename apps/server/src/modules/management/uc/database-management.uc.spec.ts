@@ -1,19 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FileSystemAdapter } from '@shared/infra/file-system';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { StorageProvider, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import {
 	DefaultEncryptionService,
 	LdapEncryptionService,
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
-import { StorageProvider, System } from '@shared/domain';
-import { ObjectId } from 'mongodb';
-import { ConfigService } from '@nestjs/config';
+import { FileSystemAdapter } from '@shared/infra/file-system';
 import { Logger } from '@src/core/logger';
-import { DatabaseManagementUc } from './database-management.uc';
+import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
+import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
 	let module: TestingModule;
@@ -67,7 +67,7 @@ describe('DatabaseManagementService', () => {
 		},
 		type: 'oidc',
 		alias: 'oidc',
-		config: {
+		oidcConfig: {
 			// eslint-disable-next-line no-template-curly-in-string
 			clientId: '${OIDC_CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
@@ -85,8 +85,8 @@ describe('DatabaseManagementService', () => {
 		},
 		type: 'oidc',
 		alias: 'oidc',
-		config: {
-			clientId: 'encryptedClientId',
+		oidcConfig: {
+			clientId: 'ClientId',
 			clientSecret: 'encryptedClientSecret',
 		},
 	};
@@ -394,8 +394,8 @@ describe('DatabaseManagementService', () => {
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${systemsCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
 
 					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
 				});
@@ -409,8 +409,8 @@ describe('DatabaseManagementService', () => {
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${storageprovidersCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
-					expect(fileContent.includes(oidcSystemWithSecrets.config.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
+					expect(fileContent.includes(oidcSystemWithSecrets.oidcConfig.clientSecret)).toBe(false);
 
 					expect(fileContent.includes(defaultSecretReplacementHintText)).toBe(true);
 				});
@@ -495,7 +495,7 @@ describe('DatabaseManagementService', () => {
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET',
 					});
-					expect((importedSystems[1] as System).config).toMatchObject({
+					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET',
 					});
@@ -511,7 +511,7 @@ describe('DatabaseManagementService', () => {
 						clientId: 'SANIS_CLIENT_ID_env',
 						clientSecret: 'SANIS_CLIENT_SECRET_env',
 					});
-					expect((importedSystems[1] as System).config).toMatchObject({
+					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID_env',
 						clientSecret: 'OIDC_CLIENT_SECRET_env',
 					});
@@ -527,7 +527,7 @@ describe('DatabaseManagementService', () => {
 						clientId: '',
 						clientSecret: '',
 					});
-					expect((importedSystems[1] as System).config).toMatchObject({
+					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
 						clientId: '',
 						clientSecret: '',
 					});
@@ -588,8 +588,8 @@ describe('DatabaseManagementService', () => {
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
-					expect((importedSystems[1] as System).config).toMatchObject({
-						clientId: 'OIDC_CLIENT_ID_encrypted',
+					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
 				});
