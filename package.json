@@ -83,7 +83,7 @@
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
 		"esbuild:bundle:pre": "node ./scripts/commonjs-to-esmodules-bundler/esmodules-bundler.js",
-		"esbuild:bundle:post": "node ./scripts/commonjs-to-esmodules-bundler/copy-declaration.js",
+		"esbuild:bundle:post": "node ./scripts/commonjs-to-esmodules-bundler/copy-files.js",
 		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/files-storage-client/filesStorageApi/v3"
 	},
 	"dependencies": {

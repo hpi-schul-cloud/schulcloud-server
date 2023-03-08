@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const esbuild = require('esbuild');
 
+// add files to be transformed from CommonJs to EsModules in the following list
 const options = [
 	{
 		name: 'keycloak-admin-client-lib',
@@ -27,7 +28,6 @@ for (const option of options) {
 			loader,
 		});
 	} catch (e) {
-		console.error(e);
 		process.exit(1);
 	}
 }
