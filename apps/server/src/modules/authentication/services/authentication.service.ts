@@ -49,7 +49,7 @@ export class AuthenticationService {
 
 	async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
 		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true }) as JwtPayload | null;
-		if (decodedJwt && decodedJwt.jti) {
+		if (decodedJwt) {
 			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
 	}

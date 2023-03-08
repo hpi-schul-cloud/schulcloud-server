@@ -1,8 +1,9 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheService } from '@shared/infra/cache';
+import { CacheStoreType } from '@shared/infra/cache/interface/cache-store-type.enum';
 import { Cache } from 'cache-manager';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 import redis = require('../../../../../../src/utils/redis');
@@ -10,6 +11,10 @@ import RedisMock = require('../../../../../../test/utils/redis/redisMock');
 
 describe('jwt strategy', () => {
 	let adapter: JwtValidationAdapter;
+
+	let cacheManager: DeepMocked<Cache>;
+	let cacheService: DeepMocked<CacheService>;
+
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -27,11 +32,10 @@ describe('jwt strategy', () => {
 		const redisClientMock = RedisMock.createClient();
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		redis.setRedisClient(redisClientMock);
-		adapter = module.get(JwtValidationAdapter);
-	});
 
-	it('should be defined', () => {
-		expect(adapter).toBeDefined();
+		cacheManager = module.get(CACHE_MANAGER);
+		cacheService = module.get(CacheService);
+		adapter = module.get(JwtValidationAdapter);
 	});
 
 	describe('when authenticate a user with jwt', () => {
@@ -48,6 +52,18 @@ describe('jwt strategy', () => {
 			await adapter.addToWhitelist(accountId, jti);
 			// might fail when we would wait more than JWT_TIMEOUT_SECONDS
 			await adapter.isWhitelisted(accountId, jti);
+		});
+	});
+
+	describe('removeFromWhitelist is called', () => {
+		describe('when redis is used as cache store', () => {
+			it('when redis is used as cache store', async () => {
+				cacheService.getStoreType.mockReturnValue(CacheStoreType.REDIS);
+
+				await adapter.removeFromWhitelist('accountId', 'jti');
+
+				expect(cacheManager.del).toHaveBeenCalledWith('jwt:accountId:jti');
+			});
 		});
 	});
 });

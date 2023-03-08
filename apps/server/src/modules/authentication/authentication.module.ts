@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { RedisModule } from '@shared/infra/redis';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { OauthModule } from '@src/modules/oauth/oauth.module';
@@ -62,7 +61,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 		SystemModule,
 		OauthModule,
 		IdentityManagementModule,
-		RedisModule,
 	],
 	providers: [
 		JwtStrategy,
