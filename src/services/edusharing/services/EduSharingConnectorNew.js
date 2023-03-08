@@ -25,13 +25,11 @@ class EduSharingConnector {
 
 	async getBasicAuthHeaders(schoolId) {
 		const county = await getCounty(schoolId);
-		console.log(county);
 		let user = Configuration.get('ES_USER');
 		if (county && county.countyId && county.countyId >= 3000 && county.countyId < 4000) {
 			// county id 3XXX -> Lower Saxony
 			user = `LowerSaxonyCounty${county.countyId}`;
 		}
-		console.log(user);
 		const password = Configuration.get('ES_PASSWORD');
 		const credentials = Buffer.from(`${user}:${password}`).toString('base64');
 		return {
