@@ -29,12 +29,12 @@ export class SchoolUc {
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		// TODO: Please think about the mandatory (validation?) and move this to a private function with a describing name
-		const shouldRestartMigration =
-			!!school.oauthMigrationFinished &&
-			oauthMigrationPossible &&
-			oauthMigrationMandatory === !!school.oauthMigrationMandatory &&
-			!oauthMigrationFinished;
+		const shouldRestartMigration = this.isRestartMigrationRequired(
+			school,
+			oauthMigrationPossible,
+			oauthMigrationMandatory,
+			oauthMigrationFinished
+		);
 
 		if (shouldRestartMigration) {
 			await this.schoolMigrationService.restartMigration(schoolId);
@@ -71,5 +71,19 @@ export class SchoolUc {
 			return response;
 		}
 		throw new NotFoundException(`No school found for schoolnumber: ${schoolnumber}`);
+	}
+
+	private isRestartMigrationRequired(
+		school: SchoolDO,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
+	): boolean {
+		const isOauthMigrationFinished = !!school.oauthMigrationFinished;
+		const isOauthMigrationMandatory = oauthMigrationMandatory === !!school.oauthMigrationMandatory;
+		const isOauthMigrationNotFinished = !oauthMigrationFinished;
+		const isRequired =
+			isOauthMigrationFinished && oauthMigrationPossible && isOauthMigrationMandatory && isOauthMigrationNotFinished;
+		return isRequired;
 	}
 }

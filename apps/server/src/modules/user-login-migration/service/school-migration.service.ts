@@ -79,6 +79,7 @@ export class SchoolMigrationService {
 	}
 
 	async restartMigration(schoolId: string): Promise<void> {
+		// eslint-disable-next-line no-console
 		console.time('restartMigration');
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
@@ -92,6 +93,7 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		school.oauthMigrationMandatory = undefined;
+		// eslint-disable-next-line no-console
 		console.timeEnd('restartMigration');
 	}
 
