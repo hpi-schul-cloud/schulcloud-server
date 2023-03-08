@@ -16,6 +16,7 @@ export class SchoolUc {
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
 	async setMigration(
 		schoolId: string,
 		oauthMigrationPossible: boolean,
@@ -27,6 +28,19 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const shouldRestartMigration = this.isRestartMigrationRequired(
+			school,
+			oauthMigrationPossible,
+			oauthMigrationMandatory,
+			oauthMigrationFinished
+		);
+
+		if (shouldRestartMigration) {
+			await this.schoolMigrationService.restartMigration(schoolId);
+		}
+
 		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
@@ -58,5 +72,22 @@ export class SchoolUc {
 			return response;
 		}
 		throw new NotFoundException(`No school found for schoolnumber: ${schoolnumber}`);
+	}
+
+	private isRestartMigrationRequired(
+		school: SchoolDO,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
+	): boolean {
+		const hasSchoolOauthMigrationFinished = !!school.oauthMigrationFinished;
+		const isOauthMigrationMandatory = oauthMigrationMandatory === !!school.oauthMigrationMandatory;
+		const isOauthMigrationNotFinished = !oauthMigrationFinished;
+		const isRequired =
+			hasSchoolOauthMigrationFinished &&
+			oauthMigrationPossible &&
+			isOauthMigrationMandatory &&
+			isOauthMigrationNotFinished;
+		return isRequired;
 	}
 }
