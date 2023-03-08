@@ -80,11 +80,14 @@ export class SchoolUc {
 		oauthMigrationMandatory: boolean,
 		oauthMigrationFinished: boolean
 	): boolean {
-		const isOauthMigrationFinished = !!school.oauthMigrationFinished;
+		const hasSchoolOauthMigrationFinished = !!school.oauthMigrationFinished;
 		const isOauthMigrationMandatory = oauthMigrationMandatory === !!school.oauthMigrationMandatory;
 		const isOauthMigrationNotFinished = !oauthMigrationFinished;
 		const isRequired =
-			isOauthMigrationFinished && oauthMigrationPossible && isOauthMigrationMandatory && isOauthMigrationNotFinished;
+			hasSchoolOauthMigrationFinished &&
+			oauthMigrationPossible &&
+			isOauthMigrationMandatory &&
+			isOauthMigrationNotFinished;
 		return isRequired;
 	}
 }
