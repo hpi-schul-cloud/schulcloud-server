@@ -1,6 +1,7 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
 import { TestingModule, Test } from '@nestjs/testing';
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
+import { createMock } from '@golevelup/ts-jest';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 

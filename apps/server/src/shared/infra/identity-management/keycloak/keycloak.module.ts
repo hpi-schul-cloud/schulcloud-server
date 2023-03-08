@@ -1,6 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
 import { EncryptionModule } from '@shared/infra/encryption';
 import { LoggerModule } from '@src/core/logger';
 import { KeycloakAdministrationModule } from '../keycloak-administration/keycloak-administration.module';
