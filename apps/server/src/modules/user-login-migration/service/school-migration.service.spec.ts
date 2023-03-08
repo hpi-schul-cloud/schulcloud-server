@@ -278,7 +278,7 @@ describe('SchoolMigrationService', () => {
 
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId: expectedSchoolId,
-					outdatedSinceEquals: schoolDO.oauthMigrationFinished,
+					outdatedSince: schoolDO.oauthMigrationFinished,
 				});
 			});
 
