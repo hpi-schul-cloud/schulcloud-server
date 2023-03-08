@@ -12,6 +12,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
@@ -68,6 +69,15 @@ describe('OAuth SSO Controller (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+
+		const wellKnown = app.get(KeycloakAdministrationService).getWellKnownUrl();
+		axiosMock.onGet(wellKnown).reply(200, {
+			issuer: 'issuer',
+			token_endpoint: 'tokenEndpoint',
+			authorization_endpoint: 'authEndpoint',
+			end_session_endpoint: 'logoutEndpoint',
+			jwks_uri: 'jwksEndpoint',
+		});
 	});
 
 	afterAll(async () => {
@@ -178,7 +188,7 @@ describe('OAuth SSO Controller (API)', () => {
 						aud: system.oauthConfig?.clientId,
 						iat: Date.now(),
 						exp: Date.now() + 100000,
-						preferred_username: externalUserId,
+						external_sub: externalUserId,
 					},
 					privateKey,
 					{
@@ -268,7 +278,7 @@ describe('OAuth SSO Controller (API)', () => {
 						aud: system.oauthConfig?.clientId,
 						iat: Date.now(),
 						exp: Date.now() + 100000,
-						preferred_username: externalUserId,
+						external_sub: externalUserId,
 					},
 					privateKey,
 					{
@@ -307,6 +317,10 @@ describe('OAuth SSO Controller (API)', () => {
 					.expect(302)
 					.expect('Location', `${clientUrl}/login?error=sso_auth_code_step`);
 			});
+		});
+
+		afterAll(() => {
+			axiosMock.restore();
 		});
 	});
 });

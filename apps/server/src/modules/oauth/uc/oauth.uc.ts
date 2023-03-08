@@ -48,7 +48,7 @@ export class OauthUc {
 	): Promise<string> {
 		const state = nanoid(16);
 
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findById(systemId);
 		if (!system.oauthConfig) {
 			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}

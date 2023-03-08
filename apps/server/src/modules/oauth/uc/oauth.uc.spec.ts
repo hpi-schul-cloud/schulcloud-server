@@ -115,6 +115,7 @@ describe('OAuthUc', () => {
 		const setup = () => {
 			const systemId = 'systemId';
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -147,7 +148,7 @@ describe('OAuthUc', () => {
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
-				systemService.findOAuthById.mockResolvedValue(system);
+				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
 				const result: string = await uc.startOauthLogin(session, systemId, false);
@@ -161,7 +162,7 @@ describe('OAuthUc', () => {
 				const authenticationUrl = 'authenticationUrl';
 				const postLoginRedirect = 'postLoginRedirect';
 
-				systemService.findOAuthById.mockResolvedValue(system);
+				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
 				await uc.startOauthLogin(session, systemId, false, postLoginRedirect);
@@ -182,7 +183,7 @@ describe('OAuthUc', () => {
 				const session: DeepMocked<ISession> = createMock<ISession>();
 				const authenticationUrl = 'authenticationUrl';
 
-				systemService.findOAuthById.mockResolvedValue(system);
+				systemService.findById.mockResolvedValue(system);
 				oauthService.getAuthenticationUrl.mockReturnValue(authenticationUrl);
 
 				const func = async () => uc.startOauthLogin(session, systemId, false);
@@ -262,7 +263,7 @@ describe('OAuthUc', () => {
 				const { cachedState, code, error, testSystem } = setup();
 				oauthService.checkAuthorizationCode.mockReturnValue(code);
 				oauthService.authenticateUser.mockRejectedValue(new OAuthSSOError('Testmessage'));
-				systemService.findOAuthById.mockResolvedValue(testSystem);
+				systemService.findById.mockResolvedValue(testSystem);
 
 				const response = uc.processOAuthLogin(cachedState, code, error);
 
@@ -301,6 +302,7 @@ describe('OAuthUc', () => {
 			});
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
+				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -367,7 +369,7 @@ describe('OAuthUc', () => {
 			describe('when authorize user and migration was successful', () => {
 				it('should return redirect to migration succeed page', async () => {
 					const { query, cachedState, system, userMigrationDto, oauthTokenResponse } = setupMigration();
-					systemService.findOAuthById.mockResolvedValue(system);
+					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 

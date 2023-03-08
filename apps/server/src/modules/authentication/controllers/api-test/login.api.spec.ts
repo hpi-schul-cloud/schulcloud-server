@@ -250,6 +250,10 @@ describe('Login Controller (api)', () => {
 			});
 		});
 
+		afterAll(() => {
+			axiosMock.restore();
+		});
+
 		describe('when user login succeeds', () => {
 			it('should sign and verify', () => {
 				if (system?.oauthConfig) {

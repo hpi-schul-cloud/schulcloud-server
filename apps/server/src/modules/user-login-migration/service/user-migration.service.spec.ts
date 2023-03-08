@@ -182,11 +182,9 @@ describe('UserMigrationService', () => {
 	describe('getMigrationRedirectUri is called', () => {
 		describe('when a Redirect-URL for a system is requested', () => {
 			it('should return a proper redirect', () => {
-				const systemId = 'someSystemId';
+				const response = service.getMigrationRedirectUri();
 
-				const response = service.getMigrationRedirectUri(systemId);
-
-				expect(response).toContain(systemId);
+				expect(response).toContain('migration');
 			});
 		});
 	});

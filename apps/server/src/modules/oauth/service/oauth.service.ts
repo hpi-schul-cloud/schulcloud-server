@@ -176,7 +176,7 @@ export class OAuthService {
 		}
 		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
 
-		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri();
 		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig, migrationRedirect);
 
 		await this.validateToken(queryToken.id_token, oauthConfig);

@@ -658,6 +658,7 @@ describe('OAuthService', () => {
 		describe('when a normal authentication url is requested', () => {
 			it('should return a authentication url', () => {
 				const oauthConfig: OauthConfig = new OauthConfig({
+					alias: 'alias',
 					clientId: '12345',
 					clientSecret: 'mocksecret',
 					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -683,6 +684,7 @@ describe('OAuthService', () => {
 		describe('when a migration authentication url is requested', () => {
 			it('should return a authentication url', () => {
 				const oauthConfig: OauthConfig = new OauthConfig({
+					alias: 'alias',
 					clientId: '12345',
 					clientSecret: 'mocksecret',
 					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',

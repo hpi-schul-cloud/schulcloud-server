@@ -108,9 +108,9 @@ export class UserMigrationService {
 	}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-	getMigrationRedirectUri(systemId: string): string {
+	getMigrationRedirectUri(): string {
 		const combinedUri = new URL(this.publicBackendUrl);
-		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
+		combinedUri.pathname = `api/v3/sso/oauth/migration`;
 		return combinedUri.toString();
 	}
 
