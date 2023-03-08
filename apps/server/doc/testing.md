@@ -77,7 +77,7 @@ When assigning a value to an expect, separate the function call from the expecta
 
 ### Promises and Timouts in tests
 
-When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
+When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expecting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
 
 - Instead of using done callback, use async test functions.
 - Use await instead of (long) promise chains
@@ -162,7 +162,7 @@ You can create a mock using `createMock<Class>()`. As result you will recieved a
 let fut: FeatureUnderTest;
 let mockService: DeepMocked<MockService>;
 
-beforeEach(async () => {
+beforeAll(async () => {
 	const module = await Test.createTestingModule({
 		providers: [
 			FeatureUnderTest,
@@ -177,12 +177,19 @@ beforeEach(async () => {
 	mockService = module.get(MockService);
 });
 
-afterEach(async () => {
+afterAll(async () => {
 	await module.close();
 });
-```
 
-the resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
+afterEach(() => {
+	jest.resetAllMocks();
+})
+```
+`createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `.close` methods should only be called in `afterAll` and not in `afterEach`.
+
+To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. `jest.restoreAllMocks` should not be used, because in some cases it will not properly restore mocks created by ts-jest.
+
+The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
 
 ```Typescript
 describe('somefunction', () => {
@@ -190,7 +197,7 @@ describe('somefunction', () => {
 		const setup = () => {
 			const resultUser = userFactory.buildWithId();
 
-			mockService.getUser.mockReturnValue(resultUser);
+			mockService.getUser.mockReturnValueOnce(resultUser);
 
 			return { resultUser };
 		};
@@ -208,8 +215,10 @@ describe('somefunction', () => {
 		});
 	});
 });
-
 ```
+For creating specific mock implementations the helper functions which only mock the implementation once, should be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.
+
+At times there could be the need to mock functions only for a specific test. In that case we strongly recommend the use of `jest.spyOn` and not `jest.fn`, because `jest.spyOn` can be restored a lot easier. 
 ## Unit Tests vs Integration Tests
 
 In Unit Tests we access directly only the component which is currently testing.
