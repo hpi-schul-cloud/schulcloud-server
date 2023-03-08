@@ -137,7 +137,7 @@ describe(BoardDoBuilder.name, () => {
 		});
 	});
 
-	describe('when building an element', () => {
+	describe('when building an text element', () => {
 		it('should work without descendants', () => {
 			const textElementNode = textElementNodeFactory.build();
 
@@ -146,7 +146,7 @@ describe(BoardDoBuilder.name, () => {
 			expect(domainObject.constructor.name).toBe('TextElement');
 		});
 
-		it('should throw error if children are provided', () => {
+		it('should throw error if textElement is not a leaf', () => {
 			const textElementNode = textElementNodeFactory.buildWithId();
 			const columnNode = columnNodeFactory.buildWithId({ parent: textElementNode });
 

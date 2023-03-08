@@ -65,6 +65,8 @@ export class BoardDoBuilder {
 	}
 
 	public buildTextElement(boardNode: TextElementNode): TextElement {
+		this.ensureLeafNode(boardNode);
+
 		const element = new TextElement({
 			id: boardNode.id,
 			text: boardNode.text,
@@ -83,6 +85,11 @@ export class BoardDoBuilder {
 		const children = this.childrenMap[boardNode.pathOfChildren] || [];
 		const sortedChildren = children.sort((a, b) => a.position - b.position);
 		return sortedChildren;
+	}
+
+	ensureLeafNode(boardNode: BoardNode) {
+		const children = this.getChildren(boardNode);
+		if (children.length !== 0) throw new Error('BoardNode is a leaf node but children were provided.');
 	}
 
 	ensureBoardNodeType(boardNode: BoardNode | BoardNode[], type: BoardNodeType | BoardNodeType[]) {
