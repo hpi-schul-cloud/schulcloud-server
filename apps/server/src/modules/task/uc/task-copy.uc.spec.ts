@@ -31,7 +31,11 @@ describe('task copy uc', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
@@ -78,11 +82,12 @@ describe('task copy uc', () => {
 		lessonRepo = module.get(LessonRepo);
 		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 	});
 
 	describe('copy task', () => {
 		const setup = () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const lesson = lessonFactory.buildWithId({ course });
@@ -90,6 +95,7 @@ describe('task copy uc', () => {
 			const task = allTasks[0];
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
+			lessonRepo.findById.mockResolvedValue(lesson);
 			taskRepo.findBySingleParent.mockResolvedValue([allTasks, allTasks.length]);
 			courseRepo.findById.mockResolvedValue(course);
 			authorisation.hasPermission.mockReturnValue(true);
@@ -106,6 +112,7 @@ describe('task copy uc', () => {
 			taskCopyService.copyTask.mockResolvedValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
 			const userId = user.id;
+
 			return {
 				user,
 				course,
@@ -119,12 +126,13 @@ describe('task copy uc', () => {
 			};
 		};
 
-		it('should throw if copy feature is deactivated', async () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, task, userId } = setup();
-			await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
-				InternalServerErrorException
-			);
+		describe('feature is deactivated', () => {
+			it('should throw InternalServerErrorException', async () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+				await expect(uc.copyTask('user.id', 'task.id', { courseId: 'course.id', userId: 'test' })).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
 		});
 
 		describe('status', () => {
@@ -314,11 +322,11 @@ describe('task copy uc', () => {
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
-				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: PermissionTypes) => {
+				userRepo.findById.mockResolvedValue(user);
+				taskRepo.findById.mockResolvedValue(task);
+				courseRepo.findById.mockResolvedValue(course);
+				lessonRepo.findById.mockResolvedValue(lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => {
 					if (e === lesson) return false;
 					return true;
 				});
