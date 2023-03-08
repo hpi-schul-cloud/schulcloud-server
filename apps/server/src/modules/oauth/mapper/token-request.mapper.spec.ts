@@ -11,7 +11,7 @@ const expectedPayload: TokenRequestPayload = new TokenRequestPayload({
 	client_id: '12345',
 	client_secret: defaultdecryptedClientSecret,
 	grant_type: 'authorization_code',
-	redirect_uri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+	redirect_uri: 'http://mockhost:3030/api/v3/sso/oauth/',
 	tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 });
 
