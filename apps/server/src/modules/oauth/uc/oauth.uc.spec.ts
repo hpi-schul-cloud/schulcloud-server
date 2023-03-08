@@ -167,7 +167,7 @@ describe('OAuthUc', () => {
 				oauthService.checkAuthorizationCode.mockReturnValue(code);
 				oauthService.getOAuthErrorResponse.mockReturnValue(errorResponse);
 				oauthService.authenticateUser.mockRejectedValue(new OAuthSSOError('Testmessage'));
-				systemService.findOAuthById.mockResolvedValue(testSystem);
+				systemService.findById.mockResolvedValue(testSystem);
 
 				const response: OAuthProcessDto = await uc.processOAuth(query, testSystem.id!);
 
@@ -185,6 +185,7 @@ describe('OAuthUc', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -247,7 +248,7 @@ describe('OAuthUc', () => {
 			describe('when authorize user and migration was successful', () => {
 				it('should return redirect to migration succeed page', async () => {
 					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
-					systemService.findOAuthById.mockResolvedValue(system);
+					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
@@ -260,7 +261,7 @@ describe('OAuthUc', () => {
 			describe('when migration failed', () => {
 				it('should return redirect to dashboard ', async () => {
 					const { query, system, userMigrationFailedDto, oauthTokenResponse } = setupMigration();
-					systemService.findOAuthById.mockResolvedValue(system);
+					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
