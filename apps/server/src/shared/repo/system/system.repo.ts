@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { System, SystemType } from '@shared/domain';
+import { System, SystemTypeEnum } from '@shared/domain';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SystemScope } from '@shared/repo/system/system-scope';
 
@@ -9,13 +9,21 @@ export class SystemRepo extends BaseRepo<System> {
 		return System;
 	}
 
-	async findByFilter(type?: SystemType, onlyOauth = false): Promise<System[]> {
+	async findByFilter(type: SystemTypeEnum): Promise<System[]> {
 		const scope = new SystemScope();
-		if (type) {
-			scope.byType(type);
-		}
-		if (onlyOauth) {
-			scope.withOauthConfigOnly();
+		switch (type) {
+			case SystemTypeEnum.LDAP:
+				scope.withLdapConfig();
+				break;
+			case SystemTypeEnum.OAUTH:
+				scope.withOauthConfig();
+				break;
+			case SystemTypeEnum.OIDC:
+				scope.withOidcConfig();
+				break;
+			default:
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				throw new Error(`system type ${type} unknown`);
 		}
 		return this._em.find(System, scope.query);
 	}

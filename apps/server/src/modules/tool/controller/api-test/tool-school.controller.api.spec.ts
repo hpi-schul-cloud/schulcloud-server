@@ -15,6 +15,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
+import { ObjectId } from 'bson';
 import {
 	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
@@ -104,9 +105,10 @@ describe('ToolSchoolController (API)', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
+			const randomTestId = new ObjectId().toString();
 			const postParams: SchoolExternalToolPostParams = {
-				toolId: 'irgendeineId',
-				schoolId: 'irgendeineId',
+				toolId: randomTestId,
+				schoolId: randomTestId,
 				version: 1,
 				parameters: [],
 			};
@@ -260,6 +262,62 @@ describe('ToolSchoolController (API)', () => {
 					);
 					return res;
 				});
+		});
+	});
+
+	describe('[PUT] tools/school/:schoolExternalToolId', () => {
+		it('should return forbidden when user is not authorized', async () => {
+			const { userWithMissingPermission, schoolExternalTool } = await setup();
+			currentUser = mapUserToCurrentUser(userWithMissingPermission);
+			const paramEntry = { name: 'name', value: 'Updatedvalue' };
+			const randomTestId = new ObjectId().toString();
+			const postParams: SchoolExternalToolPostParams = {
+				toolId: randomTestId,
+				schoolId: randomTestId,
+				version: 1,
+				parameters: [paramEntry],
+			};
+
+			await request(app.getHttpServer()).put(`${basePath}/${schoolExternalTool.id}`).send(postParams).expect(403);
+		});
+		it('should update an existing school external tool', async () => {
+			const { externalTool, school, adminUser, schoolExternalTool } = await setup();
+			currentUser = mapUserToCurrentUser(adminUser);
+			const paramEntry = { name: 'name', value: 'Updatedvalue' };
+			const postParams: SchoolExternalToolPostParams = {
+				toolId: externalTool.id,
+				schoolId: school.id,
+				version: 1,
+				parameters: [paramEntry],
+			};
+			await request(app.getHttpServer())
+				.put(`${basePath}/${schoolExternalTool.id}`)
+				.send(postParams)
+				.expect(200)
+				.then((res: Response) => {
+					expect(res.body).toEqual(
+						expect.objectContaining(<SchoolExternalToolResponse>{
+							id: schoolExternalTool.id,
+							name: externalTool.name,
+							schoolId: postParams.schoolId,
+							toolId: postParams.toolId,
+							status: SchoolExternalToolStatusResponse.LATEST,
+							toolVersion: postParams.version,
+							parameters: [
+								{
+									name: paramEntry.name,
+									value: paramEntry.value,
+								},
+							],
+						})
+					);
+					return res;
+				});
+			const updatedSchoolExternalTool: SchoolExternalTool | null = await em.findOne(SchoolExternalTool, {
+				school: postParams.schoolId,
+				tool: postParams.toolId,
+			});
+			expect(updatedSchoolExternalTool).toBeDefined();
 		});
 	});
 });

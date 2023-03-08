@@ -192,12 +192,12 @@ describe('SchoolExternalToolUc', () => {
 		});
 
 		describe('when userId and schoolExternalTool are given', () => {
-			it('should call schoolExternalToolValidationService.validateCreate()', async () => {
+			it('should call schoolExternalToolValidationService.validate()', async () => {
 				const { user, tool } = setup();
 
 				await uc.createSchoolExternalTool(user.id, tool);
 
-				expect(schoolExternalToolValidationService.validateCreate).toHaveBeenCalledWith(tool);
+				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(tool);
 			});
 
 			it('should call schoolExternalToolService.createSchoolExternalTool', async () => {
@@ -205,12 +205,12 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.createSchoolExternalTool(user.id, tool);
 
-				expect(schoolExternalToolService.createSchoolExternalTool).toHaveBeenCalledWith(tool);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(tool);
 			});
 		});
 	});
 
-	describe('getExternalTool is called', () => {
+	describe('getSchoolExternalTool is called', () => {
 		describe('when checks permission', () => {
 			it('should check the permissions of the user', async () => {
 				const { user, schoolExternalToolId } = setup();
@@ -237,6 +237,65 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(result).toEqual(tool);
 			});
+		});
+	});
+
+	describe('updateSchoolExternalTool is called', () => {
+		const setupUpdate = () => {
+			const { tool, user } = setup();
+			const updatedTool: SchoolExternalToolDO = { ...tool };
+			updatedTool.parameters[0].value = 'updatedValue';
+
+			schoolExternalToolService.saveSchoolExternalTool.mockResolvedValue(updatedTool);
+			return {
+				updatedTool,
+				schoolExternalToolId: updatedTool.id as EntityId,
+				user,
+			};
+		};
+
+		it('should check the permissions of the user', async () => {
+			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
+
+			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+
+			expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				user.id,
+				AllowedAuthorizationEntityType.SchoolExternalTool,
+				schoolExternalToolId,
+				{
+					action: Actions.read,
+					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+				}
+			);
+		});
+
+		it('should call schoolExternalToolValidationService.validate()', async () => {
+			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
+
+			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+
+			expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
+		});
+
+		it('should call the service to update the tool', async () => {
+			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
+
+			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
+
+			expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(updatedTool);
+		});
+
+		it('should return a schoolExternalToolDO', async () => {
+			const { updatedTool, schoolExternalToolId, user } = setupUpdate();
+
+			const result: SchoolExternalToolDO = await uc.updateSchoolExternalTool(
+				user.id,
+				schoolExternalToolId,
+				updatedTool
+			);
+
+			expect(result).toEqual(updatedTool);
 		});
 	});
 });

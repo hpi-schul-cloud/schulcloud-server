@@ -12,13 +12,13 @@ export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
-		if (!idToken || !idToken.preferred_username) {
-			throw new OAuthSSOError('Failed to extract preferred_username', 'sso_jwt_problem');
+		const idToken = jwt.decode(input.idToken, { json: true }) as (JwtPayload & { external_sub?: string }) | null;
+		if (!idToken || !idToken.external_sub) {
+			throw new OAuthSSOError('Failed to extract external_sub', 'sso_jwt_problem');
 		}
 
 		const externalUser: ExternalUserDto = new ExternalUserDto({
-			externalId: idToken.preferred_username as string,
+			externalId: idToken.external_sub,
 		});
 
 		const oauthData: OauthDataDto = new OauthDataDto({
