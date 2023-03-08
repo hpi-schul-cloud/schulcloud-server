@@ -48,18 +48,6 @@ describe('S3ClientAdapter', () => {
 		client = module.get('S3_Client');
 	});
 
-	const clientSendMockResolved = () => {
-		const resultObj = {
-			Body: { on: () => true },
-			ContentType: 'data.ContentType',
-			ContentLength: 'data.ContentLength',
-			ContentRange: 'data.ContentRange',
-			ETag: 'data.ETag',
-		};
-		// @ts-expect-error Testcase
-		client.send.mockResolvedValue(resultObj);
-	};
-
 	afterAll(async () => {
 		await module.close();
 	});
@@ -103,7 +91,16 @@ describe('S3ClientAdapter', () => {
 	describe('getFile', () => {
 		describe('WHEN file was received successfully ', () => {
 			const setup = () => {
-				clientSendMockResolved();
+				const resultObj = {
+					Body: { on: () => true },
+					ContentType: 'data.ContentType',
+					ContentLength: 'data.ContentLength',
+					ContentRange: 'data.ContentRange',
+					ETag: 'data.ETag',
+				};
+
+				// @ts-expect-error Testcase
+				client.send.mockResolvedValueOnce(resultObj);
 			};
 
 			it('should call send() of client', async () => {
