@@ -3,11 +3,13 @@ import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
 	ApiResponse,
+	ApiOkResponse,
+	ApiBadRequestResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { Logger } from '@src/core/logger';
@@ -64,6 +66,28 @@ export class ToolSchoolController {
 		);
 		const mapped: SchoolExternalToolResponse =
 			this.responseMapper.mapToSchoolExternalToolResponse(schoolExternalToolDO);
+		return mapped;
+	}
+
+	@Put('/:schoolExternalToolId')
+	@ApiOkResponse({ description: 'The Tool has been successfully updated.', type: SchoolExternalToolResponse })
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
+	async updateSchoolExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolIdParams,
+		@Body() body: SchoolExternalToolPostParams
+	): Promise<SchoolExternalToolResponse> {
+		const schoolExternalTool: SchoolExternalTool = this.requestMapper.mapSchoolExternalToolRequest(body);
+		const updated: SchoolExternalToolDO = await this.schoolExternalToolUc.updateSchoolExternalTool(
+			currentUser.userId,
+			params.schoolExternalToolId,
+			schoolExternalTool
+		);
+
+		const mapped: SchoolExternalToolResponse = this.responseMapper.mapToSchoolExternalToolResponse(updated);
+		this.logger.debug(`SchoolExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 		return mapped;
 	}
 
