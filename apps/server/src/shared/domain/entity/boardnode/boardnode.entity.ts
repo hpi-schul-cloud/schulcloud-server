@@ -10,7 +10,7 @@ const PATH_SEPARATOR = ',';
 
 @Entity({ tableName: 'boardnodes', discriminatorColumn: 'type' })
 export abstract class BoardNode extends BaseEntityWithTimestamps {
-	constructor(props: BoardNodeProperties) {
+	constructor(props: BoardNodeProps) {
 		super();
 		if (props.parent && props.parent.id == null) {
 			throw new InternalServerErrorException('Cannot create board node with a parent having no id');
@@ -57,7 +57,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	}
 }
 
-export interface BoardNodeProperties {
+export interface BoardNodeProps {
 	parent?: BoardNode;
 	position?: number;
 }

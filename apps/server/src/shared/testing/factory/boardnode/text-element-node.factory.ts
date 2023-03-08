@@ -1,7 +1,7 @@
-import { TextElementNode, TextElementNodeProperties } from '@shared/domain';
+import { TextElementNode, TextElementNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 
-export const textElementNodeFactory = BaseFactory.define<TextElementNode, TextElementNodeProperties>(
+export const textElementNodeFactory = BaseFactory.define<TextElementNode, TextElementNodeProps>(
 	TextElementNode,
 	({ sequence }) => {
 		return {
