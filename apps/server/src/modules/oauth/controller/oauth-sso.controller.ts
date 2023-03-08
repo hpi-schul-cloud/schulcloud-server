@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Logger } from '@src/core/logger';
-import { AuthenticationService, ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
@@ -28,8 +28,7 @@ export class OauthSSOController {
 	constructor(
 		private readonly oauthUc: OauthUc,
 		private readonly hydraUc: HydraOauthUc,
-		private readonly logger: Logger,
-		private readonly authenticationService: AuthenticationService
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(OauthSSOController.name);
 	}
@@ -97,10 +96,8 @@ export class OauthSSOController {
 		@Res() res: Response,
 		@Param() urlParams: SystemUrlParams
 	): Promise<void> {
-		const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, urlParams.systemId);
+		const migration: MigrationDto = await this.oauthUc.migrate(jwt, currentUser.userId, query, urlParams.systemId);
 		const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
-
-		await this.authenticationService.removeJwtFromWhitelist(jwt);
 
 		if (response.redirect) {
 			res.redirect(response.redirect);

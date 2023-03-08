@@ -57,7 +57,7 @@ describe('jwt strategy', () => {
 
 	describe('removeFromWhitelist is called', () => {
 		describe('when redis is used as cache store', () => {
-			it('when redis is used as cache store', async () => {
+			it('should call the cache manager to delete the entry from the cache', async () => {
 				cacheService.getStoreType.mockReturnValue(CacheStoreType.REDIS);
 
 				await adapter.removeFromWhitelist('accountId', 'jti');

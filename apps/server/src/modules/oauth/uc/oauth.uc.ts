@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { FeathersJwtProvider } from '@src/modules/authorization';
-import { UserService } from '@src/modules/user';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { SchoolService } from '@src/modules/school';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { UserService } from '@src/modules/user';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { AuthenticationService } from '../../authentication';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
@@ -30,7 +31,8 @@ export class OauthUc {
 		private readonly userMigrationService: UserMigrationService,
 		private readonly jwtService: FeathersJwtProvider,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly authenticationService: AuthenticationService
 	) {
 		this.logger.setContext(OauthUc.name);
 	}
@@ -44,7 +46,12 @@ export class OauthUc {
 		}
 	}
 
-	async migrate(currentUserId: string, query: AuthorizationParams, targetSystemId: string): Promise<MigrationDto> {
+	async migrate(
+		userJwt: string,
+		currentUserId: string,
+		query: AuthorizationParams,
+		targetSystemId: string
+	): Promise<MigrationDto> {
 		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, targetSystemId);
 		const data: OauthDataDto = await this.provisioningService.getData(
 			queryToken.access_token,
@@ -72,6 +79,9 @@ export class OauthUc {
 			data.externalUser.externalId,
 			targetSystemId
 		);
+
+		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+
 		return migrationDto;
 	}
 

@@ -4,7 +4,7 @@ import { getMockRes } from '@jest-mock/express';
 import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
-import { AuthenticationService, ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { Request } from 'express';
@@ -63,10 +63,6 @@ describe('OAuthController', () => {
 				{
 					provide: HydraOauthUc,
 					useValue: createMock<HydraOauthUc>(),
-				},
-				{
-					provide: AuthenticationService,
-					useValue: createMock<AuthenticationService>(),
 				},
 			],
 		}).compile();

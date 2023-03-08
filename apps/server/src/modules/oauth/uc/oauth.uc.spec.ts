@@ -1,27 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { AuthenticationService } from '@src/modules/authentication';
+import { FeathersJwtProvider } from '@src/modules/authorization';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
+import { SchoolService } from '@src/modules/school';
+import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
 import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
-import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { FeathersJwtProvider } from '@src/modules/authorization';
-import { ProvisioningService } from '@src/modules/provisioning';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
-import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('OAuthUc', () => {
@@ -77,6 +78,10 @@ describe('OAuthUc', () => {
 				{
 					provide: FeathersJwtProvider,
 					useValue: createMock<FeathersJwtProvider>(),
+				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
 				},
 			],
 		}).compile();
@@ -252,7 +257,7 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, system.id as string);
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, system.id as string);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
 				});
@@ -265,7 +270,7 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, 'systemdId');
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, 'systemdId');
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
 				});
@@ -284,7 +289,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, system.id as string);
+					await uc.migrate('jwt', 'currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
 						oauthData.externalSchool.externalId,
@@ -306,7 +311,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, system.id as string);
+					await uc.migrate('jwt', 'currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
@@ -318,7 +323,7 @@ describe('OAuthUc', () => {
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, system.id as string);
+					await uc.migrate('jwt', 'currentUserId', query, system.id as string);
 
 					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
 				});
@@ -341,7 +346,7 @@ describe('OAuthUc', () => {
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await expect(uc.migrate('currentUserId', query, system.id as string)).rejects.toThrow(error);
+					await expect(uc.migrate('jwt', 'currentUserId', query, system.id as string)).rejects.toThrow(error);
 				});
 			});
 		});
