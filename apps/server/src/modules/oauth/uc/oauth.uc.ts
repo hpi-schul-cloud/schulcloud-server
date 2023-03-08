@@ -99,7 +99,7 @@ export class OauthUc {
 	}
 
 	private async getOauthErrorResponse(error, systemId: string): Promise<OAuthProcessDto> {
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findById(systemId);
 		const provider: string = system.oauthConfig ? system.oauthConfig.provider : 'unknown-provider';
 		const oAuthError: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error, provider);
 		return oAuthError;
