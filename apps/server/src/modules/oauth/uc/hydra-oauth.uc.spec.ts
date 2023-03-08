@@ -45,6 +45,7 @@ describe('HydraOauthUc', () => {
 		authEndpoint: `${hydraUri}/oauth2/auth`,
 		clientId: 'toolClientId',
 		clientSecret: 'toolSecret',
+		alias: 'alias',
 		grantType: 'authorization_code',
 		issuer: `${hydraUri}/`,
 		jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,

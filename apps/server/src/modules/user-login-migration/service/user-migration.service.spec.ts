@@ -157,7 +157,7 @@ describe('UserMigrationService', () => {
 				});
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				systemService.findOAuth.mockResolvedValue([iservSystem, sanisSystem]);
+				systemService.findByType.mockResolvedValue([iservSystem, sanisSystem]);
 
 				const result: string = await service.getMigrationRedirect(officialSchoolNumber, 'iservId');
 
@@ -170,7 +170,7 @@ describe('UserMigrationService', () => {
 		describe('when the migration systems have invalid data', () => {
 			it('should throw InternalServerErrorException', async () => {
 				const { officialSchoolNumber } = setup();
-				systemService.findOAuth.mockResolvedValue([]);
+				systemService.findByType.mockResolvedValue([]);
 
 				const promise: Promise<string> = service.getMigrationRedirect(officialSchoolNumber, 'unknownSystemId');
 
@@ -196,6 +196,7 @@ describe('UserMigrationService', () => {
 			const sourceOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'sourceClientId',
 				clientSecret: 'sourceSecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://source.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -210,6 +211,7 @@ describe('UserMigrationService', () => {
 			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'targetClientId',
 				clientSecret: 'targetSecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://target.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',

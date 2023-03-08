@@ -57,7 +57,7 @@ describe('OidcMockProvisioningStrategy', () => {
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
-					return { preferred_username: userName };
+					return { external_sub: userName };
 				});
 
 				return {
@@ -77,7 +77,7 @@ describe('OidcMockProvisioningStrategy', () => {
 				});
 			});
 
-			it('should throw error when there is no preferred_username in the idToken', async () => {
+			it('should throw error when there is no external_sub in the idToken', async () => {
 				const { input } = setup();
 				jest.spyOn(jwt, 'decode').mockReturnValue({});
 

@@ -9,6 +9,7 @@ export interface ISystemProperties {
 	alias?: string;
 	displayName?: string;
 	oauthConfig?: OauthConfig;
+	oidcConfig?: OidcConfig;
 	ldapConfig?: LdapConfig;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
@@ -18,6 +19,7 @@ export class OauthConfig {
 	constructor(oauthConfig: OauthConfig) {
 		this.clientId = oauthConfig.clientId;
 		this.clientSecret = oauthConfig.clientSecret;
+		this.alias = oauthConfig.alias;
 		this.tokenEndpoint = oauthConfig.tokenEndpoint;
 		this.grantType = oauthConfig.grantType;
 		this.redirectUri = oauthConfig.redirectUri;
@@ -35,6 +37,9 @@ export class OauthConfig {
 
 	@Property()
 	clientSecret: string;
+
+	@Property()
+	alias: string;
 
 	@Property()
 	redirectUri: string;
@@ -134,6 +139,42 @@ export class LdapConfig {
 		};
 	};
 }
+export class OidcConfig {
+	constructor(oidcConfig: OidcConfig) {
+		this.clientId = oidcConfig.clientId;
+		this.clientSecret = oidcConfig.clientSecret;
+		this.alias = oidcConfig.alias;
+		this.authorizationUrl = oidcConfig.authorizationUrl;
+		this.tokenUrl = oidcConfig.tokenUrl;
+		this.logoutUrl = oidcConfig.logoutUrl;
+		this.userinfoUrl = oidcConfig.userinfoUrl;
+		this.defaultScopes = oidcConfig.defaultScopes;
+	}
+
+	@Property()
+	clientId: string;
+
+	@Property()
+	clientSecret: string;
+
+	@Property()
+	alias: string;
+
+	@Property()
+	authorizationUrl: string;
+
+	@Property()
+	tokenUrl: string;
+
+	@Property()
+	logoutUrl: string;
+
+	@Property()
+	userinfoUrl: string;
+
+	@Property()
+	defaultScopes: string;
+}
 
 @Entity({ tableName: 'systems' })
 export class System extends BaseEntityWithTimestamps {
@@ -144,6 +185,7 @@ export class System extends BaseEntityWithTimestamps {
 		this.alias = props.alias;
 		this.displayName = props.displayName;
 		this.oauthConfig = props.oauthConfig;
+		this.oidcConfig = props.oidcConfig;
 		this.ldapConfig = props.ldapConfig;
 		this.provisioningStrategy = props.provisioningStrategy;
 		this.provisioningUrl = props.provisioningUrl;
@@ -169,7 +211,7 @@ export class System extends BaseEntityWithTimestamps {
 	provisioningStrategy?: SystemProvisioningStrategy;
 
 	@Property({ nullable: true })
-	config?: Record<string, unknown>;
+	oidcConfig?: OidcConfig;
 
 	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
 	ldapConfig?: LdapConfig;

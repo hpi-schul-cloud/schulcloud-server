@@ -52,7 +52,7 @@ export class OAuthService {
 			);
 		}
 
-		const system = await this.systemService.findOAuthById(systemId);
+		const system = await this.systemService.findById(systemId);
 		if (!system.id) {
 			// unreachable. System loaded from DB always has an ID
 			throw new UnauthorizedException(`System with id "${systemId}" does not exist.`);
@@ -170,7 +170,7 @@ export class OAuthService {
 	async authorizeForMigration(query: AuthorizationParams, targetSystemId: string): Promise<OauthTokenResponse> {
 		const authCode: string = this.checkAuthorizationCode(query);
 
-		const system: SystemDto = await this.systemService.findOAuthById(targetSystemId);
+		const system: SystemDto = await this.systemService.findById(targetSystemId);
 		if (!system.id) {
 			throw new NotFoundException(`System with id "${targetSystemId}" does not exist.`);
 		}

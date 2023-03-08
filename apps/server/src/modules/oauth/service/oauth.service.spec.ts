@@ -20,6 +20,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OauthConfigDto } from '@src/modules/system/service';
+import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { IJwt } from '../interface/jwt.base.interface';
@@ -56,6 +57,7 @@ describe('OAuthService', () => {
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 
 	let testSystem: System;
+	let testSystemDto: SystemDto;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';
@@ -124,6 +126,7 @@ describe('OAuthService', () => {
 
 	beforeEach(() => {
 		testSystem = systemFactory.withOauthConfig().buildWithId();
+		testSystemDto = SystemMapper.mapFromEntityToDto(testSystem);
 		testOauthConfig = testSystem.oauthConfig as OauthConfig;
 	});
 
@@ -353,6 +356,7 @@ describe('OAuthService', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -398,7 +402,7 @@ describe('OAuthService', () => {
 		describe('when the function is called with a valid query', () => {
 			it('should return a query token', async () => {
 				const { query, system, oauthTokenResponse } = setupMigration();
-				systemService.findOAuthById.mockResolvedValue(system);
+				systemService.findById.mockResolvedValue(system);
 				userMigrationService.getMigrationRedirectUri.mockReturnValue('mockRedirect');
 				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
 
@@ -411,7 +415,7 @@ describe('OAuthService', () => {
 		describe('when no system is found', () => {
 			it('should throw an error', async () => {
 				const { query } = setupMigration();
-				systemService.findOAuthById.mockResolvedValue({} as SystemDto);
+				systemService.findById.mockResolvedValue({} as SystemDto);
 
 				const response = service.authorizeForMigration(query, 'noSystemId');
 
@@ -427,6 +431,7 @@ describe('OAuthService', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -504,16 +509,20 @@ describe('OAuthService', () => {
 
 		afterEach(() => {
 			userService.findByExternalId.mockReset();
-			systemService.findOAuthById.mockReset();
+			systemService.findById.mockReset();
 		});
 		// const mockSystemDto: SystemDto = {};
 
 		it('should authenticate a user', async () => {
 			const { query, system, mockUser } = setup();
-			systemService.findOAuthById.mockResolvedValueOnce(testSystem);
+			systemService.findById.mockResolvedValueOnce(testSystemDto);
 			userService.findByExternalId.mockResolvedValue(mockUser);
 
-			const { user, redirect } = await service.authenticateUser(system.id!, query.code);
+			const systemId = system.id;
+			if (!systemId) {
+				fail('System id is not defined');
+			}
+			const { user, redirect } = await service.authenticateUser(systemId, query.code);
 			expect(redirect).toStrictEqual(`${hostUri}/dashboard`);
 			expect(user).toStrictEqual(mockUser);
 		});
@@ -522,7 +531,7 @@ describe('OAuthService', () => {
 			it('the authentication should fail', async () => {
 				const { query, mockUser } = setup();
 
-				systemService.findOAuthById.mockResolvedValue({} as SystemDto);
+				systemService.findById.mockResolvedValue({} as SystemDto);
 				userService.findByExternalId.mockResolvedValue(mockUser);
 
 				await expect(service.authenticateUser('', query.code)).rejects.toThrow(UnauthorizedException);
@@ -534,7 +543,7 @@ describe('OAuthService', () => {
 				const { query, mockUser, system } = setup();
 				system.oauthConfig = undefined;
 
-				systemService.findOAuthById.mockResolvedValueOnce(system);
+				systemService.findById.mockResolvedValueOnce(system);
 				userService.findByExternalId.mockResolvedValue(mockUser);
 
 				await expect(service.authenticateUser(testSystem.id, query.code)).rejects.toThrow(UnauthorizedException);
@@ -575,7 +584,7 @@ describe('OAuthService', () => {
 				it('should return a migration redirect url', async () => {
 					const { query, migrationRedirect, system } = setupMigration();
 
-					systemService.findOAuthById.mockResolvedValueOnce(system);
+					systemService.findById.mockResolvedValueOnce(system);
 					userService.findByExternalId.mockResolvedValue(null);
 					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(true);
 
@@ -590,7 +599,7 @@ describe('OAuthService', () => {
 				it('should should finish the process normally and return a valid jwt', async () => {
 					const { query, mockUser, migrationRedirect, system } = setupMigration();
 
-					systemService.findOAuthById.mockResolvedValueOnce(system);
+					systemService.findById.mockResolvedValueOnce(system);
 					userService.findByExternalId.mockResolvedValue(mockUser);
 					userMigrationService.isSchoolInMigration.mockResolvedValueOnce(false);
 
