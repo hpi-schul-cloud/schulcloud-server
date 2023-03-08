@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, SystemType } from '@shared/domain';
+import { EntityId, SystemType, SystemTypeEnum } from '@shared/domain';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 
@@ -9,9 +9,9 @@ export class SystemUc {
 
 	async findByFilter(type?: SystemType, onlyOauth = false): Promise<SystemDto[]> {
 		if (onlyOauth) {
-			return this.systemService.findOAuth();
+			return this.systemService.findByType(SystemTypeEnum.OAUTH);
 		}
-		return this.systemService.findAll(type);
+		return this.systemService.findByType(type);
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
