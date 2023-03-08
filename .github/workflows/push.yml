@@ -13,6 +13,15 @@ permissions:
 
 jobs:
   build_and_push:
+    # this basically means do not execute it as dependabot unless it is labeled as ready-for-ci
+    # because automated processes and pr from forks are dangerous, therefore those prs won't have access to secrets, labeling them acts like allow-listing them
+    # more details here https://docs.github.com/en/rest/dependabot/secrets?apiVersion=2022-11-28 even when re-running an action manually the actor stays the same as of mid 2022
+
+    #https://github.com/actions/runner/issues/1173#issuecomment-1354501147 when false equals true, you have to come up with something ...
+    if: |
+      (github.actor == 'dependabot[bot]' &&
+      contains(github.event.issue.labels.*.name, 'ready-for-ci') == 'true') ||
+      github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       packages: write

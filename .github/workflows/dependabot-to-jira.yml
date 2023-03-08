@@ -21,7 +21,7 @@ jobs:
                          "key": "BC"
                        },
                        "summary": "${{ github.event.pull_request.title }} in ${{ github.event.repository.name }}",
-                       "description": "h4. Task:\n${{ github.event.pull_request.title }}\n${{ github.event.pull_request.html_url }}\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment",
+                       "description": "h4. Task:\n${{ github.event.pull_request.title }}\n${{ github.event.pull_request.html_url }}\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment",
                        "issuetype": {
                          "id": "10100"
                        },
