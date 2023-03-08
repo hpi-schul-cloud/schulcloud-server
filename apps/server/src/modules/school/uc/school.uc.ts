@@ -16,6 +16,7 @@ export class SchoolUc {
 		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
 	async setMigration(
 		schoolId: string,
 		oauthMigrationPossible: boolean,
