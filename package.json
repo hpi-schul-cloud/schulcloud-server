@@ -65,7 +65,7 @@
 		"nest:start:files-storage:debug": "nest start files-storage --debug --watch & nest start files-storage-amqp --debug --watch",
 		"nest:start:files-storage:prod": "node dist/apps/server/apps/files-storage.app",
 		"nest:start:files-storage-amqp:prod": "node dist/apps/server/apps/files-storage-consumer.app",
-		"nest:start:console": "nest start console --",
+		"nest:start:console": "npm run nest:build && nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
@@ -81,8 +81,8 @@
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"esbuild:bundle:pre": "node ./scripts/commonjs-to-esmodules-bundler/esmodules-bundler.js",
-		"esbuild:bundle:post": "node ./scripts/commonjs-to-esmodules-bundler/copy-files.js",
+		"esbuild:bundle:pre": "node ./apps/esbuild/esmodules-bundler.js",
+		"esbuild:bundle:post": "node ./apps/esbuild/copy-files.js",
 		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/files-storage-client/filesStorageApi/v3"
 	},
 	"dependencies": {
