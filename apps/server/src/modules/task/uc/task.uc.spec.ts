@@ -3,8 +3,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Actions, Course, ITaskStatus, Lesson, Permission, SortOrder, Task, User } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { Actions, ITaskStatus, Permission, SortOrder } from '@shared/domain';
+import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
 	lessonFactory,
@@ -22,7 +22,6 @@ describe('TaskUC', () => {
 	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -45,10 +44,6 @@ describe('TaskUC', () => {
 				{
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: CourseRepo,
@@ -75,7 +70,6 @@ describe('TaskUC', () => {
 
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
-		userRepo = module.get(UserRepo);
 		courseRepo = module.get(CourseRepo);
 		lessonRepo = module.get(LessonRepo);
 		authorizationService = module.get(AuthorizationService);
@@ -91,52 +85,6 @@ describe('TaskUC', () => {
 		jest.resetAllMocks();
 	});
 
-	const setUserRepoMock = {
-		findById: (user: User) => {
-			const spy = userRepo.findById.mockResolvedValue(user);
-			return spy;
-		},
-	};
-
-	const setAuthorizationServiceMock = {
-		getUserWithPermissions: (user: User) => {
-			const spy = authorizationService.getUserWithPermissions.mockResolvedValue(user);
-			return spy;
-		},
-	};
-
-	const setTaskRepoMock = {
-		findAllByParentIds: (tasks: Task[] = []) => {
-			const spy = taskRepo.findAllByParentIds.mockResolvedValue([tasks, tasks.length]);
-			return spy;
-		},
-		findAllFinishedByParentIds: (tasks: Task[] = []) => {
-			const spy = taskRepo.findAllFinishedByParentIds.mockResolvedValue([tasks, tasks.length]);
-			return spy;
-		},
-	};
-
-	const setCourseRepoMock = {
-		findAllForTeacher: (courses: Course[] = []) => {
-			const spy = courseRepo.findAllForTeacher.mockResolvedValue([courses, courses.length]);
-			return spy;
-		},
-		findAllForTeacherOrSubstituteTeacher: (courses: Course[] = []) => {
-			const spy = courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValue([courses, courses.length]);
-			return spy;
-		},
-		findAllByUserId: (courses: Course[] = []) => {
-			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, courses.length]);
-			return spy;
-		},
-	};
-	const setLessonRepoMock = {
-		findAllByCourseIds: (lessons: Lesson[] = []) => {
-			const spy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, lessons.length]);
-			return spy;
-		},
-	};
-
 	it('should be defined', () => {
 		expect(service).toBeDefined();
 	});
@@ -149,13 +97,14 @@ describe('TaskUC', () => {
 					const user = setupUser(permissions);
 					const task = taskFactory.finished(user).build();
 
-					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllByUserId([]);
-					setLessonRepoMock.findAllByCourseIds([]);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					authorizationService.hasPermission.mockReturnValueOnce(false);
-					const findAllFinishedByParentIdsMock = setTaskRepoMock.findAllFinishedByParentIds([task]);
+					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
-					return { user, findAllFinishedByParentIdsMock, task };
+					return { user, task };
 				};
 
 				it('should call auth getUserWithPermissions() with userId', async () => {
@@ -175,15 +124,15 @@ describe('TaskUC', () => {
 				});
 
 				it('should call task repo findAllFinishedByParentIds', async () => {
-					const { user, findAllFinishedByParentIdsMock } = setup();
+					const { user } = setup();
 
 					await service.findAllFinished(user.id);
 
-					expect(findAllFinishedByParentIdsMock).toHaveBeenCalled();
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalled();
 				});
 
 				it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
-					const { user, findAllFinishedByParentIdsMock } = setup();
+					const { user } = setup();
 
 					await service.findAllFinished(user.id);
 
@@ -197,7 +146,7 @@ describe('TaskUC', () => {
 						},
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
-					expect(findAllFinishedByParentIdsMock).toHaveBeenCalledWith(...expectedParams);
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 				});
 
 				it('should return a counted type', async () => {
@@ -221,7 +170,7 @@ describe('TaskUC', () => {
 				});
 
 				it('should pass skip option', async () => {
-					const { user, findAllFinishedByParentIdsMock } = setup();
+					const { user } = setup();
 					const skip = 5;
 
 					await service.findAllFinished(user.id, { skip });
@@ -236,11 +185,11 @@ describe('TaskUC', () => {
 						},
 						{ pagination: { skip }, order: { dueDate: SortOrder.desc } },
 					];
-					expect(findAllFinishedByParentIdsMock).toHaveBeenCalledWith(...expectedParams);
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 				});
 
 				it('should pass limit option', async () => {
-					const { user, findAllFinishedByParentIdsMock } = setup();
+					const { user } = setup();
 					const limit = 5;
 					await service.findAllFinished(user.id, { limit });
 
@@ -254,7 +203,7 @@ describe('TaskUC', () => {
 						},
 						{ pagination: { limit }, order: { dueDate: SortOrder.desc } },
 					];
-					expect(findAllFinishedByParentIdsMock).toHaveBeenCalledWith(...expectedParams);
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 				});
 			});
 
@@ -265,18 +214,18 @@ describe('TaskUC', () => {
 					const task = taskFactory.finished(user).build();
 					const lesson = lessonFactory.buildWithId();
 
-					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllByUserId([]);
+					authorizationService.getUserWithPermissions.mockResolvedValue(user);
+					courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					authorizationService.hasPermission.mockReturnValueOnce(false);
-					const findAllFinishedByParentIdsMock = setTaskRepoMock.findAllFinishedByParentIds([task]);
+					taskRepo.findAllFinishedByParentIds.mockResolvedValue([[task], 1]);
 
-					return { user, findAllFinishedByParentIdsMock, task, lesson };
+					return { user, task, lesson };
 				};
 
 				it('should used permitted lessons for search finished tasks', async () => {
-					const { user, findAllFinishedByParentIdsMock, lesson } = setup();
+					const { user, lesson } = setup();
 
 					await service.findAllFinished(user.id);
 
@@ -290,7 +239,7 @@ describe('TaskUC', () => {
 						},
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
-					expect(findAllFinishedByParentIdsMock).toHaveBeenCalledWith(...expectedParams);
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 				});
 			});
 
@@ -301,18 +250,18 @@ describe('TaskUC', () => {
 					const task = taskFactory.finished(user).build();
 					const course = courseFactory.buildWithId();
 
-					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllByUserId([course]);
-					setLessonRepoMock.findAllByCourseIds([]);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					authorizationService.hasPermission.mockReturnValueOnce(false);
-					const findAllFinishedByParentIdsMock = setTaskRepoMock.findAllFinishedByParentIds([task]);
+					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
-					return { user, findAllFinishedByParentIdsMock, task, course };
+					return { user, task, course };
 				};
 
 				it('should used permitted courses for search finished tasks', async () => {
 					const { user, course } = setup();
-					const spy = setTaskRepoMock.findAllFinishedByParentIds();
 
 					await service.findAllFinished(user.id);
 
@@ -326,7 +275,7 @@ describe('TaskUC', () => {
 						},
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
-					expect(spy).toHaveBeenCalledWith(...expectedParams);
+					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 				});
 			});
 		});
@@ -339,11 +288,12 @@ describe('TaskUC', () => {
 
 					const task = taskFactory.finished(user).build({ creator: user });
 
-					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllByUserId([]);
-					setLessonRepoMock.findAllByCourseIds([]);
-					authorizationService.hasPermission.mockReturnValue(true);
-					setTaskRepoMock.findAllFinishedByParentIds([task]);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
+					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
 					return { user };
 				};
@@ -365,19 +315,20 @@ describe('TaskUC', () => {
 					const course = courseFactory.build({ teachers: [user] });
 					const task = taskFactory.finished(user).build({ course });
 
-					setAuthorizationServiceMock.getUserWithPermissions(user);
-					setCourseRepoMock.findAllByUserId([course]);
-					setLessonRepoMock.findAllByCourseIds([]);
-					authorizationService.hasPermission.mockReturnValue(true);
-					setTaskRepoMock.findAllFinishedByParentIds([task]);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
+					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+					const spy = jest.spyOn(task, 'createTeacherStatusForUser');
 
-					return { user, task };
+					return { user, task, spy };
 				};
 
 				it('should select the right status', async () => {
-					const { user, task } = setup();
-
-					const spy = jest.spyOn(task, 'createTeacherStatusForUser');
+					const { user, spy } = setup();
 
 					await service.findAllFinished(user.id);
 
@@ -392,7 +343,7 @@ describe('TaskUC', () => {
 				const permissions = [];
 				const user = setupUser(permissions);
 
-				authorizationService.checkOneOfPermissions.mockImplementation(() => {
+				authorizationService.checkOneOfPermissions.mockImplementationOnce(() => {
 					throw new UnauthorizedException();
 				});
 
@@ -414,8 +365,8 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
 
-				setAuthorizationServiceMock.getUserWithPermissions(user);
-				authorizationService.hasAllPermissions.mockReturnValue(false);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 
 				return { user, paginationParams };
 			};
@@ -448,9 +399,9 @@ describe('TaskUC', () => {
 				task2.submissions.add(submissionFactory.submitted().build({ task: task2, student: user, graded: true }));
 				task3.submissions.add(submissionFactory.submitted().build({ task: task3, student: user2, graded: true }));
 
-				setAuthorizationServiceMock.getUserWithPermissions(user);
-				authorizationService.hasAllPermissions.mockReturnValue(true);
-				setCourseRepoMock.findAllByUserId([course]);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
@@ -561,10 +512,10 @@ describe('TaskUC', () => {
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task = taskFactory.build({ course });
 
-				setAuthorizationServiceMock.getUserWithPermissions(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				setCourseRepoMock.findAllForTeacherOrSubstituteTeacher([course]);
+				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
@@ -596,10 +547,10 @@ describe('TaskUC', () => {
 					submissionFactory.submitted().build({ task: task2, student: user, teamMembers: [user], graded: true })
 				);
 
-				setAuthorizationServiceMock.getUserWithPermissions(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				setCourseRepoMock.findAllForTeacherOrSubstituteTeacher([course]);
+				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
@@ -694,8 +645,8 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
-				authorizationService.checkPermission.mockImplementation(() => {
+				taskRepo.findById.mockResolvedValueOnce(task);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -717,10 +668,10 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.findById.mockResolvedValueOnce(task);
 				task.finishForUser = jest.fn();
 				task.restoreForUser = jest.fn();
-				taskRepo.save.mockResolvedValue();
+				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
 
 				return { user, task };
@@ -778,12 +729,12 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.findById.mockResolvedValueOnce(task);
 				task.finishForUser = jest.fn();
 				task.restoreForUser = jest.fn();
-				taskRepo.save.mockResolvedValue();
+				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(true);
-				task.createTeacherStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				task.createTeacherStatusForUser = jest.fn().mockReturnValueOnce(mockStatus);
 
 				return { user, task };
 			};
@@ -806,12 +757,12 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.findById.mockResolvedValueOnce(task);
 				task.finishForUser = jest.fn();
 				task.restoreForUser = jest.fn();
 				taskRepo.save.mockResolvedValue();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
-				task.createStudentStatusForUser = jest.fn().mockReturnValue(mockStatus);
+				task.createStudentStatusForUser = jest.fn().mockReturnValueOnce(mockStatus);
 
 				return { user, task };
 			};
@@ -835,8 +786,8 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
-				authorizationService.checkPermission.mockImplementation(() => {
+				taskRepo.findById.mockResolvedValueOnce(task);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -863,10 +814,10 @@ describe('TaskUC', () => {
 				const task = taskFactory.buildWithId({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.findById.mockResolvedValueOnce(task);
 				task.unpublish = jest.fn();
-				taskRepo.save.mockResolvedValue();
-				task.createTeacherStatusForUser = jest.fn().mockImplementation(() => {
+				taskRepo.save.mockResolvedValueOnce();
+				task.createTeacherStatusForUser = jest.fn().mockImplementationOnce(() => {
 					return {};
 				});
 
@@ -916,7 +867,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkPermission.mockImplementation(() => {
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
