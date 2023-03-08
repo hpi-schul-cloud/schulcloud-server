@@ -1,6 +1,22 @@
-import { cardNodeFactory } from '@shared/testing';
+import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
+import { BoardNode } from './boardnode.entity';
+import { ColumnBoardNode } from './column-board-node.entity';
 
-describe('BoardNode', () => {
+describe(BoardNode.name, () => {
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
+	describe('constructor', () => {
+		it('should throw an error when parent has no id', () => {
+			const board = columnBoardNodeFactory.build();
+			expect(() => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const column = new ColumnBoardNode({ parent: board, title: 'column #1' });
+			}).toThrowError();
+		});
+	});
+
 	describe('hasParent', () => {
 		it('should return false for root nodes', () => {
 			const node = cardNodeFactory.build();

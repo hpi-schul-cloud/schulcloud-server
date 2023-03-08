@@ -3,26 +3,26 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
+	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	cardNodeFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
-import { ColumnBoardRepo } from './column-board.repo';
+import { CardRepo } from './card.repo';
 
-describe(ColumnBoardRepo.name, () => {
+describe(CardRepo.name, () => {
 	let module: TestingModule;
-	let repo: ColumnBoardRepo;
+	let repo: CardRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [ColumnBoardRepo, BoardNodeRepo],
+			providers: [CardRepo, BoardNodeRepo],
 		}).compile();
-		repo = module.get(ColumnBoardRepo);
+		repo = module.get(CardRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -49,10 +49,10 @@ describe(ColumnBoardRepo.name, () => {
 	};
 
 	describe('findById', () => {
-		it('should find the board', async () => {
-			const { boardNode } = await setup();
-			const result = await repo.findById(boardNode.id);
-			expect(result.id).toEqual(boardNode.id);
+		it('should find the card', async () => {
+			const { cardNodes } = await setup();
+			const result = await repo.findById(cardNodes[0].id);
+			expect(result.id).toEqual(cardNodes[0].id);
 		});
 
 		it('should throw an error when not found', async () => {
