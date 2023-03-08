@@ -1,6 +1,6 @@
 import { UserDO } from '@shared/domain/domainobject/user.do';
 
-export type UserQuery = Partial<Pick<UserDO, 'schoolId'>> & {
+export type UserQuery = Partial<Pick<UserDO, 'schoolId' | 'outdatedSince'>> & {
 	isOutdated?: boolean;
 	lastLoginSystemChangeGreaterThan?: Date;
 };

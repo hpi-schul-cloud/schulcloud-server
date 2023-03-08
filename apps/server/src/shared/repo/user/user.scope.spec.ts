@@ -64,7 +64,25 @@ describe('UserScope', () => {
 			});
 		});
 
-		it('should return scope without added hasPreviousExternalId to query', () => {
+		it('should return scope without added loginSystemChangeGreaterThan to query', () => {
+			scope.whereLastLoginSystemChangeGreaterThan(undefined);
+			expect(scope.query).toEqual({});
+		});
+	});
+
+	describe('whereOutdatedSinceEquals is called', () => {
+		it('should return scope with added query where outdatedSinceEquals is given', () => {
+			const date: Date = new Date();
+			scope.withOutdatedSince(date);
+
+			expect(scope.query).toEqual({
+				outdatedSince: {
+					$eq: date,
+				},
+			});
+		});
+
+		it('should return scope without added whereOutdatedSinceEquals to query', () => {
 			scope.whereLastLoginSystemChangeGreaterThan(undefined);
 			expect(scope.query).toEqual({});
 		});
