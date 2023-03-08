@@ -1,5 +1,5 @@
 // TODO: should not get from this place over path
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from './user';
 
 export interface JwtPayload extends ICurrentUser {
 	/** audience */

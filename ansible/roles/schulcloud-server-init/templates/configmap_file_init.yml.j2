@@ -26,23 +26,20 @@ data:
         echo "gg, hacky mongo replicaset"
     fi
     curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
-    IDM_ACTIVE={{ WITH_ERWINIDM }}
-    if [[ ${IDM_ACTIVE,,} == true ]]
-    then
-      curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
-    else
-      echo "Skip IDM initialization"
-    fi
 
     # Below is a series of a MongoDB-data initializations, meant for the development and testing
     # purposes on various dev environments - most of them will only work there.
 
+    # Test OIDC system configuration used in conjunction with OIDCMOCK deployment.
+    OIDCMOCK_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $OIDCMOCK__CLIENT_SECRET)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
     mongo $DATABASE__URL --eval 'db.systems.insert([
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
+      "provisioningStrategy": "oidc",
+      "displayName": "SSO LDAP School One 0",
       "ldapConfig" : {
         "active" : true,
         "federalState": ObjectId("0000b186816abba584714c56"),
@@ -77,6 +74,16 @@ data:
             "uniqueMember" : "member"
           }
         }
+      },
+      "oidcConfig": {
+        "alias": "schoolOne0",
+        "clientId": "'${OIDCMOCK__CLIENT_ID}'",
+        "clientSecret": "'${OIDCMOCK_CLIENT_SECRET}'",
+        "authorizationUrl": "'${OIDCMOCK__BASE_URL}'/connect/authorize",
+        "tokenUrl": "'${OIDCMOCK__BASE_URL}'/connect/token",
+        "logoutUrl": "'${OIDCMOCK__BASE_URL}'/connect/endsession",
+        "userinfoUrl": "'${OIDCMOCK__BASE_URL}'/connect/userinfo",
+        "defaultScopes": "openid profile email"
       }
     },
     {
@@ -115,6 +122,16 @@ data:
         }
       }
     }]);'
+
+    # Below is the IDM setup used for the development and testing
+    # It includes initialization of the OIDCMOCK based login and corresponding LDAP federation
+    IDM_ACTIVE={{ WITH_ERWINIDM }}
+    if [[ ${IDM_ACTIVE,,} == true ]]
+    then
+      curl --retry 360 --retry-connrefused --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
+    else
+      echo "Skip IDM initialization"
+    fi
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
     mongo $DATABASE__URL --eval 'db.storageproviders.insert( {

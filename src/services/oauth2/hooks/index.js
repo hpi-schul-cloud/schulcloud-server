@@ -6,7 +6,10 @@ const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
-const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
+const iframeSubject = (pseudonym, url) => {
+	console.log('iframeSubject 0000000000000000', pseudonym, url);
+	return `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
+}
 
 exports.getSubject = iframeSubject;
 
@@ -33,6 +36,9 @@ const setSubject = (hook) => {
 					const { pseudonym } = pseudonyms.data[0];
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
+					console.log(hook.data, 111111111111);
+					console.log(hook.params.account, 2222222222222222222)
+					console.log(hook.params,333333333333)
 					hook.data.force_subject_identifier = pseudonym;
 				})
 		);
