@@ -669,16 +669,23 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				task.finishForUser = jest.fn();
-				task.restoreForUser = jest.fn();
+
+				const finishForUserMock = jest.spyOn(task, 'finishForUser');
+				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
+
 				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
 
-				return { user, task };
+				const restoreMocks = () => {
+					finishForUserMock.mockRestore();
+					restoreForUserMock.mockRestore();
+				};
+
+				return { user, task, restoreMocks };
 			};
 
 			it('should check for permission to finish the task', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
@@ -686,39 +693,49 @@ describe('TaskUC', () => {
 					action: Actions.read,
 					requiredPermissions: [],
 				});
+
+				restoreMocks();
 			});
 
 			it('should finish the task for the user', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(task.finishForUser).toBeCalled();
+
+				restoreMocks();
 			});
 
 			it('should restore the task for the user', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.changeFinishedForUser(user.id, task.id, false);
 
 				expect(task.restoreForUser).toBeCalled();
+
+				restoreMocks();
 			});
 
 			it('should save the task', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(taskRepo.save).toBeCalledWith(task);
+
+				restoreMocks();
 			});
 
 			it('should return the task and its status', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(result.task).toEqual(task);
 				expect(result.status).toBeDefined();
+
+				restoreMocks();
 			});
 		});
 
@@ -730,23 +747,33 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				task.finishForUser = jest.fn();
-				task.restoreForUser = jest.fn();
+				const finishForUserMock = jest.spyOn(task, 'finishForUser');
+				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
 				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(true);
-				task.createTeacherStatusForUser = jest.fn().mockReturnValueOnce(mockStatus);
+				const createTeacherStatusForUserMock = jest
+					.spyOn(task, 'createTeacherStatusForUser')
+					.mockReturnValueOnce(mockStatus);
 
-				return { user, task };
+				const restoreMocks = () => {
+					finishForUserMock.mockRestore();
+					restoreForUserMock.mockRestore();
+					createTeacherStatusForUserMock.mockRestore();
+				};
+
+				return { user, task, restoreMocks };
 			};
 
 			it('should return task and teacher status', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(task.createTeacherStatusForUser).toBeCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
+
+				restoreMocks();
 			});
 		});
 
@@ -758,23 +785,33 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				task.finishForUser = jest.fn();
-				task.restoreForUser = jest.fn();
+				const finishForUserMock = jest.spyOn(task, 'finishForUser');
+				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
 				taskRepo.save.mockResolvedValue();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
-				task.createStudentStatusForUser = jest.fn().mockReturnValueOnce(mockStatus);
+				const createStudentStatusForUserMock = jest
+					.spyOn(task, 'createStudentStatusForUser')
+					.mockReturnValueOnce(mockStatus);
 
-				return { user, task };
+				const restoreMocks = () => {
+					finishForUserMock.mockRestore();
+					restoreForUserMock.mockRestore();
+					createStudentStatusForUserMock.mockRestore();
+				};
+
+				return { user, task, restoreMocks };
 			};
 
 			it('should return task and student status', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(task.createStudentStatusForUser).toBeCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
+
+				restoreMocks();
 			});
 		});
 	});
@@ -815,46 +852,57 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				task.unpublish = jest.fn();
+				const unpublishMock = jest.spyOn(task, 'unpublish');
 				taskRepo.save.mockResolvedValueOnce();
-				task.createTeacherStatusForUser = jest.fn().mockImplementationOnce(() => {
-					return {};
-				});
+				const createTeacherStatusForUserMock = jest.spyOn(task, 'createTeacherStatusForUser');
 
-				return { user, task };
+				const restoreMocks = () => {
+					unpublishMock.mockRestore();
+					createTeacherStatusForUserMock.mockRestore();
+				};
+
+				return { user, task, restoreMocks };
 			};
 
 			it('should call unpublish method in task entity', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.revertPublished(user.id, task.id);
 
 				expect(task.unpublish).toBeCalled();
+
+				restoreMocks();
 			});
 
 			it('should save the task', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.revertPublished(user.id, task.id);
 
 				expect(taskRepo.save).toBeCalledWith(task);
+
+				restoreMocks();
 			});
 
 			it('should create teacher status', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				await service.revertPublished(user.id, task.id);
 
 				expect(task.createTeacherStatusForUser).toBeCalled();
+
+				restoreMocks();
 			});
 
 			it('should return the task and its status', async () => {
-				const { user, task } = setup();
+				const { user, task, restoreMocks } = setup();
 
 				const result = await service.revertPublished(user.id, task.id);
 
 				expect(result.task).toEqual(task);
 				expect(result.status).toBeDefined();
+
+				restoreMocks();
 			});
 		});
 	});
