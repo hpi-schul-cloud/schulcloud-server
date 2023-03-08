@@ -95,7 +95,7 @@ describe(`card lookup (api)`, () => {
 		return { columnBoardNode, columnNode, card1, card2, card3, user, course };
 	};
 
-	describe('with valid cards payload', () => {
+	describe('with valid card ids', () => {
 		it('should return status 200', async () => {
 			const { card1 } = await setup();
 
@@ -123,13 +123,16 @@ describe(`card lookup (api)`, () => {
 			expect(returnedIds).toContain(card1.id);
 			expect(returnedIds).toContain(card2.id);
 		});
+	});
 
+	describe('with invalid card ids', () => {
 		it('should return empty array if card id does not exist', async () => {
 			await setup();
 			const notExistingCardId = new ObjectId().toString();
 
-			const { result } = await api.get({ ids: [notExistingCardId] });
+			const { result, status } = await api.get({ ids: [notExistingCardId] });
 
+			expect(status).toEqual(200);
 			expect(result.data).toHaveLength(0);
 		});
 
