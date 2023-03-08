@@ -32,30 +32,37 @@ module.exports = (hydraUrl) => {
 	return {
 		// Fetches information on a login request.
 		getLoginRequest(challenge) {
+			console.log(challenge, "challenge LOGINNNNNNNNNNNN")
 			return get('login', challenge);
 		},
 		// Accepts a login request.
 		acceptLoginRequest(challenge, body) {
+			console.log(body, 'ACCEPT LOGIN LLLLLLLLLLLLL' )
 			return put('login', 'accept', challenge, body);
 		},
 		// Rejects a login request.
 		rejectLoginRequest(challenge, body) {
+			console.log(body,'rejectLoginRequest PPPPPPPPPPPPPPP' )
 			return put('login', 'reject', challenge, body);
 		},
 		// Fetches information on a consent request.
 		getConsentRequest(challenge) {
+			console.log(challenge, "getConsentRequest RRRRRRRRRRRRRRRRRR")
 			return get('consent', challenge);
 		},
 		// Accepts a consent request.
 		acceptConsentRequest(challenge, body) {
+			console.log(challenge, body,'acceptConsentRequest MMMMMMMMMMMM' )
 			return put('consent', 'accept', challenge, body);
 		},
 		// Rejects a consent request.
 		rejectConsentRequest(challenge, body) {
+			console.log(challenge, "REJECTTTTTTTTTTTTTTTTTT")
 			return put('consent', 'reject', challenge, body);
 		},
 		// Accepts a logout request.
 		acceptLogoutRequest(challenge, body) {
+			console.log(challenge, 'acceptLogoutRequestHHHHHHHHHHHHHHHHHHHH')
 			return put('logout', 'accept', challenge, body);
 		},
 		// Verify Logout Request

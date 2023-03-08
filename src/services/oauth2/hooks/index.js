@@ -101,6 +101,7 @@ const injectLoginRequest = (hook) =>
 	Hydra(hook.app.settings.services.hydra)
 		.getLoginRequest(hook.id)
 		.then((loginRequest) => {
+			console.log(loginRequest, 'loginRequest9999999999999')
 			hook.params.loginRequest = loginRequest;
 			return hook;
 		});
@@ -109,16 +110,19 @@ const injectConsentRequest = (hook) =>
 	Hydra(hook.app.settings.services.hydra)
 		.getConsentRequest(hook.id)
 		.then((consentRequest) => {
+			console.log(consentRequest, "consentRequest123123123123123")
 			hook.params.consentRequest = consentRequest;
 			return hook;
 		});
 
 const validateSubject = (hook) => {
+	console.log(hook.params.consentRequest.subject,hook.params.account.userId.toString(), "validateSubject000000000000" )
 	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to patch another user's consent");
 };
 
 const managesOwnConsents = (hook) => {
+	console.log(hook.id, hook.params.account.userId.toString(), "managesOwnConsents1111111111")
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
