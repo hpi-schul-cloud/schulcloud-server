@@ -673,7 +673,6 @@ describe('TaskUC', () => {
 				const finishForUserMock = jest.spyOn(task, 'finishForUser');
 				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
 
-				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
 
 				const restoreMocks = () => {
@@ -749,7 +748,6 @@ describe('TaskUC', () => {
 				taskRepo.findById.mockResolvedValueOnce(task);
 				const finishForUserMock = jest.spyOn(task, 'finishForUser');
 				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
-				taskRepo.save.mockResolvedValueOnce();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(true);
 				const createTeacherStatusForUserMock = jest
 					.spyOn(task, 'createTeacherStatusForUser')
@@ -787,7 +785,6 @@ describe('TaskUC', () => {
 				taskRepo.findById.mockResolvedValueOnce(task);
 				const finishForUserMock = jest.spyOn(task, 'finishForUser');
 				const restoreForUserMock = jest.spyOn(task, 'restoreForUser');
-				taskRepo.save.mockResolvedValue();
 				authorizationService.hasOneOfPermissions.mockReturnValueOnce(false);
 				const createStudentStatusForUserMock = jest
 					.spyOn(task, 'createStudentStatusForUser')
@@ -853,7 +850,6 @@ describe('TaskUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
 				const unpublishMock = jest.spyOn(task, 'unpublish');
-				taskRepo.save.mockResolvedValueOnce();
 				const createTeacherStatusForUserMock = jest.spyOn(task, 'createTeacherStatusForUser');
 
 				const restoreMocks = () => {
@@ -958,7 +954,6 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				taskService.delete.mockResolvedValueOnce();
 
 				return { user, task };
 			};
