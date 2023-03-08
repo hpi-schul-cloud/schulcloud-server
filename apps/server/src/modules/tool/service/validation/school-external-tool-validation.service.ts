@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { isNaN } from 'lodash';
 import { ValidationError } from '@shared/common';
+import { CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { isNaN } from 'lodash';
 import { ExternalToolService } from '../external-tool.service';
 
 const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } = {
@@ -19,7 +19,7 @@ const typeCheckers: { [key in CustomParameterType]: (val: string) => boolean } =
 export class SchoolExternalToolValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
-	async validateCreate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
+	async validate(schoolExternalToolDO: SchoolExternalToolDO): Promise<void> {
 		this.checkForDuplicateParameters(schoolExternalToolDO);
 		const loadedExternalTool: ExternalToolDO = await this.externalToolService.findExternalToolById(
 			schoolExternalToolDO.toolId
@@ -60,9 +60,7 @@ export class SchoolExternalToolValidationService {
 					this.checkOptionalParameter(param, foundEntry);
 					if (foundEntry) {
 						this.checkParameterType(foundEntry, param);
-						if (CustomParameterType.STRING === param.type) {
-							this.checkParameterRegex(foundEntry, param);
-						}
+						this.checkParameterRegex(foundEntry, param);
 					}
 				}
 			}
@@ -78,7 +76,7 @@ export class SchoolExternalToolValidationService {
 	}
 
 	private checkParameterType(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
-		if (foundEntry.value && !typeCheckers[param.type](foundEntry.value)) {
+		if (foundEntry.value !== undefined && !typeCheckers[param.type](foundEntry.value)) {
 			throw new ValidationError(
 				`tool_param_type_mismatch: The value of parameter with name ${foundEntry.name} should be of type ${param.type}.`
 			);
@@ -86,10 +84,10 @@ export class SchoolExternalToolValidationService {
 	}
 
 	private checkParameterRegex(foundEntry: CustomParameterEntryDO, param: CustomParameterDO): void {
-		if (!param.regex) return;
-		if (!new RegExp(param.regex).test(foundEntry.value ?? ''))
+		if (param.regex && !new RegExp(param.regex).test(foundEntry.value ?? '')) {
 			throw new ValidationError(
 				`tool_param_value_regex: The given entry for the parameter with name ${foundEntry.name} does not fit the regex.`
 			);
+		}
 	}
 }
