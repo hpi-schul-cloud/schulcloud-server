@@ -66,7 +66,7 @@
 		"nest:start:files-storage:debug": "nest start files-storage --debug --watch & nest start files-storage-amqp --debug --watch",
 		"nest:start:files-storage:prod": "node dist/apps/server/apps/files-storage.app",
 		"nest:start:files-storage-amqp:prod": "node dist/apps/server/apps/files-storage-consumer.app",
-		"nest:start:console": "npm run nest:build && nest start console --",
+		"nest:start:console": "nest start console --",
 		"nest:start:console:dev": "nest start console --watch --",
 		"nest:start:console:debug": "nest start console --debug --watch --",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
