@@ -1,5 +1,5 @@
 import { Card } from '@shared/domain';
-import { CardResponse, TextElementResponse } from '../dto';
+import { CardResponse, TextElementResponse, VisibilitySettingsResponse } from '../dto';
 
 export class CardResponseMapper {
 	static mapToResponse(card: Card): CardResponse {
@@ -14,7 +14,7 @@ export class CardResponseMapper {
 						text: element.text,
 					})
 			),
-			visibilitySettings: {},
+			visibilitySettings: new VisibilitySettingsResponse({}),
 		});
 		return result;
 	}
