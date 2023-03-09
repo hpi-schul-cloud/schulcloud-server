@@ -39,7 +39,11 @@ const setSubject = (hook) => {
 					console.log(hook.data, 111111111111);
 					console.log(hook.params.account, 2222222222222222222)
 					console.log(hook.params,333333333333)
+					console.log(hook.params.session, 4444444444444444444444444)
 					hook.data.force_subject_identifier = pseudonym;
+					if (!hook.params.headers.authorization) {
+						hook.params.session = null;
+					}
 				})
 		);
 };
