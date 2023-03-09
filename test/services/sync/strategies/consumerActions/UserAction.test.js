@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const appPromise = require('../../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../../utils/setup.nest.services');
 
-const { expect } = chai;
+const { assert, expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('User Actions', () => {
@@ -96,6 +96,8 @@ describe('User Actions', () => {
 			expect(updateUserArg.email).to.be.equal(testUserInput.email);
 			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
 			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
+			expect(updateUserArg.lastSyncedAt).to.not.be.null;
+			expect(updateUserArg.lastSyncedAt).to.be.at.most(new Date());
 
 			expect(testAccountArg).to.be.equal(testAccountInput);
 		});
