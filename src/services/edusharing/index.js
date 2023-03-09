@@ -10,22 +10,20 @@ const EduSharingConnectorNew = require('./services/EduSharingConnectorNew');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
+	constructor() {
+		if (Configuration.get('ES_USE_OLD_API')) {
+			this.connector = EduSharingConnector;
+		} else {
+			this.connector = EduSharingConnectorNew;
+		}
+	}
+
 	find(params) {
-		return EduSharingConnector.FIND(params.query, params.authentication.payload.schoolId);
+		return this.connector.FIND(params.query, params.authentication.payload.schoolId);
 	}
 
 	get(id, params) {
-		return EduSharingConnector.GET(id, params.authentication.payload.schoolId);
-	}
-}
-
-class EduSharingNew {
-	find(params) {
-		return EduSharingConnectorNew.FIND(params.query, params.authentication.payload.schoolId);
-	}
-
-	get(id, params) {
-		return EduSharingConnectorNew.GET(id, params.authentication.payload.schoolId);
+		return this.connector.GET(id, params.authentication.payload.schoolId);
 	}
 }
 
@@ -48,7 +46,7 @@ module.exports = (app) => {
 	const merlinService = app.service(merlinRoute);
 	merlinService.hooks(merlinHooks);
 
-	const edusharing = Configuration.get('ES_USE_OLD_API') ? new EduSharing() : new EduSharingNew();
+	const edusharing = new EduSharing();
 	app.use(eduSharingRoute, edusharing, (req, res) => {
 		res.send(res.data);
 	});
