@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - dependabot/**
   pull_request:
-    types: [labeled]
+    types: [ labeled ]
 
 permissions:
   contents: read
@@ -125,7 +125,7 @@ jobs:
     needs:
       - build_and_push
       - branch_name
-    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml
+    uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
     with:
       ref: ${{ github.ref }}
 
