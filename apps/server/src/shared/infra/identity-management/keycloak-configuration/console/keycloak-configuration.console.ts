@@ -112,6 +112,39 @@ export class KeycloakConsole {
 		);
 	}
 
+	/**
+	 * For migration purpose. Moves all database accounts to the IDM
+	 * @param options
+	 */
+	@Command({
+		command: 'migrate',
+		description: 'Add all database users to the IDM.',
+		options: [
+			...KeycloakConsole.retryFlags,
+			{
+				flags: '-c, --check',
+				description: 'Do not migrate, but check if all accounts are available in both systems IDM and DB.',
+				required: false,
+				defaultValue: false,
+			},
+		],
+	})
+	async migrate(options: IRetryOptions): Promise<void> {
+		await this.repeatCommand(
+			'migrate',
+			async () => {
+				const [count, errList] = await this.keycloakConfigurationUc.migrate();
+				this.console.info(`Migrated ${count} users into IDM`);
+				for (const err of errList){
+					this.console.info(err);
+				}
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
 	private async repeatCommand<T>(
 		commandName: string,
 		command: () => Promise<T>,
