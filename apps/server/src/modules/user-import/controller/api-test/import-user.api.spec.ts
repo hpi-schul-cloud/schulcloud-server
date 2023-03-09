@@ -4,7 +4,6 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
 import {
-	ICurrentUser,
 	ImportUser,
 	MatchCreator,
 	Permission,
@@ -15,6 +14,7 @@ import {
 	System,
 	User,
 } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	importUserFactory,

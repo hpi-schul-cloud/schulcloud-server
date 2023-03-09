@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
@@ -62,6 +62,18 @@ export class TaskController {
 	@Patch(':taskId/restore')
 	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
+
+		const response = TaskMapper.mapToResponse(task);
+
+		return response;
+	}
+
+	@Patch(':taskId/revertPublished')
+	async revertPublished(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.revertPublished(currentUser.userId, urlParams.taskId);
 
 		const response = TaskMapper.mapToResponse(task);
 

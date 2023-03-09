@@ -1,4 +1,3 @@
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
 const { statusApi } = require('../../../../externalServices');
 
@@ -58,16 +57,15 @@ module.exports = {
 			const rawData = await statusApi.getIncidents();
 			const instanceSpecific = [];
 			const noneSpecific = [];
+			const statusEnum = { fixed: 4, danger: 2 };
 
-			const promises = rawData.data.map(async (element) => {
-				if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
-					// only mind messages for own instance (including none instance specific messages)
-					const isinstance = await getInstance(instance, element.component_id);
-					if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
-						instanceSpecific.push(element);
-					} else if (isinstance !== importance.INGORE) {
-						noneSpecific.push(element);
-					}
+			const filteredData = rawData.data.filter((element) => element.status !== statusEnum.fixed);
+			const promises = filteredData.map(async (element) => {
+				const isinstance = await getInstance(instance, element.component_id);
+				if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
+					instanceSpecific.push(element);
+				} else if (isinstance !== importance.INGORE) {
+					noneSpecific.push(element);
 				}
 			});
 

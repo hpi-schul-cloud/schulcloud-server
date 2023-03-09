@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
@@ -28,24 +28,17 @@ import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
 import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
-import { UserMigrationApiModule } from '@src/modules/user-migration';
+import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration';
 import { VideoConferenceModule } from '@src/modules/video-conference';
+import { AccountApiModule } from '../account/account-api.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
 const serverModules = [
-	ConfigModule.forRoot({
-		isGlobal: true,
-		validationOptions: { infer: true },
-		// hacky solution: the server config is loaded in the validate step.
-		// reasoning: nest's ConfigService has fixed priority of configs.
-		// 1. validated configs, 2. default passed in configService.get(key, default) 3. process.env 4. custom configs
-		// in process env everything is a string. So a feature flag will be the string 'false' and therefore truthy
-		// So we want custom configs to overwrite process.env. Thus we make them validated
-		validate: serverConfig,
-	}),
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
 	AuthenticationApiModule,
+	AccountApiModule,
 	CollaborativeStorageModule,
 	OauthApiModule,
 	TaskModule,
@@ -75,7 +68,7 @@ const serverModules = [
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
-	UserMigrationApiModule,
+	UserLoginMigrationApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

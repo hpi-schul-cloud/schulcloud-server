@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OauthProviderService } from '@shared/infra/oauth-provider/index';
-import { ICurrentUser, Permission, User } from '@shared/domain/index';
+import { Permission, User } from '@shared/domain/index';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 
 @Injectable()
 export class OauthProviderClientCrudUc {
