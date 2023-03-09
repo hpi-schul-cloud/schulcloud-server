@@ -128,7 +128,7 @@ describe(`card lookup (api)`, () => {
 	describe('with invalid card ids', () => {
 		it('should return empty array if card id does not exist', async () => {
 			await setup();
-			const notExistingCardId = new ObjectId().toString();
+			const notExistingCardId = new ObjectId().toHexString();
 
 			const { result, status } = await api.get({ ids: [notExistingCardId] });
 
@@ -138,7 +138,7 @@ describe(`card lookup (api)`, () => {
 
 		it('should return only results of existing cards', async () => {
 			const { card1, card2 } = await setup();
-			const notExistingCardId = new ObjectId().toString();
+			const notExistingCardId = new ObjectId().toHexString();
 
 			const { result } = await api.get({ ids: [card1.id, notExistingCardId, card2.id] });
 

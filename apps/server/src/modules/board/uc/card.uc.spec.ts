@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { cardFactory } from '@shared/testing/factory/domainobject/card.do.factory';
+import { cardFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardNodeRepo, CardRepo } from '../repo';
 import { CardUc } from './card.uc';
