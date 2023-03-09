@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { TextElementResponse } from './content-element.response';
+import { TextElementResponse } from './text-element.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
 export class CardResponse {
