@@ -6,27 +6,30 @@ const { build } = require('esbuild');
 const options = [
 	{
 		name: 'keycloak-admin-client-lib',
-		entryPoints: ['apps/esbuild/content/keycloak-admin-client-cjs-index.ts'],
+		entryPoint: ['esbuild/content/keycloak-admin-client-cjs-index.ts'],
 		outdir: 'node_modules/@keycloak/keycloak-admin-client-cjs',
-		platform: 'node',
-		format: 'cjs',
-		bundle: true,
-		minify: true,
-		loader: { '.js': 'jsx' },
 	},
 ];
 
+const globalOptions = {
+	platform: 'node',
+	format: 'cjs',
+	bundle: true,
+	minify: true,
+	loader: { '.js': 'jsx' },
+};
+
 for (const option of options) {
-	const { entryPoints, outdir, platform, format, bundle, minify, loader } = option;
+	const { entryPoint, outdir } = option;
 	try {
 		build({
-			entryPoints,
+			entryPoints: entryPoint,
 			outdir,
-			platform,
-			format,
-			bundle,
-			minify,
-			loader,
+			platform: globalOptions.platform,
+			format: globalOptions.format,
+			bundle: globalOptions.bundle,
+			minify: globalOptions.minify,
+			loader: globalOptions.loader,
 			plugins: [dtsPlugin()],
 		});
 	} catch (e) {
