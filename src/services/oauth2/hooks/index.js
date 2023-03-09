@@ -101,7 +101,6 @@ const injectLoginRequest = (hook) =>
 	Hydra(hook.app.settings.services.hydra)
 		.getLoginRequest(hook.id)
 		.then((loginRequest) => {
-			console.log(loginRequest, 'loginRequest9999999999999')
 			hook.params.loginRequest = loginRequest;
 			return hook;
 		});
@@ -110,7 +109,6 @@ const injectConsentRequest = (hook) =>
 	Hydra(hook.app.settings.services.hydra)
 		.getConsentRequest(hook.id)
 		.then((consentRequest) => {
-			console.log(consentRequest, "consentRequest123123123123123")
 			hook.params.consentRequest = consentRequest;
 			return hook;
 		});
