@@ -33,6 +33,14 @@ describe('BoardNodeRepo', () => {
 	});
 
 	const setup = async () => {
+		// root
+		// -- level1[0]
+		// ---- level2[0]
+		// ---- level2[1]
+		// ------ level3[0]
+		// ------ level3[1]
+		// -- level1[1]
+
 		const root = columnBoardNodeFactory.build();
 		await em.persistAndFlush(root);
 		const level1 = columnNodeFactory.buildList(2, { parent: root });
@@ -91,6 +99,20 @@ describe('BoardNodeRepo', () => {
 
 				expect(result).toEqual([]);
 			});
+		});
+	});
+
+	describe('findChildrenOfMany', () => {
+		it('should find a map of children', async () => {
+			const { root, level1, level2 } = await setup();
+
+			const result = await repo.findChildrenOfMany([root, ...level1, ...level2]);
+
+			expect(Object.keys(result)).toEqual([root.pathOfChildren, level1[0].pathOfChildren, level2[1].pathOfChildren]);
+
+			expect(result[root.pathOfChildren]).toHaveLength(2);
+			expect(result[level1[0].pathOfChildren]).toHaveLength(2);
+			expect(result[level2[1].pathOfChildren]).toHaveLength(2);
 		});
 	});
 });
