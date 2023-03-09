@@ -339,6 +339,11 @@
 				}
 			}
 		},
+		"FEATURE_FWU_CONTENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
+		},
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
 			"default": 20971520,
