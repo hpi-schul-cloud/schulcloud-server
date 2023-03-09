@@ -17,7 +17,7 @@ import {
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
