@@ -11,10 +11,10 @@ const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
 	constructor() {
-		if (Configuration.get('ES_USE_OLD_API')) {
-			this.connector = EduSharingConnectorV6;
-		} else {
+		if (Configuration.get('ES_API_V7')) {
 			this.connector = EduSharingConnectorV7;
+		} else {
+			this.connector = EduSharingConnectorV6;
 		}
 	}
 

@@ -745,10 +745,10 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
-		"ES_USE_OLD_API": {
+		"ES_API_V7": {
 			"type": "boolean",
-			"default": true,
-			"description": "Use the old edusharing API endpoints (affects search url)"
+			"default": false,
+			"description": "Use the newer API for Edusharing v7"
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
