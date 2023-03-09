@@ -53,6 +53,13 @@ describe(BoardDoBuilder.name, () => {
 			const elementIds = domainObject.columns.map((el) => el.id);
 			expect(elementIds).toEqual([columnNode3.id, columnNode2.id, columnNode1.id]);
 		});
+
+		it('should be able to use the builder', () => {
+			const columnBoardNode = columnBoardNodeFactory.buildWithId();
+			const builder = new BoardDoBuilder();
+			const domainObject = columnBoardNode.useDoBuilder(builder);
+			expect(domainObject.id).toEqual(columnBoardNode.id);
+		});
 	});
 
 	describe('when building a column', () => {
