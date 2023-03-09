@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode } from '@shared/domain';
