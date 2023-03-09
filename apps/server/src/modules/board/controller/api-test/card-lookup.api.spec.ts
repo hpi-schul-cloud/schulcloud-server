@@ -11,6 +11,7 @@ import {
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolFactory,
+	textElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -83,16 +84,18 @@ describe(`card lookup (api)`, () => {
 		const course = courseFactory.build({ teachers: [user] });
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const card1 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const card2 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const card3 = cardNodeFactory.buildWithId({ parent: columnNode });
+		const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
+		const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
+		const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
+		const textElement = textElementNodeFactory.buildWithId({ parent: cardNode1 });
 
-		await em.persistAndFlush([user, course, columnBoardNode, columnNode, card1, card2, card3]);
+		await em.persistAndFlush([user, course, columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, textElement]);
+		await em.persistAndFlush([user, course, columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3]);
 		em.clear();
 
 		currentUser = mapUserToCurrentUser(user);
 
-		return { columnBoardNode, columnNode, card1, card2, card3, user, course };
+		return { columnBoardNode, columnNode, card1: cardNode1, card2: cardNode2, card3: cardNode3, user, course };
 	};
 
 	describe('with valid card ids', () => {
