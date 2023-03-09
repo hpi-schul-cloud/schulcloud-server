@@ -33,7 +33,6 @@
 		"setup:idm": "npm run setup:idm:seed && npm run setup:idm:configure",
 		"build": "npm run nest:build",
 		"postinstall": "node ./apps/esbuild/esmodules-bundler.js",
-		"postbuild": "node ./apps/esbuild/copy-files.js",
 		"copy-files": "copyfiles src/**/*.yaml build",
 		"inspect": "npm run build && node --inspect=5959 build/src/",
 		"inspect-container": "npm run build && node --inspect=0.0.0.0:5959 build/src/",
@@ -83,8 +82,6 @@
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"esbuild:bundle:pre": "node ./apps/esbuild/esmodules-bundler.js",
-		"esbuild:bundle:post": "node ./apps/esbuild/copy-files.js",
 		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/files-storage-client/filesStorageApi/v3"
 	},
 	"dependencies": {
@@ -235,6 +232,7 @@
 		"chai-http": "^4.2.0",
 		"copyfiles": "^2.4.0",
 		"esbuild": "^0.17.10",
+		"esbuild-plugin-d.ts": "^1.1.0",
 		"eslint": "^8.30.0",
 		"eslint-config-airbnb-base": "^15.0.0",
 		"eslint-config-airbnb-typescript": "^17.0.0",
