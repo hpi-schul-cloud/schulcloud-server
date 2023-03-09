@@ -18,12 +18,11 @@ export class FwuController {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const path = req.params[0];
+		let file: Uint8Array;
 		try {
-			var file = await this.fwuUc.get(path);
+			file = await this.fwuUc.get(path);
 		} catch (error) {
-			throw new Error('HttpStatusCode: ' + error.$metadata.httpStatusCode + ' at ' + path + ' ' + error);
-			// res.sendStatus(error);
-			// return;
+			throw new Error(`HttpStatusCode: ${error.$metadata.httpStatusCode} at ${path} ${error}`);
 		}
 		const i = path.lastIndexOf('.');
 		const contentType = i !== -1 ? path.slice(i) : 'application/octet-stream';

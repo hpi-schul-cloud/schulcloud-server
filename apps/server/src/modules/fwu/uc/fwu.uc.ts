@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { FwuRepo } from '../repo/fwu.repo';
 
 @Injectable()
 export class FwuUc {
-	constructor(private authorizationService: FeathersAuthorizationService, private logger: Logger) {
+	constructor(private logger: Logger) {
 		this.logger.setContext(FwuUc.name);
 	}
 
