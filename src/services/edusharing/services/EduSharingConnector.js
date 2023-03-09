@@ -81,12 +81,7 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			for (const cookie of result.headers['set-cookie']) {
-				if (cookie.startsWith('JSESSIONID')) {
-					return cookie;
-				}
-			}
-			throw new GeneralError('Cookie not found in response headers');
+			return result.headers['set-cookie'][0];
 		} catch (err) {
 			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
@@ -110,16 +105,13 @@ class EduSharingConnector {
 	async eduSharingRequest(options, retried = false) {
 		try {
 			await this.authorize();
-			if (options.method.toUpperCase() === 'GET') {
-				return await request.get(options);
-			}
 			if (options.method.toUpperCase() === 'POST') {
 				return await request.post(options);
 			}
-			return null;
+			const res = await request.get(options);
+			return res;
 		} catch (err) {
 			if (err.statusCode === 404) {
-				// more recent edusharing version return empty 200 instead
 				return null;
 			}
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
@@ -176,14 +168,14 @@ class EduSharingConnector {
 			throw new NotFound('Invalid node id');
 		}
 
-		const criteria = [];
-		criteria.push({ property: 'ngsearchword', values: ['*'] });
-		criteria.push({
+		const criterias = [];
+		criterias.push({ property: 'ngsearchword', values: ['*'] });
+		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(criteria, 0, 1);
+		const response = await this.searchEduSharing(criterias, 0, 1);
 
 		if (!response.data || response.data.length !== 1) {
 			throw new NotFound('Item not found');
@@ -235,73 +227,69 @@ class EduSharingConnector {
 			...instancePermissions.publicGroups,
 		];
 
-		const criteria = [];
+		const criterias = [];
 		if (groups.length) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:ph_invited',
 				values: groups,
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:hpi_searchable',
 				values: ['1'],
 			});
 		}
 
 		if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
-			criteria.push({
+			criterias.push({
 				property: 'ccm:hpi_lom_general_aggregationlevel',
 				values: ['1'],
 			});
 		} else if (collection) {
-			criteria.push({ property: 'ngsearchword', values: ['*'] });
-			criteria.push({
+			criterias.push({ property: 'ngsearchword', values: ['*'] });
+			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
 			});
 		} else {
-			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
+			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(criteria, skipCount, maxItems, sortProperties);
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems);
 		return response;
 	}
 
-	async searchEduSharing(criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
-		const searchEndpoint = ES_ENDPOINTS.SEARCH;
-		const url = `${searchEndpoint}?${[
-			`contentType=FILES`,
-			`skipCount=${skipCount}`,
-			`maxItems=${maxItems}`,
-			`sortProperties=${sortProperties}`,
-			`sortAscending=${sortAscending}`,
-			`propertyFilter=-all-`,
-		].join('&')}`;
-
-		const facets = ['cclom:general_keyword'];
-
-		const body = JSON.stringify({
-			criterias: criteria,
-			facettes: facets,
-		});
-
-		const options = {
-			method: 'POST',
-			url,
-			headers: {
-				Accept: 'application/json',
-				'Content-type': 'application/json',
-				...basicAuthorizationHeaders,
-			},
-			body,
-			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
-		};
-
+	async searchEduSharing(criterias, skipCount, maxItems) {
 		try {
+			const url = `${ES_ENDPOINTS.SEARCH}?${[
+				`contentType=FILES`,
+				`skipCount=${skipCount}`,
+				`maxItems=${maxItems}`,
+				`sortProperties=score`,
+				`sortAscending=false`,
+				`propertyFilter=-all-`,
+			].join('&')}`;
+
+			const facettes = ['cclom:general_keyword'];
+
+			const options = {
+				method: 'POST',
+				url,
+				headers: {
+					Accept: 'application/json',
+					'Content-type': 'application/json',
+					...basicAuthorizationHeaders,
+				},
+				body: JSON.stringify({
+					criterias,
+					facettes,
+				}),
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
+			};
+
 			const response = await this.eduSharingRequest(options);
-			logger.debug(response);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.nodes) {
 				const promises = parsed.nodes.map(async (node) => {
@@ -309,19 +297,15 @@ class EduSharingConnector {
 						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
 					}
 
-					// workaround for Edu-Sharing bug, where keywords are like "['a,b,c', 'd \n']"
+					// workaround for Edu-Sharing bug, where arrays are as strings "['a,b,c']"
 					if (
 						node.properties &&
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						const keywords = [];
-						for (const dirtyKeyword of node.properties['cclom:general_keyword']) {
-							for (const keyword of dirtyKeyword.split(',')) {
-								keywords.push(keyword.trim());
-							}
-						}
-						node.properties['cclom:general_keyword'] = keywords;
+						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
+							.slice(1, -1)
+							.split(',');
 					}
 				});
 				await Promise.allSettled(promises);
