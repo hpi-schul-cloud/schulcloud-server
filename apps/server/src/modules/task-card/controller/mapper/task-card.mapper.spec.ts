@@ -92,22 +92,6 @@ describe('task-card mapper', () => {
 	});
 
 	describe('mapToDomain', () => {
-		// TODO sollte hier auch abgefragt werden, aber momentan noch in der falschen suite?
-		// it('should throw if title is not given', () => {
-		// 	const cardElementRichText = new RichTextCardElementParam();
-		// 	cardElementRichText.type = CardElementType.RichText;
-		// 	cardElementRichText.value = 'update richtext';
-		// 	cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
-
-		// 	const params = {
-		// 		cardElements: [
-		// 			{
-		// 				content: cardElementRichText,
-		// 			},
-		// 		],
-		// 	};
-		// 	expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
-		// });
 		it('should map params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
