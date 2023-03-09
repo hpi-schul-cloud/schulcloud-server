@@ -46,6 +46,7 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/clients').hooks(hooks.hooks.clients);
+	console.log(hooks(hooks.hooks.clients), "--------------------------------------")
 
 	app.use('/oauth2/loginRequest', {
 		get(challenge) {
@@ -58,6 +59,7 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
+	console.log(hooks.hooks.loginRequest, '++++++++++++++++++++++++++')
 
 	app.use('/oauth2/logoutRequest', {
 		patch(challenge, body) {
@@ -77,9 +79,11 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/consentRequest').hooks(hooks.hooks.consentRequest);
+	console.log(hooks.hooks.consentRequest, '\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\')
 
 	app.use('/oauth2/introspect', {
 		create(data) {
+			console.log(data, "DATATTAATTATTATATTATATATAT ")
 			return hydraAdmin.introspectOAuth2Token(data.token, 'openid');
 		},
 	});
@@ -87,6 +91,7 @@ module.exports = function oauth2() {
 
 	app.use('/oauth2/auth/sessions/consent', {
 		get(user) {
+			console.log(user, "USER USER  USER USER")
 			return hydraAdmin.listConsentSessions(user);
 		},
 		remove(user, params) {
@@ -94,4 +99,5 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/auth/sessions/consent').hooks(hooks.hooks.consentSessions);
+	console.log("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 };
