@@ -879,8 +879,8 @@ describe('Task Entity', () => {
 		describe('when has no users assigned', () => {
 			it('should return an empty array', () => {
 				const task = taskFactory.build();
-
-				expect(task.getUsersList()).toEqual([]);
+				const result = task.getUsersList();
+				expect(result).toEqual([]);
 			});
 		});
 
@@ -906,7 +906,8 @@ describe('Task Entity', () => {
 					},
 				];
 
-				expect(task.getUsersList()).toEqual(usersList);
+				const result = task.getUsersList();
+				expect(result).toEqual(usersList);
 			});
 		});
 	});
