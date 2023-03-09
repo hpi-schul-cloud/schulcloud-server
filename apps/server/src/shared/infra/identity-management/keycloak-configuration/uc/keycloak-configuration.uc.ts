@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
+import { KeycloakMigrationService } from '../service/keycloak-migration.service';
 
 @Injectable()
 export class KeycloakConfigurationUc {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly keycloakConfigService: KeycloakConfigurationService,
-		private readonly keycloakSeedService: KeycloakSeedService
+		private readonly keycloakSeedService: KeycloakSeedService,
+		private readonly keycloakMigrationService: KeycloakMigrationService
 	) {}
 
 	public async check(): Promise<boolean> {
@@ -21,6 +23,10 @@ export class KeycloakConfigurationUc {
 
 	public async seed(): Promise<number> {
 		return this.keycloakSeedService.seed();
+	}
+
+	public async migrate(): Promise<[number, string[]]> {
+		return this.keycloakMigrationService.migrate();
 	}
 
 	async configure(): Promise<number> {

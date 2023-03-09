@@ -82,6 +82,17 @@ describe('KeycloakConsole', () => {
 		});
 	});
 
+	describe('migrate', () => {
+		it('should resolve successfully', async () => {
+			jest.spyOn(uc, 'migrate').mockResolvedValue([1, []]);
+			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
+		});
+		it('should throw on error', async () => {
+			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
+			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
+		});
+	});
+
 	describe('configure', () => {
 		it('should resolve successfully', async () => {
 			uc.configure.mockResolvedValue(1);

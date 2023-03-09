@@ -69,17 +69,31 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
-			const id = await this.getIdmAccountId(accountDto.id);
-			accountId = await this.identityManager.updateAccount(id, idmAccount);
-			if (accountDto.password) {
-				await this.identityManager.updateAccountPassword(id, accountDto.password);
+			try {
+				accountId = await this.updateAccount(accountDto.id, idmAccount, accountDto.password);
+			} catch (err) {
+				accountId = await this.createAccount(idmAccount, accountDto.password);
 			}
 		} else {
-			accountId = await this.identityManager.createAccount(idmAccount, accountDto.password);
+			accountId = await this.createAccount(idmAccount, accountDto.password);
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+	}
+
+	private async updateAccount(accountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
+		const id = await this.getIdmAccountId(accountId);
+		const updatedAccountId = await this.identityManager.updateAccount(id, idmAccount);
+		if (password) {
+			await this.identityManager.updateAccountPassword(id, password);
+		}
+		return updatedAccountId;
+	}
+
+	private async createAccount(idmAccount: IAccountUpdate, password?: string): Promise<string> {
+		const accountId = await this.identityManager.createAccount(idmAccount, password);
+		return accountId;
 	}
 
 	async updateUsername(accountRefId: EntityId, username: string): Promise<AccountDto> {
