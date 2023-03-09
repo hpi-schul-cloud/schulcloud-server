@@ -5,13 +5,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { OauthTokenResponse, AuthorizationParams } from '../controller/dto';
+
 import { HydraOauthUc } from '.';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 import { OAuthSSOError } from '../error/oauth-sso.error';

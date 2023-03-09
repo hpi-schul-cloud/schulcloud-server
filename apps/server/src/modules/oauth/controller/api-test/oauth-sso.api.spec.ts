@@ -20,9 +20,9 @@ import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { Request } from 'express';
 import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { AuthorizationParams, OauthTokenResponse } from '../dto';
-import { JwtAuthGuard } from '../../../authentication/guard/jwt-auth.guard';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
