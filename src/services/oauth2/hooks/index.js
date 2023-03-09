@@ -36,7 +36,6 @@ const setSubject = (hook) => {
 					const { pseudonym } = pseudonyms.data[0];
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
-					hook.data.subject = '';
 					console.log(hook.data, 111111111111);
 					console.log(hook.params.account, 2222222222222222222)
 					console.log(hook.params,333333333333)
@@ -115,11 +114,13 @@ const injectConsentRequest = (hook) =>
 		});
 
 const validateSubject = (hook) => {
+	console.log(hook.params.consentRequest.subject, hook.params.account.userId.toString(), "12345678901234567890")
 	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to patch another user's consent");
 };
 
 const managesOwnConsents = (hook) => {
+	console.log(hook.id, hook.params.account.userId, "UuuuuUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
