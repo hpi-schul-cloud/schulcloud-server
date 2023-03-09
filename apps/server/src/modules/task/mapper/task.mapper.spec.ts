@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions } from '@shared/domain';
+import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions, UsersList } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams, UsersList } from '../controller/dto';
+import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -72,11 +72,13 @@ describe('task.mapper', () => {
 			const usersList: UsersList[] = [
 				{
 					id: 'user ID #1',
-					name: 'user name #1',
+					firstName: 'user',
+					lastName: 'name #1',
 				},
 				{
 					id: 'user ID #2',
-					name: 'user name #2',
+					firstName: 'user',
+					lastName: 'name #2',
 				},
 			];
 			const spyUsers = jest.spyOn(task, 'getUsersList').mockReturnValue(usersList);

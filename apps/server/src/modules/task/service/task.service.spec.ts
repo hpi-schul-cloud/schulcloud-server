@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
@@ -194,7 +194,7 @@ describe('TaskService', () => {
 				lessonRepo.findById.mockResolvedValue(lesson);
 				await expect(async () => {
 					await taskService.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 
 				lessonRepo.findById.mockRestore();
 			});
@@ -204,7 +204,7 @@ describe('TaskService', () => {
 
 				await expect(async () => {
 					await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [someUser.id] });
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 			});
 			/*
 			it('should set users', async () => {
@@ -343,7 +343,7 @@ describe('TaskService', () => {
 
 				await expect(async () => {
 					await taskService.update(user.id, task.id, params);
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
@@ -355,7 +355,7 @@ describe('TaskService', () => {
 				};
 				await expect(async () => {
 					await taskService.update(user.id, task.id, params);
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 
 				lessonRepo.findById.mockRestore();
 			});

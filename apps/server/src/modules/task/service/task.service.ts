@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import {
 	Counted,
@@ -77,7 +77,7 @@ export class TaskService {
 				const courseUsers = course.getStudentIds();
 				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
 				if (!isAllUsersInCourse) {
-					throw new BadRequestException('Users do not belong to course');
+					throw new ForbiddenException('Users do not belong to course');
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				taskParams.users = users;
@@ -87,7 +87,7 @@ export class TaskService {
 		if (params.lessonId) {
 			const lesson = await this.lessonRepo.findById(params.lessonId);
 			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
-				throw new BadRequestException('Lesson does not belong to Course');
+				throw new ForbiddenException('Lesson does not belong to Course');
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			taskParams.lesson = lesson;
@@ -141,7 +141,7 @@ export class TaskService {
 				const courseUsers = course.getStudentIds();
 				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
 				if (!isAllUsersInCourse) {
-					throw new BadRequestException('Users do not belong to course');
+					throw new ForbiddenException('Users do not belong to course');
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.users.set(users);
@@ -151,7 +151,7 @@ export class TaskService {
 		if (params.lessonId) {
 			const lesson = await this.lessonRepo.findById(params.lessonId);
 			if (!task.course || lesson.course.id !== task.course.id) {
-				throw new BadRequestException('Lesson does not belong to Course');
+				throw new ForbiddenException('Lesson does not belong to Course');
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson = lesson;

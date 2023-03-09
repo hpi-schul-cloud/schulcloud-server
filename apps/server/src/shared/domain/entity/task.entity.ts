@@ -2,7 +2,6 @@ import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property }
 import { InternalServerErrorException } from '@nestjs/common';
 import { School } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import type { UsersList } from '@src/modules/task/controller/dto/task.response';
 import type { IEntityWithSchool } from '../interface';
 import type { ILearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
@@ -34,6 +33,14 @@ export type TaskParentDescriptions = {
 
 export interface ITaskParent {
 	getStudentIds(): EntityId[];
+}
+
+export class UsersList {
+	id!: string;
+
+	firstName!: string;
+
+	lastName!: string;
 }
 
 @Entity({ tableName: 'homeworks' })
@@ -143,7 +150,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			const usersList: UsersList[] = users.map((user) => {
 				return {
 					id: user.id,
-					name: `${user.firstName} ${user.lastName}`,
+					firstName: user.firstName,
+					lastName: user.lastName,
 				};
 			});
 			return usersList;

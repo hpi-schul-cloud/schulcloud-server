@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
@@ -146,7 +146,7 @@ export class TaskController {
 	private FeatureTaskCardEnabled() {
 		const enabled = Configuration.get('FEATURE_TASK_CARD_ENABLED') as boolean;
 		if (!enabled) {
-			throw new InternalServerErrorException('Feature not enabled');
+			throw new NotImplementedException('Feature not enabled');
 		}
 	}
 }

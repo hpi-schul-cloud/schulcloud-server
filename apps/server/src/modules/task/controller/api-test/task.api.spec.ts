@@ -1227,7 +1227,7 @@ describe('Task Controller (API)', () => {
 
 			expect((response.body as TaskResponse).status.isDraft).toEqual(true);
 			expect((response.body as TaskResponse).users).toEqual([
-				{ id: student.id, name: `${student.firstName} ${student.lastName}` },
+				{ id: student.id, firstName: student.firstName, lastName: student.lastName },
 			]);
 		});
 		it('PATCH :id should update a task', async () => {
@@ -1275,8 +1275,8 @@ describe('Task Controller (API)', () => {
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
 			expect(responseTask.lessonName).toEqual(lesson.name);
 			expect(responseTask.users).toEqual([
-				{ id: student1.id, name: `${student1.firstName} ${student1.lastName}` },
-				{ id: student2.id, name: `${student2.firstName} ${student2.lastName}` },
+				{ id: student1.id, firstName: student1.firstName, lastName: student1.lastName },
+				{ id: student2.id, firstName: student2.firstName, lastName: student2.lastName },
 			]);
 		});
 		describe('business logic errors', () => {
@@ -1372,7 +1372,7 @@ describe('Task Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(teacher);
 
 			const params = { name: 'test', courseId: course.id };
-			await request(app.getHttpServer()).post(`/tasks`).set('Accept', 'application/json').send(params).expect(500);
+			await request(app.getHttpServer()).post(`/tasks`).set('Accept', 'application/json').send(params).expect(501);
 		});
 
 		it('Find task should throw', async () => {
@@ -1388,7 +1388,7 @@ describe('Task Controller (API)', () => {
 
 			currentUser = mapUserToCurrentUser(student);
 
-			await request(app.getHttpServer()).get(`/tasks/${task.id}`).set('Accept', 'application/json').expect(500);
+			await request(app.getHttpServer()).get(`/tasks/${task.id}`).set('Accept', 'application/json').expect(501);
 		});
 
 		it('Update task should throw', async () => {
@@ -1411,7 +1411,7 @@ describe('Task Controller (API)', () => {
 				.patch(`/tasks/${task.id}`)
 				.set('Accept', 'application/json')
 				.send(params)
-				.expect(500);
+				.expect(501);
 		});
 	});
 });

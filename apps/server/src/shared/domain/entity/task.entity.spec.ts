@@ -7,10 +7,10 @@ import {
 	schoolFactory,
 	setupEntities,
 	submissionFactory,
-	taskCardFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { UsersList } from './task.entity';
 
 describe('Task Entity', () => {
 	let orm: MikroORM;
@@ -893,14 +893,16 @@ describe('Task Entity', () => {
 				const course = courseFactory.buildWithId({ teachers: [user1] });
 				const task = taskFactory.isPublished().buildWithId({ creator: user2, course, users: [user3, user4] });
 
-				const usersList = [
+				const usersList: UsersList[] = [
 					{
 						id: user3.id,
-						name: `${user3.firstName} ${user3.lastName}`,
+						firstName: user3.firstName,
+						lastName: user3.lastName,
 					},
 					{
 						id: user4.id,
-						name: `${user4.firstName} ${user4.lastName}`,
+						firstName: user4.firstName,
+						lastName: user4.lastName,
 					},
 				];
 

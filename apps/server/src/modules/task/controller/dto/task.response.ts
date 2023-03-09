@@ -1,13 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
-import { RichText } from '@shared/domain';
+import { RichText, UsersList } from '@shared/domain';
 import { TaskStatusResponse } from './task-status.response';
-
-export class UsersList {
-	id!: string;
-
-	name!: string;
-}
 
 /**
  * DTO for returning a task document via api.
