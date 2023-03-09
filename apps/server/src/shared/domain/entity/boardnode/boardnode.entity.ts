@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain/domainobject';
 import { EntityId } from '../../types';
@@ -20,6 +20,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.position = props.position ?? 0;
 	}
 
+	@Index()
 	@Property({ nullable: false })
 	path: string;
 
@@ -29,6 +30,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	position: number;
 
+	@Index()
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
 
