@@ -11,10 +11,11 @@ import { OidcIdentityProviderMapper } from './mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 import { KeycloakConfigurationUc } from './uc/keycloak-configuration.uc';
+import { KeycloakManagementController } from './controller/keycloak-configuration.controller';
 
 @Module({
 	imports: [KeycloakAdministrationModule, LoggerModule, EncryptionModule, ConsoleWriterModule, SystemModule],
-	controllers: [],
+	controllers: [KeycloakManagementController],
 	providers: [
 		{
 			provide: KeycloakConfigurationInputFiles,
