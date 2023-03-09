@@ -107,14 +107,20 @@ class UserAction extends BaseConsumerAction {
 	}
 
 	async updateUserAndAccount(foundUser, user, account) {
-		const updateObject = this.createUserUpdateObject(user, foundUser);
-		if (!_.isEmpty(updateObject)) {
-			await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, updateObject, account);
-		}
+		// Prepare user update object with all the modified user data.
+		const userUpdateObject = this.createUserUpdateObject(user, foundUser);
+
+		// Set the last sync date value to the current date - this will be, e.g.,
+		// date of the last performed LDAP server sync (for a specific user).
+		userUpdateObject.lastSyncedAt = new Date();
+
+		// Perform the user and account updates.
+		await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, userUpdateObject, account);
 	}
 
 	createUserUpdateObject(user, foundUser) {
 		const updateObject = {};
+
 		if (user.firstName !== foundUser.firstName) {
 			updateObject.firstName = user.firstName || ' ';
 		}
@@ -128,13 +134,12 @@ class UserAction extends BaseConsumerAction {
 			updateObject.ldapDn = user.ldapDn;
 		}
 
-		updateObject.lastSyncedAt = new Date();
-
 		// Role
 		const userRoles = foundUser.roles && foundUser.roles.map((r) => r.name);
 		if (!_.isEqual(userRoles, user.roles)) {
 			updateObject.roles = user.roles;
 		}
+
 		return updateObject;
 	}
 
