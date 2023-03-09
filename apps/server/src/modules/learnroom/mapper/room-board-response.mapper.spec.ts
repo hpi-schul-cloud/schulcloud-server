@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskCardFactory, taskFactory } from '@shared/testing';
-import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
+import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
@@ -90,6 +90,7 @@ describe('room board response mapper', () => {
 			const result = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+			expect((result.elements[0].content as BoardTaskResponse).taskCardId).toEqual(taskCard.id);
 		});
 
 		it('should map lessons on board to response', () => {
