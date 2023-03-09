@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Card } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';

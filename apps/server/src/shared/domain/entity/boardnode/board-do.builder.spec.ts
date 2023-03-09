@@ -6,6 +6,7 @@ import {
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoBuilder } from './board-do.builder';
+import { BoardNodeType } from './types';
 
 describe(BoardDoBuilder.name, () => {
 	beforeAll(async () => {
@@ -160,6 +161,13 @@ describe(BoardDoBuilder.name, () => {
 			expect(() => {
 				new BoardDoBuilder([columnNode]).buildTextElement(textElementNode);
 			}).toThrowError();
+		});
+	});
+
+	describe('ensure board node types', () => {
+		it('should check a single node', () => {
+			const card = cardNodeFactory.build();
+			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.COLUMN)).toThrowError();
 		});
 	});
 });
