@@ -55,6 +55,8 @@ describe('User Actions', () => {
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
 			expect(userArg.schoolId).to.be.equal(testSchoolId);
 			expect(userArg._id).to.be.equal(testUserInput._id);
+			expect(userArg.lastSyncedAt).to.not.be.null;
+			expect(userArg.lastSyncedAt).to.be.at.most(new Date());
 			expect(accountArg._id).to.be.equal(testAccountInput._id);
 		});
 

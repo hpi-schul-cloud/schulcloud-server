@@ -145,6 +145,12 @@ class UserAction extends BaseConsumerAction {
 
 	async createUserAndAccount(idmUser, account, school) {
 		idmUser.schoolId = school._id;
+
+		// Set the last sync date value to the current date as new users
+		// and accounts are also created in the sync process, and they
+		// should be considered synchronized at the time of creation.
+		idmUser.lastSyncedAt = new Date();
+
 		const userAccountService = await this.app.service('/sync/userAccount');
 		return userAccountService.createUserAndAccount(idmUser, account, school);
 	}
