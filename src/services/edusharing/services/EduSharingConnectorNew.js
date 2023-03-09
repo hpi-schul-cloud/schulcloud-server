@@ -23,27 +23,30 @@ class EduSharingConnector {
 		this.app = app;
 	}
 
-	async getBasicAuthHeaders(schoolId) {
+	async getUserForSchool(schoolId) {
 		const county = await getCounty(schoolId);
 		let user = Configuration.get('ES_USER');
 		if (county && county.countyId && county.countyId >= 3000 && county.countyId < 4000) {
-			// county id 3XXX -> Lower Saxony
+			// county id 3XXX == Lower Saxony
 			user = `LowerSaxonyCounty${county.countyId}`;
 		}
-		const password = Configuration.get('ES_PASSWORD');
-		const credentials = Buffer.from(`${user}:${password}`).toString('base64');
-		return {
-			Authorization: `Basic ${credentials}`,
-		};
+		return user;
 	}
 
-	async eduSharingRequest(options, retried = false) {
+	async eduSharingRequest(options, user, retried = false) {
+		const secretOptions = { ...options };
+		if (secretOptions.headers === undefined) {
+			secretOptions.headers = {};
+		}
+		const password = Configuration.get('ES_PASSWORD');
+		secretOptions.headers.Authorization = `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
+
 		try {
-			if (options.method.toUpperCase() === 'GET') {
-				return await request.get(options);
+			if (secretOptions.method.toUpperCase() === 'GET') {
+				return await request.get(secretOptions);
 			}
-			if (options.method.toUpperCase() === 'POST') {
-				return await request.post(options);
+			if (secretOptions.method.toUpperCase() === 'POST') {
+				return await request.post(secretOptions);
 			}
 			return null;
 		} catch (err) {
@@ -55,17 +58,16 @@ class EduSharingConnector {
 			if (retried === true) {
 				throw new GeneralError('Edu-Sharing Request failed');
 			} else {
-				const response = await this.eduSharingRequest(options, true);
+				const response = await this.eduSharingRequest(options, user, true);
 				return response;
 			}
 		}
 	}
 
-	async getImage(schoolId, url) {
+	async getImage(url, user) {
 		const options = {
 			uri: url,
 			method: 'GET',
-			headers: await this.getBasicAuthHeaders(schoolId),
 			encoding: null, // necessary to get the image as binary value
 			resolveWithFullResponse: true,
 			// edu-sharing returns 302 to an error page instead of 403,
@@ -74,7 +76,7 @@ class EduSharingConnector {
 		};
 
 		try {
-			const result = await this.eduSharingRequest(options);
+			const result = await this.eduSharingRequest(options, user);
 			const encodedData = `data:image;base64,${result.body.toString('base64')}`;
 			return Promise.resolve(encodedData);
 		} catch (err) {
@@ -91,6 +93,8 @@ class EduSharingConnector {
 			throw new NotFound('Invalid node id');
 		}
 
+		const user = this.getUserForSchool(schoolId);
+
 		const criteria = [];
 		criteria.push({ property: 'ngsearchword', values: [''] });
 		criteria.push({
@@ -98,7 +102,7 @@ class EduSharingConnector {
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(schoolId, criteria, 0, 1);
+		const response = await this.searchEduSharing(user, criteria, 0, 1);
 
 		if (!response.data) {
 			throw new NotFound(`Item not found, uuid ${uuid}`);
@@ -115,6 +119,7 @@ class EduSharingConnector {
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
+		const user = this.getUserForSchool(schoolId);
 
 		const maxItems = parseInt($limit, 10) || 9;
 		const skipCount = parseInt($skip, 10) || 0;
@@ -148,11 +153,11 @@ class EduSharingConnector {
 			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(schoolId, criteria, skipCount, maxItems, sortProperties);
+		const response = await this.searchEduSharing(user, criteria, skipCount, maxItems, sortProperties);
 		return response;
 	}
 
-	async searchEduSharing(schoolId, criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
+	async searchEduSharing(user, criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
 		const searchEndpoint = ES_ENDPOINTS.SEARCH;
 		const url = `${searchEndpoint}?${[
 			`contentType=FILES`,
@@ -176,22 +181,18 @@ class EduSharingConnector {
 			headers: {
 				Accept: 'application/json',
 				'Content-type': 'application/json',
-				...(await this.getBasicAuthHeaders(schoolId)),
 			},
 			body,
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
 		try {
-			const response = await this.eduSharingRequest(options);
+			const response = await this.eduSharingRequest(options, user);
 			const parsed = JSON.parse(response);
 			if (parsed && parsed.nodes) {
 				const promises = parsed.nodes.map(async (node) => {
 					if (node.preview && node.preview.url) {
-						node.preview.url = await this.getImage(
-							schoolId,
-							`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`
-						);
+						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`, user);
 					}
 
 					// workaround for Edu-Sharing bug, where keywords are like "['a,b,c', 'd \n']"
