@@ -4,19 +4,19 @@ import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheService } from '@shared/infra/cache';
 import { CacheStoreType } from '@shared/infra/cache/interface/cache-store-type.enum';
+import { feathersRedis, RedisMock } from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
-import redis = require('../../../../../../src/utils/redis');
-import RedisMock = require('../../../../../../test/utils/redis/redisMock');
 
 describe('jwt strategy', () => {
+	let module: TestingModule;
 	let adapter: JwtValidationAdapter;
 
 	let cacheManager: DeepMocked<Cache>;
 	let cacheService: DeepMocked<CacheService>;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				JwtValidationAdapter,
 				{
@@ -29,13 +29,22 @@ describe('jwt strategy', () => {
 				},
 			],
 		}).compile();
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 		const redisClientMock = RedisMock.createClient();
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		redis.setRedisClient(redisClientMock);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+		feathersRedis.setRedisClient(redisClientMock);
 
 		cacheManager = module.get(CACHE_MANAGER);
 		cacheService = module.get(CacheService);
 		adapter = module.get(JwtValidationAdapter);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('when authenticate a user with jwt', () => {
@@ -63,6 +72,16 @@ describe('jwt strategy', () => {
 				await adapter.removeFromWhitelist('accountId', 'jti');
 
 				expect(cacheManager.del).toHaveBeenCalledWith('jwt:accountId:jti');
+			});
+		});
+
+		describe('when a memory store is used', () => {
+			it('should do nothing', async () => {
+				cacheService.getStoreType.mockReturnValue(CacheStoreType.MEMORY);
+
+				await adapter.removeFromWhitelist('accountId', 'jti');
+
+				expect(cacheManager.del).not.toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,6 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain';
-import { CacheWrapperTestModule } from '@shared/infra/cache';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq/rabbitmq.module';
@@ -15,7 +14,6 @@ const imports = [
 	FilesStorageApiModule,
 	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, FileRecord] }),
 	RabbitMQWrapperTestModule,
-	CacheWrapperTestModule,
 	AuthorizationModule,
 	AuthenticationModule,
 	CoreModule,

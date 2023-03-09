@@ -36,6 +36,7 @@ describe('OAuthUc', () => {
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
+	let authenticationService: DeepMocked<AuthenticationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -92,6 +93,7 @@ describe('OAuthUc', () => {
 		provisioningService = module.get(ProvisioningService);
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
+		authenticationService = module.get(AuthenticationService);
 	});
 
 	afterAll(async () => {
@@ -260,6 +262,17 @@ describe('OAuthUc', () => {
 					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, system.id as string);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+				});
+
+				it('should remove the jwt from the whitelist', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+
+					await uc.migrate('jwt', 'currentUserId', query, system.id as string);
+
+					expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
 				});
 			});
 

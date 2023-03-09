@@ -1,10 +1,12 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { CacheService } from '@shared/infra/cache';
 import { CacheStoreType } from '@shared/infra/cache/interface/cache-store-type.enum';
+import {
+	addTokenToWhitelist,
+	createRedisIdentifierFromJwtData,
+	ensureTokenIsWhitelisted,
+} from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
-import jwtWhitelist = require('../../../../../../src/services/authentication/logic/whitelist');
-
-const { ensureTokenIsWhitelisted, addTokenToWhitelist, createRedisIdentifierFromJwtData } = jwtWhitelist;
 
 @Injectable()
 export class JwtValidationAdapter {

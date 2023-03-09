@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { CacheWrapperModule } from '@shared/infra/cache';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -61,6 +62,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		SystemModule,
 		OauthModule,
 		IdentityManagementModule,
+		CacheWrapperModule,
 	],
 	providers: [
 		JwtStrategy,

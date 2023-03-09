@@ -132,6 +132,16 @@ describe('AuthenticationService', () => {
 				expect(jwtValidationAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
 			});
 		});
+
+		describe('when a non-valid jwt is provided', () => {
+			it('should do nothing', async () => {
+				jest.spyOn(jwt, 'decode').mockReturnValue(null);
+
+				await authenticationService.removeJwtFromWhitelist('jwt');
+
+				expect(jwtValidationAdapter.removeFromWhitelist).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('checkBrutForce', () => {

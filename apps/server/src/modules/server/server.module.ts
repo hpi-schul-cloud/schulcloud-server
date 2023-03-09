@@ -4,7 +4,6 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
-import { CacheWrapperModule, CacheWrapperTestModule } from '@shared/infra/cache';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
@@ -96,7 +95,6 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 			// debug: true, // use it for locally debugging of queries
 		}),
-		CacheWrapperModule,
 	],
 	controllers: [ServerController],
 })
@@ -115,7 +113,6 @@ export class ServerModule {}
 		...serverModules,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 		RabbitMQWrapperTestModule,
-		CacheWrapperTestModule,
 	],
 	controllers: [ServerController],
 })
@@ -127,7 +124,6 @@ export class ServerTestModule {
 				...serverModules,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
-				CacheWrapperTestModule,
 			],
 			controllers: [ServerController],
 		};
