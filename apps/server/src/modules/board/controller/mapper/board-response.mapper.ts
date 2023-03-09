@@ -1,5 +1,5 @@
 import { ColumnBoard } from '@shared/domain';
-import { BoardResponse, CardSkeletonResponse, ColumnResponse } from '../dto';
+import { BoardResponse, CardSkeletonResponse, ColumnResponse, TimestampsResponse } from '../dto';
 
 export class BoardResponseMapper {
 	static mapToResponse(board: ColumnBoard): BoardResponse {
@@ -14,7 +14,7 @@ export class BoardResponseMapper {
 						cards: column.cards.map((card) => new CardSkeletonResponse({ cardId: card.id, height: card.height })),
 					})
 			),
-			timestamps: { lastUpdatedAt: board.updatedAt, createdAt: board.createdAt },
+			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 		});
 		return result;
 	}
