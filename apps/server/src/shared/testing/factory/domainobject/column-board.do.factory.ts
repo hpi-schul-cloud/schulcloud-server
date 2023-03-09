@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ColumnBoard } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { Factory } from 'fishery';
