@@ -12,7 +12,7 @@ const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo'
 const appPromise = require('../../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../../utils/setup.nest.services');
 
-const { assert, expect } = chai;
+const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('User Actions', () => {
