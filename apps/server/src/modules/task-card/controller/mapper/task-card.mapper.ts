@@ -77,6 +77,7 @@ export class TaskCardMapper {
 		}
 
 		if (params.cardElements) {
+			// TODO split following code into a separate method because it's too nested (and write tests for it)
 			params.cardElements.forEach((element) => {
 				if (element.content instanceof RichTextCardElementParam) {
 					const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
