@@ -116,13 +116,11 @@ const injectConsentRequest = (hook) =>
 		});
 
 const validateSubject = (hook) => {
-	console.log(hook.params.consentRequest.subject, hook.params.account.userId.toString(), "validateSubject000000000000" )
 	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to patch another user's consent");
 };
 
 const managesOwnConsents = (hook) => {
-	console.log(hook.params.account.userId.toString(), hook.id, "managesOwnConsents1111111111")
 	if (hook.id === hook.params.account.userId.toString()) return hook;
 	throw new Forbidden("You want to manage another user's consents");
 };
