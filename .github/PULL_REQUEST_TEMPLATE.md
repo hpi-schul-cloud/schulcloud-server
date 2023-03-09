@@ -56,7 +56,7 @@ Base links to copy
 
 ## Approval for review
 
-- [ ] DEV: Changes are reflected in the generated API file of the frontend and have been tested with a separate PR.
+- [ ] DEV: If api was changed - `generate-client:server` was executed in vue frontend and changes were tested and put in a PR with the same branch name.
 - [ ] QA: In addition to review, the code has been manually tested (if manual testing is possible)
 - [ ] All points were discussed with the ticket creator, support-team or product owner. The code upholds all quality guidelines from the PR-template.
 
