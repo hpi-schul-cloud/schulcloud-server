@@ -93,7 +93,7 @@ class EduSharingConnector {
 			throw new NotFound('Invalid node id');
 		}
 
-		const user = this.getUserForSchool(schoolId);
+		const user = await this.getUserForSchool(schoolId);
 
 		const criteria = [];
 		criteria.push({ property: 'ngsearchword', values: [''] });
@@ -119,7 +119,7 @@ class EduSharingConnector {
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
-		const user = this.getUserForSchool(schoolId);
+		const user = await this.getUserForSchool(schoolId);
 
 		const maxItems = parseInt($limit, 10) || 9;
 		const skipCount = parseInt($skip, 10) || 0;
