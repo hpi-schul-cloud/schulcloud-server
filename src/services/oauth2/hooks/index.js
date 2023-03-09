@@ -36,14 +36,13 @@ const setSubject = (hook) => {
 					const { pseudonym } = pseudonyms.data[0];
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
-					console.log(hook.data, 111111111111);
+					console.log(11111111111)
 					console.log(hook.params.account, 2222222222222222222)
 					console.log(hook.params,333333333333)
 					console.log(hook.params.session, 4444444444444444444444444)
 					console.log(hook.params.loginRequest.session_id, 555555555555555555)
 					console.log(hook.params.headers.authorization, 66666666)
 					console.log(hook.params.loginRequest.client, 77777777777)
-					console.log(hook.data.force_subject_identifier, 8888888888)
 					hook.data.force_subject_identifier = pseudonym;
 					if (!hook.params.headers.authorization) {
 						hook.params.loginRequest.session_id = null;
