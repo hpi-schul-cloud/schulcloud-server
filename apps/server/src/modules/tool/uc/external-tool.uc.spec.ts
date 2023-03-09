@@ -7,7 +7,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import {
 	externalToolDOFactory,
 	oauth2ToolConfigDOFactory,
@@ -284,7 +284,12 @@ describe('ExternalToolUc', () => {
 		const setupUpdate = () => {
 			const { externalToolDO, toolId } = setup();
 
-			const externalToolDOtoUpdate: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined, version: 1 };
+			const externalToolDOtoUpdate: ExternalToolDO = {
+				...externalToolDO,
+				name: 'newName',
+				url: undefined,
+				version: 1,
+			};
 			const updatedExternalToolDO: ExternalToolDO = { ...externalToolDO, name: 'newName', url: undefined };
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalToolDO);

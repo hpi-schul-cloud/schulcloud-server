@@ -6,6 +6,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { NotFoundException } from '@nestjs/common';
 import { SchoolMigrationService } from '@src/modules/user-login-migration';
 import { AuthorizationService } from '@src/modules/authorization';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
@@ -52,7 +53,7 @@ describe('SchoolUc', () => {
 		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 
-		beforeAll(() => {
+		const setup = () => {
 			migrationResponse = new OauthMigrationDto({
 				oauthMigrationPossible: new Date(),
 				oauthMigrationMandatory: new Date(),
@@ -61,10 +62,19 @@ describe('SchoolUc', () => {
 			});
 			schoolService.setMigration.mockResolvedValue(migrationResponse);
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
-		});
+			schoolService.getSchoolById.mockResolvedValue(
+				schoolDOFactory.buildWithId({
+					name: 'mockName',
+					id: mockId,
+					oauthMigrationFinished: undefined,
+				})
+			);
+		};
 
 		describe('when migrationflags and schoolId and userId are given', () => {
 			it('should call the service', async () => {
+				setup();
+
 				await schoolUc.setMigration(mockId, true, true, true, mockId);
 
 				expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
@@ -73,15 +83,45 @@ describe('SchoolUc', () => {
 
 		describe('when oauthMigrationFinished is given', () => {
 			it('should call schoolMigrationService to complete the migration when oauthMigrationFinished is true', async () => {
+				setup();
+
 				await schoolUc.setMigration(mockId, false, true, true, mockId);
 
 				expect(schoolMigrationService.completeMigration).toHaveBeenCalledWith(mockId);
 			});
 
 			it('should not call the schoolMigrationService when oauthMigrationFinished is false', async () => {
-				await schoolUc.setMigration(mockId, false, true, false, mockId);
+				setup();
+
+				await schoolUc.setMigration(mockId, true, true, false, mockId);
 
 				expect(schoolMigrationService.completeMigration).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('after school migration has finished', () => {
+			it('should call schoolMigrationService to restart the migration', async () => {
+				setup();
+
+				schoolService.getSchoolById.mockResolvedValue(
+					schoolDOFactory.buildWithId({
+						name: 'mockName',
+						id: mockId,
+						oauthMigrationFinished: new Date(),
+						oauthMigrationMandatory: new Date(),
+					})
+				);
+				await schoolUc.setMigration(mockId, true, true, false, mockId);
+
+				expect(schoolMigrationService.restartMigration).toHaveBeenCalledWith(mockId);
+			});
+
+			it('should not call schoolMigrationService when ', async () => {
+				setup();
+
+				await schoolUc.setMigration(mockId, true, true, false, mockId);
+
+				expect(schoolMigrationService.restartMigration).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -90,13 +130,11 @@ describe('SchoolUc', () => {
 		let migrationResponse: OauthMigrationDto;
 		const mockId = 'someId';
 
-		beforeAll(() => {
-			schoolService.getMigration.mockResolvedValue(migrationResponse);
-			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
-		});
-
 		describe('when schoolId and UserId are given', () => {
 			it('should call the service', async () => {
+				schoolService.getMigration.mockResolvedValue(migrationResponse);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+
 				await schoolUc.getMigration(mockId, mockId);
 
 				expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
@@ -108,12 +146,10 @@ describe('SchoolUc', () => {
 		let schoolDO: SchoolDO;
 		const mockSchoolnumber = '1234';
 
-		beforeEach(() => {
-			schoolDO = new SchoolDO({ name: 'mockSchool', officialSchoolNumber: '1234' });
-			schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
-		});
-
 		it('should call the service and return an object', async () => {
+			schoolDO = schoolDOFactory.buildWithId({ name: 'mockSchool', officialSchoolNumber: '1234' });
+			schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
+
 			const response: PublicSchoolResponse = await schoolUc.getPublicSchoolData(mockSchoolnumber);
 
 			expect(schoolService.getSchoolBySchoolNumber).toHaveBeenCalledWith(mockSchoolnumber);
