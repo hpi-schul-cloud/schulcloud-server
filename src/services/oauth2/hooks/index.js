@@ -36,6 +36,7 @@ const setSubject = (hook) => {
 					const { pseudonym } = pseudonyms.data[0];
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
+					hook.data.subject = '';
 					console.log(hook.data, 111111111111);
 					console.log(hook.params.account, 2222222222222222222)
 					console.log(hook.params,333333333333)
