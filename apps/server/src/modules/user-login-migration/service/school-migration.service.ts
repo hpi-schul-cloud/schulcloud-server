@@ -79,8 +79,7 @@ export class SchoolMigrationService {
 	}
 
 	async restartMigration(schoolId: string): Promise<void> {
-		// eslint-disable-next-line no-console
-		console.time('restartMigration');
+		const startTime: number = performance.now();
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
@@ -93,8 +92,9 @@ export class SchoolMigrationService {
 		await this.userService.saveAll(migratedUsers.data);
 
 		school.oauthMigrationMandatory = undefined;
-		// eslint-disable-next-line no-console
-		console.timeEnd('restartMigration');
+
+		const endTime: number = performance.now();
+		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
