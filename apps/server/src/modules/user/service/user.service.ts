@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, IFindOptions, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Page } from '@shared/domain/domainobject/page';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
@@ -12,6 +13,7 @@ import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
+import { UserQuery } from './user-query.type';
 
 @Injectable()
 export class UserService {
@@ -47,6 +49,16 @@ export class UserService {
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
 		return savedUser;
+	}
+
+	async saveAll(users: UserDO[]): Promise<UserDO[]> {
+		const savedUsers: Promise<UserDO[]> = this.userDORepo.saveAll(users);
+		return savedUsers;
+	}
+
+	async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+		const users: Page<UserDO> = await this.userDORepo.find(query, options);
+		return users;
 	}
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {

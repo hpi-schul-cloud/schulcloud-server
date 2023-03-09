@@ -4,6 +4,7 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Page } from '@shared/domain/domainobject/page';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @Injectable()
@@ -61,6 +62,39 @@ export class SchoolMigrationService {
 			return null;
 		}
 		return existingSchool;
+	}
+
+	async completeMigration(schoolId: string): Promise<void> {
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
+			schoolId,
+			isOutdated: false,
+			lastLoginSystemChangeGreaterThan: school.oauthMigrationPossible,
+		});
+
+		notMigratedUsers.data.forEach((user: UserDO) => {
+			user.outdatedSince = school.oauthMigrationFinished;
+		});
+		await this.userService.saveAll(notMigratedUsers.data);
+	}
+
+	async restartMigration(schoolId: string): Promise<void> {
+		const startTime: number = performance.now();
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
+			schoolId,
+			outdatedSince: school.oauthMigrationFinished,
+		});
+
+		migratedUsers.data.forEach((user: UserDO) => {
+			user.outdatedSince = undefined;
+		});
+		await this.userService.saveAll(migratedUsers.data);
+
+		school.oauthMigrationMandatory = undefined;
+
+		const endTime: number = performance.now();
+		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
 	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {

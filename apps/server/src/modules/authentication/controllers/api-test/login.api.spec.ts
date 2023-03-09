@@ -10,6 +10,7 @@ import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import request from 'supertest';
 import axios from 'axios';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { OauthAuthorizationQueryParams } from '../oauth-authorization.params';
 
 const schoolExternalId = 'mockSchoolExternalId';
@@ -107,6 +108,7 @@ describe('Login Controller (api)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
+	let kcAdminService: KeycloakAdministrationService;
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -119,6 +121,7 @@ describe('Login Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		kcAdminService = app.get(KeycloakAdministrationService);
 	});
 
 	afterAll(async () => {
@@ -261,7 +264,7 @@ describe('Login Controller (api)', () => {
 					aud: system.oauthConfig?.clientId,
 					iat: Date.now(),
 					exp: Date.now() + 100000,
-					preferred_username: username,
+					external_sub: username,
 				},
 				{ key: privateRsaKey, passphrase: '0000' },
 				{ algorithm: 'RS256' }
@@ -271,6 +274,15 @@ describe('Login Controller (api)', () => {
 				id_token: idToken,
 				refresh_token: 'refreshToken',
 				access_token: 'accessToken',
+			});
+
+			const wellKnown = kcAdminService.getWellKnownUrl();
+			axiosMock.onGet(wellKnown).reply(200, {
+				issuer: 'issuer',
+				token_endpoint: 'tokenEndpoint',
+				authorization_endpoint: 'authEndpoint',
+				end_session_endpoint: 'logoutEndpoint',
+				jwks_uri: 'jwksEndpoint',
 			});
 		});
 
@@ -298,7 +310,6 @@ describe('Login Controller (api)', () => {
 
 				if (!system.oauthConfig) {
 					fail('oauth system not properly initialized');
-					return;
 				}
 
 				const response = await request(app.getHttpServer()).get(`${basePath}/oauth/${system.id}`).query(params).send();
@@ -315,7 +326,6 @@ describe('Login Controller (api)', () => {
 
 				if (!system.oauthConfig) {
 					fail('oauth system not properly initialized');
-					return;
 				}
 
 				const response = await request(app.getHttpServer()).get(`${basePath}/oauth/${system.id}`).query(params).send();
