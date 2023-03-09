@@ -8,7 +8,6 @@ import {
 	CardElement,
 	CardElementType,
 	CardRichTextElementResponse,
-	CardTitleElementResponse,
 	InputFormat,
 	Permission,
 	Task,
@@ -23,7 +22,6 @@ import {
 	roleFactory,
 	taskCardFactory,
 	taskFactory,
-	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -88,17 +86,7 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const params = {
-				cardElements: [
-					{
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
-				],
-			};
-			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
+			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send().expect(500);
 		});
 
 		it('Find task-card should throw', async () => {
@@ -142,20 +130,10 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const params = {
-				cardElements: [
-					{
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
-				],
-			};
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
 				.set('Accept', 'application/json')
-				.send(params)
+				.send()
 				.expect(500);
 		});
 	});
@@ -164,10 +142,9 @@ describe('Task-Card Controller (api)', () => {
 		it('GET :id should return existing task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 			const title = 'title test';
-			const titleCardElement = titleCardElementFactory.build(title);
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
-			const taskCard = taskCardFactory.buildWithId({ creator: user, cardElements: [titleCardElement], task });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 
 			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
@@ -196,12 +173,6 @@ describe('Task-Card Controller (api)', () => {
 				cardElements: [
 					{
 						content: {
-							type: 'title',
-							value: 'title test',
-						},
-					},
-					{
-						content: {
 							type: 'richText',
 							value: 'rich 2',
 							inputFormat: 'richtext_ck5',
@@ -226,7 +197,7 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 			const expectedDueDate = user.school.schoolYear?.endDate;
 
-			expect(responseTaskCard.cardElements.length).toEqual(3);
+			expect(responseTaskCard.cardElements?.length).toEqual(3);
 			expect(responseTaskCard.task.name).toEqual('title test');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
 			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
@@ -240,7 +211,7 @@ describe('Task-Card Controller (api)', () => {
 			const task = taskFactory.build({ creator: user });
 			const taskCard = taskCardFactory.build({
 				creator: user,
-				cardElements: [titleCardElementFactory.buildWithId(), richTextCardElementFactory.buildWithId()],
+				cardElements: [richTextCardElementFactory.buildWithId()],
 				task,
 			});
 
@@ -270,11 +241,10 @@ describe('Task-Card Controller (api)', () => {
 		it('PATCH should update the task card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 			const title = 'title test';
-			const titleCardElement = titleCardElementFactory.buildWithId(title);
 			const richTextCardElement = richTextCardElementFactory.buildWithId();
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
-			const taskCard = taskCardFactory.buildWithId({ creator: user, cardElements: [titleCardElement], task });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 
 			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
@@ -285,13 +255,6 @@ describe('Task-Card Controller (api)', () => {
 			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
 				cardElements: [
-					{
-						id: titleCardElement.id,
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
 					{
 						id: richTextCardElement.id,
 						content: {
@@ -318,12 +281,9 @@ describe('Task-Card Controller (api)', () => {
 				.expect(200);
 
 			const responseTaskCard = response.body as TaskCardResponse;
-			const responseTitle = responseTaskCard.cardElements.filter(
-				(element) => element.cardElementType === CardElementType.Title
-			);
+
 			expect(responseTaskCard.id).toEqual(taskCard.id);
-			expect(responseTaskCard.cardElements.length).toEqual(3);
-			expect((responseTitle[0].content as CardTitleElementResponse).value).toEqual('title updated');
+			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
 			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
 		});
@@ -343,12 +303,6 @@ describe('Task-Card Controller (api)', () => {
 					cardElements: [
 						{
 							content: {
-								type: 'title',
-								value: 'title test',
-							},
-						},
-						{
-							content: {
 								type: 'richText',
 								value: text,
 								inputFormat: 'richtext_ck5',
@@ -366,10 +320,10 @@ describe('Task-Card Controller (api)', () => {
 					.expect(201);
 
 				const responseTaskCard = response.body as TaskCardResponse;
-				const richTextElement = responseTaskCard.cardElements.filter(
+				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
+				expect(richTextElement[0].content.value).toEqual(sanitizedText);
 			});
 
 			it('should sanitize richtext on update, with given format', async () => {
@@ -411,7 +365,7 @@ describe('Task-Card Controller (api)', () => {
 					.expect(200);
 
 				const responseTaskCard = response.body as TaskCardResponse;
-				const richTextElement = responseTaskCard.cardElements.filter(
+				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
 				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
