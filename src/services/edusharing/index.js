@@ -5,16 +5,16 @@ const path = require('path');
 
 const hooks = require('./hooks');
 const merlinHooks = require('./hooks/merlin.hooks');
-const EduSharingConnector = require('./services/EduSharingConnector');
-const EduSharingConnectorNew = require('./services/EduSharingConnectorNew');
+const EduSharingConnectorV6 = require('./services/EduSharingConnectorV6');
+const EduSharingConnectorV7 = require('./services/EduSharingConnectorV7');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
 	constructor() {
 		if (Configuration.get('ES_USE_OLD_API')) {
-			this.connector = EduSharingConnector;
+			this.connector = EduSharingConnectorV6;
 		} else {
-			this.connector = EduSharingConnectorNew;
+			this.connector = EduSharingConnectorV7;
 		}
 	}
 
