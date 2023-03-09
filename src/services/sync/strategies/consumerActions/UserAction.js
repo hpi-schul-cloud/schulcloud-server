@@ -127,6 +127,9 @@ class UserAction extends BaseConsumerAction {
 		if (user.ldapDn !== foundUser.ldapDn) {
 			updateObject.ldapDn = user.ldapDn;
 		}
+
+		updateObject.lastSyncedAt = new Date();
+
 		// Role
 		const userRoles = foundUser.roles && foundUser.roles.map((r) => r.name);
 		if (!_.isEqual(userRoles, user.roles)) {
