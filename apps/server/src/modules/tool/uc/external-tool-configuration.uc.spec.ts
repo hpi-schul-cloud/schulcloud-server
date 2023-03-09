@@ -12,7 +12,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { AuthorizationService } from '@src/modules/authorization';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';

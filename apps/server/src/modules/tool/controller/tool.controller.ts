@@ -12,7 +12,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Logger } from '@src/core/logger';
 import { ValidationError } from '@shared/common';
