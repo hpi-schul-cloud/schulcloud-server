@@ -1,17 +1,10 @@
-import { Body, Controller, Get, NotImplementedException, Param, Put } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardResponseMapper } from './mapper';
 import { BoardUc } from '../uc/board.uc';
-import {
-	ColumnUrlParams,
-	BoardResponse,
-	BoardUrlParams,
-	MoveCardBodyParams,
-	MoveColumnBodyParams,
-	RenameBodyParams,
-} from './dto';
+import { BoardResponse, BoardUrlParams } from './dto';
+import { BoardResponseMapper } from './mapper';
 
 @ApiTags('Boards')
 @Authenticate('jwt')
@@ -31,39 +24,39 @@ export class BoardController {
 		return response;
 	}
 
-	@Put('/:boardId/cards/:cardId/position')
-	moveCard(
-		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: MoveCardBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		throw new NotImplementedException();
-	}
+	// @Put('/:boardId/cards/:cardId/position')
+	// moveCard(
+	// 	@Param() urlParams: BoardUrlParams,
+	// 	@Body() bodyParams: MoveCardBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise<void> {
+	// 	throw new NotImplementedException();
+	// }
 
-	@Put('/:boardId/columns/:columnId/position')
-	moveColumn(
-		@Param() urlParams: ColumnUrlParams,
-		@Body() bodyParams: MoveColumnBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		throw new NotImplementedException();
-	}
+	// @Put('/:boardId/columns/:columnId/position')
+	// moveColumn(
+	// 	@Param() urlParams: ColumnUrlParams,
+	// 	@Body() bodyParams: MoveColumnBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise<void> {
+	// 	throw new NotImplementedException();
+	// }
 
-	@Put('/:boardId/title')
-	renameBoard(
-		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		throw new NotImplementedException();
-	}
+	// @Put('/:boardId/title')
+	// renameBoard(
+	// 	@Param() urlParams: BoardUrlParams,
+	// 	@Body() bodyParams: RenameBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise<void> {
+	// 	throw new NotImplementedException();
+	// }
 
-	@Put(':boardId/columns/:columnId/title')
-	renameColumn(
-		@Param() urlParams: ColumnUrlParams,
-		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		throw new NotImplementedException();
-	}
+	// @Put(':boardId/columns/:columnId/title')
+	// renameColumn(
+	// 	@Param() urlParams: ColumnUrlParams,
+	// 	@Body() bodyParams: RenameBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise<void> {
+	// 	throw new NotImplementedException();
+	// }
 }
