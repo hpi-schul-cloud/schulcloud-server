@@ -116,7 +116,7 @@ class AdminUsers {
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			setSearchParametesIfExist(clientQuery, query);
 
-			const dateQueries = ['createdAt', 'outdatedSince'];
+			const dateQueries = ['createdAt', 'outdatedSince', 'lastLoginSystemChange'];
 			for (const dateQuery of dateQueries) {
 				if (clientQuery[dateQuery]) {
 					if (typeof clientQuery[dateQuery] === 'object') {
