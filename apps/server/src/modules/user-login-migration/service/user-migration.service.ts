@@ -1,16 +1,21 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Injectable,
+	InternalServerErrorException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolService } from '@src/modules/school';
-import { EntityNotFoundError } from '@shared/common';
 import { SystemDto, SystemService } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user';
+import { SystemTypeEnum } from '@src/shared/domain/types';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { PageTypes } from '../interface/page-types.enum';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { UserService } from '@src/modules/user/service/user.service';
 import { PageContentDto } from './dto/page-content.dto';
+import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from './dto/migration.dto';
 
 @Injectable()
@@ -44,7 +49,7 @@ export class UserMigrationService {
 
 	async getMigrationRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const oauthSystems: SystemDto[] = await this.systemService.findOAuth();
+		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
 			(system: SystemDto): boolean => system.alias === 'SANIS'
 		);
@@ -70,12 +75,11 @@ export class UserMigrationService {
 		const sourceSystem: SystemDto = await this.systemService.findById(sourceId);
 		const targetSystem: SystemDto = await this.systemService.findById(targetId);
 
-		const targetSystemLoginUrl: URL = this.getOauthLoginUrl(targetSystem);
-		targetSystemLoginUrl.searchParams.set('redirect_uri', this.getMigrationRedirectUri(targetId));
+		const targetSystemLoginUrl: string = this.getLoginUrl(targetSystem);
 
 		switch (pageType) {
 			case PageTypes.START_FROM_TARGET_SYSTEM: {
-				const sourceSystemLoginUrl: URL = this.getOauthLoginUrl(sourceSystem, targetSystemLoginUrl.toString());
+				const sourceSystemLoginUrl: string = this.getLoginUrl(sourceSystem, targetSystemLoginUrl.toString());
 
 				const content: PageContentDto = new PageContentDto({
 					proceedButtonUrl: sourceSystemLoginUrl.toString(),
@@ -104,9 +108,9 @@ export class UserMigrationService {
 	}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-	getMigrationRedirectUri(systemId: string): string {
+	getMigrationRedirectUri(): string {
 		const combinedUri = new URL(this.publicBackendUrl);
-		combinedUri.pathname = `api/v3/sso/oauth/${systemId}/migration`;
+		combinedUri.pathname = `api/v3/sso/oauth/migration`;
 		return combinedUri.toString();
 	}
 
@@ -147,28 +151,18 @@ export class UserMigrationService {
 		}
 	}
 
-	private getOauthLoginUrl(system: SystemDto, postLoginUri?: string): URL {
-		if (!system.oauthConfig) {
-			throw new EntityNotFoundError(`System ${system?.id || 'unknown'} has no oauth config`);
+	private getLoginUrl(system: SystemDto, postLoginRedirect?: string): string {
+		if (!system.oauthConfig || !system.id) {
+			throw new UnprocessableEntityException(`System ${system?.id || 'unknown'} has no oauth config`);
 		}
 
-		const { oauthConfig } = system;
-
-		const loginUrl: URL = new URL(oauthConfig.authEndpoint);
-		loginUrl.searchParams.append('client_id', oauthConfig.clientId);
-		loginUrl.searchParams.append('redirect_uri', this.getRedirectUri(oauthConfig.redirectUri, postLoginUri).toString());
-		loginUrl.searchParams.append('response_type', oauthConfig.responseType);
-		loginUrl.searchParams.append('scope', oauthConfig.scope);
-
-		return loginUrl;
-	}
-
-	private getRedirectUri(redirectUri: string, postLoginUri?: string): URL {
-		const combinedUri = new URL(redirectUri);
-		if (postLoginUri) {
-			combinedUri.searchParams.append('postLoginRedirect', postLoginUri);
+		const loginUrl: URL = new URL(`api/v3/sso/login/${system.id}`, this.publicBackendUrl);
+		if (postLoginRedirect) {
+			loginUrl.searchParams.append('postLoginRedirect', postLoginRedirect);
+		} else {
+			loginUrl.searchParams.append('migration', 'true');
 		}
 
-		return combinedUri;
+		return loginUrl.toString();
 	}
 }
