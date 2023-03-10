@@ -135,7 +135,7 @@ export class KeycloakConsole {
 			async () => {
 				const [count, errList] = await this.keycloakConfigurationUc.migrate();
 				this.console.info(`Migrated ${count} users into IDM`);
-				for (const err of errList){
+				for (const err of errList) {
 					this.console.info(err);
 				}
 				return count;

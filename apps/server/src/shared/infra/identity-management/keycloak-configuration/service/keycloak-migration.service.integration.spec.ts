@@ -80,7 +80,6 @@ describe('KeycloakConfigurationService Integration', () => {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
 		}
 		keycloakMigrationService = module.get(KeycloakMigrationService);
-
 	});
 
 	afterAll(async () => {
@@ -97,12 +96,8 @@ describe('KeycloakConfigurationService Integration', () => {
 
 			await em.persistAndFlush(allAccounts);
 			for (const account of dbAndIdmAccounts) {
-				try {
-					// eslint-disable-next-line no-await-in-loop
-					await createAccountInIdm(account);
-				} catch (err) {
-					console.log(err);
-				}
+				// eslint-disable-next-line no-await-in-loop
+				await createAccountInIdm(account);
 			}
 		}
 	});

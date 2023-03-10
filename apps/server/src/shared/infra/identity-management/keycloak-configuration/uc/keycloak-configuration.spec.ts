@@ -30,10 +30,10 @@ describe('KeycloakConfigurationUc', () => {
 					provide: KeycloakSeedService,
 					useValue: createMock<KeycloakSeedService>(),
 				},
-				{ 
+				{
 					provide: KeycloakMigrationService,
 					useValue: createMock<KeycloakMigrationService>(),
-				}
+				},
 			],
 		}).compile();
 		uc = module.get(KeycloakConfigurationUc);
@@ -41,7 +41,6 @@ describe('KeycloakConfigurationUc', () => {
 		keycloakConfigServiceMock = module.get(KeycloakConfigurationService);
 		keycloakSeedServiceMock = module.get(KeycloakSeedService);
 		keycloakMigrationService = module.get(KeycloakMigrationService);
-
 	});
 
 	afterAll(async () => {
