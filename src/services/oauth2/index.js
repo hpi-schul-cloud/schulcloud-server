@@ -61,6 +61,7 @@ module.exports = function oauth2() {
 
 	app.use('/oauth2/logoutRequest', {
 		patch(challenge, body) {
+			console.log(challenge, body, "CHALENGE BODY 11111111111111111")
 			return hydraAdmin.acceptLogoutRequest(challenge, body);
 		},
 	});
