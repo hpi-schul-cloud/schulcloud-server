@@ -30,7 +30,7 @@ To facilitate this, your tests should be wrapped in at least two describe levels
 // Name of the unit under test
 describe("Course Service", (() => {
 	// method that is called
-	describe('createCourse is called', () => {
+	describe('createCourse', () => {
     	// a "when..." sentence
 		describe("When a student tries to create a course", (() => {
 			// a "should..." sentence
@@ -69,10 +69,10 @@ We use different levels of describe blocks to structure the tests in a way, that
 All of the data and mock preparation should happen in a setup function. Every describe scenario only contains one setup function and is called in every test. No further data or mock preparation should be added to the test. Often there will be only one test in every describe scenario, this is perfectly fine with our desired structure.
 
 ```TypeScript
-describe('<method> is called', () => {
-	describe('when <senario description that is prepared in setup>', () => {
+describe('[method]', () => {
+	describe('when [senario description that is prepared in setup]', () => {
 		const setup = () => {
-			// prepare the data and mocks for this senario
+			// prepare the data and mocks for this scenario
 		};
 
 		it('...', () => {
@@ -84,9 +84,9 @@ describe('<method> is called', () => {
 		});
 	});          
 
-	describe('when <senario description that is prepared in setup>', () => {
+	describe('when [senario description that is prepared in setup]', () => {
 		const setup = () => {
-			// prepare the data and mocks for this senario
+			// prepare the data and mocks for this scenario
 		};
 
 		it('...', () => {
