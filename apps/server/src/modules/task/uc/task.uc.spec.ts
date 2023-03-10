@@ -366,7 +366,7 @@ describe('TaskUC', () => {
 				const paginationParams = new PaginationParams();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasAllPermissions.mockReturnValue(false);
 
 				return { user, paginationParams };
 			};
@@ -374,7 +374,7 @@ describe('TaskUC', () => {
 			it('should call authorizationService.hasAllPermissions with correct permissions and throw', async () => {
 				const { user, paginationParams } = setup();
 
-				await expect(service.findAll(user.id, paginationParams)).rejects.toThrow();
+				await expect(service.findAll(user.id, paginationParams)).rejects.toThrowError(UnauthorizedException);
 
 				expect(authorizationService.hasAllPermissions).toHaveBeenNthCalledWith(1, user, [
 					Permission.TASK_DASHBOARD_VIEW_V3,
