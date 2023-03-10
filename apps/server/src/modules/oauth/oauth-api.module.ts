@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication';
+import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { ProvisioningModule } from '@src/modules/provisioning';
 import { SchoolModule } from '@src/modules/school';
