@@ -60,7 +60,7 @@ Your test should be structured in three seperate areas, each distinguished by at
 
 this is known as the AAA-pattern.
 
-The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values. Therefore it largely differs from case to case what a sufficient amount of scenarios would be. Parameter values that a theoretically not possible by the typescript type definition should be ignored as a test case. 
+The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values. Therefore it largely differs from case to case what a sufficient amount of scenarios would be. Parameter values that contradict the typescript type definition should be ignored as a test case. 
 The test coverage report already enforces scenarios that test every possible if/else result in the code. But still some scenarios are not covered by the report and must be tested:
 * All error scenarios: That means one describe block for every call that can reject.
 
@@ -224,11 +224,11 @@ afterEach(() => {
 	jest.resetAllMocks();
 })
 ```
+The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you code completion and type safety, combined with all the features of spies.
+
 `createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `.close` methods should only be called in `afterAll` and not in `afterEach`.
 
 To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. `jest.restoreAllMocks` should not be used, because in some cases it will not properly restore mocks created by ts-jest.
-
-The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
 
 ```Typescript
 describe('somefunction', () => {
