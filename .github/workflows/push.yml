@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - dependabot/**
   pull_request:
-    types: [labeled]
+    types: [ labeled ]
 
 permissions:
   contents: read
