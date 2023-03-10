@@ -27,7 +27,7 @@ export class Column implements ColumnProps, BoardNodeBuildable {
 	}
 }
 
-interface ColumnProps {
+export interface ColumnProps {
 	id: EntityId;
 
 	title?: string;

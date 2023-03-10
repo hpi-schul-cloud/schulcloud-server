@@ -23,7 +23,7 @@ export class TextElement implements TextElementProps, BoardNodeBuildable {
 	}
 }
 
-interface TextElementProps {
+export interface TextElementProps {
 	id: EntityId;
 
 	text: string;

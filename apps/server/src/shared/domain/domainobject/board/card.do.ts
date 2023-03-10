@@ -30,7 +30,7 @@ export class Card implements CardProps, BoardNodeBuildable {
 	}
 }
 
-interface CardProps {
+export interface CardProps {
 	id: EntityId;
 
 	title: string;

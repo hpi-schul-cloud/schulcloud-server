@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, CardNode } from '@shared/domain';
+import { CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -10,7 +10,7 @@ import {
 	columnNodeFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { cardFactory } from '@shared/testing/factory/domainobject';
 import { BoardNodeRepo } from './board-node.repo';
 import { CardRepo } from './card.repo';
 
@@ -64,14 +64,7 @@ describe(CardRepo.name, () => {
 
 	describe('save', () => {
 		it('should save cards', async () => {
-			const card = new Card({
-				id: new ObjectId().toHexString(),
-				title: `card #1`,
-				height: 150,
-				elements: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
+			const card = cardFactory.build();
 
 			const columnNode = columnNodeFactory.build();
 			await em.persistAndFlush(columnNode);
