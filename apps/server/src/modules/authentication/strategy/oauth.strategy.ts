@@ -4,9 +4,10 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
-import { OAuthProcessDto } from '@src/modules/oauth/service/dto/oauth-process.dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
+import { OAuthSSOError } from '../../oauth/error/oauth-sso.error';
+import { SSOErrorCode } from '../../oauth/error/sso-error-code.enum';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
@@ -39,13 +40,17 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 				tokenDto.idToken,
 				tokenDto.accessToken
 			);
+
 			request.query = { ...request.params, redirect };
 
 			const currentUser: ICurrentUser | unknown = await this.loadICurrentUser(request.params.systemId, user);
 			return currentUser;
 		} catch (error) {
-			const errorDto: OAuthProcessDto = this.oauthService.getOAuthErrorResponse(error);
-			request.query = { ...request.params, redirect: errorDto.redirect };
+			const errorCode: string = error instanceof OAuthSSOError ? error.errorcode : SSOErrorCode.SSO_OAUTH_LOGIN_FAILED;
+			const errorRedirect: string = this.oauthService.createErrorRedirect(errorCode);
+
+			request.query = { ...request.params, redirect: errorRedirect };
+
 			return {};
 		}
 	}

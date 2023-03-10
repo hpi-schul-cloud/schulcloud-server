@@ -4,10 +4,11 @@ import { OauthConfig } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AuthorizationParams } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
-import { AuthorizationParams } from '../controller/dto';
 import { HydraSsoService } from '../service/hydra.service';
+import { OAuthService } from '../service/oauth.service';
 
 @Injectable()
 export class HydraOauthUc {

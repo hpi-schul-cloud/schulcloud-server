@@ -9,8 +9,8 @@ import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { AuthorizationParams } from '../controller/dto';
 import { HydraOauthUc } from '.';
+import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
@@ -116,7 +116,7 @@ describe('HydraOauthUc', () => {
 			it('should throw error', async () => {
 				const error = 'kdjiqwjdjnq';
 
-				const func = () => uc.getOauthToken({ error }, '4566456');
+				const func = () => uc.getOauthToken('4566456', undefined, error);
 
 				await expect(func).rejects.toThrow(
 					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
@@ -129,12 +129,14 @@ describe('HydraOauthUc', () => {
 				const error = 'error';
 
 				hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-				oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+				oauthService.requestToken.mockResolvedValue(oauthTokenDto);
 				oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
 				const func = async () => uc.getOauthToken('oauthClientId', undefined, error);
 
-				await expect(func).rejects.toThrow(new OAuthSSOError('Authorization in external system failed', error));
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
+				);
 			});
 		});
 	});

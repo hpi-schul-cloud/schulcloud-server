@@ -8,7 +8,6 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { OAuthProcessDto } from '../../oauth/service/dto/oauth-process.dto';
 import { ICurrentUser } from '../interface';
 import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
 import { OauthStrategy, PathParams } from './oauth.strategy';
@@ -114,11 +113,7 @@ describe('OauthStrategy', () => {
 				redirect: '/mock-redirect',
 			});
 			accountService.findByUserId.mockResolvedValueOnce(null);
-			oauthService.getOAuthErrorResponse.mockReturnValue(
-				new OAuthProcessDto({
-					redirect: 'errorRedirect',
-				})
-			);
+			oauthService.createErrorRedirect.mockReturnValue('errorRedirect');
 
 			const result: ICurrentUser | unknown = await strategy.validate(request);
 

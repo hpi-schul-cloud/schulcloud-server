@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
 import { Logger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
@@ -15,16 +15,10 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { nanoid } from 'nanoid';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { nanoid } from 'nanoid';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
 import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
 
@@ -83,10 +77,11 @@ export class OauthUc {
 
 		this.logger.debug(`Oauth login process started. [state: ${state}, system: ${systemId}]`);
 
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, code, error);
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
-			code,
-			error,
+			tokenDto.idToken,
+			tokenDto.accessToken,
 			postLoginRedirect
 		);
 
@@ -116,12 +111,9 @@ export class OauthUc {
 			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
 		}
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, query.code, query.error);
-		const data: OauthDataDto = await this.provisioningService.getData(
-			targetSystemId,
-			tokenDto.idToken,
-			tokenDto.accessToken
-		);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, query.code, query.error);
+
+		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (data.externalSchool) {
 			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
@@ -144,7 +136,9 @@ export class OauthUc {
 
 	private async getJwtForUser(userId: EntityId): Promise<string> {
 		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+
 		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+
 		return accessToken;
 	}
 }

@@ -8,27 +8,19 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
+import { SystemService } from '@src/modules/system';
 import { OauthConfigDto, SystemDto } from '@src/modules/system/service';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SystemDto, SystemService } from '@src/modules/system/service';
-import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
@@ -242,11 +234,12 @@ describe('OAuthUc', () => {
 		};
 		describe('when a user is returned', () => {
 			it('should return a response with a valid jwt', async () => {
-				const { cachedState, code, error, jwt, redirect, user, currentUser } = setup();
+				const { cachedState, code, error, jwt, redirect, user, currentUser, tokenDto } = setup();
 
 				userService.getResolvedUser.mockResolvedValue(currentUser);
 				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwt });
-				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
+				oauthService.authenticateUser.mockResolvedValue(tokenDto);
+				oauthService.provisionUser.mockResolvedValue({ user, redirect });
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code, error);
 				expect(response).toEqual(
@@ -260,23 +253,21 @@ describe('OAuthUc', () => {
 
 		describe('when no user is returned', () => {
 			it('should return a response without a jwt', async () => {
-				const { cachedState, code, error, redirect } = setup();
-				oauthService.checkAuthorizationCode.mockReturnValue(code);
-				oauthService.authenticateUser.mockResolvedValue({ redirect });
+				const { cachedState, code, error, redirect, tokenDto } = setup();
+				oauthService.authenticateUser.mockResolvedValue(tokenDto);
+				oauthService.provisionUser.mockResolvedValue({ redirect });
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code, error);
-				expect(response).toEqual(
-					expect.objectContaining({
-						redirect,
-					})
-				);
+
+				expect(response).toEqual<OAuthProcessDto>({
+					redirect,
+				});
 			});
 		});
 
 		describe('when an error occurs', () => {
 			it('should return an OAuthProcessDto with error', async () => {
 				const { cachedState, code, error, testSystem } = setup();
-				oauthService.checkAuthorizationCode.mockReturnValue(code);
 				oauthService.authenticateUser.mockRejectedValue(new OAuthSSOError('Testmessage'));
 				systemService.findById.mockResolvedValue(testSystem);
 
@@ -288,11 +279,12 @@ describe('OAuthUc', () => {
 
 		describe('when the process runs successfully', () => {
 			it('should return a valid jwt', async () => {
-				const { cachedState, code, user, currentUser, jwt, redirect } = setup();
+				const { cachedState, code, user, currentUser, jwt, redirect, tokenDto } = setup();
 
 				userService.getResolvedUser.mockResolvedValue(currentUser);
 				authenticationService.generateJwt.mockResolvedValue({ accessToken: jwt });
-				oauthService.authenticateUser.mockResolvedValue({ user, redirect });
+				oauthService.authenticateUser.mockResolvedValue(tokenDto);
+				oauthService.provisionUser.mockResolvedValue({ user, redirect });
 
 				const response: OAuthProcessDto = await uc.processOAuthLogin(cachedState, code);
 
@@ -356,16 +348,13 @@ describe('OAuthUc', () => {
 			const userMigrationFailedDto: MigrationDto = new MigrationDto({
 				redirect: 'https://mock.de/dashboard',
 			});
-
-			oauthService.checkAuthorizationCode.mockReturnValue(code);
-			oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
-
 			const tokenDto: OAuthTokenDto = new OAuthTokenDto({
 				idToken: 'idToken',
 				refreshToken: 'refreshToken',
 				accessToken: 'accessToken',
 			});
 
+			oauthService.requestToken.mockResolvedValue(tokenDto);
 			provisioningService.getData.mockResolvedValue(oauthData);
 
 			return {
@@ -483,8 +472,8 @@ describe('OAuthUc', () => {
 		describe('when state is mismatched', () => {
 			it('should throw an UnauthorizedException', async () => {
 				const query: AuthorizationParams = { state: 'failedState' };
-				const { cachedState, userMigrationDto, oauthTokenResponse } = setupMigration();
-				oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+				const { cachedState, userMigrationDto, tokenDto } = setupMigration();
+				oauthService.authenticateUser.mockResolvedValue(tokenDto);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
 				const response = uc.migrate('currentUserId', query, cachedState);

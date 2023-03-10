@@ -1,30 +1,23 @@
-import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, User } from '@shared/domain';
+import { OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto, ProvisioningDto } from '@src/modules/provisioning/dto';
 import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SystemService } from '@src/modules/system';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { IJwt } from '../interface/jwt.base.interface';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
-import { OauthAdapterService } from './oauth-adapter.service';
+import { SSOErrorCode } from '../error/sso-error-code.enum';
+import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {
@@ -43,7 +36,7 @@ export class OAuthService {
 
 	async authenticateUser(systemId: string, authCode?: string, errorCode?: string): Promise<OAuthTokenDto> {
 		if (errorCode || !authCode) {
-			throw new UnauthorizedException(
+			throw new OAuthSSOError(
 				'Authorization Query Object has no authorization code or error',
 				errorCode || 'sso_auth_code_step'
 			);
@@ -51,10 +44,11 @@ export class OAuthService {
 
 		const system: SystemDto = await this.systemService.findById(systemId);
 		if (!system.oauthConfig) {
-			throw new UnauthorizedException(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
+			throw new OAuthSSOError(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
 		}
 		const { oauthConfig } = system;
 
+		// TODO use migration redirect
 		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, oauthConfig.redirectUri);
 
 		await this.validateToken(oauthTokens.idToken, oauthConfig);
@@ -106,9 +100,13 @@ export class OAuthService {
 		}
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect || postLoginRedirect);
+		const redirect: string = await this.getPostLoginRedirectUrl(
+			idToken,
+			systemId,
+			migrationConsentRedirect || postLoginRedirect
+		);
 
-		return { user, redirect: postLoginRedirect };
+		return { user, redirect };
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {
@@ -141,7 +139,7 @@ export class OAuthService {
 	async getPostLoginRedirectUrl(idToken: string, systemId: string, postLoginRedirect?: string): Promise<string> {
 		const clientUrl: string = Configuration.get('HOST') as string;
 		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findById(systemId);
 
 		let redirect: string;
 		if (system.oauthConfig?.provider === 'iserv') {
@@ -204,9 +202,10 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private createErrorRedirect(errorCode: string): string {
+	createErrorRedirect(errorCode: string): string {
 		const redirect = new URL('/login', Configuration.get('HOST') as string);
 		redirect.searchParams.append('error', errorCode);
+
 		return redirect.toString();
 	}
 }
