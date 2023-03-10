@@ -8,19 +8,19 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthenticationService } from '@src/modules/authentication';
+import { AuthenticationService, ICurrentUser } from '@src/modules/authentication';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
-import { ICurrentUser } from '@src/modules/authentication';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { SchoolService } from '../../school';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
 import { OAuthService } from '../service/oauth.service';
@@ -45,7 +45,6 @@ describe('OAuthUc', () => {
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let userService: DeepMocked<UserService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
-	let authenticationService: DeepMocked<AuthenticationService>;
 
 	beforeAll(async () => {
 		orm = await setupEntities();
@@ -384,12 +383,12 @@ describe('OAuthUc', () => {
 				});
 
 				it('should remove the jwt from the whitelist', async () => {
-					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					await uc.migrate('jwt', 'currentUserId', query, system.id as string);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
 				});
@@ -397,14 +396,14 @@ describe('OAuthUc', () => {
 
 			describe('when the jwt cannot be removed', () => {
 				it('should throw', async () => {
-					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
 					const error: Error = new Error('testError');
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
 
-					const func = () => uc.migrate('jwt', 'currentUserId', query, system.id as string);
+					const func = () => uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					await expect(func).rejects.toThrow(error);
 				});
@@ -503,7 +502,7 @@ describe('OAuthUc', () => {
 				oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-				const response = uc.migrate('currentUserId', query, cachedState);
+				const response = uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 				await expect(response).rejects.toThrow(UnauthorizedException);
 			});
