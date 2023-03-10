@@ -3,7 +3,6 @@ import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { LanguageType, Permission, Role, RoleName, School, User } from '@shared/domain';
 import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { result } from 'lodash';
 
 describe('UserMapper', () => {
 	let orm: MikroORM;
