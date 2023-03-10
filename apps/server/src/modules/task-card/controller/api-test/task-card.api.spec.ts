@@ -4,15 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import {
-	CardElement,
-	CardElementType,
-	CardRichTextElementResponse,
-	InputFormat,
-	Permission,
-	Task,
-	TaskCard,
-} from '@shared/domain';
+import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
@@ -87,17 +79,8 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const params = {
-				cardElements: [
-					{
-						content: {
-							type: 'richText',
-							value: 'rich 2',
-							inputFormat: 'richtext_ck5',
-						},
-					},
-				],
+				title: 'title',
 			};
-
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
 
@@ -141,11 +124,13 @@ describe('Task-Card Controller (api)', () => {
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
-
+			const params = {
+				title: 'title',
+			};
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
 				.set('Accept', 'application/json')
-				.send()
+				.send(params)
 				.expect(500);
 		});
 	});
@@ -182,6 +167,7 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const taskCardParams = {
+				title: 'test title',
 				cardElements: [
 					{
 						content: {
@@ -209,8 +195,8 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 			const expectedDueDate = user.school.schoolYear?.endDate;
 
-			expect(responseTaskCard.cardElements?.length).toEqual(3);
-			expect(responseTaskCard.task.name).toEqual('title test');
+			expect(responseTaskCard.cardElements?.length).toEqual(2);
+			expect(responseTaskCard.task.name).toEqual('test title');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
 			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
 			expect(responseTaskCard.courseId).toEqual(course.id);
@@ -232,7 +218,7 @@ describe('Task-Card Controller (api)', () => {
 
 			const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
 			const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
-			expect(foundCardElementsInitial[1]).toEqual(2);
+			expect(foundCardElementsInitial[1]).toEqual(1);
 
 			currentUser = mapUserToCurrentUser(user);
 
@@ -266,6 +252,7 @@ describe('Task-Card Controller (api)', () => {
 			const inThreeDays = new Date(Date.now() + 259200000);
 			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
+				title: 'test title',
 				cardElements: [
 					{
 						id: richTextCardElement.id,
@@ -312,6 +299,7 @@ describe('Task-Card Controller (api)', () => {
 				const text = '<iframe>rich text 1</iframe> some more text';
 
 				const taskCardParams = {
+					title: 'test title',
 					cardElements: [
 						{
 							content: {
@@ -355,6 +343,7 @@ describe('Task-Card Controller (api)', () => {
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 				const taskCardUpdateParams = {
+					title: 'test title',
 					cardElements: [
 						{
 							content: {
