@@ -19,6 +19,7 @@ export class FwuController {
 		}
 		const path = req.params[0];
 		let file: Uint8Array;
+
 		try {
 			file = await this.fwuUc.get(path);
 		} catch (error) {

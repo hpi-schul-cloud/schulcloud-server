@@ -26,8 +26,11 @@ export class FwuUc {
 		});
 		const response = await client.send(request);
 		if (response.$metadata.httpStatusCode !== 200) {
-			// eslint-disable-next-line no-console
-			console.log(`S3 request failed for: ${path}`);
+			this.logger.warn({
+				message: 'S3 request failed for FWU content',
+				url: path,
+				error: response.$metadata.httpStatusCode,
+			});
 			return Promise.reject(response.$metadata.httpStatusCode);
 		}
 		const readableStream = response.Body as NodeJS.ReadableStream;
