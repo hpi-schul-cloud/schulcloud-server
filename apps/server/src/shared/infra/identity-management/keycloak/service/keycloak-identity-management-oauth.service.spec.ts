@@ -129,7 +129,6 @@ describe('KeycloakIdentityManagementService', () => {
 			const setup = () => {
 				setupOauthConfigurationReturn();
 				configServiceMock.get.mockReturnValue('localhost');
-				kcIdmOauthService.resetOauthConfigCache();
 			};
 
 			it('should return the keycloak OAuth redirect URL for local development', async () => {
@@ -167,7 +166,6 @@ describe('KeycloakIdentityManagementService', () => {
 	describe('isOauthConfigAvailable', () => {
 		const setup = (testKcConnection: boolean) => {
 			kcAdminServiceMock.testKcConnection.mockResolvedValueOnce(testKcConnection);
-			kcIdmOauthService.resetOauthConfigCache();
 		};
 
 		describe('when keycloak is available', () => {
