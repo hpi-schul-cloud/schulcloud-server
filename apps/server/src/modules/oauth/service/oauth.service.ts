@@ -34,7 +34,12 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async authenticateUser(systemId: string, authCode?: string, errorCode?: string): Promise<OAuthTokenDto> {
+	async authenticateUser(
+		systemId: string,
+		redirectUri: string,
+		authCode?: string,
+		errorCode?: string
+	): Promise<OAuthTokenDto> {
 		if (errorCode || !authCode) {
 			throw new OAuthSSOError(
 				'Authorization Query Object has no authorization code or error',
@@ -48,8 +53,7 @@ export class OAuthService {
 		}
 		const { oauthConfig } = system;
 
-		// TODO use migration redirect
-		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, oauthConfig.redirectUri);
+		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, redirectUri);
 
 		await this.validateToken(oauthTokens.idToken, oauthConfig);
 
@@ -163,17 +167,11 @@ export class OAuthService {
 		migration: boolean,
 		alias?: string
 	): string {
-		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
-		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
+		const redirectUri: string = this.getRedirectUri(migration);
 
+		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
-		if (migration) {
-			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, publicBackendUrl);
-			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
-		} else {
-			const redirectUri: URL = new URL(`api/v3/sso/oauth`, publicBackendUrl);
-			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
-		}
+		authenticationUrl.searchParams.append('redirect_uri', redirectUri);
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);
@@ -182,6 +180,15 @@ export class OAuthService {
 		}
 
 		return authenticationUrl.toString();
+	}
+
+	getRedirectUri(migration: boolean) {
+		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
+
+		const path: string = migration ? 'api/v3/sso/oauth/migration' : 'api/v3/sso/oauth';
+		const redirectUri: URL = new URL(path, publicBackendUrl);
+
+		return redirectUri.toString();
 	}
 
 	private buildTokenRequestPayload(

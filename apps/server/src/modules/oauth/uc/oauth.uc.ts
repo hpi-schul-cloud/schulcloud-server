@@ -67,17 +67,21 @@ export class OauthUc {
 			systemId,
 			provider: system.oauthConfig.provider,
 			postLoginRedirect,
+			userLoginMigration: migration,
 		});
 
 		return authenticationUrl;
 	}
 
 	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
-		const { state, systemId, postLoginRedirect } = cachedState;
+		const { state, systemId, postLoginRedirect, userLoginMigration } = cachedState;
 
 		this.logger.debug(`Oauth login process started. [state: ${state}, system: ${systemId}]`);
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, code, error);
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
+
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code, error);
+
 		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
 			tokenDto.idToken,
@@ -105,13 +109,20 @@ export class OauthUc {
 		query: AuthorizationParams,
 		cachedState: OauthLoginStateDto
 	): Promise<MigrationDto> {
-		const { state, systemId } = cachedState;
+		const { state, systemId, userLoginMigration } = cachedState;
 
 		if (state !== query.state) {
 			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
 		}
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, query.code, query.error);
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
+
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
+			systemId,
+			redirectUri,
+			query.code,
+			query.error
+		);
 
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 

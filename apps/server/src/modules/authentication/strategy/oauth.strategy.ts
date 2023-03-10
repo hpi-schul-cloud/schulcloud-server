@@ -30,11 +30,15 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 			throw new BadRequestException(request.params.systemId, 'No SystemId provided!');
 		}
 		try {
+			const redirectUri: string = this.oauthService.getRedirectUri(false);
+
 			const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
 				request.params.systemId,
+				redirectUri,
 				request.query.code,
 				request.query.error
 			);
+
 			const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 				request.params.systemId,
 				tokenDto.idToken,
