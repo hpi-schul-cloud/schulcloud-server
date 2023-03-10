@@ -366,7 +366,8 @@ describe('TaskUC', () => {
 				const paginationParams = new PaginationParams();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasAllPermissions.mockReturnValue(false);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 
 				return { user, paginationParams };
 			};
