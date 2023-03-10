@@ -91,6 +91,13 @@ describe('KeycloakConsole', () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
 			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
 		});
+		it('should log errors', async () => {
+			const errorMessage = 'An error Message';
+			jest.spyOn(uc, 'migrate').mockResolvedValueOnce([1, [errorMessage]]);
+			const writerSpy = jest.spyOn(writer, 'info');
+			await console.migrate({ retryCount: 1, retryDelay: 10 })
+			expect(writerSpy).toHaveBeenCalledWith(expect.stringContaining(errorMessage));
+		});
 	});
 
 	describe('configure', () => {
