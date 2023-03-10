@@ -4,9 +4,10 @@ import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheService } from '@shared/infra/cache';
 import { CacheStoreType } from '@shared/infra/cache/interface/cache-store-type.enum';
-import { feathersRedis, RedisMock } from '@src/imports-from-feathers';
+import { feathersRedis } from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
+import RedisMock = require('../../../../../../test/utils/redis/redisMock');
 
 describe('jwt strategy', () => {
 	let module: TestingModule;

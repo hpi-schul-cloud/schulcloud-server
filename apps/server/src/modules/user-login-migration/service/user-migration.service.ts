@@ -141,13 +141,11 @@ export class UserMigrationService {
 		await this.userService.save(userDOCopy);
 		await this.accountService.save(accountCopy);
 
-		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-		const errorUrl: URL = new URL('/migration/error', this.hostUrl);
-		errorUrl.searchParams.append('sourceSystem', accountCopy.systemId ?? '');
-		errorUrl.searchParams.append('targetSystem', targetSystemId);
-		const userMigrationDto: MigrationDto = new MigrationDto({
-			redirect: errorUrl.toString(),
-		});
+		const userMigrationDto: MigrationDto = this.createUserMigrationDto(
+			'/migration/error',
+			accountCopy.systemId ?? '',
+			targetSystemId
+		);
 		return userMigrationDto;
 	}
 
@@ -166,12 +164,21 @@ export class UserMigrationService {
 		account.systemId = targetSystemId;
 		await this.accountService.save(account);
 
-		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-		const migrationSuccessUrl: URL = new URL('/migration/success', this.hostUrl);
-		migrationSuccessUrl.searchParams.append('sourceSystem', accountId ?? '');
-		migrationSuccessUrl.searchParams.append('targetSystem', targetSystemId);
+		const userMigrationDto: MigrationDto = this.createUserMigrationDto(
+			'/migration/success',
+			accountId ?? '',
+			targetSystemId
+		);
+		return userMigrationDto;
+	}
+
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+	private createUserMigrationDto(urlPath: string, sourceSystemId: string, targetSystemId: string) {
+		const errorUrl: URL = new URL(urlPath, this.hostUrl);
+		errorUrl.searchParams.append('sourceSystem', sourceSystemId);
+		errorUrl.searchParams.append('targetSystem', targetSystemId);
 		const userMigrationDto: MigrationDto = new MigrationDto({
-			redirect: migrationSuccessUrl.toString(),
+			redirect: errorUrl.toString(),
 		});
 		return userMigrationDto;
 	}
