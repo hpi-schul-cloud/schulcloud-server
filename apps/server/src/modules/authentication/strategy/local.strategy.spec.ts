@@ -1,17 +1,17 @@
-import bcrypt from 'bcryptjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnauthorizedException } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { RoleName, User } from '@shared/domain';
-import { setupEntities, accountFactory, userFactory } from '@shared/testing';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { IdentityManagementOauthService } from '@shared/infra/identity-management';
-import { ConfigService } from '@nestjs/config';
-import { IServerConfig } from '@src/modules/server';
 import { MikroORM } from '@mikro-orm/core';
-import { LocalStrategy } from './local.strategy';
+import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { RoleName, User } from '@shared/domain';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, setupEntities, userFactory } from '@shared/testing';
+import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { IServerConfig } from '@src/modules/server';
+import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
+import { LocalStrategy } from './local.strategy';
 
 describe('LocalStrategy', () => {
 	let orm: MikroORM;

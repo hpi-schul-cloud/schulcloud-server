@@ -1,29 +1,32 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MikroORM } from '@mikro-orm/core';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { setupEntities, userDoFactory } from '@shared/testing';
+import { SystemService } from '@src/modules/system/service/system.service';
 import { systemFactory } from '@shared/testing/factory/system.factory';
+import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { OauthConfigDto } from '@src/modules/system/service';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
 import { UserService } from '@src/modules/user';
-import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
+import { ObjectId } from 'bson';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { OauthConfigDto } from '@src/modules/system/service';
+import { OauthTokenResponse } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OAuthTokenDto } from '../interface';
-import { OAuthProcessDto, OauthTokenResponse } from './dto';
-import { OauthAdapterService } from './oauth-adapter.service';
+import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OAuthService } from './oauth.service';
+import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../../provisioning/dto';
+import { OauthAdapterService } from './oauth-adapter.service';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -54,6 +57,7 @@ describe('OAuthService', () => {
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 
 	let testSystem: System;
+	let testSystemDto: SystemDto;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';
@@ -122,6 +126,7 @@ describe('OAuthService', () => {
 		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
 			switch (key) {
 				case 'HOST':
+				case 'PUBLIC_BACKEND_URL':
 					return hostUri;
 				default:
 					throw new Error(`No mock for key '${key}'`);
@@ -129,6 +134,7 @@ describe('OAuthService', () => {
 		});
 
 		testSystem = systemFactory.withOauthConfig().buildWithId();
+		testSystemDto = SystemMapper.mapFromEntityToDto(testSystem);
 		testOauthConfig = testSystem.oauthConfig as OauthConfig;
 	});
 
@@ -169,13 +175,16 @@ describe('OAuthService', () => {
 	});
 
 	describe('validateToken', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 		describe('when the token is validated', () => {
 			it('should validate id_token and return it decoded', async () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): JwtPayload => {
 					return { sub: 'mockSub' };
 				});
 
-				const decodedJwt: JwtPayload = await service.validateToken('idToken', testOauthConfig);
+				const decodedJwt: IJwt = await service.validateToken('idToken', testOauthConfig);
 
 				expect(decodedJwt.sub).toStrictEqual('mockSub');
 			});
@@ -192,7 +201,7 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getRedirectUrl is called', () => {
+	describe('getPostLoginRedirectUrl is called', () => {
 		describe('when the oauth provider is iserv', () => {
 			it('should return an iserv login url string', async () => {
 				const system: SystemDto = new SystemDto({
@@ -201,17 +210,13 @@ describe('OAuthService', () => {
 						provider: 'iserv',
 						logoutEndpoint: 'http://iserv.de/logout',
 					} as OauthConfigDto,
-				});
 				systemService.findOAuthById.mockResolvedValue(system);
-
 				const result: string = await service.getPostLoginRedirectUrl('idToken', 'systemId');
-
 				expect(result).toEqual(
 					`http://iserv.de/logout?id_token_hint=idToken&post_logout_redirect_uri=https%3A%2F%2Fmock.de%2Fdashboard`
 				);
 			});
 		});
-
 		describe('when it is called with a postLoginRedirect and the provider is not iserv', () => {
 			it('should return the postLoginRedirect', async () => {
 				const system: SystemDto = new SystemDto({ type: 'oauth' });
@@ -235,39 +240,14 @@ describe('OAuthService', () => {
 		});
 	});
 
-	describe('getOAuthErrorResponse', () => {
-		describe('when an OAuthSSOError is given', () => {
-			it('should return a login url string within an error', () => {
-				const specialError: OAuthSSOError = new OAuthSSOError('foo', 'special_error_code');
-
-				const response = service.getOAuthErrorResponse(specialError, 'provider');
-
-				expect(response.provider).toStrictEqual('provider');
-				expect(response.errorCode).toStrictEqual('special_error_code');
-				expect(response.redirect).toStrictEqual(`${hostUri}/login?error=special_error_code&provider=provider`);
-			});
-		});
-		describe('when any other error is given', () => {
-			it('should return a login url string within an error', () => {
-				const generalError: Error = new Error('foo');
-
-				const response: OAuthProcessDto = service.getOAuthErrorResponse(generalError, 'provider');
-
-				expect(response.provider).toStrictEqual('provider');
-				expect(response.errorCode).toStrictEqual('oauth_login_failed');
-				expect(response.redirect).toStrictEqual(`${hostUri}/login?error=oauth_login_failed&provider=provider`);
-			});
-		});
-	});
-
-	describe('authenticateUser is called', () => {
-		const setup = () => {
-			const code = '43534543jnj543342jn2';
-			const query: AuthorizationParams = { code };
+	describe('authorizeForMigration', () => {
+		const setupMigration = () => {
+			const query: AuthorizationParams = { code: '43534543jnj543342jn2', state: 'someState' };
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
+				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',

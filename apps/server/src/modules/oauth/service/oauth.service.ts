@@ -1,7 +1,6 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig } from '@shared/domain';
+import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
@@ -12,11 +11,20 @@ import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OAuthTokenDto } from '../interface';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { SystemDto } from '@src/modules/system/service/dto/system.dto';
+import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
+import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UserMigrationService } from '@src/modules/user-login-migration';
+import { SystemService } from '@src/modules/system';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest, OAuthProcessDto, OauthTokenResponse } from './dto';
+import { OAuthSSOError } from '../error/oauth-sso.error';
+import { IJwt } from '../interface/jwt.base.interface';
+import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OauthAdapterService } from './oauth-adapter.service';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 @Injectable()
 export class OAuthService {
@@ -41,7 +49,7 @@ export class OAuthService {
 			);
 		}
 
-		const system: SystemDto = await this.systemService.findOAuthById(systemId);
+		const system: SystemDto = await this.systemService.findById(systemId);
 		if (!system.oauthConfig) {
 			throw new UnauthorizedException(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
 		}
@@ -57,7 +65,8 @@ export class OAuthService {
 	async provisionUser(
 		systemId: string,
 		idToken: string,
-		accessToken: string
+		accessToken: string,
+		postLoginRedirect?: string
 	): Promise<{ user?: UserDO; redirect: string }> {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
@@ -97,7 +106,7 @@ export class OAuthService {
 		}
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect);
+		const postLoginRedirect: string = await this.getPostLoginRedirectUrl(idToken, systemId, migrationConsentRedirect || postLoginRedirect);
 
 		return { user, redirect: postLoginRedirect };
 	}
@@ -123,7 +132,7 @@ export class OAuthService {
 		});
 
 		if (typeof decodedJWT === 'string') {
-			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+			throw new OAuthSSOError('Failed to validate idToken', SSOErrorCode.SSO_JWT_PROBLEM);
 		}
 
 		return decodedJWT;
@@ -149,24 +158,32 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getOAuthErrorResponse(error: unknown, provider?: string): OAuthProcessDto {
-		this.logger.error(error);
+	getAuthenticationUrl(
+		type: string,
+		oauthConfig: OauthConfig,
+		state: string,
+		migration: boolean,
+		alias?: string
+	): string {
+		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
-		let errorCode: string;
-		if (error instanceof OAuthSSOError) {
-			errorCode = error.errorcode;
+		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
+		if (migration) {
+			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, publicBackendUrl);
+			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
 		} else {
-			errorCode = 'oauth_login_failed';
+			const redirectUri: URL = new URL(`api/v3/sso/oauth`, publicBackendUrl);
+			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
+		}
+		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
+		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
+		authenticationUrl.searchParams.append('state', state);
+		if (alias && type === 'oidc') {
+			authenticationUrl.searchParams.append('kc_idp_hint', alias);
 		}
 
-		const redirect = this.createErrorRedirect(errorCode, provider);
-
-		const oauthResponse = new OAuthProcessDto({
-			provider,
-			errorCode,
-			redirect,
-		});
-		return oauthResponse;
+		return authenticationUrl.toString();
 	}
 
 	private buildTokenRequestPayload(
@@ -187,12 +204,9 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private createErrorRedirect(errorCode: string, provider?: string): string {
+	private createErrorRedirect(errorCode: string): string {
 		const redirect = new URL('/login', Configuration.get('HOST') as string);
 		redirect.searchParams.append('error', errorCode);
-		if (provider) {
-			redirect.searchParams.append('provider', provider);
-		}
 		return redirect.toString();
 	}
 }

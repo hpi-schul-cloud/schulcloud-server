@@ -9,6 +9,13 @@ export class OauthConfigResponse {
 	clientId: string;
 
 	@ApiProperty({
+		description: 'An alias',
+		required: false,
+		nullable: true,
+	})
+	alias: string;
+
+	@ApiProperty({
 		description: 'Redirect uri',
 		required: true,
 		nullable: false,
@@ -80,6 +87,7 @@ export class OauthConfigResponse {
 
 	constructor(oauthConfigResponse: {
 		redirectUri: string;
+		alias: string;
 		tokenEndpoint: string;
 		responseType: string;
 		clientId: string;
@@ -92,6 +100,7 @@ export class OauthConfigResponse {
 		issuer: string;
 	}) {
 		this.clientId = oauthConfigResponse.clientId;
+		this.alias = oauthConfigResponse.alias;
 		this.redirectUri = oauthConfigResponse.redirectUri;
 		this.grantType = oauthConfigResponse.grantType;
 		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;
