@@ -1,13 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ICurrentUser, System } from '@shared/domain';
-import { CurrentUserMapper } from '@shared/domain/mapper/current-user.mapper';
+import { System } from '@shared/domain';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Strategy } from 'passport-custom';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
+import { ICurrentUser } from '../interface/user';
+import { CurrentUserMapper } from '../mapper';
 
 export type RequestBody = { systemId?: string; username?: string; password?: string; schoolId?: string };
 

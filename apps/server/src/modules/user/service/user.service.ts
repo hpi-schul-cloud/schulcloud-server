@@ -1,17 +1,23 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
+import { EntityId, IFindOptions, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Page } from '@shared/domain/domainobject/page';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserMapper } from '@src/modules/authentication/mapper';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
+import { UserQuery } from './user-query.type';
 
 @Injectable()
 export class UserService {
@@ -23,7 +29,8 @@ export class UserService {
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly roleService: RoleService
+		private readonly roleService: RoleService,
+		private readonly accountService: AccountService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -39,9 +46,32 @@ export class UserService {
 		return userDto;
 	}
 
+	async getResolvedUser(userId: EntityId): Promise<ICurrentUser> {
+		const user: User = await this.userRepo.findById(userId, true);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+
+		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		return resolvedUser;
+	}
+
+	async findById(id: string): Promise<UserDO> {
+		const userDO = await this.userDORepo.findById(id, true);
+		return userDO;
+	}
+
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
 		return savedUser;
+	}
+
+	async saveAll(users: UserDO[]): Promise<UserDO[]> {
+		const savedUsers: Promise<UserDO[]> = this.userDORepo.saveAll(users);
+		return savedUsers;
+	}
+
+	async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+		const users: Page<UserDO> = await this.userDORepo.find(query, options);
+		return users;
 	}
 
 	async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
@@ -63,12 +93,6 @@ export class UserService {
 			return userDto.lastName ? userDto.lastName : id;
 		}
 		return userDto.lastName ? `${userDto.firstName} ${userDto.lastName}` : id;
-	}
-
-	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
-		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
-			throw new BadRequestException('Language is not activated.');
-		}
 	}
 
 	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {
@@ -96,5 +120,11 @@ export class UserService {
 
 		const promise: Promise<void> = this.userRepo.save(saveEntity);
 		return promise;
+	}
+
+	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
+			throw new BadRequestException('Language is not activated.');
+		}
 	}
 }

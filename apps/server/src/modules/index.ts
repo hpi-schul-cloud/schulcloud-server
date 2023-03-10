@@ -22,4 +22,4 @@ export * from './sharing';
 export * from './tool';
 export * from './school';
 export * from './role';
-export * from './user-migration';
+export * from './user-login-migration';

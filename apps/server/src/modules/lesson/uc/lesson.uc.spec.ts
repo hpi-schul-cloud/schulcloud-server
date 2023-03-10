@@ -64,7 +64,7 @@ describe('LessonUC', () => {
 		expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 			expect.objectContaining({ ...user }),
 			expect.objectContaining({ ...lesson }),
-			PermissionContextBuilder.write([Permission.TOPIC_EDIT])
+			PermissionContextBuilder.write([Permission.TOPIC_VIEW])
 		);
 		expect(lessonService.deleteLesson).toHaveBeenCalledWith(expect.objectContaining({ ...lesson }));
 

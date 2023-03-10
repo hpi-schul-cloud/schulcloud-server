@@ -1,21 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { getMockRes } from '@jest-mock/express';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
-import { OauthUc } from '../uc';
-import { AuthorizationParams, SystemUrlParams } from './dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OauthSSOController } from './oauth-sso.controller';
+import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
+import { OauthUc } from '../uc';
 
 describe('OAuthController', () => {
 	let module: TestingModule;
 	let controller: OauthSSOController;
-	let oauthUc: DeepMocked<OauthUc>;
 	let hydraOauthUc: DeepMocked<HydraOauthUc>;
 
 	const mockHost = 'https://mock.de';
@@ -52,12 +49,12 @@ describe('OAuthController', () => {
 			controllers: [OauthSSOController],
 			providers: [
 				{
-					provide: OauthUc,
-					useValue: createMock<OauthUc>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: OauthUc,
+					useValue: createMock<OauthUc>(),
 				},
 				{
 					provide: HydraOauthUc,
@@ -67,7 +64,6 @@ describe('OAuthController', () => {
 		}).compile();
 
 		controller = module.get(OauthSSOController);
-		oauthUc = module.get(OauthUc);
 		hydraOauthUc = module.get(HydraOauthUc);
 	});
 
@@ -80,84 +76,16 @@ describe('OAuthController', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('startOauthAuthorizationCodeFlow is called', () => {
-		const query: AuthorizationParams = new AuthorizationParams();
-		query.code = 'defaultAuthCode';
-		const systemParams: SystemUrlParams = new SystemUrlParams();
-		systemParams.systemId = 'systemId';
-
-		describe('when a redirect url is defined', () => {
-			it('should redirect to the redirect url', async () => {
-				const { res } = getMockRes();
-				const response: OAuthProcessDto = new OAuthProcessDto({
-					provider: 'iserv',
-					redirect: 'postLoginRedirect',
-				});
-				oauthUc.processOAuth.mockResolvedValue(response);
-
-				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
-
-				expect(res.redirect).toHaveBeenCalledWith('postLoginRedirect');
-			});
-		});
-
-		describe('when no redirect url is defined', () => {
-			it('should not redirect', async () => {
-				const { res } = getMockRes();
-				const response: OAuthProcessDto = new OAuthProcessDto({
-					idToken: '2222',
-					provider: 'iserv',
-				});
-				oauthUc.processOAuth.mockResolvedValue(response);
-
-				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
-
-				expect(res.redirect).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when a jwt is defined', () => {
-			it('should set a jwt cookie', async () => {
-				const { res } = getMockRes();
-				const response: OAuthProcessDto = new OAuthProcessDto({
-					idToken: '2222',
-					provider: 'iserv',
-					jwt: 'userJwt',
-				});
-				oauthUc.processOAuth.mockResolvedValue(response);
-
-				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
-
-				expect(res.cookie).toHaveBeenCalledWith('jwt', 'userJwt', cookieProperties);
-			});
-		});
-
-		describe('when no jwt is defined', () => {
-			it('should not set a jwt cookie', async () => {
-				const { res } = getMockRes();
-				const response: OAuthProcessDto = new OAuthProcessDto({
-					idToken: '2222',
-					provider: 'iserv',
-				});
-				oauthUc.processOAuth.mockResolvedValue(response);
-
-				await controller.startOauthAuthorizationCodeFlow(query, res, systemParams);
-
-				expect(res.cookie).not.toHaveBeenCalled();
-			});
-		});
-	});
-
 	describe('getHydraOauthToken', () => {
 		it('should call the hydraOauthUc', async () => {
-			const authParams: AuthorizationParams = {
+			const authParams: StatelessAuthorizationParams = {
 				code: 'code',
 			};
 			const oauthClientId = 'clientId';
 
 			await controller.getHydraOauthToken(authParams, oauthClientId);
 
-			expect(hydraOauthUc.getOauthToken).toBeCalledWith(authParams, oauthClientId);
+			expect(hydraOauthUc.getOauthToken).toBeCalledWith(oauthClientId, authParams.code, authParams.error);
 		});
 	});
 
