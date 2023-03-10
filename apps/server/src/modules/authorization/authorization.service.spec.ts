@@ -51,6 +51,7 @@ describe('AuthorizationService', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('hasPermission', () => {

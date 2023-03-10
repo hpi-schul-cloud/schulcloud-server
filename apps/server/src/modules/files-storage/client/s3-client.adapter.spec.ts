@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { Readable } from 'node:stream';
@@ -162,19 +162,25 @@ describe('S3ClientAdapter', () => {
 		});
 
 		describe('WHEN client throws error', () => {
-			const setup = () => {
+			const setup = (errorKey: string) => {
 				const { pathToFile } = createParameter();
-				const error = new Error('NoSuchKey');
+				const error = new Error(errorKey);
 				// @ts-expect-error Testcase
 				client.send.mockRejectedValueOnce(error);
 
 				return { error, pathToFile };
 			};
 
-			it('should throw error', async () => {
-				const { error, pathToFile } = setup();
+			it('should throw NotFoundException', async () => {
+				const { pathToFile } = setup('NoSuchKey');
 
-				await expect(service.get(pathToFile)).rejects.toThrowError(error);
+				await expect(service.get(pathToFile)).rejects.toThrowError(NotFoundException);
+			});
+
+			it('should throw error', async () => {
+				const { pathToFile } = setup('Unknown Error');
+
+				await expect(service.get(pathToFile)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 	});
