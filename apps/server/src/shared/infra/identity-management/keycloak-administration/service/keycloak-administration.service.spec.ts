@@ -47,14 +47,11 @@ describe('KeycloakAdministrationService', () => {
 		service = module.get(KeycloakAdministrationService);
 
 		kcAdminClient.realms.update = jest.fn();
-		kcAdminClient.clients.find = jest.fn();
-	});
-
-	beforeEach(() => {
-		jest.spyOn(service, 'lastAuthorizationTime', 'get').mockReturnValueOnce(0);
+		kcAdminClient.clients = kcApiClientMock;
 	});
 
 	afterEach(() => {
+		service.resetLastAuthorizationTime();
 		kcApiClientMock.find.mockClear();
 		jest.resetAllMocks();
 	});
@@ -95,7 +92,6 @@ describe('KeycloakAdministrationService', () => {
 		});
 
 		it('should return false on error', async () => {
-			jest.spyOn(service, 'lastAuthorizationTime', 'get').mockReturnValueOnce(0);
 			kcAdminClient.auth.mockRejectedValueOnce(new Error());
 			expect(await service.testKcConnection()).toBe(false);
 		});
