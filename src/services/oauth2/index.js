@@ -49,6 +49,7 @@ module.exports = function oauth2() {
 
 	app.use('/oauth2/loginRequest', {
 		get(challenge) {
+			console.log(challenge, 88888888888888888888888, hydraAdmin.getLoginRequest(challenge))
 			return hydraAdmin.getLoginRequest(challenge);
 		},
 		patch(challenge, body, params) {
@@ -60,11 +61,15 @@ module.exports = function oauth2() {
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
 
 	app.use('/oauth2/logoutRequest', {
-		patch(challenge, body) {
-			console.log(challenge, body, "CHALENGE BODY 11111111111111111")
-			console.log(hydraAdmin.acceptLogoutRequest(challenge, body), 11111111111111111111111111)
-			return hydraAdmin.acceptLogoutRequest(challenge, body);
+		get(challenge) {
+			console.log(challenge, 98996777567576756, hydraAdmin.getLogoutRequest(challenge))
+			return hydraAdmin.getLoginRequest(challenge);
 		},
+		patch(challenge, body, params) {
+			return params.query.accept
+				? hydraAdmin.acceptLogoutRequest(challenge, body)
+				: hydraAdmin.rejectLogoutRequest(challenge, body);
+		}
 	});
 	app.service('/oauth2/logoutRequest').hooks(hooks.hooks.logoutRequest);
 	console.log(app.service('/oauth2/logoutRequest').hooks(hooks.hooks.logoutRequest), 2222222222222222222)
