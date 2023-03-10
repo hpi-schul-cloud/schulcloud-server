@@ -252,7 +252,7 @@ describe('Task-Card Controller (api)', () => {
 			const inThreeDays = new Date(Date.now() + 259200000);
 			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
-				title: 'test title',
+				title: 'updated title',
 				cardElements: [
 					{
 						id: richTextCardElement.id,
@@ -282,6 +282,8 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 
 			expect(responseTaskCard.id).toEqual(taskCard.id);
+			// expect(responseTaskCard.title).toEqual('Task Card Title');
+			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
 			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
@@ -368,5 +370,54 @@ describe('Task-Card Controller (api)', () => {
 				expect(richTextElement ? richTextElement[0].content.value : '').toEqual(sanitizedText);
 			});
 		});
+	});
+	describe('When title is provided', () => {
+		it('should create a task card with title', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+			};
+
+			const response = await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(201);
+
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.title).toEqual(taskCardParams.title);
+		});
+		// it('should update a task card with title', async () => {
+		// 	const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+		// 	// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+		// 	const task = taskFactory.build({ creator: user });
+		// 	const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+
+		// 	await em.persistAndFlush([user, task, taskCard]);
+		// 	em.clear();
+
+		// 	currentUser = mapUserToCurrentUser(user);
+
+		// 	const taskCardUpdateParams = {
+		// 		title: 'test title',
+		// 	};
+
+		// 	const response = await request(app.getHttpServer())
+		// 		.patch(`/cards/task/${taskCard.id}`)
+		// 		.set('Accept', 'application/json')
+		// 		.send(taskCardUpdateParams)
+		// 		.expect(200);
+
+		// 	const responseTaskCard = response.body as TaskCardResponse;
+
+		// 	expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
+		// });
 	});
 });
