@@ -13,43 +13,37 @@ const iframeSubject = (pseudonym, url) => {
 
 exports.getSubject = iframeSubject;
 
-const setSubject = (hook) => {
+const setSubject = async (hook) => {
 	if (!hook.params.query.accept) return hook;
-	return hook.app
-		.service('ltiTools')
-		.find({
-			query: {
-				oAuthClientId: hook.params.loginRequest.client.client_id,
-				isLocal: true,
-			},
-		})
-		.then((tools) =>
-			hook.app
-				.service('pseudonym')
-				.find({
-					query: {
-						toolId: tools.data[0]._id,
-						userId: hook.params.account.userId,
-					},
-				})
-				.then((pseudonyms) => {
-					const { pseudonym } = pseudonyms.data[0];
-					if (!hook.data) hook.data = {};
-					hook.data.subject = hook.params.account.userId;
-					console.log(11111111111)
-					console.log(hook.params.account, 2222222222222222222)
-					console.log(hook.params,333333333333)
-					console.log(hook.params.session, 4444444444444444444444444)
-					console.log(hook.params.loginRequest.session_id, 555555555555555555)
-					console.log(hook.params.headers.authorization, 66666666)
-					console.log(hook.params.loginRequest.client, 77777777777)
-					hook.data.force_subject_identifier = pseudonym;
-					if (!hook.params.headers.authorization) {
-						hook.params.loginRequest.session_id = null;
-					}
-				})
-		);
-};
+  
+	const tools = await hook.app.service('ltiTools').find({
+	  query: {
+		oAuthClientId: hook.params.loginRequest.client.client_id,
+		isLocal: true,
+	  },
+	});
+  
+	const pseudonyms = await hook.app.service('pseudonym').find({
+	  query: {
+		toolId: tools.data[0]._id,
+		userId: hook.params.account.userId,
+	  },
+	});
+  
+	const { pseudonym } = pseudonyms.data[0];
+  
+	if (!hook.data) hook.data = {};
+  
+	if (hook.data.subject === hook.params.account.userId) {
+	  hook.data.subject = '';
+	} else {
+	  hook.data.subject = hook.params.account.userId;
+	}
+  
+	hook.data.force_subject_identifier = pseudonym;
+  
+	return hook;
+  };
 
 const setIdToken = (hook) => {
 	const scope = hook.params.consentRequest.requested_scope;
