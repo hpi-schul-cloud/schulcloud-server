@@ -276,6 +276,21 @@ describe('OAuthUc', () => {
 				});
 			});
 
+			describe('when the jwt cannot be removed', () => {
+				it('should throw', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse } = setupMigration();
+					const error: Error = new Error('testError');
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
+
+					const func = () => uc.migrate('jwt', 'currentUserId', query, system.id as string);
+
+					await expect(func).rejects.toThrow(error);
+				});
+			});
+
 			describe('when migration failed', () => {
 				it('should return redirect to dashboard ', async () => {
 					const { query, system, userMigrationFailedDto, oauthTokenResponse } = setupMigration();
