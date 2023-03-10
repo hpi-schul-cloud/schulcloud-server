@@ -17,6 +17,7 @@ export class UserMapper {
 			preferences: entity.preferences,
 			lastLoginSystemChange: entity.lastLoginSystemChange,
 			outdatedSince: entity.outdatedSince,
+			lastSyncedAt: entity.lastSyncedAt,
 		});
 	}
 
@@ -34,6 +35,7 @@ export class UserMapper {
 			preferences: dto.preferences,
 			lastLoginSystemChange: dto.lastLoginSystemChange,
 			outdatedSince: dto.outdatedSince,
+			lastSyncedAt: dto.lastSyncedAt,
 		});
 		if (dto.id) {
 			user.id = dto.id;
@@ -57,6 +59,8 @@ export class UserMapper {
 		// so we can't check if the field is undefined. it is always initialized with an empty object.
 		target.preferences =
 			source.preferences && Object.keys(source.preferences).length !== 0 ? source.preferences : target.preferences;
+		target.lastSyncedAt = source.lastSyncedAt ?? target.lastSyncedAt;
+
 		return target;
 	}
 }

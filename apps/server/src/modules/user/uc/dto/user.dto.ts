@@ -15,6 +15,7 @@ export class UserDto {
 		this.preferences = user.preferences;
 		this.lastLoginSystemChange = user.lastLoginSystemChange;
 		this.outdatedSince = user.outdatedSince;
+		this.lastSyncedAt = user.lastSyncedAt;
 	}
 
 	id?: EntityId;
@@ -43,4 +44,6 @@ export class UserDto {
 	lastLoginSystemChange?: Date;
 
 	outdatedSince?: Date;
+
+	lastSyncedAt?: Date;
 }
