@@ -1,6 +1,7 @@
+import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain';
+import { BoardNode, EntityId } from '@shared/domain';
 
 @Injectable()
 export class BoardNodeRepo {
@@ -27,6 +28,26 @@ export class BoardNodeRepo {
 			map[child.path].push(child);
 		}
 		return map;
+	}
+
+	async save(boardNode: BoardNode | BoardNode[]) {
+		const boardNodes = Utils.asArray(boardNode);
+
+		// fill identity map with existing board nodes
+		const boardNodeIds = boardNodes.map((bn) => bn.id);
+		const existingNodes = await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
+		const nodeCache = new Map<EntityId, BoardNode>(existingNodes.map((node) => [node.id, node]));
+
+		boardNodes.forEach((node) => {
+			const existing = nodeCache.get(node.id);
+			if (existing) {
+				this.em.assign(existing, node);
+			} else {
+				this.em.create(BoardNode, node, { managed: true, persist: true });
+			}
+		});
+
+		await this.em.flush();
 	}
 
 	// TODO. findDescendantsOfMany
