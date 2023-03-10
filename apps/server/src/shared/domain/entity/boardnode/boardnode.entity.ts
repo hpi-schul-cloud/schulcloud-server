@@ -1,6 +1,6 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain/domainobject';
+import { AnyBoardDo } from '../../domainobject';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import type { BoardDoBuilder } from './board-do.builder';

@@ -1,6 +1,5 @@
-import { AnyBoardDo, Card, Column, ColumnBoard, TextElement } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
-import { BoardNodeBuilder } from '../../domainobject/board/types/board-node-builder';
+import { AnyBoardDo, Card, Column, ColumnBoard, TextElement, BoardNodeBuilder } from '../../domainobject';
+import { EntityId } from '../../types';
 import { BoardNode } from './boardnode.entity';
 import { CardNode } from './card-node.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
