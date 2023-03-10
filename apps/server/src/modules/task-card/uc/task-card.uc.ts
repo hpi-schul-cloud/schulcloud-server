@@ -141,6 +141,9 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
+		if (params.title) {
+			card.title = params.title;
+		}
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));

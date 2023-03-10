@@ -70,9 +70,9 @@ export class TaskCardParams {
 	})
 	courseId?: string;
 
+	@MinLength(2)
 	@IsString()
 	@SanitizeHtml()
-	@MinLength(2)
 	@ApiProperty({
 		description: 'The title of the card',
 	})
