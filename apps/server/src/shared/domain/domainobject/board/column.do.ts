@@ -1,7 +1,10 @@
+import type { BoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { Card } from './card.do';
+import type { BoardNodeBuilder } from './types';
+import type { BoardNodeBuildable } from './types/board-node-buildable';
 
-export class Column implements ColumnProps {
+export class Column implements ColumnProps, BoardNodeBuildable {
 	id: EntityId;
 
 	title?: string;
@@ -18,6 +21,11 @@ export class Column implements ColumnProps {
 		this.cards = props.cards;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
+	}
+
+	useBoardNodeBuilder(builder: BoardNodeBuilder): BoardNode[] {
+		const boardNodes = builder.buildColumnNode(this);
+		return boardNodes;
 	}
 }
 

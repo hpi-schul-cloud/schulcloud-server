@@ -15,6 +15,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		if (props.parent && props.parent.id == null) {
 			throw new InternalServerErrorException('Cannot create board node with a parent having no id');
 		}
+		this.id = props.id;
 		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
@@ -60,6 +61,8 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 }
 
 export interface BoardNodeProps {
+	id: EntityId;
+	type: BoardNodeType;
 	parent?: BoardNode;
 	position?: number;
 }

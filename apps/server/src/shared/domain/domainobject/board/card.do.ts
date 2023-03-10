@@ -1,7 +1,10 @@
-import { EntityId } from '@shared/domain/types';
+import type { BoardNode } from '../../entity/boardnode/boardnode.entity';
+import type { EntityId } from '../../types';
 import { TextElement } from './text-element.do';
+import type { BoardNodeBuildable } from './types/board-node-buildable';
+import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class Card implements CardProps {
+export class Card implements CardProps, BoardNodeBuildable {
 	id: EntityId;
 
 	title: string;
@@ -21,6 +24,11 @@ export class Card implements CardProps {
 		this.elements = props.elements;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
+	}
+
+	useBoardNodeBuilder(builder: BoardNodeBuilder): BoardNode[] {
+		const boardNodes = builder.buildCardNode(this);
+		return boardNodes;
 	}
 }
 
