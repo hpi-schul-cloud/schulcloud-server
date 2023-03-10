@@ -36,7 +36,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
-import { BoardModule } from '../board';
+import { BoardApiModule, BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -76,6 +76,7 @@ const serverModules = [
 	ToolApiModule,
 	UserLoginMigrationApiModule,
 	BoardModule,
+	BoardApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

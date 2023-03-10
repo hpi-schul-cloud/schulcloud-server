@@ -9,8 +9,14 @@ import { BoardManagementUc, BoardUc, CardUc } from './uc';
 
 @Module({
 	imports: [ConsoleWriterModule, LoggerModule],
-	controllers: [BoardController, CardController],
-	providers: [BoardManagementConsole, BoardManagementUc, BoardUc, CardRepo, CardUc, BoardNodeRepo, ColumnBoardRepo],
+	providers: [BoardManagementConsole, BoardManagementUc, CardRepo, BoardNodeRepo, ColumnBoardRepo],
 	exports: [],
 })
 export class BoardModule {}
+
+@Module({
+	imports: [BoardModule, LoggerModule],
+	controllers: [BoardController, CardController],
+	providers: [BoardUc, CardUc],
+})
+export class BoardApiModule {}

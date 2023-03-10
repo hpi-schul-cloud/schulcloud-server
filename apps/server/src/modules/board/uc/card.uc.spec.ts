@@ -39,11 +39,6 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		// jest.resetAllMocks();
-		// jest.clearAllMocks();
-	});
-
 	const setup = () => {
 		const user = userFactory.buildWithId();
 		const cards = cardFactory.buildList(3);
