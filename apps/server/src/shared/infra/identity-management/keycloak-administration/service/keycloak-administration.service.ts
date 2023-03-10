@@ -4,7 +4,7 @@ import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-setti
 
 @Injectable()
 export class KeycloakAdministrationService {
-	private _lastAuthorizationTime = 0;
+	private lastAuthorizationTime = 0;
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
@@ -59,15 +59,15 @@ export class KeycloakAdministrationService {
 		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
 	}
 
-	public get lastAuthorizationTime(): number {
-		return this._lastAuthorizationTime;
+	public resetLastAuthorizationTime(): void {
+		this.lastAuthorizationTime = 0;
 	}
 
 	private async authorizeAccess() {
 		const elapsedTimeMilliseconds = new Date().getTime() - this.lastAuthorizationTime;
 		if (elapsedTimeMilliseconds > KeycloakAdministrationService.AUTHORIZATION_TIMEBOX_MS) {
 			await this.kcAdminClient.auth(this.kcSettings.credentials);
-			this._lastAuthorizationTime = new Date().getTime();
+			this.lastAuthorizationTime = new Date().getTime();
 		}
 	}
 }
