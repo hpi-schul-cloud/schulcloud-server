@@ -9,8 +9,8 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
 import { EntityNotFoundError } from '@shared/common';
-import { Page } from '@shared/domain/interface/page';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
+import { Page } from '../../domain/domainobject/page';
 
 class UserRepoSpec extends UserDORepo {
 	mapEntityToDOSpec(entity: User): UserDO {
@@ -305,12 +305,13 @@ describe('UserRepo', () => {
 		});
 	});
 
-	describe('find', () => {
+	describe('find() is called', () => {
 		const setupFind = async () => {
 			const query: UserQuery = {
 				schoolId: undefined,
 				isOutdated: undefined,
 				lastLoginSystemChangeGreaterThan: undefined,
+				outdatedSince: undefined,
 			};
 
 			const options: IFindOptions<UserDO> = {};
@@ -407,10 +408,12 @@ describe('UserRepo', () => {
 			it('should add query to scope', async () => {
 				const { options, emFindAndCountSpy } = await setupFind();
 				const lastLoginSystemChangeGreaterThan: Date = new Date();
+				const outdatedSince: Date = new Date();
 				const query: UserQuery = {
 					schoolId: 'schoolId',
 					isOutdated: true,
 					lastLoginSystemChangeGreaterThan,
+					outdatedSince,
 				};
 
 				await repo.find(query, options);
@@ -430,6 +433,11 @@ describe('UserRepo', () => {
 							{
 								lastLoginSystemChange: {
 									$gte: query.lastLoginSystemChangeGreaterThan,
+								},
+							},
+							{
+								outdatedSince: {
+									$eq: query.outdatedSince,
 								},
 							},
 						],

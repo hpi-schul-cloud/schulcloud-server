@@ -10,9 +10,9 @@ import {
 	ToolConfigType,
 } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Page } from '@shared/domain/interface/page';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { Page } from '../../domain/domainobject/page';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
