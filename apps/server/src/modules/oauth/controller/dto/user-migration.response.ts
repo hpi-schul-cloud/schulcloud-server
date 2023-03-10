@@ -3,5 +3,5 @@ export class UserMigrationResponse {
 		this.redirect = props.redirect;
 	}
 
-	redirect?: string;
+	redirect: string;
 }
