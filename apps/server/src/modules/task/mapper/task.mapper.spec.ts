@@ -2,7 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions, UsersList } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
-import { TaskResponse, TaskStatusResponse, TaskCreateParams, TaskUpdateParams } from '../controller/dto';
+import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (
@@ -30,6 +30,9 @@ const createExpectedResponse = (
 			type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 		};
 	}
+	if (task.taskCard) {
+		expected.taskCardId = task.taskCard;
+	}
 	expected.duedate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
@@ -56,8 +59,9 @@ describe('task.mapper', () => {
 	});
 
 	describe('mapToResponse', () => {
-		it('should map task with status and description values', () => {
+		it('should map task with status, task card and description values', () => {
 			const task = taskFactory.buildWithId({ availableDate: new Date(), dueDate: new Date() });
+			task.taskCard = 'task card ID #1';
 
 			const descriptions: TaskParentDescriptions = {
 				courseName: 'course #1',

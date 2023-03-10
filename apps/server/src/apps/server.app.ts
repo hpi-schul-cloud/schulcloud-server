@@ -1,15 +1,10 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
-import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-
-// register source-map-support for debugging
-import { install as sourceMapInstall } from 'source-map-support';
-
 // application imports
 import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
+/* eslint-disable no-console */
+import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -18,8 +13,12 @@ import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
+import express from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
+
+// register source-map-support for debugging
+import { install as sourceMapInstall } from 'source-map-support';
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
