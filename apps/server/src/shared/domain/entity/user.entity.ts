@@ -26,6 +26,7 @@ export interface IUserProperties {
 	lastLoginSystemChange?: Date;
 	outdatedSince?: Date;
 	previousExternalId?: string;
+	lastSyncedAt?: Date;
 }
 
 @Entity({ tableName: 'users' })
@@ -113,6 +114,9 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	@Property({ nullable: true })
 	outdatedSince?: Date;
 
+	@Property({ nullable: true })
+	lastSyncedAt?: Date;
+
 	constructor(props: IUserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -129,5 +133,6 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.lastLoginSystemChange = props.lastLoginSystemChange;
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
+		this.lastSyncedAt = props.lastSyncedAt;
 	}
 }
