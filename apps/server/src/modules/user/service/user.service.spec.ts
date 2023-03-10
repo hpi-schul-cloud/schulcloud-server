@@ -2,7 +2,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, LanguageType, PermissionService, Role, RoleName, School, SortOrder, User } from '@shared/domain';
+import {
+	IFindOptions,
+	Permission,
+	LanguageType,
+	PermissionService,
+	Role,
+	RoleName,
+	School,
+	SortOrder,
+	User,
+} from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -13,6 +23,9 @@ import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { SchoolService } from '@src/modules/school';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
@@ -27,6 +40,7 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let schoolService: DeepMocked<SchoolService>;
+	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -65,6 +79,10 @@ describe('UserService', () => {
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
 				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -76,6 +94,7 @@ describe('UserService', () => {
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
+		accountService = module.get(AccountService);
 
 		orm = await setupEntities();
 	});
@@ -146,6 +165,50 @@ describe('UserService', () => {
 
 			expect(result).toBeDefined();
 			expect(result).toBeInstanceOf(UserDO);
+		});
+	});
+
+	describe('getResolvedUser is called', () => {
+		describe('when a resolved user is requested', () => {
+			it('should return an ICurrentUser', async () => {
+				const systemId = 'systemId';
+				const role: Role = roleFactory.buildWithId({
+					name: RoleName.STUDENT,
+					permissions: [Permission.DASHBOARD_VIEW],
+				});
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				const account: AccountDto = new AccountDto({
+					id: 'accountId',
+					systemId,
+					username: 'username',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					activated: true,
+				});
+
+				userRepo.findById.mockResolvedValue(user);
+				accountService.findByUserIdOrFail.mockResolvedValue(account);
+
+				const result: ICurrentUser = await service.getResolvedUser(user.id);
+
+				expect(result).toEqual<ICurrentUser>({
+					userId: user.id,
+					systemId,
+					schoolId: user.school.id,
+					accountId: account.id,
+					roles: [role.name],
+					user: {
+						id: user.id,
+						roles: [{ id: role.id, name: role.name }],
+						schoolId: user.school.id,
+						permissions: role.permissions,
+						firstName: user.firstName,
+						lastName: user.lastName,
+						createdAt: user.createdAt,
+						updatedAt: user.updatedAt,
+					},
+				});
+			});
 		});
 	});
 

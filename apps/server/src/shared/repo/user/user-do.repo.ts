@@ -1,3 +1,4 @@
+import { EntityName, FilterQuery, IdentifiedReference, QueryOrderMap, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo, Scope } from '@shared/repo';
 import {
@@ -12,7 +13,6 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { EntityName, FilterQuery, QueryOrderMap, Reference } from '@mikro-orm/core';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityNotFoundError } from '@shared/common';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
@@ -106,8 +106,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			previousExternalId: entity.previousExternalId,
 		});
 
-		if (entity.roles.isInitialized(true)) {
-			user.roleIds = entity.roles.getItems().map((role: Role) => role.id);
+		if (entity.roles.isInitialized()) {
+			user.roleIds = entity.roles.getItems().map((role: Role): EntityId => role.id);
 		}
 
 		return user;
@@ -119,7 +119,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
 			school: Reference.createFromPK(School, entityDO.schoolId),
-			roles: entityDO.roleIds.map((roleId) => Reference.createFromPK(Role, roleId)),
+			roles: entityDO.roleIds.map(
+				(roleId: EntityId): IdentifiedReference<Role> => Reference.createFromPK(Role, roleId)
+			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
