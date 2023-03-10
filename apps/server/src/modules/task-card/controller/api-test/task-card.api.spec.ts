@@ -86,7 +86,19 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send().expect(500);
+			const params = {
+				cardElements: [
+					{
+						content: {
+							type: 'richText',
+							value: 'rich 2',
+							inputFormat: 'richtext_ck5',
+						},
+					},
+				],
+			};
+
+			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
 
 		it('Find task-card should throw', async () => {
