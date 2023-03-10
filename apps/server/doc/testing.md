@@ -29,13 +29,16 @@ To facilitate this, your tests should be wrapped in at least two describe levels
 ```TypeScript
 // Name of the unit under test
 describe("Course Service", (() => {
-    // a "when..." sentence
-	describe("When a student tries to create a course", (() => {
-		// a "should..." sentence
-        it("should fail", async () => {
-            ...
-        });
-    });
+	// method that is called
+	describe('createCourse is called', () => {
+    	// a "when..." sentence
+		describe("When a student tries to create a course", (() => {
+			// a "should..." sentence
+				it("should return course", async () => {
+					...
+				});
+		});
+	});
 });
 ```
 
@@ -56,6 +59,42 @@ Your test should be structured in three seperate areas, each distinguished by at
 - Assert - check the result
 
 this is known as the AAA-pattern.
+
+The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values. Therefore it largely differs from case to case what a sufficient amount of scenarios would be. Parameter values that a theoretically not possible by the typescript type definition should be ignored as a test case. 
+The test coverage report already enforces scenarios that test every possible if/else result in the code. But still some scenarios are not covered by the report and must be tested:
+* All error scenarios: That means one describe block for every call that can reject.
+
+We use different levels of describe blocks to structure the tests in a way, that the tested scenarios could easily be recognized. The outer describe would be the function call itself. Every scenario is added as another describe inside the outer describe. 
+
+All of the data and mock preparation should happen in a setup function. Every describe scenario only contains one setup function and is called in every test. No further data or mock preparation should be added to the test. Often there will be only one test in every describe scenario, this is perfectly fine with our desired structure.
+
+```TypeScript
+describe('<method> is called', () => {
+	describe('when <senario description that is prepared in setup>', () => {
+		const setup = () => {
+			// prepare the data and mocks for this senario
+		};
+
+		it('...', () => {
+			const { } = setup();
+		});
+
+		it('...', () => {
+			const { } = setup();
+		});
+	});          
+
+	describe('when <senario description that is prepared in setup>', () => {
+		const setup = () => {
+			// prepare the data and mocks for this senario
+		};
+
+		it('...', () => {
+			const { } = setup();
+		});
+	});
+});
+```
 
 ## Testing Samples
 
