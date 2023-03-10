@@ -8,7 +8,8 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthenticationService, ICurrentUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@src/modules/provisioning';
