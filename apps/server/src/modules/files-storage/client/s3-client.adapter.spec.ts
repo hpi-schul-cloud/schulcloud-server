@@ -216,12 +216,11 @@ describe('S3ClientAdapter', () => {
 			});
 		});
 
-		describe('WHEN client throws Bad Request error', () => {
+		describe('WHEN client throws error', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-
-				const error = new Error('Bad Request');
+				const error = new Error('testError');
 
 				client.config.endpoint = jest.fn().mockResolvedValueOnce({ protocol: '' });
 				jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
