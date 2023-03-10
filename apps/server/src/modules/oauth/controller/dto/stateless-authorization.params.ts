@@ -1,10 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 
-/**
- * @deprecated
- */
-export class AuthorizationParams {
+export class StatelessAuthorizationParams {
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
@@ -21,8 +18,4 @@ export class AuthorizationParams {
 	@IsOptional()
 	@IsString()
 	error_uri?: string;
-
-	@IsString()
-	@IsNotEmpty()
-	state!: string;
 }
