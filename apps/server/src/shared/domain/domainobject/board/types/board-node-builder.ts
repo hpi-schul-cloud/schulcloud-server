@@ -1,12 +1,12 @@
-import type { BoardNode } from '../../../entity';
-import { Card } from '../card.do';
+import type { EntityId } from '../../../types';
+import type { Card } from '../card.do';
 import type { ColumnBoard } from '../column-board.do';
-import { Column } from '../column.do';
-import { TextElement } from '../text-element.do';
+import type { Column } from '../column.do';
+import type { TextElement } from '../text-element.do';
 
 export interface BoardNodeBuilder {
-	buildColumnBoardNode(columnBoard: ColumnBoard): BoardNode;
-	buildColumnNode(column: Column, parent: BoardNode): BoardNode;
-	buildCardNode(card: Card, parent: BoardNode): BoardNode;
-	buildTextElementNode(textElement: TextElement, parent: BoardNode): BoardNode;
+	buildColumnBoardNode(columnBoard: ColumnBoard, parentId?: EntityId): void;
+	buildColumnNode(column: Column, parentId?: EntityId): void;
+	buildCardNode(card: Card, parentId?: EntityId): void;
+	buildTextElementNode(textElement: TextElement, parentId?: EntityId): void;
 }

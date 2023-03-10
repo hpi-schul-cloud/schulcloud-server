@@ -1,6 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Card, CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -9,6 +10,7 @@ import {
 	columnNodeFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { BoardNodeRepo } from './board-node.repo';
 import { CardRepo } from './card.repo';
 
@@ -19,7 +21,7 @@ describe(CardRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
 			providers: [CardRepo, BoardNodeRepo],
 		}).compile();
 		repo = module.get(CardRepo);
@@ -57,6 +59,29 @@ describe(CardRepo.name, () => {
 
 		it('should throw an error when not found', async () => {
 			await expect(repo.findById('invalid-id')).rejects.toThrowError(NotFoundError);
+		});
+	});
+
+	describe('save', () => {
+		it('should save cards', async () => {
+			const card = new Card({
+				id: new ObjectId().toHexString(),
+				title: `card #1`,
+				height: 150,
+				elements: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			const columnNode = columnNodeFactory.build();
+			await em.persistAndFlush(columnNode);
+
+			await repo.save(card, columnNode.id);
+			em.clear();
+
+			const result = await em.findOne(CardNode, card.id);
+
+			expect(result).toBeDefined();
 		});
 	});
 });

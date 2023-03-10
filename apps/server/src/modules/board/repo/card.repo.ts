@@ -1,6 +1,7 @@
+import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, Card, CardNode, EntityId } from '@shared/domain';
+import { Card, CardNode, EntityId } from '@shared/domain';
 import { BoardDoBuilder } from '@shared/domain/entity/boardnode/board-do.builder';
 import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
@@ -31,10 +32,11 @@ export class CardRepo {
 		return domainObjects;
 	}
 
-	async saveCard(card: Card, parentId: EntityId[]) {
-		const builder = new BoardNodeBuilderImpl();
-		const parent = await this.em.findOneOrFail(BoardNode, { id: parentId });
-		const cardNode = builder.buildCardNode(card, parent);
-		await this.boardNodeRepo.save(cardNode);
+	async save(card: Card | Card[], parentId: EntityId) {
+		const cards = Utils.asArray(card);
+		const parent = await this.boardNodeRepo.findById(parentId);
+		const builder = new BoardNodeBuilderImpl(parent);
+		const cardNodes = builder.buildBoardNodes(cards, parent.id);
+		await this.boardNodeRepo.save(cardNodes);
 	}
 }

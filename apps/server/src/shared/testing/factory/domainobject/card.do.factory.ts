@@ -11,5 +11,7 @@ export const cardFactory = Factory.define<Card>(({ sequence }) => {
 		elements: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		// FIXME
+		useBoardNodeBuilder: () => {},
 	};
 });

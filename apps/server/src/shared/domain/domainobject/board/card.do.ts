@@ -1,4 +1,3 @@
-import type { BoardNode } from '../../entity/boardnode/boardnode.entity';
 import type { EntityId } from '../../types';
 import { TextElement } from './text-element.do';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
@@ -26,9 +25,8 @@ export class Card implements CardProps, BoardNodeBuildable {
 		this.updatedAt = props.updatedAt;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder): BoardNode[] {
-		const boardNodes = builder.buildCardNode(this);
-		return boardNodes;
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
+		builder.buildCardNode(this, parentId);
 	}
 }
 

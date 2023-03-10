@@ -1,4 +1,3 @@
-import type { BoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { Column } from './column.do';
 import { BoardNodeBuildable, BoardNodeBuilder } from './types';
@@ -22,9 +21,8 @@ export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 		this.updatedAt = props.updatedAt;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: BoardNode): BoardNode[] {
-		const boardNodes = builder.buildColumnBoardNode(this, parent);
-		return boardNodes;
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
+		builder.buildColumnBoardNode(this, parentId);
 	}
 }
 

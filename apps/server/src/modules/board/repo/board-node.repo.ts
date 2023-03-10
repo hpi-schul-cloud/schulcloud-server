@@ -7,6 +7,11 @@ import { BoardNode, EntityId } from '@shared/domain';
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	async findById(id: EntityId): Promise<BoardNode> {
+		const boardNode = await this.em.findOneOrFail(BoardNode, id);
+		return boardNode;
+	}
+
 	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
