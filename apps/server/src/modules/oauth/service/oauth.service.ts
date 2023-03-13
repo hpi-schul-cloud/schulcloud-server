@@ -9,16 +9,16 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '@src/modules/oauth/controller/dto';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SystemService } from '@src/modules/system';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
+import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { SSOErrorCode } from '../error/sso-error-code.enum';
 import { IJwt } from '../interface/jwt.base.interface';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
 import { OauthAdapterService } from './oauth-adapter.service';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 
 @Injectable()
 export class OAuthService {
@@ -37,7 +37,8 @@ export class OAuthService {
 	async authenticateUser(
 		systemId: string,
 		authCode?: string,
-		errorCode?: string
+		errorCode?: string,
+		postLoginRedirect?: string
 	): Promise<{ user?: UserDO; redirect: string }> {
 		let redirect: string;
 		if (errorCode) {
@@ -85,7 +86,12 @@ export class OAuthService {
 			}
 		}
 
-		redirect = this.getRedirectUrl(oauthConfig.provider, queryToken.id_token, oauthConfig.logoutEndpoint);
+		redirect = this.getPostLoginRedirectUrl(
+			oauthConfig.provider,
+			queryToken.id_token,
+			oauthConfig.logoutEndpoint,
+			postLoginRedirect
+		);
 
 		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
 
@@ -126,7 +132,7 @@ export class OAuthService {
 		});
 
 		if (typeof verifiedJWT === 'string') {
-			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+			throw new OAuthSSOError('Failed to validate idToken', SSOErrorCode.SSO_JWT_PROBLEM);
 		}
 
 		return verifiedJWT as IJwt;
@@ -143,7 +149,10 @@ export class OAuthService {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		if (!user) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
-			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
+			throw new OAuthSSOError(
+				`Failed to find user with Id ${externalUserId} ${additionalInfo}`,
+				SSOErrorCode.SSO_USER_NOT_FOUND
+			);
 		}
 
 		return user;
@@ -167,7 +176,7 @@ export class OAuthService {
 		}
 		const oauthConfig: OauthConfig = this.extractOauthConfigFromSystem(system);
 
-		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri(targetSystemId);
+		const migrationRedirect: string = this.userMigrationService.getMigrationRedirectUri();
 		const queryToken: OauthTokenResponse = await this.requestToken(authCode, oauthConfig, migrationRedirect);
 
 		await this.validateToken(queryToken.id_token, oauthConfig);
@@ -175,47 +184,52 @@ export class OAuthService {
 		return queryToken;
 	}
 
-	/**
-	 * Builds the URL from the given parameters.
-	 *
-	 * @param provider
-	 * @param idToken
-	 * @param logoutEndpoint
-	 * @return built redirectUrl
-	 */
-	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = ''): string {
-		const HOST = Configuration.get('HOST') as string;
+	getPostLoginRedirectUrl(provider: string, idToken = '', logoutEndpoint = '', postLoginRedirect?: string): string {
+		const clientUrl: string = Configuration.get('HOST') as string;
+		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
 
-		// iserv strategy
-		// TODO: move to client in https://ticketsystem.dbildungscloud.de/browse/N21-381
 		let redirect: string;
 		if (provider === 'iserv') {
-			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+			const iservLogoutUrl: URL = new URL(logoutEndpoint);
+			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
+			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
+
+			redirect = iservLogoutUrl.toString();
+		} else if (postLoginRedirect) {
+			redirect = postLoginRedirect;
 		} else {
-			redirect = `${HOST}/dashboard`;
+			redirect = dashboardUrl.toString();
 		}
 
 		return redirect;
 	}
 
-	getOAuthErrorResponse(error: unknown, provider: string): OAuthProcessDto {
-		this.logger.error(error);
+	getAuthenticationUrl(
+		type: string,
+		oauthConfig: OauthConfig,
+		state: string,
+		migration: boolean,
+		alias?: string
+	): string {
+		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
+		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
 
-		let errorCode: string;
-		if (error instanceof OAuthSSOError) {
-			errorCode = error.errorcode;
+		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
+		if (migration) {
+			const migrationRedirectUri: URL = new URL(`api/v3/sso/oauth/migration`, publicBackendUrl);
+			authenticationUrl.searchParams.append('redirect_uri', migrationRedirectUri.toString());
 		} else {
-			errorCode = 'oauth_login_failed';
+			const redirectUri: URL = new URL(`api/v3/sso/oauth`, publicBackendUrl);
+			authenticationUrl.searchParams.append('redirect_uri', redirectUri.toString());
+		}
+		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
+		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
+		authenticationUrl.searchParams.append('state', state);
+		if (alias && type === 'oidc') {
+			authenticationUrl.searchParams.append('kc_idp_hint', alias);
 		}
 
-		const redirect = this.createErrorRedirect(errorCode, provider);
-
-		const oauthResponse = new OAuthProcessDto({
-			provider,
-			errorCode,
-			redirect,
-		});
-		return oauthResponse;
+		return authenticationUrl.toString();
 	}
 
 	private async shouldUserMigrate(externalUserId: string, officialSchoolNumber: string, systemId: EntityId) {
@@ -254,12 +268,9 @@ export class OAuthService {
 		return tokenRequestPayload;
 	}
 
-	private createErrorRedirect(errorCode: string, provider?: string): string {
+	private createErrorRedirect(errorCode: string): string {
 		const redirect = new URL('/login', Configuration.get('HOST') as string);
 		redirect.searchParams.append('error', errorCode);
-		if (provider) {
-			redirect.searchParams.append('provider', provider);
-		}
 		return redirect.toString();
 	}
 }
