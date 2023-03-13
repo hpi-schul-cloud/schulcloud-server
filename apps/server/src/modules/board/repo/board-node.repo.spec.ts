@@ -18,7 +18,7 @@ describe('BoardNodeRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [BoardNodeRepo],
 		}).compile();
 		repo = module.get(BoardNodeRepo);

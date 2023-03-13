@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { CardRepo, ColumnBoardRepo, ContentElementRepo } from '../repo';
-import { CardService, ContentElementService } from '../service';
+import { ContentElementService } from '../service';
+import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
 	constructor(
-		private readonly cardRepo: CardRepo,
-		private readonly elementRepo: ContentElementRepo,
-		private readonly columnBoardRepo: ColumnBoardRepo,
+		private readonly cardService: CardService,
+		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
 	) {
-
-@Injectable()
-export class CardUc {
-	constructor(private readonly cardService: CardService, private readonly elementService: ContentElementService, private readonly logger: Logger) {
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -42,7 +37,6 @@ export class CardUc {
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
-
 		const element = await this.elementService.createElement(card.id);
 
 		return element;

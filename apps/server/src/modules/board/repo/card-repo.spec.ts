@@ -9,8 +9,8 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	textElementNodeFactory,
+	cardFactory,
 } from '@shared/testing';
-import { cardFactory } from '@shared/testing/factory/domainobject';
 import { BoardNodeRepo } from './board-node.repo';
 import { CardRepo } from './card.repo';
 
@@ -21,7 +21,7 @@ describe(CardRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ debug: true })],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [CardRepo, BoardNodeRepo],
 		}).compile();
 		repo = module.get(CardRepo);

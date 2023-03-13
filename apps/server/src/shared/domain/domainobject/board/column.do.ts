@@ -1,7 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { Card } from './card.do';
-import type { BoardNodeBuilder } from './types';
-import type { BoardNodeBuildable } from './types/board-node-buildable';
+import type { BoardNodeBuildable, BoardNodeBuilder } from './types';
 
 export class Column implements ColumnProps, BoardNodeBuildable {
 	id: EntityId;

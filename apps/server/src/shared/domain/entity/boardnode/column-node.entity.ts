@@ -6,7 +6,7 @@ import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.COLUMN })
 export class ColumnNode extends BoardNode {
-	@Property()
+	@Property({ nullable: true })
 	title?: string;
 
 	constructor(props: ColumnNodeProps) {

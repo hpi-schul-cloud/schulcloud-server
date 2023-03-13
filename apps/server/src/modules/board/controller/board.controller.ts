@@ -2,11 +2,9 @@ import { Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CardUc } from '../uc';
-import { BoardUc } from '../uc/board.uc';
+import { BoardUc, CardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, CardResponse, ColumnResponse, ColumnUrlParams } from './dto';
-import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
-import { CardResponseMapper } from './mapper/card-response.mapper';
+import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from './mapper';
 
 @ApiTags('Boards')
 @Authenticate('jwt')

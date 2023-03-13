@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Column, ColumnBoard, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { ColumnRepo } from '../repo';
 import { ColumnBoardService } from '../service';
 
 @Injectable()
 export class BoardUc {
-	constructor(
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnRepo: ColumnRepo,
-		private readonly logger: Logger
-	) {
+	constructor(private readonly columnBoardService: ColumnBoardService, private readonly logger: Logger) {
 		this.logger.setContext(BoardUc.name);
 	}
 

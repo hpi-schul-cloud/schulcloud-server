@@ -99,9 +99,6 @@ describe('FilesStorageUC', () => {
 
 	afterAll(async () => {
 		await orm.close();
-	});
-
-	afterEach(async () => {
 		await module.close();
 	});
 
