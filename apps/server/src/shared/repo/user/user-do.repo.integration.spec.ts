@@ -355,30 +355,53 @@ describe('UserRepo', () => {
 		});
 
 		describe('pagination', () => {
-			it('should return all users when options with pagination is set to undefined', async () => {
-				const { query, users } = await setupFind();
+			describe('when options with pagination is set to undefined', () => {
+				it('should return all users ', async () => {
+					const { query, users } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(query, undefined);
+					const page: Page<UserDO> = await repo.find(query, undefined);
 
-				expect(page.data.length).toBe(users.length);
+					expect(page.data.length).toBe(users.length);
+				});
 			});
 
-			it('should return one ltiTool when pagination has a limit of 1', async () => {
-				const { query, options } = await setupFind();
-				options.pagination = { limit: 1 };
+			describe('when limit and skip of pagination is undefined', () => {
+				it('should set limit and skip to undefined in options', async () => {
+					const { query, emFindAndCountSpy } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(query, options);
+					await repo.find(query, { pagination: { limit: undefined, skip: undefined } });
 
-				expect(page.data.length).toBe(1);
+					expect(emFindAndCountSpy).toHaveBeenCalledWith(
+						User,
+						query,
+						expect.objectContaining({
+							offset: undefined,
+							limit: undefined,
+						})
+					);
+				});
 			});
 
-			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
-				const { query, options } = await setupFind();
-				options.pagination = { limit: 1, skip: 3 };
+			describe(' when pagination has a limit of 1', () => {
+				it('should return one ltiTool', async () => {
+					const { query, options } = await setupFind();
+					options.pagination = { limit: 1 };
 
-				const page: Page<UserDO> = await repo.find(query, options);
+					const page: Page<UserDO> = await repo.find(query, options);
 
-				expect(page.data.length).toBe(0);
+					expect(page.data.length).toBe(1);
+				});
+			});
+
+			describe('pagination has a limit of 1 and skip is set to 2', () => {
+				it('should return no ltiTool when ', async () => {
+					const { query, options } = await setupFind();
+					options.pagination = { limit: 1, skip: 3 };
+
+					const page: Page<UserDO> = await repo.find(query, options);
+
+					expect(page.data.length).toBe(0);
+				});
 			});
 		});
 
