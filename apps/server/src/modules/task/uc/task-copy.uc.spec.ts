@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, PermissionTypes, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyService } from '../service';
@@ -177,8 +177,7 @@ describe('task copy uc', () => {
 				const { user, task, userId } = setup();
 
 				await uc.copyTask(user.id, task.id, { userId });
-
-				expect(courseRepo.findById).not.toHaveBeenCalled();
+				expect(taskCopyService.copyTask).toHaveBeenCalled();
 			});
 
 			it('should fetch destination lesson', async () => {
@@ -214,11 +213,15 @@ describe('task copy uc', () => {
 				const { course, user, task, userId } = setup();
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
-
-				expect(authorisation.hasPermission).toBeCalledWith(user, course, {
-					action: Actions.write,
-					requiredPermissions: [],
-				});
+				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
+					user.id,
+					AllowedAuthorizationEntityType.Course,
+					course.id,
+					{
+						action: Actions.write,
+						requiredPermissions: [],
+					}
+				);
 			});
 
 			it('should pass authorisation check without destination course', async () => {
@@ -289,8 +292,10 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					courseRepo.findById.mockResolvedValue(course);
 					authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
+					authorisation.checkPermissionByReferences.mockImplementation(() => {
+						throw new ForbiddenException();
+					});
 					return { user, course, task };
 				};
 
@@ -336,7 +341,7 @@ describe('task copy uc', () => {
 				});
 
 				expect(taskCopyService.copyTask).toBeCalledWith({
-					originalTask: task,
+					originalTaskId: task.id,
 					destinationCourse: course,
 					destinationLesson: lesson,
 					user,
