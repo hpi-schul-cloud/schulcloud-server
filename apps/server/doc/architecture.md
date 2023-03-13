@@ -89,11 +89,14 @@ The datamodel itself is defined through Entities, that have to be mapped into do
 
 ## Modules
 
-Each domain module comprises of a number of public services, that are explicitly exported from the module for external use. Along with these services it should export any types and interfaces needed outside the module.
+The codebase is broken into modules, each dealing with a part of the businesslogic, or seperated technical concerns.
+These modules define what code is available where, and ensure a clean dependency graph.
 
-TODO: since nestJs modules can only export injectables, the method of exporting types and interfaces is not defined yet, and implementation detail for now. One possible solution is to put an index file into the module folder, that defines the types that may be imported from the outside. This also allows us to define a linter rule in the future that prevents access to any files deeper than the index file.
+All Code written should be part of exactly one module. If something is needed in more than one module, it needs to be made available to import in other modules. A special case is the shared module, which can be imported anywhere, but naturally should not have any dependencies on any other module.
 
-In addition, it contains any classes it needs internally to function, including any repositories or other internal classes that should not be accessed from outside the module. *No Class may be provided in more than one module!*
+Each module has a defined public interface. It is comprised of services explicitly exported from the module, as well as types and interfaces exported in the index file in the root folder of the module.
+
+In addition, it contains any classes and other definitions it needs internally to function, including any repositories, their corresponding mappers, or other internal classes that should not be accessed from outside the module.
 
 ```js
 @Module({
