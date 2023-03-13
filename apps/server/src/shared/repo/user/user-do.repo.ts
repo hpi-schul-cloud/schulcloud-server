@@ -35,7 +35,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
-			.whereLastLoginSystemChangeGreaterThan(query.lastLoginSystemChangeGreaterThan)
+			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.withOutdatedSince(query.outdatedSince)
 			.allowEmptyQuery(true);
 

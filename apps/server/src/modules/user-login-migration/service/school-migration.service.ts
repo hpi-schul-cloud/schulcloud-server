@@ -69,7 +69,7 @@ export class SchoolMigrationService {
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeGreaterThan: school.oauthMigrationPossible,
+			lastLoginSystemChangeSmallerThan: school.oauthMigrationPossible,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
