@@ -2,14 +2,14 @@ import { Injectable, UnauthorizedException, UnprocessableEntityException } from 
 import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { Logger } from '@src/core/logger';
+import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolService } from '@src/modules/school';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
@@ -99,6 +99,7 @@ export class OauthUc {
 	}
 
 	async migrate(
+		userJwt: string,
 		currentUserId: string,
 		query: AuthorizationParams,
 		cachedState: OauthLoginStateDto
@@ -132,6 +133,9 @@ export class OauthUc {
 			data.externalUser.externalId,
 			systemId
 		);
+
+		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+
 		return migrationDto;
 	}
 

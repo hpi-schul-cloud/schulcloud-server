@@ -2,25 +2,25 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { OauthUc } from '@src/modules/oauth/uc/oauth.uc';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
+import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
 import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
@@ -89,6 +89,10 @@ describe('OAuthUc', () => {
 					provide: SchoolMigrationService,
 					useValue: createMock<SchoolMigrationService>(),
 				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
+				},
 			],
 		}).compile();
 
@@ -100,6 +104,7 @@ describe('OAuthUc', () => {
 		userService = module.get(UserService);
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
+		authenticationService = module.get(AuthenticationService);
 	});
 
 	afterAll(async () => {
@@ -373,9 +378,35 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, cachedState);
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+				});
+
+				it('should remove the jwt from the whitelist', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
+				});
+			});
+
+			describe('when the jwt cannot be removed', () => {
+				it('should throw', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					const error: Error = new Error('testError');
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
+
+					const func = () => uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					await expect(func).rejects.toThrow(error);
 				});
 			});
 
@@ -385,7 +416,7 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, cachedState);
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
 				});
@@ -404,7 +435,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
 						oauthData.externalSchool.externalId,
@@ -426,7 +457,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
@@ -438,7 +469,7 @@ describe('OAuthUc', () => {
 					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
 				});
@@ -461,7 +492,7 @@ describe('OAuthUc', () => {
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await expect(uc.migrate('currentUserId', query, cachedState)).rejects.toThrow(error);
+					await expect(uc.migrate('jwt', 'currentUserId', query, cachedState)).rejects.toThrow(error);
 				});
 			});
 		});
@@ -472,7 +503,7 @@ describe('OAuthUc', () => {
 				oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-				const response = uc.migrate('currentUserId', query, cachedState);
+				const response = uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 				await expect(response).rejects.toThrow(UnauthorizedException);
 			});
