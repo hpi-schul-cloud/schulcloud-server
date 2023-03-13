@@ -60,18 +60,10 @@ module.exports = (hydraUrl) => {
 			console.log(challenge, "REJECTTTTTTTTTTTTTTTTTT")
 			return put('consent', 'reject', challenge, body);
 		},
-		getLogoutRequest(challenge) {
-			console.log(challenge, "getConsentRequest RRRRRRRRRRRRRRRRRR")
-			return get('logout', challenge);
-		},
 		// Accepts a logout request.
 		acceptLogoutRequest(challenge, body) {
 			console.log(challenge, 'acceptLogoutRequestHHHHHHHHHHHHHHHHHHHH')
 			return put('logout', 'accept', challenge, body);
-		},
-		rejectLogoutRequest(challenge, body) {
-			console.log(body,'LOGOUT PPPPPPPPPPPPPPP' )
-			return put('logout', 'reject', challenge, body);
 		},
 		// Verify Logout Request
 		verifyLogoutRequest: (redirectUri) =>
