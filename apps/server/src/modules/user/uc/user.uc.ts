@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { EntityId, LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { ChangeLanguageParams } from '../controller/dto';
 import { IUserConfig } from '../interfaces';
 
@@ -36,10 +35,5 @@ export class UserUc {
 		await this.userRepo.save(user);
 
 		return true;
-	}
-
-	async save(user: UserDto): Promise<void> {
-		const promise: Promise<void> = this.userService.createOrUpdate(user);
-		return promise;
 	}
 }

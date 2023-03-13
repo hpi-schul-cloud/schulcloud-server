@@ -19,7 +19,6 @@ describe('OauthStrategy', () => {
 	const systemId = 'mockSystemId';
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
-	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -48,7 +47,6 @@ describe('OauthStrategy', () => {
 		strategy = module.get(OauthStrategy);
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
-		roleService = module.get(RoleService);
 	});
 
 	afterAll(async () => {

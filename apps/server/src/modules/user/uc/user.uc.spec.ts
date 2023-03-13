@@ -3,12 +3,10 @@ import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, PermissionService, RoleName, User } from '@shared/domain';
+import { LanguageType, PermissionService, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {
@@ -105,31 +103,6 @@ describe('UserUc', () => {
 
 		it('should throw an error if language is not activated', async () => {
 			await expect(userUc.patchLanguage(user.id, { language: LanguageType.EN })).rejects.toThrow(BadRequestException);
-		});
-	});
-
-	describe('save', () => {
-		let userDto: UserDto;
-		let roleDto: RoleDto;
-
-		beforeEach(() => {
-			roleDto = new RoleDto({
-				id: 'roleId',
-				name: RoleName.DEMO,
-			});
-			userDto = new UserDto({
-				firstName: 'John',
-				lastName: 'Doe',
-				email: 'user@example.com',
-				roleIds: [roleDto.id as string],
-				schoolId: 'school123',
-			});
-		});
-
-		it('should call the save method of userService', async () => {
-			await userUc.save(userDto);
-
-			expect(userService.createOrUpdate).toHaveBeenCalledWith(userDto);
 		});
 	});
 });

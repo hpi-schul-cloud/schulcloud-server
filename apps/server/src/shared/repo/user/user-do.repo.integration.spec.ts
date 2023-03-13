@@ -1,44 +1,34 @@
+import { createMock } from '@golevelup/ts-jest';
+import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
-import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
 import { EntityNotFoundError } from '@shared/common';
+import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { Page } from '../../domain/domainobject/page';
 
-class UserRepoSpec extends UserDORepo {
-	mapEntityToDOSpec(entity: User): UserDO {
-		return super.mapEntityToDO(entity);
-	}
-
-	mapDOToEntityPropertiesSpec(entityDO: UserDO): IUserProperties {
-		return super.mapDOToEntityProperties(entityDO);
-	}
-}
-
 describe('UserRepo', () => {
 	let module: TestingModule;
-	let repo: UserRepoSpec;
+	let repo: UserDORepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				UserRepoSpec,
+				UserDORepo,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(UserRepoSpec);
+		repo = module.get(UserDORepo);
 		em = module.get(EntityManager);
 	});
 
@@ -235,7 +225,7 @@ describe('UserRepo', () => {
 			testEntity.lastLoginSystemChange = new Date();
 			testEntity.previousExternalId = 'someId';
 
-			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
+			const userDO: UserDO = repo.mapEntityToDO(testEntity);
 
 			expect(userDO).toEqual(
 				expect.objectContaining({
@@ -283,25 +273,25 @@ describe('UserRepo', () => {
 				previousExternalId: 'someId',
 			});
 
-			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual(
-				expect.objectContaining({
-					email: testDO.email,
-					firstName: testDO.firstName,
-					lastName: testDO.lastName,
-					school: { id: testDO.schoolId },
-					roles: [{ id: testDO.roleIds[0] }],
-					ldapDn: testDO.ldapDn,
-					externalId: testDO.externalId,
-					language: testDO.language,
-					forcePasswordChange: testDO.forcePasswordChange,
-					preferences: testDO.preferences,
-					outdatedSince: testDO.outdatedSince,
-					lastLoginSystemChange: testDO.lastLoginSystemChange,
-					previousExternalId: testDO.previousExternalId,
-				})
-			);
+			expect(result).toEqual<IUserProperties>({
+				email: testDO.email,
+				firstName: testDO.firstName,
+				lastName: testDO.lastName,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roleIds[0] })],
+				ldapDn: testDO.ldapDn,
+				externalId: testDO.externalId,
+				language: testDO.language,
+				forcePasswordChange: testDO.forcePasswordChange,
+				preferences: testDO.preferences,
+				outdatedSince: testDO.outdatedSince,
+				lastLoginSystemChange: testDO.lastLoginSystemChange,
+				previousExternalId: testDO.previousExternalId,
+			});
 		});
 	});
 

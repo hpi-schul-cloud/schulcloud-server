@@ -1,15 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
 import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { EntityNotFoundError } from '@shared/common';
 import { MigrationResponse } from '../controller/dto';
-import { SchoolService } from './school.service';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
@@ -25,10 +24,6 @@ describe('SchoolService', () => {
 				{
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
-				},
-				{
-					provide: SchoolMapper,
-					useValue: createMock<SchoolMapper>(),
 				},
 			],
 		}).compile();

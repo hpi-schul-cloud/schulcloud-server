@@ -107,7 +107,7 @@ export class OAuthService {
 		const redirect: string = await this.getPostLoginRedirectUrl(
 			idToken,
 			systemId,
-			migrationConsentRedirect || postLoginRedirect
+			postLoginRedirect || migrationConsentRedirect
 		);
 
 		return { user, redirect };

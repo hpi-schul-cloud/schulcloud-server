@@ -11,7 +11,6 @@ import { systemFactory } from '@shared/testing/factory/system.factory';
 import { Logger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { OauthConfigDto } from '@src/modules/system/service';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
@@ -53,7 +52,6 @@ describe('OAuthService', () => {
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 
 	let testSystem: System;
-	let testSystemDto: SystemDto;
 	let testOauthConfig: OauthConfig;
 
 	const hostUri = 'https://mock.de';
@@ -130,7 +128,6 @@ describe('OAuthService', () => {
 		});
 
 		testSystem = systemFactory.withOauthConfig().buildWithId();
-		testSystemDto = SystemMapper.mapFromEntityToDto(testSystem);
 		testOauthConfig = testSystem.oauthConfig as OauthConfig;
 	});
 
@@ -287,7 +284,7 @@ describe('OAuthService', () => {
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
 				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
 
-				const result: OAuthTokenDto = await service.authenticateUser(system.id!, authCode);
+				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
 					accessToken: oauthTokenResponse.access_token,
@@ -304,7 +301,7 @@ describe('OAuthService', () => {
 
 				systemService.findById.mockResolvedValueOnce(system);
 
-				const func = () => service.authenticateUser(testSystem.id, authCode);
+				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
 				await expect(func).rejects.toThrow(
 					new OAuthSSOError(`Requested system ${testSystem.id} has no oauth configured`, 'sso_internal_error')
@@ -314,7 +311,7 @@ describe('OAuthService', () => {
 
 		describe('when query has an error code', () => {
 			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', undefined, 'errorCode');
+				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
 
 				await expect(func).rejects.toThrow(
 					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'errorCode')
@@ -324,7 +321,7 @@ describe('OAuthService', () => {
 
 		describe('when query has no code and no error', () => {
 			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId');
+				const func = () => service.authenticateUser('systemId', 'redirectUri');
 
 				await expect(func).rejects.toThrow(
 					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')

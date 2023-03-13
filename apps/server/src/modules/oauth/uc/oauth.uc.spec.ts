@@ -178,6 +178,7 @@ describe('OAuthUc', () => {
 					state: 'mockNanoId',
 					postLoginRedirect,
 					provider: system.oauthConfig?.provider as string,
+					userLoginMigration: false,
 				});
 			});
 		});
@@ -207,6 +208,7 @@ describe('OAuthUc', () => {
 				systemId: 'systemId',
 				postLoginRedirect,
 				provider: 'mock_provider',
+				userLoginMigration: false,
 			});
 			const code = 'code';
 			const error = 'error';
@@ -311,6 +313,7 @@ describe('OAuthUc', () => {
 				state: 'state',
 				systemId: 'systemId',
 				provider: 'mock_provider',
+				userLoginMigration: true,
 			});
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
@@ -388,10 +391,10 @@ describe('OAuthUc', () => {
 				});
 
 				it('should remove the jwt from the whitelist', async () => {
-					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					const { query, system, userMigrationDto, cachedState, tokenDto } = setupMigration();
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 
 					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -401,11 +404,11 @@ describe('OAuthUc', () => {
 
 			describe('when the jwt cannot be removed', () => {
 				it('should throw', async () => {
-					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					const { query, system, userMigrationDto, cachedState, tokenDto } = setupMigration();
 					const error: Error = new Error('testError');
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
 
 					const func = () => uc.migrate('jwt', 'currentUserId', query, cachedState);

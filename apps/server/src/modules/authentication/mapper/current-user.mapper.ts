@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { EntityId, Role, User } from '@shared/domain';
+import { Role, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';

@@ -1,15 +1,14 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@src/core/logger';
 import { SchoolRepo } from '..';
-import { SchoolDO } from '../../domain/domainobject/school.do';
-import { Logger } from '../../../core/logger';
-import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
 
 describe('SchoolRepo', () => {
 	let module: TestingModule;
@@ -21,7 +20,6 @@ describe('SchoolRepo', () => {
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				SchoolRepo,
-				SchoolMapper,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -45,18 +43,47 @@ describe('SchoolRepo', () => {
 		expect(repo.entityName).toBe(School);
 	});
 
+	describe('save is called', () => {
+		describe('when saving only required fields', () => {
+			function setupDO() {
+				const domainObject: SchoolDO = new SchoolDO({
+					name: 'schoolName',
+				});
+
+				return {
+					domainObject,
+				};
+			}
+
+			it('should save a School', async () => {
+				const { domainObject } = setupDO();
+				const { id, ...expected } = domainObject;
+				expected.systems = [];
+
+				const result: SchoolDO = await repo.save(domainObject);
+
+				expect(result).toMatchObject(expected);
+				expect(result.id).toBeDefined();
+			});
+		});
+	});
+
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
 		const school = new School({ name: 'test', schoolYear, previousExternalId: 'someId' });
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
+
 		await em.persistAndFlush([school, schoolYear]);
+
 		const storedSchoolYears = await em.find(SchoolYear, {});
 		expect(storedSchoolYears).toHaveLength(1);
 		expect(storedSchoolYears[0]).toEqual(schoolYear);
+
 		const storedSchools = await em.find(School, {});
 		expect(storedSchools).toHaveLength(1);
+
 		const storedSchool = storedSchools[0];
 		expect(storedSchool).toEqual(school);
 		expect(storedSchool.previousExternalId).toBeDefined();
