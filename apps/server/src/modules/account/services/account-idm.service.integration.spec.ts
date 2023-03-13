@@ -1,16 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
-import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
-import { IAccount } from '@shared/domain';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
 import { ObjectId } from '@mikro-orm/mongodb';
-import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
+import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { IAccount } from '@shared/domain';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
+import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
+import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
-import { AbstractAccountService } from './account.service.abstract';
 import { AccountServiceIdm } from './account-idm.service';
+import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService IDM Integration', () => {
 	let module: TestingModule;
@@ -66,7 +66,7 @@ describe('AccountService IDM Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: KeycloakConfiguration.keycloakSettings,
+					useValue: KeycloakAdministration.keycloakSettings,
 				},
 			],
 		}).compile();

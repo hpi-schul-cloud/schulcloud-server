@@ -162,8 +162,8 @@ const throwErrorIfNotObjectId = (id) => {
 const bsonIdToString = (input) => {
 	let out;
 	if (isArray(input)) {
-		out = input.map((id) => id.toString());
-	} else if (isDefined(input)) {
+		out = input.map((id) => bsonIdToString(id));
+	} else if (isObjectId(input)) {
 		out = input.toString();
 	} else {
 		out = input;
