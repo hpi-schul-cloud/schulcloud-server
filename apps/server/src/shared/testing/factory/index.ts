@@ -1,5 +1,6 @@
 export * from './account.factory';
 export * from './board.factory';
+export * from './boardnode';
 export * from './boardelement.factory';
 export * from './card-element.factory';
 export * from './course-external-tool.factory';
