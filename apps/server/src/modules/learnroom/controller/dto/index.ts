@@ -1,5 +1,3 @@
-export * from './board';
-export * from './card';
 export * from './course-metadata.response';
 export * from './dashboard.response';
 export * from './dashboard.url.params';
