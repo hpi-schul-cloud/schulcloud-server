@@ -231,7 +231,7 @@ describe('SchoolMigrationService', () => {
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId,
 					isOutdated: false,
-					lastLoginSystemChangeGreaterThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
 				});
 			});
 
