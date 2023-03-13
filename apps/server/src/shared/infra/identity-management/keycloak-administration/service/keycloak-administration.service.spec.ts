@@ -1,13 +1,13 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
-import { TestingModule, Test } from '@nestjs/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
-import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakAdministrationService', () => {
 	let module: TestingModule;
-	let kcAdminClient: KeycloakAdminClient;
+	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
 	let settings: IKeycloakSettings;
 	let service: KeycloakAdministrationService;
 
@@ -27,28 +27,13 @@ describe('KeycloakAdministrationService', () => {
 		};
 	};
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				KeycloakAdministrationService,
 				{
 					provide: KeycloakAdminClient,
-					useValue: {
-						auth: jest.fn().mockImplementation(async (): Promise<void> => {
-							if (settings.credentials.username !== 'username') {
-								throw new Error();
-							}
-
-							return Promise.resolve();
-						}),
-						setConfig: jest.fn(),
-						realms: {
-							update: jest.fn(),
-						},
-						clients: kcApiClientMock,
-						baseUrl: getSettings().baseUrl,
-						realmName: getSettings().realmName,
-					},
+					useValue: createMock<KeycloakAdminClient>(),
 				},
 				{
 					provide: KeycloakSettings,
@@ -61,7 +46,18 @@ describe('KeycloakAdministrationService', () => {
 		settings = module.get(KeycloakSettings);
 		service = module.get(KeycloakAdministrationService);
 
+		kcAdminClient.realms.update = jest.fn();
+		kcAdminClient.clients = kcApiClientMock;
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		service.resetLastAuthorizationTime();
 		kcApiClientMock.find.mockClear();
+		jest.resetAllMocks();
 	});
 
 	describe('callKcAdminClient', () => {
@@ -71,26 +67,24 @@ describe('KeycloakAdministrationService', () => {
 		});
 
 		it('should authorize before client access', async () => {
-			const authSpy = jest.spyOn(kcAdminClient, 'auth');
 			await service.callKcAdminClient();
-			expect(authSpy).toHaveBeenCalled();
+			expect(kcAdminClient.auth).toHaveBeenCalled();
 		});
 
 		it('should authorize only once per minute', async () => {
 			jest.useFakeTimers();
-			const authSpy = jest.spyOn(kcAdminClient, 'auth');
 
 			// set timer
 			jest.setSystemTime(new Date(2020, 1, 1, 0, 0, 0));
 			await service.callKcAdminClient();
-			authSpy.mockClear();
+			kcAdminClient.auth.mockClear();
 
 			await service.callKcAdminClient();
-			expect(authSpy).not.toHaveBeenCalled();
+			expect(kcAdminClient.auth).not.toHaveBeenCalled();
 
 			jest.setSystemTime(new Date(2020, 1, 1, 0, 1, 0));
 			await service.callKcAdminClient();
-			expect(authSpy).toHaveBeenCalled();
+			expect(kcAdminClient.auth).toHaveBeenCalled();
 
 			jest.useRealTimers();
 		});
@@ -102,7 +96,7 @@ describe('KeycloakAdministrationService', () => {
 		});
 
 		it('should return false on error', async () => {
-			settings.credentials.username = '';
+			kcAdminClient.auth.mockRejectedValueOnce(new Error());
 			expect(await service.testKcConnection()).toBe(false);
 		});
 	});

@@ -25,13 +25,7 @@ describe('task copy uc', () => {
 
 	beforeAll(async () => {
 		await setupEntities();
-	});
 
-	afterAll(async () => {
-		await module.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
@@ -78,11 +72,20 @@ describe('task copy uc', () => {
 		lessonRepo = module.get(LessonRepo);
 		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('copy task', () => {
 		const setup = () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
+
 			const user = userFactory.buildWithId();
 			const course = courseFactory.buildWithId({ teachers: [user] });
 			const lesson = lessonFactory.buildWithId({ course });
@@ -90,6 +93,7 @@ describe('task copy uc', () => {
 			const task = allTasks[0];
 			authorisation.getUserWithPermissions.mockResolvedValue(user);
 			taskRepo.findById.mockResolvedValue(task);
+			lessonRepo.findById.mockResolvedValue(lesson);
 			taskRepo.findBySingleParent.mockResolvedValue([allTasks, allTasks.length]);
 			courseRepo.findById.mockResolvedValue(course);
 			authorisation.hasPermission.mockReturnValue(true);
@@ -106,6 +110,7 @@ describe('task copy uc', () => {
 			taskCopyService.copyTask.mockResolvedValue(status);
 			taskRepo.save.mockResolvedValue(undefined);
 			const userId = user.id;
+
 			return {
 				user,
 				course,
@@ -119,22 +124,26 @@ describe('task copy uc', () => {
 			};
 		};
 
-		it('should throw if copy feature is deactivated', async () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
-			const { course, user, task, userId } = setup();
-			await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
-				InternalServerErrorException
-			);
+		describe('feature is deactivated', () => {
+			it('should throw InternalServerErrorException', async () => {
+				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
+
+				await expect(uc.copyTask('user.id', 'task.id', { courseId: 'course.id', userId: 'test' })).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
 		});
 
 		describe('status', () => {
 			it('should return status', async () => {
 				const { course, lesson, user, task, status, userId } = setup();
+
 				const result = await uc.copyTask(user.id, task.id, {
 					courseId: course.id,
 					lessonId: lesson.id,
 					userId,
 				});
+
 				expect(result).toEqual(status);
 			});
 		});
@@ -142,37 +151,48 @@ describe('task copy uc', () => {
 		describe('repos', () => {
 			it('should fetch correct user', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
+
 				expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
 			});
 
 			it('should fetch correct task', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
+
 				expect(taskRepo.findById).toBeCalledWith(task.id);
 			});
 
 			it('should fetch destination course', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
+
 				expect(courseRepo.findById).toBeCalledWith(course.id);
 			});
 
 			it('should pass without destination course', async () => {
 				const { user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { userId });
 				expect(taskCopyService.copyTask).toHaveBeenCalled();
 			});
 
 			it('should fetch destination lesson', async () => {
 				const { lesson, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
+
 				expect(lessonRepo.findById).toBeCalledWith(lesson.id);
 			});
 
 			it('should pass without destination lesson', async () => {
 				const { user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { userId });
+
 				expect(lessonRepo.findById).not.toHaveBeenCalled();
 			});
 		});
@@ -180,7 +200,9 @@ describe('task copy uc', () => {
 		describe('permissions', () => {
 			it('should check authorisation for task', async () => {
 				const { course, lesson, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
+
 				expect(authorisation.hasPermission).toBeCalledWith(user, task, {
 					action: Actions.read,
 					requiredPermissions: [],
@@ -189,6 +211,7 @@ describe('task copy uc', () => {
 
 			it('should check authorisation for destination course', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
 					user.id,
@@ -203,7 +226,9 @@ describe('task copy uc', () => {
 
 			it('should pass authorisation check without destination course', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { userId });
+
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -212,7 +237,9 @@ describe('task copy uc', () => {
 
 			it('should check authorisation for destination lesson', async () => {
 				const { lesson, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
+
 				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -221,7 +248,9 @@ describe('task copy uc', () => {
 
 			it('should pass authorisation check without destination lesson', async () => {
 				const { lesson, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { userId });
+
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
 					action: Actions.write,
 					requiredPermissions: [],
@@ -286,7 +315,9 @@ describe('task copy uc', () => {
 		describe('derive copy name', () => {
 			it('should derive name for copy', async () => {
 				const { course, user, task, allTasks } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId: new ObjectId().toHexString() });
+
 				const existingNames = allTasks.map((t) => t.name);
 				expect(existingNames.length).toEqual(3);
 				expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
@@ -294,17 +325,21 @@ describe('task copy uc', () => {
 
 			it('should use findAllByParentIds to determine existing task names', async () => {
 				const { course, user, task, userId } = setup();
+
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
+
 				expect(taskRepo.findBySingleParent).toHaveBeenCalledWith('', course.id);
 			});
 
 			it('should call copy service', async () => {
 				const { course, lesson, user, task, copyName } = setup();
+
 				await uc.copyTask(user.id, task.id, {
 					courseId: course.id,
 					lessonId: lesson.id,
 					userId: new ObjectId().toHexString(),
 				});
+
 				expect(taskCopyService.copyTask).toBeCalledWith({
 					originalTaskId: task.id,
 					destinationCourse: course,
@@ -321,14 +356,15 @@ describe('task copy uc', () => {
 				const course = courseFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
-				jest.spyOn(userRepo, 'findById').mockImplementation(() => Promise.resolve(user));
-				jest.spyOn(taskRepo, 'findById').mockImplementation(() => Promise.resolve(task));
-				jest.spyOn(courseRepo, 'findById').mockImplementation(() => Promise.resolve(course));
-				jest.spyOn(lessonRepo, 'findById').mockImplementation(() => Promise.resolve(lesson));
-				jest.spyOn(authorisation, 'hasPermission').mockImplementation((u: User, e: PermissionTypes) => {
+				userRepo.findById.mockResolvedValue(user);
+				taskRepo.findById.mockResolvedValue(task);
+				courseRepo.findById.mockResolvedValue(course);
+				lessonRepo.findById.mockResolvedValue(lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => {
 					if (e === lesson) return false;
 					return true;
 				});
+
 				return { user, lesson, task };
 			};
 
