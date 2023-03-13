@@ -255,7 +255,7 @@ describe('somefunction', () => {
 	});
 });
 ```
-For creating specific mock implementations the helper functions which only mock the implementation once, should be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.
+For creating specific mock implementations the helper functions which only mock the implementation once, must be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.
 
 If you want to mock a method that is not part of a dependency you can mock it with `jest.spyOn`. We strongly recommend the use of `jest.spyOn` and not `jest.fn`, because `jest.spyOn` can be restored a lot easier. 
 ## Unit Tests vs Integration Tests
