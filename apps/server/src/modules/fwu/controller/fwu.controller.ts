@@ -2,7 +2,7 @@ import { Controller, Get, Req, Res, InternalServerErrorException } from '@nestjs
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { fwuContentEnabled } from '../fwu.config';
 import { FwuUc } from '../uc/fwu.uc';
 
 @ApiTags('FWU')
@@ -13,7 +13,6 @@ export class FwuController {
 
 	@Get('*')
 	async get(@Req() req: Request, @Res() res: Response) {
-		const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
 		if (!fwuContentEnabled) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}

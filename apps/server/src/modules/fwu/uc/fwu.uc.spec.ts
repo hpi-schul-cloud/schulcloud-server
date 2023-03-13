@@ -1,8 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { FwuUc } from './fwu.uc';
 
 describe('FwuUc', () => {
@@ -39,7 +38,6 @@ describe('FwuUc', () => {
 
 	describe('get', () => {
 		beforeEach(() => {
-			// Configuration.get('FEATURE_COPY_SERVICE_ENABLED', true);
 			path = '5501219/index.html';
 			jest.resetAllMocks();
 		});
