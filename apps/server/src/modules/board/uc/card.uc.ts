@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, EntityId } from '@shared/domain';
+import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { ColumnBoardRepo } from '../repo';
+import { ColumnBoardRepo, ContentElementRepo } from '../repo';
 import { CardRepo } from '../repo/card.repo';
 
 @Injectable()
 export class CardUc {
 	constructor(
 		private readonly cardRepo: CardRepo,
+		private readonly elementRepo: ContentElementRepo,
 		private readonly columnBoardRepo: ColumnBoardRepo,
 		private readonly logger: Logger
 	) {
@@ -24,7 +25,7 @@ export class CardUc {
 	}
 
 	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
-		this.logger.debug({ action: 'createCard', userId, boardId, columnId, position });
+		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
 
 		const board = await this.columnBoardRepo.findById(boardId);
 		const column = board.columns.find((c) => c.id === columnId);
@@ -49,5 +50,26 @@ export class CardUc {
 		await this.cardRepo.save(column.cards, column.id);
 
 		return card;
+	}
+
+	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
+		this.logger.debug({ action: 'createElement', userId, cardId });
+
+		const card = await this.cardRepo.findById(cardId);
+
+		// TODO check permissions
+
+		const element = new TextElement({
+			id: new ObjectId().toHexString(),
+			text: ``,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		card.addElement(element);
+
+		await this.elementRepo.save(card.elements, card.id);
+
+		return element;
 	}
 }

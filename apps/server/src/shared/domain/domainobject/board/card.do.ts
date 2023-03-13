@@ -25,6 +25,10 @@ export class Card implements CardProps, BoardNodeBuildable {
 		this.updatedAt = props.updatedAt;
 	}
 
+	addElement(element: TextElement, position?: number) {
+		this.elements.splice(position || this.elements.length, 0, element);
+	}
+
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
 		builder.buildCardNode(this, parentId);
 	}
