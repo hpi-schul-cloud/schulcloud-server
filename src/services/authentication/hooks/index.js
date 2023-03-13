@@ -14,27 +14,6 @@ const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 /**
  *
- * @deprecated
- *
- * Remove when ldap strategy is removed
- */
-const updateUsernameForLDAP = async (context) => {
-	const { schoolId, strategy } = context.data;
-
-	if (strategy === 'ldap' && schoolId) {
-		await context.app
-			.service('schools')
-			.get(schoolId)
-			.then((school) => {
-				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
-				return context;
-			});
-	}
-	return context;
-};
-
-/**
- *
  * @deprecated Remove when ldap, TSP and local strategy are removed
  */
 const bruteForceCheck = async (context) => {
@@ -211,8 +190,6 @@ const hooks = {
 		create: [
 			// NOTE: is ported to nest
 			checkJwtAuthWhitelisted,
-			// NOTE: is ported to nest
-			updateUsernameForLDAP,
 			// NOTE: is ported to nest
 			lowerCaseUsername,
 			// NOTE: is ported to nest
