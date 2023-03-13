@@ -58,9 +58,18 @@ describe('UserScope', () => {
 			scope.whereLastLoginSystemChangeSmallerThan(date);
 
 			expect(scope.query).toEqual({
-				lastLoginSystemChange: {
-					$lt: date,
-				},
+				$or: [
+					{
+						lastLoginSystemChange: {
+							$lt: date,
+						},
+					},
+					{
+						lastLoginSystemChange: {
+							$exists: false,
+						},
+					},
+				],
 			});
 		});
 

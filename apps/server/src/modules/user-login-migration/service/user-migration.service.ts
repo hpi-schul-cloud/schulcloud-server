@@ -13,8 +13,8 @@ import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { MigrationDto } from './dto/migration.dto';
 import { EntityId, SystemTypeEnum } from '@src/shared/domain/types';
+import { MigrationDto } from './dto/migration.dto';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 

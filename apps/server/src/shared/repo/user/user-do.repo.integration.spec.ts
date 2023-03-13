@@ -10,7 +10,7 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
-import { Page } from '../../domain/domainobject/page';
+import { Page } from '@shared/domain/domainobject/page';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -413,7 +413,7 @@ describe('UserRepo', () => {
 					{
 						$and: [
 							{
-								school: query.schoolId,
+								school: 'schoolId',
 							},
 							{
 								outdatedSince: {
@@ -421,13 +421,22 @@ describe('UserRepo', () => {
 								},
 							},
 							{
-								lastLoginSystemChange: {
-									$gte: query.lastLoginSystemChangeSmallerThan,
-								},
+								$or: [
+									{
+										lastLoginSystemChange: {
+											$lt: lastLoginSystemChangeSmallerThan,
+										},
+									},
+									{
+										lastLoginSystemChange: {
+											$exists: false,
+										},
+									},
+								],
 							},
 							{
 								outdatedSince: {
-									$eq: query.outdatedSince,
+									$eq: outdatedSince,
 								},
 							},
 						],
