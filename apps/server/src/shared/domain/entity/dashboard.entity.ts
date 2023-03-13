@@ -228,7 +228,6 @@ export class DashboardEntity {
 		};
 	}
 
-
 	setLearnRooms(rooms: ILearnroom[]): void {
 		this.removeRoomsNotInList(rooms);
 		const newRooms = this.determineNewRoomsIn(rooms);
