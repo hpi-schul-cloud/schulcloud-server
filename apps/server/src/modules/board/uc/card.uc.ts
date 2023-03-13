@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { CardRepo } from '../repo/card.repo';
+import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
-	constructor(private readonly cardRepo: CardRepo, private readonly logger: Logger) {
+	constructor(private readonly cardService: CardService, private readonly logger: Logger) {
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -13,7 +13,7 @@ export class CardUc {
 		this.logger.debug({ action: 'findCards', userId, cardIds });
 
 		// TODO check permissions
-		const cards = await this.cardRepo.findByIds(cardIds);
+		const cards = await this.cardService.findByIds(cardIds);
 		return cards;
 	}
 }
