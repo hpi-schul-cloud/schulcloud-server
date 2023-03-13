@@ -127,6 +127,18 @@ describe('SchoolService', () => {
 				expect(result).toBe(false);
 			});
 		});
+
+		describe('when features of school is undefined', () => {
+			it('should return false', async () => {
+				const { schoolSaved, schoolSavedId } = setup();
+				schoolSaved.features = undefined;
+				schoolRepo.findById.mockResolvedValue(schoolSaved);
+
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
+
+				expect(result).toBe(false);
+			});
+		});
 	});
 
 	describe('getSchoolById is called', () => {
