@@ -8,6 +8,8 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { OAuthSSOError } from '../../oauth/error/oauth-sso.error';
 import { SSOErrorCode } from '../../oauth/error/sso-error-code.enum';
+import { RoleService } from '../../role';
+import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
@@ -19,6 +21,7 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly accountService: AccountService,
+		private readonly roleService: RoleService,
 		private readonly logger: Logger
 	) {
 		super();
@@ -67,7 +70,10 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 		if (!account) {
 			throw new UnauthorizedException('no account found');
 		}
-		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+
+		const roles: RoleDto[] = await this.roleService.findByIds(user.roleIds);
+
+		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, roles, systemId);
 		return currentUser;
 	}
 }

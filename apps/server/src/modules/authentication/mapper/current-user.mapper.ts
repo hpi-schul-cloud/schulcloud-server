@@ -1,6 +1,7 @@
 import { ValidationError } from '@shared/common';
 import { EntityId, Role, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';
 
 export class CurrentUserMapper {
@@ -36,7 +37,7 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(accountId: string, user: UserDO, systemId?: string): ICurrentUser {
+	static userDoToICurrentUser(accountId: string, user: UserDO, roles: RoleDto[], systemId?: string): ICurrentUser {
 		const permissions = new Set<string>();
 
 		if (!user.id || !user.createdAt || !user.updatedAt) {
@@ -55,9 +56,8 @@ export class CurrentUserMapper {
 				updatedAt: user.updatedAt,
 				firstName: user.firstName,
 				lastName: user.lastName,
-				roles: user.roleIds.map((role: EntityId) => {
-					// TODO use correct mapping to role name
-					return { id: role, name: role };
+				roles: roles.map((role: RoleDto) => {
+					return { id: role.id ?? '', name: role.name };
 				}),
 				schoolId: user.schoolId,
 				permissions: Array.from(permissions),

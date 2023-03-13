@@ -10,6 +10,7 @@ import { OauthModule } from '@src/modules/oauth/oauth.module';
 import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { SystemModule } from '@src/modules/system';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
+import { RoleModule } from '@src/modules/role';
 import { jwtConstants } from './constants';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
@@ -61,6 +62,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		AccountModule,
 		SystemModule,
 		OauthModule,
+		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
 	],

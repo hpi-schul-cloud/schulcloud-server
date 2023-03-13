@@ -8,6 +8,7 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { RoleService } from '../../role';
 import { ICurrentUser } from '../interface';
 import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
 import { OauthStrategy, PathParams } from './oauth.strategy';
@@ -18,6 +19,7 @@ describe('OauthStrategy', () => {
 	const systemId = 'mockSystemId';
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
+	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,6 +35,10 @@ describe('OauthStrategy', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -42,6 +48,7 @@ describe('OauthStrategy', () => {
 		strategy = module.get(OauthStrategy);
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
+		roleService = module.get(RoleService);
 	});
 
 	afterAll(async () => {
