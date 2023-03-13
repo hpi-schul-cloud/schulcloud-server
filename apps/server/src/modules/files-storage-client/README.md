@@ -2,4 +2,4 @@
 
 ## Summary
 
-The module work as API client wrapper to communicated with the files-storage in backend.
+The module works as API client wrapper to communicate with the files-storage backend.

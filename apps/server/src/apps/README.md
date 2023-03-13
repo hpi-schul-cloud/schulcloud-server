@@ -2,4 +2,5 @@
 
 ## Summary
 
-The folder is to place all possible startable applications and connected to concret modules in modules folder.
+This folder contains all possible startable applications.
+Each of this bootstrap processes is connected to a specific module in modules folder.
