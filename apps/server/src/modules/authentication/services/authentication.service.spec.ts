@@ -3,16 +3,21 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
+import { ICurrentUser } from '@src/modules/authentication';
+import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { AuthenticationService } from './authentication.service';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
+import { AuthenticationService } from './authentication.service';
+
+jest.mock('jsonwebtoken');
 
 describe('AuthenticationService', () => {
 	let module: TestingModule;
 	let authenticationService: AuthenticationService;
+
+	let jwtValidationAdapter: DeepMocked<JwtValidationAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
@@ -46,6 +51,7 @@ describe('AuthenticationService', () => {
 			],
 		}).compile();
 
+		jwtValidationAdapter = module.get(JwtValidationAdapter);
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
@@ -111,6 +117,29 @@ describe('AuthenticationService', () => {
 						subject: mockCurrentUser.accountId,
 					})
 				);
+			});
+		});
+	});
+
+	describe('removeJwtFromWhitelist is called', () => {
+		describe('when a valid jwt is provided', () => {
+			it('should call the jwtValidationAdapter to remove the jwt', async () => {
+				const jwtToken = { sub: 'sub', accountId: 'accountId', jti: 'jti' };
+				jest.spyOn(jwt, 'decode').mockReturnValue(jwtToken);
+
+				await authenticationService.removeJwtFromWhitelist('jwt');
+
+				expect(jwtValidationAdapter.removeFromWhitelist).toHaveBeenCalledWith(jwtToken.accountId, jwtToken.jti);
+			});
+		});
+
+		describe('when a non-valid jwt is provided', () => {
+			it('should do nothing', async () => {
+				jest.spyOn(jwt, 'decode').mockReturnValue(null);
+
+				await authenticationService.removeJwtFromWhitelist('jwt');
+
+				expect(jwtValidationAdapter.removeFromWhitelist).not.toHaveBeenCalled();
 			});
 		});
 	});
