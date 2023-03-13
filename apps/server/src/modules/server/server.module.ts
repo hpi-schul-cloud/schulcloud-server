@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
+import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger, LoggerModule } from '@src/core/logger';
@@ -36,6 +36,7 @@ import { VideoConferenceModule } from '@src/modules/video-conference';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import { RedisClient } from 'redis';
+import { BoardApiModule, BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -74,6 +75,8 @@ const serverModules = [
 	SharingApiModule,
 	ToolApiModule,
 	UserLoginMigrationApiModule,
+	BoardModule,
+	BoardApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
