@@ -4,7 +4,7 @@ import { CourseExternalTool, SchoolExternalTool } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { CourseExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/';
 import { courseExternalToolDOFactory } from '@shared/testing/factory/domainobject/course-external-tool.factory';
@@ -23,8 +23,8 @@ describe('CourseExternalToolRepo', () => {
 				CourseExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

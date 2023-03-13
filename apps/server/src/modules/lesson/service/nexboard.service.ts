@@ -1,5 +1,5 @@
 import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
@@ -7,7 +7,7 @@ export type NexboardResponse = { id: string; publicLink: string };
 
 @Injectable()
 export class NexboardService {
-	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: Logger) {}
+	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: LegacyLogger) {}
 
 	async createNexboard(
 		userId: EntityId,

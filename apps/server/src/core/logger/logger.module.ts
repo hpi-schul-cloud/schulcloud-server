@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ILoggerConfig } from './interfaces';
-import { Logger } from './logger.service';
+import { LegacyLogger } from './legacy-logger.service';
 
 @Module({
 	imports: [
@@ -29,7 +29,7 @@ import { Logger } from './logger.service';
 			inject: [ConfigService],
 		}),
 	],
-	providers: [Logger],
-	exports: [Logger],
+	providers: [LegacyLogger],
+	exports: [LegacyLogger],
 })
 export class LoggerModule {}

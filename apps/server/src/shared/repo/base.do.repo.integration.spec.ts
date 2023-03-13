@@ -5,7 +5,7 @@ import { BaseDO, BaseEntityWithTimestamps } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 
 describe('BaseDORepo', () => {
@@ -69,8 +69,8 @@ describe('BaseDORepo', () => {
 			providers: [
 				TestRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
@@ -33,8 +33,8 @@ describe('UserRepo', () => {
 			providers: [
 				UserRepoSpec,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

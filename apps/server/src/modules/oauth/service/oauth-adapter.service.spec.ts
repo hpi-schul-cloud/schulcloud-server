@@ -5,7 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { systemFactory } from '@shared/testing';
 import { of, throwError } from 'rxjs';
 import { OauthAdapterService } from './oauth-adapter.service';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 
@@ -50,8 +50,8 @@ describe('OauthAdapterServive', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

@@ -15,7 +15,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	BasicToolConfigDO,
@@ -41,8 +41,8 @@ describe('ExternalToolRepo', () => {
 				ExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ExternalToolSortingMapper,

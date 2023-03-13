@@ -13,7 +13,7 @@ import { KeycloakIdentityManagementService } from '@shared/infra/identity-manage
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -94,8 +94,8 @@ describe('AccountService Integration', () => {
 					useValue: KeycloakAdministration.keycloakSettings,
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

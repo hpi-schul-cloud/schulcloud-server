@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { BusinessError } from '@shared/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ErrorResponse } from '../dto/error.response';
 import { GlobalErrorFilter } from './global-error.filter';
 
@@ -23,7 +23,7 @@ class SampleError extends BusinessError {
 describe('GlobalErrorFilter', () => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let errorFilter: GlobalErrorFilter<any>;
-	const logger: DeepMocked<Logger> = createMock<Logger>();
+	const logger: DeepMocked<LegacyLogger> = createMock<LegacyLogger>();
 	beforeAll(() => {
 		errorFilter = new GlobalErrorFilter(logger);
 	});

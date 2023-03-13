@@ -5,7 +5,7 @@ import { RoleName } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage/collaborative-storage.adapter';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
 import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 
 class TestStrategy implements ICollaborativeStorageStrategy {
@@ -46,8 +46,8 @@ describe('CollaborativeStorage Adapter', () => {
 				CollaborativeStorageAdapter,
 				CollaborativeStorageAdapterMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: 'ICollaborativeStorageStrategy',

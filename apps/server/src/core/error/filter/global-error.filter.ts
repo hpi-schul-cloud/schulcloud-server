@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { ApiValidationError, BusinessError } from '@shared/common';
 import { IError, RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { ILogger, Logger } from '@src/core/logger';
+import { ILegacyLogger, LegacyLogger } from '@src/core/logger';
 import { Response } from 'express';
 import _ from 'lodash';
 import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
@@ -57,7 +57,7 @@ function createErrorResponseForFeathersError(error: FeathersError) {
 	return new ErrorResponse(snakeType, startTitle, message, code);
 }
 
-const createErrorResponse = (error: unknown, logger: ILogger): ErrorResponse => {
+const createErrorResponse = (error: unknown, logger: ILegacyLogger): ErrorResponse => {
 	try {
 		if (error instanceof Error) {
 			if (isFeathersError(error)) {
@@ -82,7 +82,7 @@ const createErrorResponse = (error: unknown, logger: ILogger): ErrorResponse => 
 	}
 };
 
-const writeValidationErrors = (error: ApiValidationError, logger: ILogger) => {
+const writeValidationErrors = (error: ApiValidationError, logger: ILegacyLogger) => {
 	const errorMsg = error.validationErrors.map(
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
@@ -90,7 +90,7 @@ const writeValidationErrors = (error: ApiValidationError, logger: ILogger) => {
 	logger.error(errorMsg, error.stack, 'API Validation Error');
 };
 
-const writeErrorLog = (error: unknown, logger: ILogger): void => {
+const writeErrorLog = (error: unknown, logger: ILegacyLogger): void => {
 	if (error instanceof Error) {
 		if (isFeathersError(error)) {
 			logger.error(error, error.stack, 'Feathers Error');
@@ -112,7 +112,7 @@ const writeErrorLog = (error: unknown, logger: ILogger): void => {
 
 @Catch()
 export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
-	constructor(private logger: Logger) {
+	constructor(private logger: LegacyLogger) {
 		this.logger.setContext('Error');
 	}
 

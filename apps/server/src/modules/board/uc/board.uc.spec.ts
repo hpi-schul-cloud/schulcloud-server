@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ColumnBoardRepo } from '../repo';
 import { ColumnBoardService } from '../service/board.service';
 import { BoardUc } from './board.uc';
@@ -22,8 +22,8 @@ describe(BoardUc.name, () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

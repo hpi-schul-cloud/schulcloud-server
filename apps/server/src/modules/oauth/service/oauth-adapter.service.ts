@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common/decorators';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
@@ -12,7 +12,7 @@ import { TokenRequestPayload } from '../controller/dto/token-request.payload';
 
 @Injectable()
 export class OauthAdapterService {
-	constructor(private readonly httpService: HttpService, private readonly logger: Logger) {
+	constructor(private readonly httpService: HttpService, private readonly logger: LegacyLogger) {
 		this.logger.setContext(OauthAdapterService.name);
 	}
 

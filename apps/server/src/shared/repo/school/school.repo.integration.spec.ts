@@ -8,7 +8,7 @@ import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolRepo } from '..';
 import { SchoolDO } from '../../domain/domainobject/school.do';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { SchoolMapper } from '../../../modules/school/mapper/school.mapper';
 
 describe('SchoolRepo', () => {
@@ -23,8 +23,8 @@ describe('SchoolRepo', () => {
 				SchoolRepo,
 				SchoolMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

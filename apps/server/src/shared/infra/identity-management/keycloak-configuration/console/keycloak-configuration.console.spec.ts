@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakConsole } from './keycloak-configuration.console';
 
@@ -10,7 +10,7 @@ describe('KeycloakConsole', () => {
 	let console: KeycloakConsole;
 	let writer: DeepMocked<ConsoleWriterService>;
 	let uc: DeepMocked<KeycloakConfigurationUc>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,15 +24,15 @@ describe('KeycloakConsole', () => {
 					useValue: createMock<KeycloakConfigurationUc>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 
 		writer = module.get(ConsoleWriterService);
 		uc = module.get(KeycloakConfigurationUc);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		console = new KeycloakConsole(writer, uc, logger);
 	});
 

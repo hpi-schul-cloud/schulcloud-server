@@ -9,7 +9,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
 import { schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationParams } from '@src/modules/oauth/controller/dto/authorization.params';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
@@ -87,8 +87,8 @@ describe('OAuthService', () => {
 					useValue: createMock<IEncryptionService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ProvisioningService,

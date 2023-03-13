@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
@@ -17,7 +17,7 @@ export class OauthStrategy extends PassportStrategy(Strategy, 'oauth') {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(OauthStrategy.name);

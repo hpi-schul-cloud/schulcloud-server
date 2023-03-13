@@ -3,19 +3,20 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import util from 'util';
 import { Logger as WinstonLogger } from 'winston';
 import { RequestLoggingBody } from './interfaces';
-import { ILogger } from './interfaces/logger.interface';
+import { ILegacyLogger } from './interfaces/legacy-logger.interface';
 
 @Injectable({ scope: Scope.TRANSIENT })
 /**
+ * @deprecated The new logger for loggables should be used.
  * Default logger for server application.
- * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
+ * Must implement ILegacyLogger but must not extend ConsoleLogger (this can be changed).
  * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
  */
-export class Logger implements ILogger {
+export class LegacyLogger implements ILegacyLogger {
 	/**
 	 * This Logger Service can be injected into every Class,
 	 * use setContext() with CustomProviderClass.name that will be added to every log.
-	 * It implements @ILogger which provides the logger methods.
+	 * It implements @ILegacyLogger which provides the logger methods.
 	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
 	 */
 	private context = '';

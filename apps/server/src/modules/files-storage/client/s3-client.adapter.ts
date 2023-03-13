@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
 import { FileDto } from '../dto';
 import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from '../interface';
@@ -21,7 +21,7 @@ export class S3ClientAdapter implements IStorageClient {
 	constructor(
 		@Inject('S3_Client') readonly client: S3Client,
 		@Inject('S3_Config') readonly config: S3Config,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
 	}

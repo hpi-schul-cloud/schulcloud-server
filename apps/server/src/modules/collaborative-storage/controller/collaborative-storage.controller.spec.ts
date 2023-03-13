@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
 import { createMock } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('CollaborativeStorage Controller', () => {
 	let module: TestingModule;
@@ -14,8 +14,8 @@ describe('CollaborativeStorage Controller', () => {
 			providers: [
 				CollaborativeStorageController,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: CollaborativeStorageUc,

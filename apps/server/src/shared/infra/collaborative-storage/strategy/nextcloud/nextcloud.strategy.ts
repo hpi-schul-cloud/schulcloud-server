@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { PseudonymsRepo } from '@shared/repo/';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymDO } from '@shared/domain/';
@@ -17,7 +17,7 @@ import { NextcloudClient } from './nextcloud.client';
 @Injectable()
 export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,
 		private readonly pseudonymsRepo: PseudonymsRepo,
 		private readonly ltiToolRepo: LtiToolRepo

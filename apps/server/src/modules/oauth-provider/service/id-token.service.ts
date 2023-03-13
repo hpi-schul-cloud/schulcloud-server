@@ -7,7 +7,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class IdTokenService {
@@ -20,7 +20,7 @@ export class IdTokenService {
 		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.host = Configuration.get('HOST') as string;
 		this.iFrameProperties = 'title="username" style="height: 26px; width: 180px; border: none;"';

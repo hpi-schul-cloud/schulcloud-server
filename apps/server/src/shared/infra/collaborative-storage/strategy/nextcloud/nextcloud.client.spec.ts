@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -71,7 +71,7 @@ describe('NextCloud Adapter Strategy', () => {
 	let client: NextcloudClientSpec;
 
 	let httpService: DeepMocked<HttpService>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	const testGroupId = 'group1Id';
 	const testGroupName = 'group1DisplayName';
@@ -92,14 +92,14 @@ describe('NextCloud Adapter Strategy', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 		client = module.get(NextcloudClientSpec);
 		httpService = module.get(HttpService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterEach(() => {

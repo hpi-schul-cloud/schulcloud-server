@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
 import { PseudonymsRepo } from '@shared/repo/pseudonyms/pseudonyms.repo';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,8 +32,8 @@ describe('Pseudonym Repo', () => {
 			providers: [
 				PseudonymsRepoSpec,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

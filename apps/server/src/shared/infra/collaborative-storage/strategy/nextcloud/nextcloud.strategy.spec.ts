@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { PseudonymsRepo } from '@shared/repo/index';
 import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
 import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
@@ -36,7 +36,7 @@ describe('NextCloud Adapter Strategy', () => {
 	let pseudonymsRepo: DeepMocked<PseudonymsRepo>;
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let nextcloudTool: LtiToolDO;
-	let logger: Logger;
+	let logger: LegacyLogger;
 	const toolName = 'SchulcloudNextcloud';
 
 	afterAll(async () => {
@@ -61,8 +61,8 @@ describe('NextCloud Adapter Strategy', () => {
 					useValue: createMock<PseudonymsRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -70,7 +70,7 @@ describe('NextCloud Adapter Strategy', () => {
 		client = module.get(NextcloudClient);
 		pseudonymsRepo = module.get(PseudonymsRepo);
 		ltiToolRepo = module.get(LtiToolRepo);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		orm = await setupEntities();
 	});
 

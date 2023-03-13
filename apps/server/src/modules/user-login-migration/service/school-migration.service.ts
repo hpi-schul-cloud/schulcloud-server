@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserService } from '@src/modules/user';
@@ -11,7 +11,7 @@ import { OAuthMigrationError } from '../error/oauth-migration.error';
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly userService: UserService
 	) {}
 

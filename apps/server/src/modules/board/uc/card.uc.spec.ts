@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
 
@@ -20,8 +20,8 @@ describe(CardUc.name, () => {
 					useValue: createMock<CardService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

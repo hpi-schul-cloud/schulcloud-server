@@ -8,7 +8,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 import { IServerConfig } from '../../server/server.config';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { AccountValidationService } from './account.validation.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(AccountService.name);

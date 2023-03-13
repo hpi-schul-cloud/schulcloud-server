@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { File, StorageProvider } from '@shared/domain/entity';
 import { FilesRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
 
 describe('DeleteFileUC', () => {
 	let uc: DeleteFilesUc;
 	let filesRepo: FilesRepo;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	const exampleStorageProvider = new StorageProvider({
 		endpointUrl: 'endpointUrl',
@@ -49,13 +49,13 @@ describe('DeleteFileUC', () => {
 					},
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		uc = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
 	});

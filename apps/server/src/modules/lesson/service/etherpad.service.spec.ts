@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain';
 import { FeathersServiceProvider } from '@shared/infra/feathers/feathers-service.provider';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { EtherpadService } from './etherpad.service';
 
 describe('Etherpad service', () => {
@@ -20,8 +20,8 @@ describe('Etherpad service', () => {
 					useValue: createMock<FeathersServiceProvider>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

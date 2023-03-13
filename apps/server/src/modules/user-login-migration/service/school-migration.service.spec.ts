@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Page } from '@shared/domain/domainobject/page';
@@ -33,8 +33,8 @@ describe('SchoolMigrationService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

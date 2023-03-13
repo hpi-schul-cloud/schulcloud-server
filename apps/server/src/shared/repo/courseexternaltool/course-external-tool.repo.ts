@@ -3,7 +3,7 @@ import { EntityName, Reference } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Course, CourseExternalTool, ICourseExternalToolProperties, SchoolExternalTool } from '@shared/domain';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CourseExternalToolQuery } from '@src/modules/tool/uc/dto/course-external-tool.types';
 import { CourseExternalToolDO } from '@shared/domain/domainobject/external-tool/course-external-tool.do';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
@@ -18,7 +18,7 @@ export class CourseExternalToolRepo extends BaseDORepo<
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger
+		protected readonly logger: LegacyLogger
 	) {
 		super(_em, logger);
 	}

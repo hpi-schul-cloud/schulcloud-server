@@ -12,7 +12,7 @@ import { IdentityManagementService } from '@shared/infra/identity-management/ide
 import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server';
 import { AccountRepo } from '../repo/account.repo';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AbstractAccountService } from './account.service.abstract';
 
@@ -111,8 +111,8 @@ describe('AccountService', () => {
 					},
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ConfigService,

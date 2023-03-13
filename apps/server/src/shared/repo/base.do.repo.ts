@@ -2,11 +2,11 @@ import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {}
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {}
 
 	abstract get entityName(): EntityName<E>;
 

@@ -4,7 +4,7 @@ import { ExternalTool, type School, SchoolExternalTool } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/custom-parameter-entry.do';
@@ -24,8 +24,8 @@ describe('SchoolExternalToolRepo', () => {
 				SchoolExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

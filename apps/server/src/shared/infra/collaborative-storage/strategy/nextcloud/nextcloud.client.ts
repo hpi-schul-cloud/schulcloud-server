@@ -8,7 +8,7 @@ import {
 import { firstValueFrom, Observable } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { HttpService } from '@nestjs/axios';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
@@ -28,7 +28,7 @@ export class NextcloudClient {
 	config: AxiosRequestConfig;
 
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
 		@Inject('oidcInternalName') readonly oidcInternalName: string
 	) {

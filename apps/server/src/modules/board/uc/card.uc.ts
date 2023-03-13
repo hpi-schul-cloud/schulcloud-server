@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
-	constructor(private readonly cardService: CardService, private readonly logger: Logger) {
+	constructor(private readonly cardService: CardService, private readonly logger: LegacyLogger) {
 		this.logger.setContext(CardUc.name);
 	}
 

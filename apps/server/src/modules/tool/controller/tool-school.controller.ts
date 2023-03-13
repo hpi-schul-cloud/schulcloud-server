@@ -12,7 +12,7 @@ import {
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import {
@@ -35,7 +35,7 @@ export class ToolSchoolController {
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
 		private readonly responseMapper: SchoolExternalToolResponseMapper,
 		private readonly requestMapper: SchoolExternalToolRequestMapper,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	@Get()

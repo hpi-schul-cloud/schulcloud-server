@@ -4,10 +4,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { Logger } from './logger.service';
+import { LegacyLogger } from './legacy-logger.service';
 
-describe('Logger', () => {
-	let service: Logger;
+describe('LegacyLogger', () => {
+	let service: LegacyLogger;
 	let processStdoutWriteSpy;
 	let processStderrWriteSpy;
 	let winstonLogger: DeepMocked<WinstonLogger>;
@@ -15,7 +15,7 @@ describe('Logger', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				Logger,
+				LegacyLogger,
 				{
 					provide: WINSTON_MODULE_PROVIDER,
 					useValue: createMock<WinstonLogger>(),
@@ -23,7 +23,7 @@ describe('Logger', () => {
 			],
 		}).compile();
 
-		service = await module.resolve(Logger);
+		service = await module.resolve(LegacyLogger);
 		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 

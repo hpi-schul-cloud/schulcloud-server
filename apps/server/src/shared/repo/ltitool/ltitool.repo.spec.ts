@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { NotFoundError } from '@mikro-orm/core';
 import { ILtiToolProperties, LtiTool } from '@shared/domain';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
@@ -32,8 +32,8 @@ describe('LtiTool Repo', () => {
 			providers: [
 				LtiToolRepoSpec,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

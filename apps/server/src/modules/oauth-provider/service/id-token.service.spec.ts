@@ -9,7 +9,7 @@ import { PseudonymDO, Team } from '@shared/domain';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
@@ -75,8 +75,8 @@ describe('IdTokenService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

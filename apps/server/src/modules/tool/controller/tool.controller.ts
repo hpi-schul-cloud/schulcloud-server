@@ -14,7 +14,7 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Lti11Uc } from '../uc/lti11.uc';
@@ -43,7 +43,7 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	@Get('lti11/:toolId/launch')

@@ -12,7 +12,7 @@ import {
 	Permission,
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -22,7 +22,7 @@ export class NewsUc {
 	constructor(
 		private newsRepo: NewsRepo,
 		private authorizationService: FeathersAuthorizationService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(NewsUc.name);
 	}

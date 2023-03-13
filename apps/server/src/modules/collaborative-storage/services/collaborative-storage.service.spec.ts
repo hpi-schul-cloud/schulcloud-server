@@ -10,7 +10,7 @@ import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mappe
 import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationService } from '@src/modules/authorization';
 import { MikroORM } from '@mikro-orm/core';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -36,8 +36,8 @@ describe('Collaborative Storage Service', () => {
 				CollaborativeStorageService,
 				TeamMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: RoleService,

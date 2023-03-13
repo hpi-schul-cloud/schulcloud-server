@@ -13,7 +13,7 @@ import {
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
@@ -37,7 +37,7 @@ export class OauthSSOController {
 	constructor(
 		private readonly oauthUc: OauthUc,
 		private readonly hydraUc: HydraOauthUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthSSOController.name);
 		this.clientUrl = Configuration.get('HOST') as string;

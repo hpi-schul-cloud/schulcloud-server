@@ -2,7 +2,7 @@ import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -12,7 +12,7 @@ import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
 export class FilesStorageConsumer {
 	constructor(
 		private readonly filesStorageService: FilesStorageService,
-		private logger: Logger,
+		private logger: LegacyLogger,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		private readonly orm: MikroORM // don't remove it, we need it for @UseRequestContext
 	) {

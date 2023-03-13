@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CopyFileDto, FileDto } from '../dto';
 import { IFileRequestInfo } from '../interfaces';
 import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
@@ -8,7 +8,7 @@ import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
 export class FilesStorageClientAdapterService {
-	constructor(private logger: Logger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 

@@ -13,7 +13,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
@@ -30,7 +30,7 @@ describe('UserMigrationService', () => {
 	let orm: MikroORM;
 	let service: UserMigrationService;
 	let configBefore: IConfig;
-	let logger: Logger;
+	let logger: LegacyLogger;
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
@@ -67,8 +67,8 @@ describe('UserMigrationService', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -78,7 +78,7 @@ describe('UserMigrationService', () => {
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 
 		orm = await setupEntities();
 	});

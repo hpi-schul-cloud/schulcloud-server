@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { EntityId, OauthConfig, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { UserService } from '@src/modules/user';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -26,7 +26,7 @@ export class OAuthService {
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
 		private readonly userMigrationService: UserMigrationService
