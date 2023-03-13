@@ -91,7 +91,7 @@ describe('KeycloakConfigurationService Integration', () => {
 			await keycloak.realms.create({ realm: testRealm, enabled: true });
 			keycloak.setConfig({ realmName: testRealm });
 			dbOnlyAccounts = accountFactory.buildList(2);
-			dbAndIdmAccounts = accountFactory.buildList(2);
+			dbAndIdmAccounts = accountFactory.buildList(123);
 			allAccounts = [...dbOnlyAccounts, ...dbAndIdmAccounts];
 
 			await em.persistAndFlush(allAccounts);
@@ -114,7 +114,7 @@ describe('KeycloakConfigurationService Integration', () => {
 		it('should copy all accounts to the IDM', async () => {
 			if (!isKeycloakAvailable) return;
 			const createSpy = jest.spyOn(identityManagementService, 'createAccount');
-			const updateSpy = jest.spyOn(identityManagementService, 'createAccount');
+			const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
 			const [migratedAccountCounts] = await keycloakMigrationService.migrate();
 			expect(migratedAccountCounts).toBe(allAccounts.length);
 			expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
@@ -136,10 +136,5 @@ describe('KeycloakConfigurationService Integration', () => {
 			const [theErrorMessage] = err;
 			expect(theErrorMessage).toContain(conflictingDbAccount.id);
 		});
-
-		// TODO Test 1 account can be created
-		// TODO Test multiple accounts can be created (e.g. 123)
-		// TODO Test accounts in IDM get updated if already exists
-		// TODO Test accounts
 	});
 });
