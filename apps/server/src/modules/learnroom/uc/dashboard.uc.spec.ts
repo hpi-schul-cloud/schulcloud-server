@@ -12,8 +12,7 @@ import {
 } from '@shared/domain';
 import { createMock } from '@golevelup/ts-jest';
 import { courseFactory, setupEntities } from '@shared/testing';
-import { CourseRepo, IDashboardRepo, UserRepo } from '@shared/repo';
-import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
+import { CourseRepo, IDashboardRepo } from '@shared/repo';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -54,14 +53,6 @@ describe('dashboard uc', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
-				},
-				{
-					provide: AuthorisationUtils,
-					useValue: createMock<AuthorisationUtils>(),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
 				},
 			],
 		}).compile();
@@ -131,12 +122,6 @@ describe('dashboard uc', () => {
 				});
 				return Promise.resolve(dashboard);
 			});
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
-				if (userId === 'userId') {
-					return Promise.resolve([[course], 1]);
-				}
-				throw new Error('not found');
-			});
 			const result = await service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			const resultGrid = result.getGrid();
 			expect(resultGrid[0].pos).toEqual({ x: 2, y: 1 });
@@ -157,12 +142,6 @@ describe('dashboard uc', () => {
 							userId: 'userId',
 						})
 					);
-				throw new Error('not found');
-			});
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
-				if (userId === 'userId') {
-					return Promise.resolve([[course], 1]);
-				}
 				throw new Error('not found');
 			});
 			const spy = jest.spyOn(repo, 'persistAndFlush');
