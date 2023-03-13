@@ -5,8 +5,8 @@ import type { Column } from '../column.do';
 import type { TextElement } from '../text-element.do';
 
 export interface BoardNodeBuilder {
-	buildColumnBoardNode(columnBoard: ColumnBoard, parentId?: EntityId): void;
-	buildColumnNode(column: Column, parentId?: EntityId): void;
-	buildCardNode(card: Card, parentId?: EntityId): void;
-	buildTextElementNode(textElement: TextElement, parentId?: EntityId): void;
+	buildColumnBoardNode(columnBoard: ColumnBoard): void;
+	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void;
+	buildCardNode(card: Card, parentId?: EntityId, position?: number): void;
+	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void;
 }

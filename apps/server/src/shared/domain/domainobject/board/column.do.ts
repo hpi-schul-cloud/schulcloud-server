@@ -25,8 +25,8 @@ export class Column implements ColumnProps, BoardNodeBuildable {
 		this.cards.splice(position || this.cards.length, 0, card);
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
-		builder.buildColumnNode(this, parentId);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
+		builder.buildColumnNode(this, parentId, position);
 	}
 }
 

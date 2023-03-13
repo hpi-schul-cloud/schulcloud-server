@@ -26,8 +26,8 @@ export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 		this.columns.splice(position || this.columns.length, 0, column);
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
-		builder.buildColumnBoardNode(this, parentId);
+	useBoardNodeBuilder(builder: BoardNodeBuilder): void {
+		builder.buildColumnBoardNode(this);
 	}
 }
 

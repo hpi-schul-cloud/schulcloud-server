@@ -19,7 +19,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 	}
 
 	buildBoardNodes(domainObjects: AnyBoardDo[], parentId?: EntityId): BoardNode[] {
-		domainObjects.forEach((domainObject) => domainObject.useBoardNodeBuilder(this, parentId));
+		this.buildChildren(domainObjects, parentId);
 		return this.resultNodes;
 	}
 
@@ -33,22 +33,23 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		this.buildChildren(columnBoard.columns, columnBoardNode.id);
 	}
 
-	buildColumnNode(column: Column, parentId: EntityId): void {
-		const parent = this.parentsMap.get(parentId);
+	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void {
+		const parent = this.getParent(parentId);
 		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN_BOARD);
 
 		const columnNode = new ColumnNode({
 			id: column.id,
 			title: column.title,
 			parent,
+			position,
 		});
 		this.registerNode(columnNode);
 
 		this.buildChildren(column.cards, columnNode.id);
 	}
 
-	buildCardNode(card: Card, parentId: EntityId): void {
-		const parent = this.parentsMap.get(parentId);
+	buildCardNode(card: Card, parentId?: EntityId, position?: number): void {
+		const parent = this.getParent(parentId);
 		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN);
 
 		const cardNode = new CardNode({
@@ -56,20 +57,22 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 			height: card.height,
 			title: card.title,
 			parent,
+			position,
 		});
 		this.registerNode(cardNode);
 
 		this.buildChildren(card.elements, cardNode.id);
 	}
 
-	buildTextElementNode(textElement: TextElement, parentId: EntityId): void {
-		const parent = this.parentsMap.get(parentId);
+	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void {
+		const parent = this.getParent(parentId);
 		this.ensureBoardNodeType(parent, BoardNodeType.CARD);
 
 		const textElementNode = new TextElementNode({
 			id: textElement.id,
 			text: textElement.text,
 			parent,
+			position,
 		});
 		this.registerNode(textElementNode);
 	}
@@ -79,13 +82,18 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		this.resultNodes.push(boardNode);
 	}
 
+	getParent(parentId?: EntityId): BoardNode | undefined {
+		const parent = parentId ? this.parentsMap.get(parentId) : undefined;
+		return parent;
+	}
+
 	ensureBoardNodeType(boardNode: BoardNode | undefined, ...allowedBoardNodeTypes: BoardNodeType[]) {
 		if (!boardNode || !allowedBoardNodeTypes.includes(boardNode.type)) {
 			throw new Error(`board node type is not allowed: >${boardNode?.type ?? 'undefined'}<`);
 		}
 	}
 
-	buildChildren(children: AnyBoardDo[], parentId: EntityId): void {
-		children.forEach((domainObject) => domainObject.useBoardNodeBuilder(this, parentId));
+	buildChildren(children: AnyBoardDo[], parentId?: EntityId): void {
+		children.forEach((domainObject, position) => domainObject.useBoardNodeBuilder(this, parentId, position));
 	}
 }

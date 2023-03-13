@@ -18,8 +18,8 @@ export class TextElement implements TextElementProps, BoardNodeBuildable {
 		this.updatedAt = props.updatedAt;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
-		builder.buildTextElementNode(this, parentId);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
+		builder.buildTextElementNode(this, parentId, position);
 	}
 }
 
