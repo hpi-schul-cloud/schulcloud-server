@@ -26,8 +26,6 @@ describe('CoursePermissionService', () => {
 				'FILESTORAGE_EDIT',
 				'FILESTORAGE_REMOVE',
 				'FILESTORAGE_VIEW',
-				'HOMEWORK_CREATE',
-				'HOMEWORK_EDIT',
 				'HOMEWORK_VIEW',
 				'JOIN_MEETING',
 				'LESSONS_VIEW',
@@ -65,6 +63,8 @@ describe('CoursePermissionService', () => {
 				'USERGROUP_EDIT',
 				'SCOPE_PERMISSIONS_VIEW',
 				'START_MEETING',
+				'HOMEWORK_CREATE',
+				'HOMEWORK_EDIT',
 				...studentPermissions,
 			].sort()
 		),
@@ -89,6 +89,8 @@ describe('CoursePermissionService', () => {
 				'USERGROUP_EDIT',
 				'SCOPE_PERMISSIONS_VIEW',
 				'START_MEETING',
+				'HOMEWORK_CREATE',
+				'HOMEWORK_EDIT',
 				...studentPermissions,
 			].sort()
 		),

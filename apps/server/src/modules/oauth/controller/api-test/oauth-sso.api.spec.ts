@@ -53,6 +53,18 @@ describe('OAuth SSO Controller (API)', () => {
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
 
+		const schulcloudJwt: string = jwt.sign(
+			{
+				sub: 'testUser',
+				accountId: 'accountId',
+				jti: 'jti',
+			},
+			privateKey,
+			{
+				algorithm: 'RS256',
+			}
+		);
+
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -61,6 +73,7 @@ describe('OAuth SSO Controller (API)', () => {
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
 					req.user = currentUser;
+					req.headers.authorization = schulcloudJwt;
 					return true;
 				},
 			})
@@ -298,7 +311,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${baseUrl}/migration/succeed`);
+					.expect('Location', `${baseUrl}/migration/success?sourceSystem=${system.id}&targetSystem=${system.id}`);
 			});
 		});
 

@@ -29,9 +29,9 @@ import { SystemModule } from '@src/modules/system';
 import { TaskModule } from '@src/modules/task';
 import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
-import { UserModule } from '@src/modules/user';
 import { ImportUserModule } from '@src/modules/user-import';
 import { UserLoginMigrationApiModule } from '@src/modules/user-login-migration/user-login-migration-api.module';
+import { UserApiModule } from '@src/modules/user/user-api.module';
 import { VideoConferenceModule } from '@src/modules/video-conference';
 import connectRedis from 'connect-redis';
 import session from 'express-session';
@@ -50,7 +50,7 @@ const serverModules = [
 	TaskCardModule,
 	LessonApiModule,
 	NewsModule,
-	UserModule,
+	UserApiModule,
 	ImportUserModule,
 	LearnroomModule,
 	FilesStorageClientModule,

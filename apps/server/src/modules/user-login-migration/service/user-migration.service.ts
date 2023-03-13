@@ -6,17 +6,17 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolService } from '@src/modules/school';
-import { SystemDto, SystemService } from '@src/modules/system/service';
-import { SystemTypeEnum } from '@src/shared/domain/types';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
+import { SchoolService } from '@src/modules/school';
+import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { MigrationDto } from './dto/migration.dto';
-import { PageContentDto } from './dto/page-content.dto';
+import { EntityId, SystemTypeEnum } from '@src/shared/domain/types';
 import { PageTypes } from '../interface/page-types.enum';
+import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
 export class UserMigrationService {
@@ -111,38 +111,73 @@ export class UserMigrationService {
 	async migrateUser(currentUserId: string, externalUserId: string, targetSystemId: string): Promise<MigrationDto> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(currentUserId);
-		const userDOCopy: UserDO = { ...userDO };
-		const accountCopy: AccountDto = { ...account };
+		const userDOCopy: UserDO = new UserDO({ ...userDO });
+		const accountCopy: AccountDto = new AccountDto({ ...account });
 
+		let migrationDto: MigrationDto;
 		try {
-			userDO.previousExternalId = userDO.externalId;
-			userDO.externalId = externalUserId;
-			userDO.lastLoginSystemChange = new Date();
-			await this.userService.save(userDO);
-			account.systemId = targetSystemId;
-			await this.accountService.save(account);
-
-			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-			const userMigrationDto: MigrationDto = new MigrationDto({
-				redirect: `${this.hostUrl}/migration/succeed`,
-			});
-			return userMigrationDto;
+			migrationDto = await this.doMigration(userDO, externalUserId, account, targetSystemId, accountCopy.systemId);
 		} catch (e: unknown) {
-			await this.userService.save(userDOCopy);
-			await this.accountService.save(accountCopy);
-
 			this.logger.log({
 				message: 'This error occurred during migration of User:',
 				affectedUserId: currentUserId,
 				error: e,
 			});
 
-			// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
-			const userMigrationDto: MigrationDto = new MigrationDto({
-				redirect: `${this.hostUrl}/dashboard`,
-			});
-			return userMigrationDto;
+			migrationDto = await this.rollbackMigration(userDOCopy, accountCopy, targetSystemId);
 		}
+
+		return migrationDto;
+	}
+
+	private async rollbackMigration(
+		userDOCopy: UserDO,
+		accountCopy: AccountDto,
+		targetSystemId: string
+	): Promise<MigrationDto> {
+		await this.userService.save(userDOCopy);
+		await this.accountService.save(accountCopy);
+
+		const userMigrationDto: MigrationDto = this.createUserMigrationDto(
+			'/migration/error',
+			accountCopy.systemId ?? '',
+			targetSystemId
+		);
+		return userMigrationDto;
+	}
+
+	private async doMigration(
+		userDO: UserDO,
+		externalUserId: string,
+		account: AccountDto,
+		targetSystemId: string,
+		accountId?: EntityId
+	): Promise<MigrationDto> {
+		userDO.previousExternalId = userDO.externalId;
+		userDO.externalId = externalUserId;
+		userDO.lastLoginSystemChange = new Date();
+		await this.userService.save(userDO);
+
+		account.systemId = targetSystemId;
+		await this.accountService.save(account);
+
+		const userMigrationDto: MigrationDto = this.createUserMigrationDto(
+			'/migration/success',
+			accountId ?? '',
+			targetSystemId
+		);
+		return userMigrationDto;
+	}
+
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+	private createUserMigrationDto(urlPath: string, sourceSystemId: string, targetSystemId: string) {
+		const errorUrl: URL = new URL(urlPath, this.hostUrl);
+		errorUrl.searchParams.append('sourceSystem', sourceSystemId);
+		errorUrl.searchParams.append('targetSystem', targetSystemId);
+		const userMigrationDto: MigrationDto = new MigrationDto({
+			redirect: errorUrl.toString(),
+		});
+		return userMigrationDto;
 	}
 
 	private getLoginUrl(system: SystemDto, postLoginRedirect?: string): string {

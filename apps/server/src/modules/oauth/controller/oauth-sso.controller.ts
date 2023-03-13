@@ -14,7 +14,7 @@ import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
 import { Logger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { CookieOptions, Request, Response } from 'express';
@@ -158,6 +158,7 @@ export class OauthSSOController {
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
 	async migrateUser(
+		@JWT() jwt: string,
 		@Session() session: ISession,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AuthorizationParams,
@@ -165,7 +166,7 @@ export class OauthSSOController {
 	): Promise<void> {
 		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
 		try {
-			const migration: MigrationDto = await this.oauthUc.migrate(currentUser.userId, query, oauthLoginState);
+			const migration: MigrationDto = await this.oauthUc.migrate(jwt, currentUser.userId, query, oauthLoginState);
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {

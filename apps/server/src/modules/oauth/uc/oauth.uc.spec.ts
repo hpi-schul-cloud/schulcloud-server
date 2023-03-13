@@ -90,6 +90,10 @@ describe('OAuthUc', () => {
 					provide: SchoolMigrationService,
 					useValue: createMock<SchoolMigrationService>(),
 				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
+				},
 			],
 		}).compile();
 
@@ -101,6 +105,7 @@ describe('OAuthUc', () => {
 		userService = module.get(UserService);
 		userMigrationService = module.get(UserMigrationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
+		authenticationService = module.get(AuthenticationService);
 	});
 
 	afterAll(async () => {
@@ -377,9 +382,35 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, cachedState);
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/migration/succeed');
+				});
+
+				it('should remove the jwt from the whitelist', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
+				});
+			});
+
+			describe('when the jwt cannot be removed', () => {
+				it('should throw', async () => {
+					const { query, system, userMigrationDto, oauthTokenResponse, cachedState } = setupMigration();
+					const error: Error = new Error('testError');
+					systemService.findById.mockResolvedValue(system);
+					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.authorizeForMigration.mockResolvedValue(oauthTokenResponse);
+					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
+
+					const func = () => uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					await expect(func).rejects.toThrow(error);
 				});
 			});
 
@@ -389,7 +420,7 @@ describe('OAuthUc', () => {
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 
-					const result: MigrationDto = await uc.migrate('currentUserId', query, cachedState);
+					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(result.redirect).toStrictEqual('https://mock.de/dashboard');
 				});
@@ -408,7 +439,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
 						oauthData.externalSchool.externalId,
@@ -430,7 +461,7 @@ describe('OAuthUc', () => {
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
 				});
@@ -442,7 +473,7 @@ describe('OAuthUc', () => {
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await uc.migrate('currentUserId', query, cachedState);
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.schoolToMigrate).not.toHaveBeenCalled();
 				});
@@ -465,7 +496,7 @@ describe('OAuthUc', () => {
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-					await expect(uc.migrate('currentUserId', query, cachedState)).rejects.toThrow(error);
+					await expect(uc.migrate('jwt', 'currentUserId', query, cachedState)).rejects.toThrow(error);
 				});
 			});
 		});
@@ -476,7 +507,7 @@ describe('OAuthUc', () => {
 				oauthService.authenticateUser.mockResolvedValue(tokenDto);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
-				const response = uc.migrate('currentUserId', query, cachedState);
+				const response = uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 				await expect(response).rejects.toThrow(UnauthorizedException);
 			});

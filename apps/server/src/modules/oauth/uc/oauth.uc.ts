@@ -105,6 +105,7 @@ export class OauthUc {
 	}
 
 	async migrate(
+		userJwt: string,
 		currentUserId: string,
 		query: AuthorizationParams,
 		cachedState: OauthLoginStateDto
@@ -142,6 +143,9 @@ export class OauthUc {
 			data.externalUser.externalId,
 			systemId
 		);
+
+		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+
 		return migrationDto;
 	}
 

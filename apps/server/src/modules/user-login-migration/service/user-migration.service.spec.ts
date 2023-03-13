@@ -12,10 +12,10 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { accountFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
+import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto';
@@ -88,6 +88,10 @@ describe('UserMigrationService', () => {
 		await orm.close();
 
 		Configuration.reset(configBefore);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	const setup = () => {
@@ -330,48 +334,54 @@ describe('UserMigrationService', () => {
 				lastLoginSystemChange: new Date(),
 			});
 
-			const id = new ObjectId().toHexString();
+			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
-			const systemId = new ObjectId().toHexString();
+			const sourceSystemId = new ObjectId().toHexString();
 
-			const accountDto = accountFactory.buildWithId(
-				{
-					userId,
-					username: '',
-					systemId,
-				},
-				id
-			) as AccountDto;
+			const accountDto: AccountDto = new AccountDto({
+				id: accountId,
+				updatedAt: new Date(),
+				createdAt: new Date(),
+				userId,
+				username: '',
+				systemId: sourceSystemId,
+			});
 
-			const migratedAccount = accountFactory.buildWithId(
-				{
-					userId,
-					username: '',
-					systemId: targetSystemId,
-				},
-				id
-			);
+			const migratedAccount: AccountSaveDto = new AccountSaveDto({
+				id: accountId,
+				updatedAt: new Date(),
+				createdAt: new Date(),
+				userId,
+				username: '',
+				systemId: targetSystemId,
+			});
 
 			return {
 				accountDto,
 				migratedUserDO,
 				notMigratedUser,
 				migratedAccount,
+				sourceSystemId,
 				targetSystemId,
 			};
 		};
 
 		describe('when migrate user was successful', () => {
 			it('should return to migration succeed page', async () => {
-				const { targetSystemId } = setupMigrationData();
+				const { targetSystemId, sourceSystemId, accountDto } = setupMigrationData();
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
 
 				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(result.redirect).toStrictEqual(`${hostUri}/migration/succeed`);
+				expect(result.redirect).toStrictEqual(
+					`${hostUri}/migration/success?sourceSystem=${sourceSystemId}&targetSystem=${targetSystemId}`
+				);
 			});
 
 			it('should call methods of migration ', async () => {
-				const { migratedUserDO, migratedAccount, targetSystemId } = setupMigrationData();
+				const { migratedUserDO, migratedAccount, targetSystemId, notMigratedUser, accountDto } = setupMigrationData();
+				userService.findById.mockResolvedValue(notMigratedUser);
+				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
 
 				await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
@@ -444,7 +454,7 @@ describe('UserMigrationService', () => {
 			});
 
 			it('should return to dashboard', async () => {
-				const { migratedUserDO, accountDto, targetSystemId } = setupMigrationData();
+				const { migratedUserDO, accountDto, targetSystemId, sourceSystemId } = setupMigrationData();
 				const error = new NotFoundException('Test Error');
 				userService.findById.mockResolvedValue(migratedUserDO);
 				accountService.findByUserIdOrFail.mockResolvedValue(accountDto);
@@ -452,7 +462,9 @@ describe('UserMigrationService', () => {
 
 				const result = await service.migrateUser('userId', 'externalUserTargetId', targetSystemId);
 
-				expect(result.redirect).toStrictEqual(`${hostUri}/dashboard`);
+				expect(result.redirect).toStrictEqual(
+					`${hostUri}/migration/error?sourceSystem=${sourceSystemId}&targetSystem=${targetSystemId}`
+				);
 			});
 		});
 	});
