@@ -3,10 +3,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
+	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	cardNodeFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
@@ -34,21 +34,21 @@ describe(ColumnBoardRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
-	const setup = async () => {
-		const boardNode = columnBoardNodeFactory.build();
-		await em.persistAndFlush(boardNode);
-		const columnNodes = columnNodeFactory.buildList(2, { parent: boardNode });
-		await em.persistAndFlush(columnNodes);
-		const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
-		await em.persistAndFlush(cardNodes);
-		const elementNodes = textElementNodeFactory.buildList(2, { parent: cardNodes[1] });
-		await em.persistAndFlush(elementNodes);
-		em.clear();
-
-		return { boardNode, columnNodes, cardNodes, elementNodes };
-	};
-
 	describe('findById', () => {
+		const setup = async () => {
+			const boardNode = columnBoardNodeFactory.build();
+			await em.persistAndFlush(boardNode);
+			const columnNodes = columnNodeFactory.buildList(2, { parent: boardNode });
+			await em.persistAndFlush(columnNodes);
+			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+			await em.persistAndFlush(cardNodes);
+			const elementNodes = textElementNodeFactory.buildList(2, { parent: cardNodes[1] });
+			await em.persistAndFlush(elementNodes);
+			em.clear();
+
+			return { boardNode, columnNodes, cardNodes, elementNodes };
+		};
+
 		it('should find the board', async () => {
 			const { boardNode } = await setup();
 			const result = await repo.findById(boardNode.id);

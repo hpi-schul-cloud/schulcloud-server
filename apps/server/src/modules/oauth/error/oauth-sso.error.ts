@@ -1,3 +1,5 @@
+import { SSOErrorCode } from './sso-error-code.enum';
+
 export class OAuthSSOError extends Error {
 	readonly message: string;
 
@@ -5,7 +7,7 @@ export class OAuthSSOError extends Error {
 
 	readonly DEFAULT_MESSAGE: string = 'Error in SSO Oauth Process.';
 
-	readonly DEFAULT_ERRORCODE: string = 'OauthLoginFailed';
+	readonly DEFAULT_ERRORCODE: string = SSOErrorCode.SSO_OAUTH_LOGIN_FAILED;
 
 	constructor(message?: string, errorcode?: string) {
 		super(message);

@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
-import { BoardManagementConsole } from './console/board-management.console';
-import { BoardController } from './controller/board.controller';
-import { CardController } from './controller/card.controller';
-import { BoardNodeRepo, CardRepo, ColumnBoardRepo, ContentElementRepo } from './repo';
-import { ColumnRepo } from './repo/column.repo';
+import { BoardManagementConsole } from './console';
+import { BoardController, CardController } from './controller';
+import { BoardNodeRepo, CardRepo, ColumnBoardRepo, ColumnRepo, ContentElementRepo } from './repo';
+import { CardService, ColumnBoardService } from './service';
 import { BoardManagementUc, BoardUc, CardUc } from './uc';
 
 @Module({
@@ -22,6 +21,6 @@ import { BoardManagementUc, BoardUc, CardUc } from './uc';
 		ColumnBoardRepo,
 		ContentElementRepo,
 	],
-	exports: [],
+	exports: [ColumnBoardService, CardService],
 })
 export class BoardModule {}
