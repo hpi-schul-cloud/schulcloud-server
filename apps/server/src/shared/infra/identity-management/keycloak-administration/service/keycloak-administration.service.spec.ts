@@ -50,6 +50,10 @@ describe('KeycloakAdministrationService', () => {
 		kcAdminClient.clients = kcApiClientMock;
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	afterEach(() => {
 		service.resetLastAuthorizationTime();
 		kcApiClientMock.find.mockClear();
