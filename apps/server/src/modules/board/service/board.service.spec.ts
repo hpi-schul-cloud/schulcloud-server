@@ -36,14 +36,14 @@ describe(ColumnBoardService.name, () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const board = columnBoardFactory.build();
-		const boardId = board.id;
-
-		return { board, boardId };
-	};
-
 	describe('finding a board', () => {
+		const setup = () => {
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+
+			return { board, boardId };
+		};
+
 		it('should call the card repository', async () => {
 			const { boardId } = setup();
 

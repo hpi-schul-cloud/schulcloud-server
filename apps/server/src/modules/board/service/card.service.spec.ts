@@ -35,14 +35,14 @@ describe(CardService.name, () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const cards = cardFactory.buildList(3);
-		const cardIds = cards.map((c) => c.id);
-
-		return { cards, cardIds };
-	};
-
 	describe('finding many cards', () => {
+		const setup = () => {
+			const cards = cardFactory.buildList(3);
+			const cardIds = cards.map((c) => c.id);
+
+			return { cards, cardIds };
+		};
+
 		it('should call the card repository', async () => {
 			const { cardIds } = setup();
 
