@@ -99,7 +99,6 @@ describe('Dashboard Controller (API)', () => {
 			});
 		});
 
-
 		it('should return dashboard with teacher active courses', async () => {
 			const teacher = setupWithRole(RoleName.TEACHER);
 			const student = setupWithRole(RoleName.STUDENT);
