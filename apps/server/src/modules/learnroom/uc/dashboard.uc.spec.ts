@@ -77,24 +77,13 @@ describe('dashboard uc', () => {
 	});
 
 	describe('getUsersDashboard', () => {
-		it('should return a dashboard for teacher only courses', async () => {
-			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId });
-				return Promise.resolve(dashboard);
-			});
-			jest.spyOn(courseRepo, 'findAllForTeacher').mockImplementation(() => Promise.resolve([[], 0]));
-			const dashboard = await service.getUsersDashboard('userId', false);
-
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
-			expect(spy).toHaveBeenCalledWith('userId');
-		});
 		it('should return a dashboard', async () => {
 			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
 				const dashboard = new DashboardEntity('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
 			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
-			const dashboard = await service.getUsersDashboard('userId', true);
+			const dashboard = await service.getUsersDashboard('userId');
 
 			expect(dashboard instanceof DashboardEntity).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
@@ -113,7 +102,7 @@ describe('dashboard uc', () => {
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
 			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
 
-			const result = await service.getUsersDashboard('userId', true);
+			const result = await service.getUsersDashboard('userId');
 
 			expect(result instanceof DashboardEntity).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
@@ -198,70 +187,6 @@ describe('dashboard uc', () => {
 
 			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
 			await expect(callFut).rejects.toThrow(NotFoundException);
-		});
-
-		it('should throw if moving substitute course', async () => {
-			const course = courseFactory.buildWithId();
-			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
-				if (id === 'dashboardId')
-					return Promise.resolve(
-						new DashboardEntity(id, {
-							grid: [
-								{
-									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromPersistedReference(
-										'elementId',
-										learnroomMock(course._id.toString(), 'Mathe')
-									),
-								},
-							],
-							userId: 'userId',
-						})
-					);
-				throw new Error('not found');
-			});
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
-				if (userId === 'userId') {
-					return Promise.resolve([[course], 1]);
-				}
-				throw new Error('not found');
-			});
-			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
-			await expect(callFut).rejects.toThrow(BadRequestException);
-		});
-
-		it('should throw if moving into substitute course', async () => {
-			const course = courseFactory.buildWithId();
-			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
-				if (id === 'dashboardId')
-					return Promise.resolve(
-						new DashboardEntity(id, {
-							grid: [
-								{
-									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
-								},
-								{
-									pos: { x: 2, y: 1 },
-									gridElement: GridElement.FromPersistedReference(
-										'elementId',
-										learnroomMock(course._id.toString(), 'Substitute Course')
-									),
-								},
-							],
-							userId: 'userId',
-						})
-					);
-				throw new Error('not found');
-			});
-			jest.spyOn(courseRepo, 'findAllForSubstituteTeacher').mockImplementation((userId: EntityId) => {
-				if (userId === 'userId') {
-					return Promise.resolve([[course], 1]);
-				}
-				throw new Error('not found');
-			});
-			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
-			await expect(callFut).rejects.toThrow(BadRequestException);
 		});
 	});
 

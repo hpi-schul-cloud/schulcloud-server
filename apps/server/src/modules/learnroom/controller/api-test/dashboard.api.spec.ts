@@ -134,7 +134,7 @@ describe('Dashboard Controller (API)', () => {
 			expect(response.status).toEqual(200);
 			const body = response.body as DashboardResponse;
 			expect(body.id).toEqual(dashboardId);
-			expect(body.gridElements.length).toEqual(2);
+			expect(body.gridElements.length).toEqual(3);
 			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
 			elementNames.forEach((name) => {
 				expect(name).toEqual('should appear');

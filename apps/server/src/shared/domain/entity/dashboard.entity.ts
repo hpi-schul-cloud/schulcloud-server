@@ -218,20 +218,8 @@ export class DashboardEntity {
 		return element;
 	}
 
-	moveElement(
-		from: GridPositionWithGroupIndex,
-		to: GridPositionWithGroupIndex,
-		substituteCourses: ILearnroom[]
-	): GridElementWithPosition {
+	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
 		const elementToMove = this.getReferencesFromPosition(from);
-		if (substituteCourses.length > 0) {
-			this.checkIfMovedToSubstitute(elementToMove, substituteCourses);
-			const toPosition = this.grid.get(this.gridIndexFromPosition(to));
-			if (toPosition) {
-				this.checkIfMovedToSubstitute(toPosition, substituteCourses);
-			}
-		}
-
 		const resultElement = this.mergeElementIntoPosition(elementToMove, to);
 		this.removeFromPosition(from);
 		return {
@@ -240,16 +228,6 @@ export class DashboardEntity {
 		};
 	}
 
-	private checkIfMovedToSubstitute(element: IGridElement, substituteCourses: ILearnroom[]) {
-		element.getReferences().forEach((course) => {
-			const { id } = course.getMetadata();
-			substituteCourses.forEach((substitute) => {
-				if (substitute.getMetadata().id === id) {
-					throw new BadRequestException('substitute courses cannot be arranged');
-				}
-			});
-		});
-	}
 
 	setLearnRooms(rooms: ILearnroom[]): void {
 		this.removeRoomsNotInList(rooms);
