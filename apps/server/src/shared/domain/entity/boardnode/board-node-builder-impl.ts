@@ -12,8 +12,10 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 
 	private resultNodes: BoardNode[] = [];
 
-	constructor(parentNode: BoardNode) {
-		this.parentsMap.set(parentNode.id, parentNode);
+	constructor(parentNode?: BoardNode) {
+		if (parentNode) {
+			this.parentsMap.set(parentNode.id, parentNode);
+		}
 	}
 
 	buildBoardNodes(domainObjects: AnyBoardDo[], parentId?: EntityId): BoardNode[] {

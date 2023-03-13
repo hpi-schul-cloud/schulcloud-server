@@ -22,6 +22,10 @@ export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 		this.updatedAt = props.updatedAt;
 	}
 
+	addColumn(column: Column, position?: number) {
+		this.columns.splice(position || this.columns.length, 0, column);
+	}
+
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId): void {
 		builder.buildColumnBoardNode(this, parentId);
 	}

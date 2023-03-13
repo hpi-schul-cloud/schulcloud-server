@@ -1,7 +1,9 @@
+import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ColumnBoard, ColumnBoardNode, EntityId } from '@shared/domain';
 import { BoardDoBuilder } from '@shared/domain/entity/boardnode/board-do.builder';
+import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 
 @Injectable()
@@ -16,5 +18,12 @@ export class ColumnBoardRepo {
 		const domainObject = new BoardDoBuilder(descendants).buildColumnBoard(boardNode);
 
 		return domainObject;
+	}
+
+	async save(board: ColumnBoard | ColumnBoard[]) {
+		const boards = Utils.asArray(board);
+		const builder = new BoardNodeBuilderImpl();
+		const boardNodes = builder.buildBoardNodes(boards);
+		await this.boardNodeRepo.save(boardNodes);
 	}
 }
