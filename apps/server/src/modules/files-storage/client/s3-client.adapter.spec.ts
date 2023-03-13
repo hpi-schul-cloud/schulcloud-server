@@ -202,36 +202,27 @@ describe('S3ClientAdapter', () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
 
-				client.config.endpoint = jest.fn().mockResolvedValueOnce({ protocol: '' });
+				// @ts-expect-error EndpointMock
+				client.config.endpoint = () => {
+					return { protocol: '' };
+				};
 
-				return { file, pathToFile };
+				const restoreMocks = () => {
+					// @ts-expect-error Set of undefined works as mock restore
+					client.config.endpoint = undefined;
+				};
+
+				return { file, pathToFile, restoreMocks };
 			};
 
 			it('should return data', async () => {
-				const { file, pathToFile } = setup();
+				const { file, pathToFile, restoreMocks } = setup();
 
 				const result = await service.create(pathToFile, file);
 
 				expect(result).toBeDefined();
-			});
-		});
 
-		describe('WHEN client throws error', () => {
-			const setup = () => {
-				const { file } = createFile();
-				const { pathToFile } = createParameter();
-				const error = new Error('testError');
-
-				client.config.endpoint = jest.fn().mockResolvedValueOnce({ protocol: '' });
-				jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
-
-				return { file, pathToFile, error };
-			};
-
-			it('should throw error from client', async () => {
-				const { file, pathToFile, error } = setup();
-
-				await expect(service.create(pathToFile, file)).rejects.toThrow(error);
+				restoreMocks();
 			});
 		});
 
@@ -241,21 +232,58 @@ describe('S3ClientAdapter', () => {
 				const { pathToFile } = createParameter();
 				const error = { Code: 'NoSuchBucket' };
 
-				client.config.endpoint = jest.fn().mockResolvedValueOnce({ protocol: '' });
-				jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
-				jest.spyOn(service, 'createBucket').mockResolvedValueOnce();
+				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
+				const createBucketMock = jest.spyOn(service, 'createBucket').mockResolvedValueOnce();
 				const createSpy = jest.spyOn(service, 'create');
+				// @ts-expect-error EndpointMock
+				client.config.endpoint = () => {
+					return { protocol: '' };
+				};
 
-				return { file, pathToFile, error, createSpy };
+				const restoreMocks = () => {
+					uploadDoneMock.mockRestore();
+					createBucketMock.mockRestore();
+					createSpy.mockRestore();
+					// @ts-expect-error Set of undefined works as mock restore
+					client.config.endpoint = undefined;
+				};
+
+				return { file, pathToFile, error, createSpy, restoreMocks };
 			};
 
 			it('should call createBucket() and itself', async () => {
-				const { file, pathToFile, createSpy } = setup();
+				const { file, pathToFile, createSpy, restoreMocks } = setup();
 
 				await service.create(pathToFile, file);
 
 				expect(service.createBucket).toBeCalled();
 				expect(createSpy).toBeCalledTimes(2);
+
+				restoreMocks();
+			});
+		});
+
+		describe('WHEN client throws error', () => {
+			const setup = () => {
+				const { file } = createFile();
+				const { pathToFile } = createParameter();
+				const error = new InternalServerErrorException('testError', 'S3ClientAdapter:create');
+
+				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
+
+				const restoreMocks = () => {
+					uploadDoneMock.mockRestore();
+				};
+
+				return { file, pathToFile, error, restoreMocks };
+			};
+
+			it('should throw error from client', async () => {
+				const { file, pathToFile, error, restoreMocks } = setup();
+
+				await expect(service.create(pathToFile, file)).rejects.toThrow(error);
+
+				restoreMocks();
 			});
 		});
 	});
