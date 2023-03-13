@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -11,16 +12,15 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
+import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { Request } from 'express';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { AuthorizationParams, OauthTokenResponse } from '../dto';
 
@@ -52,6 +52,18 @@ describe('OAuth SSO Controller (API)', () => {
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
 
+		const schulcloudJwt: string = jwt.sign(
+			{
+				sub: 'testUser',
+				accountId: 'accountId',
+				jti: 'jti',
+			},
+			privateKey,
+			{
+				algorithm: 'RS256',
+			}
+		);
+
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
@@ -60,6 +72,7 @@ describe('OAuth SSO Controller (API)', () => {
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
 					req.user = currentUser;
+					req.headers.authorization = schulcloudJwt;
 					return true;
 				},
 			})
@@ -297,7 +310,7 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${baseUrl}/migration/succeed`);
+					.expect('Location', `${baseUrl}/migration/success?sourceSystem=${system.id}&targetSystem=${system.id}`);
 			});
 		});
 
