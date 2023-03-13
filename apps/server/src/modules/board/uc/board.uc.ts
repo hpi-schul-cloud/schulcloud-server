@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ColumnBoard, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
-import { ColumnBoardRepo } from '../repo';
+import { ColumnBoardService } from '../service/board.service';
 
 @Injectable()
 export class BoardUc {
-	constructor(private readonly columnBoardRepo: ColumnBoardRepo, private readonly logger: Logger) {
+	constructor(private readonly columnBoardService: ColumnBoardService, private readonly logger: Logger) {
 		this.logger.setContext(BoardUc.name);
 	}
 
@@ -14,7 +13,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		// TODO check permissions
-		const board = await this.columnBoardRepo.findById(boardId);
+		const board = await this.columnBoardService.findById(boardId);
 		return board;
 	}
 
@@ -23,14 +22,8 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		const board = new ColumnBoard({
-			id: new ObjectId().toHexString(),
-			title: '',
-			columns: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
+		const board = this.columnBoardService.createBoard();
 
-		await this.columnBoardRepo.save(board);
+		return board;
 	}
 }

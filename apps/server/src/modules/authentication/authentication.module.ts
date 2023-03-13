@@ -1,22 +1,23 @@
 import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { CacheWrapperModule } from '@shared/infra/cache';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
+import { AccountModule } from '@src/modules/account';
 import { OauthModule } from '@src/modules/oauth/oauth.module';
-import { AccountModule } from '../account';
-import { AuthenticationService } from './services/authentication.service';
+import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { SystemModule } from '@src/modules/system';
+import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
+import { AuthenticationService } from './services/authentication.service';
+import { LdapService } from './services/ldap.service';
 import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
-import { LdapService } from './services/ldap.service';
-import { SystemModule } from '../system';
 import { OauthStrategy } from './strategy/oauth.strategy';
-import { SchoolMapper } from '../school/mapper/school.mapper';
 
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
 const algorithms = [
@@ -61,6 +62,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		SystemModule,
 		OauthModule,
 		IdentityManagementModule,
+		CacheWrapperModule,
 	],
 	providers: [
 		JwtStrategy,

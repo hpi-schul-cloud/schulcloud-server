@@ -3,25 +3,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { BoardNodeRepo, CardRepo } from '../repo';
+import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
-	let cardRepo: DeepMocked<CardRepo>;
+	let cardService: DeepMocked<CardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardUc,
 				{
-					provide: CardRepo,
-					useValue: createMock<CardRepo>(),
-				},
-				{
-					provide: BoardNodeRepo,
-					useValue: createMock<BoardNodeRepo>(),
+					provide: CardService,
+					useValue: createMock<CardService>(),
 				},
 				{
 					provide: Logger,
@@ -31,7 +27,7 @@ describe(CardUc.name, () => {
 		}).compile();
 
 		uc = module.get(CardUc);
-		cardRepo = module.get(CardRepo);
+		cardService = module.get(CardService);
 		await setupEntities();
 	});
 
@@ -39,31 +35,26 @@ describe(CardUc.name, () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		// jest.resetAllMocks();
-		// jest.clearAllMocks();
-	});
-
-	const setup = () => {
-		const user = userFactory.buildWithId();
-		const cards = cardFactory.buildList(3);
-		const cardIds = cards.map((c) => c.id);
-
-		return { user, cards, cardIds };
-	};
-
 	describe('finding many cards', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const cards = cardFactory.buildList(3);
+			const cardIds = cards.map((c) => c.id);
+
+			return { user, cards, cardIds };
+		};
+
 		it('should call the card repository', async () => {
 			const { user, cardIds } = setup();
 
 			await uc.findCards(user.id, cardIds);
 
-			expect(cardRepo.findByIds).toHaveBeenCalledWith(cardIds);
+			expect(cardService.findByIds).toHaveBeenCalledWith(cardIds);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
 			const { user, cards, cardIds } = setup();
-			cardRepo.findByIds.mockResolvedValueOnce(cards);
+			cardService.findByIds.mockResolvedValueOnce(cards);
 
 			const result = await uc.findCards(user.id, cardIds);
 

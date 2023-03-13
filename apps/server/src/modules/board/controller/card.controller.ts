@@ -24,6 +24,6 @@ export class CardController {
 		const result = new CardListResponse({
 			data: cardResponses,
 		});
-		return Promise.resolve(result);
+		return result;
 	}
 }

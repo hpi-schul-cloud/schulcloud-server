@@ -33,29 +33,29 @@ describe('BoardNodeRepo', () => {
 		await cleanupCollections(em);
 	});
 
-	const setup = async () => {
-		// root
-		// -- level1[0]
-		// ---- level2[0]
-		// ---- level2[1]
-		// ------ level3[0]
-		// ------ level3[1]
-		// -- level1[1]
-
-		const root = columnBoardNodeFactory.build();
-		await em.persistAndFlush(root);
-		const level1 = columnNodeFactory.buildList(2, { parent: root });
-		await em.persistAndFlush(level1);
-		const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
-		await em.persistAndFlush(level2);
-		const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
-		await em.persistAndFlush(level3);
-		em.clear();
-
-		return { root, level1, level2, level3 };
-	};
-
 	describe('findDescendants', () => {
+		const setup = async () => {
+			// root
+			// -- level1[0]
+			// ---- level2[0]
+			// ---- level2[1]
+			// ------ level3[0]
+			// ------ level3[1]
+			// -- level1[1]
+
+			const root = columnBoardNodeFactory.build();
+			await em.persistAndFlush(root);
+			const level1 = columnNodeFactory.buildList(2, { parent: root });
+			await em.persistAndFlush(level1);
+			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
+			await em.persistAndFlush(level2);
+			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
+			await em.persistAndFlush(level3);
+			em.clear();
+
+			return { root, level1, level2, level3 };
+		};
+
 		describe('when starting at the root node', () => {
 			it('should find descendents with a specific depth', async () => {
 				const { root, level1, level2 } = await setup();
@@ -104,6 +104,28 @@ describe('BoardNodeRepo', () => {
 	});
 
 	describe('findChildrenOfMany', () => {
+		const setup = async () => {
+			// root
+			// -- level1[0]
+			// ---- level2[0]
+			// ---- level2[1]
+			// ------ level3[0]
+			// ------ level3[1]
+			// -- level1[1]
+
+			const root = columnBoardNodeFactory.build();
+			await em.persistAndFlush(root);
+			const level1 = columnNodeFactory.buildList(2, { parent: root });
+			await em.persistAndFlush(level1);
+			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
+			await em.persistAndFlush(level2);
+			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
+			await em.persistAndFlush(level3);
+			em.clear();
+
+			return { root, level1, level2, level3 };
+		};
+
 		it('should find a map of children', async () => {
 			const { root, level1, level2 } = await setup();
 
