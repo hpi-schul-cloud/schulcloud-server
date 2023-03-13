@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.085Z"
+			"$date": "2023-03-01T10:54:36.810Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -38,8 +38,6 @@
 			"FOLDER_CREATE",
 			"FOLDER_DELETE",
 			"HELPDESK_CREATE",
-			"HOMEWORK_CREATE",
-			"HOMEWORK_EDIT",
 			"HOMEWORK_VIEW",
 			"LERNSTORE_VIEW",
 			"LINK_CREATE",
@@ -201,7 +199,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-02-13T22:33:26.733Z"
+			"$date": "2023-03-01T10:54:36.797Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -247,7 +245,9 @@
 			"TASK_CARD_EDIT",
 			"TEAM_CREATE",
 			"TEAM_EDIT",
-			"START_MEETING"
+			"START_MEETING",
+			"HOMEWORK_CREATE",
+			"HOMEWORK_EDIT"
 		],
 		"__v": 2
 	},
@@ -426,7 +426,7 @@
 		},
 		"name": "courseStudent",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-03-01T10:54:36.810Z"
 		},
 		"createdAt": {
 			"$date": "2019-09-09T12:00:00Z"
@@ -442,8 +442,6 @@
 			"COURSEGROUP_EDIT",
 			"LESSONS_VIEW",
 			"HOMEWORK_VIEW",
-			"HOMEWORK_EDIT",
-			"HOMEWORK_CREATE",
 			"COMMENTS_VIEW",
 			"COMMENTS_CREATE",
 			"COMMENTS_EDIT",
