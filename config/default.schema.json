@@ -985,6 +985,11 @@
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
 		},
+		"FEATURE_TASK_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the task sharing feature."
+		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
