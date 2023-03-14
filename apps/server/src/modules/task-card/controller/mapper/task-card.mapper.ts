@@ -56,7 +56,7 @@ export class TaskCardMapper {
 	}
 
 	static mapToDomain(params: TaskCardParams): ITaskCardCRUD {
-		if (!params.title.length) {
+		if (!params.title) {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
@@ -87,11 +87,11 @@ export class TaskCardMapper {
 	}
 
 	private static mapElementsToDto(cardElements: CardElementParams[]): RichText[] | void {
-		let text: RichText[] = [];
+		const text: RichText[] = [];
 		cardElements.forEach((element) => {
 			if (element.content instanceof RichTextCardElementParam) {
 				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
-				text = text ? [richText] : [...text, richText];
+				text.push(richText);
 			}
 		});
 
