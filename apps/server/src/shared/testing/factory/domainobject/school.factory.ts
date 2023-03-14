@@ -6,5 +6,15 @@ class SchoolFactory extends DoBaseFactory<SchoolDO, SchoolDO> {}
 export const schoolDOFactory = SchoolFactory.define(SchoolDO, ({ sequence }) => {
 	return {
 		name: `schoolName-${sequence}`,
+		externalId: '123',
+		features: [],
+		inMaintenanceSince: new Date(),
+		inUserMigration: true,
+		oauthMigrationMandatory: new Date(),
+		oauthMigrationPossible: new Date(),
+		oauthMigrationFinished: new Date(),
+		previousExternalId: '456',
+		officialSchoolNumber: '789',
+		systems: [],
 	};
 });
