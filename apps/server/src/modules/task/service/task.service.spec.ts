@@ -92,6 +92,16 @@ describe('TaskService', () => {
 		});
 	});
 
+	describe('findById', () => {
+		it('should call findById from task repo', async () => {
+			const task = taskFactory.buildWithId();
+			taskRepo.findById.mockResolvedValueOnce(task);
+
+			await expect(taskService.findById(task.id)).resolves.toEqual(task);
+			expect(taskRepo.findById).toBeCalledWith(task.id);
+		});
+	});
+
 	describe('delete', () => {
 		const setup = () => {
 			const task = taskFactory.buildWithId();

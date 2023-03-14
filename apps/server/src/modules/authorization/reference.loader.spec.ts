@@ -8,12 +8,12 @@ import {
 	CourseGroupRepo,
 	CourseRepo,
 	LessonRepo,
+	SchoolExternalToolRepo,
 	SchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
-	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
@@ -94,8 +94,8 @@ describe('reference.loader', () => {
 		await orm.close();
 	});
 
-	beforeEach(() => {
-		jest.restoreAllMocks();
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	it('should to be defined', () => {
