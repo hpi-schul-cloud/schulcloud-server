@@ -3,7 +3,7 @@
 ## Summary
 
 This modul is a stand alone files service.
-The service handles the binar files and the files meta data.
+The service handles the binary files and the files meta data.
 It provides upload and download streams.
 
 The Service is used for deeper and individual authorisation contexts for files.
