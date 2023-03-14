@@ -1,4 +1,5 @@
 import { SchoolFeatures, SchoolYear } from '../entity';
+import { EntityId } from '../types';
 import { BaseDO } from './base.do';
 
 export class SchoolDO extends BaseDO {
@@ -14,11 +15,13 @@ export class SchoolDO extends BaseDO {
 
 	oauthMigrationFinished?: Date;
 
+	previousExternalId?: string;
+
 	name: string;
 
 	officialSchoolNumber?: string;
 
-	systems?: string[];
+	systems?: EntityId[];
 
 	features?: SchoolFeatures[];
 
@@ -35,6 +38,7 @@ export class SchoolDO extends BaseDO {
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
 		this.oauthMigrationFinished = params.oauthMigrationFinished;
+		this.previousExternalId = params.previousExternalId;
 		this.officialSchoolNumber = params.officialSchoolNumber;
 		this.schoolYear = params.schoolYear;
 		this.systems = params.systems;

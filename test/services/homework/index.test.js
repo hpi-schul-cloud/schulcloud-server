@@ -167,23 +167,24 @@ describe('homework service', () => {
 			}
 		});
 
-		it('student can create todo for himself', async () => {
+		it('student can not create todo for himself', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const hw = await homeworkService.create(
-				{
-					name: 'Testaufgabe',
-					description: 'Müll rausbringen',
-					availableDate: '2017-09-28T11:47:46.622Z',
-					dueDate: `${Date.now()}`,
-				},
-				params
-			);
-			expect(hw).to.haveOwnProperty('_id');
-			expect(hw.teacherId.toString()).to.equal(user._id.toString());
-			expect(hw.private).to.equal(true);
-			expect(hw.schoolId.toString()).to.equal(user.schoolId.toString());
+			const data = {
+				name: 'Testaufgabe',
+				description: 'Müll rausbringen',
+				availableDate: '2017-09-28T11:47:46.622Z',
+				dueDate: `${Date.now()}`,
+			};
+			try {
+				await homeworkService.create(data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal("You don't have one of the permissions: HOMEWORK_CREATE.");
+			}
 		});
 
 		it('student can not create homework on a course', async () => {
@@ -191,19 +192,22 @@ describe('homework service', () => {
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({ userIds: [user._id] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const hw = await homeworkService.create(
-				{
-					name: 'Testaufgabe',
-					description: 'Müll rausbringen',
-					availableDate: '2017-09-28T11:47:46.622Z',
-					dueDate: `${Date.now()}`,
-					private: false,
-					courseId,
-				},
-				params
-			);
-			expect(hw).to.haveOwnProperty('_id');
-			expect(hw.courseId).to.equal(null); // default value in the database
+			const data = {
+				name: 'Testaufgabe',
+				description: 'Müll rausbringen',
+				availableDate: '2017-09-28T11:47:46.622Z',
+				dueDate: `${Date.now()}`,
+				private: false,
+				courseId,
+			};
+			try {
+				await homeworkService.create(data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal("You don't have one of the permissions: HOMEWORK_CREATE.");
+			}
 		});
 	});
 

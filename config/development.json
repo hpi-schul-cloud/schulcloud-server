@@ -1,6 +1,7 @@
 {
 	"$schema": "./default.schema.json",
 	"SC_DOMAIN": "localhost",
+	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"FEATURE_API_VALIDATION_ENABLED": true,
 	"FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
 	"FILE_SECURITY_CHECK_SERVICE_URI": "http://localhost:8081/scan/file",
@@ -9,14 +10,8 @@
 	"SYNC_LOG_LEVEL": "debug",
 	"REQUEST_LOGGING_ENABLED": true,
 	"FEATURE_MONGOOSE_LOGGING_ENABLED": true,
-	"FEATURE_LERNSTORE_ENABLED": true,
+	"FEATURE_LERNSTORE_ENABLED": false,
 	"FEATURE_S3_BUCKET_CORS": false,
-	"FEATURE_ES_COLLECTIONS_ENABLED": true,
-	"FEATURE_ES_SEARCHABLE_ENABLED": true,
-	"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": true,
-	"ES_DOMAIN": "https://repository.edu-2.sc-dev-edusharing.dbildungscloud.dev",
-	"ES_USER": "BrandenburgUser",
-	"ES_PASSWORD": "BBpasswordSC!",
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
@@ -52,7 +47,15 @@
 		"SECURE": false,
 		"EXPIRES_SECONDS": 2592000000
 	},
+	"SESSION": {
+		"SAME_SITE": "lax",
+		"SECURE": false,
+		"HTTP_ONLY": true,
+		"EXPIRES_SECONDS": 2592000000,
+		"SECRET": "devSecret"
+	},
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
-	"NEST_LOG_LEVEL": "debug"
-	}
+	"NEST_LOG_LEVEL": "debug",
+	"SESSION_SECRET": "dev-session-secret"
+}

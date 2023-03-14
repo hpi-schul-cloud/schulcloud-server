@@ -2,7 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	fileRecordFactory,
@@ -93,7 +94,7 @@ describe(`${baseRouteName} (api)`, () => {
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['schoolId must be a mongodb id'],
-					field: 'schoolId',
+					field: ['schoolId'],
 				},
 			]);
 			expect(response.status).toEqual(400);
@@ -104,7 +105,7 @@ describe(`${baseRouteName} (api)`, () => {
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['parentId must be a mongodb id'],
-					field: 'parentId',
+					field: ['parentId'],
 				},
 			]);
 			expect(response.status).toEqual(400);
@@ -115,7 +116,7 @@ describe(`${baseRouteName} (api)`, () => {
 			expect(response.error.validationErrors).toEqual([
 				{
 					errors: ['parentType must be a valid enum value'],
-					field: 'parentType',
+					field: ['parentType'],
 				},
 			]);
 			expect(response.status).toEqual(400);

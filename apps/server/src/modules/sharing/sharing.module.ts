@@ -7,9 +7,10 @@ import { ShareTokenService, TokenGenerator } from './service';
 import { ShareTokenRepo } from './repo/share-token.repo';
 import { LessonModule } from '../lesson';
 import { LearnroomModule } from '../learnroom';
+import { TaskModule } from '../task';
 
 @Module({
-	imports: [AuthorizationModule, LoggerModule, LearnroomModule, LessonModule],
+	imports: [AuthorizationModule, LoggerModule, LearnroomModule, LessonModule, TaskModule],
 	controllers: [],
 	providers: [ShareTokenService, TokenGenerator, ShareTokenRepo],
 	exports: [ShareTokenService],
@@ -17,7 +18,7 @@ import { LearnroomModule } from '../learnroom';
 export class SharingModule {}
 
 @Module({
-	imports: [SharingModule, AuthorizationModule, LearnroomModule, LessonModule, LoggerModule],
+	imports: [SharingModule, AuthorizationModule, LearnroomModule, LessonModule, TaskModule, LoggerModule],
 	controllers: [ShareTokenController],
 	providers: [ShareTokenUC],
 })

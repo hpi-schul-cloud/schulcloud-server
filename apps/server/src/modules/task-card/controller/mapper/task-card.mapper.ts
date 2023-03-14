@@ -29,6 +29,11 @@ export class TaskCardMapper {
 			dueDate: card.dueDate,
 		});
 
+		if (card.course) {
+			dto.courseId = card.course.id;
+			dto.courseName = card.course.name;
+		}
+
 		return dto;
 	}
 
@@ -60,6 +65,10 @@ export class TaskCardMapper {
 		const dto: ITaskCardCRUD = {
 			title: titleValue.value,
 		};
+
+		if (params.courseId) {
+			dto.courseId = params.courseId;
+		}
 
 		if (params.visibleAtDate) {
 			dto.visibleAtDate = params.visibleAtDate;
