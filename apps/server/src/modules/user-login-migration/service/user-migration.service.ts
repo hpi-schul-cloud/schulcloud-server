@@ -12,10 +12,10 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
-import { UserService } from '@src/modules/user/service/user.service';
+import { UserService } from '@src/modules/user';
 import { EntityId, SystemTypeEnum } from '@src/shared/domain/types';
-import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from './dto/migration.dto';
+import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
@@ -41,13 +41,7 @@ export class UserMigrationService {
 		this.publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
 	}
 
-	async isSchoolInMigration(officialSchoolNumber: string): Promise<boolean> {
-		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
-		const isInMigration: boolean = !!school?.oauthMigrationPossible || !!school?.oauthMigrationMandatory;
-		return isInMigration;
-	}
-
-	async getMigrationRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
+	async getMigrationConsentPageRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
