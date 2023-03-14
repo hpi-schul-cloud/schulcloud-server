@@ -17,10 +17,7 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	NEXTCLOUD: 'nextcloud',
-	MESSENGER: 'messenger',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
-	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
-	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
 };
 
