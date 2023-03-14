@@ -34,11 +34,6 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forSubstituteTeacher(userId: EntityId): CourseScope {
-		this.addQuery({ substitutionTeachers: userId });
-		return this;
-	}
-
 	forActiveCourses(): CourseScope {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
