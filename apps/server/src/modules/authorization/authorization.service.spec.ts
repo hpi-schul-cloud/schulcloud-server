@@ -49,7 +49,8 @@ describe('AuthorizationService', () => {
 		await orm.close();
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
+		jest.resetAllMocks();
 		jest.restoreAllMocks();
 	});
 

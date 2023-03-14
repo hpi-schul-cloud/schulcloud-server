@@ -94,6 +94,7 @@ describe('School Controller', () => {
 			});
 		});
 	});
+
 	describe('getPublicSchool', () => {
 		describe('when it gets the public schooldata', () => {
 			it('should call UC', async () => {
@@ -110,6 +111,17 @@ describe('School Controller', () => {
 
 				expect(schoolUc.getPublicSchoolData).toHaveBeenCalled();
 				expect(res).toBe(publicSchoolResponse);
+			});
+		});
+
+		describe('when schoolnumber is missing', () => {
+			it('should call the uc with empty string', async () => {
+				const { schoolQueryParams } = setupBasicData();
+				schoolQueryParams.schoolnumber = undefined;
+
+				await controller.getPublicSchool(schoolQueryParams);
+
+				expect(schoolUc.getPublicSchoolData).toHaveBeenCalledWith('');
 			});
 		});
 	});
