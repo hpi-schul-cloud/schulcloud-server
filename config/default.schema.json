@@ -224,65 +224,6 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
-		"FEATURE_MATRIX_MESSENGER_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds support for Matrix Messenger."
-		},
-		"MATRIX_MESSENGER": {
-			"type": "object",
-			"description": "Matrix messenger properties, required always to be defined",
-			"required": [
-				"URI",
-				"SERVERNAME",
-				"SECRET",
-				"STUDENT_ROOM_CREATION"
-			],
-			"properties": {
-				"URI": {
-					"type": "string",
-					"format": "uri",
-					"default": "https://matrix.messenger.schule",
-					"description": "The URI of the Matrix Messenger server."
-				},
-				"SERVERNAME": {
-					"type": "string",
-					"default": "messenger.schule",
-					"description": "Servername of the Matrix Messenger server."
-				},
-				"SECRET": {
-					"type": "string",
-					"description": "Shared secret for the Matrix server."
-				},
-				"STUDENT_ROOM_CREATION": {
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, school admins can allow students to create additional chat rooms"
-				},
-				"SCHOOL_SETTINGS_VISIBLE": {
-					"type": "boolean",
-					"default": false,
-					"description": "Only if enabled, school admins can activate the messenger in their school setting"
-				},
-				"SCHOOL_ROOM_ENABLED": {
-					"type": "boolean",
-					"default": false,
-					"description": "If enabled, school admins can choose to create a room for all students and teachers of the school"
-				},
-				"WELCOME_MESSAGE_ADMIN": {
-					"type": "string",
-					"description": "Greet new admin users with a personal message from the sync bot"
-				},
-				"WELCOME_MESSAGE_TEACHER": {
-					"type": "string",
-					"description": "Greet new teacher users with a personal message from the sync bot"
-				},
-				"WELCOME_MESSAGE_STUDENT": {
-					"type": "string",
-					"description": "Greet new student users with a personal message from the sync bot"
-				}
-			}
-		},
 		"NO_COLOR": {
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
@@ -470,21 +411,6 @@
 			"format": "uri",
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
-		},
-		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
-			"type": "integer",
-			"default": 10,
-			"description": "How many messages should be handled at the same time."
-		},
-		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
-			"type": "string",
-			"default": "matrix_sync_unpopulated",
-			"description": "Name of queue used to buffer building synchronization request internally."
-		},
-		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
-			"type": "string",
-			"default": "matrix_sync_populated",
-			"description": "Name of queue used to publish synchronization request."
 		},
 		"HOST": {
 			"type": "string",

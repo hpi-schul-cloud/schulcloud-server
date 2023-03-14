@@ -91,7 +91,6 @@
 		"purpose": "demo",
 		"features": [
 			"rocketChat",
-			"messenger",
 			"ldapUniventionMigrationSchool",
 			"videoconference"
 		],
@@ -133,9 +132,7 @@
 		"purpose": "expert",
         "features" : [
 			"rocketChat",
-			"videoconference",
-			"messenger",
-			"messengerSchoolRoom"
+			"videoconference"
 		]
 	},
 	{
@@ -148,7 +145,6 @@
 		"pilot": false,
 		"features": [
 			"rocketChat",
-			"messenger",
 			"studentVisibility"
 		],
 		"name": "Felix Mendelssohn-Gymnasium",
@@ -195,8 +191,7 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
-			"messenger"
+			"rocketChat"
 		],
 		"name": "Ludwig van Beethoven-Liceum",
 		"federalState": {
@@ -243,7 +238,6 @@
 		"pilot": false,
 		"features": [
 			"rocketChat",
-			"messenger",
 			"studentVisibility"
 		],
 		"name": "Brasilien Schule",
@@ -366,7 +360,6 @@
 		"purpose": "demo",
 		"features": [
 			"rocketChat",
-			"messenger",
 			"ldapUniventionMigrationSchool",
 			"videoconference"
 		],

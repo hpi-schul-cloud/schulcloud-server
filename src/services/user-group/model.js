@@ -6,7 +6,6 @@ const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { Schema } = mongoose;
 
 const COURSE_FEATURES = {
-	MESSENGER: 'messenger',
 };
 // not all pros exist in new entity
 const getUserGroupSchema = (additional = {}) => {
