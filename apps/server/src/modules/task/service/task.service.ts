@@ -118,6 +118,10 @@ export class TaskService {
 		return result;
 	}
 
+	async findById(taskId: EntityId): Promise<Task> {
+		return this.taskRepo.findById(taskId);
+	}
+
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);

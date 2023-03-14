@@ -459,12 +459,6 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
-		"PUBLIC_BACKEND_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"description": "The server api url that is accessible from the web (should end without a slash)."
-		},
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",
@@ -1064,6 +1058,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for lesson sharing feature."
+		},
+		"FEATURE_TASK_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the task sharing feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
