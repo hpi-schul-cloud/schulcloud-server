@@ -175,7 +175,7 @@ export class OAuthService {
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);
-		if (alias && type === 'oidc') {
+		if (alias) {
 			authenticationUrl.searchParams.append('kc_idp_hint', alias);
 		}
 
