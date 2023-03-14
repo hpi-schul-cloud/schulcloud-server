@@ -1,4 +1,4 @@
-# folder - apps
+# Folder - apps
 
 ## Summary
 
