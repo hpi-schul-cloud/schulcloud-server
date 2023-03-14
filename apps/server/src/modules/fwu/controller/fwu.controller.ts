@@ -13,7 +13,7 @@ export class FwuController {
 
 	@Get('*')
 	async get(@Req() req: Request, @Res() res: Response) {
-		const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean
+		const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
 		if (!fwuContentEnabled) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
@@ -23,6 +23,7 @@ export class FwuController {
 		try {
 			file = await this.fwuUc.get(path);
 		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 			throw new Error(`HttpStatusCode: ${error.$metadata.httpStatusCode} at ${path} ${error}`);
 		}
 		const i = path.lastIndexOf('.');
