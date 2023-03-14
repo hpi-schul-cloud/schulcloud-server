@@ -33,7 +33,7 @@ export class ProvisioningService {
 		this.strategies.set(strategy.getType(), strategy);
 	}
 
-	async getData(accessToken: string, idToken: string, systemId: string): Promise<OauthDataDto> {
+	async getData(systemId: string, idToken: string, accessToken: string): Promise<OauthDataDto> {
 		const system: ProvisioningSystemDto = await this.determineInput(systemId);
 		const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 			accessToken,

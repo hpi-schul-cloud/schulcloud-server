@@ -17,13 +17,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageClientAdapterService,
@@ -42,8 +36,13 @@ describe('FilesStorageClientAdapterService', () => {
 		client = module.get(FilesStorageProducer);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
+		await orm.close();
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('copyFilesOfParent', () => {
