@@ -1,6 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { S3Client } from '@aws-sdk/client-s3';
 
+// configuration for FWU
 export const s3Client = new S3Client({
 	endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT') as string,
 	credentials: {
