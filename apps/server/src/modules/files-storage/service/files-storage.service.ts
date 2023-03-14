@@ -64,7 +64,7 @@ export interface FilesStorageRepo {
 @Injectable()
 export class FilesStorageService {
 	constructor(
-		private readonly fileRecordRepo: IFilesStorageRepo,
+		private readonly fileRecordRepo: FilesStorageRepo,
 		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private logger: Logger
