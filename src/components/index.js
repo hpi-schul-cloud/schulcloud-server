@@ -6,6 +6,7 @@ const courseComponent = require('./course');
 const userGroupComponent = require('./user-group');
 const schoolComponent = require('./school');
 const messengerComponent = require('./messenger');
+const teamsComponent = require('./teams');
 
 module.exports = (app) => {
 	app.configure(userComponent);
@@ -16,4 +17,5 @@ module.exports = (app) => {
 	app.configure(schoolComponent);
 	app.configure(userGroupComponent);
 	app.configure(messengerComponent);
+	app.configure(teamsComponent);
 };
