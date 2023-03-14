@@ -196,6 +196,21 @@ describe('SchoolMigrationService', () => {
 				});
 			});
 
+			describe('when there are no systems in School', () => {
+				it('should add the system to migrated school', async () => {
+					const { schoolDO, targetSystemId } = setup();
+					schoolDO.systems = undefined;
+
+					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							systems: [targetSystemId],
+						})
+					);
+				});
+			});
+
 			describe('when an error occurred', () => {
 				it('should save the old schoolDo (rollback the migration)', async () => {
 					const { schoolDO, targetSystemId } = setup();
@@ -231,7 +246,7 @@ describe('SchoolMigrationService', () => {
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId,
 					isOutdated: false,
-					lastLoginSystemChangeGreaterThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
 				});
 			});
 
