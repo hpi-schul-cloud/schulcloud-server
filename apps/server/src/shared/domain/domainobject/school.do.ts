@@ -1,4 +1,5 @@
 import { SchoolFeatures, SchoolYear } from '../entity';
+import { EntityId } from '../types';
 import { BaseDO } from './base.do';
 
 export class SchoolDO extends BaseDO {
@@ -20,7 +21,7 @@ export class SchoolDO extends BaseDO {
 
 	officialSchoolNumber?: string;
 
-	systems?: string[];
+	systems?: EntityId[];
 
 	features?: SchoolFeatures[];
 
