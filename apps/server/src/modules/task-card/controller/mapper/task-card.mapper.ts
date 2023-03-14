@@ -11,7 +11,7 @@ import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { ITaskCardCRUD } from '../../interface';
-import { RichTextCardElementParam, TaskCardParams, TaskCardResponse } from '../dto';
+import { CardElementParams, RichTextCardElementParam, TaskCardParams, TaskCardResponse } from '../dto';
 
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
@@ -77,19 +77,24 @@ export class TaskCardMapper {
 		}
 
 		if (params.cardElements) {
-			// TODO split following code into a separate method because it's too nested (and write tests for it)
-			params.cardElements.forEach((element) => {
-				if (element.content instanceof RichTextCardElementParam) {
-					const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
-					if (!dto.text) {
-						dto.text = [richText];
-					} else {
-						dto.text.push(richText);
-					}
-				}
-			});
+			const text = this.mapElementsToDto(params.cardElements);
+			if (text) {
+				dto.text = text;
+			}
 		}
 
 		return dto;
+	}
+
+	private static mapElementsToDto(cardElements: CardElementParams[]): RichText[] | void {
+		let text: RichText[] = [];
+		cardElements.forEach((element) => {
+			if (element.content instanceof RichTextCardElementParam) {
+				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
+				text = text ? [richText] : [...text, richText];
+			}
+		});
+
+		return text.length ? text : undefined;
 	}
 }
