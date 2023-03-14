@@ -30,13 +30,11 @@ import {
 } from '../helper';
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
-import { FileRecordRepo } from '../repo';
-import { FileRecord, FileRecordPropertiesFactory, IFileRecordParams } from '../domain';
-import { FileSecurityCheck } from '../repo/filerecord.entity';
+import { FileRecord, FileRecordPropertiesFactory } from '../domain';
 
 // TODO: Ticket for rename EntityId to more generic Name
 
-export interface IFilesStorageRepo {
+export interface FilesStorageRepo {
 	findOneById(id: EntityId): Promise<FileRecord>;
 
 	findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord>;
@@ -66,7 +64,7 @@ export interface IFilesStorageRepo {
 @Injectable()
 export class FilesStorageService {
 	constructor(
-		private readonly fileRecordRepo: FileRecordRepo,
+		private readonly fileRecordRepo: IFilesStorageRepo,
 		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private logger: Logger

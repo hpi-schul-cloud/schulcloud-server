@@ -6,7 +6,7 @@ import { BaseEntity, Counted } from '@shared/domain';
 
 @Injectable()
 export class DataBaseManager {
-	constructor(private readonly em: EntityManager) {}
+	constructor(public readonly em: EntityManager) {}
 
 	public async remove(entities: BaseEntity[]): Promise<void> {
 		await this.em.removeAndFlush(entities);

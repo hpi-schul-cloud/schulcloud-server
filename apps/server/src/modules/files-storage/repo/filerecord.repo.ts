@@ -2,15 +2,13 @@ import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/d
 import { Injectable } from '@nestjs/common';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
 import { FileRecord, IFileRecordParams } from '../domain';
-import type { IFilesStorageRepo } from '../service';
+import type { FilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
 import { FileRecordScope } from './filerecord-scope';
 import { FileRecordEntity } from './filerecord.entity';
 
-// TODO: Paginated results?
-// TODO: Isolate MongoEntityManager in additional class
 @Injectable()
-export class FileRecordRepo extends BaseRepo2<FileRecord> implements IFilesStorageRepo {
+export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorageRepo {
 	constructor(private readonly dbm: DataBaseManager) {
 		super();
 	}
