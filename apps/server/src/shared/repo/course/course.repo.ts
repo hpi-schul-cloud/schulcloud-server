@@ -129,15 +129,6 @@ export class CourseRepo extends BaseRepo<Course> {
 		return [courses, count];
 	}
 
-	async findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
-		const scope = new CourseScope();
-		scope.forSubstituteTeacher(userId);
-
-		const [courses, count] = await this._em.findAndCount(Course, scope.query);
-
-		return [courses, count];
-	}
-
 	async findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
 		const scope = new CourseScope();
 		scope.forCourseId(courseId);
