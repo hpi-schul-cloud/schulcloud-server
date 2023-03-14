@@ -52,20 +52,9 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity, P> {
 
 		this.removeProtectedEntityFields(newEntity);
 
-		const fetchedEntity: E = await this._em.findOneOrFail(
-			this.entityName,
-			{
-				id: domainObject.id,
-			} as FilterQuery<E>,
-			{ disableIdentityMap: true }
-			/* the { disableIdentityMap: true } disables the caching for this call.
-			There is a problem with loading references on an updated entity later, if this is cached here.
-			It throws an error when trying to load roles references on a user in particular,
-			because the updated entity is supposedly not cached even though it should be.
-			I assume it has to do with the em.assign().
-			Disabling caching here should not be a problem,
-			since it is saved to the database in the next step anyway, thus caching the updated entity. */
-		);
+		const fetchedEntity: E = await this._em.findOneOrFail(this.entityName, {
+			id: domainObject.id,
+		} as FilterQuery<E>);
 		const updated: E = this._em.assign(fetchedEntity, newEntity);
 		this.logger.debug(`Updated entity with id ${updated.id}`);
 		return updated;

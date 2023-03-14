@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserService } from '@src/modules/user';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Page } from '@shared/domain/domainobject/page';
+import { Logger } from '@src/core/logger';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @Injectable()
@@ -69,7 +69,7 @@ export class SchoolMigrationService {
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeGreaterThan: school.oauthMigrationPossible,
+			lastLoginSystemChangeSmallerThan: school.oauthMigrationPossible,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
