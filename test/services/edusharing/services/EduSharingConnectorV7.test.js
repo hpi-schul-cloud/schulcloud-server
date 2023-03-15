@@ -5,7 +5,6 @@ const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const MockNode = JSON.stringify(require('../mock/response-node.json'));
-const MockNodeRestricted = JSON.stringify(require('../mock/response-node-restricted.json'));
 const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
 const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
