@@ -78,7 +78,18 @@
 	},
 	{
 		"_id": {
-			"$oid": "637b9cf270305294b01b749c"
+			"$oid": "6411b6f983c6759284e07dc8"
+		},
+		"state": "up",
+		"name": "sanis-rebranding",
+		"createdAt": {
+			"$date": "2023-03-15T12:15:53.385Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6411b99e207ae5149cca93a9"
 		},
 		"state": "up",
 		"name": "add-tool-admin-permission",
@@ -89,7 +100,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "638622fdc5fa134eb24df95f"
+			"$oid": "6411b99e207ae5149cca93aa"
 		},
 		"state": "up",
 		"name": "add-submitted-and-graded-keys-to-submission",
@@ -100,7 +111,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63b59158f877054b54decd9d"
+			"$oid": "6411b99e207ae5149cca93ab"
 		},
 		"state": "up",
 		"name": "add-school-tool-admin-permission",
@@ -111,7 +122,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63c05072858dd481877593a9"
+			"$oid": "6411b99e207ae5149cca93ac"
 		},
 		"state": "up",
 		"name": "add-task-card-permission",
@@ -122,7 +133,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63eb4d77c9cc9d2ba45cdc7c"
+			"$oid": "6411b99e207ae5149cca93ad"
 		},
 		"state": "up",
 		"name": "AddPermissionCreateToolEtherpadForStudent",
@@ -133,7 +144,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63ff2eec033f9b6e70afc6d4"
+			"$oid": "6411b99e207ae5149cca93ae"
 		},
 		"state": "up",
 		"name": "EditHomeworkCreateAndEditPermissions",
