@@ -1,4 +1,3 @@
-/* eslint-disable promise/no-return-wrap */
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const mongoose = require('mongoose');
@@ -9,6 +8,7 @@ const { Forbidden, NotFound, BadRequest, NotAuthenticated, NoClientInstanceError
 const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');
+
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 const { isNotEmptyString } = require('../../helper/stringHelper');
@@ -301,49 +301,49 @@ module.exports = function LDAPService() {
 				return Promise.reject(new Error(`Object "${searchString}" not found`));
 			});
 		}
-	}
 
-	/**
+		/**
 		 * Returns all schools on the LDAP server
 		 * @param {LdapConfig} config the ldapConfig
 		 * @return {Promise[Array[Object]]} resolves with all school objects or
 		 * rejects with error
 		 */
-	getSchools(config) {
-		return getLDAPStrategy(app, config).getSchools();
-	}
+		getSchools(config) {
+			return getLDAPStrategy(app, config).getSchools();
+		}
 
-	/**
-	 * Returns all users at a school on the LDAP server
-	 * @param {LdapConfig} config the ldapConfig
-	 * @param {School} school the school object
-	 * @return {Promise[Object]} resolves with all user objects or rejects
-	 * with error
-	 */
-	getUsers(config, school) {
-		return getLDAPStrategy(app, config).getUsers(school);
-	}
+		/**
+		 * Returns all users at a school on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {School} school the school object
+		 * @return {Promise[Object]} resolves with all user objects or rejects
+		 * with error
+		 */
+		getUsers(config, school) {
+			return getLDAPStrategy(app, config).getUsers(school);
+		}
 
-	/**
-	 * Returns all classes at a school on the LDAP server
-	 * @param {LdapConfig} config the ldapConfig
-	 * @param {School} school the school object
-	 * @return {Promise[Object]} resolves with all class objects or rejects
-	 * with error
-	 */
-	getClasses(config, school) {
-		return getLDAPStrategy(app, config).getClasses(school);
-	}
+		/**
+		 * Returns all classes at a school on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {School} school the school object
+		 * @return {Promise[Object]} resolves with all class objects or rejects
+		 * with error
+		 */
+		getClasses(config, school) {
+			return getLDAPStrategy(app, config).getClasses(school);
+		}
 
-	/**
-	 * Returns all experts on the LDAP server
-	 * @param {LdapConfig} config the ldapConfig
-	 * @return {Promise[Object]} resolves with all expert objects or rejects
-	 * with error
-	 */
-	getExperts(config) {
-		const { searchString, options } = getLDAPStrategy(app, config).getExpertsQuery();
-		return this.searchCollection(config, searchString, options);
+		/**
+		 * Returns all experts on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @return {Promise[Object]} resolves with all expert objects or rejects
+		 * with error
+		 */
+		getExperts(config) {
+			const { searchString, options } = getLDAPStrategy(app, config).getExpertsQuery();
+			return this.searchCollection(config, searchString, options);
+		}
 	}
 
 	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
