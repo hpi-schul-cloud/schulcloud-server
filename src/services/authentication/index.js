@@ -38,7 +38,6 @@ module.exports = (app) => {
 	app.set('authentication', authConfig);
 	const authentication = new SCAuthenticationService(app);
 
-	// TODO remove LocalStrategy. It is reimplemented in the Nest.js stack
 	authentication.register('tsp', new TSPStrategy());
 
 	// JWT strategy needs to stay active in feathers to enable hooks "authenticate('jwt')"
