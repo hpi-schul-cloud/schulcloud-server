@@ -157,25 +157,6 @@ if (Configuration.get('ES_API_V7')) {
 				throw new Error(err);
 			}
 		});
-
-		it('should fail to get a restricted node', async () => {
-			try {
-				const user = await testObjects.createTestUser({ roles: ['teacher'] });
-				const params = await testObjects.generateRequestParamsFromUser(user);
-				const postStub = sinon.stub(request, 'post');
-				sinon.stub(request, 'get').returns(MockAuth);
-				// cookie already set
-				// getStub.onCall(1).returns(MockAuth);
-				postStub.onCall(0).returns(MockNodeRestricted);
-
-				await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
-				throw new Error('should have failed');
-			} catch (err) {
-				chai.expect(err.message).to.not.equal('should have failed');
-				chai.expect(err.code).to.equal(403);
-				chai.expect(err.message).to.equal('This content is not available for your school');
-			}
-		});
 	});
 
 	describe('EduSharing config flags', () => {

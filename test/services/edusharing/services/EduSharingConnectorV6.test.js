@@ -14,7 +14,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 if (!Configuration.get('ES_API_V7')) {
-	describe('EduSharing FIND', () => {
+	describe('EduSharingV6 FIND', () => {
 		let app;
 		let eduSharingResponse;
 		let eduSharingService;
