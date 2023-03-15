@@ -201,7 +201,7 @@ if (!Configuration.get('ES_API_V7')) {
 		});
 	});
 
-	describe('EduSharing config flags', () => {
+	describe('EduSharingV6 config flags', () => {
 		let app;
 		let eduSharingService;
 		let server;
@@ -226,7 +226,7 @@ if (!Configuration.get('ES_API_V7')) {
 		afterEach(async () => {
 			sinon.verifyAndRestore();
 		});
-
+		// TODO: fix following test('should search with collections flag disabled')
 		it('should search with collections flag disabled', async () => {
 			try {
 				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', false);
