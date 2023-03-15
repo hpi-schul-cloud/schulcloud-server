@@ -51,6 +51,7 @@ describe('system repo', () => {
 					'alias',
 					'displayName',
 					'oauthConfig',
+					'oidcConfig',
 					'ldapConfig',
 					'_id',
 					'provisioningStrategy',
@@ -90,43 +91,41 @@ describe('system repo', () => {
 	});
 
 	describe('findByFilter', () => {
-		let systems: System[] = [];
+		const ldapSystems = systemFactory.withLdapConfig().buildListWithId(2);
+		const oauthSystems = systemFactory.withOauthConfig().buildListWithId(2);
+		const oidcSystems = systemFactory.withOidcConfig().buildListWithId(2);
 
-		beforeEach(async () => {
-			systems = [systemFactory.withOauthConfig().build(), systemFactory.build()];
-			await em.persistAndFlush(systems);
+		beforeAll(async () => {
+			await em.persistAndFlush([...ldapSystems, ...oauthSystems, ...oidcSystems]);
 		});
 
-		afterEach(async () => {
+		afterAll(async () => {
 			await em.nativeDelete(System, {});
 		});
 
-		it('should return no systems', async () => {
-			const result = await repo.findByFilter();
+		describe('when searching for a system type', () => {
+			it('should return ldap systems', async () => {
+				const result = await repo.findByFilter(SystemTypeEnum.LDAP);
+				expect(result).toStrictEqual(ldapSystems);
+			});
 
-			expect(result.length).toEqual(0);
-			expect(result).toEqual([]);
+			it('should return oauth systems', async () => {
+				const result = await repo.findByFilter(SystemTypeEnum.OAUTH);
+				expect(result).toStrictEqual(oauthSystems);
+			});
+
+			it('should return oidc systems', async () => {
+				const result = await repo.findByFilter(SystemTypeEnum.OIDC);
+				expect(result).toStrictEqual(oidcSystems);
+			});
 		});
 
-		it('should return all systems with type oauth', async () => {
-			const result = await repo.findByFilter(SystemTypeEnum.OAUTH);
-
-			expect(result.length).toEqual(systems.length);
-			expect(result).toEqual(systems);
-		});
-
-		it('should return all systems with type oauth and oauthConfig', async () => {
-			const result = await repo.findByFilter(SystemTypeEnum.OAUTH, true);
-
-			expect(result.length).toEqual(1);
-			expect(result[0].id).toEqual(systems[0].id);
-		});
-
-		it('should return all systems with oauthConfig', async () => {
-			const result = await repo.findByFilter(undefined, true);
-
-			expect(result.length).toEqual(1);
-			expect(result[0].id).toEqual(systems[0].id);
+		describe('when system type is unknown', () => {
+			it('should throw', async () => {
+				await expect(repo.findByFilter('keycloak' as unknown as SystemTypeEnum)).rejects.toThrow(
+					'system type keycloak unknown'
+				);
+			});
 		});
 	});
 });

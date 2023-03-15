@@ -10,7 +10,7 @@ import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { CustomParameterScope, EntityId, IFindOptions } from '@shared/domain';
 import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
@@ -54,31 +54,6 @@ export class ExternalToolService {
 		this.externalToolVersionService.increaseVersionOfNewToolIfNecessary(loadedTool, toUpdate);
 		const externalTool: ExternalToolDO = await this.externalToolRepo.save(toUpdate);
 		return externalTool;
-	}
-
-	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
-		if (this.isOauth2Config(toUpdate.config)) {
-			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
-				toUpdate.name,
-				toUpdate.config
-			);
-			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
-				toUpdate.config.clientId
-			);
-			await this.updateOauthClientOrThrow(loadedOauthClient, toUpdateOauthClient, toUpdate);
-		}
-	}
-
-	private async updateOauthClientOrThrow(
-		loadedOauthClient: ProviderOauthClient,
-		toUpdateOauthClient: ProviderOauthClient,
-		toUpdate: ExternalToolDO
-	) {
-		if (loadedOauthClient && loadedOauthClient.client_id) {
-			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
-		} else {
-			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);
-		}
 	}
 
 	async findExternalTools(
@@ -133,15 +108,6 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
-	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
-		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
-
-		config.scope = oauthClient.scope;
-		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
-		config.redirectUris = oauthClient.redirect_uris;
-		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
-	}
-
 	async deleteExternalTool(toolId: EntityId): Promise<void> {
 		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolRepo.findByExternalToolId(toolId);
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
@@ -173,5 +139,39 @@ export class ExternalToolService {
 			);
 		}
 		return externalTool;
+	}
+
+	private async updateOauth2ToolConfig(toUpdate: ExternalToolDO) {
+		if (this.isOauth2Config(toUpdate.config)) {
+			const toUpdateOauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
+				toUpdate.name,
+				toUpdate.config
+			);
+			const loadedOauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(
+				toUpdate.config.clientId
+			);
+			await this.updateOauthClientOrThrow(loadedOauthClient, toUpdateOauthClient, toUpdate);
+		}
+	}
+
+	private async updateOauthClientOrThrow(
+		loadedOauthClient: ProviderOauthClient,
+		toUpdateOauthClient: ProviderOauthClient,
+		toUpdate: ExternalToolDO
+	) {
+		if (loadedOauthClient && loadedOauthClient.client_id) {
+			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
+		} else {
+			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);
+		}
+	}
+
+	private async addExternalOauth2DataToConfig(config: Oauth2ToolConfigDO) {
+		const oauthClient: ProviderOauthClient = await this.oauthProviderService.getOAuth2Client(config.clientId);
+
+		config.scope = oauthClient.scope;
+		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
+		config.redirectUris = oauthClient.redirect_uris;
+		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 }

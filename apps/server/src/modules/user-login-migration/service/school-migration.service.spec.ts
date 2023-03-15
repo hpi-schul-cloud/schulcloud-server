@@ -7,7 +7,7 @@ import { UserService } from '@src/modules/user';
 import { Logger } from '@src/core/logger';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { SchoolMigrationService } from './school-migration.service';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
@@ -165,89 +165,154 @@ describe('SchoolMigrationService', () => {
 	});
 
 	describe('migrateSchool is called', () => {
-		it('should save the migrated school', async () => {
-			const { schoolDO, targetSystemId, firstExternalId } = setup();
-			const newExternalId = 'newExternalId';
+		describe('when school will be migrated', () => {
+			it('should save the migrated school', async () => {
+				const { schoolDO, targetSystemId, firstExternalId } = setup();
+				const newExternalId = 'newExternalId';
 
-			await service.migrateSchool(newExternalId, schoolDO, targetSystemId);
-
-			expect(schoolService.save).toHaveBeenCalledWith(
-				expect.objectContaining<Partial<SchoolDO>>({
-					systems: [targetSystemId],
-					previousExternalId: firstExternalId,
-					externalId: newExternalId,
-				})
-			);
-		});
-
-		describe('when there are other systems before', () => {
-			it('should add the system to migrated school', async () => {
-				const { schoolDO, targetSystemId } = setup();
-				schoolDO.systems = ['existingSystem'];
-
-				await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+				await service.migrateSchool(newExternalId, schoolDO, targetSystemId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<SchoolDO>>({
-						systems: ['existingSystem', targetSystemId],
+						systems: [targetSystemId],
+						previousExternalId: firstExternalId,
+						externalId: newExternalId,
 					})
 				);
 			});
-		});
 
-		describe('when an error occurred', () => {
-			it('should save the old schoolDo (rollback the migration)', async () => {
-				const { schoolDO, targetSystemId } = setup();
-				schoolService.save.mockRejectedValueOnce(new Error());
+			describe('when there are other systems before', () => {
+				it('should add the system to migrated school', async () => {
+					const { schoolDO, targetSystemId } = setup();
+					schoolDO.systems = ['existingSystem'];
 
-				await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
 
-				expect(schoolService.save).toHaveBeenCalledWith(schoolDO);
+					expect(schoolService.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							systems: ['existingSystem', targetSystemId],
+						})
+					);
+				});
+			});
+
+			describe('when there are no systems in School', () => {
+				it('should add the system to migrated school', async () => {
+					const { schoolDO, targetSystemId } = setup();
+					schoolDO.systems = undefined;
+
+					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							systems: [targetSystemId],
+						})
+					);
+				});
+			});
+
+			describe('when an error occurred', () => {
+				it('should save the old schoolDo (rollback the migration)', async () => {
+					const { schoolDO, targetSystemId } = setup();
+					schoolService.save.mockRejectedValueOnce(new Error());
+
+					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(schoolDO);
+				});
 			});
 		});
 	});
 
 	describe('completeMigration is called', () => {
-		it('should call getSchoolById on schoolService', async () => {
-			const expectedSchoolId = 'expectedSchoolId';
-			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
-			userService.findUsers.mockResolvedValue(users);
+		describe('when admin completes the migration', () => {
+			it('should call getSchoolById on schoolService', async () => {
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-			await service.completeMigration(expectedSchoolId);
+				await service.completeMigration(expectedSchoolId);
 
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
-		});
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
+			});
 
-		it('should call findUsers on userService', async () => {
-			const { schoolId, oauthMigrationPossible } = setup();
-			const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
-			userService.findUsers.mockResolvedValue(users);
+			it('should call findUsers on userService', async () => {
+				const { schoolId, oauthMigrationPossible } = setup();
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-			await service.completeMigration(schoolId);
+				await service.completeMigration(schoolId);
 
-			expect(userService.findUsers).toHaveBeenCalledWith({
-				schoolId,
-				isOutdated: false,
-				lastLoginSystemChangeGreaterThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					schoolId,
+					isOutdated: false,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+				});
+			});
+
+			it('should save non migrated user', async () => {
+				const { schoolDO, userDO, schoolId } = setup();
+				const users: Page<UserDO> = new Page([userDO], 1);
+				userService.findUsers.mockResolvedValue(users);
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
+
+				await service.completeMigration(schoolId);
+
+				expect(userService.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining<UserDO>([
+						{
+							...users.data[0],
+							outdatedSince: schoolDO.oauthMigrationFinished,
+						},
+					])
+				);
 			});
 		});
+	});
 
-		it('should save non migrated user', async () => {
-			const { schoolDO, userDO, schoolId } = setup();
-			const users: Page<UserDO> = new Page([userDO], 1);
-			userService.findUsers.mockResolvedValue(users);
-			schoolService.getSchoolById.mockResolvedValue(schoolDO);
+	describe('restartMigration is called', () => {
+		describe('when admin restarts the migration', () => {
+			it('should call getSchoolById on schoolService', async () => {
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-			await service.completeMigration(schoolId);
+				await service.restartMigration(expectedSchoolId);
 
-			expect(userService.saveAll).toHaveBeenCalledWith(
-				expect.arrayContaining<UserDO>([
-					{
-						...users.data[0],
-						outdatedSince: schoolDO.oauthMigrationFinished,
-					},
-				])
-			);
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
+			});
+
+			it('should call findUsers on userService', async () => {
+				const { schoolDO } = setup();
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId({ outdatedSince: new Date(2023, 2, 27) })], 1);
+				userService.findUsers.mockResolvedValue(users);
+
+				await service.restartMigration(expectedSchoolId);
+
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					schoolId: expectedSchoolId,
+					outdatedSince: schoolDO.oauthMigrationFinished,
+				});
+			});
+
+			it('should save migrated user with removed outdatedSince entry', async () => {
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
+
+				await service.restartMigration(expectedSchoolId);
+
+				expect(userService.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining<UserDO>([
+						{
+							...users.data[0],
+							outdatedSince: undefined,
+						},
+					])
+				);
+			});
 		});
 	});
 });
