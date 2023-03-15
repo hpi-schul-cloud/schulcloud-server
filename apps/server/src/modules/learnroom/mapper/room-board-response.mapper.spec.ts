@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
+import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
@@ -27,12 +27,10 @@ describe('room board response mapper', () => {
 
 	describe('mapToResponse', () => {
 		it('should map plain board into response', () => {
-			const course = courseFactory.buildWithId();
 			const board = {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
-				courseName: course.name,
 				elements: [],
 			};
 
@@ -56,13 +54,38 @@ describe('room board response mapper', () => {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
-				courseName: course.name,
 				elements: [{ type: RoomBoardElementTypes.TASK, content: { task, status } }],
 			};
 
 			const result = mapper.mapToResponse(board);
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+		});
+
+		it('should map tasks with status and its task card on board to response', () => {
+			const course = courseFactory.buildWithId();
+			const linkedTask = taskFactory.buildWithId({ course });
+			const mockTaskCardId = 'taskCardId #1';
+			linkedTask.taskCard = mockTaskCardId;
+			const status = {
+				graded: 0,
+				maxSubmissions: 0,
+				submitted: 0,
+				isDraft: false,
+				isFinished: false,
+				isSubstitutionTeacher: false,
+			};
+			const board = {
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				elements: [{ type: RoomBoardElementTypes.TASK, content: { task: linkedTask, status } }],
+			};
+
+			const result = mapper.mapToResponse(board);
+
+			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
+			expect((result.elements[0].content as BoardTaskResponse).taskCardId).toEqual(mockTaskCardId);
 		});
 
 		it('should map lessons on board to response', () => {
@@ -82,7 +105,6 @@ describe('room board response mapper', () => {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
-				courseName: course.name,
 				elements: [{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata }],
 			};
 
@@ -117,7 +139,6 @@ describe('room board response mapper', () => {
 				roomId: 'roomId',
 				displayColor: '#ACACAC',
 				title: 'boardTitle',
-				courseName: course.name,
 				elements: [
 					{ type: RoomBoardElementTypes.LESSON, content: lessonMetadata },
 					{ type: RoomBoardElementTypes.TASK, content: { task, status } },

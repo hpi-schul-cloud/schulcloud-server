@@ -2,8 +2,8 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { AccountUc } from '@src/modules/account/uc/account.uc';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
@@ -17,7 +17,7 @@ export class OidcProvisioningService {
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
 		private readonly roleService: RoleService,
-		private readonly accountUc: AccountUc
+		private readonly accountService: AccountService
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
@@ -87,7 +87,7 @@ export class OidcProvisioningService {
 		const savedUser: UserDO = await this.userService.save(user);
 
 		if (createNewAccount) {
-			await this.accountUc.saveAccount(
+			await this.accountService.saveWithValidation(
 				new AccountSaveDto({
 					userId: savedUser.id,
 					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),

@@ -45,9 +45,10 @@ describe('System Entity', () => {
 					oauthConfig: {
 						clientId: '12345',
 						clientSecret: 'mocksecret',
+						alias: 'mock-oauth-alias',
 						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
-						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
+						redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/',
 						scope: 'openid uuid',
 						responseType: 'code',
 						authEndpoint: 'http://mock.de/auth',

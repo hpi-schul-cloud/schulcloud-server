@@ -10,6 +10,7 @@ ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
+COPY esbuild ./esbuild
 RUN npm ci && npm cache clean --force
 COPY config /schulcloud-server/config
 COPY backup /schulcloud-server/backup

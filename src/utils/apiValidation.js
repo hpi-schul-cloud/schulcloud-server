@@ -119,7 +119,6 @@ const ignorePathsList = [
 	/|(.*\/tools\/sign\/lti13($|\/$))/,
 	/|(.*\/tools\/sign\/lti13($|\/$))/,
 	/|(.*\/me\/api($|\/$))/,
-	/|(.*\/schools\/[0-9a-f]{24}\/messengerSync($|\/$))/,
 	/|(.*\/nexboard\/projects($|\/$))/,
 	/|(.*\/nexboard\/projects\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/nexboard\/boards($|\/$))/,

@@ -1,8 +1,7 @@
 export enum SystemTypeEnum {
 	LDAP = 'ldap',
-	OIDC = 'oidc', // systems for authentication via keycloaks brokering mechanism
-	OAUTH = 'oauth', // systems for direct authentication via OAuth
-	KEYCLOAK = 'keycloak',
+	OAUTH = 'oauth', // systems for direct authentication via OAuth,
+	OIDC = 'oidc', // systems for direct authentication via OpenID Connect,
 }
 
 export type SystemType = SystemTypeEnum;
