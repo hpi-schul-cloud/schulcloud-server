@@ -55,11 +55,9 @@ export class OauthUc {
 		}
 
 		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(
-			system.type,
 			system.oauthConfig,
 			state,
 			migration,
-			system.alias
 		);
 
 		session.oauthLoginState = new OauthLoginStateDto({
