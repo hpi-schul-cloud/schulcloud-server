@@ -1,5 +1,4 @@
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@shared/domain';
 import {
 	BadRequestException,
 	Body,
@@ -23,6 +22,7 @@ import {
 } from '@src/modules/video-conference/dto/video-conference.dto';
 import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
 import { defaultVideoConferenceOptions } from '@src/modules/video-conference/interface/vc-options.interface';
+import { ICurrentUser } from '@src/modules/authentication/interface';
 import { VideoConferenceBaseResponse, VideoConferenceInfoResponse } from './dto/video-conference.response';
 import { VideoConferenceCreateParams } from './dto/video-conference.params';
 

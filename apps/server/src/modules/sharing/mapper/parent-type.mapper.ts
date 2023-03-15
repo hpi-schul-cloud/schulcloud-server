@@ -7,6 +7,7 @@ export class ShareTokenParentTypeMapper {
 		const types: Map<ShareTokenParentType, AllowedAuthorizationEntityType> = new Map();
 		types.set(ShareTokenParentType.Course, AllowedAuthorizationEntityType.Course);
 		types.set(ShareTokenParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
+		types.set(ShareTokenParentType.Task, AllowedAuthorizationEntityType.Task);
 
 		const res = types.get(type);
 

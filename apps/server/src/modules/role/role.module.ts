@@ -5,6 +5,6 @@ import { RoleUc } from '@src/modules/role/uc/role.uc';
 
 @Module({
 	providers: [RoleRepo, RoleService, RoleUc],
-	exports: [RoleService, RoleUc],
+	exports: [RoleService, RoleUc, RoleRepo],
 })
 export class RoleModule {}

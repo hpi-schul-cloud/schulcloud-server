@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, userFactory } from '@shared/testing';
-import { Actions, ICurrentUser, Permission, User } from '@shared/domain';
+import { Actions, Permission, User } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
@@ -11,7 +12,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { AuthorizationService } from '@src/modules/authorization';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { Page } from '@shared/domain/interface/page';
+import { Page } from '@shared/domain/domainobject/page';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';

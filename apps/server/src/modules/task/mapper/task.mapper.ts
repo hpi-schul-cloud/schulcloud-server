@@ -24,6 +24,9 @@ export class TaskMapper {
 				type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 			});
 		}
+		if (task.taskCard) {
+			dto.taskCardId = task.taskCard;
+		}
 		dto.availableDate = task.availableDate;
 		dto.duedate = task.dueDate;
 
@@ -32,6 +35,10 @@ export class TaskMapper {
 			dto.lessonName = taskDesc.lessonName;
 		}
 		dto.lessonHidden = taskDesc.lessonHidden;
+
+		if (task.users) {
+			dto.users = task.getUsersList();
+		}
 
 		return dto;
 	}
@@ -44,6 +51,7 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
@@ -59,6 +67,7 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;

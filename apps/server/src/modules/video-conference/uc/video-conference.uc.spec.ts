@@ -3,18 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	EntityId,
-	ICurrentUser,
-	IResolvedUser,
-	Permission,
-	Role,
-	RoleName,
-	Team,
-	User,
-	VideoConferenceDO,
-} from '@shared/domain';
+import { Course, EntityId, Permission, Role, RoleName, Team, User, VideoConferenceDO } from '@shared/domain';
+import { ICurrentUser, IResolvedUser } from '@src/modules/authentication';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';

@@ -3,7 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Permission, Submission } from '@shared/domain';
+import { Permission, Submission } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseGroupFactory,
@@ -147,7 +148,7 @@ describe('Submission Controller (API)', () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['taskId must be a mongodb id'],
-						field: 'taskId',
+						field: ['taskId'],
 					},
 				]);
 			});
@@ -265,7 +266,7 @@ describe('Submission Controller (API)', () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['submissionId must be a mongodb id'],
-						field: 'submissionId',
+						field: ['submissionId'],
 					},
 				]);
 			});

@@ -5,6 +5,8 @@ import {
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
+	ITaskUpdate,
 	ITaskStatus,
 	Lesson,
 	Permission,
@@ -103,6 +105,22 @@ export class TaskUC {
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
 			? task.createTeacherStatusForUser(user)
 			: task.createStudentStatusForUser(user);
+
+		const result = new TaskWithStatusVo(task, status);
+
+		return result;
+	}
+
+	async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+
+		task.unpublish();
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -217,5 +235,17 @@ export class TaskUC {
 		await this.taskService.delete(task);
 
 		return true;
+	}
+
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		return this.taskService.create(userId, params);
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		return this.taskService.update(userId, taskId, params);
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		return this.taskService.find(userId, taskId);
 	}
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { Course, Lesson, Task, User } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
@@ -6,7 +7,7 @@ import { CopyFilesService } from '@src/modules/files-storage-client';
 import { FileUrlReplacement } from '@src/modules/files-storage-client/service/copy-files.service';
 
 type TaskCopyParams = {
-	originalTask: Task;
+	originalTaskId: EntityId;
 	destinationCourse?: Course;
 	destinationLesson?: Lesson;
 	user: User;
@@ -22,7 +23,8 @@ export class TaskCopyService {
 	) {}
 
 	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
-		const { originalTask, user, destinationCourse, destinationLesson } = params;
+		const { user, destinationLesson, destinationCourse } = params;
+		const originalTask = await this.taskRepo.findById(params.originalTaskId);
 
 		const taskCopy = await this.copyTaskEntity(params, originalTask, user, destinationCourse, destinationLesson);
 
@@ -34,7 +36,7 @@ export class TaskCopyService {
 
 		await this.updateFileUrls(taskCopy, fileUrlReplacements);
 
-		return this.deriveCopyStatus(fileCopyStatus, taskCopy, params);
+		return this.deriveCopyStatus(fileCopyStatus, originalTask, taskCopy);
 	}
 
 	private async copyTaskEntity(
@@ -47,7 +49,7 @@ export class TaskCopyService {
 		const taskCopy = new Task({
 			name: params.copyName || originalTask.name,
 			description: originalTask.description,
-			descriptionInputFormat: params.originalTask.descriptionInputFormat,
+			descriptionInputFormat: originalTask.descriptionInputFormat,
 			school: user.school,
 			creator: user,
 			course: destinationCourse,
@@ -65,7 +67,7 @@ export class TaskCopyService {
 		await this.taskRepo.save(task);
 	}
 
-	private deriveCopyStatus(fileCopyStatus: CopyStatus, taskCopy: Task, params: TaskCopyParams) {
+	private deriveCopyStatus(fileCopyStatus: CopyStatus, originalTask: Task, taskCopy: Task) {
 		const elements = [
 			{
 				type: CopyElementType.METADATA,
@@ -87,7 +89,7 @@ export class TaskCopyService {
 			type: CopyElementType.TASK,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
 			copyEntity: taskCopy,
-			originalEntity: params.originalTask,
+			originalEntity: originalTask,
 			elements,
 		};
 		return status;

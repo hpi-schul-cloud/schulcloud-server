@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse, ApiFoundResponse } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';

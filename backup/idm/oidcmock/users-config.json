@@ -21,5 +21,28 @@
 				"Value": "emil.extern@not.amail"
 			}
 		]
+	},
+	{
+		"SubjectId": "N2FkN2EyYWEtOTA3Yi00YTljLTkxYWItNWM4ZjA4MDkwMjc3",
+		"Username": "laura.ldapkowski.123456",
+		"Password": "DummyPwd!",
+		"Claims": [
+			{
+				"Type": "name",
+				"Value": "Laura Ldapkowski"
+			},
+			{
+				"Type": "given_name",
+				"Value": "Laura"
+			},
+			{
+				"Type": "family_name",
+				"Value": "Ldapkowski"
+			},
+			{
+				"Type": "email",
+				"Value": "laura.ldapkowski.123456@example.org"
+			}
+		]
 	}
 ]

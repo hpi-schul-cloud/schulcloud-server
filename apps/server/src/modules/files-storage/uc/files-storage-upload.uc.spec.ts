@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
@@ -277,8 +277,7 @@ describe('FilesStorageUC upload methods', () => {
 			it('should pass error', async () => {
 				const { uploadFromUrlParams, userId } = setup();
 
-				const expectedError = new NotFoundException(ErrorType.FILE_NOT_FOUND);
-				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow(expectedError);
+				await expect(filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams)).rejects.toThrow();
 			});
 		});
 	});
@@ -303,7 +302,7 @@ describe('FilesStorageUC upload methods', () => {
 
 				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
-				return { params, userId, request, fileRecord, buffer: readable, fileInfo };
+				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
 
 			it('should call checkPermissionByReferences', async () => {
@@ -321,16 +320,15 @@ describe('FilesStorageUC upload methods', () => {
 			});
 
 			it('should call uploadFile with correct params', async () => {
-				const { params, userId, request, buffer, fileInfo } = setup();
+				const { params, userId, request, readable, fileInfo } = setup();
+				const file = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 				await filesStorageUC.upload(userId, params, request);
 
-				const fileDescription = FileDtoBuilder.buildFromRequest(fileInfo, request, buffer);
-
-				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, fileDescription);
+				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, file);
 			});
 
-			it('should call uploadFile with correct params', async () => {
+			it('should return fileRecord', async () => {
 				const { params, userId, request, fileRecord } = setup();
 
 				const result = await filesStorageUC.upload(userId, params, request);
@@ -339,45 +337,18 @@ describe('FilesStorageUC upload methods', () => {
 			});
 		});
 
-		describe('WHEN user is authorized and busboy emits error', () => {
-			const setup = () => {
-				const { params, userId } = buildFileRecordsWithParams();
-				const request = createRequest();
-				const error = new Error('test');
-
-				const size = request.headers['content-length'];
-
-				request.get.mockReturnValue(size);
-				request.pipe.mockImplementation((requestStream) => {
-					requestStream.emit('error', error);
-
-					return requestStream;
-				});
-
-				return { params, userId, request, error };
-			};
-
-			it('should pass error', async () => {
-				const { params, userId, request, error } = setup();
-
-				const expectedError = new BadRequestException(error, `${FilesStorageUC.name}:upload requestStream`);
-
-				await expect(filesStorageUC.upload(userId, params, request)).rejects.toThrow(expectedError);
-			});
-		});
-
-		describe('WHEN user is authorized, busboy emits event and storage client throws error', () => {
+		describe('WHEN user is authorized, busboy emits event and filesStorageService throws error', () => {
 			const setup = () => {
 				const { params, userId, fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
-				const buffer = Buffer.from('abc');
+				const readable = Readable.from('abc');
 
 				const size = request.headers['content-length'];
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
-					requestStream.emit('file', 'file', buffer, {
+					requestStream.emit('file', 'file', readable, {
 						filename: fileRecord.name,
 						encoding: '7-bit',
 						mimeType: fileRecord.mimeType,
