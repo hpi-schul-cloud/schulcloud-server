@@ -301,6 +301,11 @@
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
+		"FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the Identity Management (ErWIn IDM) as primary account storage."
+		},
 		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
 			"type": "boolean",
 			"default": false,
