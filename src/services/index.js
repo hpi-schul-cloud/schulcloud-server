@@ -42,8 +42,6 @@ const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
 const alert = require('./alert');
-const messenger = require('./messenger');
-const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
@@ -99,8 +97,6 @@ module.exports = function initializeServices() {
 	app.configure(alert);
 	app.configure(edusharing);
 	app.configure(webuntis);
-	app.configure(messenger);
-	app.configure(messengerSync);
 	app.configure(nexboard);
 	app.configure(etherpad);
 	app.configure(storageProvider);

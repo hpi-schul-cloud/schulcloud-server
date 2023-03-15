@@ -1,17 +1,17 @@
 import { EntityManager } from '@mikro-orm/core';
-import jwt from 'jsonwebtoken';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
-import MockAdapter from 'axios-mock-adapter';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { RequestBody } from '@src/modules/authentication/strategy/ldap.strategy';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
+import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import request from 'supertest';
 import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
 import { OauthAuthorizationQueryParams } from '../oauth-authorization.params';
 
 const schoolExternalId = 'mockSchoolExternalId';
