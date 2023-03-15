@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
+import { DateType, MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
@@ -228,10 +228,11 @@ describe('SchoolMigrationService', () => {
 		describe('when admin completes the migration', () => {
 			it('should call getSchoolById on schoolService', async () => {
 				const expectedSchoolId = 'expectedSchoolId';
+				const migrationStartedAt = new Date();
 				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
 				userService.findUsers.mockResolvedValue(users);
 
-				await service.completeMigration(expectedSchoolId);
+				await service.completeMigration(expectedSchoolId, migrationStartedAt);
 
 				expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
 			});
@@ -241,7 +242,7 @@ describe('SchoolMigrationService', () => {
 				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
 				userService.findUsers.mockResolvedValue(users);
 
-				await service.completeMigration(schoolId);
+				await service.completeMigration(schoolId, oauthMigrationPossible);
 
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId,
@@ -256,7 +257,7 @@ describe('SchoolMigrationService', () => {
 				userService.findUsers.mockResolvedValue(users);
 				schoolService.getSchoolById.mockResolvedValue(schoolDO);
 
-				await service.completeMigration(schoolId);
+				await service.completeMigration(schoolId, schoolDO.oauthMigrationPossible);
 
 				expect(userService.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining<UserDO>([
