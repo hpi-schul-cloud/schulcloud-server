@@ -48,6 +48,8 @@ if (!Configuration.get('ES_API_V7')) {
 				const student = await testObjects.createTestUser({ roles: ['student'] });
 				const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
+				sinon.stub(request, 'get').returns(MockAuth);
+
 				paramsStudent.query = { searchQuery: '' };
 				const response = await eduSharingService.find(paramsStudent);
 
@@ -63,7 +65,6 @@ if (!Configuration.get('ES_API_V7')) {
 				const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
 				sinon.stub(request, 'get').returns(MockAuth);
-
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
 				postStub.onCall(1).returns(MockNodes);
@@ -82,9 +83,7 @@ if (!Configuration.get('ES_API_V7')) {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
-				// cookie already set
-				// sinon.stub(request, 'get').returns(MockAuth);
-
+				sinon.stub(request, 'get').returns(MockAuth);
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
 
@@ -107,9 +106,7 @@ if (!Configuration.get('ES_API_V7')) {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
-				// cookie already set
-				// sinon.stub(request, 'get').returns(MockAuth);
-
+				sinon.stub(request, 'get').returns(MockAuth);
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
 
@@ -128,6 +125,7 @@ if (!Configuration.get('ES_API_V7')) {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
+				sinon.stub(request, 'get').returns(MockAuth);
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
 
@@ -161,10 +159,9 @@ if (!Configuration.get('ES_API_V7')) {
 			try {
 				const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 				const params = await testObjects.generateRequestParamsFromUser(user);
-				const postStub = sinon.stub(request, 'post');
 
-				// cookie already set
-				// getStub.onCall(1).returns(MockAuth);
+				sinon.stub(request, 'get').returns(MockAuth);
+				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNode);
 				const mockImg = { body: 'dummyImage' };
 				postStub.onCall(1).returns(mockImg);
@@ -187,8 +184,6 @@ if (!Configuration.get('ES_API_V7')) {
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const postStub = sinon.stub(request, 'post');
 				sinon.stub(request, 'get').returns(MockAuth);
-				// cookie already set
-				// getStub.onCall(1).returns(MockAuth);
 				postStub.onCall(0).returns(MockNodeRestricted);
 
 				await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
@@ -234,6 +229,7 @@ if (!Configuration.get('ES_API_V7')) {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
+				sinon.stub(request, 'get').returns(MockAuth);
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
 

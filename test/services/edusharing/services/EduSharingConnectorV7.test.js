@@ -6,7 +6,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const MockNode = JSON.stringify(require('../mock/response-node.json'));
 const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
-const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
@@ -51,7 +50,6 @@ if (Configuration.get('ES_API_V7')) {
 
 				chai.expect(JSON.stringify(response)).to.equal(JSON.stringify(eduSharingResponse));
 			} catch (err) {
-				console.log(err);
 				throw new Error(err);
 			}
 		});
@@ -60,8 +58,6 @@ if (Configuration.get('ES_API_V7')) {
 			try {
 				const student = await testObjects.createTestUser({ roles: ['student'] });
 				const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
-
-				sinon.stub(request, 'get').returns(MockAuth);
 
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
@@ -80,9 +76,6 @@ if (Configuration.get('ES_API_V7')) {
 			try {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
-
-				// cookie already set
-				// sinon.stub(request, 'get').returns(MockAuth);
 
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
@@ -105,9 +98,6 @@ if (Configuration.get('ES_API_V7')) {
 			try {
 				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
-
-				// cookie already set
-				// sinon.stub(request, 'get').returns(MockAuth);
 
 				const postStub = sinon.stub(request, 'post');
 				postStub.onCall(0).returns(MockNodes);
@@ -141,8 +131,6 @@ if (Configuration.get('ES_API_V7')) {
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const postStub = sinon.stub(request, 'post');
 
-				// cookie already set
-				// getStub.onCall(1).returns(MockAuth);
 				postStub.onCall(0).returns(MockNode);
 				const mockImg = { body: 'dummyImage' };
 				postStub.onCall(1).returns(mockImg);
