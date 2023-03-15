@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Column, ColumnProps } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';

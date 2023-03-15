@@ -170,4 +170,14 @@ describe(BoardDoBuilder.name, () => {
 			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.COLUMN)).toThrowError();
 		});
 	});
+
+	it('should delegate to the board node', async () => {
+		const textElementNode = textElementNodeFactory.build();
+		jest.spyOn(textElementNode, 'useDoBuilder');
+
+		const builder = new BoardDoBuilder();
+		builder.buildDomainObject(textElementNode);
+
+		expect(textElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
+	});
 });

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { TextElementNode, TextElementNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 

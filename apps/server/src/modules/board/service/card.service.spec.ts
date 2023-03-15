@@ -3,8 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { cardFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { CardRepo } from '../repo';
-import { ColumnBoardService } from './column-board.service';
+import { CardRepo, ColumnBoardRepo } from '../repo';
 import { CardService } from './card.service';
 
 describe(CardService.name, () => {
@@ -21,8 +20,8 @@ describe(CardService.name, () => {
 					useValue: createMock<CardRepo>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
+					provide: ColumnBoardRepo,
+					useValue: createMock<ColumnBoardRepo>(),
 				},
 				{
 					provide: Logger,

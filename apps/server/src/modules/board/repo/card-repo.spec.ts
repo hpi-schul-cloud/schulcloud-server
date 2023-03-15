@@ -63,18 +63,35 @@ describe(CardRepo.name, () => {
 	});
 
 	describe('save', () => {
-		it('should save cards', async () => {
-			const card = cardFactory.build();
+		const setup = async () => {
+			const cards = cardFactory.buildList(3);
 
 			const columnNode = columnNodeFactory.build();
 			await em.persistAndFlush(columnNode);
 
-			await repo.save(card, columnNode.id);
+			return { columnId: columnNode.id, card1: cards[0], card2: cards[1], card3: cards[2] };
+		};
+
+		it('should save cards', async () => {
+			const { columnId, card1 } = await setup();
+
+			await repo.save(card1, columnId);
 			em.clear();
 
-			const result = await em.findOne(CardNode, card.id);
+			const result = await em.findOne(CardNode, card1.id);
 
 			expect(result).toBeDefined();
+		});
+
+		it('should persist card order to positions', async () => {
+			const { columnId, card1, card2, card3 } = await setup();
+
+			await repo.save([card1, card2, card3], columnId);
+			em.clear();
+
+			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
+			expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
+			expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
 		});
 	});
 });

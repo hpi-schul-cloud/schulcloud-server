@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { ColumnBoardRepo } from '../repo';
+import { ColumnBoardRepo, ColumnRepo } from '../repo';
 import { ColumnBoardService } from './column-board.service';
 
 describe(ColumnBoardService.name, () => {
@@ -19,6 +19,10 @@ describe(ColumnBoardService.name, () => {
 				{
 					provide: ColumnBoardRepo,
 					useValue: createMock<ColumnBoardRepo>(),
+				},
+				{
+					provide: ColumnRepo,
+					useValue: createMock<ColumnRepo>(),
 				},
 				{
 					provide: Logger,
