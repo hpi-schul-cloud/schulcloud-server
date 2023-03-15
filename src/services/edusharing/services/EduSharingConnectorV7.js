@@ -13,7 +13,6 @@ const ES_METADATASET =
 		? 'mds_oeh'
 		: 'mds';
 const ES_ENDPOINTS = {
-	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
 	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch`,
 };
@@ -87,10 +86,10 @@ class EduSharingConnector {
 
 	async GET(uuid, schoolId) {
 		if (!schoolId) {
-			throw new Forbidden('Missing school');
+			throw new Forbidden(`Missing school ${schoolId}`);
 		}
 		if (!this.validateUuid(uuid)) {
-			throw new NotFound('Invalid node id');
+			throw new NotFound(`Invalid node id ${uuid}`);
 		}
 
 		const user = await this.getUserForSchool(schoolId);
