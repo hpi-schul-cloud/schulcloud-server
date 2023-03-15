@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
 import { Actions, Course, Permission, Task, User } from '@shared/domain';
@@ -89,6 +89,16 @@ describe('TaskService', () => {
 
 			await expect(taskService.findBySingleParent(userId, courseId)).resolves.toEqual([[], 0]);
 			expect(taskRepo.findBySingleParent).toBeCalledWith(userId, courseId, undefined, undefined);
+		});
+	});
+
+	describe('findById', () => {
+		it('should call findById from task repo', async () => {
+			const task = taskFactory.buildWithId();
+			taskRepo.findById.mockResolvedValueOnce(task);
+
+			await expect(taskService.findById(task.id)).resolves.toEqual(task);
+			expect(taskRepo.findById).toBeCalledWith(task.id);
 		});
 	});
 
@@ -194,10 +204,33 @@ describe('TaskService', () => {
 				lessonRepo.findById.mockResolvedValue(lesson);
 				await expect(async () => {
 					await taskService.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 
 				lessonRepo.findById.mockRestore();
 			});
+			it('should throw if not all users do not belong to course', async () => {
+				course = courseFactory.studentsWithId(2).buildWithId();
+				const someUser = userFactory.buildWithId();
+
+				await expect(async () => {
+					await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [someUser.id] });
+				}).rejects.toThrow(ForbiddenException);
+			});
+			/*
+			it('should set users', async () => {
+				user = userFactory.buildWithId();
+				course = courseFactory.studentsWithId(2).buildWithId();
+				courseRepo.findById.mockResolvedValue(course);
+				const students = course.students.getItems();
+
+				userRepo.findById.mockResolvedValue(user).mockResolvedValueOnce(user).mockResolvedValueOnce(students[0]);
+
+				const taskMock = {
+					users: [students[0].id],
+				};
+				await taskService.create(user.id, { name: 'test', courseId: course.id, usersIds: [students[0].id] });
+				expect(taskRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...taskMock }));
+			}); */
 			it('should save the task', async () => {
 				const taskMock = {
 					name: 'test',
@@ -310,6 +343,18 @@ describe('TaskService', () => {
 
 				lessonRepo.findById.mockRestore();
 			});
+			it('should throw if not all users do not belong to course', async () => {
+				const someUser = userFactory.buildWithId();
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					usersIds: [someUser.id],
+				};
+
+				await expect(async () => {
+					await taskService.update(user.id, task.id, params);
+				}).rejects.toThrow(ForbiddenException);
+			});
 			it('should throw if lesson does not belong to course', async () => {
 				const lesson = lessonFactory.buildWithId();
 				lessonRepo.findById.mockResolvedValue(lesson);
@@ -320,7 +365,7 @@ describe('TaskService', () => {
 				};
 				await expect(async () => {
 					await taskService.update(user.id, task.id, params);
-				}).rejects.toThrow(BadRequestException);
+				}).rejects.toThrow(ForbiddenException);
 
 				lessonRepo.findById.mockRestore();
 			});

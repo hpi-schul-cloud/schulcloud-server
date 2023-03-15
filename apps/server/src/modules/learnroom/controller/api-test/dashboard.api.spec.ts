@@ -99,27 +99,6 @@ describe('Dashboard Controller (API)', () => {
 			});
 		});
 
-		it('should return dashboard with teacher and substitute teacher active courses', async () => {
-			const teacher = setupWithRole(RoleName.TEACHER);
-			const student = setupWithRole(RoleName.STUDENT);
-			const twoDaysInMilliSeconds = 172800000;
-			const courses = courseBuild(student, teacher, twoDaysInMilliSeconds);
-			await em.persistAndFlush([teacher, ...courses]);
-			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacher.id);
-			currentUser = mapUserToCurrentUser(teacher);
-
-			const response = await request(app.getHttpServer()).get('/dashboard?showSubstitute=true');
-
-			expect(response.status).toEqual(200);
-			const body = response.body as DashboardResponse;
-			expect(body.id).toEqual(dashboardId);
-			expect(body.gridElements.length).toEqual(3);
-			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
-			elementNames.forEach((name) => {
-				expect(name).toEqual('should appear');
-			});
-		});
-
 		it('should return dashboard with teacher active courses', async () => {
 			const teacher = setupWithRole(RoleName.TEACHER);
 			const student = setupWithRole(RoleName.STUDENT);
@@ -134,7 +113,7 @@ describe('Dashboard Controller (API)', () => {
 			expect(response.status).toEqual(200);
 			const body = response.body as DashboardResponse;
 			expect(body.id).toEqual(dashboardId);
-			expect(body.gridElements.length).toEqual(2);
+			expect(body.gridElements.length).toEqual(3);
 			const elementNames = [...body.gridElements].map((gridElement) => gridElement.title);
 			elementNames.forEach((name) => {
 				expect(name).toEqual('should appear');

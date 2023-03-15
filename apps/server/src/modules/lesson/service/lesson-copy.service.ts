@@ -346,7 +346,7 @@ export class LessonCopyService {
 			const copiedTasksStatus = await Promise.all(
 				linkedTasks.map((element) =>
 					this.taskCopyService.copyTask({
-						originalTask: element,
+						originalTaskId: element.id,
 						destinationCourse: params.destinationCourse,
 						destinationLesson,
 						user: params.user,
