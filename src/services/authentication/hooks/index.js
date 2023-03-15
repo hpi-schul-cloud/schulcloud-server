@@ -14,7 +14,7 @@ const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 /**
  *
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 const bruteForceCheck = async (context) => {
 	if (disabledBruteForceCheck) {
@@ -30,7 +30,7 @@ const bruteForceCheck = async (context) => {
 
 /**
  *
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
@@ -46,7 +46,7 @@ const bruteForceReset = async (context) => {
  * Based on the account ID this adds user ID and system ID to the context.
  * For Moodle and iServ it creates a new Account. Neither strategy is used anymore
  *
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 const injectUserId = async (context) => {
 	const { strategy } = context.data;
@@ -86,7 +86,7 @@ const injectUserId = async (context) => {
 };
 
 /**
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 const lowerCaseUsername = (hook) => {
 	if (hook.data.username) {
@@ -96,7 +96,7 @@ const lowerCaseUsername = (hook) => {
 };
 
 /**
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 const trimUsername = (hook) => {
 	if (hook.data.username) {
@@ -106,7 +106,7 @@ const trimUsername = (hook) => {
 };
 
 /**
- * @deprecated Remove when ldap, TSP and local strategy are removed
+ * @deprecated Remove when TSP strategy is removed
  */
 const trimPassword = (hook) => {
 	if (hook.data.password) {
