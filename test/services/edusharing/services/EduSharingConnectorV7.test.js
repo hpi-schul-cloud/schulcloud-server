@@ -45,10 +45,8 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('search with an empty query', async () => {
 			try {
-				const student = await testObjects.createTestUser(app, { roles: ['student'] });
-				console.log('schoolId', student.schoolId);
+				const student = await testObjects.createTestUser({ roles: ['student'] });
 				const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
-
 				paramsStudent.query = { searchQuery: '' };
 				const response = await eduSharingService.find(paramsStudent);
 
@@ -61,7 +59,7 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('search with params', async () => {
 			try {
-				const student = await testObjects.createTestUser(app, { roles: ['student'] });
+				const student = await testObjects.createTestUser({ roles: ['student'] });
 				const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
 				sinon.stub(request, 'get').returns(MockAuth);
@@ -81,7 +79,7 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('should search for a collection', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'] });
+				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
 				// cookie already set
@@ -106,7 +104,7 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('should search with searchable flag', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'] });
+				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
 				// cookie already set
@@ -127,7 +125,7 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('should search with appropriate ph_invited group permissions', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'] });
+				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
 				const postStub = sinon.stub(request, 'post');
@@ -148,20 +146,20 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('should fail to get a node with invalid uuid', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+				const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				await eduSharingService.get('dummyNodeId', params);
 				throw new Error('should have failed');
 			} catch (err) {
 				chai.expect(err.message).to.not.equal('should have failed');
 				chai.expect(err.code).to.equal(404);
-				chai.expect(err.message).to.equal('Invalid node id');
+				chai.expect(err.message).to.equal('Invalid node id dummyNodeId');
 			}
 		});
 
 		it('should get a node', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+				const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const postStub = sinon.stub(request, 'post');
 
@@ -183,7 +181,7 @@ if (Configuration.get('ES_API_V7')) {
 
 		it('should fail to get a restricted node', async () => {
 			try {
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'] });
+				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const postStub = sinon.stub(request, 'post');
 				sinon.stub(request, 'get').returns(MockAuth);
@@ -231,7 +229,7 @@ if (Configuration.get('ES_API_V7')) {
 			try {
 				Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', false);
 
-				const user = await testObjects.createTestUser(app, { roles: ['teacher'] });
+				const user = await testObjects.createTestUser({ roles: ['teacher'] });
 				const params = await testObjects.generateRequestParamsFromUser(user);
 
 				const postStub = sinon.stub(request, 'post');
