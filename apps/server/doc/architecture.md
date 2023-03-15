@@ -114,6 +114,8 @@ Notice that in the above example, the `PublicService` can be used anywhere withi
 
 Things that cant be injectables, like types and interfaces, are exported via the index file at the root of the module.
 
+Code that needs to be shared across many modules can either be put into their own seperate module, if there is a clearly defined seperate concern covered by it, or into the shared module if not.
+
 ### Api Modules
 
 The controllers and the corresponding usecases, along with the api tests for these routes, are seperated into api modules
