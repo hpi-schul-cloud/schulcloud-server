@@ -14,7 +14,6 @@ import {
 	Task,
 	TaskCard,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -26,6 +25,7 @@ import {
 	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
@@ -233,6 +233,7 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
+			expect(responseTaskCard.task.status.isDraft).toEqual(false);
 		});
 		it('DELETE should remove task-card, its card-elements and associated task', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
