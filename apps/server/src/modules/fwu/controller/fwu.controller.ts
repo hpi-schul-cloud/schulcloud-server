@@ -26,8 +26,9 @@ export class FwuController {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 			throw new Error(`HttpStatusCode: ${error.$metadata.httpStatusCode} at ${path} ${error}`);
 		}
-		const i = path.lastIndexOf('.');
-		const contentType = i !== -1 ? path.slice(i) : 'application/octet-stream';
+		const startIndexOfContentType = path.lastIndexOf('.');
+		const contentType =
+			startIndexOfContentType !== -1 ? path.slice(startIndexOfContentType) : 'application/octet-stream';
 		res.type(contentType);
 		res.send(file);
 	}
