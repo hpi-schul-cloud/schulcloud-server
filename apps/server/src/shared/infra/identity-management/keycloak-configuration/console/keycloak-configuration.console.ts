@@ -6,8 +6,13 @@ import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
 interface IRetryOptions {
-	retryCount: number;
-	retryDelay: number;
+	retryCount?: number;
+	retryDelay?: number;
+}
+
+interface IMigrationOptions {
+	skip?: number;
+	query?: string;
 }
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
 export class KeycloakConsole {
@@ -122,22 +127,25 @@ export class KeycloakConsole {
 		options: [
 			...KeycloakConsole.retryFlags,
 			{
-				flags: '-c, --check',
-				description: 'Do not migrate, but check if all accounts are available in both systems IDM and DB.',
+				flags: '-q, --query',
+				description: 'Limit migration to accounts with username partially matching the query string.',
 				required: false,
-				defaultValue: false,
+				defaultValue: undefined,
+			},
+			{
+				flags: '-s, --skip',
+				description: 'Limit migration to accounts with username partially matching the query string.',
+				required: false,
+				defaultValue: undefined,
 			},
 		],
 	})
-	async migrate(options: IRetryOptions): Promise<void> {
+	async migrate(options: IRetryOptions & IMigrationOptions): Promise<void> {
 		await this.repeatCommand(
 			'migrate',
 			async () => {
-				const [count, errList] = await this.keycloakConfigurationUc.migrate();
+				const count = await this.keycloakConfigurationUc.migrate(options.skip, options.query);
 				this.console.info(`Migrated ${count} users into IDM`);
-				for (const err of errList) {
-					this.console.info(err);
-				}
 				return count;
 			},
 			options.retryCount,
@@ -145,12 +153,7 @@ export class KeycloakConsole {
 		);
 	}
 
-	private async repeatCommand<T>(
-		commandName: string,
-		command: () => Promise<T>,
-		count: number,
-		delay: number
-	): Promise<T> {
+	private async repeatCommand<T>(commandName: string, command: () => Promise<T>, count = 1, delay = 10): Promise<T> {
 		let repetitions = 0;
 		let error = new Error('error could be thrown if count is < 1');
 		while (repetitions < count) {

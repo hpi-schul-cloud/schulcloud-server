@@ -176,7 +176,7 @@ describe('AccountService Integration', () => {
 			});
 		});
 		it('should create a new account on update error', async () => {
-			const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
+			const findSpy = jest.spyOn(identityManagementService, 'findAccountByTecRefId');
 			const createSpy = jest.spyOn(identityManagementService, 'createAccount');
 
 			const mockAccountDto = {
@@ -186,7 +186,7 @@ describe('AccountService Integration', () => {
 				systemId: 'systemId',
 			};
 
-			updateSpy.mockRejectedValueOnce(new Error('Update Failed'));
+			findSpy.mockRejectedValueOnce(new Error('Update Failed'));
 			const ret = await accountIdmService.save(mockAccountDto);
 
 			expect(createSpy).toHaveBeenCalled();
