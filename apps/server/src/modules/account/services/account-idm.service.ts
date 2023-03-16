@@ -69,9 +69,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
+			let idmId: string | undefined;
 			try {
-				accountId = await this.updateAccount(accountDto.id, idmAccount, accountDto.password);
-			} catch (err) {
+				idmId = await this.getIdmAccountId(accountDto.id);
+			} catch {
+				idmId = undefined;
+			}
+			if (idmId) {
+				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
+			} else {
 				accountId = await this.createAccount(idmAccount, accountDto.password);
 			}
 		} else {
@@ -82,11 +88,10 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	private async updateAccount(accountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
-		const id = await this.getIdmAccountId(accountId);
-		const updatedAccountId = await this.identityManager.updateAccount(id, idmAccount);
+	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
+		const updatedAccountId = await this.identityManager.updateAccount(idmAccountId, idmAccount);
 		if (password) {
-			await this.identityManager.updateAccountPassword(id, password);
+			await this.identityManager.updateAccountPassword(idmAccountId, password);
 		}
 		return updatedAccountId;
 	}

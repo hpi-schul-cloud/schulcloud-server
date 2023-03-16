@@ -84,19 +84,28 @@ describe('KeycloakConsole', () => {
 
 	describe('migrate', () => {
 		it('should resolve successfully', async () => {
-			jest.spyOn(uc, 'migrate').mockResolvedValue([1, []]);
+			jest.spyOn(uc, 'migrate').mockResolvedValue(1);
 			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).resolves.not.toThrow();
+		});
+		it('should forward the skip option', async () => {
+			const migrateSpy = jest.spyOn(uc, 'migrate');
+			migrateSpy.mockClear();
+			migrateSpy.mockResolvedValue(1);
+			const skipValue = 10;
+			await console.migrate({ skip: skipValue });
+			expect(migrateSpy).toHaveBeenCalledWith(skipValue, undefined);
+		});
+		it('should forward the query option', async () => {
+			const migrateSpy = jest.spyOn(uc, 'migrate');
+			migrateSpy.mockClear();
+			migrateSpy.mockResolvedValue(1);
+			const queryValue = 'test';
+			await console.migrate({ query: queryValue });
+			expect(migrateSpy).toHaveBeenCalledWith(undefined, queryValue);
 		});
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
-			await expect(console.migrate({ retryCount: 1, retryDelay: 10 })).rejects.toThrow();
-		});
-		it('should log errors', async () => {
-			const errorMessage = 'An error Message';
-			jest.spyOn(uc, 'migrate').mockResolvedValueOnce([1, [errorMessage]]);
-			const writerSpy = jest.spyOn(writer, 'info');
-			await console.migrate({ retryCount: 1, retryDelay: 10 })
-			expect(writerSpy).toHaveBeenCalledWith(expect.stringContaining(errorMessage));
+			await expect(console.migrate({})).rejects.toThrow();
 		});
 	});
 

@@ -111,30 +111,30 @@ describe('KeycloakConfigurationService Integration', () => {
 
 	// Execute this test for a test run against a running Keycloak instance
 	describe('migration', () => {
-		it('should copy all accounts to the IDM', async () => {
-			if (!isKeycloakAvailable) return;
-			const createSpy = jest.spyOn(identityManagementService, 'createAccount');
-			const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
-			const [migratedAccountCounts] = await keycloakMigrationService.migrate();
-			expect(migratedAccountCounts).toBe(allAccounts.length);
-			expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
-			expect(updateSpy).toHaveBeenCalledTimes(dbAndIdmAccounts.length);
+		describe('Given all accounts are able to migrate', () => {
+			it('should copy all accounts to the IDM', async () => {
+				if (!isKeycloakAvailable) return;
+				const createSpy = jest.spyOn(identityManagementService, 'createAccount');
+				const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
+				const migratedAccountCounts = await keycloakMigrationService.migrate();
+				expect(migratedAccountCounts).toBe(allAccounts.length);
+				expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
+				expect(updateSpy).toHaveBeenCalledTimes(dbAndIdmAccounts.length);
+			});
 		});
+		describe('Given there is an account that can not be migrated', () => {
+			it('should report failures', async () => {
+				if (!isKeycloakAvailable) return;
 
-		it('should report failures', async () => {
-			if (!isKeycloakAvailable) return;
+				// GIVEN
+				const conflictingIdmAccount = accountFactory.build();
+				const conflictingDbAccount = dbOnlyAccounts[0];
+				conflictingIdmAccount.username = conflictingDbAccount.username;
+				await createAccountInIdm(conflictingIdmAccount);
 
-			// GIVEN
-			const conflictingIdmAccount = accountFactory.build();
-			const conflictingDbAccount = dbOnlyAccounts[0];
-			conflictingIdmAccount.username = conflictingDbAccount.username;
-			await createAccountInIdm(conflictingIdmAccount);
-
-			const [migratedAccountCounts, err] = await keycloakMigrationService.migrate();
-			expect(migratedAccountCounts).toBe(allAccounts.length - 1);
-			expect(err).toHaveLength(1);
-			const [theErrorMessage] = err;
-			expect(theErrorMessage).toContain(conflictingDbAccount.id);
+				const migratedAccountCounts = await keycloakMigrationService.migrate();
+				expect(migratedAccountCounts).toBe(allAccounts.length - 1);
+			});
 		});
 	});
 });
