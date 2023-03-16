@@ -54,11 +54,7 @@ export class OauthUc {
 			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(
-			system.oauthConfig,
-			state,
-			migration,
-		);
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
