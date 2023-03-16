@@ -85,7 +85,7 @@ describe('dashboard entity', () => {
 				],
 				userId: 'userId',
 			});
-			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 }, []);
+			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 			const grid = dashboard.getGrid();
 			expect(grid[0].pos).toEqual({ x: 3, y: 3 });
@@ -93,7 +93,7 @@ describe('dashboard entity', () => {
 
 		it('when no element at origin position, it should throw notFound', () => {
 			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
-			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 }, []);
+			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 });
 			expect(callMove).toThrow(NotFoundException);
 		});
 
@@ -108,7 +108,7 @@ describe('dashboard entity', () => {
 				userId: 'userId',
 			});
 			const spy = jest.spyOn(targetElement, 'addReferences');
-			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 }, []);
+			const returnValue = dashboard.moveElement({ x: 1, y: 2 }, { x: 3, y: 3 });
 			expect(spy).toHaveBeenLastCalledWith(movedElement.getReferences());
 			expect(returnValue.pos).toEqual({ x: 3, y: 3 });
 		});
@@ -124,7 +124,7 @@ describe('dashboard entity', () => {
 				userId: 'userId',
 			});
 			const spy = jest.spyOn(element, 'removeReferenceByIndex');
-			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 }, []);
+			dashboard.moveElement({ x: 1, y: 2, groupIndex: 1 }, { x: 3, y: 3 });
 			expect(spy).toHaveBeenCalledWith(1);
 			expect(dashboard.getGrid().length).toEqual(2);
 		});
@@ -140,7 +140,7 @@ describe('dashboard entity', () => {
 				],
 				userId: 'userId',
 			});
-			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 }, []);
+			const callMove = () => dashboard.moveElement({ x: 0, y: 2 }, { x: 4, y: 3 });
 			expect(callMove).toThrow(BadRequestException);
 		});
 	});

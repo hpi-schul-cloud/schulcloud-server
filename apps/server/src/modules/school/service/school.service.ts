@@ -31,7 +31,12 @@ export class SchoolService {
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 		if (oauthMigrationPossible != null) {
-			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+			if (!schoolDo.oauthMigrationFinished && !schoolDo.oauthMigrationPossible) {
+				schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+				schoolDo.oauthMigrationStart = schoolDo.oauthMigrationPossible;
+			} else {
+				schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+			}
 		}
 		if (oauthMigrationMandatory != null) {
 			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;

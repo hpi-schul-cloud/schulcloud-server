@@ -36,6 +36,10 @@ export class TaskMapper {
 		}
 		dto.lessonHidden = taskDesc.lessonHidden;
 
+		if (task.users) {
+			dto.users = task.getUsersList();
+		}
+
 		return dto;
 	}
 
@@ -47,6 +51,7 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
@@ -62,6 +67,7 @@ export class TaskMapper {
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
+			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
