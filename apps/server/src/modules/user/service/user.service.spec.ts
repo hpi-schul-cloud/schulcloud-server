@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -27,16 +27,13 @@ import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
 	let service: UserService;
-	let orm: MikroORM;
 	let module: TestingModule;
 
 	let userRepo: DeepMocked<UserRepo>;
 	let userDORepo: DeepMocked<UserDORepo>;
-	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
-	let schoolService: DeepMocked<SchoolService>;
 	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
@@ -85,18 +82,17 @@ describe('UserService', () => {
 
 		userRepo = module.get(UserRepo);
 		userDORepo = module.get(UserDORepo);
-		schoolService = module.get(SchoolService);
-		roleRepo = module.get(RoleRepo);
+		module.get(SchoolService);
+		module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

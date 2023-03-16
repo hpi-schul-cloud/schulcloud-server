@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,14 +11,11 @@ import { UserUc } from './user.uc';
 describe('UserUc', () => {
 	let module: TestingModule;
 	let userUc: UserUc;
-	let userService: DeepMocked<UserService>;
-	let orm: MikroORM;
 	let userRepo: DeepMocked<UserRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
@@ -47,11 +43,11 @@ describe('UserUc', () => {
 		}).compile();
 
 		userUc = module.get(UserUc);
-		userService = module.get(UserService);
+		module.get(UserService);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	it('should be defined', () => {

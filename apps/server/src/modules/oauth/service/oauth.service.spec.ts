@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, System } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -40,7 +39,6 @@ jest.mock('jsonwebtoken');
 
 describe('OAuthService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: OAuthService;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
@@ -57,7 +55,7 @@ describe('OAuthService', () => {
 	const hostUri = 'https://mock.de';
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -109,7 +107,6 @@ describe('OAuthService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {

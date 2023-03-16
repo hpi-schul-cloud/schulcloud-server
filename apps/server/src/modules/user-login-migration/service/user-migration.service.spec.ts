@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	BadRequestException,
@@ -27,7 +26,6 @@ import { UserMigrationService } from './user-migration.service';
 
 describe('UserMigrationService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: UserMigrationService;
 	let configBefore: IConfig;
 	let logger: Logger;
@@ -80,12 +78,11 @@ describe('UserMigrationService', () => {
 		accountService = module.get(AccountService);
 		logger = module.get(Logger);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 
 		Configuration.reset(configBefore);
 	});
