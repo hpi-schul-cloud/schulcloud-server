@@ -301,6 +301,17 @@ describe('SchoolService', () => {
 				expect(resp.enableMigrationStart).toBeTruthy();
 			});
 		});
+		describe('when DO does not have oauthMigrationPossible and oauthMigrationFinished', () => {
+			it('should set oauthMigrationStart', async () => {
+				const { testId, testDO } = setupMigration(undefined, undefined, undefined);
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, undefined);
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(testDO.oauthMigrationStart).toBeTruthy();
+				expect(resp.enableMigrationStart).toBeTruthy();
+			});
+		});
 		describe('when migrationflags are falsly', () => {
 			it('should not set the migrationflags', async () => {
 				const { testId, testDO } = setupMigration(false, false, false);
