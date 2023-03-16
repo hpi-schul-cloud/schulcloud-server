@@ -119,7 +119,7 @@ export class TaskCardParams {
 			[Permission.TASK_CARD_EDIT]: Permission.TASK_CARD_EDIT,
 			[Permission.TASK_CARD_VIEW]: Permission.TASK_CARD_VIEW,
 		},
-		enumName: 'Permission',
+		enumName: 'TaskCardPermission',
 	})
 	permission?: Permission;
 }
