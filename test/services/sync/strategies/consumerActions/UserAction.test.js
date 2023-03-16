@@ -20,22 +20,16 @@ describe('User Actions', () => {
 	let userAction;
 	let userAccountService;
 	let nestServices;
-	let configBefore;
 
 	before(async () => {
 		const app = await appPromise();
 		userAction = new UserAction(app, true);
 		userAccountService = await app.service('/sync/userAccount');
 		nestServices = await setupNestServices(app);
-
-		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', true);
 	});
 
 	after(async () => {
 		await closeNestServices(nestServices);
-
-		Configuration.reset(configBefore);
 	});
 
 	afterEach(() => {
@@ -68,7 +62,7 @@ describe('User Actions', () => {
 		});
 
 		it('should create user and account if not exists, but should not set the lastSyncedAt field if FEATURE_SYNC_LAST_SYNCED_AT_ENABLED env var flag has been set to false', async () => {
-			configBefore = Configuration.toObject({ plainSecrets: true });
+			const configBefore = Configuration.toObject({ plainSecrets: true });
 			Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', false);
 
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
@@ -89,7 +83,7 @@ describe('User Actions', () => {
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
 			expect(userArg.schoolId).to.be.equal(testSchoolId);
 			expect(userArg._id).to.be.equal(testUserInput._id);
-			expect(userArg.lastSyncedAt).to.be.null;
+			expect(userArg.lastSyncedAt).to.be.undefined;
 			expect(accountArg._id).to.be.equal(testAccountInput._id);
 
 			Configuration.reset(configBefore);
@@ -140,7 +134,7 @@ describe('User Actions', () => {
 		});
 
 		it('should update user and account if exists, but should not update the lastSyncedAt field if FEATURE_SYNC_LAST_SYNCED_AT_ENABLED env var flag has been set to false', async () => {
-			configBefore = Configuration.toObject({ plainSecrets: true });
+			const configBefore = Configuration.toObject({ plainSecrets: true });
 			Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', false);
 
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
@@ -180,7 +174,7 @@ describe('User Actions', () => {
 			expect(updateUserArg.email).to.be.equal(testUserInput.email);
 			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
 			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
-			expect(updateUserArg.lastSyncedAt).to.be.null;
+			expect(updateUserArg.lastSyncedAt).to.be.undefined;
 
 			expect(testAccountArg).to.be.equal(testAccountInput);
 
