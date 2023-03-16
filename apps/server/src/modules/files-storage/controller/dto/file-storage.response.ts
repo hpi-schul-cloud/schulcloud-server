@@ -25,7 +25,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	parentId: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ScanStatus })
 	securityCheckStatus: ScanStatus;
 
 	@ApiProperty()
