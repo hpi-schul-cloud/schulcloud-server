@@ -345,7 +345,7 @@ describe('Task-Card Controller (api)', () => {
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 				const taskCardUpdateParams = {
-					title: 'test title',
+					title: 'test title updated',
 					cardElements: [
 						{
 							content: {
