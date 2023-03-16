@@ -29,7 +29,7 @@ export class SchoolUc {
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-		const migrationStartedAt: Date | undefined = school.oauthMigrationPossible;
+		const migrationStartedAt: Date | undefined = school.oauthMigrationStart;
 
 		const shouldRestartMigration = this.isRestartMigrationRequired(
 			school,

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DateType, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { SchoolService } from '@src/modules/school';
@@ -52,14 +52,14 @@ describe('SchoolMigrationService', () => {
 	});
 
 	const setup = () => {
-		const oauthMigrationPossible = new Date(2023, 2, 26);
+		const oauthMigrationStart = new Date(2023, 2, 26);
 		const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 			id: 'schoolId',
 			name: 'schoolName',
 			officialSchoolNumber: '3',
 			externalId: 'firstExternalId',
 			oauthMigrationFinished: new Date(2023, 2, 27),
-			oauthMigrationPossible,
+			oauthMigrationStart,
 		});
 
 		const userDO: UserDO = {
@@ -77,7 +77,7 @@ describe('SchoolMigrationService', () => {
 			userDO,
 			targetSystemId,
 			firstExternalId: schoolDO.externalId,
-			oauthMigrationPossible,
+			oauthMigrationStart,
 		};
 	};
 
@@ -238,16 +238,16 @@ describe('SchoolMigrationService', () => {
 			});
 
 			it('should call findUsers on userService', async () => {
-				const { schoolId, oauthMigrationPossible } = setup();
+				const { schoolId, oauthMigrationStart } = setup();
 				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
 				userService.findUsers.mockResolvedValue(users);
 
-				await service.completeMigration(schoolId, oauthMigrationPossible);
+				await service.completeMigration(schoolId, oauthMigrationStart);
 
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId,
 					isOutdated: false,
-					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationStart) as Date,
 				});
 			});
 
@@ -257,7 +257,7 @@ describe('SchoolMigrationService', () => {
 				userService.findUsers.mockResolvedValue(users);
 				schoolService.getSchoolById.mockResolvedValue(schoolDO);
 
-				await service.completeMigration(schoolId, schoolDO.oauthMigrationPossible);
+				await service.completeMigration(schoolId, schoolDO.oauthMigrationStart);
 
 				expect(userService.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining<UserDO>([
