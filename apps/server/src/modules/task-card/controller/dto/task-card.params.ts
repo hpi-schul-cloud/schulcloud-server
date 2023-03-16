@@ -113,7 +113,13 @@ export class TaskCardParams {
 	cardElements!: CardElementParams[];
 
 	@IsOptional()
-	@IsEnum(Permission)
-	@ApiPropertyOptional({ description: 'Permissions of the card', enum: Permission })
+	@ApiPropertyOptional({
+		description: 'Permissions of the card',
+		enum: {
+			[Permission.TASK_CARD_EDIT]: Permission.TASK_CARD_EDIT,
+			[Permission.TASK_CARD_VIEW]: Permission.TASK_CARD_VIEW,
+		},
+		enumName: 'Permission',
+	})
 	permission?: Permission;
 }
