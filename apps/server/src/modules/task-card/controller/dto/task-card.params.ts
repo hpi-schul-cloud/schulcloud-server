@@ -16,6 +16,11 @@ import {
 
 export abstract class CardElementBase {}
 
+// TODO only temporarily in this file, should be moved to a separate file
+enum TaskCardPermission {
+	'TASK_CARD_EDIT' = Permission.TASK_CARD_EDIT,
+	'TASK_CARD_VIEW' = Permission.TASK_CARD_VIEW,
+}
 export class TitleCardElementParam extends CardElementBase {
 	@ApiProperty({
 		description: 'Type of card element, i.e. text (needed for discriminator)',
@@ -113,13 +118,11 @@ export class TaskCardParams {
 	cardElements!: CardElementParams[];
 
 	@IsOptional()
+	@IsEnum(Permission)
 	@ApiPropertyOptional({
 		description: 'Permissions of the card',
-		enum: {
-			[Permission.TASK_CARD_EDIT]: Permission.TASK_CARD_EDIT,
-			[Permission.TASK_CARD_VIEW]: Permission.TASK_CARD_VIEW,
-		},
+		enum: TaskCardPermission,
 		enumName: 'TaskCardPermission',
 	})
-	permission?: Permission;
+	taskCardPermission?: TaskCardPermission;
 }
