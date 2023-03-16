@@ -8,6 +8,5 @@ import { FwuUc } from './uc/fwu.uc';
 	imports: [AuthorizationModule],
 	controllers: [FwuController],
 	providers: [FwuUc, Logger],
-	exports: [FwuUc],
 })
 export class FwuModule {}
