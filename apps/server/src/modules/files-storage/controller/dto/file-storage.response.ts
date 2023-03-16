@@ -37,7 +37,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	type: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
 
 	@ApiPropertyOptional()
@@ -61,8 +61,8 @@ export class CopyFileResponse {
 		this.name = data.name;
 	}
 
-	@ApiProperty()
-	id?: string | undefined;
+	@ApiPropertyOptional()
+	id?: string;
 
 	@ApiProperty()
 	sourceId: string;
