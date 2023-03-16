@@ -386,7 +386,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('as a student', () => {
+		describe('as a student without task assignment', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
@@ -502,6 +502,10 @@ describe('TaskUC', () => {
 					isSubstitutionTeacher: false,
 				});
 			});
+		});
+
+		describe('as a student with task assignment', () => {
+			// TODO: add test
 		});
 
 		describe('as a substitution teacher', () => {

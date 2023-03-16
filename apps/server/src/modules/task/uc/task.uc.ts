@@ -6,8 +6,8 @@ import {
 	EntityId,
 	IPagination,
 	ITaskCreate,
-	ITaskUpdate,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
@@ -141,7 +141,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
+			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date(), userId: user.id },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },

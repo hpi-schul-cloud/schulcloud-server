@@ -3,8 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputFormat, Permission, Task } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Course, InputFormat, Permission, Task, User } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -16,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskListResponse, TaskResponse } from '@src/modules/task/controller/dto';
@@ -1318,6 +1318,7 @@ describe('Task Controller (API)', () => {
 			});
 		});
 	});
+
 	describe('When task-card feature is not enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
@@ -1412,6 +1413,138 @@ describe('Task Controller (API)', () => {
 				.set('Accept', 'application/json')
 				.send(params)
 				.expect(501);
+		});
+	});
+
+	describe('Multiple users filtered by assignment', () => {
+		let app: INestApplication;
+		let em: EntityManager;
+		let currentUser: ICurrentUser;
+		let teacher: User;
+		let student1: User;
+		let student2: User;
+		let student3: User;
+		let history: Course;
+		let english: Course;
+
+		const createStudent = (id: number) => {
+			const studentRole = roleFactory.build({
+				permissions: [
+					Permission.TASK_DASHBOARD_VIEW_V3,
+					Permission.JOIN_MEETING,
+					Permission.TASK_CARD_VIEW,
+					Permission.TEAM_CREATE,
+					Permission.TEAM_EDIT,
+					Permission.TOOL_CREATE_ETHERPAD,
+				],
+			});
+
+			const student = userFactory.build({
+				firstName: `Student ${id}`,
+				roles: [studentRole],
+			});
+
+			return student;
+		};
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerTestModule],
+			})
+				.overrideGuard(JwtAuthGuard)
+				.useValue({
+					canActivate(context: ExecutionContext) {
+						const req: Request = context.switchToHttp().getRequest();
+						req.user = currentUser;
+						return true;
+					},
+				})
+				.compile();
+			em = module.get(EntityManager);
+
+			// create teacher
+			teacher = userFactory.build({});
+			// create student1, student2, student3
+			student1 = createStudent(1);
+			student2 = createStudent(2);
+			student3 = createStudent(3);
+			// create course history: [student1, student2, student3]
+			history = courseFactory.build({
+				name: 'history',
+				students: [student1, student2, student3],
+			});
+			// create course english: [student1]
+			english = courseFactory.build({
+				name: 'english',
+				students: [student1, student2],
+			});
+			// add task: "write an essay" to english course, users: [student1]
+			const taskEnglish1 = taskFactory.build({
+				course: english,
+				name: 'write an essay',
+				users: [student1],
+			});
+			// add task: "grammer 1" to english course, users: []
+			const taskEnglish2 = taskFactory.build({
+				course: english,
+				name: 'grammer 1',
+				users: [],
+			});
+			// add task: "cause of WW2" to history course, users: [student1, student2]
+			const taskHistory1 = taskFactory.build({
+				course: history,
+				name: 'cause of WW2',
+				users: [student1, student2],
+			});
+			// add task: "fall of Rome" to history course, users: [student1]
+			const taskHistory2 = taskFactory.build({
+				course: history,
+				name: 'fall of Rome',
+				users: [student1],
+			});
+			// add task: "DDR culture" to history course, users: undefined
+			const taskHistory3 = taskFactory.build({
+				course: history,
+				name: 'DDR culture',
+				// users: undefined,
+			});
+
+			console.log('ddr task', JSON.parse(JSON.stringify(taskHistory3.users)));
+
+			await em.persistAndFlush([
+				teacher,
+				student1,
+				student2,
+				student3,
+				history,
+				english,
+				taskEnglish1,
+				taskEnglish2,
+				taskHistory1,
+				taskHistory2,
+				taskHistory3,
+			]);
+			em.clear();
+
+			app = module.createNestApplication();
+			await app.init();
+		});
+
+		it('students 1 gets their tasks', async () => {
+			currentUser = mapUserToCurrentUser(student1);
+
+			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
+			const { total } = response.body as TaskListResponse;
+			console.log('response', response.body, response.statusCode);
+			expect(response.status).toBe(200);
+			expect(total).toBe(4);
+		});
+
+		it('students 2 gets their tasks', async () => {
+			// TODO: add test
+		});
+
+		it('students 3 gets their tasks', async () => {
+			// TODO: add test
 		});
 	});
 });

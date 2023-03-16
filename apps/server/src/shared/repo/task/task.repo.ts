@@ -114,6 +114,7 @@ export class TaskRepo extends BaseRepo<Task> {
 			afterDueDateOrNone?: Date;
 			finished?: { userId: EntityId; value: boolean };
 			availableOn?: Date;
+			userId?: EntityId;
 		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
@@ -134,6 +135,10 @@ export class TaskRepo extends BaseRepo<Task> {
 		}
 
 		scope.addQuery(parentIdScope.query);
+
+		if (filters?.userId) {
+			scope.byAssignedUser(filters.userId);
+		}
 
 		if (filters?.finished) {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
