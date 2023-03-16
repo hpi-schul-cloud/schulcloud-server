@@ -367,7 +367,8 @@ describe('Task-Card Controller (api)', () => {
 				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect(richTextElement ? richTextElement[0].content.value : '').toEqual(sanitizedText);
+				const expectedRichTextElement = richTextElement ? richTextElement[0].content.value : '';
+				expect(expectedRichTextElement).toEqual(sanitizedText);
 			});
 		});
 	});
@@ -430,5 +431,23 @@ describe('Task-Card Controller (api)', () => {
 		// 		.send(taskCardParams)
 		// 		.expect(400);
 		// });
+	});
+	describe('When title is not provided', () => {
+		it('should throw an Error when create', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
 	});
 });
