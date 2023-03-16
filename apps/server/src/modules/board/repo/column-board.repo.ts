@@ -11,9 +11,7 @@ export class ColumnBoardRepo {
 	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const boardNode = await this.em.findOneOrFail(ColumnBoardNode, {
-			id: boardId,
-		});
+		const boardNode = await this.boardNodeRepo.findById(ColumnBoardNode, boardId);
 		const descendants = await this.boardNodeRepo.findDescendants(boardNode, 3);
 		const domainObject = new BoardDoBuilder(descendants).buildColumnBoard(boardNode);
 

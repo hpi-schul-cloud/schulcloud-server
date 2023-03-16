@@ -1,4 +1,4 @@
-import { Utils } from '@mikro-orm/core';
+import { EntityName, FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode, EntityId } from '@shared/domain';
@@ -7,9 +7,15 @@ import { BoardNode, EntityId } from '@shared/domain';
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<BoardNode> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, id);
+	async findById<T extends BoardNode>(entityName: EntityName<T>, id: EntityId): Promise<T> {
+		const boardNode = await this.em.findOneOrFail(entityName, id as FilterQuery<T>);
+
 		return boardNode;
+	}
+
+	async findByIds<T extends BoardNode>(entityName: EntityName<T>, ids: EntityId[]): Promise<T[]> {
+		const boardNodes = await this.em.find(entityName, { id: { $in: ids } } as FilterQuery<T>);
+		return boardNodes;
 	}
 
 	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
