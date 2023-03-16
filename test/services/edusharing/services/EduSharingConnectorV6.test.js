@@ -180,12 +180,13 @@ describe('EduSharingV6 FIND', () => {
 
 	// TODO: fix following test ('should fail to get a restricted node')
 
-	it.skip('should fail to get a restricted node', async () => {
+	it('should fail to get a restricted node', async () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const postStub = sinon.stub(request, 'post');
+
 			sinon.stub(request, 'get').returns(MockAuth);
+			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodeRestricted);
 
 			await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
