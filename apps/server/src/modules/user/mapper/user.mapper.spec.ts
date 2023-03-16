@@ -46,7 +46,6 @@ describe('UserMapper', () => {
 		expect(resultDto.preferences).toEqual(userEntity.preferences);
 		expect(resultDto.lastLoginSystemChange).toEqual(userEntity.lastLoginSystemChange);
 		expect(resultDto.outdatedSince).toEqual(userEntity.outdatedSince);
-		expect(resultDto.lastSyncedAt).toEqual(userEntity.lastSyncedAt);
 	});
 
 	it('mapFromDtoToEntity', () => {
@@ -69,7 +68,6 @@ describe('UserMapper', () => {
 		expect(resultEntity.preferences).toEqual(userDto.preferences);
 		expect(resultEntity.lastLoginSystemChange).toEqual(userDto.lastLoginSystemChange);
 		expect(resultEntity.outdatedSince).toEqual(userDto.outdatedSince);
-		expect(resultEntity.lastSyncedAt).toEqual(userDto.lastSyncedAt);
 	});
 
 	describe('mapFromEntityToEntity', () => {
@@ -99,7 +97,6 @@ describe('UserMapper', () => {
 			expect(resultEntity.preferences).toEqual(userEntity.preferences);
 			expect(resultEntity.lastLoginSystemChange).toEqual(userEntity.lastLoginSystemChange);
 			expect(resultEntity.outdatedSince).toEqual(userEntity.outdatedSince);
-			expect(resultEntity.lastSyncedAt).toEqual(userEntity.lastSyncedAt);
 		});
 
 		it('map all fields', () => {
@@ -137,62 +134,6 @@ describe('UserMapper', () => {
 			expect(resultEntity.preferences).toEqual(patch.preferences);
 			expect(resultEntity.lastLoginSystemChange).toEqual(patch.lastLoginSystemChange);
 			expect(resultEntity.outdatedSince).toEqual(patch.outdatedSince);
-			expect(resultEntity.lastSyncedAt).toEqual(patch.lastSyncedAt);
-		});
-
-		it("doesn't patch existing lastSyncedAt field if not included in the patch object", () => {
-			const patch: User = new User({
-				email: 'overrideMe',
-				firstName: 'overrideMe',
-				lastName: 'overrideMe',
-				roles: [new Role({ name: RoleName.DEMO, permissions: [Permission.ADMIN_EDIT] })],
-				school: new School({
-					name: 'overrideMe',
-				}),
-			});
-
-			userEntity = userFactory.buildWithId({
-				roles: [roleFactory.buildWithId()],
-				lastSyncedAt: new Date('2023-01-01'),
-			});
-
-			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
-
-			expect(resultEntity.id).toEqual(userEntity.id);
-			expect(resultEntity.email).toEqual(patch.email);
-			expect(resultEntity.firstName).toEqual(patch.firstName);
-			expect(resultEntity.lastName).toEqual(patch.lastName);
-			expect(resultEntity.roles).toEqual(patch.roles);
-			expect(resultEntity.school).toEqual(patch.school);
-			expect(resultEntity.lastSyncedAt).toEqual(userEntity.lastSyncedAt);
-		});
-
-		it('patch existing lastSyncedAt field', () => {
-			const patch: User = new User({
-				email: 'overrideMe',
-				firstName: 'overrideMe',
-				lastName: 'overrideMe',
-				roles: [new Role({ name: RoleName.DEMO, permissions: [Permission.ADMIN_EDIT] })],
-				school: new School({
-					name: 'overrideMe',
-				}),
-				lastSyncedAt: new Date(),
-			});
-
-			userEntity = userFactory.buildWithId({
-				roles: [roleFactory.buildWithId()],
-				lastSyncedAt: new Date('2023-01-01'),
-			});
-
-			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
-
-			expect(resultEntity.id).toEqual(userEntity.id);
-			expect(resultEntity.email).toEqual(patch.email);
-			expect(resultEntity.firstName).toEqual(patch.firstName);
-			expect(resultEntity.lastName).toEqual(patch.lastName);
-			expect(resultEntity.roles).toEqual(patch.roles);
-			expect(resultEntity.school).toEqual(patch.school);
-			expect(resultEntity.lastSyncedAt).toEqual(patch.lastSyncedAt);
 		});
 	});
 });
