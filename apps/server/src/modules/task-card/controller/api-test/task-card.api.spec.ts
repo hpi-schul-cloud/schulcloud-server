@@ -413,24 +413,24 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		// it('should throw an error if title is not a string', async () => {
-		// 	const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+		it('should throw an error if title is not a string', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
-		// 	await em.persistAndFlush([user]);
-		// 	em.clear();
+			await em.persistAndFlush([user]);
+			em.clear();
 
-		// 	currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
-		// 	const taskCardParams = {
-		// 		title: 1234,
-		// 	};
+			const taskCardParams = {
+				title: 1234,
+			};
 
-		// 	await request(app.getHttpServer())
-		// 		.post(`/cards/task/`)
-		// 		.set('Accept', 'application/json')
-		// 		.send(taskCardParams)
-		// 		.expect(400);
-		// });
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(501);
+		});
 	});
 	describe('When title is not provided', () => {
 		it('should throw an Error when create', async () => {
