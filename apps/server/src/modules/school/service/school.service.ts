@@ -1,7 +1,7 @@
-import { SchoolRepo } from '@shared/repo';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
@@ -32,6 +32,8 @@ export class SchoolService {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 		if (oauthMigrationPossible != null) {
 			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+
+			this.enableOauthMigration(schoolDo);
 		}
 		if (oauthMigrationMandatory != null) {
 			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
@@ -50,6 +52,14 @@ export class SchoolService {
 		});
 
 		return response;
+	}
+
+	private enableOauthMigration(schoolDo: SchoolDO) {
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		} else {
+			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+		}
 	}
 
 	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
