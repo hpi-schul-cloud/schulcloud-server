@@ -21,7 +21,7 @@ export class CardService {
 		const board = await this.columnBoardRepo.findById(boardId);
 		const column = board.columns.find((c) => c.id === columnId);
 
-		if (column == null) {
+		if (column === undefined) {
 			throw new NotFoundException(`The requested Column: id='${columnId}' has not been found.`);
 		}
 

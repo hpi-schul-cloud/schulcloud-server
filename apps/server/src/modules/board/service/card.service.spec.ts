@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { CardRepo, ColumnBoardRepo } from '../repo';
 import { CardService } from './card.service';
 
@@ -94,20 +95,51 @@ describe(CardService.name, () => {
 	});
 
 	describe('creating a new card', () => {
-		it('should save a list of cards using the repo', async () => {
+		const setup = () => {
 			const column = columnFactory.build();
 			const board = columnBoardFactory.build({ columns: [column] });
 			const boardId = board.id;
 			const columnId = column.id;
 
+			return { board, boardId, column, columnId };
+		};
+
+		it('should save a list of cards using the repo', async () => {
+			const { board, boardId, columnId } = setup();
+
+			jest.useFakeTimers();
+			const fakeDate = new Date(2022, 10, 4);
+			jest.setSystemTime(fakeDate);
+
 			columnBoardRepo.findById.mockResolvedValueOnce(board);
 
 			await service.createCard(boardId, columnId);
 
-			const cardsList = cardRepo.save.mock.calls[0][0];
-			const parentId = cardRepo.save.mock.calls[0][1];
-			expect(cardsList).toBeInstanceOf(Array<Card>);
-			expect(parentId).toEqual(parentId);
+			expect(cardRepo.save).toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						id: expect.any(String),
+						title: '',
+						height: 150,
+						elements: [],
+						createdAt: fakeDate,
+						updatedAt: fakeDate,
+					}),
+				],
+				columnId
+			);
+			jest.useRealTimers();
+		});
+
+		it('should throw not found exception if requested column id has not been found', async () => {
+			const { board, boardId } = setup();
+
+			const notExistingColumnId = new ObjectId().toHexString();
+			const error = new NotFoundException(`The requested Column: id='${notExistingColumnId}' has not been found.`);
+
+			columnBoardRepo.findById.mockResolvedValueOnce(board);
+
+			await expect(service.createCard(boardId, notExistingColumnId)).rejects.toThrowError(error);
 		});
 	});
 });
