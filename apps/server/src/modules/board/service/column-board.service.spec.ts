@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory } from '@shared/testing/factory/domainobject';
@@ -11,6 +10,7 @@ describe(ColumnBoardService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
 	let columnBoardRepo: DeepMocked<ColumnBoardRepo>;
+	let columnRepo: DeepMocked<ColumnRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,6 +33,7 @@ describe(ColumnBoardService.name, () => {
 
 		service = module.get(ColumnBoardService);
 		columnBoardRepo = module.get(ColumnBoardRepo);
+		columnRepo = module.get(ColumnRepo);
 		await setupEntities();
 	});
 
@@ -63,14 +64,51 @@ describe(ColumnBoardService.name, () => {
 			const result = await service.findById(board.id);
 			expect(result).toEqual(board);
 		});
+	});
 
-		it('should throw not found exception if board does not exist', async () => {
-			const error = new Error('not found');
-			columnBoardRepo.findById.mockRejectedValueOnce(error);
+	describe('creating a board', () => {
+		it('should save a board using the repo', async () => {
+			await service.createBoard();
 
-			const notExistingBoardId = new ObjectId().toHexString();
+			expect(columnBoardRepo.save).toHaveBeenCalledWith(
+				expect.objectContaining({
+					id: expect.any(String),
+					title: '',
+					columns: [],
+					createdAt: expect.any(Date),
+					updatedAt: expect.any(Date),
+				})
+			);
+		});
+	});
 
-			await expect(async () => service.findById(notExistingBoardId)).rejects.toThrow(error);
+	describe('creating a column', () => {
+		const setup = () => {
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+
+			return { board, boardId };
+		};
+
+		it('should save a list of columns using the repo', async () => {
+			const { board, boardId } = setup();
+
+			columnBoardRepo.findById.mockResolvedValueOnce(board);
+
+			await service.createColumn(boardId);
+
+			expect(columnRepo.save).toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						id: expect.any(String),
+						title: '',
+						cards: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+				],
+				boardId
+			);
 		});
 	});
 });
