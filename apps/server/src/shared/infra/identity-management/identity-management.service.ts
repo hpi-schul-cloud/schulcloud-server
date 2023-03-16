@@ -1,5 +1,11 @@
 import { IAccount, IAccountUpdate } from '@shared/domain';
 
+export type SearchOptions = {
+	exact?: boolean;
+	skip?: number;
+	limit?: number;
+};
+
 export abstract class IdentityManagementService {
 	/**
 	 * Create a new account in the identity management.
@@ -55,9 +61,10 @@ export abstract class IdentityManagementService {
 	/**
 	 * Loads the account with the specific username.
 	 * @param username of the account to be loaded.
-	 * @returns the account if exists otherwise undefined
+	 * @param options the search options to be applied.
+	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountByUsername(username: string): Promise<IAccount | undefined>;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<IAccount[]>;
 
 	/**
 	 * Load all accounts.

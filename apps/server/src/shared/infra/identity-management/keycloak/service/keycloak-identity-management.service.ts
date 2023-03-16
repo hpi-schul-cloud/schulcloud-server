@@ -1,7 +1,7 @@
-import { IAccount, IAccountUpdate } from '@shared/domain';
-import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { IdentityManagementService } from '../../identity-management.service';
+import { Injectable } from '@nestjs/common';
+import { IAccount, IAccountUpdate } from '@shared/domain';
+import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()
@@ -109,12 +109,16 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountByUsername(username: string): Promise<IAccount | undefined> {
-		const [keycloakUser] = await (await this.kcAdminClient.callKcAdminClient()).users.find({ username });
-		if (keycloakUser) {
-			return this.extractAccount(keycloakUser);
-		}
-		return undefined;
+	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<IAccount[]> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const results = await kc.users.find({
+			username,
+			exact: options?.exact,
+			first: options?.skip,
+			max: options?.limit,
+		});
+		const accounts = results.map((account) => this.extractAccount(account));
+		return accounts;
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {

@@ -254,7 +254,7 @@ describe('KeycloakIdentityManagement', () => {
 	describe('findAccountByUsername', () => {
 		it('should find an existing account by username', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([mockedAccount1]);
-			const ret = await idm.findAccountByUsername(mockedAccount1.username);
+			const ret = await idm.findAccountsByUsername(mockedAccount1.username);
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
@@ -269,7 +269,7 @@ describe('KeycloakIdentityManagement', () => {
 		});
 		it('should return undefined if no account found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
-			const ret = await idm.findAccountByUsername('');
+			const ret = await idm.findAccountsByUsername('');
 
 			expect(ret).toBeUndefined();
 		});

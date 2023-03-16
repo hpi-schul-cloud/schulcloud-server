@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 
 import { EntityId, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
@@ -13,24 +13,31 @@ export class AccountServiceIdm extends AbstractAccountService {
 		super();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findById(id: EntityId): Promise<AccountDto> {
-		throw new NotImplementedException();
+		const result = await this.identityManager.findAccountById(id);
+		const account = AccountIdmToDtoMapper.mapToDto(result);
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		throw new NotImplementedException();
+		const results = (await this.identityManager.getAllAccounts()).filter((account) => userIds.includes(account.id));
+		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		return accounts;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
-		throw new NotImplementedException();
+		const result = await this.identityManager.findAccountByFctIntId(userId);
+		const account = result ? AccountIdmToDtoMapper.mapToDto(result) : null;
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		throw new NotImplementedException();
+		const result = await this.identityManager.findAccountByFctIntId(userId);
+		if (!result) {
+			throw new NotFoundException(`Account with userId ${userId} not found`);
+		}
+		const account = AccountIdmToDtoMapper.mapToDto(result);
+		return account;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
@@ -38,21 +45,20 @@ export class AccountServiceIdm extends AbstractAccountService {
 		throw new NotImplementedException();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	async searchByUsernamePartialMatch(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		userName: string,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		skip: number,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		limit: number
 	): Promise<{ accounts: AccountDto[]; total: number }> {
-		throw new NotImplementedException();
+		const results = await this.identityManager.findAccountsByUsername(userName, { exact: false });
+		const accounts = results.slice(skip, skip + limit).map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		return { accounts, total: results.length };
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
-		throw new NotImplementedException();
+		const results = await this.identityManager.findAccountsByUsername(userName, { exact: true });
+		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		return { accounts, total: accounts.length };
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
