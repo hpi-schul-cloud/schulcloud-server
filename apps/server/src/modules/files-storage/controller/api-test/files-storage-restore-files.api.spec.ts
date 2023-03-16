@@ -4,7 +4,6 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
@@ -14,6 +13,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
@@ -191,7 +191,9 @@ describe(`${baseRouteName} (api)`, () => {
 				const response = await api.restore(`/${validId}/cookies/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['parentType must be a valid enum value'],
+						errors: [
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+						],
 						field: ['parentType'],
 					},
 				]);
