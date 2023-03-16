@@ -161,8 +161,6 @@ describe('task-card mapper', () => {
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
 			};
-			console.log('result', result);
-			console.log('expectedDto', expectedDto);
 			expect(result).toEqual(expectedDto);
 		});
 	});
