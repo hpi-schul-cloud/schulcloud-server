@@ -57,7 +57,6 @@ export class UserMapper {
 		// so we can't check if the field is undefined. it is always initialized with an empty object.
 		target.preferences =
 			source.preferences && Object.keys(source.preferences).length !== 0 ? source.preferences : target.preferences;
-
 		return target;
 	}
 }

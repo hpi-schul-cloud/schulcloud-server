@@ -117,7 +117,6 @@ describe('UserMapper', () => {
 			patch.preferences = { key: 'value' };
 			patch.lastLoginSystemChange = new Date();
 			patch.outdatedSince = new Date();
-			patch.lastSyncedAt = new Date();
 
 			const resultEntity = UserMapper.mapFromEntityToEntity(userEntity, patch);
 
