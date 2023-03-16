@@ -6,6 +6,7 @@ const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 const { isNotEmptyString } = require('../../../../helper/stringHelper');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
@@ -110,12 +111,17 @@ class UserAction extends BaseConsumerAction {
 		// Prepare user update object with all the modified user data.
 		const userUpdateObject = this.createUserUpdateObject(user, foundUser);
 
-		// Set the last sync date value to the current date - this will be, e.g.,
-		// date of the last performed LDAP server sync (for a specific user).
-		userUpdateObject.lastSyncedAt = new Date();
+		// If the feature flag is enabled, set the last sync date value to the
+		// current date - this will be, e.g., date of the last performed LDAP
+		// server sync (for a specific user).
+		if (Configuration.get('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED') === true) {
+			userUpdateObject.lastSyncedAt = new Date();
+		}
 
-		// Perform the user and account updates.
-		await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, userUpdateObject, account);
+		// Perform the user and account updates if the update object is not empty.
+		if (!_.isEmpty(userUpdateObject)) {
+			await this.app.service('/sync/userAccount').updateUserAndAccount(foundUser._id, userUpdateObject, account);
+		}
 	}
 
 	createUserUpdateObject(user, foundUser) {
@@ -146,10 +152,13 @@ class UserAction extends BaseConsumerAction {
 	async createUserAndAccount(idmUser, account, school) {
 		idmUser.schoolId = school._id;
 
-		// Set the last sync date value to the current date as new users
-		// and accounts are also created in the sync process, and they
-		// should be considered synchronized at the time of creation.
-		idmUser.lastSyncedAt = new Date();
+		// If the feature flag is enabled, set the last sync date value to the
+		// current date as new users and accounts are also created in the sync
+		// process, and they should be considered synchronized at the time of
+		// creation.
+		if (Configuration.get('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED') === true) {
+			idmUser.lastSyncedAt = new Date();
+		}
 
 		const userAccountService = await this.app.service('/sync/userAccount');
 		return userAccountService.createUserAndAccount(idmUser, account, school);

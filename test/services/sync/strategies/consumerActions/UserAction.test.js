@@ -4,6 +4,7 @@ const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest, NotFound } = require('../../../../../src/errors');
 const { UserAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
@@ -19,16 +20,22 @@ describe('User Actions', () => {
 	let userAction;
 	let userAccountService;
 	let nestServices;
+	let configBefore;
 
 	before(async () => {
 		const app = await appPromise();
 		userAction = new UserAction(app, true);
 		userAccountService = await app.service('/sync/userAccount');
 		nestServices = await setupNestServices(app);
+
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
+		Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', true);
 	});
 
 	after(async () => {
 		await closeNestServices(nestServices);
+
+		Configuration.reset(configBefore);
 	});
 
 	afterEach(() => {
