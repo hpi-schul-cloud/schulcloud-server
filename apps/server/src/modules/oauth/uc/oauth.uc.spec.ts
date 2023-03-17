@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
@@ -37,7 +36,6 @@ jest.mock('nanoid', () => {
 
 describe('OAuthUc', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: OauthUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
@@ -49,7 +47,7 @@ describe('OAuthUc', () => {
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -110,7 +108,6 @@ describe('OAuthUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {
@@ -121,7 +118,6 @@ describe('OAuthUc', () => {
 		const setup = () => {
 			const systemId = 'systemId';
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -317,7 +313,6 @@ describe('OAuthUc', () => {
 			});
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',

@@ -226,7 +226,7 @@ afterEach(() => {
 ```
 The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you code completion and type safety, combined with all the features of spies.
 
-`createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `.close` methods should only be called in `afterAll` and not in `afterEach`.
+`createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `module.close` should only be called in `afterAll` and not in `afterEach`.
 
 To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. `jest.restoreAllMocks` should not be used, because in some cases it will not properly restore mocks created by ts-jest.
 
