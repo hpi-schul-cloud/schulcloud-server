@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '.';
 import { InputFormat, RichText } from '../types';
 
 describe('TitleCardElementEntity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
@@ -24,14 +17,8 @@ describe('TitleCardElementEntity', () => {
 });
 
 describe('RichTextCardElementEntity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

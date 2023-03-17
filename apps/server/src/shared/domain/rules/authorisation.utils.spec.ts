@@ -28,9 +28,9 @@ describe('permission.utils', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
+
 	describe('[resolvePermissions]', () => {
 		it('should return permissions of a user with one role', () => {
 			const role = roleFactory.build({ permissions: [permissionA] });
