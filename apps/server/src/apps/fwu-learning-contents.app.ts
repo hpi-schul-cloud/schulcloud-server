@@ -8,7 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { API_VERSION_PATH, FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
+import { FwuLearningContentsApiModule } from '@src/modules/fwu-learning-contents';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
@@ -34,7 +34,8 @@ async function bootstrap() {
 	const rootExpress = express();
 
 	const port = 5555;
-	const basePath = API_VERSION_PATH;
+	// v1 oder v3?
+	const basePath = '/api/v3';
 
 	// exposed alias mounts
 	rootExpress.use(basePath, nestExpress);
