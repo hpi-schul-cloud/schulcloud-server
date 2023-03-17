@@ -1,10 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, EntityId, Permission, User } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { setupEntities, userFactory } from '@shared/testing';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
@@ -12,7 +11,6 @@ import { SchoolExternalToolUc } from './school-external-tool.uc';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: SchoolExternalToolUc;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -21,7 +19,7 @@ describe('SchoolExternalToolUc', () => {
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolExternalToolUc,
@@ -53,7 +51,6 @@ describe('SchoolExternalToolUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {

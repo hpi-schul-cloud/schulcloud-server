@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, User } from '@shared/domain';
@@ -28,7 +27,6 @@ jest.mock('jsonwebtoken');
 
 describe('IservProvisioningStrategy', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let strategy: IservProvisioningStrategy;
 
 	let schoolService: DeepMocked<SchoolService>;
@@ -36,7 +34,7 @@ describe('IservProvisioningStrategy', () => {
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				IservProvisioningStrategy,
@@ -63,7 +61,6 @@ describe('IservProvisioningStrategy', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('getType is called', () => {

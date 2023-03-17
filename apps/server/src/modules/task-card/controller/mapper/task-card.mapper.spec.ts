@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ValidationError } from '@shared/common';
 import {
@@ -24,14 +23,8 @@ import { TaskMapper } from '@src/modules/task/mapper';
 import { TaskCardMapper } from './task-card.mapper';
 
 describe('task-card mapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('mapToResponse', () => {

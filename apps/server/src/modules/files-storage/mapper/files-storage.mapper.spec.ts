@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { NotImplementedException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
@@ -13,14 +12,8 @@ import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities([FileRecord]);
 	});
 
 	describe('mapToAllowedAuthorizationEntityType()', () => {
