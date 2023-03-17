@@ -4,9 +4,9 @@ import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 @Injectable()
-export class FwuUc {
+export class FwuLearningContentsUc {
 	constructor(private logger: Logger) {
-		this.logger.setContext(FwuUc.name);
+		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
 	async get(path: string): Promise<Uint8Array> {

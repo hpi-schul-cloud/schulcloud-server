@@ -3,13 +3,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { FwuUc } from '../uc/fwu.uc';
+import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 
-@ApiTags('FWU')
+@ApiTags('Fwu-learning-contents')
 @Authenticate('jwt')
-@Controller('fwu')
-export class FwuController {
-	constructor(private readonly fwuUc: FwuUc) {}
+@Controller('fwu-learning-contents')
+export class FwuLearningContentsController {
+	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get('*')
 	async get(@Req() req: Request, @Res() res: Response) {
@@ -21,7 +21,7 @@ export class FwuController {
 		let file: Uint8Array;
 
 		try {
-			file = await this.fwuUc.get(path);
+			file = await this.fwuLearningContentsUc.get(path);
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 			throw new Error(`HttpStatusCode: ${error.$metadata.httpStatusCode} at ${path} ${error}`);
