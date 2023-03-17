@@ -15,7 +15,7 @@ import { AccountApiModule } from '@src/modules/account/account-api.module';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
-import { FwuModule } from '@src/modules/fwu';
+import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
 import { LearnroomModule } from '@src/modules/learnroom';
 import { LessonApiModule } from '@src/modules/lesson';
 import { NewsModule } from '@src/modules/news';
@@ -78,7 +78,7 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardModule,
 	BoardApiModule,
-	FwuModule,
+	FwuLearningContentsModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
