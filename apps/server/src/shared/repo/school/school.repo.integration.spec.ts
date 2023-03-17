@@ -159,6 +159,7 @@ describe('SchoolRepo', () => {
 					oauthMigrationMandatory: schoolEntity.oauthMigrationMandatory,
 					oauthMigrationPossible: schoolEntity.oauthMigrationPossible,
 					oauthMigrationFinished: schoolEntity.oauthMigrationFinished,
+					oauthMigrationFinalFinish: schoolEntity.oauthMigrationFinalFinish,
 					previousExternalId: schoolEntity.previousExternalId,
 					officialSchoolNumber: schoolEntity.officialSchoolNumber,
 					schoolYear,
@@ -193,6 +194,7 @@ describe('SchoolRepo', () => {
 			expect(result.oauthMigrationMandatory).toEqual(entityDO.oauthMigrationMandatory);
 			expect(result.oauthMigrationPossible).toEqual(entityDO.oauthMigrationPossible);
 			expect(result.oauthMigrationFinished).toEqual(entityDO.oauthMigrationFinished);
+			expect(result.oauthMigrationFinalFinish).toEqual(entityDO.oauthMigrationFinalFinish);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
 			expect(result.schoolYear).toEqual(entityDO.schoolYear);

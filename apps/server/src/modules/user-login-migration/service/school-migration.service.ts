@@ -15,6 +15,12 @@ export class SchoolMigrationService {
 		private readonly userService: UserService
 	) {}
 
+	validateGracePeriod(school: SchoolDO) {
+		if (!school.oauthMigrationFinalFinish || Date.now() >= school.oauthMigrationFinalFinish.getTime()) {
+			throw new Error(); // stub
+		}
+	}
+
 	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
 		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
 

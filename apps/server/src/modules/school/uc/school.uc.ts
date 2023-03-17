@@ -30,7 +30,7 @@ export class SchoolUc {
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		const shouldRestartMigration = this.isRestartMigrationRequired(
+		const shouldRestartMigration: boolean = this.isRestartMigrationRequired(
 			school,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
@@ -38,7 +38,12 @@ export class SchoolUc {
 		);
 
 		if (shouldRestartMigration) {
-			await this.schoolMigrationService.restartMigration(schoolId);
+			try {
+				this.schoolMigrationService.validateGracePeriod(school);
+				await this.schoolMigrationService.restartMigration(schoolId);
+			} catch {
+				throw new Error(); // stub
+			}
 		}
 
 		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(

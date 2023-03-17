@@ -2,6 +2,7 @@ import { SchoolRepo } from '@shared/repo';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
@@ -32,12 +33,17 @@ export class SchoolService {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 		if (oauthMigrationPossible != null) {
 			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+			schoolDo.oauthMigrationFinalFinish = undefined;
 		}
 		if (oauthMigrationMandatory != null) {
 			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
 		}
 		if (oauthMigrationFinished != null) {
 			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
+			if (schoolDo.oauthMigrationFinished) {
+				schoolDo.oauthMigrationFinalFinish =
+					schoolDo.oauthMigrationFinished.getTime() + Configuration.get('MIGRATION_END_GRACE_PERIOD');
+			}
 		}
 
 		await this.schoolRepo.save(schoolDo);
@@ -46,6 +52,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
 			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
@@ -59,6 +66,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
 			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 

@@ -513,6 +513,11 @@
 			"default": "false",
 			"description": "Enables the oauth system (iserv to sanis) migration feature."
 		},
+		"MIGRATION_END_GRACE_PERIOD": {
+			"type": "number",
+			"default": "7*24*60*60*1000",
+			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "HPI Schul-Cloud",
