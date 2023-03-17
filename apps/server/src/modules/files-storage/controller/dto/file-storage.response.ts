@@ -10,7 +10,7 @@ export class FileRecordResponse {
 		this.securityCheckStatus = fileRecord.securityCheck.status;
 		this.parentId = fileRecord.parentId;
 		this.creatorId = fileRecord.creatorId;
-		this.type = fileRecord.mimeType;
+		this.mimeType = fileRecord.mimeType;
 		this.parentType = fileRecord.parentType;
 		this.deletedSince = fileRecord.deletedSince;
 	}
@@ -35,7 +35,7 @@ export class FileRecordResponse {
 	creatorId: string;
 
 	@ApiProperty()
-	type: string;
+	mimeType: string;
 
 	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
