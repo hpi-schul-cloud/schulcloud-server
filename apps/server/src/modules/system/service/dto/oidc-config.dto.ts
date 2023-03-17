@@ -1,25 +1,31 @@
 export class OidcConfigDto {
-	constructor(configDto: OidcConfigDto) {
-		this.clientId = configDto.clientId;
-		this.clientSecret = configDto.clientSecret;
-		this.authorizationUrl = configDto.authorizationUrl;
-		this.tokenUrl = configDto.tokenUrl;
-		this.logoutUrl = configDto.logoutUrl;
-		this.userinfoUrl = configDto.userinfoUrl;
-		this.defaultScopes = configDto.defaultScopes;
+	constructor(oidcConfigDto: OidcConfigDto) {
+		this.parentSystemId = oidcConfigDto.parentSystemId;
+		this.clientId = oidcConfigDto.clientId;
+		this.clientSecret = oidcConfigDto.clientSecret;
+		this.alias = oidcConfigDto.alias;
+		this.authorizationUrl = oidcConfigDto.authorizationUrl;
+		this.tokenUrl = oidcConfigDto.tokenUrl;
+		this.userinfoUrl = oidcConfigDto.userinfoUrl;
+		this.logoutUrl = oidcConfigDto.logoutUrl;
+		this.defaultScopes = oidcConfigDto.defaultScopes;
 	}
+
+	parentSystemId: string;
 
 	clientId: string;
 
 	clientSecret: string;
 
+	alias: string;
+
 	authorizationUrl: string;
 
 	tokenUrl: string;
 
-	logoutUrl?: string;
+	logoutUrl: string;
 
-	userinfoUrl?: string;
+	userinfoUrl: string;
 
-	defaultScopes?: string;
+	defaultScopes: string;
 }

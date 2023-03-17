@@ -141,7 +141,11 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user, originalTask } = setup();
 
 				await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				expect(taskCopyService.copyTask).toHaveBeenCalledWith({ originalTask, destinationCourse, user });
+				expect(taskCopyService.copyTask).toHaveBeenCalledWith({
+					originalTaskId: originalTask.id,
+					destinationCourse,
+					user,
+				});
 			});
 
 			it('should call copyHelperService', async () => {

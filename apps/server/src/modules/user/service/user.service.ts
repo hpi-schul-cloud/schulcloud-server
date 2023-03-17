@@ -1,15 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, PermissionService, Role, School, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { EntityId, IFindOptions, LanguageType, PermissionService, User } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/interface/page';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
+import { ICurrentUser } from '@src/modules/authentication';
+import { CurrentUserMapper } from '@src/modules/authentication/mapper';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -21,11 +23,11 @@ export class UserService {
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly roleRepo: RoleRepo,
-		private readonly schoolMapper: SchoolMapper,
 		private readonly schoolService: SchoolService,
 		private readonly permissionService: PermissionService,
 		private readonly configService: ConfigService<IUserConfig, true>,
-		private readonly roleService: RoleService
+		private readonly roleService: RoleService,
+		private readonly accountService: AccountService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -35,10 +37,21 @@ export class UserService {
 		return [user, permissions];
 	}
 
+	/**
+	 * @deprecated
+	 */
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
 		const userDto = UserMapper.mapFromEntityToDto(userEntity);
 		return userDto;
+	}
+
+	async getResolvedUser(userId: EntityId): Promise<ICurrentUser> {
+		const user: User = await this.userRepo.findById(userId, true);
+		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
+
+		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		return resolvedUser;
 	}
 
 	async findById(id: string): Promise<UserDO> {
@@ -71,6 +84,9 @@ export class UserService {
 		return user;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	async getDisplayName(userDto: UserDto): Promise<string> {
 		const id: string = userDto.id ? userDto.id : '';
 
@@ -89,24 +105,6 @@ export class UserService {
 		await this.userRepo.save(user);
 
 		return true;
-	}
-
-	async createOrUpdate(user: UserDto): Promise<void> {
-		const userRoles: Role[] = await this.roleRepo.findByIds(user.roleIds);
-		const schoolDO: SchoolDO = await this.schoolService.getSchoolById(user.schoolId);
-		const schoolEntity: School = new School(this.schoolMapper.mapDOToEntityProperties(schoolDO));
-
-		let saveEntity: User;
-		if (user.id) {
-			const userEntity: User = await this.userRepo.findById(user.id);
-			const fromDto: User = UserMapper.mapFromDtoToEntity(user, userRoles, schoolEntity);
-			saveEntity = UserMapper.mapFromEntityToEntity(fromDto, userEntity);
-		} else {
-			saveEntity = UserMapper.mapFromDtoToEntity(user, userRoles, schoolEntity);
-		}
-
-		const promise: Promise<void> = this.userRepo.save(saveEntity);
-		return promise;
 	}
 
 	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {

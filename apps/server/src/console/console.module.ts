@@ -12,6 +12,7 @@ import { FileRecord } from '@src/modules/files-storage/entity';
 import { ManagementModule } from '@src/modules/management/management.module';
 import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
+import { BoardModule } from '@src/modules/board';
 import { ServerConsole } from './server.console';
 
 @Module({
@@ -20,6 +21,7 @@ import { ServerConsole } from './server.console';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
+		BoardModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot({

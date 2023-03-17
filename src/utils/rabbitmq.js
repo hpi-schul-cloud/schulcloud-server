@@ -82,7 +82,6 @@ class Channel {
 	async consumeQueue(consumer, options) {
 		try {
 			const ch = await this.getChannel();
-			ch.prefetch(Configuration.get('RABBITMQ_MATRIX_CONSUME_CONCURRENCY'));
 			ch.consume(this.queue, consumer, options);
 			ch.on('close', () => {
 				// try to reconnect consumer if channel was closed for some reason

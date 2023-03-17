@@ -4,6 +4,7 @@ export * from './base.entity';
 export * from './board.entity';
 export * from './boardelement.entity';
 export * from './card-element.entity';
+export * from './boardnode';
 export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './external-tools';
