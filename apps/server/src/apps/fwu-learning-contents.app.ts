@@ -34,7 +34,6 @@ async function bootstrap() {
 	const rootExpress = express();
 
 	const port = 5555;
-	// v1 oder v3?
 	const basePath = '/api/v3';
 
 	// exposed alias mounts
