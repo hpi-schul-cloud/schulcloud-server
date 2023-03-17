@@ -56,17 +56,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "6308cf3bee02bf090ec3a491"
-		},
-		"state": "up",
-		"name": "clean-user-account",
-		"createdAt": {
-			"$date": "2022-08-25T14:19:14.069Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "632c5fafc744915f90d1c73b"
 		},
 		"state": "up",
@@ -150,6 +139,17 @@
 		"name": "EditHomeworkCreateAndEditPermissions",
 		"createdAt": {
 			"$date": "2023-03-01T10:40:42.101Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64141f668fb9600ed8e0c11a"
+		},
+		"state": "up",
+		"name": "RefactorSystemSubConfig",
+		"createdAt": {
+			"$date": "2023-03-15T14:04:48.654Z"
 		},
 		"__v": 0
 	}
