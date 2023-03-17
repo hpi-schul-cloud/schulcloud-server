@@ -19,7 +19,7 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(FilesStorageApiModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create(FwuLearningContentsApiModule, nestExpressAdapter);
 
 	// WinstonLogger
 	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
@@ -41,7 +41,7 @@ async function bootstrap() {
 	rootExpress.listen(port);
 
 	console.log('#################################');
-	console.log(`### Start Files Storage Server   ###`);
+	console.log(`### Start FWU Learning Contents Server   ###`);
 	console.log(`### Port:     ${port}            ###`);
 	console.log(`### Base path: ${basePath}           ###`);
 	console.log('#################################');
