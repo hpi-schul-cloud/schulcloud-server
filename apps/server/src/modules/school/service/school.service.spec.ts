@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SchoolFeatures } from '@shared/domain';
@@ -13,7 +12,6 @@ import { SchoolService } from './school.service';
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
-	let orm: MikroORM;
 
 	let schoolRepo: DeepMocked<SchoolRepo>;
 
@@ -29,12 +27,11 @@ describe('SchoolService', () => {
 		}).compile();
 		schoolRepo = module.get(SchoolRepo);
 		schoolService = module.get(SchoolService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	const setup = () => {

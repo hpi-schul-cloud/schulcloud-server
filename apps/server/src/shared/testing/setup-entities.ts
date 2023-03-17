@@ -3,7 +3,6 @@ import { ALL_ENTITIES } from '@shared/domain';
 
 /**
  * Test-Setup to make all entities available without a database connection.
- * Teardown: 'await orm.close()' in after-hook!
  * @returns
  */
 export const setupEntities = async (entities: EntityClass<AnyEntity>[] = ALL_ENTITIES): Promise<MikroORM> => {
