@@ -3,7 +3,7 @@ const htmlParser = require('node-html-parser');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden, GeneralError, NotFound } = require('../../../errors');
+const { Forbidden, GeneralError, NotFound, Unavailable } = require('../../../errors');
 const logger = require('../../../logger');
 const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');
@@ -302,7 +302,7 @@ class EduSharingConnector {
 					criteria,
 					facets,
 				}),
-				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_ES'),
+				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			};
 
 			const response = await this.eduSharingRequest(options);
@@ -341,37 +341,32 @@ class EduSharingConnector {
 	}
 
 	async getPlayerForNode(nodeUuid) {
-		try {
-			const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`;
-			const options = {
-				method: 'GET',
-				url,
-				headers: {
-					Accept: 'application/json',
-					...basicAuthorizationHeaders,
-				},
-				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_ES'),
-			};
+		const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`;
+		const options = {
+			method: 'GET',
+			url,
+			headers: {
+				Accept: 'application/json',
+				...basicAuthorizationHeaders,
+			},
+		};
 
-			const response = await this.eduSharingRequest(options);
-			const parsed = JSON.parse(response);
-			if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-				const root = htmlParser.parse(parsed.detailsSnippet);
-				const content = root.querySelector('.edusharing_rendering_content_wrapper');
-				const iframe = content.querySelector('iframe');
-				const iframeSrc = iframe.getAttribute('src');
-				const script = content.querySelector('script');
-				const scriptSrc = script.getAttribute('src');
-				if (iframeSrc === null || scriptSrc === null) {
-					throw new GeneralError('Could not find player in answer from Edu-Sharing');
-				}
-				return { 'iframe_src': iframeSrc, 'script_src': scriptSrc };
-			} else {
-				throw new GeneralError(`Unexpected answer from Edu-Sharing: ${response}`);
+		const response = await this.eduSharingRequest(options);
+		const parsed = JSON.parse(response);
+		if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
+			const root = htmlParser.parse(parsed.detailsSnippet);
+			const content = root.querySelector('.edusharing_rendering_content_wrapper');
+			const iframe = content.querySelector('iframe');
+			const iframeSrc = iframe.getAttribute('src');
+			const script = content.querySelector('script');
+			const scriptSrc = script.getAttribute('src');
+			if (iframeSrc === null || scriptSrc === null) {
+				throw new Unavailable(`No Iframe detected in Edu-Sharing renderer response.`);
 			}
-	    } catch (err) {
-			logger.error('Edu-Sharing failed getting player: ', err, err.message);
-			return Promise.reject(err);
+			const iframeH5P = { iframe_src: iframeSrc, script_src: scriptSrc };
+			return iframeH5P;
+		} else {
+			throw new Unavailable(`Unexpected response from Edu-Sharing renderer.`);
 		}
 	}
 
