@@ -118,7 +118,6 @@ describe('OAuthUc', () => {
 		const setup = () => {
 			const systemId = 'systemId';
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -314,7 +313,6 @@ describe('OAuthUc', () => {
 			});
 
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				alias: 'alias',
 				clientId: '12345',
 				clientSecret: 'mocksecret',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
