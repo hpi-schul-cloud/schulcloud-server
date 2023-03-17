@@ -18,14 +18,7 @@ export class FwuLearningContentsController {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const path = req.params[0];
-		let file: Uint8Array;
-
-		try {
-			file = await this.fwuLearningContentsUc.get(path);
-		} catch (error) {
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			throw new Error(`HttpStatusCode: ${error.$metadata.httpStatusCode} at ${path} ${error}`);
-		}
+		const file = await this.fwuLearningContentsUc.get(path);
 		const startIndexOfContentType = path.lastIndexOf('.');
 		const contentType =
 			startIndexOfContentType !== -1 ? path.slice(startIndexOfContentType) : 'application/octet-stream';

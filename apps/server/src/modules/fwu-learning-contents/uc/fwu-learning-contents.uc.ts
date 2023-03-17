@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
@@ -24,7 +24,16 @@ export class FwuLearningContentsUc {
 			Bucket: Configuration.get('FWU_CONTENT__S3_BUCKET') as string,
 			Key: path.toString(),
 		});
-		const response = await client.send(request);
+		const response = await client.send(request).catch((error) => {
+			if ('name' in error) {
+				if ((error as Error).name === 'NoSuchKey') {
+					throw new NotFoundException();
+				} else {
+					throw new InternalServerErrorException((error as Error).name);
+				}
+			}
+			throw new InternalServerErrorException();
+		});
 		if (response.$metadata.httpStatusCode !== 200) {
 			this.logger.warn({
 				message: 'S3 request failed for FWU content',
