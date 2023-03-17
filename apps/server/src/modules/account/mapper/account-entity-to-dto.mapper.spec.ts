@@ -79,12 +79,12 @@ describe('AccountEntityToDtoMapper', () => {
 			};
 			const testAmount = 10;
 
-			const ret = AccountEntityToDtoMapper.mapSearchResult([[testEntity1, testEntity2], testAmount]);
+			const [accounts, total] = AccountEntityToDtoMapper.mapSearchResult([[testEntity1, testEntity2], testAmount]);
 
-			expect(ret.total).toBe(testAmount);
-			expect(ret.accounts).toHaveLength(2);
-			expect(ret.accounts).toContainEqual(expect.objectContaining({ id: '1' }));
-			expect(ret.accounts).toContainEqual(expect.objectContaining({ id: '2' }));
+			expect(total).toBe(testAmount);
+			expect(accounts).toHaveLength(2);
+			expect(accounts).toContainEqual(expect.objectContaining({ id: '1' }));
+			expect(accounts).toContainEqual(expect.objectContaining({ id: '2' }));
 		});
 	});
 

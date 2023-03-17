@@ -9,13 +9,13 @@ export class AccountValidationService {
 	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo) {}
 
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
-		const [foundUsers, { accounts: foundAccounts }] = await Promise.all([
+		const [foundUsers, [accounts]] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
 			this.userRepo.findByEmail(email),
 			AccountEntityToDtoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
 		]);
 
-		const filteredAccounts = foundAccounts.filter((foundAccount) => foundAccount.systemId === systemId);
+		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);
 
 		return !(
 			foundUsers.length > 1 ||

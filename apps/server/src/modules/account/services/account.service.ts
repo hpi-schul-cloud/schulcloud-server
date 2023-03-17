@@ -1,15 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
+import { Counted } from '@shared/domain';
 import { isEmail, validateOrReject } from 'class-validator';
+import { Logger } from '../../../core/logger';
+import { IServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
-import { IServerConfig } from '../../server/server.config';
-import { Logger } from '../../../core/logger';
 import { AccountValidationService } from './account.validation.service';
+import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
@@ -25,34 +26,51 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async findById(id: string): Promise<AccountDto> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.findById(id);
+		}
 		return this.accountDb.findById(id);
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.findMultipleByUserId(userIds);
+		}
 		return this.accountDb.findMultipleByUserId(userIds);
 	}
 
 	async findByUserId(userId: string): Promise<AccountDto | null> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.findByUserId(userId);
+		}
 		return this.accountDb.findByUserId(userId);
 	}
 
 	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.findByUserIdOrFail(userId);
+		}
 		return this.accountDb.findByUserIdOrFail(userId);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.findByUsernameAndSystemId(username, systemId);
+		}
 		return this.accountDb.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.searchByUsernamePartialMatch(userName, skip, limit);
+		}
 		return this.accountDb.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY')) {
+			return this.accountIdm.searchByUsernameExactMatch(userName);
+		}
 		return this.accountDb.searchByUsernameExactMatch(userName);
 	}
 

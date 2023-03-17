@@ -1,18 +1,18 @@
+import { createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
-import bcrypt from 'bcryptjs';
-import { createMock } from '@golevelup/ts-jest';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server';
-import { AccountRepo } from '../repo/account.repo';
+import bcrypt from 'bcryptjs';
 import { Logger } from '../../../core/logger';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AbstractAccountService } from './account.service.abstract';
 
@@ -439,20 +439,20 @@ describe('AccountService', () => {
 			const partialUserName = 'admin';
 			const skip = 2;
 			const limit = 10;
-			const foundAccounts = await accountService.searchByUsernamePartialMatch(partialUserName, skip, limit);
+			const [accounts, total] = await accountService.searchByUsernamePartialMatch(partialUserName, skip, limit);
 			expect(accountRepo.searchByUsernamePartialMatch).toHaveBeenCalledWith(partialUserName, skip, limit);
-			expect(foundAccounts.total).toBe(mockAccounts.length);
+			expect(total).toBe(mockAccounts.length);
 
-			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
 	});
 	describe('searchByUsernameExactMatch', () => {
 		it('should call repo', async () => {
 			const partialUserName = 'admin';
-			const foundAccounts = await accountService.searchByUsernameExactMatch(partialUserName);
+			const [accounts, total] = await accountService.searchByUsernameExactMatch(partialUserName);
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
-			expect(foundAccounts.total).toBe(1);
-			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			expect(total).toBe(1);
+			expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
 		});
 	});
 });

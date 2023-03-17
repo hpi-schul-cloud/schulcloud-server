@@ -64,10 +64,10 @@ describe('AuthenticationService', () => {
 	describe('loadAccount', () => {
 		describe('when resolving an account without system id', () => {
 			it('should find an account', async () => {
-				accountService.searchByUsernameExactMatch.mockResolvedValueOnce({
-					accounts: [{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
-					total: 2,
-				});
+				accountService.searchByUsernameExactMatch.mockResolvedValueOnce([
+					[{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
+					2,
+				]);
 				const account = await authenticationService.loadAccount('username');
 				expect(account).toEqual(mockAccount);
 			});

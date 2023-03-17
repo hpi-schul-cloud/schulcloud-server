@@ -258,20 +258,22 @@ describe('KeycloakIdentityManagement', () => {
 
 			expect(ret).not.toBeNull();
 			expect(ret).toEqual(
-				expect.objectContaining({
-					id: mockedAccount1.id,
-					username: mockedAccount1.username,
-					email: mockedAccount1.email,
-					firstName: mockedAccount1.firstName,
-					lastName: mockedAccount1.lastName,
-				})
+				expect.arrayContaining([
+					expect.objectContaining({
+						id: mockedAccount1.id,
+						username: mockedAccount1.username,
+						email: mockedAccount1.email,
+						firstName: mockedAccount1.firstName,
+						lastName: mockedAccount1.lastName,
+					}),
+				])
 			);
 		});
 		it('should return undefined if no account found', async () => {
 			kcUsersMock.find.mockResolvedValueOnce([]);
 			const ret = await idm.findAccountsByUsername('');
 
-			expect(ret).toBeUndefined();
+			expect(ret).toStrictEqual([]);
 		});
 	});
 

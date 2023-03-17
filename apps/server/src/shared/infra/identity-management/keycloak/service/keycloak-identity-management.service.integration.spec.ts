@@ -153,11 +153,13 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		const account = await idmService.findAccountsByUsername(testAccount.username as string);
 
 		expect(account).toEqual(
-			expect.objectContaining<Omit<IAccount, 'id'>>({
-				username: testAccount.username,
-				firstName: testAccount.firstName,
-				lastName: testAccount.lastName,
-			})
+			expect.arrayContaining([
+				expect.objectContaining<Omit<IAccount, 'id'>>({
+					username: testAccount.username,
+					firstName: testAccount.firstName,
+					lastName: testAccount.lastName,
+				}),
+			])
 		);
 	});
 

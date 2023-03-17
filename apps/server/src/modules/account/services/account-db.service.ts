@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId } from '@shared/domain';
-import { AccountRepo } from '../repo/account.repo';
+import { Account, Counted, EntityId } from '@shared/domain';
 import { AccountEntityToDtoMapper } from '../mapper';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
@@ -106,16 +106,12 @@ export class AccountServiceDb extends AbstractAccountService {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 
-	async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}

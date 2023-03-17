@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 
-import { EntityId, IAccountUpdate } from '@shared/domain';
+import { Counted, EntityId, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
 import { AbstractAccountService } from './account.service.abstract';
@@ -40,29 +40,26 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
-		throw new NotImplementedException();
+		const [accounts] = await this.searchByUsernameExactMatch(username);
+		const account = accounts.find((tempAccount) => tempAccount.systemId === systemId) || null;
+		return account;
 	}
 
-	async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const results = await this.identityManager.findAccountsByUsername(userName, { exact: false });
 		const accounts = results.slice(skip, skip + limit).map((result) => AccountIdmToDtoMapper.mapToDto(result));
-		return { accounts, total: results.length };
+		return [accounts, results.length];
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const results = await this.identityManager.findAccountsByUsername(userName, { exact: true });
 		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
-		return { accounts, total: accounts.length };
+		return [accounts, accounts.length];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
 		throw new NotImplementedException();
 	}
 

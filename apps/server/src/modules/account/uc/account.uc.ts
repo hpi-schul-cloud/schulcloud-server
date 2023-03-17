@@ -13,8 +13,8 @@ import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import bcrypt from 'bcryptjs';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ObjectId } from 'bson';
 import { ICurrentUser } from '@src/modules/authentication';
+import { ObjectId } from 'bson';
 import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -60,9 +60,7 @@ export class AccountUc {
 			if (!(await this.isSuperhero(currentUser))) {
 				throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 			}
-			// eslint-disable-next-line no-case-declarations
-			const { accounts, total } = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
-			// eslint-disable-next-line no-case-declarations
+			const [accounts, total] = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
 			const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
 			return new AccountSearchListResponse(accountList, total, skip, limit);
 		}
