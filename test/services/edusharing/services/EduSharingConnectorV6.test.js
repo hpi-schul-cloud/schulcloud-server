@@ -178,8 +178,6 @@ describe('EduSharingV6 FIND', () => {
 		}
 	});
 
-	// TODO: fix following test ('should fail to get a restricted node')
-
 	it('should fail to get a restricted node', async () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -224,7 +222,7 @@ describe('EduSharingV6 config flags', () => {
 	afterEach(async () => {
 		sinon.verifyAndRestore();
 	});
-	// TODO: fix following test('should search with collections flag disabled')
+
 	it('should search with collections flag disabled', async () => {
 		try {
 			Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', false);
