@@ -43,7 +43,6 @@ describe('UserUc', () => {
 		}).compile();
 
 		userUc = module.get(UserUc);
-		module.get(UserService);
 		userRepo = module.get(UserRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);

@@ -82,8 +82,6 @@ describe('UserService', () => {
 
 		userRepo = module.get(UserRepo);
 		userDORepo = module.get(UserDORepo);
-		module.get(SchoolService);
-		module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
