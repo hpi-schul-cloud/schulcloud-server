@@ -63,7 +63,7 @@ describe('delete teams user data usecase', () => {
 	describe('delete teams user data usecase', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData;
-			console.log(deleteUserDataFromTeams);
+
 			expect(deleteUserDataFromTeams).to.be.an('Array');
 			expect(deleteUserDataFromTeams.length).to.be.equal(1);
 			expect(deleteUserDataFromTeams[0]).to.be.a('function');
