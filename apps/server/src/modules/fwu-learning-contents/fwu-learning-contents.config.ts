@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { S3Config } from './interface/config';
 
 export const s3Config: S3Config = {
 	endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT') as string,
@@ -8,6 +9,6 @@ export const s3Config: S3Config = {
 	secretAccessKey: Configuration.get('FWU_CONTENT__S3_SECRET_KEY') as string,
 };
 
-//export const s3Bucket = Configuration.get('FWU_CONTENT__S3_BUCKET') as string;
+// export const s3Bucket = Configuration.get('FWU_CONTENT__S3_BUCKET') as string;
 
-//export const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
+// export const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
