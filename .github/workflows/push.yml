@@ -24,6 +24,8 @@ jobs:
       contains(github.event.issue.labels.*.name, 'ready-for-ci') == 'true') ||
       github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
+    needs:
+      - branch_meta
     permissions:
       packages: write
     steps:
@@ -50,7 +52,7 @@ jobs:
         run: |
           mkdir -p ~/.docker 
           echo '{"experimental": "enabled"}' >> ~/.docker/config.json
-          echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ github.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
+          echo "IMAGE_EXISTS=$(docker manifest inspect ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }} > /dev/null && echo 1 || echo 0)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         if: ${{ env.IMAGE_EXISTS == 0 }}
@@ -58,32 +60,41 @@ jobs:
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
 
-  branch_name:
+  branch_meta:
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.extract_branch.outputs.branch }}
+      branch: ${{ steps.extract_branch_meta.outputs.branch }}
+      sha: ${{ steps.extract_branch_meta.outputs.sha }}
     steps:
-      - name: Extract branch name
+      - name: Extract branch meta
         shell: bash
-        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-        id: extract_branch
+        id: extract_branch_meta
+        run: |
+          if [ "${{ github.event_name }}" == 'pull_request' ]; then
+            echo "branch=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+            echo "sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+            echo "sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
 
   deploy:
     needs:
       - build_and_push
-      - branch_name
+      - branch_meta
     uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@main
     with:
-      branch: ${{ needs.branch_name.outputs.branch }}
+      branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
@@ -100,7 +111,7 @@ jobs:
   trivy-vulnerability-scanning:
     needs:
       - build_and_push
-      - branch_name
+      - branch_meta
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -110,7 +121,7 @@ jobs:
       - name: run trivy vulnerability scanner
         uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
         with:
-          image-ref: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
+          image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
@@ -124,10 +135,10 @@ jobs:
   end-to-end-tests:
     needs:
       - build_and_push
-      - branch_name
+      - branch_meta
     uses: hpi-schul-cloud/end-to-end-tests/.github/workflows/e2e_call.yml@main
     with:
-      ref: ${{ github.ref }}
+      ref: ${{ needs.branch_meta.outputs.branch }}
 
   test-successful:
     runs-on: ubuntu-latest

@@ -14,8 +14,8 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import {
 	CopyFileParams,
@@ -186,7 +186,9 @@ describe(`${baseRouteName} (api)`, () => {
 				const response = await api.copy(`/${validId}/cookies/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['parentType must be a valid enum value'],
+						errors: [
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+						],
 						field: ['parentType'],
 					},
 				]);
