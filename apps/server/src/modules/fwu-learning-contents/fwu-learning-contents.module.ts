@@ -3,6 +3,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { s3Config } from './fwu-learning-contents.config';
+import { S3ClientAdapter } from './client/s3-client.adapter';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 import { S3Config } from './interface/config';
