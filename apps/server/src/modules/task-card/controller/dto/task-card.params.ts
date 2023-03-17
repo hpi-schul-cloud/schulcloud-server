@@ -1,6 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
-import { CardElementType, InputFormat } from '@shared/domain';
+import { CardElementType, InputFormat, Permission } from '@shared/domain';
 import { Type } from 'class-transformer';
 import {
 	IsArray,
@@ -16,6 +16,11 @@ import {
 
 export abstract class CardElementBase {}
 
+// TODO only temporarily in this file, should be moved to a separate file
+enum TaskCardPermission {
+	'TASK_CARD_EDIT' = Permission.TASK_CARD_EDIT,
+	'TASK_CARD_VIEW' = Permission.TASK_CARD_VIEW,
+}
 export class TitleCardElementParam extends CardElementBase {
 	@ApiProperty({
 		description: 'Type of card element, i.e. text (needed for discriminator)',
@@ -111,4 +116,13 @@ export class TaskCardParams {
 		type: [CardElementParams],
 	})
 	cardElements!: CardElementParams[];
+
+	@IsOptional()
+	@IsEnum(Permission)
+	@ApiPropertyOptional({
+		description: 'Permissions of the card',
+		enum: TaskCardPermission,
+		enumName: 'TaskCardPermission',
+	})
+	taskCardPermission?: TaskCardPermission;
 }

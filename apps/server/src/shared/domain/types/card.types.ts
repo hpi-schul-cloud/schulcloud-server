@@ -1,6 +1,6 @@
 import { Collection } from '@mikro-orm/core';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import type { User } from '@shared/domain';
+import type { Permission, User } from '@shared/domain';
 import { CardElement, CardElementType, RichTextCardElement, TitleCardElement } from '../entity/cardElement.entity';
 import { InputFormat } from './input-format.types';
 
