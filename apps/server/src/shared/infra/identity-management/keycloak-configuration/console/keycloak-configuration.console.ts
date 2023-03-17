@@ -134,7 +134,7 @@ export class KeycloakConsole {
 			},
 			{
 				flags: '-s, --skip',
-				description: 'Limit migration to accounts with username partially matching the query string.',
+				description: 'Skip the first "s" accounts during migration. Default 0.',
 				required: false,
 				defaultValue: undefined,
 			},
