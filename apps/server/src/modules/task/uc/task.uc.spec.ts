@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
@@ -26,7 +25,6 @@ describe('TaskUC', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
-	let orm: MikroORM;
 
 	const setupUser = (permissions: Permission[]) => {
 		const role = roleFactory.build({ permissions });
@@ -35,7 +33,7 @@ describe('TaskUC', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			imports: [],
@@ -78,7 +76,6 @@ describe('TaskUC', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {

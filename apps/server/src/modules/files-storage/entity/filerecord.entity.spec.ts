@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -12,14 +11,8 @@ import {
 } from './filerecord.entity';
 
 describe('FileRecord Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities([FileRecord]);
 	});
 
 	describe('when creating a new instance using the constructor', () => {
