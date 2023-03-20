@@ -19,7 +19,6 @@ export class ConsoleWriterService {
 
 	warn(text?: string): void {
 		this.spinner.warn(text);
-		this.spinner.start();
 	}
 
 	succeed(text?: string): void {

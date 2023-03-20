@@ -165,6 +165,8 @@ export class KeycloakConsole {
 						res.infos.map((m) => this.console.info(m));
 					}
 					success += res.infos.length;
+					this.console.info(`... continue migration at ${position}`);
+					this.console.start();
 				}
 				this.console.succeed(`Migrated ${success}/${position} users into IDM`);
 				return position;

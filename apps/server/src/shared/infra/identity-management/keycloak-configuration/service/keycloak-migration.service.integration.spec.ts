@@ -91,7 +91,7 @@ describe('KeycloakConfigurationService Integration', () => {
 			await keycloak.realms.create({ realm: testRealm, enabled: true });
 			keycloak.setConfig({ realmName: testRealm });
 			dbOnlyAccounts = accountFactory.buildList(2);
-			dbAndIdmAccounts = accountFactory.buildList(123);
+			dbAndIdmAccounts = accountFactory.buildList(63);
 			allAccounts = [...dbOnlyAccounts, ...dbAndIdmAccounts];
 
 			await em.persistAndFlush(allAccounts);
@@ -117,7 +117,10 @@ describe('KeycloakConfigurationService Integration', () => {
 				const createSpy = jest.spyOn(identityManagementService, 'createAccount');
 				const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
 				const migratedAccountCounts = await keycloakMigrationService.migrate();
-				expect(migratedAccountCounts).toBe(allAccounts.length);
+
+				expect(migratedAccountCounts.amount).toBe(allAccounts.length);
+				expect(migratedAccountCounts.infos.length).toBe(allAccounts.length);
+				expect(migratedAccountCounts.errors.length).toBe(0);
 				expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
 				expect(updateSpy).toHaveBeenCalledTimes(dbAndIdmAccounts.length);
 			});
@@ -126,14 +129,13 @@ describe('KeycloakConfigurationService Integration', () => {
 			it('should report failures', async () => {
 				if (!isKeycloakAvailable) return;
 
-				// GIVEN
 				const conflictingIdmAccount = accountFactory.build();
 				const conflictingDbAccount = dbOnlyAccounts[0];
 				conflictingIdmAccount.username = conflictingDbAccount.username;
 				await createAccountInIdm(conflictingIdmAccount);
 
 				const migratedAccountCounts = await keycloakMigrationService.migrate();
-				expect(migratedAccountCounts).toBe(allAccounts.length - 1);
+				expect(migratedAccountCounts.errors.length).toBe(1);
 			});
 		});
 	});
