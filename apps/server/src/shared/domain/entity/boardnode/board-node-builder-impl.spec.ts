@@ -119,6 +119,11 @@ describe(BoardNodeBuilderImpl.name, () => {
 			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.CARD)).not.toThrowError();
 		});
 
+		it('should do nothing if no boardNode was given', () => {
+			const { builder } = setup();
+			expect(() => builder.ensureBoardNodeType(undefined, BoardNodeType.CARD)).not.toThrowError();
+		});
+
 		it('should throw error if wrong type', () => {
 			const { builder, cardNode } = setup();
 			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.COLUMN)).toThrowError();
@@ -149,6 +154,11 @@ describe(BoardNodeBuilderImpl.name, () => {
 			const { builder } = setup();
 			const fakeId = new ObjectId().toHexString();
 			expect(builder.getParent(fakeId)).toBeUndefined();
+		});
+
+		it('should return undefined if no parentid was given', () => {
+			const { builder } = setup();
+			expect(builder.getParent()).toBeUndefined();
 		});
 	});
 });
