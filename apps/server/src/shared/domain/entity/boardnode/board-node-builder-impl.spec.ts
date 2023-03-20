@@ -5,6 +5,7 @@ import {
 	columnFactory,
 	textElementFactory,
 } from '@shared/testing/factory/domainobject';
+import { ObjectId } from 'bson';
 import { BoardNodeBuilderImpl } from './board-node-builder-impl';
 import { BoardNodeType } from './types';
 
@@ -126,6 +127,28 @@ describe(BoardNodeBuilderImpl.name, () => {
 		it('should do nothing if one of the valid types is met', () => {
 			const { builder, cardNode } = setup();
 			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.COLUMN, BoardNodeType.CARD)).not.toThrowError();
+		});
+	});
+
+	describe('when getting a parent', () => {
+		const setup = () => {
+			const columnBoardNode = columnBoardNodeFactory.buildWithId();
+
+			const builder = new BoardNodeBuilderImpl(columnBoardNode);
+
+			return { builder, columnBoardNode };
+		};
+
+		it('should return the correct parent', () => {
+			const { builder, columnBoardNode } = setup();
+
+			expect(builder.getParent(columnBoardNode.id)).toBe(columnBoardNode);
+		});
+
+		it('should return undefined if the parent is unknown', () => {
+			const { builder } = setup();
+			const fakeId = new ObjectId().toHexString();
+			expect(builder.getParent(fakeId)).toBeUndefined();
 		});
 	});
 });
