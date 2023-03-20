@@ -23,7 +23,7 @@ export class MigrationResponse {
 		description: 'Date from when Migration is finally finished and cannot be restarted again',
 		type: Date,
 	})
-	oauthMigrationFinalFinished?: Date;
+	oauthMigrationFinalFinish?: Date;
 
 	@ApiProperty({
 		description: 'Enable the Migration',
@@ -34,7 +34,7 @@ export class MigrationResponse {
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationFinished = params.oauthMigrationFinished;
-		this.oauthMigrationFinalFinished = params.oauthMigrationFinalFinished;
+		this.oauthMigrationFinalFinish = params.oauthMigrationFinalFinish;
 		this.enableMigrationStart = params.enableMigrationStart;
 	}
 }

@@ -38,12 +38,8 @@ export class SchoolUc {
 		);
 
 		if (shouldRestartMigration) {
-			try {
-				this.schoolMigrationService.validateGracePeriod(school);
-				await this.schoolMigrationService.restartMigration(schoolId);
-			} catch {
-				throw new Error(); // stub
-			}
+			this.schoolMigrationService.validateGracePeriod(school);
+			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 
 		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(
