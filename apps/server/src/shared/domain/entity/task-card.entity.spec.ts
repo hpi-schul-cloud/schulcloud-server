@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
 import { richTextCardElementFactory, setupEntities, taskCardFactory, titleCardElementFactory } from '@shared/testing';
 import { CardElementType, RichTextCardElement, TitleCardElement } from '.';
 
 describe('Task Card Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(() => {
