@@ -1,19 +1,13 @@
-import { MikroORM } from '@mikro-orm/core';
 import { User } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { UserMapper } from '@src/modules/user/mapper/user.mapper';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 
 describe('UserMapper', () => {
-	let orm: MikroORM;
 	let userEntity: User;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(() => {

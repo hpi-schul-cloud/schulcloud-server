@@ -75,7 +75,6 @@ describe('TaskCardUc', () => {
 		uc = module.get(TaskCardUc);
 		cardElementRepo = module.get(CardElementRepo);
 		courseRepo = module.get(CourseRepo);
-		module.get(RichTextCardElementRepo);
 		taskCardRepo = module.get(TaskCardRepo);
 		userRepo = module.get(UserRepo);
 		authorizationService = module.get(AuthorizationService);
