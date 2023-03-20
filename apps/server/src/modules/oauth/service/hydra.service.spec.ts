@@ -54,7 +54,6 @@ describe('HydraService', () => {
 	const oauthConfig: OauthConfig = new OauthConfig({
 		clientId: '12345',
 		clientSecret: 'mocksecret',
-		alias: 'hydra',
 		tokenEndpoint: `${hydraUri}/oauth2/token`,
 		grantType: 'authorization_code',
 		redirectUri: `${apiHost}/api/v3/sso/hydra/12345`,

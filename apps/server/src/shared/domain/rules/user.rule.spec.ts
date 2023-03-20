@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { Role, User } from '../entity';
@@ -7,7 +6,6 @@ import { Actions } from './actions.enum';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {
-	let orm: MikroORM;
 	let service: UserRule;
 	let user: User;
 	let entity: User;
@@ -17,17 +15,13 @@ describe('UserRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [UserRule],
 		}).compile();
 
 		service = await module.get(UserRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	beforeEach(() => {

@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
@@ -28,7 +27,6 @@ let authorizationService: DeepMocked<AuthorizationService>;
 
 describe('TaskService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let taskService: TaskService;
 	let submissionService: DeepMocked<SubmissionService>;
@@ -69,11 +67,10 @@ describe('TaskService', () => {
 		authorizationService = module.get(AuthorizationService);
 		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

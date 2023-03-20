@@ -1,6 +1,6 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common/';
+import { createMock } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import {
 	Course,
 	DashboardEntity,
@@ -10,9 +10,8 @@ import {
 	LearnroomTypes,
 	SortOrder,
 } from '@shared/domain';
-import { createMock } from '@golevelup/ts-jest';
-import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
+import { courseFactory, setupEntities } from '@shared/testing';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -30,7 +29,6 @@ const learnroomMock = (id: string, name: string) => {
 };
 
 describe('dashboard uc', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
@@ -38,7 +36,6 @@ describe('dashboard uc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -60,7 +57,7 @@ describe('dashboard uc', () => {
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
 		courseRepo = module.get(CourseRepo);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterEach(() => {

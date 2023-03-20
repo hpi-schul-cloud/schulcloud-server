@@ -23,7 +23,6 @@ describe('resolvePermissions', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

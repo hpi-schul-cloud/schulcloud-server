@@ -8,7 +8,7 @@ import { SystemResponseMapper } from './system-response.mapper';
 function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthConfigResponse | undefined): boolean {
 	if (expected != null && actual != null) {
 		expect(actual.clientId).toBe(expected.clientId);
-		expect(actual.alias).toBe(expected.alias);
+		expect(actual.idpHint).toBe(expected.idpHint);
 		expect(actual.grantType).toBe(expected.grantType);
 		expect(actual.tokenEndpoint).toBe(expected.tokenEndpoint);
 		expect(actual.authEndpoint).toBe(expected.authEndpoint);
@@ -28,7 +28,6 @@ describe('oauth-response mapper', () => {
 	let module: TestingModule;
 	const defaultOauthConfigDto = new OauthConfigDto({
 		clientId: '12345',
-		alias: 'alias-mock',
 		clientSecret: 'mocksecret',
 		tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 		grantType: 'authorization_code',

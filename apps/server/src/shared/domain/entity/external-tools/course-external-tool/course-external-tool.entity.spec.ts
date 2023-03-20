@@ -1,5 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
-import { courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 import {
 	BasicToolConfig,
 	CourseExternalTool,
@@ -12,16 +10,11 @@ import {
 	SchoolExternalTool,
 	ToolConfigType,
 } from '@shared/domain';
+import { courseFactory, schoolFactory, setupEntities } from '@shared/testing';
 
 describe('ExternalTool Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

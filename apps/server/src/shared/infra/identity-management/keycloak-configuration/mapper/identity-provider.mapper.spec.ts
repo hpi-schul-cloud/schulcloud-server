@@ -36,7 +36,7 @@ describe('OidcIdentityProviderMapper', () => {
 			parentSystemId: new ObjectId(0).toString(),
 			clientId: 'clientId',
 			clientSecret: 'clientSecret',
-			alias: 'alias',
+			idpHint: 'alias',
 			authorizationUrl: 'authorizationUrl',
 			tokenUrl: 'tokenUrl',
 			logoutUrl: 'logoutUrl',

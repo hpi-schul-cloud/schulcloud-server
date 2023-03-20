@@ -9,8 +9,8 @@ export class OidcIdentityProviderMapper {
 	public mapToKeycloakIdentityProvider(oidcConfig: OidcConfigDto, flowAlias: string): IdentityProviderRepresentation {
 		return {
 			providerId: 'oidc',
-			alias: oidcConfig.alias,
-			displayName: oidcConfig.alias,
+			alias: oidcConfig.idpHint,
+			displayName: oidcConfig.idpHint,
 			enabled: true,
 			firstBrokerLoginFlowAlias: flowAlias,
 			config: {

@@ -837,6 +837,11 @@
 			"default": 60000,
 			"description": "Timeout for incoming requests to the copy API in milliseconds."
 		},
+		"FEATURE_SYNC_LAST_SYNCED_AT_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enable setting/updating user's document lastSyncedAt field, e.g. in the LDAP sync process"
+		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
 			"default": false,
