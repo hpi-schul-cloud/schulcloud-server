@@ -62,6 +62,15 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
+		},
+		"fwu-learning-contents": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/fwu-learning-contents.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		}
 	}
 }

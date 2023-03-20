@@ -19,10 +19,12 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	console.log('1');
 	const nestApp = await NestFactory.create(FwuLearningContentsApiModule, nestExpressAdapter);
-
+	console.log('2');
 	// WinstonLogger
 	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
+	console.log('3');
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
@@ -33,7 +35,7 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
-	const port = 4444;
+	const port = 4446;
 	const basePath = '/api/v3';
 
 	// exposed alias mounts
