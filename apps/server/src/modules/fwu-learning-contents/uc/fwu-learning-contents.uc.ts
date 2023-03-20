@@ -1,30 +1,21 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, Inject } from '@nestjs/common';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 
 @Injectable()
 export class FwuLearningContentsUc {
-	constructor(private logger: Logger) {
+	constructor(private logger: Logger, @Inject('S3_Client') readonly client: S3Client) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
 	async get(path: string): Promise<Uint8Array> {
-		const client = new S3Client({
-			endpoint: Configuration.get('FWU_CONTENT__S3_ENDPOINT') as string,
-			credentials: {
-				accessKeyId: Configuration.get('FWU_CONTENT__S3_ACCESS_KEY') as string,
-				secretAccessKey: Configuration.get('FWU_CONTENT__S3_SECRET_KEY') as string,
-			},
-			region: Configuration.get('FWU_CONTENT__S3_REGION') as string,
-			tls: true,
-			forcePathStyle: true,
-		});
+		console.log('UC FWU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 		const request = new GetObjectCommand({
 			Bucket: Configuration.get('FWU_CONTENT__S3_BUCKET') as string,
 			Key: path.toString(),
 		});
-		const response = await client.send(request).catch((error) => {
+		const response = await this.client.send(request).catch((error) => {
 			if ('name' in error) {
 				if ((error as Error).name === 'NoSuchKey') {
 					throw new NotFoundException();

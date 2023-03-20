@@ -1,8 +1,11 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { HttpModule } from '@nestjs/axios';
+import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { ALL_ENTITIES } from '@shared/domain';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
@@ -13,7 +16,6 @@ import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 import { S3Config } from './interface/config';
 
 const providers = [
-	FwuLearningContentsUc,
 	Logger,
 	{
 		provide: 'S3_Client',
@@ -34,6 +36,7 @@ const providers = [
 		provide: 'S3_Config',
 		useValue: s3Config,
 	},
+	FwuLearningContentsUc,
 ];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -45,6 +48,9 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 @Module({
 	imports: [
 		AuthorizationModule,
+		AuthenticationModule,
+		CoreModule,
+		HttpModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',

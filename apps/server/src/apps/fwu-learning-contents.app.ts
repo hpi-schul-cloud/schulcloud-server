@@ -8,7 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { FwuLearningContentsApiModule } from '@src/modules/fwu-learning-contents';
+import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
@@ -19,12 +19,9 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	console.log('1');
-	const nestApp = await NestFactory.create(FwuLearningContentsApiModule, nestExpressAdapter);
-	console.log('2');
+	const nestApp = await NestFactory.create(FwuLearningContentsModule, nestExpressAdapter);
 	// WinstonLogger
 	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
-	console.log('3');
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
