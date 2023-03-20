@@ -88,8 +88,8 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 	}
 
 	ensureBoardNodeType(boardNode: BoardNode | undefined, ...allowedBoardNodeTypes: BoardNodeType[]) {
-		if (!boardNode || !allowedBoardNodeTypes.includes(boardNode.type)) {
-			throw new Error(`board node type is not allowed: >${boardNode?.type ?? 'undefined'}<`);
+		if (boardNode && !allowedBoardNodeTypes.includes(boardNode.type)) {
+			throw new Error(`board node type is not allowed: >${boardNode.type}<`);
 		}
 	}
 
