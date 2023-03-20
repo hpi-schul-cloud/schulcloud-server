@@ -106,10 +106,7 @@ export class OAuthService {
 
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		if (!user) {
-			throw new OAuthSSOError(
-				`Provisioning of user with externalId: ${externalUserId} failed`,
-				provisioning ? 'sso_user_notfound' : 'sso_provisioning_disabled'
-			);
+			throw new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound');
 		}
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
