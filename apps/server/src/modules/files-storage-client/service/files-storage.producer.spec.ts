@@ -1,6 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,12 +15,11 @@ describe('FilesStorageProducer', () => {
 	let service: FilesStorageProducer;
 	let configService: DeepMocked<ConfigService>;
 	let amqpConnection: DeepMocked<AmqpConnection>;
-	let orm: MikroORM;
 
 	const timeout = 10000;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageProducer,
@@ -47,7 +45,6 @@ describe('FilesStorageProducer', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

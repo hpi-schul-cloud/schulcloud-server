@@ -97,6 +97,8 @@ const userSchema = new Schema(
 		ldapId: { type: String }, // UUID to identify during the sync
 		previousExternalId: { type: String }, // the former ldapId after oauth migrated user
 
+		lastSyncedAt: { type: Date }, // date of the last user data sync
+
 		...externalSourceSchema,
 
 		customAvatarBackgroundColor: { type: String },

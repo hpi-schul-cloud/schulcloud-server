@@ -1,52 +1,45 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	IFindOptions,
-	Permission,
 	LanguageType,
+	Permission,
 	PermissionService,
 	Role,
 	RoleName,
-	School,
 	SortOrder,
 	User,
 } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { UserMapper } from '@src/modules/user/mapper/user.mapper';
-import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { SchoolService } from '@src/modules/school';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
+import { RoleService } from '@src/modules/role/service/role.service';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user/service/user.service';
+import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 
 describe('UserService', () => {
 	let service: UserService;
-	let orm: MikroORM;
 	let module: TestingModule;
 
 	let userRepo: DeepMocked<UserRepo>;
 	let userDORepo: DeepMocked<UserDORepo>;
-	let roleRepo: DeepMocked<RoleRepo>;
 	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
-	let schoolService: DeepMocked<SchoolService>;
 	let accountService: DeepMocked<AccountService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				UserService,
-				SchoolMapper,
 				{
 					provide: EntityManager,
 					useValue: createMock<EntityManager>(),
@@ -89,18 +82,15 @@ describe('UserService', () => {
 
 		userRepo = module.get(UserRepo);
 		userDORepo = module.get(UserDORepo);
-		schoolService = module.get(SchoolService);
-		roleRepo = module.get(RoleRepo);
 		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
@@ -294,78 +284,6 @@ describe('UserService', () => {
 
 		it('should throw an error if language is not activated', async () => {
 			await expect(service.patchLanguage(user.id, LanguageType.EN)).rejects.toThrowError();
-		});
-	});
-
-	describe('createOrUpdate', () => {
-		let user: User;
-		let roles: Role[];
-		let school: School;
-		const date: Date = new Date(2020, 1, 1);
-		let capturedUser: User;
-
-		beforeAll(() => {
-			jest.useFakeTimers();
-			jest.setSystemTime(date);
-		});
-
-		afterAll(() => {
-			jest.useRealTimers();
-		});
-
-		beforeEach(() => {
-			roles = [roleFactory.buildWithId(), roleFactory.buildWithId()];
-			roleRepo.findByNames.mockImplementation(
-				(names: RoleName[]): Promise<Role[]> => Promise.resolve(roles.filter((role) => names.includes(role.name)))
-			);
-			roleRepo.findByIds.mockImplementation(
-				(ids: string[]): Promise<Role[]> => Promise.resolve(roles.filter((role: Role) => ids.includes(role.id)))
-			);
-			user = userFactory.buildWithId({ roles });
-			userRepo.findById.mockResolvedValue(user);
-			userRepo.save.mockImplementation((entities: User[] | User): Promise<void> => {
-				if (entities instanceof User) {
-					capturedUser = entities;
-				}
-				return Promise.resolve();
-			});
-			school = schoolFactory.buildWithId();
-			schoolService.getSchoolById.mockResolvedValue({
-				id: school.id,
-				name: school.name,
-				schoolYear: school.schoolYear,
-			});
-		});
-
-		it('should patch existing user', async () => {
-			const userDto: UserDto = UserMapper.mapFromEntityToDto(user);
-
-			await service.createOrUpdate(userDto);
-
-			expect(userDto.id).toEqual(user.id);
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(userDto.schoolId);
-			expect(userRepo.findById).toHaveBeenCalledWith(user.id);
-			expect(userRepo.save).toHaveBeenCalledWith(user);
-		});
-
-		it('should save new user', async () => {
-			const userDto: UserDto = {
-				email: 'abc@def.xyz',
-				firstName: 'Hans',
-				lastName: 'Peter',
-				roleIds: [roles[0].id, roles[1].id],
-				schoolId: school.id,
-			} as UserDto;
-
-			await service.createOrUpdate(userDto);
-
-			expect(schoolService.getSchoolById).toHaveBeenCalledWith(userDto.schoolId);
-			expect(userRepo.findById).not.toHaveBeenCalled();
-			expect(userRepo.save).toHaveBeenCalled();
-			expect(capturedUser.id).toBeNull();
-			expect(capturedUser.roles.getItems().map((role: Role) => role.id)).toEqual(
-				user.roles.getItems().map((role: Role) => role.id)
-			);
 		});
 	});
 

@@ -1,8 +1,20 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName, User } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
+import { RoleService } from '@src/modules/role';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
 import jwt from 'jsonwebtoken';
+import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
+	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
@@ -13,16 +25,38 @@ import { IservProvisioningStrategy } from './iserv.strategy';
 
 jest.mock('jsonwebtoken');
 
-describe('IservStrategy', () => {
+describe('IservProvisioningStrategy', () => {
 	let module: TestingModule;
 	let strategy: IservProvisioningStrategy;
 
+	let schoolService: DeepMocked<SchoolService>;
+	let userService: DeepMocked<UserService>;
+	let roleService: DeepMocked<RoleService>;
+
 	beforeAll(async () => {
+		await setupEntities();
 		module = await Test.createTestingModule({
-			providers: [IservProvisioningStrategy],
+			providers: [
+				IservProvisioningStrategy,
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+			],
 		}).compile();
 
 		strategy = module.get(IservProvisioningStrategy);
+		schoolService = module.get(SchoolService);
+		userService = module.get(UserService);
+		roleService = module.get(RoleService);
 	});
 
 	afterAll(async () => {
@@ -40,59 +74,112 @@ describe('IservStrategy', () => {
 	});
 
 	describe('getData is called', () => {
-		describe('when oauth input data is provided', () => {
-			afterEach(() => {
-				jest.resetAllMocks();
+		const setup = () => {
+			const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
+			const email = 'abc@def.de';
+			const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+				system: new ProvisioningSystemDto({
+					systemId: 'systemId',
+					provisioningStrategy: SystemProvisioningStrategy.ISERV,
+				}),
+				accessToken: 'accessToken',
+				idToken: 'idToken',
 			});
 
-			const setup = () => {
-				const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
-				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.ISERV,
-					}),
-					accessToken: 'accessToken',
-					idToken: 'idToken',
+			return {
+				userUUID,
+				email,
+				input,
+			};
+		};
+
+		describe('when the operation succeeds', () => {
+			it('should return the user data', async () => {
+				const { input, userUUID, email } = setup();
+				const user: UserDO = userDoFactory.buildWithId({ externalId: userUUID });
+				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const roleDto: RoleDto = new RoleDto({
+					name: RoleName.STUDENT,
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
-					return { uuid: userUUID };
+					return { uuid: userUUID, email };
 				});
-
-				return {
-					userUUID,
-					input,
-				};
-			};
-
-			it('should fetch the user data', async () => {
-				const { input, userUUID } = setup();
+				userService.findByExternalId.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
+				roleService.findByIds.mockResolvedValue([roleDto]);
 
 				const result: OauthDataDto = await strategy.getData(input);
 
 				expect(result).toEqual<OauthDataDto>({
 					system: input.system,
-					externalUser: new ExternalUserDto({ externalId: userUUID }),
+					externalUser: new ExternalUserDto({
+						externalId: userUUID,
+						email: user.email,
+						roles: [roleDto.name],
+						firstName: user.firstName,
+						lastName: user.lastName,
+					}),
+					externalSchool: new ExternalSchoolDto({
+						externalId: 'schoolExternalId',
+						name: school.name,
+						officialSchoolNumber: school.officialSchoolNumber,
+					}),
 				});
 			});
+		});
 
-			it('should throw error when there is no uuid in the idToken', async () => {
+		describe('when the id token is invalid', () => {
+			it('should throw an error with code sso_jwt_problem', async () => {
 				const { input } = setup();
-				jest.spyOn(jwt, 'decode').mockReturnValue({});
 
-				const result: Promise<OauthDataDto> = strategy.getData(input);
-
-				await expect(result).rejects.toThrow(OAuthSSOError);
-			});
-
-			it('should throw error when there is no idToken', async () => {
-				const { input } = setup();
 				jest.spyOn(jwt, 'decode').mockReturnValue(null);
 
-				const result: Promise<OauthDataDto> = strategy.getData(input);
+				const func = () => strategy.getData(input);
 
-				await expect(result).rejects.toThrow(OAuthSSOError);
+				await expect(func).rejects.toThrow(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
+			});
+		});
+
+		describe('when no user with the externalId is found', () => {
+			it('should throw an error with code sso_user_notfound and additional information', async () => {
+				const { input, userUUID, email } = setup();
+				const schoolId: string = new ObjectId().toHexString();
+				const user: User = userFactory.buildWithId({
+					externalId: userUUID,
+					school: schoolFactory.buildWithId(undefined, schoolId),
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return { uuid: userUUID, email };
+				});
+				userService.findByExternalId.mockResolvedValue(null);
+				userService.findByEmail.mockResolvedValue([user]);
+
+				const func = () => strategy.getData(input);
+
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError(
+						`Failed to find user with Id ${userUUID} [schoolId: ${schoolId}, currentLdapId: ${userUUID}]`,
+						'sso_user_notfound'
+					)
+				);
+			});
+
+			it('should throw an error with code sso_user_notfound without additional information', async () => {
+				const { input, userUUID, email } = setup();
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return { uuid: userUUID, email };
+				});
+				userService.findByExternalId.mockResolvedValue(null);
+				userService.findByEmail.mockResolvedValue([]);
+
+				const func = () => strategy.getData(input);
+
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError(`Failed to find user with Id ${userUUID}`, 'sso_user_notfound')
+				);
 			});
 		});
 	});

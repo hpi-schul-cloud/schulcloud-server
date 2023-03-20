@@ -81,7 +81,7 @@ export class SystemService {
 				});
 				generatedSystem.id = system.id;
 				generatedSystem.oauthConfig = { ...brokerConfig };
-				generatedSystem.oauthConfig.alias = system.oidcConfig.alias;
+				generatedSystem.oauthConfig.idpHint = system.oidcConfig.idpHint;
 				generatedSystem.oauthConfig.redirectUri += system.id;
 				return generatedSystem;
 			}

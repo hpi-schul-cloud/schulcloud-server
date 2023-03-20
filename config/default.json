@@ -39,12 +39,6 @@
 			120
 		]
 	},
-	"MATRIX_MESSENGER": {
-		"URI": "https://matrix.messenger.schule",
-		"SERVERNAME": "messenger.schule",
-		"SECRET": "SECRET",
-		"STUDENT_ROOM_CREATION": false
-	},
 	"COOKIE": {
 		"SAME_SITE": "none",
 		"HTTP_ONLY": false,
