@@ -4,12 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
+	cardFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	textElementNodeFactory,
-	cardFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { CardRepo } from './card.repo';
@@ -78,9 +78,9 @@ describe(CardRepo.name, () => {
 			await repo.save(card1, columnId);
 			em.clear();
 
-			const result = await em.findOne(CardNode, card1.id);
+			const result = await em.findOneOrFail(CardNode, card1.id);
 
-			expect(result).toBeDefined();
+			expect(result.id).toEqual(card1.id);
 		});
 
 		it('should persist card order to positions', async () => {
