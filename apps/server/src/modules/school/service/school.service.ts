@@ -31,18 +31,18 @@ export class SchoolService {
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 		if (oauthMigrationPossible != null) {
-			if (!schoolDo.oauthMigrationFinished && !schoolDo.oauthMigrationPossible) {
-				schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+			if (this.isNewMigration(schoolDo)) {
+				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
 				schoolDo.oauthMigrationStart = schoolDo.oauthMigrationPossible;
 			} else {
-				schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
+				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
 			}
 		}
 		if (oauthMigrationMandatory != null) {
-			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
+			schoolDo.oauthMigrationMandatory = this.setOrClearDate(oauthMigrationMandatory);
 		}
 		if (oauthMigrationFinished != null) {
-			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
+			schoolDo.oauthMigrationFinished = this.setOrClearDate(oauthMigrationFinished);
 		}
 
 		await this.schoolRepo.save(schoolDo);
@@ -55,6 +55,16 @@ export class SchoolService {
 		});
 
 		return response;
+	}
+
+	private isNewMigration(schoolDo: SchoolDO): boolean {
+		const isNewMigration: boolean = !schoolDo.oauthMigrationFinished && !schoolDo.oauthMigrationPossible;
+		return isNewMigration;
+	}
+
+	private setOrClearDate(migrationFlag: boolean): Date | undefined {
+		const result: Date | undefined = migrationFlag ? new Date() : undefined;
+		return result;
 	}
 
 	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
