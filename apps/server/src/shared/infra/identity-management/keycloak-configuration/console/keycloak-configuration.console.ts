@@ -13,6 +13,7 @@ interface IRetryOptions {
 interface IMigrationOptions {
 	skip?: number;
 	query?: string;
+	verbose?: boolean;
 }
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
 export class KeycloakConsole {
@@ -138,6 +139,12 @@ export class KeycloakConsole {
 				required: false,
 				defaultValue: undefined,
 			},
+			{
+				flags: '-v, --verbose',
+				description: 'Output new id during the migration. Default false',
+				required: false,
+				defaultValue: false,
+			},
 		],
 	})
 	async migrate(options: IRetryOptions & IMigrationOptions): Promise<void> {
@@ -154,7 +161,9 @@ export class KeycloakConsole {
 					count = res.amount;
 					position += res.amount;
 					res.errors.map((m) => this.console.warn(m));
-					res.infos.map((m) => this.console.info(m));
+					if (options.verbose) {
+						res.infos.map((m) => this.console.info(m));
+					}
 					success += res.infos.length;
 				}
 				this.console.succeed(`Migrated ${success}/${position} users into IDM`);

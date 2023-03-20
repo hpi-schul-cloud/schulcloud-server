@@ -298,7 +298,7 @@
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
 		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
