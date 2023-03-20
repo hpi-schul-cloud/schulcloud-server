@@ -168,7 +168,6 @@ describe(BoardDoBuilder.name, () => {
 		it('should do nothing if type is correct', () => {
 			const card = cardNodeFactory.build();
 			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.CARD)).not.toThrowError();
-			8;
 		});
 
 		it('should do nothing if one of the types is correct', () => {
