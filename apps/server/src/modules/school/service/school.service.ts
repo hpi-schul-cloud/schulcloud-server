@@ -30,17 +30,17 @@ export class SchoolService {
 		oauthMigrationFinished?: boolean
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		if (oauthMigrationPossible != null) {
+		if (oauthMigrationPossible !== undefined) {
 			if (this.isNewMigration(schoolDo)) {
 				this.setMigrationStart(schoolDo, oauthMigrationPossible);
 			} else {
 				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
 			}
 		}
-		if (oauthMigrationMandatory != null) {
+		if (oauthMigrationMandatory !== undefined) {
 			schoolDo.oauthMigrationMandatory = this.setOrClearDate(oauthMigrationMandatory);
 		}
-		if (oauthMigrationFinished != null) {
+		if (oauthMigrationFinished !== undefined) {
 			schoolDo.oauthMigrationFinished = this.setOrClearDate(oauthMigrationFinished);
 		}
 
