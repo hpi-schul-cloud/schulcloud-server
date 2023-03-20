@@ -1,20 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities, userDoFactory } from '@shared/testing';
-import { SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
-import { Logger } from '@src/core/logger';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/domainobject/page';
+import { setupEntities, userDoFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { SchoolMigrationService } from './school-migration.service';
+import { Logger } from '@src/core/logger';
+import { SchoolService } from '@src/modules/school';
+import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: SchoolMigrationService;
 
 	let userService: DeepMocked<UserService>;
@@ -43,12 +41,11 @@ describe('SchoolMigrationService', () => {
 		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	const setup = () => {
@@ -196,6 +193,21 @@ describe('SchoolMigrationService', () => {
 				});
 			});
 
+			describe('when there are no systems in School', () => {
+				it('should add the system to migrated school', async () => {
+					const { schoolDO, targetSystemId } = setup();
+					schoolDO.systems = undefined;
+
+					await service.migrateSchool('newExternalId', schoolDO, targetSystemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							systems: [targetSystemId],
+						})
+					);
+				});
+			});
+
 			describe('when an error occurred', () => {
 				it('should save the old schoolDo (rollback the migration)', async () => {
 					const { schoolDO, targetSystemId } = setup();
@@ -231,7 +243,7 @@ describe('SchoolMigrationService', () => {
 				expect(userService.findUsers).toHaveBeenCalledWith({
 					schoolId,
 					isOutdated: false,
-					lastLoginSystemChangeGreaterThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationPossible) as Date,
 				});
 			});
 
