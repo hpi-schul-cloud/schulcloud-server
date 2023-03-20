@@ -19,7 +19,7 @@ export class TaskCardMapper {
 
 		const dto = new TaskCardResponse({
 			id: card.id,
-			draggable: card.draggable || true,
+			draggable: card.draggable,
 			task: taskResponse,
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
@@ -78,7 +78,7 @@ export class TaskCardMapper {
 
 		if (params.cardElements) {
 			const text = this.mapElementsToDto(params.cardElements);
-			if (text) {
+			if (text?.length) {
 				dto.text = text;
 			}
 		}
@@ -95,6 +95,6 @@ export class TaskCardMapper {
 			}
 		});
 
-		return text.length ? text : undefined;
+		return text.length ? text : [];
 	}
 }

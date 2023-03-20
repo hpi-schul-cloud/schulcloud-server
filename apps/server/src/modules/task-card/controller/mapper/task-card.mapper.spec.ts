@@ -178,5 +178,19 @@ describe('task-card mapper', () => {
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
 		});
+		it('should not have a text property if cardElements is missing', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const params = {
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+			};
+			const result = TaskCardMapper.mapToDomain(params);
+
+			expect(result.text).toBeUndefined();
+		});
 	});
 });
