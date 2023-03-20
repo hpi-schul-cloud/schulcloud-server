@@ -11,10 +11,13 @@ class AccountFactory extends BaseFactory<Account, IAccountProperties> {
 	}
 }
 
+export const defaultTestPassword = 'DummyPasswd!1';
+export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+// !!! important username should not be contain a space !!!
 export const accountFactory = AccountFactory.define(Account, ({ sequence }) => {
 	return {
-		username: `account #${sequence}`,
-		password: `password123! #${sequence}`,
+		username: `account${sequence}`,
+		password: defaultTestPasswordHash,
 		userId: new ObjectId(),
 	};
 });

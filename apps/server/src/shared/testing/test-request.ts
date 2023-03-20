@@ -4,6 +4,7 @@ import { ICurrentUser } from '@src/modules';
 import supertest from 'supertest';
 import { randomUUID } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
+import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -61,10 +62,14 @@ export class TestRequest {
 
 		if (accountWithPassword) {
 			const uri = '/authentication/local';
-			const response = await supertest(this.app.getHttpServer()).post(uri).set('Accept', 'application/json').send({
+			const params = {
 				username: accountWithPassword.username,
-				password: accountWithPassword.password,
-			});
+				password: defaultTestPassword,
+			};
+			const response = await supertest(this.app.getHttpServer())
+				.post(uri)
+				.set('Accept', 'application/json')
+				.send(params);
 
 			jwt = this.extractJwt(response);
 		}

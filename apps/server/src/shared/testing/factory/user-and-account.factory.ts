@@ -9,7 +9,7 @@ import { userFactory } from './user.factory';
 export class UserAndAccountTestFactory {
 	// role names from seed and new roles
 	static buildUser(role: Role, school: School = schoolFactory.build()) {
-		const user = userFactory.withRole(role).build({ school });
+		const user = userFactory.withRole(role).buildWithId({ school });
 		const account = accountFactory.build({ userId: user.id });
 
 		return { account, user, school };
@@ -17,7 +17,7 @@ export class UserAndAccountTestFactory {
 
 	static buildStudent(additionalPermissions?: Permission[]) {
 		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
-		const teacherRole = roleFactory.build({ permissions });
+		const teacherRole = roleFactory.buildWithId({ permissions });
 		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
 
 		return { studentAccount: account, studentUser: user, school };
@@ -25,7 +25,7 @@ export class UserAndAccountTestFactory {
 
 	static buildTeacher(additionalPermissions?: Permission[]) {
 		const permissions = _.union(userPermissions, teacherPermissions, additionalPermissions);
-		const teacherRole = roleFactory.build({ permissions });
+		const teacherRole = roleFactory.buildWithId({ permissions });
 		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
 
 		return { teacherAccount: account, teacherUser: user, school };
@@ -33,7 +33,7 @@ export class UserAndAccountTestFactory {
 
 	static buildAdmin(additionalPermissions?: Permission[]) {
 		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
-		const teacherRole = roleFactory.build({ permissions });
+		const teacherRole = roleFactory.buildWithId({ permissions });
 		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
 
 		return { adminAccount: account, adminUser: user, school };
