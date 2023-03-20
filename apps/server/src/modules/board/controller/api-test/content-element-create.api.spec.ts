@@ -3,6 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import {
+	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
@@ -16,7 +17,7 @@ import { Request } from 'express';
 import request from 'supertest';
 import { CardResponse } from '../dto';
 
-const baseRouteName = '/boards';
+const baseRouteName = '/cards';
 
 class API {
 	app: INestApplication;
@@ -25,9 +26,9 @@ class API {
 		this.app = app;
 	}
 
-	async post(boardId: string, columnId: string) {
+	async post(cardId: string) {
 		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}/${boardId}/columns/${columnId}/cards`)
+			.post(`${baseRouteName}/${cardId}/elements`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -38,7 +39,7 @@ class API {
 	}
 }
 
-describe(`card create (api)`, () => {
+describe(`content element create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -74,28 +75,29 @@ describe(`card create (api)`, () => {
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		await em.persistAndFlush([user, columnBoardNode, columnNode]);
+		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode };
+		return { user, columnBoardNode, columnNode, cardNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 201', async () => {
-			const { user, columnBoardNode, columnNode } = await setup();
+			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(columnBoardNode.id, columnNode.id);
+			const response = await api.post(cardNode.id);
 
 			expect(response.status).toEqual(201);
 		});
 
-		it('should return the created card', async () => {
-			const { user, columnBoardNode, columnNode } = await setup();
+		it('should return the created content element', async () => {
+			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { result } = await api.post(columnBoardNode.id, columnNode.id);
+			const { result } = await api.post(cardNode.id);
 
 			expect(result.id).toBeDefined();
 		});
