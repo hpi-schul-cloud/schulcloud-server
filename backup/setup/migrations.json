@@ -56,23 +56,23 @@
 	},
 	{
 		"_id": {
-			"$oid": "6308cf3bee02bf090ec3a491"
-		},
-		"state": "up",
-		"name": "clean-user-account",
-		"createdAt": {
-			"$date": "2022-08-25T14:19:14.069Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "632c5fafc744915f90d1c73b"
 		},
 		"state": "up",
 		"name": "add_oauth_client_permissions",
 		"createdAt": {
 			"$date": "2022-09-22T13:01:17.867Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6411b6f983c6759284e07dc8"
+		},
+		"state": "up",
+		"name": "sanis-rebranding",
+		"createdAt": {
+			"$date": "2023-03-15T12:15:53.385Z"
 		},
 		"__v": 0
 	},
@@ -139,6 +139,17 @@
 		"name": "EditHomeworkCreateAndEditPermissions",
 		"createdAt": {
 			"$date": "2023-03-01T10:40:42.101Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64141f668fb9600ed8e0c11a"
+		},
+		"state": "up",
+		"name": "RefactorSystemSubConfig",
+		"createdAt": {
+			"$date": "2023-03-15T14:04:48.654Z"
 		},
 		"__v": 0
 	},

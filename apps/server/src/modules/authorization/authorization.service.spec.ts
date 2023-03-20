@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,12 +22,11 @@ import { ReferenceLoader } from './reference.loader';
 class TestEntity extends BaseEntity {}
 
 describe('AuthorizationService', () => {
-	let orm: MikroORM;
 	let service: AuthorizationService;
 	let loader: DeepMocked<ReferenceLoader>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -43,10 +41,6 @@ describe('AuthorizationService', () => {
 
 		service = await module.get(AuthorizationService);
 		loader = await module.get(ReferenceLoader);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	afterEach(() => {

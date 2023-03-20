@@ -77,7 +77,7 @@ describe('SystemService', () => {
 						oauthConfig: expect.objectContaining({
 							clientId: oauthSystem.oauthConfig.clientId,
 							clientSecret: oauthSystem.oauthConfig.clientSecret,
-							alias: oidcSystem.oidcConfig?.alias ?? '',
+							idpHint: oidcSystem.oidcConfig?.idpHint,
 							redirectUri: oauthSystem.oauthConfig.redirectUri + oidcSystem.id,
 							grantType: oauthSystem.oauthConfig.grantType,
 							tokenEndpoint: oauthSystem.oauthConfig.tokenEndpoint,
@@ -169,7 +169,7 @@ describe('SystemService', () => {
 							oauthConfig: expect.objectContaining({
 								clientId: oauthSystem.oauthConfig.clientId,
 								clientSecret: oauthSystem.oauthConfig.clientSecret,
-								alias: oidcSystem.oidcConfig?.alias ?? '',
+								idpHint: oidcSystem.oidcConfig?.idpHint,
 								redirectUri: oauthSystem.oauthConfig.redirectUri + oidcSystem.id,
 								grantType: oauthSystem.oauthConfig.grantType,
 								tokenEndpoint: oauthSystem.oauthConfig.tokenEndpoint,

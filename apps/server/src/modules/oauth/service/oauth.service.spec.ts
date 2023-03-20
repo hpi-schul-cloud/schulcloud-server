@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig, SchoolFeatures, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
@@ -43,7 +42,6 @@ jest.mock('jsonwebtoken');
 
 describe('OAuthService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: OAuthService;
 
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
@@ -61,7 +59,7 @@ describe('OAuthService', () => {
 	const hostUri = 'https://mock.de';
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -118,7 +116,6 @@ describe('OAuthService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {
@@ -253,7 +250,6 @@ describe('OAuthService', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
-				alias: 'alias',
 				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -561,7 +557,6 @@ describe('OAuthService', () => {
 		describe('when a normal authentication url is requested', () => {
 			it('should return a authentication url', () => {
 				const oauthConfig: OauthConfig = new OauthConfig({
-					alias: 'alias',
 					clientId: '12345',
 					clientSecret: 'mocksecret',
 					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -576,10 +571,10 @@ describe('OAuthService', () => {
 					jwksEndpoint: 'http://mock.de/jwks',
 				});
 
-				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', false, 'alias');
+				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', false);
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
+					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state'
 				);
 			});
 		});
@@ -587,7 +582,6 @@ describe('OAuthService', () => {
 		describe('when a migration authentication url is requested', () => {
 			it('should return a authentication url', () => {
 				const oauthConfig: OauthConfig = new OauthConfig({
-					alias: 'alias',
 					clientId: '12345',
 					clientSecret: 'mocksecret',
 					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
@@ -602,10 +596,33 @@ describe('OAuthService', () => {
 					jwksEndpoint: 'http://mock.de/jwks',
 				});
 
-				const result: string = service.getAuthenticationUrl('oidc', oauthConfig, 'state', true, 'alias');
+				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
 
 				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=alias'
+					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state'
+				);
+			});
+			it('should return add an idp hint if existing authentication url', () => {
+				const oauthConfig: OauthConfig = new OauthConfig({
+					clientId: '12345',
+					clientSecret: 'mocksecret',
+					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+					grantType: 'authorization_code',
+					redirectUri: 'http://mockhost.de/api/v3/sso/oauth/testsystemId',
+					scope: 'openid uuid',
+					responseType: 'code',
+					authEndpoint: 'http://mock.de/auth',
+					provider: 'mock_type',
+					logoutEndpoint: 'http://mock.de/logout',
+					issuer: 'mock_issuer',
+					jwksEndpoint: 'http://mock.de/jwks',
+					idpHint: 'TheIdpHint',
+				});
+
+				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
+
+				expect(result).toEqual(
+					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=TheIdpHint'
 				);
 			});
 		});
