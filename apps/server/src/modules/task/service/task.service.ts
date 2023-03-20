@@ -73,6 +73,15 @@ export class TaskService {
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			taskParams.course = course;
 
+			if (params.lessonId) {
+				const lesson = await this.lessonRepo.findById(params.lessonId);
+				if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
+					throw new ForbiddenException('Lesson does not belong to Course');
+				}
+				this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+				taskParams.lesson = lesson;
+			}
+
 			if (params.usersIds) {
 				const courseUsers = course.getStudentIds();
 				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
@@ -82,15 +91,6 @@ export class TaskService {
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				taskParams.users = users;
 			}
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
-			taskParams.lesson = lesson;
 		}
 
 		const task = new Task(taskParams);
@@ -141,6 +141,17 @@ export class TaskService {
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			task.course = course;
 
+			if (params.lessonId) {
+				const lesson = await this.lessonRepo.findById(params.lessonId);
+				if (!task.course || lesson.course.id !== task.course.id) {
+					throw new ForbiddenException('Lesson does not belong to Course');
+				}
+				this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+				task.lesson = lesson;
+			} else {
+				task.lesson = undefined;
+			}
+
 			if (params.usersIds) {
 				const courseUsers = course.getStudentIds();
 				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
@@ -149,16 +160,13 @@ export class TaskService {
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.users.set(users);
+			} else {
+				task.users.removeAll();
 			}
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!task.course || lesson.course.id !== task.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
-			task.lesson = lesson;
+		} else {
+			task.course = undefined;
+			task.lesson = undefined;
+			task.users.removeAll();
 		}
 
 		this.taskDateValidation(params.availableDate, params.dueDate);
