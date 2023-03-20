@@ -1,8 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { ConfigModule } from '@nestjs/config';
+import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
+import { ALL_ENTITIES } from '@shared/domain';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { Logger } from '@src/core/logger';
-import { s3Config } from './fwu-learning-contents.config';
+import { s3Config, config } from './fwu-learning-contents.config';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 import { S3Config } from './interface/config';
@@ -31,8 +36,28 @@ const providers = [
 	},
 ];
 
+const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
+};
+
 @Module({
-	imports: [AuthorizationModule],
+	imports: [
+		AuthorizationModule,
+		MikroOrmModule.forRoot({
+			...defaultMikroOrmOptions,
+			type: 'mongo',
+			// TODO add mongoose options as mongo options (see database.js)
+			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
+			entities: [...ALL_ENTITIES],
+
+			// debug: true, // use it for locally debugging of querys
+		}),
+		ConfigModule.forRoot(createConfigModuleOptions(config)),
+	],
 	controllers: [FwuLearningContentsController],
 	providers,
 })
