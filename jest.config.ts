@@ -5,12 +5,11 @@ import type { Config } from '@jest/types';
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
-	preset: 'ts-jest',
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
-		'^.+\\.(t|j)s$': 'ts-jest',
+		'^.+\\.(t|j)s$': ['ts-jest', { isolatedModules: true }],
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
@@ -35,6 +34,6 @@ const config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 	},
-	maxWorkers: '50%', // limited for not taking all workers within of a single github action
+	maxWorkers: 2, // limited for not taking all workers within of a single github action
 };
 export default config;
