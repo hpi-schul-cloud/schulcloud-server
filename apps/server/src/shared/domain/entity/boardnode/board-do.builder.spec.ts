@@ -171,7 +171,7 @@ describe(BoardDoBuilder.name, () => {
 		});
 	});
 
-	it('should delegate to the board node', async () => {
+	it('should delegate to the board node', () => {
 		const textElementNode = textElementNodeFactory.build();
 		jest.spyOn(textElementNode, 'useDoBuilder');
 
