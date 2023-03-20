@@ -41,8 +41,9 @@ export class SchoolService {
 		if (oauthMigrationFinished != null) {
 			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
 			if (schoolDo.oauthMigrationFinished) {
-				schoolDo.oauthMigrationFinalFinish =
-					schoolDo.oauthMigrationFinished.getTime() + Configuration.get('MIGRATION_END_GRACE_PERIOD');
+				schoolDo.oauthMigrationFinalFinish = new Date(
+					schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
+				);
 			}
 		}
 
