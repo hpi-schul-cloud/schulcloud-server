@@ -56,7 +56,7 @@ export class TaskCardMapper {
 	}
 
 	static mapToDomain(params: TaskCardParams): ITaskCardCRUD {
-		if (!params.title) {
+		if (!params.title || params.title.length === 0) {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
