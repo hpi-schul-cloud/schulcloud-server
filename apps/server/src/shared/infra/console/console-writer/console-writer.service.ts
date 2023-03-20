@@ -9,7 +9,20 @@ import ora from 'ora';
 export class ConsoleWriterService {
 	private spinner: ora.Ora = createSpinner();
 
-	info(text: string): void {
+	start(): void {
+		this.spinner.start();
+	}
+
+	info(text?: string): void {
 		this.spinner.info(text);
+	}
+
+	warn(text?: string): void {
+		this.spinner.warn(text);
+		this.spinner.start();
+	}
+
+	succeed(text?: string): void {
+		this.spinner.succeed(text);
 	}
 }

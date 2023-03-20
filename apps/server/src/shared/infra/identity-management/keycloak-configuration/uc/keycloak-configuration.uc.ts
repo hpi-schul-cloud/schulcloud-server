@@ -3,6 +3,7 @@ import { KeycloakAdministrationService } from '../../keycloak-administration/ser
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
 import { KeycloakMigrationService } from '../service/keycloak-migration.service';
+import { AccountMigrationInfoDto } from '../dto/account-migration-info.dto';
 
 @Injectable()
 export class KeycloakConfigurationUc {
@@ -25,8 +26,8 @@ export class KeycloakConfigurationUc {
 		return this.keycloakSeedService.seed();
 	}
 
-	public async migrate(skip?: number, query?: string): Promise<number> {
-		return this.keycloakMigrationService.migrate(skip, query);
+	public async migrate(start?: number, query?: string): Promise<AccountMigrationInfoDto> {
+		return this.keycloakMigrationService.migrate(start, query);
 	}
 
 	async configure(): Promise<number> {

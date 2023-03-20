@@ -134,7 +134,7 @@ export class KeycloakConsole {
 			},
 			{
 				flags: '-s, --skip',
-				description: 'Skip the first "s" accounts during migration. Default 0.',
+				description: 'Skip the first "s" accounts during migration. Default is 0.',
 				required: false,
 				defaultValue: undefined,
 			},
@@ -144,9 +144,21 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'migrate',
 			async () => {
-				const count = await this.keycloakConfigurationUc.migrate(options.skip, options.query);
-				this.console.info(`Migrated ${count} users into IDM`);
-				return count;
+				let position = options.skip ?? 0;
+				let count = 1;
+				this.console.start();
+				let success = 0;
+				while (count > 0) {
+					// eslint-disable-next-line no-await-in-loop
+					const res = await this.keycloakConfigurationUc.migrate(position, options.query);
+					count = res.amount;
+					position += res.amount;
+					res.errors.map((m) => this.console.warn(m));
+					res.infos.map((m) => this.console.info(m));
+					success += res.infos.length;
+				}
+				this.console.succeed(`Migrated ${success}/${position} users into IDM`);
+				return position;
 			},
 			options.retryCount,
 			options.retryDelay
