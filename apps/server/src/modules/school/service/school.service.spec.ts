@@ -365,7 +365,7 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
-					enableMigrationStart: false,
+					enableMigrationStart: true,
 				});
 			});
 
