@@ -1,230 +1,97 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, News, NewsTargetModel } from '@shared/domain';
-import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
-import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@src/modules/news/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
-import moment from 'moment';
-import request from 'supertest';
+import { Account, News, NewsTargetModel, User } from '@shared/domain';
+import { TestRequest, UserAndAccountTestFactory } from '@shared/testing';
+import { ServerTestModule } from '@src/modules/server';
+import { CreateNewsParams } from '../dto';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	const user = {
-		userId: '0000d224816abba584714c9c',
-		roles: [],
-		schoolId: '5f2987e020834114b8efd6f8',
-		accountId: '0000d225816abba584714c9d',
-	};
-	const courseTargetId = new ObjectId().toHexString();
-	const unpublishedCourseTargetId = new ObjectId().toHexString();
-	const teamTargetId = new ObjectId().toHexString();
-	const targets = [
-		{
-			targetModel: NewsTargetModel.Course,
-			targetIds: [courseTargetId, unpublishedCourseTargetId],
-		},
-		{
-			targetModel: NewsTargetModel.Team,
-			targetIds: [teamTargetId],
-		},
-	];
-	const emptyPaginationResponse: NewsListResponse = { data: [], total: 0 };
+	let request: TestRequest;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = user;
-					return true;
-				},
-			})
-			.overrideProvider(FeathersAuthorizationService)
-			.useValue({
-				checkEntityPermissions() {},
-				getPermittedEntities(userId, targetModel) {
-					return targets.filter((target) => target.targetModel === targetModel).flatMap((target) => target.targetIds);
-				},
-				getEntityPermissions() {
-					return ['NEWS_VIEW', 'NEWS_EDIT'];
-				},
-			})
-			.compile();
+		}).compile();
 
-		app = module.createNestApplication();
+		app = module.createNestApplication(); // { httpsOptions: {} }
 		await app.init();
 		em = module.get(EntityManager);
+		request = new TestRequest(app, '/news');
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete(News, {});
+		await Promise.all([em.nativeDelete(News, {}), em.nativeDelete(User, {}), em.nativeDelete(Account, {})]);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const newTestNews = (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false): News => {
-		const displayAt = unpublished ? moment().add(1, 'days').toDate() : moment().subtract(1, 'days').toDate();
-		const news = News.createInstance(targetModel, {
-			school: user.schoolId,
-			title: 'test course news',
-			content: 'content',
-			target: targetId,
+	// creating without parent context make no sense, api disign is broken
+	describe('create', () => {
+		// TODO: maybe move out in additional file? Then uer exits level can be removed
+		describe('when user not exists', () => {
+			it('should be throw an Unauthorized', async () => {
+				const response = await request.post('');
 
-			displayAt,
-			creator: user.userId,
-		});
-		return news;
-	};
-
-	const createTestNews = async (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false) => {
-		const news = newTestNews(targetModel, targetId, unpublished);
-		await em.persistAndFlush(news);
-		return news;
-	};
-	describe('GET /news', () => {
-		it('should get empty response if there is no news', async () => {
-			const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-			const { data, total } = response.body as NewsListResponse;
-			expect(total).toBe(0);
-			expect(data).toHaveLength(0);
+				expect(response.statusCode).toEqual(401);
+			});
 		});
 
-		it('should get for /news without parameters', async () => {
-			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
-			const expected = {
-				data: [news],
-				total: 1,
-			};
-			const response = await request(app.getHttpServer()).get(`/news`).expect(200);
-			const { data, total } = response.body as NewsListResponse;
-			expect(total).toBe(expected.total);
-			expect(data.length).toBe(expected.data.length);
-			expect(data[0].id).toBe(expected.data[0]._id.toString());
-		});
+		describe('when user is a student', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser, school } = UserAndAccountTestFactory.buildStudent();
 
-		it('should get for /news with unpublished params only unpublished news', async () => {
-			const unpublishedNews = await createTestNews(NewsTargetModel.Course, unpublishedCourseTargetId, true);
-			const expected = {
-				data: [unpublishedNews],
-				total: 1,
-			};
-			const response = await request(app.getHttpServer()).get(`/news?unpublished=true`).expect(200);
-			const { data, total } = response.body as NewsListResponse;
+				await em.persistAndFlush([studentAccount, studentUser]);
 
-			expect(total).toBe(expected.total);
-			expect(data.length).toBe(expected.data.length);
-			expect(data[0].id).toBe(expected.data[0]._id.toString());
-		});
-	});
+				const params: CreateNewsParams = {
+					title: 'test news',
+					content: 'content',
+					targetModel: NewsTargetModel.School,
+					targetId: school.id,
+					displayAt: new Date(),
+				};
 
-	describe('GET /news/{id}', () => {
-		it('should get news by id', async () => {
-			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
-			const response = await request(app.getHttpServer()).get(`/news/${news._id.toHexString()}`).expect(200);
-			const body = response.body as NewsResponse;
-			expect(body.id).toBe(news._id.toString());
-		});
-
-		it('should throw not found if news was not found', async () => {
-			const randomId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).get(`/news/${randomId}`).expect(404);
-		});
-	});
-
-	describe('GET /team/{teamId}/news', () => {
-		it('should get team-news by id', async () => {
-			const news = await createTestNews(NewsTargetModel.Team, teamTargetId);
-			const response = await request(app.getHttpServer()).get(`/team/${teamTargetId}/news`).expect(200);
-			const body = response.body as NewsListResponse;
-			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
-		});
-
-		it('should not throw if a team was not found', async () => {
-			const randomId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).get(`/team/${randomId}/news`).expect(200).expect(emptyPaginationResponse);
-		});
-	});
-
-	describe('POST /news/{id}', () => {
-		it('should create news by input params', async () => {
-			const courseId = new ObjectId().toString();
-
-			const params: CreateNewsParams = {
-				title: 'test course news',
-				content: 'content',
-				targetModel: NewsTargetModel.Course,
-				targetId: courseId,
-				displayAt: new Date(),
+				return { studentAccount, params };
 			};
 
-			const response = await request(app.getHttpServer()).post(`/news`).send(params).expect(201);
-			const body = response.body as NewsResponse;
-			expect(body.id).toBeDefined();
-			expect(body.title).toBe(params.title);
-			expect(body.targetId).toBe(params.targetId);
-			expect(body.displayAt).toBe(params.displayAt?.toISOString());
-		});
-		it('should throw ApiValidationError if input parameters dont match the required schema', async () => {
-			const params = new CreateNewsParams();
-			const res = await request(app.getHttpServer()).post(`/news`).send(params).expect(400);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(res.body.type).toBe(API_VALIDATION_ERROR_TYPE.type);
-		});
-	});
+			it('should not be possible to create a news', async () => {
+				const { studentAccount, params } = await setup();
 
-	describe('PATCH /news/{id}', () => {
-		it('should update news by update params', async () => {
-			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
+				const response = await request.post('', params, studentAccount);
 
-			const params = {
-				title: 'updated test news',
-				content: 'new content',
-				displayAt: new Date(),
-			} as UpdateNewsParams;
-
-			const response = await request(app.getHttpServer())
-				.patch(`/news/${news._id.toHexString()}`)
-				.send(params)
-				.expect(200);
-			const body = response.body as NewsResponse;
-			expect(body.id).toBe(news._id.toHexString());
-			expect(body.title).toBe(params.title);
-			expect(body.content).toBe(params.content);
-			expect(body.displayAt).toBe(params.displayAt.toISOString());
+				expect(response.statusCode).toEqual(403);
+			});
 		});
 
-		it('should do nothing if path an empty object for update', async () => {
-			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
-			const params = {} as UpdateNewsParams;
-			await request(app.getHttpServer()).patch(`/news/${news._id.toString()}`).send(params).expect(200);
-		});
+		describe('when user is a teacher', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser, school } = UserAndAccountTestFactory.buildTeacher();
 
-		it('should throw an error if trying to update of object which doesnt exists', async () => {
-			const randomId = new ObjectId().toHexString();
-			const params = {} as UpdateNewsParams;
-			await request(app.getHttpServer()).patch(`/news/${randomId}`).send(params).expect(404);
-		});
-	});
-	describe('DELETE /news/{id}', () => {
-		it('should delete news', async () => {
-			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
-			const newsId = news._id.toHexString();
-			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(200).expect(newsId);
-		});
+				await em.persistAndFlush([teacherAccount, teacherUser]);
 
-		it('should throw not found error, if news doesnt exists', async () => {
-			const randomId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).delete(`/news/${randomId}`).expect(404);
+				const params: CreateNewsParams = {
+					title: 'test news',
+					content: 'content',
+					targetModel: NewsTargetModel.School,
+					targetId: school.id,
+					displayAt: new Date(),
+				};
+
+				return { teacherAccount, params };
+			};
+
+			it('should not be possible to create a news', async () => {
+				const { teacherAccount, params } = await setup();
+
+				const response = await request.post('', params, teacherAccount);
+
+				expect(response.statusCode).toEqual(201);
+				expect(response.body).toMatchObject(params);
+			});
 		});
 	});
 });
