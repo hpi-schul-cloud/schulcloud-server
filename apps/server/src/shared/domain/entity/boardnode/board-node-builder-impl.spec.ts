@@ -103,4 +103,29 @@ describe(BoardNodeBuilderImpl.name, () => {
 			expect(boardNodes[0].type).toBe(BoardNodeType.TEXT_ELEMENT);
 		});
 	});
+
+	describe('ensure board node type', () => {
+		const setup = () => {
+			const cardNode = cardNodeFactory.buildWithId();
+
+			const builder = new BoardNodeBuilderImpl();
+
+			return { builder, cardNode };
+		};
+
+		it('should do nothing if type is correct', () => {
+			const { builder, cardNode } = setup();
+			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.CARD)).not.toThrowError();
+		});
+
+		it('should throw error if wrong type', () => {
+			const { builder, cardNode } = setup();
+			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.COLUMN)).toThrowError();
+		});
+
+		it('should do nothing if one of the valid types is met', () => {
+			const { builder, cardNode } = setup();
+			expect(() => builder.ensureBoardNodeType(cardNode, BoardNodeType.COLUMN, BoardNodeType.CARD)).not.toThrowError();
+		});
+	});
 });

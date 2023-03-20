@@ -165,9 +165,20 @@ describe(BoardDoBuilder.name, () => {
 	});
 
 	describe('ensure board node types', () => {
-		it('should check a single node', () => {
+		it('should do nothing if type is correct', () => {
+			const card = cardNodeFactory.build();
+			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.CARD)).not.toThrowError();
+		});
+
+		it('should throw error if wrong type', () => {
 			const card = cardNodeFactory.build();
 			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.COLUMN)).toThrowError();
+		});
+
+		it('should throw error if one of multiple board nodes has the wrong type', () => {
+			const column = columnNodeFactory.build();
+			const card = cardNodeFactory.build();
+			expect(() => new BoardDoBuilder().ensureBoardNodeType([card, column], BoardNodeType.COLUMN)).toThrowError();
 		});
 	});
 
