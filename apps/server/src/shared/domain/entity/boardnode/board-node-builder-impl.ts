@@ -1,4 +1,4 @@
-import { AnyBoardDo, Card, Column, ColumnBoard, TextElement, BoardNodeBuilder } from '../../domainobject';
+import { AnyBoardDo, BoardNodeBuilder, Card, Column, ColumnBoard, TextElement } from '../../domainobject';
 import { EntityId } from '../../types';
 import { BoardNode } from './boardnode.entity';
 import { CardNode } from './card-node.entity';
