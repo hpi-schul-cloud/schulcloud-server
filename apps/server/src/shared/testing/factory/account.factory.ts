@@ -14,6 +14,7 @@ class AccountFactory extends BaseFactory<Account, IAccountProperties> {
 export const accountFactory = AccountFactory.define(Account, ({ sequence }) => {
 	return {
 		username: `account #${sequence}`,
+		password: `password123! #${sequence}`,
 		userId: new ObjectId(),
 	};
 });
