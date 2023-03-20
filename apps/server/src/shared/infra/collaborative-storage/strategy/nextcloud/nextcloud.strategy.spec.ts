@@ -240,7 +240,7 @@ describe('NextCloud Adapter Strategy', () => {
 		let groupId: string;
 
 		beforeEach(() => {
-			user = userFactory.withRole(RoleName.TEAMMEMBER).buildWithId();
+			user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 			teamUsers = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
 			pseudonymDo = new PseudonymDO({
