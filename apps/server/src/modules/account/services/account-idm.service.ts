@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
-
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
@@ -9,7 +9,10 @@ import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
-	constructor(private readonly identityManager: IdentityManagementService) {
+	constructor(
+		private readonly identityManager: IdentityManagementService,
+		private readonly configService: ConfigService
+	) {
 		super();
 	}
 
@@ -58,9 +61,12 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return [accounts, accounts.length];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
-		throw new NotImplementedException();
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+		const attributeName = 'lastTriedFailedLogin';
+		const id = await this.getIdmAccountId(accountId);
+		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
+		const updatedAccount = await this.identityManager.findAccountById(id);
+		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
@@ -109,8 +115,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
-	private async getIdmAccountId(schoolCloudId: string) {
-		const idmAccount = await this.identityManager.findAccountByTecRefId(schoolCloudId);
+	private async getIdmAccountId(accountId: string) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY') === true) {
+			return accountId;
+		}
+		const idmAccount = await this.identityManager.findAccountByTecRefId(accountId);
 		return idmAccount.id;
 	}
 }

@@ -79,4 +79,28 @@ export abstract class IdentityManagementService {
 	 * @returns the accounts id if deleted successfully
 	 */
 	abstract deleteAccountById(accountId: string): Promise<string>;
+
+	/**
+	 * Gets an attribute value of a specific user.
+	 * @param userId the id of the user to get an attribute value.
+	 * @param attributeName the name of the attribute to get.
+	 * @returns the attribute value if exists, null otherwise.
+	 */
+	abstract getUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise<TValue | null>;
+
+	/**
+	 * Sets an attribute value of a specific user.
+	 * @param userId the id of the user to set an attribute value.
+	 * @param attributeName the name of the attribute to set.
+	 * @param attributeValue the value of the attribute to set.
+	 */
+	abstract setUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise<void>;
 }

@@ -1,5 +1,6 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common';
 import { IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
@@ -129,6 +130,39 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async deleteAccountById(id: string): Promise<string> {
 		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id });
 		return id;
+	}
+
+	async getUserAttribute<TValue extends boolean | number | string | unknown = unknown>(
+		userId: string,
+		attributeName: string
+	): Promise<TValue | null> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const user = await kc.users.findOne({ id: userId });
+		if (!user) {
+			throw new EntityNotFoundError(`User '${userId}' not found`);
+		}
+		if (!user.attributes || !user.attributes[attributeName]) {
+			return null;
+		}
+		return user.attributes[attributeName] as TValue;
+	}
+
+	async setUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise<void> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const user = await kc.users.findOne({ id: userId });
+		if (!user) {
+			throw new EntityNotFoundError(`User '${userId}' not found`);
+		}
+		if (user.attributes) {
+			user.attributes[attributeName] = attributeValue;
+		} else {
+			user.attributes = { [attributeName]: attributeValue };
+		}
+		await kc.users.update({ id: userId }, user);
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {
