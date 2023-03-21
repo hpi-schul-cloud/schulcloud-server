@@ -5,7 +5,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICreateNews, NewsTargetModel, Permission } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
 import { NewsUc } from './news.uc';
 
@@ -41,10 +41,6 @@ describe('NewsUc', () => {
 			targetIds: [teamTargetId],
 		},
 	];
-
-	afterAll(async () => {
-		await module.close();
-	});
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -89,14 +85,18 @@ describe('NewsUc', () => {
 					},
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(NewsUc);
 		repo = module.get(NewsRepo);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
