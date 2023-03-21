@@ -77,18 +77,6 @@ export class TestRequest {
 
 		return formatedJwt;
 	}
-	/*
-	public generateJwt(currentUser: ICurrentUser) {
-		const jti = randomUUID();
-
-		const jwt = this.jwtService.sign(currentUser, {
-			subject: currentUser.accountId,
-			jwtid: jti,
-		});
-
-		return jwt;
-	}
-	*/
 
 	public async get(
 		routeName: string,
@@ -96,13 +84,46 @@ export class TestRequest {
 		query?: string | Record<string, unknown>
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
-		// const jwt = this.generateJwt(account);
 		const formatedJwt = await this.getJwt(account);
 		const response = await supertest(this.app)
 			.get(uri)
 			.set('Accept', 'application/json')
 			.set('Authorization', formatedJwt)
 			.query(query || {});
+
+		return response;
+	}
+
+	public async delete(
+		routeName: string,
+		account?: Account,
+		query?: string | Record<string, unknown>
+	): Promise<supertest.Response> {
+		const uri = this.getUri(routeName);
+		const formatedJwt = await this.getJwt(account);
+		const response = await supertest(this.app)
+			.delete(uri)
+			.set('Accept', 'application/json')
+			.set('Authorization', formatedJwt)
+			.query(query || {});
+
+		return response;
+	}
+
+	public async update(
+		routeName: string,
+		data = {},
+		account?: Account,
+		query?: string | Record<string, unknown>
+	): Promise<supertest.Response> {
+		const uri = this.getUri(routeName);
+		const formatedJwt = await this.getJwt(account);
+		const response = await supertest(this.app)
+			.put(uri)
+			.set('Accept', 'application/json')
+			.set('Authorization', formatedJwt)
+			.query(query || {})
+			.send(data);
 
 		return response;
 	}
@@ -114,7 +135,6 @@ export class TestRequest {
 		query?: string | Record<string, unknown>
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
-		// const jwt = this.generateJwt(account);
 		const formatedJwt = await this.getJwt(account);
 		const response = await supertest(this.app.getHttpServer())
 			.post(uri)
