@@ -9,6 +9,10 @@ export class OAuthMigrationError extends OAuthSSOError {
 
 	readonly DEFAULT_ERRORCODE: string = 'OauthMigrationFailed';
 
+	readonly sourceSystemId?: string;
+
+	readonly targetSystemId?: string;
+
 	readonly officialSchoolNumberFromSource?: string;
 
 	readonly officialSchoolNumberFromTarget?: string;
@@ -16,12 +20,16 @@ export class OAuthMigrationError extends OAuthSSOError {
 	constructor(
 		message?: string,
 		errorcode?: string,
+		sourceSystemId?: string,
+		targetSystemId?: string,
 		officialSchoolNumberFromSource?: string,
 		officialSchoolNumberFromTarget?: string
 	) {
 		super(message);
 		this.message = message || this.DEFAULT_MESSAGE;
 		this.errorcode = errorcode || this.DEFAULT_ERRORCODE;
+		this.sourceSystemId = sourceSystemId;
+		this.targetSystemId = targetSystemId;
 		this.officialSchoolNumberFromSource = officialSchoolNumberFromSource;
 		this.officialSchoolNumberFromTarget = officialSchoolNumberFromTarget;
 	}
