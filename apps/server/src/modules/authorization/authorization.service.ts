@@ -5,16 +5,17 @@ import {
 	CourseRule,
 	EntityId,
 	LessonRule,
+	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskRule,
 	TaskCardRule,
+	TaskRule,
 	User,
 	UserRule,
-	SchoolExternalToolRule,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -50,7 +51,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(user.id, context);
 		}
 	}
 
@@ -80,7 +81,7 @@ export class AuthorizationService extends BasePermissionManager {
 		context: IPermissionContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(userId, context);
 		}
 	}
 
