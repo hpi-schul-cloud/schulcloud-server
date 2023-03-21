@@ -9,7 +9,7 @@ export class KeycloakMigrationService {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}
 
-	async migrate(start = 0, userNamePattern = ''): Promise<number> {
+	async migrate(start = 0, userNamePattern = '', verbose = false): Promise<number> {
 		const amount = 100;
 		let skip = start;
 		let foundAccounts = 1;
@@ -28,12 +28,17 @@ export class KeycloakMigrationService {
 				const ret = await this.accountService.save(account);
 				if (ret.idmReferenceId) {
 					migratedAccounts += 1;
-					this.logger.log(`Migration of account ${account.id} done, new id is ${ret.idmReferenceId}.`);
+					if (verbose) {
+						this.logger.log(`Migration of account ${account.id} done, new id is ${ret.idmReferenceId}.`);
+					}
 				} else {
 					this.logger.error(`Migration of account ${account.id} failed.`);
 				}
 			}
 			skip += foundAccounts;
+			if (!verbose) {
+				this.logger.log(`...migrated ${skip} accounts.`);
+			}
 		}
 		return migratedAccounts;
 	}

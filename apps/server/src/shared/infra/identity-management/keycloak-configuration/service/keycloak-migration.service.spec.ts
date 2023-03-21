@@ -75,9 +75,16 @@ describe('KeycloakMigrationService', () => {
 				const migratedAccountCounts = await service.migrate();
 				expect(migratedAccountCounts).toBe(maxAccounts);
 			});
+			it('migration should log every 100 entries', async () => {
+				maxAccounts = 1000;
+				await service.migrate();
+				expect(infoLogSpy).toHaveBeenCalledTimes(maxAccounts / 100 + 1);
+			});
+		});
+		describe('When verbose is set', () => {
 			it('migration should log all account ids (old and new)', async () => {
 				maxAccounts = 1000;
-				const migratedAccountCounts = await service.migrate();
+				const migratedAccountCounts = await service.migrate(0, '', true);
 				expect(migratedAccountCounts).toBe(maxAccounts);
 				expect(infoLogSpy).toHaveBeenCalledTimes(maxAccounts);
 			});
@@ -99,7 +106,7 @@ describe('KeycloakMigrationService', () => {
 			it('migration should forward the query', async () => {
 				maxAccounts = 1;
 				const queryString = 'test';
-				const migratedAccountCounts = await service.migrate(0, queryString);
+				const migratedAccountCounts = await service.migrate(0, queryString, true);
 				expect(infoLogSpy).toHaveBeenCalledTimes(migratedAccountCounts);
 				expect(infoLogSpy).toHaveBeenCalledWith(expect.stringContaining(queryString));
 			});
@@ -109,7 +116,6 @@ describe('KeycloakMigrationService', () => {
 				maxAccounts = 1200;
 				const migratedAccountCounts = await service.migrate();
 				expect(migratedAccountCounts).toBe(maxAccounts - 1);
-				expect(infoLogSpy).toHaveBeenCalledTimes(maxAccounts - 1);
 				expect(errorLogSpy).toHaveBeenCalledTimes(1);
 				expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorAccountId));
 			});
