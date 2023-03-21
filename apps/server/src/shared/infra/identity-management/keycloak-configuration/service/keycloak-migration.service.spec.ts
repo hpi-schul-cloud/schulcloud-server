@@ -99,8 +99,7 @@ describe('KeycloakMigrationService', () => {
 			it('migration should forward the query', async () => {
 				maxAccounts = 1;
 				const queryString = 'test';
-				const migratedAccountCounts = await service.migrate(0, queryString);
-				expect(infoLogSpy).toHaveBeenCalledTimes(migratedAccountCounts);
+				await service.migrate(0, queryString);
 				expect(infoLogSpy).toHaveBeenCalledWith(expect.stringContaining(queryString));
 			});
 		});

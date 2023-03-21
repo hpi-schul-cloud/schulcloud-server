@@ -50,7 +50,7 @@ describe(BoardManagementConsole.name, () => {
 			let report = '';
 
 			consoleWriter.info.mockImplementationOnce((text) => {
-				report = text;
+				report = text ?? '';
 			});
 
 			const output = await service.createBoards();
