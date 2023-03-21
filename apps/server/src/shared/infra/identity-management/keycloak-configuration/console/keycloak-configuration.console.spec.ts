@@ -86,7 +86,7 @@ describe('KeycloakConsole', () => {
 		const setup = () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
 			migrateSpy.mockClear();
-			migrateSpy.mockResolvedValueOnce({ amount: 1, infos: [], errors: [] });
+			migrateSpy.mockResolvedValueOnce({ amount: 1, infos: ['1'], errors: [] });
 			migrateSpy.mockResolvedValueOnce({ amount: 0, infos: [], errors: [] });
 			return migrateSpy;
 		};
@@ -106,6 +106,13 @@ describe('KeycloakConsole', () => {
 			const queryValue = 'test';
 			await console.migrate({ query: queryValue });
 			expect(migrateSpy).toHaveBeenCalledWith(0, queryValue);
+		});
+		it('should log infos if in verbose mode', async () => {
+			setup();
+			const writerInfoSpy = jest.spyOn(writer, 'info');
+			writerInfoSpy.mockClear();
+			await console.migrate({ verbose: true });
+			expect(writerInfoSpy).toHaveBeenCalledWith(expect.stringContaining('1'));
 		});
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
