@@ -83,7 +83,6 @@ describe('KeycloakConsole', () => {
 	});
 
 	describe('migrate', () => {
-
 		const setup = () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
 			migrateSpy.mockClear();

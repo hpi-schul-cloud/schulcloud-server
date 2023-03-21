@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountMigrationInfoDto } from '../dto/account-migration-info.dto';
 
 @Injectable()
 export class KeycloakMigrationService {
-	constructor(private readonly accountService: AccountService, private readonly logger: Logger) {
-		this.logger.setContext(KeycloakMigrationService.name);
-	}
+	constructor(private readonly accountService: AccountService) {}
 
 	async migrate(start = 0, userNamePattern = ''): Promise<AccountMigrationInfoDto> {
 		const amount = 100;

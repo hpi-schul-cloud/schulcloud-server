@@ -10,5 +10,4 @@ export class AccountMigrationInfoDto {
 	infos: string[];
 
 	errors: string[];
-
 }
