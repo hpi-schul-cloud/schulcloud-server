@@ -5,6 +5,7 @@ import type { Config } from '@jest/types';
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
+	preset: 'ts-jest',
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
