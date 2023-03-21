@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { WinstonLogger, WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Loggable } from './interfaces';
+import { Loggable } from './loggable';
 import { LoggingUtils } from './logging.utils';
 
 // ErrorLogger may only be used in the ErrorModule. Do not use it in other modules!

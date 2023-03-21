@@ -1,5 +1,4 @@
-import { Loggable } from '@src/core/logger/interfaces/loggable.interface';
-import { LoggingUtils } from '@src/core/logger/logging.utils';
+import { Loggable } from '@src/core/logger/loggable';
 import util from 'util';
 import { ErrorLoggable } from '../error.loggable';
 
@@ -7,7 +6,7 @@ export class ErrorLoggingUtils {
 	static createErrorLoggable(error: unknown): Loggable {
 		let loggable: Loggable;
 
-		if (LoggingUtils.isInstanceOfLoggable(error)) {
+		if (error instanceof Loggable) {
 			loggable = error;
 		} else if (error instanceof Error) {
 			loggable = new ErrorLoggable(error);

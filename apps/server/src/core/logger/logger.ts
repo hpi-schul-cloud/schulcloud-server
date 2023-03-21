@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { Loggable } from './interfaces/loggable.interface';
+import { Loggable } from './loggable';
 import { LoggingUtils } from './logging.utils';
 
 export class Logger {

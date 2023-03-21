@@ -1,5 +1,5 @@
 import util from 'util';
-import { Loggable } from './interfaces';
+import { Loggable } from './loggable';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {
@@ -13,9 +13,5 @@ export class LoggingUtils {
 	private static stringifyMessage(message: unknown): string {
 		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
 		return stringifiedMessage;
-	}
-
-	static isInstanceOfLoggable(object: any): object is Loggable {
-		return 'getLogMessage' in object;
 	}
 }
