@@ -1,12 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
+import { Course, Lesson, Permission, SortOrder, Submission, Task, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
+	roleFactory,
 	submissionFactory,
 	taskFactory,
 	userFactory,
@@ -45,6 +46,10 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllByParentIds', () => {
+		describe('find by assigned user', () => {
+			// fail('TODO: add test');
+		});
+
 		describe('given populates are set correctly', () => {
 			describe('when task parent is a user', () => {
 				const setup = async () => {
@@ -860,6 +865,174 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllFinishedByParentIds', () => {
+		describe('find by assigned user', () => {
+			const createStudent = (id: number) => {
+				const studentRole = roleFactory.build({
+					permissions: [
+						Permission.TASK_DASHBOARD_VIEW_V3,
+						Permission.JOIN_MEETING,
+						Permission.TASK_CARD_VIEW,
+						Permission.TEAM_CREATE,
+						Permission.TEAM_EDIT,
+						Permission.TOOL_CREATE_ETHERPAD,
+					],
+				});
+
+				const student = userFactory.build({
+					firstName: `Student ${id}`,
+					roles: [studentRole],
+				});
+
+				return student;
+			};
+
+			const createTeacher = (id: number) => {
+				const teacherRole = roleFactory.build({
+					permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+				});
+
+				const student = userFactory.build({
+					firstName: `Teacher ${id}`,
+					roles: [teacherRole],
+				});
+
+				return student;
+			};
+
+			const createCourse = (name: string, students: User[], teachers: User[]) => {
+				const course = courseFactory.build({
+					name: 'history',
+					students,
+					teachers,
+				});
+
+				return course;
+			};
+
+			const createLesson = (name: string, course: Course) => {
+				const lesson = lessonFactory.build({
+					name,
+					course,
+				});
+
+				return lesson;
+			};
+
+			const createTask = (
+				name: string,
+				opt?: { creator?: User; lesson?: Lesson; course?: Course; users?: User[]; finished?: User[] }
+			) => {
+				let tf = taskFactory;
+				if (opt?.finished) {
+					tf = tf.finished(opt.finished);
+				}
+				let submission: Submission | undefined;
+
+				if (opt?.course) {
+					const courseGroup = courseGroupFactory.build({ course: opt.course });
+					submission = submissionFactory.build({ courseGroup });
+				}
+
+				const task = tf.build({
+					name,
+					users: opt?.users,
+					course: opt?.course,
+					lesson: opt?.lesson,
+					creator: opt?.creator,
+					submissions: submission ? [submission] : undefined,
+				});
+
+				return task;
+			};
+
+			const setup = async () => {
+				const [student1, student2, student3, student4] = [1, 2, 3, 4].map(createStudent);
+				const [teacher1, teacher2] = [1, 2].map(createTeacher);
+				const englishCourse = createCourse('english', [student1, student2, student3], [teacher1, teacher2]);
+				const lesson = createLesson('grammer', englishCourse);
+				const writeEssayTask = createTask('write an essay', {
+					// users: [student1, student2],
+					course: englishCourse,
+					finished: [student1],
+					creator: teacher1,
+				});
+				const grammer1Task = createTask('grammer 1', {
+					users: [student1],
+					course: englishCourse,
+					finished: [student1],
+					creator: teacher1,
+				});
+				const grammer2Task = createTask('grammer 2', {
+					users: [],
+					course: englishCourse,
+					creator: teacher1,
+				});
+				const grammer3Task = createTask('grammer 3', {
+					course: englishCourse,
+					creator: teacher1,
+				});
+
+				await em.persistAndFlush([
+					student1,
+					student2,
+					student3,
+					student4,
+					teacher1,
+					teacher2,
+					englishCourse,
+					lesson,
+					writeEssayTask,
+					grammer1Task,
+					grammer2Task,
+					grammer3Task,
+				]);
+				em.clear();
+
+				return {
+					students: [student1, student2, student3, student4],
+					teachers: [teacher1, teacher2],
+					courses: [englishCourse],
+					lessons: [lesson],
+					tasks: [writeEssayTask, grammer1Task, grammer2Task, grammer3Task],
+				};
+			};
+
+			const setup2 = async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build();
+				const courseGroup = courseGroupFactory.build({ course });
+				const submission = submissionFactory.build({ courseGroup });
+
+				// const task = taskFactory.finished(user).build({ creator: user, submissions: [submission] });
+				const task = createTask('test', { creator: user, finished: [user], course });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				return { user };
+			};
+
+			it.only('populate all assigned students with homeworks set to finished', async () => {
+				// const {
+				// 	teachers: [teacher1, teacher2],
+				// } = await setup();
+
+				const { user } = await setup2();
+
+				const [result, total] = await repo.findAllFinishedByParentIds({
+					creatorId: user.id,
+					openCourseIds: [],
+					lessonIdsOfOpenCourses: [],
+					finishedCourseIds: [],
+					lessonIdsOfFinishedCourses: [],
+				});
+
+				console.log(result, total);
+
+				fail('TODO');
+			});
+		});
+
 		describe('given populates are set correctly', () => {
 			describe('when task parent is a user', () => {
 				const setup = async () => {
@@ -1665,6 +1838,10 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findBySingleParent', () => {
+		describe('find by assigned user', () => {
+			// fail('TODO: add test');
+		});
+
 		/* need to be fixed input params or names not correctly
 		describe('given populates are set correctly', () => {
 			describe('when task parent is a user', () => {
@@ -2101,6 +2278,4 @@ describe('TaskRepo', () => {
 			}).rejects.toThrow();
 		});
 	});
-
-	// TODO: add tests
 });
