@@ -114,7 +114,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					// return value match
+					expect(response.body).toEqual({});
 				});
 			});
 
@@ -160,6 +160,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({});
 				});
 			});
 
@@ -174,7 +175,7 @@ describe('Lesson Controller (API) - delete', () => {
 					return { teacherAccount, lessonId: lesson.id };
 				};
 
-				it('it should delete the lesson', async () => {
+				it('it should throw a forbidden', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
 					const response = await request.delete(lessonId, teacherAccount);
@@ -201,7 +202,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					// return value match
+					expect(response.body).toEqual({});
 				});
 			});
 
@@ -223,7 +224,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					// return value match
+					expect(response.body).toEqual({});
 				});
 			});
 		});
@@ -242,12 +243,13 @@ describe('Lesson Controller (API) - delete', () => {
 					return { adminAccount, lessonId: lesson.id };
 				};
 
-				it('it should throw a forbidden', async () => {
+				it('it should delete the lesson', async () => {
 					const { lessonId, adminAccount } = await setup();
 
 					const response = await request.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual({});
 				});
 			});
 
