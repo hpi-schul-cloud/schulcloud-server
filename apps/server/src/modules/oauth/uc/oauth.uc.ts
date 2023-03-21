@@ -128,12 +128,15 @@ export class OauthUc {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (data.externalSchool) {
-			await this.schoolMigrationService.migrateSchool(
+			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
 				currentUserId,
 				data.externalSchool.externalId,
 				data.externalSchool.officialSchoolNumber,
 				systemId
 			);
+			if (schoolToMigrate) {
+				await this.schoolMigrationService.migrateSchool(data.externalSchool.externalId, schoolToMigrate, systemId);
+			}
 		}
 
 		const migrationDto: MigrationDto = await this.userMigrationService.migrateUser(
