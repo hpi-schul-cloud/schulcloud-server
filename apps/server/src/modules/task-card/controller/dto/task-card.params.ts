@@ -16,24 +16,6 @@ import {
 
 export abstract class CardElementBase {}
 
-export class TitleCardElementParam extends CardElementBase {
-	@ApiProperty({
-		description: 'Type of card element, i.e. text (needed for discriminator)',
-		type: String,
-		example: CardElementType.Title,
-	})
-	type = CardElementType.Title;
-
-	@ApiProperty({
-		description: 'Title of the card, content of title card element',
-		required: true,
-	})
-	@IsString()
-	@MinLength(2)
-	@SanitizeHtml()
-	value!: string;
-}
-
 export class RichTextCardElementParam extends CardElementBase {
 	@ApiProperty({
 		description: 'Type of card element, i.e. richText (needed for discriminator)',
@@ -55,7 +37,7 @@ export class RichTextCardElementParam extends CardElementBase {
 	inputFormat!: InputFormat;
 }
 
-@ApiExtraModels(TitleCardElementParam, RichTextCardElementParam)
+@ApiExtraModels(RichTextCardElementParam)
 export class CardElementParams {
 	@ApiPropertyOptional()
 	@IsOptional()
@@ -66,19 +48,16 @@ export class CardElementParams {
 	@ApiProperty({
 		description: 'Content of the card element, depending on its type',
 		required: true,
-		oneOf: [{ $ref: getSchemaPath(TitleCardElementParam) }, { $ref: getSchemaPath(RichTextCardElementParam) }],
+		oneOf: [{ $ref: getSchemaPath(RichTextCardElementParam) }],
 	})
 	@ValidateNested()
 	@Type(() => CardElementBase, {
 		discriminator: {
 			property: 'type',
-			subTypes: [
-				{ value: TitleCardElementParam, name: CardElementType.Title },
-				{ value: RichTextCardElementParam, name: CardElementType.RichText },
-			],
+			subTypes: [{ value: RichTextCardElementParam, name: CardElementType.RichText }],
 		},
 	})
-	content!: RichTextCardElementParam | TitleCardElementParam;
+	content!: RichTextCardElementParam;
 }
 
 export class TaskCardParams {
@@ -90,6 +69,14 @@ export class TaskCardParams {
 		pattern: '[a-f0-9]{24}',
 	})
 	courseId?: string;
+
+	@IsString()
+	@MinLength(2)
+	@SanitizeHtml()
+	@ApiProperty({
+		description: 'The title of the card',
+	})
+	title!: string;
 
 	@IsOptional()
 	@IsDate()
@@ -103,12 +90,13 @@ export class TaskCardParams {
 	@ApiPropertyOptional({ description: 'Due date of the card' })
 	dueDate?: Date;
 
+	@IsOptional()
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => CardElementParams)
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Card elements array',
 		type: [CardElementParams],
 	})
-	cardElements!: CardElementParams[];
+	cardElements?: CardElementParams[];
 }
