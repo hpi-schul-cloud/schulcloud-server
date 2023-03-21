@@ -1,5 +1,4 @@
-export * from './card.do.factory';
-export * from './column-board.do.factory';
+export * from './board';
 export * from './course-external-tool.factory';
 export * from './do-base.factory';
 export * from './external-tool.factory';
