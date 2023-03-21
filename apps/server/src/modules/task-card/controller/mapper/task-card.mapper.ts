@@ -3,32 +3,31 @@ import {
 	CardElement,
 	CardElementResponse,
 	CardRichTextElementResponse,
-	CardTitleElementResponse,
 	RichText,
 	TaskCard,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { ITaskCardCRUD } from '../../interface';
-import { RichTextCardElementParam, TaskCardParams, TaskCardResponse, TitleCardElementParam } from '../dto';
+import { CardElementParams, RichTextCardElementParam, TaskCardParams, TaskCardResponse } from '../dto';
 
 export class TaskCardMapper {
 	mapToResponse(card: TaskCard, taskWithStatusVo: TaskWithStatusVo): TaskCardResponse {
 		const taskResponse: TaskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
-		const cardElements = card.getCardElements();
-		const cardElementsResponse = this.mapElements(cardElements);
 
 		const dto = new TaskCardResponse({
 			id: card.id,
-			draggable: card.draggable || true,
-			cardElements: cardElementsResponse,
+			draggable: card.draggable,
 			task: taskResponse,
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
+			title: card.title,
 		});
-
+		if (card.cardElements.length) {
+			dto.cardElements = this.getCardElementResponse(card);
+		}
 		if (card.course) {
 			dto.courseId = card.course.id;
 			dto.courseName = card.course.name;
@@ -40,11 +39,6 @@ export class TaskCardMapper {
 	private mapElements(cardElements: CardElement[]): CardElementResponse[] {
 		const cardElementsResponse: CardElementResponse[] = [];
 		cardElements.forEach((element) => {
-			if (element.cardElementType === CardElementType.Title) {
-				const content = new CardTitleElementResponse(element as TitleCardElement);
-				const response = { id: element.id, cardElementType: element.cardElementType, content };
-				cardElementsResponse.push(response);
-			}
 			if (element.cardElementType === CardElementType.RichText) {
 				const content = new CardRichTextElementResponse(element as RichTextCardElement);
 				const response = { id: element.id, cardElementType: element.cardElementType, content };
@@ -55,15 +49,19 @@ export class TaskCardMapper {
 		return cardElementsResponse;
 	}
 
+	private getCardElementResponse(card: TaskCard): CardElementResponse[] {
+		const cardElements = card.getCardElements();
+		const cardElementsResponse = this.mapElements(cardElements);
+		return cardElementsResponse;
+	}
+
 	static mapToDomain(params: TaskCardParams): ITaskCardCRUD {
-		const title = params.cardElements.filter((element) => element.content instanceof TitleCardElementParam);
-		if (title.length !== 1) {
+		if (!params.title || params.title.length === 0) {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
-		const titleValue = title[0].content as TitleCardElementParam;
 		const dto: ITaskCardCRUD = {
-			title: titleValue.value,
+			title: params.title,
 		};
 
 		if (params.courseId) {
@@ -78,17 +76,25 @@ export class TaskCardMapper {
 			dto.dueDate = params.dueDate;
 		}
 
-		params.cardElements.forEach((element) => {
+		if (params.cardElements) {
+			const text = this.mapElementsToDto(params.cardElements);
+			if (text?.length) {
+				dto.text = text;
+			}
+		}
+
+		return dto;
+	}
+
+	private static mapElementsToDto(cardElements: CardElementParams[]): RichText[] | void {
+		const text: RichText[] = [];
+		cardElements.forEach((element) => {
 			if (element.content instanceof RichTextCardElementParam) {
 				const richText = new RichText({ content: element.content.value, type: element.content.inputFormat });
-				if (!dto.text) {
-					dto.text = [richText];
-				} else {
-					dto.text.push(richText);
-				}
+				text.push(richText);
 			}
 		});
 
-		return dto;
+		return text.length ? text : [];
 	}
 }
