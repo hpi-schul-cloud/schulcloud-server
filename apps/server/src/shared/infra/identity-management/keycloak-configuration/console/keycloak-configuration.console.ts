@@ -160,9 +160,9 @@ export class KeycloakConsole {
 					const res = await this.keycloakConfigurationUc.migrate(position, options.query);
 					count = res.amount;
 					position += res.amount;
-					res.errors.map((m) => this.console.warn(m));
+					res.errors.forEach((m) => this.console.warn(m));
 					if (options.verbose) {
-						res.infos.map((m) => this.console.info(m));
+						res.infos.forEach((m) => this.console.info(m));
 					}
 					success += res.infos.length;
 					this.console.info(`... continue migration at ${position}`);

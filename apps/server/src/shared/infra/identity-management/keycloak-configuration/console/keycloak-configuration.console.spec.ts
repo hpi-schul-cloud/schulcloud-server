@@ -114,6 +114,15 @@ describe('KeycloakConsole', () => {
 			await console.migrate({ verbose: true });
 			expect(writerInfoSpy).toHaveBeenCalledWith(expect.stringContaining('1'));
 		});
+		it('should log errors', async () => {
+			const migrateSpy = jest.spyOn(uc, 'migrate');
+			migrateSpy.mockClear();
+			migrateSpy.mockResolvedValueOnce({ amount: 1, infos: [], errors: ['1'] });
+			const writerWarnSpy = jest.spyOn(writer, 'warn');
+			writerWarnSpy.mockClear();
+			await console.migrate({ verbose: true });
+			expect(writerWarnSpy).toHaveBeenCalledWith(expect.stringContaining('1'));
+		});
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());
 			await expect(console.migrate({})).rejects.toThrow();
