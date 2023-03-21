@@ -23,7 +23,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const results = (await this.identityManager.getAllAccounts()).filter((account) => userIds.includes(account.id));
+		const allAccounts = await this.identityManager.getAllAccounts();
+		const results = allAccounts.filter((account) => userIds.includes(account.id));
 		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
 		return accounts;
 	}
