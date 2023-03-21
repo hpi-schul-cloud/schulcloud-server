@@ -13,7 +13,6 @@ export class FwuLearningContentsController {
 
 	@Get('*')
 	async get(@Req() req: Request, @Res() res: Response) {
-		console.log('Controller FWU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 		const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
 		if (!fwuContentEnabled) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
