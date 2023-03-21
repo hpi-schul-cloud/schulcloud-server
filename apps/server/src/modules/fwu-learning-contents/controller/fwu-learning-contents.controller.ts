@@ -5,9 +5,9 @@ import { Request, Response } from 'express';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 
-@ApiTags('fwu-learning-contents')
+@ApiTags('fwu')
 @Authenticate('jwt')
-@Controller('fwu-learning-contents')
+@Controller('fwu')
 export class FwuLearningContentsController {
 	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
