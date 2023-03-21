@@ -50,15 +50,16 @@ export class TestRequest {
 		return authenticationResponse;
 	}
 
-	private extractJwt(response: supertest.Response): string {
+	private getFormatedJwt(response: supertest.Response): string {
 		const authenticationResponse = this.castToAuthenticationResponse(response);
 		const jwt = authenticationResponse.accessToken;
+		const formatedJwt = `Bearer ${jwt}`;
 
-		return jwt;
+		return formatedJwt;
 	}
 
 	public async getJwt(accountWithPassword?: Account): Promise<string> {
-		let jwt = 'invalidJwt';
+		let formatedJwt = 'invalidJwt';
 
 		if (accountWithPassword) {
 			const uri = '/authentication/local';
@@ -71,10 +72,10 @@ export class TestRequest {
 				.set('Accept', 'application/json')
 				.send(params);
 
-			jwt = this.extractJwt(response);
+			formatedJwt = this.getFormatedJwt(response);
 		}
 
-		return jwt;
+		return formatedJwt;
 	}
 	/*
 	public generateJwt(currentUser: ICurrentUser) {
@@ -96,11 +97,11 @@ export class TestRequest {
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		// const jwt = this.generateJwt(account);
-		const jwt = await this.getJwt(account);
+		const formatedJwt = await this.getJwt(account);
 		const response = await supertest(this.app)
 			.get(uri)
 			.set('Accept', 'application/json')
-			.set('Authorization', jwt)
+			.set('Authorization', formatedJwt)
 			.query(query || {});
 
 		return response;
@@ -114,11 +115,11 @@ export class TestRequest {
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		// const jwt = this.generateJwt(account);
-		const jwt = await this.getJwt(account);
+		const formatedJwt = await this.getJwt(account);
 		const response = await supertest(this.app.getHttpServer())
 			.post(uri)
-			.set('Accept', 'application/json')
-			.set('Authorization', jwt)
+			.set('accept', 'application/json')
+			.set('authorization', formatedJwt)
 			.query(query || {})
 			.send(data);
 
