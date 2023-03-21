@@ -36,7 +36,7 @@ jobs:
         run: npm run feathers:test
   nest_tests_cov:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     services:
       rabbitmq:
         image: rabbitmq:3
