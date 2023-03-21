@@ -1,7 +1,9 @@
 import { EntityId } from '@shared/domain/types';
 import { Column } from './column.do';
+import { BoardNodeBuildable } from './types/board-node-buildable';
+import { BoardNodeBuilder } from './types/board-node-builder';
 
-export class ColumnBoard implements ColumnBoardProps {
+export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 	id: EntityId;
 
 	title: string;
@@ -19,9 +21,17 @@ export class ColumnBoard implements ColumnBoardProps {
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 	}
+
+	addColumn(column: Column, position?: number) {
+		this.columns.splice(position || this.columns.length, 0, column);
+	}
+
+	useBoardNodeBuilder(builder: BoardNodeBuilder): void {
+		builder.buildColumnBoardNode(this);
+	}
 }
 
-interface ColumnBoardProps {
+export interface ColumnBoardProps {
 	id: EntityId;
 
 	title: string;
