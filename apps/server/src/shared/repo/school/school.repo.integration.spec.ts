@@ -156,6 +156,7 @@ describe('SchoolRepo', () => {
 					features: [],
 					inMaintenanceSince: schoolEntity.inMaintenanceSince,
 					inUserMigration: schoolEntity.inUserMigration,
+					oauthMigrationStart: schoolEntity.oauthMigrationStart,
 					oauthMigrationMandatory: schoolEntity.oauthMigrationMandatory,
 					oauthMigrationPossible: schoolEntity.oauthMigrationPossible,
 					oauthMigrationFinished: schoolEntity.oauthMigrationFinished,
@@ -190,6 +191,7 @@ describe('SchoolRepo', () => {
 			expect(result.inMaintenanceSince).toEqual(entityDO.inMaintenanceSince);
 			expect(result.inUserMigration).toEqual(entityDO.inUserMigration);
 			expect(result.name).toEqual(entityDO.name);
+			expect(result.oauthMigrationStart).toEqual(entityDO.oauthMigrationStart);
 			expect(result.oauthMigrationMandatory).toEqual(entityDO.oauthMigrationMandatory);
 			expect(result.oauthMigrationPossible).toEqual(entityDO.oauthMigrationPossible);
 			expect(result.oauthMigrationFinished).toEqual(entityDO.oauthMigrationFinished);

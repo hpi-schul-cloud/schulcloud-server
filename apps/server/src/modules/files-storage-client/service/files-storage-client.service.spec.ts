@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolFactory, setupEntities, taskFactory } from '@shared/testing';
@@ -13,10 +12,9 @@ describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;
 	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FilesStorageProducer>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -37,7 +35,6 @@ describe('FilesStorageClientAdapterService', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
