@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ColumnNode, ColumnNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 

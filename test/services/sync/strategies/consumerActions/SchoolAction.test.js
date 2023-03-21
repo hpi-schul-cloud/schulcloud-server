@@ -70,4 +70,47 @@ describe('School Actions', () => {
 			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
 		});
 	});
+
+	describe('when school is migrated', () => {
+		it('should not update school', () => {
+			const findSchoolByLdapIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const updateSchoolName = sinon.stub(SchoolRepo, 'updateSchoolName');
+			const findSchoolByPreviousExternalIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByPreviousExternalIdAndSystem');
+
+			findSchoolByLdapIdAndSystem.returns(null);
+			findSchoolByPreviousExternalIdAndSystem.returns({ name: 'Migrated school' });
+
+			schoolAction.action({ ldapSchoolIdentifier: 'ldapIdFromNotMigratedSystem', systems: ['systemA'] });
+
+			expect(updateSchoolName.notCalled).to.be.true;
+		});
+
+		it('should not create school', () => {
+			const findSchoolByLdapIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const createSchool = sinon.stub(SchoolRepo, 'createSchool');
+			const findSchoolByPreviousExternalIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByPreviousExternalIdAndSystem');
+
+			findSchoolByLdapIdAndSystem.returns(null);
+			findSchoolByPreviousExternalIdAndSystem.returns({ name: 'Migrated school' });
+
+			expect(createSchool.notCalled).to.be.true;
+		});
+
+		it('should not check officialSchoolNumber', () => {
+			const findSchoolByLdapIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const findSchoolByOfficialSchoolNumber = sinon.stub(SchoolRepo, 'findSchoolByOfficialSchoolNumber');
+			const findSchoolByPreviousExternalIdAndSystem = sinon.stub(SchoolRepo, 'findSchoolByPreviousExternalIdAndSystem');
+
+			findSchoolByLdapIdAndSystem.returns(null);
+			findSchoolByPreviousExternalIdAndSystem.returns({ name: 'Migrated school' });
+
+			schoolAction.action({
+				ldapSchoolIdentifier: 'ldapIdFromNotMigratedSystem',
+				systems: ['systemA'],
+				officialSchoolNumber: '00100',
+			});
+
+			expect(findSchoolByOfficialSchoolNumber.notCalled).to.be.true;
+		});
+	});
 });
