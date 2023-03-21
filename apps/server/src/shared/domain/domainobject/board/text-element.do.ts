@@ -1,6 +1,8 @@
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '../../types';
+import type { BoardNodeBuildable } from './types/board-node-buildable';
+import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class TextElement implements TextElementProps {
+export class TextElement implements TextElementProps, BoardNodeBuildable {
 	id: EntityId;
 
 	text: string;
@@ -15,9 +17,13 @@ export class TextElement implements TextElementProps {
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 	}
+
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
+		builder.buildTextElementNode(this, parentId, position);
+	}
 }
 
-interface TextElementProps {
+export interface TextElementProps {
 	id: EntityId;
 
 	text: string;
