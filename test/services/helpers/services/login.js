@@ -1,23 +1,41 @@
 const accountsHelper = require('./accounts');
 
+const userdata = (user, account) => {
+	return {
+		accountId: account.id ? account.id : account.id,
+		systemId: account.systemId,
+		userId: user._id,
+		schoolId: user.schoolId,
+		roles: user.roles,
+	};
+};
+
+const getpayload = (user, account) => {
+	const currentTime = Math.floor(Date.now() / 1000);
+	const dataFromUser = userdata(user, account);
+	const expirsIn = currentTime + 3600;
+	return {
+		accountId: dataFromUser.accountId,
+		systemId: dataFromUser.systemId,
+		userId: dataFromUser.userId,
+		schoolId: dataFromUser.schoolId,
+		roles: dataFromUser.roles,
+		iat: currentTime,
+		sub: dataFromUser.accountId,
+	};
+};
+
 const generateJWT =
 	(appPromise) =>
 	async ({ username, password }) => {
 		const app = await appPromise;
-		const result = await app.service('authentication').create(
-			{
-				strategy: 'local',
-				username,
-				password,
-			},
-			{
-				headers: {
-					'content-type': 'application/json',
-				},
-				provider: 'rest',
-			}
-		);
-		return result.accessToken;
+
+		const { accounts } = await app.service('nest-account-service').searchByUsernameExactMatch(username);
+		const user = await app.service('usersModel').get({
+			_id: accounts[0].userId,
+		});
+		const token = await app.service('authentication').createAccessToken(getpayload(user, accounts[0]));
+		return token;
 	};
 
 /**
