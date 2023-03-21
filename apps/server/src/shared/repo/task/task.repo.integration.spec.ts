@@ -1029,7 +1029,9 @@ describe('TaskRepo', () => {
 
 				console.log(result, total);
 
-				fail('TODO');
+				// NOTE: if in setup2 we do remove course, then a task is returned
+				// does not seem right
+				fail('TODO: bug here, should return task');
 			});
 		});
 
