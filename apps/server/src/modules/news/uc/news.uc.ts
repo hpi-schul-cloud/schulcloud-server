@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+	Counted,
 	EntityId,
 	ICreateNews,
 	IFindOptions,
@@ -7,13 +8,13 @@ import {
 	IUpdateNews,
 	News,
 	NewsTargetModel,
-	SortOrder,
-	Counted,
 	Permission,
+	SortOrder,
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { CrudOperation, NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
@@ -22,7 +23,7 @@ export class NewsUc {
 	constructor(
 		private newsRepo: NewsRepo,
 		private authorizationService: FeathersAuthorizationService,
-		private logger: LegacyLogger
+		private logger: Logger
 	) {
 		this.logger.setContext(NewsUc.name);
 	}
@@ -34,9 +35,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		this.logger.log(`create news as user ${userId}`);
-
+	public async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 
@@ -52,7 +51,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(`news ${news.id} created by user ${userId}`);
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, userId, news));
 
 		return news;
 	}
@@ -64,9 +63,11 @@ export class NewsUc {
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
-		this.logger.log(`start find all news for user ${userId}`);
-
+	public async findAllForUser(
+		userId: EntityId,
+		scope?: INewsScope,
+		options?: IFindOptions<News>
+	): Promise<Counted<News[]>> {
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);
 
@@ -84,8 +85,6 @@ export class NewsUc {
 			})
 		);
 
-		this.logger.log(`return ${newsList.length} news for user ${userId}`);
-
 		return [newsList, newsCount];
 	}
 
@@ -95,9 +94,7 @@ export class NewsUc {
 	 * @param userId
 	 * @returns
 	 */
-	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
-		this.logger.log(`start find one news ${id}`);
-
+	public async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
 		const news = await this.newsRepo.findOneById(id);
 		const isPublished = news.displayAt > new Date();
 		const requiredPermissions = NewsUc.getRequiredPermissions(isPublished);
@@ -119,9 +116,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
-		this.logger.log(`start update news ${id}`);
-
+	public async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, [
 			Permission.NEWS_EDIT,
@@ -136,6 +131,8 @@ export class NewsUc {
 
 		await this.newsRepo.save(news);
 
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, userId, news));
+
 		return news;
 	}
 
@@ -145,13 +142,13 @@ export class NewsUc {
 	 * @param userId
 	 * @returns
 	 */
-	async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
-		this.logger.log(`start remove news ${id}`);
-
+	public async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
 
 		await this.newsRepo.delete(news);
+
+		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
 
 		return id;
 	}
