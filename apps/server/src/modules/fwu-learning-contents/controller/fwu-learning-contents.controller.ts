@@ -24,8 +24,7 @@ export class FwuLearningContentsController {
 		const contentType =
 			startIndexOfContentType !== -1 ? path.slice(startIndexOfContentType) : 'application/octet-stream';
 		const startIndexOfFileName = path.lastIndexOf('/') + 1;
-		const endIndexOfFileName = path.lastIndexOf('.');
-		const fileName = path.slice(startIndexOfFileName, endIndexOfFileName);
+		const fileName = path.slice(startIndexOfFileName);
 		return new StreamableFile(response.data, {
 			type: contentType,
 			disposition: `filename="${fileName}"`,
