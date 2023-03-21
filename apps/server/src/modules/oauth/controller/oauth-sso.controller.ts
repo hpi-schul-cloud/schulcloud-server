@@ -28,6 +28,7 @@ import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 import { UserMigrationResponse } from './dto/user-migration.response';
+import { OAuthMigrationError } from '../../user-login-migration/error/oauth-migration.error';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -53,6 +54,25 @@ export class OauthSSOController {
 
 		const errorRedirect: URL = new URL('/login', this.clientUrl);
 		errorRedirect.searchParams.append('error', ssoError.errorcode);
+
+		res.redirect(errorRedirect.toString());
+	}
+
+	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
+		this.logger.error(error);
+		const migrationError: OAuthMigrationError =
+			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
+
+		session.destroy((err) => {
+			this.logger.log(err);
+		});
+
+		const errorRedirect: URL = new URL('/login', this.clientUrl);
+		errorRedirect.searchParams.append('error', migrationError.errorcode);
+		errorRedirect.searchParams.append('sourceSystemId', <string>migrationError.sourceSystemId);
+		errorRedirect.searchParams.append('targetSystem', <string>migrationError.targetSystemId);
+		errorRedirect.searchParams.append('sourceSchoolNumber', <string>migrationError.officialSchoolNumberFromSource);
+		errorRedirect.searchParams.append('targetSchoolNumber', <string>migrationError.officialSchoolNumberFromTarget);
 
 		res.redirect(errorRedirect.toString());
 	}
@@ -170,7 +190,7 @@ export class OauthSSOController {
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.errorHandler(error, session, res);
+			this.migrationErrorHandler(error, session, res);
 		}
 	}
 }
