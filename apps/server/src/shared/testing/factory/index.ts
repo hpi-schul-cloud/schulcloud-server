@@ -25,3 +25,5 @@ export * from './task.factory';
 export * from './user.factory';
 export * from './user.do.factory';
 export * from './user-and-account.factory';
+export * from './domainobject';
+
