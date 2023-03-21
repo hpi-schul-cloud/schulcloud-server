@@ -61,6 +61,7 @@ export class AuthorizationService extends BasePermissionManager {
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise<boolean> {
+		// TODO: This try-catch is unnecessary and wrong because NotFound is the correct response if the entity cannot be loaded.
 		try {
 			const [user, entity] = await Promise.all([
 				this.getUserWithPermissions(userId),
