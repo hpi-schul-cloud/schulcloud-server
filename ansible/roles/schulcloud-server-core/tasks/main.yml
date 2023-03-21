@@ -14,7 +14,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-fwu-learning-svc.yml.j2
+      template: api-fwu-svc.yml.j2
 
   - name: Configmap
     kubernetes.core.k8s:
@@ -62,7 +62,7 @@
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
-      template: api-fwu-learning-deployment.yml.j2
+      template: api-fwu-deployment.yml.j2
 
   - name: Delete Files CronJob
     kubernetes.core.k8s:
