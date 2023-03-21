@@ -1,13 +1,24 @@
 import { INestApplication } from '@nestjs/common';
 import { Account } from '@shared/domain';
-import { ICurrentUser } from '@src/modules';
 import supertest from 'supertest';
-import { randomUUID } from 'crypto';
-import { JwtService } from '@nestjs/jwt';
 import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {
 	accessToken: string;
+}
+
+enum Header {
+	accept = 'accept',
+	json = 'application/json',
+	authorization = 'authorization',
+}
+
+enum Jwt {
+	invalid = 'invalidJwt',
+	prefix = 'Bearer',
+	loginUri = '/authentication/local',
+	responseKey = 'accessToken',
+	errorMessage = 'TestRequest: Can not cast to local AutenticationResponse:',
 }
 
 export class TestRequest {
@@ -40,11 +51,11 @@ export class TestRequest {
 
 	private castToAuthenticationResponse(response: supertest.Response): AuthenticationResponse {
 		let authenticationResponse: AuthenticationResponse;
-		if ('accessToken' in response.body) {
+		if (Jwt.responseKey in response.body) {
 			authenticationResponse = response.body as AuthenticationResponse;
 		} else {
 			const body = JSON.stringify(response.body);
-			throw new Error(`TestRequest: Can not cast to local AutenticationResponse: ${body}`);
+			throw new Error(`${Jwt.errorMessage} ${body}`);
 		}
 
 		return authenticationResponse;
@@ -53,24 +64,21 @@ export class TestRequest {
 	private getFormatedJwt(response: supertest.Response): string {
 		const authenticationResponse = this.castToAuthenticationResponse(response);
 		const jwt = authenticationResponse.accessToken;
-		const formatedJwt = `Bearer ${jwt}`;
+		const formatedJwt = `${Jwt.prefix} ${jwt}`;
 
 		return formatedJwt;
 	}
 
 	public async getJwt(accountWithPassword?: Account): Promise<string> {
-		let formatedJwt = 'invalidJwt';
+		let formatedJwt: string = Jwt.invalid;
 
 		if (accountWithPassword) {
-			const uri = '/authentication/local';
+			const uri = Jwt.loginUri;
 			const params = {
 				username: accountWithPassword.username,
 				password: defaultTestPassword,
 			};
-			const response = await supertest(this.app.getHttpServer())
-				.post(uri)
-				.set('Accept', 'application/json')
-				.send(params);
+			const response = await supertest(this.app.getHttpServer()).post(uri).set(Header.accept, Header.json).send(params);
 
 			formatedJwt = this.getFormatedJwt(response);
 		}
@@ -85,10 +93,10 @@ export class TestRequest {
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app)
+		const response = await supertest(this.app.getHttpServer())
 			.get(uri)
-			.set('Accept', 'application/json')
-			.set('Authorization', formatedJwt)
+			.set(Header.accept, Header.json)
+			.set(Header.authorization, formatedJwt)
 			.query(query || {});
 
 		return response;
@@ -101,10 +109,10 @@ export class TestRequest {
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app)
+		const response = await supertest(this.app.getHttpServer())
 			.delete(uri)
-			.set('Accept', 'application/json')
-			.set('Authorization', formatedJwt)
+			.set(Header.accept, Header.json)
+			.set(Header.authorization, formatedJwt)
 			.query(query || {});
 
 		return response;
@@ -118,10 +126,10 @@ export class TestRequest {
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app)
+		const response = await supertest(this.app.getHttpServer())
 			.put(uri)
-			.set('Accept', 'application/json')
-			.set('Authorization', formatedJwt)
+			.set(Header.accept, Header.json)
+			.set(Header.authorization, formatedJwt)
 			.query(query || {})
 			.send(data);
 
@@ -138,8 +146,8 @@ export class TestRequest {
 		const formatedJwt = await this.getJwt(account);
 		const response = await supertest(this.app.getHttpServer())
 			.post(uri)
-			.set('accept', 'application/json')
-			.set('authorization', formatedJwt)
+			.set(Header.accept, Header.json)
+			.set(Header.authorization, formatedJwt)
 			.query(query || {})
 			.send(data);
 
