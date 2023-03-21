@@ -10,6 +10,12 @@
       namespace: "{{ NAMESPACE }}"
       template: api-files-svc.yml.j2
 
+  - name: FwuLearningContentsService
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-fwu-learning-svc.yml.j2
+
   - name: Configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -51,6 +57,12 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-files-deployment.yml.j2
+
+  - name: FwuLearningContentsDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-fwu-learning-deployment.yml.j2
 
   - name: Delete Files CronJob
     kubernetes.core.k8s:
