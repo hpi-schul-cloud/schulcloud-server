@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { AnyBoardDo } from '@shared/domain/domainobject';
+import { AnyBoardDo } from '../../domainobject';
 import { BoardDoBuilder } from './board-do.builder';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardNodeType } from './types/board-node-type';
