@@ -38,7 +38,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			account.userId,
 			new Error(`login failing, because account ${account.id} has no userId`)
 		);
-		const user = await this.userRepo.findById(accountUserId);
+		const user = await this.userRepo.findById(accountUserId, true);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user);
 		return currentUser;
 	}
