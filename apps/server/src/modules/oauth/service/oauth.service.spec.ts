@@ -450,7 +450,7 @@ describe('OAuthService', () => {
 		});
 
 		describe('when provisioning an existing user, that is in a school with provisioning disabled', () => {
-			it('should not provision the user, but find it', async () => {
+			const setup = () => {
 				const externalUserId = 'externalUserId';
 				const user: UserDO = userDoFactory.buildWithId({ externalId: externalUserId });
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -474,6 +474,14 @@ describe('OAuthService', () => {
 				migrationCheckService.shouldUserMigrate.mockResolvedValue(false);
 				userService.findByExternalId.mockResolvedValue(user);
 
+				return {
+					user,
+				};
+			};
+
+			it('should not provision the user, but find it', async () => {
+				const { user } = setup();
+
 				const result: { user?: UserDO; redirect: string } = await service.provisionUser(
 					'systemId',
 					'idToken',
@@ -489,7 +497,7 @@ describe('OAuthService', () => {
 		});
 
 		describe('when provisioning a new user, that is in a school with provisioning disabled', () => {
-			it('should throw an error with code sso_provisioning_disabled', async () => {
+			const setup = () => {
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
@@ -512,6 +520,14 @@ describe('OAuthService', () => {
 				migrationCheckService.shouldUserMigrate.mockResolvedValue(false);
 				userService.findByExternalId.mockResolvedValue(null);
 
+				return {
+					externalUserId,
+				};
+			};
+
+			it('should throw an error with code sso_provisioning_disabled', async () => {
+				const { externalUserId } = setup();
+
 				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
 
 				await expect(func).rejects.toThrow(
@@ -525,7 +541,7 @@ describe('OAuthService', () => {
 		});
 
 		describe('when the user cannot be found after provisioning', () => {
-			it('should throw an error', async () => {
+			const setup = () => {
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
@@ -543,6 +559,14 @@ describe('OAuthService', () => {
 				provisioningService.getData.mockResolvedValue(oauthData);
 				provisioningService.provisionData.mockResolvedValue(provisioningDto);
 				userService.findByExternalId.mockResolvedValue(null);
+
+				return {
+					externalUserId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { externalUserId } = setup();
 
 				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
 
