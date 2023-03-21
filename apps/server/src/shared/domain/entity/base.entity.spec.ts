@@ -1,4 +1,4 @@
-import { Entity, MikroORM } from '@mikro-orm/core';
+import { Entity } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'mongodb';
 import { BaseEntity } from './base.entity';
@@ -7,14 +7,8 @@ import { BaseEntity } from './base.entity';
 class User extends BaseEntity {}
 
 describe('BaseEntity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities([User]);
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities([User]);
 	});
 
 	describe('when _id property is set to ObjectId', () => {

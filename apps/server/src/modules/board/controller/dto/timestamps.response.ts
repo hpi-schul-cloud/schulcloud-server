@@ -1,9 +1,3 @@
-/* interface BoardTimestamps {
-	lastUpdatedAt: string;
-	createdAt: string;
-	deletedAt: string;
-} */
-
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class TimestampsResponse {

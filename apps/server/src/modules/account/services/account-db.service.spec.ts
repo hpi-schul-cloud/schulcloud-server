@@ -19,7 +19,6 @@ import { AbstractAccountService } from './account.service.abstract';
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AbstractAccountService;
-	let orm: MikroORM;
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
 
@@ -38,7 +37,6 @@ describe('AccountService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -126,7 +124,7 @@ describe('AccountService', () => {
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountServiceDb);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(() => {

@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
@@ -29,7 +28,6 @@ import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: ShareTokenUC;
 	let service: DeepMocked<ShareTokenService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
@@ -86,11 +84,10 @@ describe('ShareTokenUC', () => {
 		authorization = module.get(AuthorizationService);
 		courseService = module.get(CourseService);
 		lessonRepo = module.get(LessonRepo);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

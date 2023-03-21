@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import {
 	boardFactory,
@@ -10,14 +9,8 @@ import {
 } from '@shared/testing';
 
 describe('Board Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('getByTargetId', () => {
