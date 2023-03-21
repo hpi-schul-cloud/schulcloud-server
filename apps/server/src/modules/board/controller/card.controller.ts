@@ -1,9 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc/card.uc';
-import { CardIdsParams, CardListResponse } from './dto';
+import { CardIdsParams, CardListResponse, CardUrlParams, TextElementResponse } from './dto';
+import { TextElementResponseMapper } from './mapper';
 import { CardResponseMapper } from './mapper/card-response.mapper';
 
 @ApiTags('Cards')
@@ -25,5 +26,17 @@ export class CardController {
 			data: cardResponses,
 		});
 		return result;
+	}
+
+	@Post(':cardId/elements')
+	async createElement(
+		@Param() urlParams: CardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TextElementResponse> {
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
+
+		const response = TextElementResponseMapper.mapToResponse(element);
+
+		return response;
 	}
 }
