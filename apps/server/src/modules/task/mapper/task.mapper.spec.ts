@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat, ITaskStatus, ITaskUpdate, Task, TaskParentDescriptions, UsersList } from '@shared/domain';
 import { setupEntities, taskFactory } from '@shared/testing';
@@ -48,14 +47,8 @@ const createExpectedResponse = (
 };
 
 describe('task.mapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('mapToResponse', () => {
