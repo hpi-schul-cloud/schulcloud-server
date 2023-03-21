@@ -97,7 +97,9 @@ describe('SchoolMigrationService', () => {
 				jest.useFakeTimers();
 				jest.setSystemTime(new Date(2023, 3, 28));
 
-				expect(() => service.validateGracePeriod(schoolDO)).toThrow(ValidationError);
+				expect(() => service.validateGracePeriod(schoolDO)).toThrow(
+					new ValidationError('grace_period_expired: The grace period after finishing migration has expired')
+				);
 			});
 		});
 	});

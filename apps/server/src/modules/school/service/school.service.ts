@@ -44,11 +44,7 @@ export class SchoolService {
 		}
 		if (oauthMigrationFinished !== undefined) {
 			schoolDo.oauthMigrationFinished = this.setOrClearDate(oauthMigrationFinished);
-			if (schoolDo.oauthMigrationFinished) {
-				schoolDo.oauthMigrationFinalFinish = new Date(
-					schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
-				);
-			}
+			this.calculateMigrationFinalFinish(schoolDo);
 		}
 
 		await this.schoolRepo.save(schoolDo);
@@ -77,6 +73,14 @@ export class SchoolService {
 	private setMigrationStart(schoolDo: SchoolDO, oauthMigrationPossible: boolean): void {
 		schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
 		schoolDo.oauthMigrationStart = schoolDo.oauthMigrationPossible;
+	}
+
+	private calculateMigrationFinalFinish(schoolDo: SchoolDO) {
+		if (schoolDo.oauthMigrationFinished) {
+			schoolDo.oauthMigrationFinalFinish = new Date(
+				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
+			);
+		}
 	}
 
 	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
