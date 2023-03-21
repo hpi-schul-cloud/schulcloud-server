@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import {
 	Account,
+	Counted,
 	EntityId,
 	Permission,
 	PermissionService,
@@ -12,7 +13,7 @@ import {
 	School,
 	SchoolRolePermission,
 	SchoolRoles,
-	User,
+	User
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
@@ -27,7 +28,7 @@ import {
 	AccountByIdParams,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
-	AccountSearchType,
+	AccountSearchType
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';
@@ -175,34 +176,28 @@ describe('AccountUc', () => {
 							throw new EntityNotFoundError(Account.name);
 						},
 
-						searchByUsernameExactMatch: (username: string): Promise<{ accounts: AccountDto[]; total: number }> => {
+						searchByUsernameExactMatch: (username: string): Promise<Counted<AccountDto[]>> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
 							if (account) {
-								return Promise.resolve({ accounts: [AccountEntityToDtoMapper.mapToDto(account)], total: 1 });
+								return Promise.resolve([[AccountEntityToDtoMapper.mapToDto(account)], 1]);
 							}
 							if (username === 'not@available.username') {
-								return Promise.resolve({
-									accounts: [AccountEntityToDtoMapper.mapToDto(mockOtherTeacherAccount)],
-									total: 1,
-								});
+								return Promise.resolve([[AccountEntityToDtoMapper.mapToDto(mockOtherTeacherAccount)], 1]);
 							}
 							if (username === 'multiple@account.username') {
-								return Promise.resolve({
-									accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
-									total: mockAccounts.length,
-								});
+								return Promise.resolve([
+									mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+									mockAccounts.length,
+								]);
 							}
-							return Promise.resolve({
-								accounts: [],
-								total: 0,
-							});
+							return Promise.resolve([[], 0]);
 						},
-						searchByUsernamePartialMatch: (): Promise<{ accounts: AccountDto[]; total: number }> =>
-							Promise.resolve({
-								accounts: mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
-								total: mockAccounts.length,
-							}),
+						searchByUsernamePartialMatch: (): Promise<Counted<AccountDto[]>> =>
+							Promise.resolve([
+								mockAccounts.map((mockAccount) => AccountEntityToDtoMapper.mapToDto(mockAccount)),
+								mockAccounts.length,
+							]),
 						updateLastTriedFailedLogin: jest.fn(),
 					},
 				},

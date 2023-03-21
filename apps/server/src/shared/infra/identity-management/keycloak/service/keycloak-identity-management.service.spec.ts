@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
 import { IAccount } from '@shared/domain/interface/account';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
@@ -451,6 +452,89 @@ describe('KeycloakIdentityManagement', () => {
 			const testAccountPassword = 'test';
 
 			await expect(idm.updateAccountPassword(accountId, testAccountPassword)).rejects.toBeTruthy();
+		});
+	});
+
+	describe('getUserAttribute', () => {
+		describe('when user exists', () => {
+			const setup = () => {
+				const attributeName = 'attributeName';
+				const attributeValue = 'attributeValue';
+				kcUsersMock.findOne.mockResolvedValueOnce({
+					...mockedAccount1,
+					attributes: { [attributeName]: attributeValue },
+				});
+				return { attributeName, attributeValue };
+			};
+
+			it('should return attribute value', async () => {
+				const { attributeName, attributeValue } = setup();
+				const result = await idm.getUserAttribute(mockedAccount1.id, attributeName);
+				expect(result).toEqual(attributeValue);
+			});
+
+			it('should return null if attribute does not exist', async () => {
+				setup();
+				const result = await idm.getUserAttribute(mockedAccount1.id, 'nonExistingAttribute');
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user does not exist', () => {
+			const setup = () => {
+				kcUsersMock.findOne.mockResolvedValueOnce(undefined);
+			};
+
+			it('should throw an error', async () => {
+				setup();
+				await expect(idm.getUserAttribute('userId', 'attributeName')).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+	});
+
+	describe('setUserAttribute', () => {
+		describe('when user exists', () => {
+			const setup = (seedAttributes?: Record<string, unknown>) => {
+				const attributeName = 'attributeName';
+				const attributeValue = 'attributeValue';
+				kcUsersMock.findOne.mockResolvedValueOnce({
+					...mockedAccount1,
+					attributes: seedAttributes,
+				});
+				return { attributeName, attributeValue };
+			};
+
+			it('should create attributes and set attribute', async () => {
+				const { attributeName, attributeValue } = setup();
+				await idm.setUserAttribute(mockedAccount1.id, attributeName, attributeValue);
+				expect(kcUsersMock.update).toBeCalledWith(
+					expect.objectContaining({ id: mockedAccount1.id }),
+					expect.objectContaining({ attributes: { [attributeName]: attributeValue } })
+				);
+			});
+
+			// only needed to satisfy coverage
+			it('should set the attribute value', async () => {
+				const { attributeName, attributeValue } = setup({});
+				await idm.setUserAttribute(mockedAccount1.id, attributeName, attributeValue);
+				expect(kcUsersMock.update).toBeCalledWith(
+					expect.objectContaining({ id: mockedAccount1.id }),
+					expect.objectContaining({ attributes: { [attributeName]: attributeValue } })
+				);
+			});
+		});
+
+		describe('when user does not exist', () => {
+			const setup = () => {
+				kcUsersMock.findOne.mockResolvedValueOnce(undefined);
+			};
+
+			it('should throw an error', async () => {
+				setup();
+				await expect(idm.setUserAttribute('userId', 'attributeName', 'attributeValue')).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
 		});
 	});
 });

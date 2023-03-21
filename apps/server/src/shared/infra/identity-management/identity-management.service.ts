@@ -88,8 +88,7 @@ export abstract class IdentityManagementService {
 	 */
 	abstract getUserAttribute<TValue extends boolean | number | string>(
 		userId: string,
-		attributeName: string,
-		attributeValue: TValue
+		attributeName: string
 	): Promise<TValue | null>;
 
 	/**
