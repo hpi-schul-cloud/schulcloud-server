@@ -4,7 +4,6 @@ import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum CardElementType {
-	'Title' = 'title',
 	'RichText' = 'richText',
 }
 
@@ -16,20 +15,6 @@ export enum CardElementType {
 export abstract class CardElement extends BaseEntityWithTimestamps {
 	@Enum()
 	cardElementType!: CardElementType;
-}
-
-@Entity({
-	discriminatorValue: CardElementType.Title,
-})
-export class TitleCardElement extends CardElement {
-	constructor(title: string) {
-		super();
-		this.cardElementType = CardElementType.Title;
-		this.value = title;
-	}
-
-	@Property()
-	value!: string;
 }
 
 @Entity({
