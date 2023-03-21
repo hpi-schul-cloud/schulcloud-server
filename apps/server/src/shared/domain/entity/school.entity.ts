@@ -16,6 +16,7 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationStart?: Date;
 	oauthMigrationPossible?: Date;
 	oauthMigrationMandatory?: Date;
 	oauthMigrationFinished?: Date;
@@ -57,6 +58,9 @@ export class School extends BaseEntity {
 
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
+
+	@Property({ nullable: true })
+	oauthMigrationStart?: Date;
 
 	@Property({ nullable: true })
 	oauthMigrationPossible?: Date;
@@ -105,6 +109,7 @@ export class School extends BaseEntity {
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
+		this.oauthMigrationStart = props.oauthMigrationStart;
 		this.oauthMigrationPossible = props.oauthMigrationPossible;
 		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
 		this.oauthMigrationFinished = props.oauthMigrationFinished;

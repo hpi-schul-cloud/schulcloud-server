@@ -31,15 +31,19 @@ export class SchoolService {
 		oauthMigrationFinished?: boolean
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
-		if (oauthMigrationPossible != null) {
-			schoolDo.oauthMigrationPossible = oauthMigrationPossible ? new Date() : undefined;
-			schoolDo.oauthMigrationFinalFinish = undefined;
+		if (oauthMigrationPossible !== undefined) {
+			if (this.isNewMigration(schoolDo)) {
+				this.setMigrationStart(schoolDo, oauthMigrationPossible);
+			} else {
+				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
+				schoolDo.oauthMigrationFinalFinish = undefined;
+			}
 		}
-		if (oauthMigrationMandatory != null) {
-			schoolDo.oauthMigrationMandatory = oauthMigrationMandatory ? new Date() : undefined;
+		if (oauthMigrationMandatory !== undefined) {
+			schoolDo.oauthMigrationMandatory = this.setOrClearDate(oauthMigrationMandatory);
 		}
-		if (oauthMigrationFinished != null) {
-			schoolDo.oauthMigrationFinished = oauthMigrationFinished ? new Date() : undefined;
+		if (oauthMigrationFinished !== undefined) {
+			schoolDo.oauthMigrationFinished = this.setOrClearDate(oauthMigrationFinished);
 			if (schoolDo.oauthMigrationFinished) {
 				schoolDo.oauthMigrationFinalFinish = new Date(
 					schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
@@ -58,6 +62,21 @@ export class SchoolService {
 		});
 
 		return response;
+	}
+
+	private isNewMigration(schoolDo: SchoolDO): boolean {
+		const isNewMigration: boolean = !schoolDo.oauthMigrationFinished && !schoolDo.oauthMigrationPossible;
+		return isNewMigration;
+	}
+
+	private setOrClearDate(migrationFlag: boolean): Date | undefined {
+		const result: Date | undefined = migrationFlag ? new Date() : undefined;
+		return result;
+	}
+
+	private setMigrationStart(schoolDo: SchoolDO, oauthMigrationPossible: boolean): void {
+		schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
+		schoolDo.oauthMigrationStart = schoolDo.oauthMigrationPossible;
 	}
 
 	async getMigration(schoolId: string): Promise<OauthMigrationDto> {

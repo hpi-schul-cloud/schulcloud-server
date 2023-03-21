@@ -29,6 +29,7 @@ export class SchoolUc {
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const migrationStartedAt: Date | undefined = school.oauthMigrationStart;
 
 		const shouldRestartMigration: boolean = this.isRestartMigrationRequired(
 			school,
@@ -50,7 +51,7 @@ export class SchoolUc {
 		);
 
 		if (oauthMigrationFinished) {
-			await this.schoolMigrationService.completeMigration(schoolId);
+			await this.schoolMigrationService.completeMigration(schoolId, migrationStartedAt);
 		}
 
 		return migrationDto;
