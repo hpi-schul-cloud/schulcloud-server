@@ -4,6 +4,7 @@ import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ILoggerConfig } from './interfaces';
 import { LegacyLogger } from './legacy-logger.service';
+import { Logger } from './logger';
 
 @Module({
 	imports: [
@@ -29,7 +30,7 @@ import { LegacyLogger } from './legacy-logger.service';
 			inject: [ConfigService],
 		}),
 	],
-	providers: [LegacyLogger],
-	exports: [LegacyLogger],
+	providers: [LegacyLogger, Logger],
+	exports: [LegacyLogger, Logger],
 })
 export class LoggerModule {}
