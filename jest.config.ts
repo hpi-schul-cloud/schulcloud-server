@@ -9,7 +9,7 @@ const config: Config.InitialOptions = {
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
-		'^.+\\.(t|j)s$': ['ts-jest', { isolatedModules: true }],
+		'^.+\\.(t|j)s$': 'ts-jest',
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
