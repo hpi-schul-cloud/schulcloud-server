@@ -1,6 +1,6 @@
 import { Utils } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Card, CardNode, ColumnNode, EntityId } from '@shared/domain';
+import { BoardNode, Card, CardNode, ColumnNode, EntityId, TextElement } from '@shared/domain';
 import { BoardDoBuilder } from '@shared/domain/entity/boardnode/board-do.builder';
 import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
@@ -37,5 +37,19 @@ export class CardRepo {
 		const builder = new BoardNodeBuilderImpl(parent);
 		const cardNodes = builder.buildBoardNodes(cards, parent.id);
 		await this.boardNodeRepo.save(cardNodes);
+	}
+
+	async deleteElement(card: Card, contentElementId: EntityId): Promise<Card> {
+		const contentElement = await this.boardNodeRepo.findById(BoardNode, contentElementId);
+		const parent = await this.boardNodeRepo.findById(CardNode, card.id);
+
+		const builder = new BoardNodeBuilderImpl(parent);
+		card.elements = card.elements.filter((el) => el.id !== contentElementId);
+		const elementNodes = builder.buildBoardNodes(card.elements, card.id);
+
+		await this.boardNodeRepo.save(elementNodes);
+		await this.boardNodeRepo.deleteWithDescendants(contentElement);
+
+		return card;
 	}
 }

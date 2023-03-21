@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain';
+import { BoardNode, CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -9,6 +9,7 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	textElementFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
@@ -92,6 +93,36 @@ describe(CardRepo.name, () => {
 			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
 			expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
 			expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
+		});
+	});
+
+	describe('deleteElement', () => {
+		const setup = async () => {
+			const cardNode = cardNodeFactory.buildWithId();
+			const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
+			await em.persistAndFlush([cardNode, ...textElementNodes]);
+
+			const card = await repo.findById(cardNode.id);
+
+			return { card, cardNode, textElementNodes };
+		};
+
+		it('should delete an element from a card', async () => {
+			const { card, textElementNodes } = await setup();
+
+			const updatedCard = await repo.deleteElement(card, textElementNodes[0].id);
+			const elementIds = updatedCard.elements.map((el) => el.id);
+
+			expect(updatedCard.elements).toHaveLength(2);
+			expect(elementIds).not.toContain(textElementNodes[0].id);
+		});
+
+		it('should delete an element physically', async () => {
+			const { card, textElementNodes } = await setup();
+
+			await repo.deleteElement(card, textElementNodes[0].id);
+
+			await expect(em.findOneOrFail(BoardNode, textElementNodes[0].id)).rejects.toThrow();
 		});
 	});
 });
