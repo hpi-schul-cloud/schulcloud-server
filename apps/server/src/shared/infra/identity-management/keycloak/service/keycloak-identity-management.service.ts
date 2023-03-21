@@ -141,10 +141,11 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		if (!user) {
 			throw new EntityNotFoundError(`User '${userId}' not found`);
 		}
-		if (!user.attributes || !user.attributes[attributeName]) {
-			return null;
+		if (user.attributes && user.attributes[attributeName] && Array.isArray(user.attributes[attributeName])) {
+			const [value] = (user.attributes[attributeName] as TValue[]) || null;
+			return value;
 		}
-		return user.attributes[attributeName] as TValue;
+		return null;
 	}
 
 	async setUserAttribute<TValue extends boolean | number | string>(
