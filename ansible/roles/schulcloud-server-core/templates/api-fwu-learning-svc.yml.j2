@@ -4,7 +4,7 @@ metadata:
   name: api-fwu-learning-svc
   namespace: {{ NAMESPACE }}
   labels:
-    app: fwu-learnstore
+    app: api-fwu
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '4446'
@@ -14,6 +14,6 @@ spec:
     - port: 4446
       targetPort: 4446
       protocol: TCP
-      name: api-fwu-learning
+      name: api-fwu
   selector:
-    app: api-fwu-learning
+    app: api-fwu
