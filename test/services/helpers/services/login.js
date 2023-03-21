@@ -13,11 +13,22 @@ const userdata = (user, account) => {
 const getpayload = (user, account) => {
 	const currentTime = Math.floor(Date.now() / 1000);
 	const dataFromUser = userdata(user, account);
-	const expirsIn = currentTime + 3600;
+	const fieldsFromUser = {
+		id: user.id,
+		createdAt: user.createdAt,
+		updatedAt: user.updatedAt,
+		firstName: user.firstName,
+		lastName: user.lastName,
+		roles: user.roles,
+		schoolId: user.schoolId,
+		permissions: user.permissions,
+	};
+
 	return {
 		accountId: dataFromUser.accountId,
 		systemId: dataFromUser.systemId,
 		userId: dataFromUser.userId,
+		user: fieldsFromUser,
 		schoolId: dataFromUser.schoolId,
 		roles: dataFromUser.roles,
 		iat: currentTime,
@@ -35,6 +46,7 @@ const generateJWT =
 			_id: accounts[0].userId,
 		});
 		const token = await app.service('authentication').createAccessToken(getpayload(user, accounts[0]));
+		console.log(token);
 		return token;
 	};
 
