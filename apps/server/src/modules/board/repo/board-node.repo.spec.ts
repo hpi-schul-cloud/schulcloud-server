@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -135,6 +136,44 @@ describe('BoardNodeRepo', () => {
 			expect(result[root.pathOfChildren]).toHaveLength(2);
 			expect(result[level1[0].pathOfChildren]).toHaveLength(2);
 			expect(result[level2[1].pathOfChildren]).toHaveLength(2);
+		});
+	});
+
+	describe('save', () => {
+		it('should create new board nodes', async () => {
+			const nodes = cardNodeFactory.buildListWithId(3);
+
+			await repo.save(nodes);
+			em.clear();
+
+			const result = await em.find(CardNode, {});
+			expect(result).toEqual(nodes);
+		});
+
+		it('should update existing board nodes', async () => {
+			const node = cardNodeFactory.buildWithId({ title: 'before' });
+			await em.persistAndFlush(node);
+			node.title = 'after';
+
+			await repo.save(node);
+			em.clear();
+
+			const result = await em.findOneOrFail(CardNode, node.id);
+			expect(result.title).toEqual('after');
+		});
+
+		it('should be able to do both - create and update', async () => {
+			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+			await em.persistAndFlush(node1);
+			em.clear();
+			const node2 = cardNodeFactory.buildWithId({ title: 'created' });
+			node1.title = 'after';
+
+			await repo.save([node1, node2]);
+			em.clear();
+
+			const result = await em.find(CardNode, {});
+			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
 		});
 	});
 });

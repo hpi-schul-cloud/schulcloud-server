@@ -1,9 +1,9 @@
 /* istanbul ignore file */
-import { Card } from '@shared/domain';
+import { Card, CardProps } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { Factory } from 'fishery';
+import { BaseFactory } from '../../base.factory';
 
-export const cardFactory = Factory.define<Card>(({ sequence }) => {
+export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence }) => {
 	return {
 		id: new ObjectId().toHexString(),
 		title: `card #${sequence}`,
