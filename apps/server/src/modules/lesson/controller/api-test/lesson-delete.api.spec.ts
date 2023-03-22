@@ -135,7 +135,6 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					// return value match
 				});
 			});
 		});

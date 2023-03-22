@@ -1,4 +1,5 @@
-import { Permission, Role, School } from '@shared/domain';
+import { Permission, Role, School, EntityId, Account, User } from '@shared/domain';
+import { ObjectId } from 'bson';
 import _ from 'lodash';
 import { userPermissions, studentPermissions, teacherPermissions, adminPermissions } from '../user-role-permissions';
 import { accountFactory } from './account.factory';
@@ -6,35 +7,56 @@ import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
-export class UserAndAccountTestFactory {
-	// role names from seed and new roles
-	static buildUser(role: Role, school: School = schoolFactory.build()) {
-		const user = userFactory.withRole(role).buildWithId({ school });
-		const account = accountFactory.build({ userId: user.id });
+interface UserAndAccountParams {
+	username?: string;
+	systemId?: EntityId | ObjectId;
+	firstName?: string;
+	lastName?: string;
+	email?: string;
+	school?: School;
+}
 
-		return { account, user, school };
+export class UserAndAccountTestFactory {
+	public static buildUser(
+		role: Role,
+		params: UserAndAccountParams = {}
+	): { account: Account; user: User; school: School } {
+		const school = params.school || schoolFactory.build();
+		const user = userFactory.withRole(role).buildWithId({ school });
+		const account = accountFactory.withSystemId(params.systemId).build({ userId: user.id });
+
+		return { account, user, school: user.school };
 	}
 
-	static buildStudent(additionalPermissions?: Permission[]) {
+	public static buildStudent(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { studentAccount: Account; studentUser: User; school: School } {
 		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
-		const teacherRole = roleFactory.buildWithId({ permissions });
-		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
+		const studentRole = roleFactory.buildWithId({ permissions });
+		const { account, user, school } = UserAndAccountTestFactory.buildUser(studentRole, params);
 
 		return { studentAccount: account, studentUser: user, school };
 	}
 
-	static buildTeacher(additionalPermissions?: Permission[]) {
+	public static buildTeacher(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { teacherAccount: Account; teacherUser: User; school: School } {
 		const permissions = _.union(userPermissions, teacherPermissions, additionalPermissions);
 		const teacherRole = roleFactory.buildWithId({ permissions });
-		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
+		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole, params);
 
 		return { teacherAccount: account, teacherUser: user, school };
 	}
 
-	static buildAdmin(additionalPermissions?: Permission[]) {
+	public static buildAdmin(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { adminAccount: Account; adminUser: User; school: School } {
 		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
-		const teacherRole = roleFactory.buildWithId({ permissions });
-		const { account, user, school } = UserAndAccountTestFactory.buildUser(teacherRole);
+		const adminRole = roleFactory.buildWithId({ permissions });
+		const { account, user, school } = UserAndAccountTestFactory.buildUser(adminRole, params);
 
 		return { adminAccount: account, adminUser: user, school };
 	}
