@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IAccount } from '@shared/domain';
@@ -13,6 +13,7 @@ describe('AccountIdmService', () => {
 	let module: TestingModule;
 	let accountIdmService: AccountServiceIdm;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
+	let configServiceMock: DeepMocked<ConfigService>;
 
 	const mockIdmAccountRefId = 'tecId';
 	const mockIdmAccount: IAccount = {
@@ -29,32 +30,30 @@ describe('AccountIdmService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot(),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-								FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY: true,
-							};
-						},
-					],
-				}),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				AccountServiceIdm,
 				{
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>({
+						get: <T = unknown>(key: string): T => {
+							const config = {
+								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+								FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY: true,
+							};
+							return config[key] as T;
+						},
+					}),
+				},
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
 		idmServiceMock = module.get(IdentityManagementService);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -172,6 +171,8 @@ describe('AccountIdmService', () => {
 
 	describe('delete', () => {
 		const setup = () => {
+			configServiceMock.get.mockReturnValue(false);
+			idmServiceMock.findAccountByTecRefId.mockResolvedValue(mockIdmAccount);
 			idmServiceMock.findAccountByFctIntId.mockResolvedValue(mockIdmAccount);
 		};
 
@@ -180,7 +181,7 @@ describe('AccountIdmService', () => {
 			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
 
 			await expect(accountIdmService.delete(mockIdmAccountRefId)).resolves.not.toThrow();
-			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.attRefTechnicalId);
+			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
 		});
 	});
 

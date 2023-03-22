@@ -3,6 +3,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 
@@ -148,6 +149,7 @@ describe('AccountValidationService', () => {
 		oprhanAccount = accountFactory.buildWithId({
 			username: 'orphan@account',
 			userId: undefined,
+			systemId: new ObjectId(),
 		});
 
 		mockAccounts = [
