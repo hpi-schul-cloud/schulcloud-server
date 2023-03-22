@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, CardNode, EntityId, TextElement } from '@shared/domain';
+import { Card, EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
@@ -8,7 +8,7 @@ export class ContentElementService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async createElement(cardId: EntityId): Promise<TextElement> {
-		const card = (await this.boardDoRepo.findById(CardNode, cardId)) as Card;
+		const card = (await this.boardDoRepo.findById(cardId)) as Card;
 
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
@@ -25,7 +25,7 @@ export class ContentElementService {
 	}
 
 	async deleteElement(cardId: EntityId, contentElementId: EntityId) {
-		const card = (await this.boardDoRepo.findById(CardNode, cardId)) as Card;
+		const card = (await this.boardDoRepo.findById(cardId)) as Card;
 
 		const child = card.children.find((el) => el.id === contentElementId);
 		if (child === undefined) {

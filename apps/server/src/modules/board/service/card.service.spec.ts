@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -41,16 +40,17 @@ describe(CardService.name, () => {
 
 	describe('finding one specific card', () => {
 		const setup = () => {
-			const card = cardFactory.build();
+			const card = cardFactory.buildWithId();
 			return { card, cardId: card.id };
 		};
 
 		it('should call the card repository', async () => {
-			const { cardId } = setup();
+			const { card, cardId } = setup();
+			boardDoRepo.findById.mockResolvedValueOnce(card);
 
 			await service.findById(cardId);
 
-			expect(boardDoRepo.findById).toHaveBeenCalledWith(CardNode, cardId);
+			expect(boardDoRepo.findById).toHaveBeenCalledWith(cardId);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
@@ -76,7 +76,7 @@ describe(CardService.name, () => {
 
 			await service.findByIds(cardIds);
 
-			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(CardNode, cardIds);
+			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
 		});
 
 		it('should return the domain objects from the card repository', async () => {

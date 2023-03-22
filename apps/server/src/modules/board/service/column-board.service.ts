@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard, ColumnBoardNode, EntityId } from '@shared/domain';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Column, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
@@ -8,8 +8,11 @@ export class ColumnBoardService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const board = await this.boardDoRepo.findById(ColumnBoardNode, boardId);
-		return board as ColumnBoard;
+		const board = await this.boardDoRepo.findById(boardId);
+		if (board instanceof ColumnBoard) {
+			return board;
+		}
+		throw new NotFoundException('there is no columboard with this id');
 	}
 
 	async createBoard(): Promise<ColumnBoard> {
@@ -27,7 +30,7 @@ export class ColumnBoardService {
 	}
 
 	async createColumn(boardId: EntityId): Promise<Column> {
-		const board = (await this.boardDoRepo.findById(ColumnBoardNode, boardId)) as ColumnBoard;
+		const board = (await this.boardDoRepo.findById(boardId)) as ColumnBoard;
 
 		const column = new Column({
 			id: new ObjectId().toHexString(),

@@ -1,7 +1,7 @@
-import { EntityName, FilterQuery, Utils } from '@mikro-orm/core';
+import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
+import { AnyBoardDo, BoardNode, BoardNodeType, EntityId } from '@shared/domain';
 import { BoardDoBuilder } from '@shared/domain/entity/boardnode/board-do.builder';
 import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
@@ -10,16 +10,16 @@ import { BoardNodeRepo } from './board-node.repo';
 export class BoardDoRepo {
 	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
 
-	async findById<T extends BoardNode>(entityName: EntityName<T>, boardId: EntityId): Promise<AnyBoardDo> {
-		const boardNode = await this.em.findOneOrFail(entityName, boardId as FilterQuery<T>);
+	async findById(id: EntityId): Promise<AnyBoardDo> {
+		const boardNode = await this.em.findOneOrFail(BoardNode, id);
 		const descendants = await this.boardNodeRepo.findDescendants(boardNode);
 		const domainObject = new BoardDoBuilder(descendants).buildDomainObject(boardNode);
 
 		return domainObject;
 	}
 
-	async findByIds<T extends BoardNode>(entityName: EntityName<T>, ids: EntityId[]): Promise<AnyBoardDo[]> {
-		const boardNodes = await this.boardNodeRepo.findByIds(entityName, ids);
+	async findByIds(ids: EntityId[]): Promise<AnyBoardDo[]> {
+		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
 		const childrenMap = await this.boardNodeRepo.findChildrenOfMany(boardNodes);
 

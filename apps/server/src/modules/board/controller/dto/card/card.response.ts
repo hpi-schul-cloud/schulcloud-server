@@ -1,7 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { TimestampsResponse } from '../timestamps.response';
-import { TimestampsResponse } from '../timestamps.response';
 import { AnyContentElementResponse } from './any-content-element.response';
 import { TextElementResponse } from './text-element.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
@@ -39,9 +38,6 @@ export class CardResponse {
 
 	@ApiProperty()
 	visibilitySettings: VisibilitySettingsResponse;
-
-	@ApiProperty()
-	timestamps: TimestampsResponse;
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;
