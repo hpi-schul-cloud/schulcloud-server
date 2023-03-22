@@ -6,6 +6,11 @@ import { BoardDoRepo } from '../repo';
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
+	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
+		const parent = await this.boardDoRepo.findParentOfId(childId);
+		return parent;
+	}
+
 	async deleteChild<T extends AnyBoardDo>(parent: T, childId: EntityId): Promise<T> {
 		if (parent.children === undefined) {
 			throw new NotFoundException('child does not exist');

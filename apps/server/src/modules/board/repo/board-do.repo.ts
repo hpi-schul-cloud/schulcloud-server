@@ -32,19 +32,26 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
-	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
-		const domainObjects = Utils.asArray(domainObject);
-		const parent = await this.getParent(parentId);
-		const builder = new BoardNodeBuilderImpl(parent);
-		const boardNodes = builder.buildBoardNodes(domainObjects, parent?.id);
-		await this.boardNodeRepo.save(boardNodes);
-	}
-
-	private async getParent(parentId?: EntityId): Promise<BoardNode | undefined> {
-		if (parentId) {
-			return this.boardNodeRepo.findById(BoardNode, parentId);
+	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
+		const boardNode = await this.em.findOneOrFail(BoardNode, childId);
+		if (boardNode?.parentId) {
+			const parent = await this.em.findOneOrFail(BoardNode, boardNode.parentId);
+			const descendants = await this.boardNodeRepo.findDescendants(boardNode);
+			const domainObject = new BoardDoBuilder(descendants).buildDomainObject(parent);
+			return domainObject;
 		}
 		return undefined;
+	}
+
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
+		const getParent = async (id?: EntityId): Promise<BoardNode | undefined> =>
+			id ? this.boardNodeRepo.findById(BoardNode, id) : undefined;
+
+		const domainObjects = Utils.asArray(domainObject);
+		const parentNode = await getParent(parentId);
+		const builder = new BoardNodeBuilderImpl(parentNode);
+		const boardNodes = builder.buildBoardNodes(domainObjects, parentNode?.id);
+		await this.boardNodeRepo.save(boardNodes);
 	}
 
 	async deleteChild<T extends AnyBoardDo>(parent: T, childId: EntityId): Promise<T> {
