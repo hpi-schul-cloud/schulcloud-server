@@ -43,7 +43,9 @@ export class SchoolMigrationService {
 		if (!officialSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Official school number from target migration system is missing',
-				'ext_official_school_number_missing'
+				'ext_official_school_number_missing',
+				sourceSystem,
+				targetSystemId
 			);
 		}
 
