@@ -21,10 +21,7 @@ export class FwuLearningContentsController {
 		const path = `${req.params[0]}/${params.fwuLearningContent}`;
 		const response = await this.fwuLearningContentsUc.get(path);
 		const startIndexOfContentType = params.fwuLearningContent.lastIndexOf('.');
-		const contentType =
-			startIndexOfContentType !== -1
-				? params.fwuLearningContent.slice(startIndexOfContentType)
-				: 'application/octet-stream';
+		const contentType = params.fwuLearningContent.slice(startIndexOfContentType);
 
 		res.type(contentType);
 		res.send(response);
