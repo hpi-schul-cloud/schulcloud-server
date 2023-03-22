@@ -11,6 +11,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { SchoolMigrationService } from './school-migration.service';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { ICurrentUser } from '../../authentication';
 
 describe('SchoolMigrationService', () => {
 	let module: TestingModule;
@@ -53,20 +54,27 @@ describe('SchoolMigrationService', () => {
 
 	const setup = () => {
 		const oauthMigrationPossible = new Date(2023, 2, 26);
+
 		const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 			id: 'schoolId',
 			name: 'schoolName',
-			officialSchoolNumber: '3',
+			officialSchoolNumber: 'officialSchoolNumber',
 			externalId: 'firstExternalId',
 			oauthMigrationFinished: new Date(2023, 2, 27),
 			oauthMigrationPossible,
 		});
 
+		const currentUser: ICurrentUser = { userId: 'userId', schoolId: 'schoolId', systemId: 'systemId' } as ICurrentUser;
+
 		const userDO: UserDO = {
 			id: 'userId',
 			schoolId: schoolDO.id as string,
 		} as UserDO;
-		const targetSystemId = 'targetSystemId';
+
+		const officialSchoolNumberFromSource = 'officialSchoolNumber';
+		const officialSchoolNumberFromTarget = 'officialSchoolNumber';
+		const sourceSystemId = 'systemId';
+		const targetSystemId = 'systemId';
 
 		return {
 			currentUserId: userDO.id as string,
@@ -75,18 +83,22 @@ describe('SchoolMigrationService', () => {
 			schoolId: schoolDO.id as string,
 			externalId: schoolDO.externalId as string,
 			userDO,
-			targetSystemId,
 			firstExternalId: schoolDO.externalId,
 			oauthMigrationPossible,
+			currentUser,
+			sourceSystemId,
+			targetSystemId,
+			officialSchoolNumberFromSource,
+			officialSchoolNumberFromTarget,
 		};
 	};
 
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {
 			it('should throw an error', async () => {
-				const { currentUserId, externalId } = setup();
+				const { currentUser, externalId, targetSystemId } = setup();
 
-				const func = () => service.schoolToMigrate(currentUserId, externalId, undefined);
+				const func = () => service.schoolToMigrate(currentUser.userId, externalId, undefined, targetSystemId);
 
 				await expect(func()).rejects.toThrow(
 					new OAuthMigrationError(
@@ -99,33 +111,38 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school could not be found with official school number', () => {
 			it('should throw an error', async () => {
-				const { currentUserId, externalId, officialSchoolNumber } = setup();
+				const { currentUserId, externalId, officialSchoolNumber, targetSystemId, sourceSystemId } = setup();
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
 
-				const func = () => service.schoolToMigrate(currentUserId, externalId, officialSchoolNumber);
+				const func = () => service.schoolToMigrate(currentUserId, externalId, officialSchoolNumber, targetSystemId);
 
 				await expect(func()).rejects.toThrow(
 					new OAuthMigrationError(
 						'Could not find school by official school number from target migration system',
-						'ext_official_school_number_mismatch'
+						'ext_official_school_missing',
+						sourceSystemId,
+						targetSystemId
 					)
 				);
 			});
 		});
 
-		describe('when current user is not in the school to migrate to', () => {
+		describe('when current users school not match with school of to migrate user ', () => {
 			it('should throw an error', async () => {
-				const { currentUserId, externalId, schoolDO, userDO } = setup();
+				const { currentUserId, externalId, schoolDO, userDO, targetSystemId, sourceSystemId } = setup();
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 				userDO.schoolId = 'anotherSchool';
 				userService.findById.mockResolvedValue(userDO);
 
-				const func = () => service.schoolToMigrate(currentUserId, externalId, schoolDO.officialSchoolNumber);
+				const func = () =>
+					service.schoolToMigrate(currentUserId, externalId, schoolDO.officialSchoolNumber, targetSystemId);
 
 				await expect(func()).rejects.toThrow(
 					new OAuthMigrationError(
 						'Current users school is not the same as school found by official school number from target migration system',
-						'ext_official_school_number_mismatch'
+						'ext_official_school_number_mismatch',
+						sourceSystemId,
+						targetSystemId
 					)
 				);
 			});
@@ -133,14 +150,16 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school was already migrated', () => {
 			it('should return null ', async () => {
-				const { currentUserId, externalId, schoolDO, userDO } = setup();
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
+				const { currentUserId, externalId, schoolDO, userDO, targetSystemId } = setup();
 				userService.findById.mockResolvedValue(userDO);
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 
 				const result: SchoolDO | null = await service.schoolToMigrate(
 					currentUserId,
 					externalId,
-					schoolDO.officialSchoolNumber
+					schoolDO.officialSchoolNumber,
+					targetSystemId
 				);
 
 				expect(result).toBeNull();
@@ -149,14 +168,16 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school has to be migrated', () => {
 			it('should return migrated school', async () => {
-				const { currentUserId, schoolDO, userDO } = setup();
+				const { currentUserId, schoolDO, userDO, targetSystemId } = setup();
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
 				userService.findById.mockResolvedValue(userDO);
 
 				const result: SchoolDO | null = await service.schoolToMigrate(
 					currentUserId,
 					'newExternalId',
-					schoolDO.officialSchoolNumber
+					schoolDO.officialSchoolNumber,
+					targetSystemId
 				);
 
 				expect(result).toEqual(schoolDO);

@@ -329,7 +329,10 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${clientUrl}/login?error=sso_auth_code_step`);
+					.expect(
+						'Location',
+						`${clientUrl}/migration/error?errorcode=OauthMigrationFailed&sourceSystem=undefined&targetSystem=undefined&sourceSchoolNumber=undefined&targetSchoolNumber=undefined`
+					);
 			});
 		});
 
