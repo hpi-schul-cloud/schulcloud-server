@@ -46,7 +46,6 @@ const generateJWT =
 			_id: accounts[0].userId,
 		});
 		const token = await app.service('authentication').createAccessToken(getpayload(user, accounts[0]));
-		console.log(token);
 		return token;
 	};
 
