@@ -11,10 +11,10 @@ export class BoardDoService {
 			throw new NotFoundException('child does not exist');
 		}
 
-		parent.children = parent.children?.filter((el) => el.id !== childId);
-
-		await this.boardDoRepo.save(parent.children, parent.id);
 		await this.boardDoRepo.deleteChild(parent, childId);
+
+		parent.children = parent.children?.filter((el) => el.id !== childId);
+		await this.boardDoRepo.save(parent.children, parent.id);
 
 		return parent;
 	}

@@ -3,7 +3,7 @@ import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
 import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
-import { ColumnBoardService, CardService, ContentElementService } from './service';
+import { BoardDoService, CardService, ColumnBoardService, ContentElementService } from './service';
 import { BoardManagementUc } from './uc';
 
 @Module({
@@ -16,7 +16,8 @@ import { BoardManagementUc } from './uc';
 		ColumnBoardService,
 		CardService,
 		ContentElementService,
+		BoardDoService,
 	],
-	exports: [ColumnBoardService, CardService, ContentElementService],
+	exports: [ColumnBoardService, CardService, ContentElementService, BoardDoService],
 })
 export class BoardModule {}

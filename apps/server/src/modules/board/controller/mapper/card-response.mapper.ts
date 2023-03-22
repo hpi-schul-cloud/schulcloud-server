@@ -8,7 +8,7 @@ export class CardResponseMapper {
 			id: card.id,
 			title: card.title,
 			height: card.height,
-			elements: card.elements.map((element) => TextElementResponseMapper.mapToResponse(element)),
+			elements: card.children.map((element) => TextElementResponseMapper.mapToResponse(element)),
 			visibilitySettings: new VisibilitySettingsResponse({}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: card.updatedAt, createdAt: card.createdAt }),
 		});

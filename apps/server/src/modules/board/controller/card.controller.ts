@@ -48,7 +48,7 @@ export class CardController {
 		return response;
 	}
 
-	@Delete(':cardId/elements/:elementId')
+	@Delete(':cardId/elements/:contentElementId')
 	async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser

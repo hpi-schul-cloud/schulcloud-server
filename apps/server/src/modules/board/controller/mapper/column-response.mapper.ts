@@ -6,7 +6,7 @@ export class ColumnResponseMapper {
 		const result = new ColumnResponse({
 			id: column.id,
 			title: column.title,
-			cards: column.cards.map(
+			cards: column.children.map(
 				(card) =>
 					new CardSkeletonResponse({
 						cardId: card.id,

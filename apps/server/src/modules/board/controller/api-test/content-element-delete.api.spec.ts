@@ -79,7 +79,7 @@ describe(`content element create (api)`, () => {
 		const element = textElementNodeFactory.buildWithId({ parent: cardNode });
 		const sibling = textElementNodeFactory.buildWithId({ parent: cardNode });
 
-		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element]);
+		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
 		em.clear();
 
 		return { user, columnBoardNode, columnNode, cardNode, element, sibling };
