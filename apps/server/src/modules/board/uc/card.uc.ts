@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { ContentElementService } from '../service';
+import { BoardDoService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
+		private readonly boardDoService: BoardDoService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
 	) {
@@ -40,5 +41,17 @@ export class CardUc {
 		const element = await this.elementService.createElement(card.id);
 
 		return element;
+	}
+
+	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<Card> {
+		this.logger.debug({ action: 'deleteElement', userId, cardId, contentElementId });
+
+		const card = await this.cardService.findById(cardId);
+
+		// TODO check permissions
+
+		const updatedCard = await this.boardDoService.deleteChild(card, contentElementId);
+
+		return updatedCard;
 	}
 }

@@ -52,6 +52,12 @@ export class BoardDoRepo {
 			throw new Error('parent has no children');
 		}
 
+		const hasChild = parent.children.some((el) => el.id === childId);
+
+		if (hasChild === false) {
+			throw new Error('child does not belong to parent');
+		}
+
 		const childNode = await this.boardNodeRepo.findById(BoardNode, childId);
 		const parentNode = await this.boardNodeRepo.findById(BoardNode, parent.id);
 
