@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, InternalServerErrorException, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Req, Res, InternalServerErrorException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
