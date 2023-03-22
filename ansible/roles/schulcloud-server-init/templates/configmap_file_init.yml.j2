@@ -493,7 +493,7 @@ data:
                -X POST $HYDRA_URI/clients \
                -d '{
                      "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-                     "client_id": "nextcloud",
+                     "client_id": "'$NEXTCLOUD_CLIENT_ID'",
                      "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
                      "scope": "'"$NEXTCLOUD_SCOPES"'",
                      "token_endpoint_auth_method": "client_secret_post",
