@@ -8,6 +8,7 @@ import { SystemResponseMapper } from './system-response.mapper';
 function assertOauthConfig(expected: OauthConfigDto | undefined, actual: OauthConfigResponse | undefined): boolean {
 	if (expected != null && actual != null) {
 		expect(actual.clientId).toBe(expected.clientId);
+		expect(actual.idpHint).toBe(expected.idpHint);
 		expect(actual.grantType).toBe(expected.grantType);
 		expect(actual.tokenEndpoint).toBe(expected.tokenEndpoint);
 		expect(actual.authEndpoint).toBe(expected.authEndpoint);

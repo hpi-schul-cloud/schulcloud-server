@@ -17,10 +17,7 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	NEXTCLOUD: 'nextcloud',
-	MESSENGER: 'messenger',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
-	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
-	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
 };
 
@@ -71,6 +68,7 @@ const schoolSchema = new Schema(
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
 		ldapSchoolIdentifier: { type: String },
+		previousExternalId: { type: String, required: false },
 		ldapLastSync: { type: String },
 		updatedAt: { type: Date, default: Date.now },
 		experimental: { type: Boolean, default: false },
@@ -95,9 +93,11 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		inUserMigration: { type: Boolean },
+		oauthMigrationStart: { type: Date },
 		oauthMigrationPossible: { type: Date },
 		oauthMigrationMandatory: { type: Date },
 		oauthMigrationFinished: { type: Date },
+		oauthMigrationFinalFinish: { type: Date },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
 		tombstoneUserId: {

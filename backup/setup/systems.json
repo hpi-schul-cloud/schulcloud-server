@@ -7,11 +7,12 @@
 		"updatedAt": {
 			"$date": "2022-07-12T14:01:58.588Z"
 		},
-		"type": "oidc",
+		"type": "ldap",
 		"provisioningStrategy": "oidc",
 		"alias": "oidcmock",
 		"displayName": "OIDCMOCK",
-		"config": {
+		"oidcConfig": {
+			"idpHint": "oidcmock",
 			"clientId": "${OIDCMOCK__CLIENT_ID}",
 			"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",
 			"authorizationUrl": "${OIDCMOCK__BASE_URL}/connect/authorize",
@@ -19,6 +20,40 @@
 			"logoutUrl": "${OIDCMOCK__BASE_URL}/connect/endsession",
 			"userinfoUrl": "${OIDCMOCK__BASE_URL}/connect/userinfo",
 			"defaultScopes": "openid profile email"
-		}
+		},
+		"ldapConfig": {
+			"providerOptions": {
+			  "userAttributeNameMapping": {
+				"givenName": "givenName",
+				"sn": "sn",
+				"uuid": "uuid",
+				"uid": "uid",
+				"mail": "mail",
+				"role": "memberOf",
+				"dn": "dn"
+			  },
+			  "roleAttributeNameMapping": {
+				"roleStudent": "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+				"roleTeacher": "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+				"roleAdmin": "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+				"roleNoSc": "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
+			  },
+			  "classAttributeNameMapping": {
+				"dn": "dn"
+			  },
+			  "userPathAdditions": "ou=users",
+			  "roleType": "group",
+			  "schoolName": "OIDCMOCK School"
+			},
+			"url": "ldap://127.0.0.1:389",
+			"rootPath": "o=schoolOne0,dc=de,dc=example,dc=org",
+			"searchUser": "cn=admin,dc=example,dc=org",
+			"searchUserPassword": "admin",
+			"provider": "general",
+			"federalState": {
+			  "$oid": "0000b186816abba584714c53"
+			},
+			"active": true
+		  }
 	}
 ]

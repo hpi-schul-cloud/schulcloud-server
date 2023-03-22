@@ -1,12 +1,12 @@
-import { User, IUserProperties, RoleName } from '@shared/domain';
+import { IUserProperties, RoleName, User } from '@shared/domain';
 import { DeepPartial } from 'fishery';
-import { schoolFactory } from './school.factory';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
+import { schoolFactory } from './school.factory';
 
 class UserFactory extends BaseFactory<User, IUserProperties> {
 	withRole(name: RoleName): this {
-		const params: DeepPartial<IUserProperties> = { roles: roleFactory.buildList(1, { name }) };
+		const params: DeepPartial<IUserProperties> = { roles: [roleFactory.buildWithId({ name })] };
 		return this.params(params);
 	}
 }

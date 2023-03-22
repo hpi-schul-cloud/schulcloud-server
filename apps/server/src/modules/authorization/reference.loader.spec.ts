@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,19 +7,18 @@ import {
 	CourseGroupRepo,
 	CourseRepo,
 	LessonRepo,
+	SchoolExternalToolRepo,
 	SchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
-	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {
-	let orm: MikroORM;
 	let service: ReferenceLoader;
 	let userRepo: DeepMocked<UserRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
@@ -34,7 +32,7 @@ describe('reference.loader', () => {
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -90,12 +88,8 @@ describe('reference.loader', () => {
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
-	beforeEach(() => {
-		jest.restoreAllMocks();
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	it('should to be defined', () => {

@@ -70,6 +70,42 @@ docker run `
   ghcr.io/soluto/oidc-server-mock:0.6.0
 ```
 
+### Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering with LDAP provisioning
+
+The broker feature can be setup in conjunction with LDAP provisioning for local testing purpose. Therefore, run the sc-openldap-single container:
+
+```bash
+docker run \
+  --name sc-openldap-single \
+  -p 389:389 \
+  ghcr.io/hpi-schul-cloud/sc-openldap-single:latest
+```
+
+```pwsh
+docker run `
+  --name sc-openldap-single `
+  -p 389:389 `
+  ghcr.io/hpi-schul-cloud/sc-openldap-single:latest
+```
+
+The LDAP provisioning is trigger as follows:
+
+```bash
+curl -X POST \
+  'http://localhost:3030/api/v1/sync?target=ldap' \
+  --header 'Accept: */*' \
+  --header 'X-API-KEY: example'
+```
+
+```pwsh
+Invoke-RestMethod `
+ -Uri 'http://localhost:3030/api/v1/sync?target=ldap' `
+ -Method Post `
+ -Headers @{ "Accept" = "*/*"; "X-API-KEY" = "example" }
+```
+
+See '/tmp/config/users-config.json' for the users details.
+
 ## Test local environment
 
 You may test your local setup executing 'keycloak-identity-management.integration.spec.ts':

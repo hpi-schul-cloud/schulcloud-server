@@ -1,4 +1,5 @@
 import { SchoolFeatures, SchoolYear } from '../entity';
+import { EntityId } from '../types';
 import { BaseDO } from './base.do';
 
 export class SchoolDO extends BaseDO {
@@ -8,10 +9,28 @@ export class SchoolDO extends BaseDO {
 
 	inUserMigration?: boolean;
 
+	/**
+	 * The start date of the current oauth migration
+	 * @param oauthMigrationStart
+	 */
+	oauthMigrationStart?: Date;
+
+	/**
+	 * The last (re)start date of the current oauth migration
+	 * @param oauthMigrationPossible
+	 */
 	oauthMigrationPossible?: Date;
 
+	/**
+	 * The last date, when the current oauth migration has been made mandatory
+	 * @param oauthMigrationMandatory
+	 */
 	oauthMigrationMandatory?: Date;
 
+	/**
+	 * The last date, when the current oauth migration has been completed
+	 * @param oauthMigrationFinished
+	 */
 	oauthMigrationFinished?: Date;
 
 	previousExternalId?: string;
@@ -20,7 +39,7 @@ export class SchoolDO extends BaseDO {
 
 	officialSchoolNumber?: string;
 
-	systems?: string[];
+	systems?: EntityId[];
 
 	features?: SchoolFeatures[];
 
@@ -34,6 +53,7 @@ export class SchoolDO extends BaseDO {
 		this.inMaintenanceSince = params.inMaintenanceSince;
 		this.inUserMigration = params.inUserMigration;
 		this.name = params.name;
+		this.oauthMigrationStart = params.oauthMigrationStart;
 		this.oauthMigrationMandatory = params.oauthMigrationMandatory;
 		this.oauthMigrationPossible = params.oauthMigrationPossible;
 		this.oauthMigrationFinished = params.oauthMigrationFinished;
