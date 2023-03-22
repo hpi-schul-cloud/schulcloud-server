@@ -4,17 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import {
-	CardElement,
-	CardElementType,
-	CardRichTextElementResponse,
-	CardTitleElementResponse,
-	InputFormat,
-	Permission,
-	Task,
-	TaskCard,
-} from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -23,9 +13,9 @@ import {
 	roleFactory,
 	taskCardFactory,
 	taskFactory,
-	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
@@ -89,14 +79,7 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const params = {
-				cardElements: [
-					{
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
-				],
+				title: 'title',
 			};
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
@@ -141,16 +124,8 @@ describe('Task-Card Controller (api)', () => {
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
-
 			const params = {
-				cardElements: [
-					{
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
-				],
+				title: 'title',
 			};
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -164,10 +139,9 @@ describe('Task-Card Controller (api)', () => {
 		it('GET :id should return existing task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 			const title = 'title test';
-			const titleCardElement = titleCardElementFactory.build(title);
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
-			const taskCard = taskCardFactory.buildWithId({ creator: user, cardElements: [titleCardElement], task });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 
 			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
@@ -193,13 +167,8 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const taskCardParams = {
+				title: 'test title',
 				cardElements: [
-					{
-						content: {
-							type: 'title',
-							value: 'title test',
-						},
-					},
 					{
 						content: {
 							type: 'richText',
@@ -226,13 +195,15 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 			const expectedDueDate = user.school.schoolYear?.endDate;
 
-			expect(responseTaskCard.cardElements.length).toEqual(3);
-			expect(responseTaskCard.task.name).toEqual('title test');
+			expect(responseTaskCard.cardElements?.length).toEqual(2);
+			expect(responseTaskCard.task.name).toEqual('test title');
+			expect(responseTaskCard.title).toEqual('test title');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
 			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
+			expect(responseTaskCard.task.status.isDraft).toEqual(false);
 		});
 		it('DELETE should remove task-card, its card-elements and associated task', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
@@ -240,7 +211,7 @@ describe('Task-Card Controller (api)', () => {
 			const task = taskFactory.build({ creator: user });
 			const taskCard = taskCardFactory.build({
 				creator: user,
-				cardElements: [titleCardElementFactory.buildWithId(), richTextCardElementFactory.buildWithId()],
+				cardElements: [richTextCardElementFactory.buildWithId()],
 				task,
 			});
 
@@ -249,7 +220,7 @@ describe('Task-Card Controller (api)', () => {
 
 			const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
 			const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
-			expect(foundCardElementsInitial[1]).toEqual(2);
+			expect(foundCardElementsInitial[1]).toEqual(1);
 
 			currentUser = mapUserToCurrentUser(user);
 
@@ -270,11 +241,10 @@ describe('Task-Card Controller (api)', () => {
 		it('PATCH should update the task card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 			const title = 'title test';
-			const titleCardElement = titleCardElementFactory.buildWithId(title);
 			const richTextCardElement = richTextCardElementFactory.buildWithId();
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
-			const taskCard = taskCardFactory.buildWithId({ creator: user, cardElements: [titleCardElement], task });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 
 			await em.persistAndFlush([user, task, taskCard]);
 			em.clear();
@@ -284,14 +254,8 @@ describe('Task-Card Controller (api)', () => {
 			const inThreeDays = new Date(Date.now() + 259200000);
 			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
+				title: 'updated title',
 				cardElements: [
-					{
-						id: titleCardElement.id,
-						content: {
-							type: 'title',
-							value: 'title updated',
-						},
-					},
 					{
 						id: richTextCardElement.id,
 						content: {
@@ -318,12 +282,10 @@ describe('Task-Card Controller (api)', () => {
 				.expect(200);
 
 			const responseTaskCard = response.body as TaskCardResponse;
-			const responseTitle = responseTaskCard.cardElements.filter(
-				(element) => element.cardElementType === CardElementType.Title
-			);
+
 			expect(responseTaskCard.id).toEqual(taskCard.id);
-			expect(responseTaskCard.cardElements.length).toEqual(3);
-			expect((responseTitle[0].content as CardTitleElementResponse).value).toEqual('title updated');
+			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
+			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
 			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
 		});
@@ -340,13 +302,8 @@ describe('Task-Card Controller (api)', () => {
 				const text = '<iframe>rich text 1</iframe> some more text';
 
 				const taskCardParams = {
+					title: 'test title',
 					cardElements: [
-						{
-							content: {
-								type: 'title',
-								value: 'title test',
-							},
-						},
 						{
 							content: {
 								type: 'richText',
@@ -366,10 +323,12 @@ describe('Task-Card Controller (api)', () => {
 					.expect(201);
 
 				const responseTaskCard = response.body as TaskCardResponse;
-				const richTextElement = responseTaskCard.cardElements.filter(
+				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
+				if (richTextElement && richTextElement[0] && richTextElement[0].content) {
+					expect(richTextElement[0].content.value).toEqual(sanitizedText);
+				}
 			});
 
 			it('should sanitize richtext on update, with given format', async () => {
@@ -387,13 +346,8 @@ describe('Task-Card Controller (api)', () => {
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
 				const taskCardUpdateParams = {
+					title: 'test title updated',
 					cardElements: [
-						{
-							content: {
-								type: 'title',
-								value: 'title updated',
-							},
-						},
 						{
 							content: {
 								type: 'richText',
@@ -411,11 +365,90 @@ describe('Task-Card Controller (api)', () => {
 					.expect(200);
 
 				const responseTaskCard = response.body as TaskCardResponse;
-				const richTextElement = responseTaskCard.cardElements.filter(
+				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				expect((richTextElement[0].content as CardRichTextElementResponse).value).toEqual(sanitizedText);
+				const expectedRichTextElement = richTextElement ? richTextElement[0].content.value : '';
+				expect(expectedRichTextElement).toEqual(sanitizedText);
 			});
+		});
+	});
+	describe('When title is provided', () => {
+		it('should create a task card with title', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+			};
+
+			const response = await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(201);
+
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.title).toEqual(taskCardParams.title);
+		});
+		it('should throw an error if title is to short', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 't',
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should throw an error if title is not a string', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 1234,
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(501);
+		});
+	});
+	describe('When title is not provided', () => {
+		it('should throw an Error when create', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
 		});
 	});
 });

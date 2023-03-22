@@ -1,37 +1,28 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
 	CardElementType,
-	CardTitleElementResponse,
+	CardRichTextElementResponse,
 	InputFormat,
 	RichText,
 	RichTextCardElement,
 	TaskWithStatusVo,
-	TitleCardElement,
 } from '@shared/domain';
 import {
 	courseFactory,
 	richTextCardElementFactory,
 	setupEntities,
 	taskCardFactory,
-	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
-import { RichTextCardElementParam, TitleCardElementParam } from '@src/modules/task-card/controller/dto';
+import { RichTextCardElementParam } from '@src/modules/task-card/controller/dto';
 import { TaskMapper } from '@src/modules/task/mapper';
 import { TaskCardMapper } from './task-card.mapper';
 
 describe('task-card mapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('mapToResponse', () => {
@@ -56,9 +47,9 @@ describe('task-card mapper', () => {
 			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
 
 			expect(result).toEqual({
+				title: taskCard.title,
 				id: taskCard.id,
 				draggable: true,
-				cardElements: [],
 				courseId: taskCard.course?.id,
 				courseName: course.name,
 				task: taskResponse,
@@ -69,16 +60,16 @@ describe('task-card mapper', () => {
 		it('should map card elements to response', () => {
 			const user = userFactory.buildWithId();
 			const richTextCardElement: RichTextCardElement = richTextCardElementFactory.buildWithId();
-			const titleCardElement: TitleCardElement = titleCardElementFactory.buildWithId();
-			const titleCardElementResponse: CardElementResponse = {
-				id: titleCardElement.id,
-				cardElementType: CardElementType.Title,
-				content: new CardTitleElementResponse(titleCardElement),
+
+			const richtTextCardElementResponse: CardElementResponse = {
+				id: richTextCardElement.id,
+				cardElementType: CardElementType.RichText,
+				content: new CardRichTextElementResponse(richTextCardElement),
 			};
 
 			const taskCard = taskCardFactory.buildWithId({
 				creator: user,
-				cardElements: [titleCardElement, richTextCardElement],
+				cardElements: [richTextCardElement],
 			});
 
 			const status = taskCard.task.createTeacherStatusForUser(user);
@@ -87,53 +78,16 @@ describe('task-card mapper', () => {
 			const mapper = new TaskCardMapper();
 			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
 
-			expect(result.cardElements[0]).toEqual(expect.objectContaining({ ...titleCardElementResponse }));
+			expect(result.cardElements ? result.cardElements[0] : '').toEqual(
+				expect.objectContaining({ ...richtTextCardElementResponse })
+			);
 		});
 	});
 
 	describe('mapToDomain', () => {
-		it('should throw if title is not given', () => {
-			const cardElementRichText = new RichTextCardElementParam();
-			cardElementRichText.type = CardElementType.RichText;
-			cardElementRichText.value = 'update richtext';
-			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
-
-			const params = {
-				cardElements: [
-					{
-						content: cardElementRichText,
-					},
-				],
-			};
-			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
-		});
-		it('should throw if more than one title given', () => {
-			const cardElementTitle1 = new TitleCardElementParam();
-			cardElementTitle1.type = CardElementType.Title;
-			cardElementTitle1.value = 'update title';
-			const cardElementTitle2 = new TitleCardElementParam();
-			cardElementTitle2.type = CardElementType.Title;
-			cardElementTitle2.value = 'update title';
-
-			const params = {
-				cardElements: [
-					{
-						content: cardElementTitle1,
-					},
-					{
-						content: cardElementTitle2,
-					},
-				],
-			};
-			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError(ValidationError);
-		});
 		it('should map params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
-
-			const cardElementTitle = new TitleCardElementParam();
-			cardElementTitle.type = CardElementType.Title;
-			cardElementTitle.value = 'title';
 
 			const cardElementRichText = new RichTextCardElementParam();
 			cardElementRichText.type = CardElementType.RichText;
@@ -143,20 +97,18 @@ describe('task-card mapper', () => {
 			const params = {
 				cardElements: [
 					{
-						content: cardElementTitle,
-					},
-					{
 						content: cardElementRichText,
 					},
 				],
 				courseId: new ObjectId().toHexString(),
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				title: 'test-title',
 			};
 			const result = TaskCardMapper.mapToDomain(params);
 
 			const expectedDto = {
-				title: 'title',
+				title: 'test-title',
 				text: [new RichText({ content: 'richtext', type: InputFormat.RICH_TEXT_CK5 })],
 				courseId: params.courseId,
 				visibleAtDate: tomorrow,
@@ -167,10 +119,6 @@ describe('task-card mapper', () => {
 		it('should map update params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
-
-			const cardElementTitle = new TitleCardElementParam();
-			cardElementTitle.type = CardElementType.Title;
-			cardElementTitle.value = 'update title';
 
 			const cardElementRichText1 = new RichTextCardElementParam();
 			cardElementRichText1.type = CardElementType.RichText;
@@ -185,9 +133,6 @@ describe('task-card mapper', () => {
 			const params = {
 				cardElements: [
 					{
-						content: cardElementTitle,
-					},
-					{
 						content: cardElementRichText1,
 					},
 					{
@@ -196,6 +141,7 @@ describe('task-card mapper', () => {
 				],
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				title: 'update title',
 			};
 			const result = TaskCardMapper.mapToDomain(params);
 
@@ -209,6 +155,42 @@ describe('task-card mapper', () => {
 				dueDate: inTwoDays,
 			};
 			expect(result).toEqual(expectedDto);
+		});
+		it('should should throw an error if title is missing', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const cardElementRichText = new RichTextCardElementParam();
+			cardElementRichText.type = CardElementType.RichText;
+			cardElementRichText.value = 'richtext';
+			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
+
+			const params = {
+				cardElements: [
+					{
+						content: cardElementRichText,
+					},
+				],
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: '',
+			};
+			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
+		});
+		it('should not have a text property if cardElements is missing', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const params = {
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+			};
+			const result = TaskCardMapper.mapToDomain(params);
+
+			expect(result.text).toBeUndefined();
 		});
 	});
 });

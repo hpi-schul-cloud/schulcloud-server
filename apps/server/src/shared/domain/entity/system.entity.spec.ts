@@ -1,18 +1,11 @@
-import { MikroORM } from '@mikro-orm/core';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@shared/testing';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { System } from './system.entity';
 
 describe('System Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
