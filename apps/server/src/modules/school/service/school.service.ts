@@ -78,7 +78,7 @@ export class SchoolService {
 	private calculateMigrationFinalFinish(schoolDo: SchoolDO) {
 		if (schoolDo.oauthMigrationFinished) {
 			schoolDo.oauthMigrationFinalFinish = new Date(
-				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
+				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
 			);
 		}
 	}

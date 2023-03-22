@@ -244,7 +244,7 @@ describe('SchoolService', () => {
 		});
 		if (testDO.oauthMigrationFinished) {
 			testDO.oauthMigrationFinalFinish = new Date(
-				testDO.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD') as number)
+				testDO.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
 			);
 		}
 		schoolRepo.findById.mockResolvedValue(testDO);
