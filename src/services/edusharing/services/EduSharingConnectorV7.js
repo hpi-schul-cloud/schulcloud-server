@@ -103,7 +103,7 @@ class EduSharingConnector {
 
 		const response = await this.searchEduSharing(user, criteria, 0, 1);
 
-		if (!response.data) {
+		if (!response.data || response.data.length === 0) {
 			throw new NotFound(`Item not found, uuid ${uuid}`);
 		}
 
