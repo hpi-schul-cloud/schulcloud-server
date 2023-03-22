@@ -16,7 +16,7 @@ describe(ColumnBoard.name, () => {
 
 		board.addColumn(column);
 
-		expect(board.columns[board.columns.length - 1]).toEqual(column);
+		expect(board.children[board.children.length - 1]).toEqual(column);
 	});
 
 	it('should call the specific builder method', () => {

@@ -8,7 +8,7 @@ export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 
 	title: string;
 
-	columns: Column[];
+	children: Column[];
 
 	createdAt: Date;
 
@@ -17,13 +17,13 @@ export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
 	constructor(props: ColumnBoardProps) {
 		this.id = props.id;
 		this.title = props.title;
-		this.columns = props.columns;
+		this.children = props.children;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 	}
 
 	addColumn(column: Column, position?: number) {
-		this.columns.splice(position || this.columns.length, 0, column);
+		this.children.splice(position || this.children.length, 0, column);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder): void {
@@ -36,7 +36,7 @@ export interface ColumnBoardProps {
 
 	title: string;
 
-	columns: Column[];
+	children: Column[];
 
 	createdAt: Date;
 

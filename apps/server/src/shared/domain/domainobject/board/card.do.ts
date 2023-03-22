@@ -10,7 +10,7 @@ export class Card implements CardProps, BoardNodeBuildable {
 
 	height: number;
 
-	elements: TextElement[]; // TODO: AnyContentElement
+	children: TextElement[]; // TODO: AnyContentElement
 
 	createdAt: Date;
 
@@ -20,13 +20,13 @@ export class Card implements CardProps, BoardNodeBuildable {
 		this.id = props.id;
 		this.title = props.title;
 		this.height = props.height;
-		this.elements = props.elements;
+		this.children = props.children;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 	}
 
 	addElement(element: TextElement, position?: number) {
-		this.elements.splice(position || this.elements.length, 0, element);
+		this.children.splice(position || this.children.length, 0, element);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -41,7 +41,7 @@ export interface CardProps {
 
 	height: number;
 
-	elements: TextElement[]; // TODO: AnyContentElement
+	children: TextElement[]; // TODO: AnyContentElement
 
 	createdAt: Date;
 

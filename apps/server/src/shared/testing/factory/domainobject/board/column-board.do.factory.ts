@@ -7,7 +7,7 @@ export const columnBoardFactory = BaseFactory.define<ColumnBoard, ColumnBoardPro
 	return {
 		id: new ObjectId().toHexString(),
 		title: `column board #${sequence}`,
-		columns: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

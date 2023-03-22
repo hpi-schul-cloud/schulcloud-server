@@ -1,4 +1,5 @@
 import { EntityId } from '../../types';
+import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
 import type { BoardNodeBuilder } from './types/board-node-builder';
 
@@ -6,6 +7,8 @@ export class TextElement implements TextElementProps, BoardNodeBuildable {
 	id: EntityId;
 
 	text: string;
+
+	children?: Array<AnyBoardDo>;
 
 	createdAt: Date;
 

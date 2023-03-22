@@ -7,7 +7,7 @@ export class Column implements ColumnProps, BoardNodeBuildable {
 
 	title?: string;
 
-	cards: Card[];
+	children: Card[];
 
 	createdAt: Date;
 
@@ -16,13 +16,13 @@ export class Column implements ColumnProps, BoardNodeBuildable {
 	constructor(props: ColumnProps) {
 		this.id = props.id;
 		this.title = props.title;
-		this.cards = props.cards;
+		this.children = props.children;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;
 	}
 
 	addCard(card: Card, position?: number) {
-		this.cards.splice(position || this.cards.length, 0, card);
+		this.children.splice(position || this.children.length, 0, card);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -35,7 +35,7 @@ export interface ColumnProps {
 
 	title?: string;
 
-	cards: Card[];
+	children: Card[];
 
 	createdAt: Date;
 

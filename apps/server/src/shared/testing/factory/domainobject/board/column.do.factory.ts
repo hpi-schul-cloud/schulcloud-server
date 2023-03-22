@@ -7,7 +7,7 @@ export const columnFactory = BaseFactory.define<Column, ColumnProps>(Column, ({ 
 	return {
 		id: new ObjectId().toHexString(),
 		title: `column #${sequence}`,
-		cards: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
