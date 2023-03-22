@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
+import { ExternalExceptionFilterContext } from '@nestjs/core/exceptions/external-exception-filter-context';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
@@ -123,8 +124,16 @@ describe('Login Controller (api)', () => {
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(200);
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const token = response.body.accessToken;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
 			});
 		});
 
@@ -176,8 +185,18 @@ describe('Login Controller (api)', () => {
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const token = response.body.accessToken;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
 			});
 		});
 
