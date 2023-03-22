@@ -159,10 +159,10 @@ xdescribe('Ldap Sync Integration', () => {
 
 		for (const accountUserName of accounts) {
 			// eslint-disable-next-line no-await-in-loop
-			const accountResult = await accountService.searchByUsernameExactMatch(accountUserName);
-			if (accountResult.accounts.length) {
+			const [accountResult] = await accountService.searchByUsernameExactMatch(accountUserName);
+			if (accountResult.length) {
 				// eslint-disable-next-line no-await-in-loop
-				await accountService.delete(accountResult.accounts[0].id);
+				await accountService.delete(accountResult[0].id);
 			}
 		}
 		const userLdapDns = exampleLdapUserData.map((user) => user.ldapDn);
