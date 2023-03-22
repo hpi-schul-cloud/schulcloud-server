@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, InternalServerErrorException, Inject, StreamableFile } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, Inject } from '@nestjs/common';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { Logger } from '@src/core/logger';
@@ -14,12 +14,12 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async get(path: string) {
+	async get(path: string): Promise<Uint8Array> {
 		const request = new GetObjectCommand({
 			Bucket: this.config.bucket,
 			Key: path.toString(),
 		});
-		const data = await this.client.send(request).catch((error: unknown) => {
+		const response = await this.client.send(request).catch((error: unknown) => {
 			if (error && typeof error === 'object' && 'name' in error) {
 				if (error.name === 'NoSuchKey') {
 					throw new NotFoundException();
@@ -30,24 +30,13 @@ export class FwuLearningContentsUc {
 
 			throw new InternalServerErrorException();
 		});
-		const stream = data.Body as Readable;
 
-		return {
-			data: stream,
-			contentType: data.ContentType,
-			contentLength: data.ContentLength,
-			contentRange: data.ContentRange,
-			etag: data.ETag,
-		};
-
-		/*
-		const readableStream = response.Body as NodeJS.ReadableStream;
+		const readStream = response.Body as Readable;
+		const chunks = [new Uint8Array()];
 		return new Promise<Uint8Array>((resolve, reject) => {
-			const chunks = [new Uint8Array()];
-			readableStream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
-			readableStream.on('error', reject);
-			readableStream.on('end', () => resolve(Buffer.concat(chunks)));
+			readStream.on('data', (chunk: Uint8Array) => chunks.push(chunk));
+			readStream.on('error', reject);
+			readStream.on('end', () => resolve(Buffer.concat(chunks)));
 		});
-		*/
 	}
 }
