@@ -1,18 +1,7 @@
 const accountsHelper = require('./accounts');
 
-const userdata = (user, account) => {
-	return {
-		accountId: account.id ? account.id : account.id,
-		systemId: account.systemId,
-		userId: user._id,
-		schoolId: user.schoolId,
-		roles: user.roles,
-	};
-};
-
-const getpayload = (user, account) => {
+const getJwtPayload = (user, account) => {
 	const currentTime = Math.floor(Date.now() / 1000);
-	const dataFromUser = userdata(user, account);
 	const fieldsFromUser = {
 		id: user.id,
 		createdAt: user.createdAt,
@@ -25,27 +14,27 @@ const getpayload = (user, account) => {
 	};
 
 	return {
-		accountId: dataFromUser.accountId,
-		systemId: dataFromUser.systemId,
-		userId: dataFromUser.userId,
+		accountId: account.id ? account.id : account.id,
+		systemId: account.systemId,
+		userId: user._id,
+		schoolId: user.schoolId,
+		roles: user.roles,
 		user: fieldsFromUser,
-		schoolId: dataFromUser.schoolId,
-		roles: dataFromUser.roles,
 		iat: currentTime,
-		sub: dataFromUser.accountId,
+		sub: account.id ? account.id : account.id,
 	};
 };
 
 const generateJWT =
 	(appPromise) =>
-	async ({ username, password }) => {
+	async ({ username }) => {
 		const app = await appPromise;
 
 		const { accounts } = await app.service('nest-account-service').searchByUsernameExactMatch(username);
 		const user = await app.service('usersModel').get({
 			_id: accounts[0].userId,
 		});
-		const token = await app.service('authentication').createAccessToken(getpayload(user, accounts[0]));
+		const token = await app.service('authentication').createAccessToken(getJwtPayload(user, accounts[0]));
 		return token;
 	};
 

@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
-import { ExternalExceptionFilterContext } from '@nestjs/core/exceptions/external-exception-filter-context';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
