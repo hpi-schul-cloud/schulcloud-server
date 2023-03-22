@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Lesson, Task } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
@@ -10,7 +9,6 @@ import { TaskService } from '@src/modules/task/service/task.service';
 import AdmZip from 'adm-zip';
 
 describe('CommonCartridgeExportService', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let courseExportService: CommonCartridgeExportService;
 	let courseServiceMock: DeepMocked<CourseService>;
@@ -22,7 +20,7 @@ describe('CommonCartridgeExportService', () => {
 	let tasks: Task[];
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeExportService,
@@ -51,7 +49,6 @@ describe('CommonCartridgeExportService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('exportCourse', () => {

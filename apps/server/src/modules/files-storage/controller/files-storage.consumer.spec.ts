@@ -21,7 +21,6 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
