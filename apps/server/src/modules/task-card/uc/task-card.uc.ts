@@ -71,7 +71,7 @@ export class TaskCardUc {
 
 		await this.taskCardRepo.save(card);
 
-		await this.addTaskCardId(userId, card);
+		await this.taskService.linkTaskCard(userId, card.task.id, card.id);
 
 		return { card, taskWithStatusVo };
 	}
@@ -183,15 +183,5 @@ export class TaskCardUc {
 		taskCard.cardElements.set(newCardElements);
 
 		return taskCard;
-	}
-
-	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
-		const taskParams = {
-			name: taskCard.task.name,
-			taskCard: taskCard.id,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
-
-		return taskWithStatusVo;
 	}
 }

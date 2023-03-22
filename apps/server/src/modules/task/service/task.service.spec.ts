@@ -497,5 +497,37 @@ describe('TaskService', () => {
 				expect(result.status).toBeDefined();
 			});
 		});
+		describe('linkTaskCard', () => {
+			let task: Task;
+			const taskCardId = 'foo';
+			beforeEach(() => {
+				user = userFactory.buildWithId();
+				task = taskFactory.build();
+				userRepo.findById.mockResolvedValue(user);
+				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.save.mockResolvedValue();
+			});
+
+			afterEach(() => {
+				userRepo.findById.mockRestore();
+				taskRepo.save.mockRestore();
+				taskRepo.findById.mockRestore();
+			});
+			it('should check for permission to update the task', async () => {
+				await taskService.linkTaskCard(user.id, task.id, taskCardId);
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.write,
+					requiredPermissions: [Permission.HOMEWORK_EDIT],
+				});
+			});
+			it('should save the task with course', async () => {
+				await taskService.linkTaskCard(user.id, task.id, taskCardId);
+				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, taskCard: taskCardId });
+			});
+			it('should return the updated task', async () => {
+				const result = await taskService.linkTaskCard(user.id, task.id, taskCardId);
+				expect(result.task.taskCard).toEqual(taskCardId);
+			});
+		});
 	});
 });

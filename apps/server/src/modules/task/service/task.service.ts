@@ -184,4 +184,19 @@ export class TaskService {
 			throw new ValidationError('availableDate must be before dueDate');
 		}
 	}
+
+	public async linkTaskCard(userId: EntityId, taskId: EntityId, taskCardId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+
+		task.taskCard = taskCardId;
+		await this.taskRepo.save(task);
+
+		const status = task.createTeacherStatusForUser(user);
+		const taskWithStatusVo = new TaskWithStatusVo(task, status);
+
+		return taskWithStatusVo;
+	}
 }
