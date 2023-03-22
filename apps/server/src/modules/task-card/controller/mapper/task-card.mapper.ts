@@ -31,6 +31,7 @@ export class TaskCardMapper {
 		if (card.course) {
 			dto.courseId = card.course.id;
 			dto.courseName = card.course.name;
+			dto.courseUntilDate = card.course.untilDate;
 		}
 
 		return dto;
