@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc/card.uc';
 import { CardIdsParams, CardListResponse, CardUrlParams, TextElementResponse } from './dto';
+import { AnyContentElementResponse } from './dto/card/any-content-element.response';
 import { TextElementResponseMapper } from './mapper';
 import { CardResponseMapper } from './mapper/card-response.mapper';
 
@@ -28,11 +29,18 @@ export class CardController {
 		return result;
 	}
 
+	@ApiExtraModels(TextElementResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+		},
+	})
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<TextElementResponse> {
+	): Promise<AnyContentElementResponse> {
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
 
 		const response = TextElementResponseMapper.mapToResponse(element);
