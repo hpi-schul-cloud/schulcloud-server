@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
 import { IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementService } from '@shared/infra/identity-management';
@@ -277,12 +278,12 @@ describe('AccountIdmService', () => {
 
 		describe('when not finding an account', () => {
 			const setup = () => {
-				idmServiceMock.findAccountByFctIntId.mockRejectedValue(new Error());
+				idmServiceMock.findAccountByFctIntId.mockResolvedValue(undefined as unknown as IAccount);
 			};
 
 			it('should throw', async () => {
 				setup();
-				await expect(accountIdmService.findByUserIdOrFail('notExistingId')).rejects.toThrow();
+				await expect(accountIdmService.findByUserIdOrFail('notExistingId')).rejects.toThrow(EntityNotFoundError);
 			});
 		});
 	});

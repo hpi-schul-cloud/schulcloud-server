@@ -13,7 +13,7 @@ import {
 	School,
 	SchoolRolePermission,
 	SchoolRoles,
-	User
+	User,
 } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
@@ -28,7 +28,7 @@ import {
 	AccountByIdParams,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
-	AccountSearchType
+	AccountSearchType,
 } from '../controller/dto';
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';

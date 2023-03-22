@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
@@ -38,7 +39,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
 		const result = await this.identityManager.findAccountByFctIntId(userId);
 		if (!result) {
-			throw new NotFoundException(`Account with userId ${userId} not found`);
+			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
 		}
 		const account = AccountIdmToDtoMapper.mapToDto(result);
 		return account;
