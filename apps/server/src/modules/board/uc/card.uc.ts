@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { BoardDoService, ContentElementService } from '../service';
@@ -32,6 +32,19 @@ export class CardUc {
 		return card;
 	}
 
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<boolean> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const parent = await this.boardDoService.findParentOfId(cardId);
+		if (parent === undefined) {
+			throw new NotFoundException('card has no parent');
+		}
+		// TODO check permissions
+
+		await this.boardDoService.deleteChild(parent, cardId);
+		return true;
+	}
+
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId });
 
@@ -43,15 +56,15 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<Card> {
+	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<boolean> {
 		this.logger.debug({ action: 'deleteElement', userId, cardId, contentElementId });
 
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
 
-		const updatedCard = await this.boardDoService.deleteChild(card, contentElementId);
+		await this.boardDoService.deleteChild(card, contentElementId);
 
-		return updatedCard;
+		return true;
 	}
 }

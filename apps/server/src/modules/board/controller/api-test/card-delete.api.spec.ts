@@ -2,14 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { TextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
-	columnBoardNodeFactory,
 	columnNodeFactory,
 	mapUserToCurrentUser,
-	textElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -27,9 +24,9 @@ class API {
 		this.app = app;
 	}
 
-	async delete(cardId: string, elementId: string) {
+	async delete(cardId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/${cardId}/elements/${elementId}`)
+			.delete(`${baseRouteName}/${cardId}`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -39,7 +36,7 @@ class API {
 	}
 }
 
-describe(`content element delete (api)`, () => {
+describe(`card delete (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -73,46 +70,33 @@ describe(`content element delete (api)`, () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const columnNode = columnNodeFactory.buildWithId();
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const element = textElementNodeFactory.buildWithId({ parent: cardNode });
-		const sibling = textElementNodeFactory.buildWithId({ parent: cardNode });
 
-		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
+		await em.persistAndFlush([user, cardNode, columnNode]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode, cardNode, element, sibling };
+		return { user, cardNode, columnNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, cardNode, element } = await setup();
+			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.delete(cardNode.id, element.id);
+			const response = await api.delete(cardNode.id);
 
 			expect(response.status).toEqual(200);
 		});
 
-		it('should actually delete element', async () => {
-			const { user, cardNode, element } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		// it('should return the created card', async () => {
+		// 	const { user, columnBoardNode, columnNode } = await setup();
+		// 	currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id, element.id);
+		// 	const { result } = await api.post(columnBoardNode.id, columnNode.id);
 
-			await expect(em.findOneOrFail(TextElementNode, element.id)).rejects.toThrow();
-		});
-
-		it('should not delete siblings', async () => {
-			const { user, cardNode, element, sibling } = await setup();
-			currentUser = mapUserToCurrentUser(user);
-
-			await api.delete(cardNode.id, element.id);
-
-			const siblingFromDb = await em.findOneOrFail(TextElementNode, sibling.id);
-			expect(siblingFromDb).toBeDefined();
-		});
+		// 	expect(result.id).toBeDefined();
+		// });
 	});
 
 	// TODO: add tests for permission checks... during their implementation
