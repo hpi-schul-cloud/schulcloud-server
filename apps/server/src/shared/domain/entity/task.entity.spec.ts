@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseFactory,
@@ -13,14 +12,8 @@ import {
 import { UsersList } from './task.entity';
 
 describe('Task Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(() => {

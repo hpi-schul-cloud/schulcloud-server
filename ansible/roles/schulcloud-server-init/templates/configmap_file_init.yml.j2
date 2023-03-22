@@ -76,7 +76,7 @@ data:
         }
       },
       "oidcConfig": {
-        "alias": "schoolOne0",
+        "idpHint": "schoolOne0",
         "clientId": "'${OIDCMOCK__CLIENT_ID}'",
         "clientSecret": "'${OIDCMOCK_CLIENT_SECRET}'",
         "authorizationUrl": "'${OIDCMOCK__BASE_URL}'/connect/authorize",
@@ -209,7 +209,7 @@ data:
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
-            "displayName" : "SANIS",
+            "displayName" : "moin.schule",
             "type" : "oauth",
             "provisioningStrategy": "sanis",
             "provisioningUrl": "https://api-dienste.stage.niedersachsen-login.schule/v1/person-info",

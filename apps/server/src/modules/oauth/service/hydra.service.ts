@@ -108,7 +108,6 @@ export class HydraSsoService {
 			issuer: `${hydraUri}/`,
 			jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
 			logoutEndpoint: `${hydraUri}/oauth2/sessions/logout`,
-			alias: 'hydra',
 			provider: 'hydra',
 			redirectUri: `${Configuration.get('HOST') as string}/api/v3/sso/hydra/${oauthClientId}`,
 			responseType: 'code',

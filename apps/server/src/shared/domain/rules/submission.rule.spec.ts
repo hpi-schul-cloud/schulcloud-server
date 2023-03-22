@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	courseFactory,
@@ -21,21 +20,16 @@ const buildUserWithPermission = (permission) => {
 };
 
 describe('SubmissionRule', () => {
-	let orm: MikroORM;
 	let submissionRule: SubmissionRule;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule, SubmissionRule],
 		}).compile();
 
 		submissionRule = await module.get(SubmissionRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	afterEach(() => {

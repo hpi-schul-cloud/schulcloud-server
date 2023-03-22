@@ -36,7 +36,6 @@ jobs:
         run: npm run feathers:test
   nest_tests_cov:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -56,7 +55,8 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov
+        timeout-minutes: 18
+        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov:ci
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
