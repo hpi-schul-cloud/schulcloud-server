@@ -9,7 +9,7 @@ import { KeycloakSettings } from '../../keycloak-administration/interface/keyclo
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
-describe('KeycloakIdentityManagement', () => {
+describe('KeycloakIdentityManagementService', () => {
 	let module: TestingModule;
 	let idm: IdentityManagementService;
 	let kcUsersMock: DeepMocked<Users>;
@@ -462,7 +462,7 @@ describe('KeycloakIdentityManagement', () => {
 				const attributeValue = 'attributeValue';
 				kcUsersMock.findOne.mockResolvedValueOnce({
 					...mockedAccount1,
-					attributes: { [attributeName]: attributeValue },
+					attributes: { attributeName: [attributeValue] },
 				});
 				return { attributeName, attributeValue };
 			};

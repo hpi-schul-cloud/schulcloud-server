@@ -7,6 +7,7 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { ServerModule } from '@src/modules/server';
+import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
@@ -17,7 +18,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	let keycloak: KeycloakAdminClient;
 	let isKeycloakReachable: boolean;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1().toString()}`;
 	const testAccount: IAccount = {
 		id: new ObjectId().toString(),
 		email: 'john.doe@mail.tld',
@@ -192,7 +193,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 			};
 
 			it('should return the attribute value', async () => {
-				// if (!isKeycloakReachable) return;
+				if (!isKeycloakReachable) return;
 				const { idmId, attributeName, attributeValue } = await setup();
 				const result = await idmService.getUserAttribute(idmId, attributeName);
 
@@ -211,7 +212,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 			};
 
 			it('should set the attribute value', async () => {
-				// if (!isKeycloakReachable) return;
+				if (!isKeycloakReachable) return;
 				const { idmId, attributeName, attributeValue } = await setup();
 				await idmService.setUserAttribute(idmId, attributeName, attributeValue);
 				const result = await idmService.getUserAttribute(idmId, attributeName);
