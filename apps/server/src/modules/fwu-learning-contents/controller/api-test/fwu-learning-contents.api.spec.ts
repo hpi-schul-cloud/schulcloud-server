@@ -83,12 +83,11 @@ if (Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
 
 		let s3instance: S3rver;
 		let exampleTextFile: UploadFile;
-		let exampleBinaryFile: UploadFile;
 
 		beforeAll(async () => {
 			const port = 10000 + createRndInt(10000);
 			const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
-			({ s3instance, exampleTextFile, exampleBinaryFile } = await createS3rver(overriddenS3Config, port));
+			({ s3instance, exampleTextFile } = await createS3rver(overriddenS3Config, port));
 
 			const module = await Test.createTestingModule({
 				imports: [FwuLearningContentsModule],
@@ -136,24 +135,6 @@ if (Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
 					expect(response.type).toEqual(exampleTextFile.ContentType);
 				});
 			});
-			/*
-			describe('when the file has no file-extension', () => {
-				it('should return 200 status', async () => {
-					const response = await api.get(exampleBinaryFile.Key);
-					expect(response.status).toEqual(200);
-				});
-
-				it('should return file content', async () => {
-					const response = await api.get(exampleBinaryFile.Key);
-					expect(response.body).toEqual(exampleBinaryFile.Body);
-				});
-
-				it('should have the correct content-type', async () => {
-					const response = await api.get(exampleBinaryFile.Key);
-					expect(response.type).toEqual(exampleBinaryFile.ContentType);
-				});
-			});
-			*/
 			describe('when the file does not exist', () => {
 				it('should return 404 error', async () => {
 					const response = await api.get('1234/NotAValidKey.html');

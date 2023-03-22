@@ -2,7 +2,7 @@ import { Controller, Get, Req, Res, InternalServerErrorException, Param } from '
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigService } from '@nestjs/config';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 
@@ -10,12 +10,14 @@ import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 @Authenticate('jwt')
 @Controller('fwu')
 export class FwuLearningContentsController {
-	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
+	constructor(
+		private readonly fwuLearningContentsUc: FwuLearningContentsUc,
+		private readonly configService: ConfigService
+	) {}
 
 	@Get('*/:fwuLearningContent')
 	async get(@Req() req: Request, @Res() res: Response, @Param() params: GetFwuLearningContentParams) {
-		const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;
-		if (!fwuContentEnabled) {
+		if (!this.configService.get<boolean>('FEATURE_FWU_CONTENT_ENABLED')) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const path = `${req.params[0]}/${params.fwuLearningContent}`;
