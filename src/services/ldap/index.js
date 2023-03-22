@@ -1,4 +1,3 @@
-/* eslint-disable promise/no-return-wrap */
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const mongoose = require('mongoose');
