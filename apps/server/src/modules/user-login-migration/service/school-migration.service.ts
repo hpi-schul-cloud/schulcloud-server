@@ -6,15 +6,13 @@ import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { SystemDto, SystemService } from '../../system/service';
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly logger: Logger,
-		private readonly userService: UserService,
-		private readonly systemService: SystemService
+		private readonly userService: UserService
 	) {}
 
 	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
@@ -40,6 +38,7 @@ export class SchoolMigrationService {
 	): Promise<SchoolDO | null> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
+		const sourceSystem: string = schoolDO.systems ? schoolDO.systems[0] : '';
 
 		if (!officialSchoolNumber) {
 			throw new OAuthMigrationError(
@@ -48,22 +47,25 @@ export class SchoolMigrationService {
 			);
 		}
 
+		this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber, sourceSystem, targetSystemId);
+
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!existingSchool) {
 			throw new OAuthMigrationError(
 				'Could not find school by official school number from target migration system',
-				'ext_official_school_number_mismatch',
+				'ext_official_school_missing',
 				schoolDO.systems ? schoolDO.systems[0] : '',
 				targetSystemId
 			);
 		}
 
-		this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
+		const schoolMigrated: boolean = this.hasSchoolMigrated(externalId, existingSchool.externalId);
 
-		if (externalId === existingSchool.externalId) {
+		if (schoolMigrated) {
 			return null;
 		}
+
 		return existingSchool;
 	}
 
@@ -100,15 +102,6 @@ export class SchoolMigrationService {
 		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
-	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise<boolean> {
-		const currentUser: UserDO = await this.userService.findById(currentUserId);
-
-		if (!existingSchool || existingSchool?.id !== currentUser.schoolId) {
-			return false;
-		}
-		return true;
-	}
-
 	private async doMigration(externalId: string, schoolDO: SchoolDO, targetSystemId: string): Promise<void> {
 		if (schoolDO.systems) {
 			schoolDO.systems.push(targetSystemId);
@@ -126,15 +119,28 @@ export class SchoolMigrationService {
 		}
 	}
 
-	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
+	private checkOfficialSchoolNumbersMatch(
+		schoolDO: SchoolDO,
+		officialExternalSchoolNumber: string,
+		sourceSystem: string,
+		targetSystem: string
+	): void {
 		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Current users school is not the same as school found by official school number from target migration system',
 				'ext_official_school_number_mismatch',
-
+				sourceSystem,
+				targetSystem,
 				schoolDO.officialSchoolNumber,
 				officialExternalSchoolNumber
 			);
 		}
+	}
+
+	private hasSchoolMigrated(sourceExternalId: string, targetExternalId?: string): boolean {
+		if (sourceExternalId === targetExternalId) {
+			return true;
+		}
+		return false;
 	}
 }

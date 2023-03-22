@@ -67,9 +67,9 @@ export class OauthSSOController {
 			this.logger.log(err);
 		});
 
-		const errorRedirect: URL = new URL('/login', this.clientUrl);
-		errorRedirect.searchParams.append('error', migrationError.errorcode);
-		errorRedirect.searchParams.append('sourceSystemId', <string>migrationError.sourceSystemId);
+		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
+		errorRedirect.searchParams.append('errorcode', migrationError.errorcode);
+		errorRedirect.searchParams.append('sourceSystem', <string>migrationError.sourceSystemId);
 		errorRedirect.searchParams.append('targetSystem', <string>migrationError.targetSystemId);
 		errorRedirect.searchParams.append('sourceSchoolNumber', <string>migrationError.officialSchoolNumberFromSource);
 		errorRedirect.searchParams.append('targetSchoolNumber', <string>migrationError.officialSchoolNumberFromTarget);
