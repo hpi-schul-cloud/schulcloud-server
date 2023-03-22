@@ -1,30 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CardNode } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { CardRepo, ColumnBoardRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
 import { CardService } from './card.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
-	let cardRepo: DeepMocked<CardRepo>;
-	let columnBoardRepo: DeepMocked<ColumnBoardRepo>;
+	let boardDoRepo: DeepMocked<BoardDoRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardService,
 				{
-					provide: CardRepo,
-					useValue: createMock<CardRepo>(),
-				},
-				{
-					provide: ColumnBoardRepo,
-					useValue: createMock<ColumnBoardRepo>(),
+					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
 					provide: Logger,
@@ -34,8 +30,7 @@ describe(CardService.name, () => {
 		}).compile();
 
 		service = module.get(CardService);
-		cardRepo = module.get(CardRepo);
-		columnBoardRepo = module.get(ColumnBoardRepo);
+		boardDoRepo = module.get(BoardDoRepo);
 
 		await setupEntities();
 	});
@@ -55,12 +50,12 @@ describe(CardService.name, () => {
 
 			await service.findById(cardId);
 
-			expect(cardRepo.findById).toHaveBeenCalledWith(cardId);
+			expect(boardDoRepo.findById).toHaveBeenCalledWith(CardNode, cardId);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
 			const { card, cardId } = setup();
-			cardRepo.findById.mockResolvedValueOnce(card);
+			boardDoRepo.findById.mockResolvedValueOnce(card);
 
 			const result = await service.findById(cardId);
 
@@ -81,12 +76,12 @@ describe(CardService.name, () => {
 
 			await service.findByIds(cardIds);
 
-			expect(cardRepo.findByIds).toHaveBeenCalledWith(cardIds);
+			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(CardNode, cardIds);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
 			const { cards, cardIds } = setup();
-			cardRepo.findByIds.mockResolvedValueOnce(cards);
+			boardDoRepo.findByIds.mockResolvedValueOnce(cards);
 
 			const result = await service.findByIds(cardIds);
 
@@ -97,7 +92,7 @@ describe(CardService.name, () => {
 	describe('creating a card', () => {
 		const setup = () => {
 			const column = columnFactory.build();
-			const board = columnBoardFactory.build({ columns: [column] });
+			const board = columnBoardFactory.build({ children: [column] });
 			const boardId = board.id;
 			const columnId = column.id;
 
@@ -107,17 +102,17 @@ describe(CardService.name, () => {
 		it('should save a list of cards using the repo', async () => {
 			const { board, boardId, columnId } = setup();
 
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			await service.createCard(boardId, columnId);
 
-			expect(cardRepo.save).toHaveBeenCalledWith(
+			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				[
 					expect.objectContaining({
 						id: expect.any(String),
 						title: '',
 						height: 150,
-						elements: [],
+						children: [],
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 					}),
@@ -132,7 +127,7 @@ describe(CardService.name, () => {
 			const notExistingColumnId = new ObjectId().toHexString();
 			const error = new NotFoundException(`The requested Column: id='${notExistingColumnId}' has not been found.`);
 
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			await expect(service.createCard(boardId, notExistingColumnId)).rejects.toThrowError(error);
 		});

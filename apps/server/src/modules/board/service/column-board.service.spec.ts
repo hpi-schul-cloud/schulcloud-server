@@ -1,28 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoardNode } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { ColumnBoardRepo, ColumnRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
 import { ColumnBoardService } from './column-board.service';
 
 describe(ColumnBoardService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
-	let columnBoardRepo: DeepMocked<ColumnBoardRepo>;
-	let columnRepo: DeepMocked<ColumnRepo>;
+	let boardDoRepo: DeepMocked<BoardDoRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ColumnBoardService,
 				{
-					provide: ColumnBoardRepo,
-					useValue: createMock<ColumnBoardRepo>(),
-				},
-				{
-					provide: ColumnRepo,
-					useValue: createMock<ColumnRepo>(),
+					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
 					provide: Logger,
@@ -32,8 +28,7 @@ describe(ColumnBoardService.name, () => {
 		}).compile();
 
 		service = module.get(ColumnBoardService);
-		columnBoardRepo = module.get(ColumnBoardRepo);
-		columnRepo = module.get(ColumnRepo);
+		boardDoRepo = module.get(BoardDoRepo);
 		await setupEntities();
 	});
 
@@ -54,12 +49,12 @@ describe(ColumnBoardService.name, () => {
 
 			await service.findById(boardId);
 
-			expect(columnBoardRepo.findById).toHaveBeenCalledWith(boardId);
+			expect(boardDoRepo.findById).toHaveBeenCalledWith(ColumnBoardNode, boardId);
 		});
 
 		it('should return the columnBoard object of the given', async () => {
 			const { board } = setup();
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			const result = await service.findById(board.id);
 			expect(result).toEqual(board);
@@ -70,11 +65,11 @@ describe(ColumnBoardService.name, () => {
 		it('should save a board using the repo', async () => {
 			await service.createBoard();
 
-			expect(columnBoardRepo.save).toHaveBeenCalledWith(
+			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
 					id: expect.any(String),
 					title: '',
-					columns: [],
+					children: [],
 					createdAt: expect.any(Date),
 					updatedAt: expect.any(Date),
 				})
@@ -93,16 +88,16 @@ describe(ColumnBoardService.name, () => {
 		it('should save a list of columns using the repo', async () => {
 			const { board, boardId } = setup();
 
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			await service.createColumn(boardId);
 
-			expect(columnRepo.save).toHaveBeenCalledWith(
+			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				[
 					expect.objectContaining({
 						id: expect.any(String),
 						title: '',
-						cards: [],
+						children: [],
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 					}),
