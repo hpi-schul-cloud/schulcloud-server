@@ -34,7 +34,7 @@ export class BoardDoRepo {
 
 	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
 		const boardNode = await this.em.findOneOrFail(BoardNode, childId);
-		if (boardNode?.parentId) {
+		if (boardNode.parentId) {
 			const parent = await this.em.findOneOrFail(BoardNode, boardNode.parentId);
 			const descendants = await this.boardNodeRepo.findDescendants(parent);
 			const domainObject = new BoardDoBuilder(descendants).buildDomainObject(parent);
