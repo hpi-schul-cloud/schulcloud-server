@@ -76,9 +76,7 @@ export class NewsUc {
 		// by default show latest news first
 		if (options.order == null) options.order = { displayAt: SortOrder.desc };
 
-		const [newsList, newsCount] = unpublished ?
-			await this.newsRepo.findAllUnpublished(targets, userId, options) :
-			await this.newsRepo.findAllPublished(targets, options);
+		const [newsList, newsCount] = unpublished ? await this.newsRepo.findAllUnpublished(targets, userId, options) : await this.newsRepo.findAllPublished(targets, options);
 
 		await Promise.all(
 			newsList.map(async (news: News) => {

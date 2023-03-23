@@ -18,10 +18,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param targets
 	 * @param options
 	 */
-	async findAllPublished(
-		targets: NewsTargetFilter[],
-		options?: IFindOptions<News>
-	): Promise<Counted<News[]>> {
+	async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byPublished();
