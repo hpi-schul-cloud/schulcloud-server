@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
 import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
@@ -8,15 +7,13 @@ import { RoomBoardResponseMapper } from './room-board-response.mapper';
 describe('room board response mapper', () => {
 	let mapper: RoomBoardResponseMapper;
 	let module: TestingModule;
-	let orm: MikroORM;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],

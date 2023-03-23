@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
-import { richTextCardElementFactory, setupEntities, taskCardFactory, titleCardElementFactory } from '@shared/testing';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '.';
+import { richTextCardElementFactory, setupEntities, taskCardFactory } from '@shared/testing';
+import { CardElementType, RichTextCardElement } from '.';
 
 describe('Task Card Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -28,18 +21,13 @@ describe('Task Card Entity', () => {
 
 		describe('when task card has several card elements', () => {
 			it('should return the correct card elements', () => {
-				const titleCardElement = titleCardElementFactory.build();
 				const richTextCardElement = richTextCardElementFactory.build();
-				const taskCard = taskCardFactory.build({ cardElements: [titleCardElement, richTextCardElement] });
+				const taskCard = taskCardFactory.build({ cardElements: [richTextCardElement] });
 
 				const result = taskCard.getCardElements();
-				expect(result.length).toEqual(2);
+				expect(result.length).toEqual(1);
 
-				const resultTitleCardElement = result[0] as TitleCardElement;
-				expect(resultTitleCardElement.cardElementType).toEqual(CardElementType.Title);
-				expect(resultTitleCardElement.value).toEqual(titleCardElement.value);
-
-				const resultRichTextCardElement = result[1] as RichTextCardElement;
+				const resultRichTextCardElement = result[0] as RichTextCardElement;
 				expect(resultRichTextCardElement.cardElementType).toEqual(CardElementType.RichText);
 				expect(resultRichTextCardElement.value).toEqual(richTextCardElement.value);
 			});

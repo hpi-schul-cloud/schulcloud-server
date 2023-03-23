@@ -18,10 +18,6 @@ describe('CourseEntity', () => {
 		orm = await setupEntities();
 	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case

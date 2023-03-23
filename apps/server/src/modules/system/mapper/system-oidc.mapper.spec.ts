@@ -26,7 +26,7 @@ describe('SystemOidcMapper', () => {
 			expect(result?.parentSystemId).toEqual(systemEntity.id);
 			expect(result?.clientId).toEqual(systemEntity.oidcConfig?.clientId);
 			expect(result?.clientSecret).toEqual(systemEntity.oidcConfig?.clientSecret);
-			expect(result?.alias).toEqual(systemEntity.oidcConfig?.alias);
+			expect(result?.idpHint).toEqual(systemEntity.oidcConfig?.idpHint);
 			expect(result?.authorizationUrl).toEqual(systemEntity.oidcConfig?.authorizationUrl);
 			expect(result?.tokenUrl).toEqual(systemEntity.oidcConfig?.tokenUrl);
 			expect(result?.userinfoUrl).toEqual(systemEntity.oidcConfig?.userinfoUrl);
@@ -62,7 +62,7 @@ describe('SystemOidcMapper', () => {
 			expect(theResult.parentSystemId).toEqual(systemEntity.id);
 			expect(theResult.clientId).toEqual(systemEntity.oidcConfig?.clientId);
 			expect(theResult.clientSecret).toEqual(systemEntity.oidcConfig?.clientSecret);
-			expect(theResult.alias).toEqual(systemEntity.oidcConfig?.alias);
+			expect(theResult.idpHint).toEqual(systemEntity.oidcConfig?.idpHint);
 			expect(theResult.authorizationUrl).toEqual(systemEntity.oidcConfig?.authorizationUrl);
 			expect(theResult.tokenUrl).toEqual(systemEntity.oidcConfig?.tokenUrl);
 			expect(theResult.userinfoUrl).toEqual(systemEntity.oidcConfig?.userinfoUrl);

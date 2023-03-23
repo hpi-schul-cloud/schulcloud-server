@@ -32,6 +32,7 @@ describe('school repo', () => {
 	after(async () => {
 		await server.close();
 	});
+
 	describe('createSchool', () => {
 		it('should successfully create new school', async () => {
 			const schoolName = 'Test School';
@@ -98,6 +99,26 @@ describe('school repo', () => {
 		it('should find federal state by abbreviation', async () => {
 			const res = await SchoolRepo.findFederalState('BE');
 			expect(res.name).to.be.equal('Berlin');
+		});
+	});
+
+	describe('findSchoolByPreviousExternalIdAndSystem is called', () => {
+		it('should return null if not found', async () => {
+			const system = await testObjects.createTestSystem();
+
+			const res = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem('Not existing id', system._id);
+
+			expect(res).to.be.null;
+		});
+
+		it('should find school by findSchoolByPreviousExternalIdAndSystem', async () => {
+			const previousExternalId = 'previousExternalId';
+			const system = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool({ previousExternalId, systems: [system._id] });
+
+			const res = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(previousExternalId, system._id);
+
+			expect(res._id.toString()).to.be.equal(school._id.toString());
 		});
 	});
 });

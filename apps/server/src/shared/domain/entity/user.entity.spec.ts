@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
-import { userFactory, setupEntities } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { User } from './user.entity';
 
 describe('User Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {
