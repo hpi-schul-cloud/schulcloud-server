@@ -17,7 +17,7 @@ describe(Card.name, () => {
 
 		card.addElement(element);
 
-		expect(card.elements[card.elements.length - 1]).toEqual(element);
+		expect(card.children[card.children.length - 1]).toEqual(element);
 	});
 
 	it('should call the specific builder method', () => {

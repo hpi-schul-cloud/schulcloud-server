@@ -17,7 +17,7 @@ describe(Column.name, () => {
 
 		column.addCard(card);
 
-		expect(column.cards[column.cards.length - 1]).toEqual(card);
+		expect(column.children[column.children.length - 1]).toEqual(card);
 	});
 
 	it('should call the specific builder method', () => {
