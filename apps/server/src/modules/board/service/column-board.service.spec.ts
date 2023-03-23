@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { columnBoardFactory } from '@shared/testing/factory/domainobject';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { ColumnBoardService } from './column-board.service';
@@ -39,8 +40,9 @@ describe(ColumnBoardService.name, () => {
 		const setup = () => {
 			const board = columnBoardFactory.build();
 			const boardId = board.id;
+			const column = columnFactory.build();
 
-			return { board, boardId };
+			return { board, boardId, column };
 		};
 
 		it('should call the board do repository', async () => {
@@ -59,6 +61,16 @@ describe(ColumnBoardService.name, () => {
 			const result = await service.findById(board.id);
 
 			expect(result).toEqual(board);
+		});
+
+		it('should throw error when there is no columnboard', async () => {
+			const { boardId, column } = setup();
+
+			const expectedError = new NotFoundException(`there is no columboard with this id`);
+
+			boardDoRepo.findById.mockResolvedValue(column);
+
+			await expect(service.findById(boardId)).rejects.toThrowError(expectedError);
 		});
 	});
 
