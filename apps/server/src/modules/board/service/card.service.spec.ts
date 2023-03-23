@@ -2,7 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	textElementFactory,
+} from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
@@ -61,6 +66,12 @@ describe(CardService.name, () => {
 
 			expect(result).toEqual(card);
 		});
+
+		it('should throw if the domain object does not exist', async () => {
+			const fakeId = new ObjectId().toHexString();
+
+			await expect(service.findById(fakeId)).rejects.toThrow();
+		});
 	});
 
 	describe('finding many cards', () => {
@@ -86,6 +97,14 @@ describe(CardService.name, () => {
 			const result = await service.findByIds(cardIds);
 
 			expect(result).toEqual(cards);
+		});
+
+		it('should throw an error if some DOs are not cards', async () => {
+			const textElements = textElementFactory.buildList(2);
+			const textElementIds = textElements.map((t) => t.id);
+			boardDoRepo.findByIds.mockResolvedValue(textElements);
+
+			await expect(service.findByIds(textElementIds)).rejects.toThrow();
 		});
 	});
 

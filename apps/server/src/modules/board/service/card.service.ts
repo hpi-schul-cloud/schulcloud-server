@@ -47,7 +47,7 @@ export class CardService {
 		return card;
 	}
 
-	async updateCard(card: Card): Promise<void> {
-		await this.boardDoRepo.save(card);
-	}
+	// async updateCard(card: Card): Promise<void> {
+	// 	await this.boardDoRepo.save(card);
+	// }
 }
