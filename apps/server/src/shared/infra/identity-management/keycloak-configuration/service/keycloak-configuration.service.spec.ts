@@ -68,7 +68,7 @@ describe('KeycloakConfigurationService Unit', () => {
 	const idps: IdentityProviderRepresentation[] = [
 		{
 			providerId: 'oidc',
-			alias: oidcSystems[0].alias,
+			alias: oidcSystems[0].idpHint,
 			enabled: true,
 			config: {
 				clientId: 'clientId',

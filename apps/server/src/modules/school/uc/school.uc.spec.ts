@@ -67,6 +67,7 @@ describe('SchoolUc', () => {
 					name: 'mockName',
 					id: mockId,
 					oauthMigrationFinished: undefined,
+					oauthMigrationStart: new Date(2023, 1, 1),
 				})
 			);
 		};
@@ -84,10 +85,11 @@ describe('SchoolUc', () => {
 		describe('when oauthMigrationFinished is given', () => {
 			it('should call schoolMigrationService to complete the migration when oauthMigrationFinished is true', async () => {
 				setup();
+				const migrationStartedAt = new Date(2023, 1, 1);
 
 				await schoolUc.setMigration(mockId, false, true, true, mockId);
 
-				expect(schoolMigrationService.completeMigration).toHaveBeenCalledWith(mockId);
+				expect(schoolMigrationService.completeMigration).toHaveBeenCalledWith(mockId, migrationStartedAt);
 			});
 
 			it('should not call the schoolMigrationService when oauthMigrationFinished is false', async () => {

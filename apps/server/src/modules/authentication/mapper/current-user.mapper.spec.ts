@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ValidationError } from '@shared/common';
 import { Permission, Role, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
@@ -9,14 +8,9 @@ import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
 	const accountId = 'mockAccountId';
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('userToICurrentUser', () => {

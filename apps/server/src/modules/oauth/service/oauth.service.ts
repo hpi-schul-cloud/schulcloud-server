@@ -160,13 +160,7 @@ export class OAuthService {
 		return redirect;
 	}
 
-	getAuthenticationUrl(
-		type: string,
-		oauthConfig: OauthConfig,
-		state: string,
-		migration: boolean,
-		alias?: string
-	): string {
+	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
 		const redirectUri: string = this.getRedirectUri(migration);
 
 		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
@@ -175,8 +169,8 @@ export class OAuthService {
 		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
 		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
 		authenticationUrl.searchParams.append('state', state);
-		if (alias && type === 'oidc') {
-			authenticationUrl.searchParams.append('kc_idp_hint', alias);
+		if (oauthConfig.idpHint) {
+			authenticationUrl.searchParams.append('kc_idp_hint', oauthConfig.idpHint);
 		}
 
 		return authenticationUrl.toString();

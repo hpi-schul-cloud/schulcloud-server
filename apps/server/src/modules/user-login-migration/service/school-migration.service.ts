@@ -71,18 +71,21 @@ export class SchoolMigrationService {
 		return existingSchool;
 	}
 
-	async completeMigration(schoolId: string): Promise<void> {
+	async completeMigration(schoolId: string, migrationStartedAt: Date | undefined): Promise<void> {
+		const startTime: number = performance.now();
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeSmallerThan: school.oauthMigrationPossible,
+			lastLoginSystemChangeSmallerThan: migrationStartedAt,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
 			user.outdatedSince = school.oauthMigrationFinished;
 		});
 		await this.userService.saveAll(notMigratedUsers.data);
+		const endTime: number = performance.now();
+		this.logger.warn(`completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
 	async restartMigration(schoolId: string): Promise<void> {

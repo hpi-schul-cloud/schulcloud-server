@@ -17,6 +17,10 @@ export class BoardDoBuilder {
 		}
 	}
 
+	public buildDomainObject<T extends AnyBoardDo>(boardNode: BoardNode): T {
+		return boardNode.useDoBuilder(this) as T;
+	}
+
 	public buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard {
 		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.COLUMN);
 
