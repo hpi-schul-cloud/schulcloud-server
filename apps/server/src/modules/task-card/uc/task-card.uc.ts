@@ -80,6 +80,7 @@ export class TaskCardUc {
 		const taskParams = {
 			name: params.title,
 			courseId: '',
+			private: false,
 		};
 		if (params.courseId) {
 			taskParams.courseId = params.courseId;
