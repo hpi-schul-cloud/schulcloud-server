@@ -21,6 +21,7 @@
 		"npm": "8"
 	},
 	"scripts": {
+		"devcontainer:postinstall": "npm i && npm run setup",
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
@@ -171,6 +172,7 @@
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
 		"nanoid": "^3.3.4",
+		"nest": "^0.1.6",
 		"nest-winston": "^1.8.0",
 		"nestjs-console": "^8.0.0",
 		"oauth-1.0a": "^2.2.6",
