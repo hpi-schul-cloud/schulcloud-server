@@ -1,10 +1,12 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
 	cleanupCollections,
+	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	textElementNodeFactory,
@@ -57,6 +59,25 @@ describe(ColumnBoardRepo.name, () => {
 
 		it('should throw an error when not found', async () => {
 			await expect(repo.findById('invalid-id')).rejects.toThrowError(NotFoundError);
+		});
+	});
+
+	describe('save', () => {
+		const setup = () => {
+			const board = columnBoardFactory.build();
+
+			return { board };
+		};
+
+		it('should save the board', async () => {
+			const { board } = setup();
+
+			await repo.save(board);
+			em.clear();
+
+			const result = await em.findOneOrFail(BoardNode, board.id);
+
+			expect(result.id).toEqual(board.id);
 		});
 	});
 });
