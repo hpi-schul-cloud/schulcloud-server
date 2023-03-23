@@ -77,4 +77,10 @@ export class BoardDoRepo {
 
 		return parent;
 	}
+
+	async deleteWithDescendants(id: EntityId): Promise<boolean> {
+		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
+		await this.boardNodeRepo.deleteWithDescendants(boardNode);
+		return true;
+	}
 }

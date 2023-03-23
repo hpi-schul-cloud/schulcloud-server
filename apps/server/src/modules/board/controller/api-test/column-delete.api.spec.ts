@@ -2,13 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode, TextElementNode } from '@shared/domain';
+import { CardNode, ColumnNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
+	columnBoardNodeFactory,
 	columnNodeFactory,
 	mapUserToCurrentUser,
-	textElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -17,7 +17,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/cards';
+const baseRouteName = '/boards';
 
 class API {
 	app: INestApplication;
@@ -26,9 +26,9 @@ class API {
 		this.app = app;
 	}
 
-	async delete(cardId: string) {
+	async delete(boardId: string, columnId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/${cardId}`)
+			.delete(`${baseRouteName}/${boardId}/columns/${columnId}`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -38,7 +38,7 @@ class API {
 	}
 }
 
-describe(`card delete (api)`, () => {
+describe(`column delete (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -72,52 +72,54 @@ describe(`card delete (api)`, () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
 
-		const columnNode = columnNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const siblingColumnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const textElementNode = textElementNodeFactory.buildWithId({ parent: cardNode });
-		const siblingCardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		await em.persistAndFlush([user, cardNode, columnNode, siblingCardNode, textElementNode]);
+		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode, siblingColumnNode]);
 		em.clear();
 
-		return { user, cardNode, columnNode, siblingCardNode, textElementNode };
+		return { user, cardNode, columnNode, columnBoardNode, siblingColumnNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, cardNode } = await setup();
+			const { user, columnNode, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.delete(cardNode.id);
+			const response = await api.delete(columnBoardNode.id, columnNode.id);
 
 			expect(response.status).toEqual(200);
 		});
 
-		it('should actually delete card', async () => {
-			const { user, cardNode } = await setup();
+		it('should actually delete the column', async () => {
+			const { user, columnNode, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id);
+			await api.delete(columnBoardNode.id, columnNode.id);
+
+			await expect(em.findOneOrFail(ColumnNode, columnNode.id)).rejects.toThrow();
+		});
+
+		it('should actually delete cards of the column', async () => {
+			const { user, cardNode, columnNode, columnBoardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			await api.delete(columnBoardNode.id, columnNode.id);
 
 			await expect(em.findOneOrFail(CardNode, cardNode.id)).rejects.toThrow();
 		});
 
-		it('should actually delete elements of the card', async () => {
-			const { user, cardNode, textElementNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
-
-			await api.delete(cardNode.id);
-
-			await expect(em.findOneOrFail(TextElementNode, textElementNode.id)).rejects.toThrow();
-		});
-
 		it('should not delete siblings', async () => {
-			const { user, cardNode, siblingCardNode } = await setup();
+			const { user, columnNode, columnBoardNode, siblingColumnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id);
+			await api.delete(columnBoardNode.id, columnNode.id);
 
-			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			await expect(em.findOneOrFail(ColumnNode, columnNode.id)).rejects.toThrow();
+
+			const siblingFromDb = await em.findOneOrFail(ColumnNode, siblingColumnNode.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 	});

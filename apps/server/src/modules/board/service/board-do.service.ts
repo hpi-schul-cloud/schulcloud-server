@@ -28,4 +28,8 @@ export class BoardDoService {
 
 		return parent;
 	}
+
+	async deleteWithDescendants(id: EntityId): Promise<boolean> {
+		return this.boardDoRepo.deleteWithDescendants(id);
+	}
 }
