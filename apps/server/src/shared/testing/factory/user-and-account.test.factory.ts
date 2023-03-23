@@ -1,4 +1,4 @@
-import { Permission, Role, School, EntityId, Account, User } from '@shared/domain';
+import { Permission, Role, School, EntityId, Account, User, BaseEntity } from '@shared/domain';
 import { ObjectId } from 'bson';
 import _ from 'lodash';
 import { userPermissions, studentPermissions, teacherPermissions, adminPermissions } from '../user-role-permissions';
@@ -7,7 +7,7 @@ import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
-interface UserAndAccountParams {
+export interface UserAndAccountParams {
 	username?: string;
 	systemId?: EntityId | ObjectId;
 	firstName?: string;
@@ -17,10 +17,18 @@ interface UserAndAccountParams {
 }
 
 export class UserAndAccountTestFactory {
+	private static checkIdExists(entity: BaseEntity): void | Error {
+		if (!entity.id) {
+			throw new Error('Entity must be have a valid id.');
+		}
+	}
+
 	public static buildUser(
 		role: Role,
 		params: UserAndAccountParams = {}
 	): { account: Account; user: User; school: School } {
+		UserAndAccountTestFactory.checkIdExists(role);
+
 		const { username, systemId, firstName, lastName, email } = params;
 		const school = params.school || schoolFactory.build();
 
