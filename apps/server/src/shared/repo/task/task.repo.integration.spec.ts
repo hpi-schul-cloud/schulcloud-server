@@ -1,12 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
+import { Permission, SortOrder, Task } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
+	roleFactory,
 	submissionFactory,
 	taskFactory,
 	userFactory,
@@ -46,7 +47,193 @@ describe('TaskRepo', () => {
 
 	describe('findAllByParentIds', () => {
 		describe('find by assigned user', () => {
-			// fail('TODO: add test');
+			const createStudent = (id: number) => {
+				const studentRole = roleFactory.build({
+					permissions: [
+						Permission.TASK_DASHBOARD_VIEW_V3,
+						Permission.JOIN_MEETING,
+						Permission.TASK_CARD_VIEW,
+						Permission.TEAM_CREATE,
+						Permission.TEAM_EDIT,
+						Permission.TOOL_CREATE_ETHERPAD,
+					],
+				});
+
+				const student = userFactory.build({
+					firstName: `Student ${id}`,
+					roles: [studentRole],
+				});
+
+				return student;
+			};
+
+			const createTeacher = (id: number) => {
+				const teacherRole = roleFactory.build({
+					permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+				});
+
+				const student = userFactory.build({
+					firstName: `Teacher ${id}`,
+					roles: [teacherRole],
+				});
+
+				return student;
+			};
+
+			const setup = async () => {
+				const teachers = [1, 2].map(createTeacher);
+				const [teacher1, teacher2] = teachers;
+				const students = [1, 2, 3, 4].map(createStudent);
+				const [student1, student2, student3, student4] = students;
+				const englishCourse = courseFactory.build({
+					name: 'english',
+					teachers: [teacher1],
+					students: [student1, student2, student3],
+				});
+				const grammerLesson = lessonFactory.build({
+					name: 'grammer',
+					course: englishCourse,
+				});
+				const historyCourse = courseFactory.build({
+					name: 'history',
+					teachers: [teacher1],
+					students: [student1, student2, student3],
+				});
+				const mathsCourse = courseFactory.build({
+					name: 'maths',
+					teachers: [teacher2],
+					students: [student1, student2],
+				});
+				const mathsLesson = lessonFactory.build({
+					name: 'maths',
+					course: mathsCourse,
+				});
+
+				// create tasks
+				const englishTask1 = taskFactory.build({
+					name: 'Write an essay',
+					course: englishCourse,
+					users: [student1, student2],
+					creator: teacher1,
+				});
+				const englishTask2 = taskFactory.build({
+					name: 'grammer1',
+					creator: teacher1,
+					lesson: grammerLesson,
+					users: [student1],
+				});
+				const englishTask3 = taskFactory.build({
+					name: 'grammer2',
+					creator: teacher1,
+					lesson: grammerLesson,
+					users: [],
+				});
+				const englishTask4 = taskFactory.build({
+					name: 'grammer3',
+					creator: teacher1,
+					lesson: grammerLesson,
+				});
+
+				const historyTask1 = taskFactory.build({
+					name: 'cause of ww2',
+					course: historyCourse,
+					users: [student1, student2],
+				});
+
+				const historyTask2 = taskFactory.build({
+					name: 'fall of Rome',
+					course: historyCourse,
+					users: [student2, student3],
+				});
+
+				const historyTask3 = taskFactory.build({
+					name: 'DDR culture',
+					course: historyCourse,
+				});
+
+				const mathsTask1 = taskFactory.build({
+					name: 'textbook page 12',
+					course: mathsCourse,
+					users: [student2],
+				});
+
+				const mathsTask2 = taskFactory.build({
+					name: 'all primes under million',
+					course: mathsCourse,
+					users: [student3],
+				});
+
+				const mathsTask3 = taskFactory.build({
+					name: 'algebra 1',
+					lesson: mathsLesson,
+					users: [student2],
+				});
+
+				await em.persistAndFlush([
+					teacher1,
+					teacher2,
+					student1,
+					student2,
+					student3,
+					student4,
+					englishCourse,
+					grammerLesson,
+					historyCourse,
+					mathsCourse,
+					mathsLesson,
+					englishTask1,
+					englishTask2,
+					englishTask3,
+					englishTask4,
+					historyTask1,
+					historyTask2,
+					historyTask3,
+					mathsTask1,
+					mathsTask2,
+					mathsTask3,
+				]);
+				em.clear();
+
+				return {
+					teacher1,
+					teacher2,
+					student1,
+					student2,
+					student3,
+					student4,
+					englishCourse,
+					grammerLesson,
+					historyCourse,
+					mathsCourse,
+					mathsLesson,
+					englishTask1,
+					englishTask2,
+					englishTask3,
+					englishTask4,
+					historyTask1,
+					historyTask2,
+					historyTask3,
+					mathsTask1,
+					mathsTask2,
+					mathsTask3,
+				};
+			};
+
+			it('Assigned users should not affect all courses', async () => {
+				const { englishCourse, mathsCourse, historyCourse } = await setup();
+				const [result, total] = await repo.findAllByParentIds({
+					courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
+				});
+				expect(total).toBe(6);
+			});
+
+			it('Only creator should return task with this creator', async () => {
+				// TODO
+			});
+
+			it('Userid filter should return only assigned users', async () => {
+				// TODO
+			});
 		});
 
 		describe('given populates are set correctly', () => {
