@@ -8,7 +8,7 @@ export class NewsScope extends Scope<News> {
 	byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => {
 			return {
-				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }]
+				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }],
 			};
 		});
 		if (queries.length === 0) {
