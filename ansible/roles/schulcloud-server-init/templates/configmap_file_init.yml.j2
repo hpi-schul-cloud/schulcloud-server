@@ -457,7 +457,7 @@ data:
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
              },
-             {
+             { "setOnInsert": {
                "roles": [],
                "privacy_permission": "anonymous",
                "openNewTab": true,
@@ -479,7 +479,7 @@ data:
                "__v": 0,
                "isHidden": true,
                "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout"
-             },
+             } },
              {
                "upsert": true
              }
