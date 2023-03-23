@@ -39,7 +39,7 @@ export class NewsRepo extends BaseRepo<News> {
 	async findAllUnpublished(
 		targets: NewsTargetFilter[],
 		creatorId: EntityId,
-		options?: IFindOptions<News>,
+		options?: IFindOptions<News>
 	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);

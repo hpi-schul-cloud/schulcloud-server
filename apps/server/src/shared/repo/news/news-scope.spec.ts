@@ -82,7 +82,7 @@ describe('News Scope', () => {
 		});
 		it('should create correct query for unpublished', () => {
 			const scope = new NewsScope();
-			scope.byUnpublished(true);
+			scope.byUnpublished();
 			const result = scope.query;
 			expect(result).toHaveProperty('displayAt');
 		});

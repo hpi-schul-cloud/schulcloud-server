@@ -35,7 +35,7 @@ export class NewsScope extends Scope<News> {
 	}
 
 	byCreator(creatorId: EntityId): NewsScope {
-		if(creatorId !== undefined) {
+		if (creatorId !== undefined) {
 			this.addQuery({ creator: creatorId });
 		}
 		return this;
