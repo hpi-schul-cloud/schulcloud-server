@@ -1,5 +1,5 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { News } from '@shared/domain';
+import { EntityId, News } from '@shared/domain';
 import { EmptyResultQuery } from '../query';
 import { Scope } from '../scope';
 import { NewsTargetFilter } from './news-target-filter';
@@ -22,9 +22,13 @@ export class NewsScope extends Scope<News> {
 		return this;
 	}
 
-	byUnpublished(unpublished: boolean): NewsScope {
+	byUnpublished(unpublished: boolean, userId: EntityId | null = null): NewsScope {
 		const now = new Date();
-		this.addQuery({ displayAt: unpublished ? { $gt: now } : { $lte: now } });
+		if (unpublished) {
+			this.addQuery( userId ? { displayAt: { $gt: now } , creator: userId } : { displayAt: { $gt: now }});
+		} else {
+			this.addQuery({ displayAt: { $lte: now } });
+		}
 		return this;
 	}
 }

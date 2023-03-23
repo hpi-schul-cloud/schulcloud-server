@@ -18,15 +18,17 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param targets
 	 * @param unpublished
 	 * @param options
+	 * @param creatorId - creatorId
 	 */
 	async findAll(
 		targets: NewsTargetFilter[],
 		unpublished: boolean,
-		options?: IFindOptions<News>
+		options?: IFindOptions<News>,
+		creatorId: EntityId | null = null
 	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
-		scope.byUnpublished(unpublished);
+		scope.byUnpublished(unpublished, creatorId);
 		const countedNewsList = await this.findNewsAndCount(scope.query, options);
 		return countedNewsList;
 	}
