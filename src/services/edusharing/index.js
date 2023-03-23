@@ -1,27 +1,41 @@
 /* eslint-disable max-classes-per-file */
+const { MethodNotAllowed } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const path = require('path');
 
 const hooks = require('./hooks');
 const playerHooks = require('./hooks/player.hooks');
 const merlinHooks = require('./hooks/merlin.hooks');
-const EduSharingConnector = require('./services/EduSharingConnector');
+const EduSharingConnectorV6 = require('./services/EduSharingConnectorV6');
+const EduSharingConnectorV7 = require('./services/EduSharingConnectorV7');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
+	constructor() {
+		if (Configuration.get('ES_API_V7')) {
+			this.connector = EduSharingConnectorV7;
+		} else {
+			this.connector = EduSharingConnectorV6;
+		}
+	}
+
 	find(params) {
-		return EduSharingConnector.FIND(params.query, params.authentication.payload.schoolId);
+		return this.connector.FIND(params.query, params.authentication.payload.schoolId);
 	}
 
 	get(id, params) {
-		return EduSharingConnector.GET(id, params.authentication.payload.schoolId);
+		return this.connector.GET(id, params.authentication.payload.schoolId);
 	}
 }
 
 class EduSharingPlayer {
-    get(uuid) {
-        return EduSharingConnector.getPlayerForNode(uuid);
-    }
+	get(uuid) {
+		if (!Configuration.get('ES_API_V7')) {
+			throw new MethodNotAllowed('This feature is disabled on this instance');
+		}
+		return EduSharingConnectorV7.getPlayerForNode(uuid);
+	}
 }
 
 class MerlinToken {
@@ -43,7 +57,7 @@ module.exports = (app) => {
 	eduSharingService.hooks(hooks);
 
 	app.use(eduSharingPlayerRoute, new EduSharingPlayer(), (req, res) => {
-	    res.send(res.data);
+		res.send(res.data);
 	});
 	const eduSharingPlayerService = app.service(eduSharingPlayerRoute);
 	eduSharingPlayerService.hooks(playerHooks);
@@ -55,5 +69,4 @@ module.exports = (app) => {
 	merlinService.hooks(merlinHooks);
 
 	app.use(docRoute, staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
 };

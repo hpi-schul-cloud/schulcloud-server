@@ -1,9 +1,7 @@
 const request = require('request-promise-native');
-const sanitizeHtml = require('sanitize-html');
-
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden, GeneralError, NotFound, Unavailable } = require('../../../errors');
+const { Forbidden, GeneralError, NotFound } = require('../../../errors');
 const logger = require('../../../logger');
 const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');
@@ -17,8 +15,7 @@ const ES_METADATASET =
 const ES_ENDPOINTS = {
 	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
-	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch`,
-	RENDERER: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/rendering/v1/details/-home-/`,
+	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queriesV2/-home-/${ES_METADATASET}/ngsearch/`,
 };
 
 const basicAuthorizationHeaders = {
@@ -84,18 +81,12 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			for (const cookie of result.headers['set-cookie']) {
-				if (cookie.startsWith('JSESSIONID')) {
-					return cookie;
-				}
-			}
-			throw new GeneralError('Cookie not found in set-cookie header');
+			return result.headers['set-cookie'][0];
 		} catch (err) {
 			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
 		}
 	}
-
 
 	async authorize() {
 		const now = new Date();
@@ -114,22 +105,18 @@ class EduSharingConnector {
 	async eduSharingRequest(options, retried = false) {
 		try {
 			await this.authorize();
-			if (options.method.toUpperCase() === 'GET') {
-				return await request.get(options);
-			} else if (options.method.toUpperCase() === 'POST') {
+			if (options.method.toUpperCase() === 'POST') {
 				return await request.post(options);
-			} else {
-				throw new GeneralError(`Method not supported: ${options.method}`);
 			}
+			const res = await request.get(options);
+			return res;
 		} catch (err) {
-			// what if error is GeneralError?
 			if (err.statusCode === 404) {
-				// an empty search returns 200, so this might not be needed anymore
 				return null;
 			}
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing request failed');
+				throw new GeneralError('Edu-Sharing Request failed');
 			} else {
 				eduSharingCookieExpires = new Date();
 				const response = await this.eduSharingRequest(options, true);
@@ -182,7 +169,7 @@ class EduSharingConnector {
 		}
 
 		const criterias = [];
-		criterias.push({ property: 'ngsearchword', values: [''] });
+		criterias.push({ property: 'ngsearchword', values: ['*'] });
 		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
@@ -205,7 +192,6 @@ class EduSharingConnector {
 	}
 
 	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
-	    let sortAscending = 'false';
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
@@ -262,9 +248,7 @@ class EduSharingConnector {
 				values: ['1'],
 			});
 		} else if (collection) {
-			sortProperties = 'cclom:title';
-			sortAscending = 'true';
-			criterias.push({ property: 'ngsearchword', values: [''] });
+			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
@@ -277,18 +261,18 @@ class EduSharingConnector {
 		return response;
 	}
 
-	async searchEduSharing(criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
+	async searchEduSharing(criterias, skipCount, maxItems) {
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
-				`sortProperties=${sortProperties}`,
-				`sortAscending=${sortAscending}`,
+				`sortProperties=score`,
+				`sortAscending=false`,
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
-			const facets = ['cclom:general_keyword'];
+			const facettes = ['cclom:general_keyword'];
 
 			const options = {
 				method: 'POST',
@@ -299,8 +283,8 @@ class EduSharingConnector {
 					...basicAuthorizationHeaders,
 				},
 				body: JSON.stringify({
-					criteria,
-					facets,
+					criterias,
+					facettes,
 				}),
 				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			};
@@ -313,19 +297,15 @@ class EduSharingConnector {
 						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
 					}
 
-					// workaround for Edu-Sharing bug, where keywords are like "['a,b,c', 'd \n']"
+					// workaround for Edu-Sharing bug, where arrays are as strings "['a,b,c']"
 					if (
 						node.properties &&
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						const keywords = [];
-						for (const dirtyKeyword of node.properties['cclom:general_keyword']) {
-							for (const keyword of dirtyKeyword.split(',')) {
-								keywords.push(keyword.trim());
-							}
-						}
-						node.properties['cclom:general_keyword'] = keywords;
+						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
+							.slice(1, -1)
+							.split(',');
 					}
 				});
 				await Promise.allSettled(promises);
@@ -335,55 +315,15 @@ class EduSharingConnector {
 
 			return new EduSharingResponse(parsed);
 		} catch (err) {
-			logger.error(`Edu-Sharing failed search: ${err.message}`);
+			logger.error('Edu-Sharing failed search ', err.message);
 			return Promise.reject(err);
 		}
-	}
-
-	async getPlayerForNode(nodeUuid) {
-		const url = `${ES_ENDPOINTS.RENDERER}${nodeUuid}`;
-		const options = {
-			method: 'GET',
-			url,
-			headers: {
-				Accept: 'application/json',
-				...basicAuthorizationHeaders,
-			},
-		};
-
-		const response = await this.eduSharingRequest(options);
-		const parsed = JSON.parse(response);
-		if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-			return this.getH5Piframe(parsed.detailsSnippet);
-		}
-		throw new Unavailable(`Unexpected response from Edu-Sharing renderer.`);
 	}
 
 	validateUuid(uuid) {
 		const uuidV5Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 		const uuidV4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 		return uuidV4Regex.test(uuid) === true || uuidV5Regex.test(uuid) === true;
-	}
-
-	getH5Piframe(html) {
-		const cleanTags = sanitizeHtml(html, {
-			allowedTags: ['iframe', 'script'],
-			allowVulnerableTags: true,
-			allowedAttributes: {
-				iframe: ['src'],
-				script: ['src'],
-			},
-		});
-
-		const iframeSrc = /<iframe src="(.*?)"><\/iframe>/g.exec(cleanTags);
-		const scriptSrc = /<script src="(.*?)"><\/script>/g.exec(cleanTags);
-
-		if (iframeSrc === null || scriptSrc === null) {
-			throw new Unavailable(`No Iframe detected in Edu-Sharing renderer response.`);
-		}
-
-		const iframeH5P = { iframe_src: iframeSrc[1], script_src: scriptSrc[1] };
-		return iframeH5P;
 	}
 }
 
