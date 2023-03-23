@@ -1,7 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	textElementFactory,
+} from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
@@ -11,6 +17,7 @@ describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let cardService: DeepMocked<CardService>;
+	let boardDoService: DeepMocked<BoardDoService>;
 	let elementService: DeepMocked<ContentElementService>;
 
 	beforeAll(async () => {
@@ -38,6 +45,7 @@ describe(CardUc.name, () => {
 
 		uc = module.get(CardUc);
 		cardService = module.get(CardService);
+		boardDoService = module.get(BoardDoService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
 	});
@@ -100,6 +108,37 @@ describe(CardUc.name, () => {
 		});
 	});
 
+	describe('deleting a card', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const card = cardFactory.build();
+			const column = columnFactory.buildWithId();
+
+			return { user, column, card };
+		};
+
+		it('should succeed when parent is found', async () => {
+			const { user, card, column } = setup();
+
+			boardDoService.findParentOfId.mockResolvedValue(column);
+
+			const result = await uc.deleteCard(user.id, card.id);
+
+			expect(boardDoService.findParentOfId).toHaveBeenCalledWith(card.id);
+			expect(boardDoService.deleteChild).toHaveBeenCalledWith(column, card.id);
+			expect(result).toEqual(true);
+		});
+
+		it('should throw error if parent is not found', async () => {
+			const { user, card } = setup();
+			const expectedError = new NotFoundException(`card has no parent`);
+
+			boardDoService.findParentOfId.mockResolvedValue(undefined);
+
+			await expect(uc.deleteCard(user.id, card.id)).rejects.toThrowError(expectedError);
+		});
+	});
+
 	describe('creating a content element', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
@@ -107,7 +146,7 @@ describe(CardUc.name, () => {
 			return { user, card };
 		};
 
-		it('should call the service to find tha card', async () => {
+		it('should call the service to find the card', async () => {
 			const { user, card } = setup();
 
 			await uc.createElement(user.id, card.id);
@@ -122,6 +161,28 @@ describe(CardUc.name, () => {
 			await uc.createElement(user.id, card.id);
 
 			expect(elementService.createElement).toHaveBeenCalledWith(card.id);
+		});
+	});
+
+	describe('deleting a content element', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const contentElement = textElementFactory.build();
+			const card = cardFactory.build();
+
+			return { user, card, contentElement };
+		};
+
+		it('should delete element', async () => {
+			const { user, card, contentElement } = setup();
+
+			cardService.findById.mockResolvedValue(card);
+
+			const result = await uc.deleteElement(user.id, card.id, contentElement.id);
+
+			expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			expect(boardDoService.deleteChild).toHaveBeenCalledWith(card, contentElement.id);
+			expect(result).toEqual(true);
 		});
 	});
 });
