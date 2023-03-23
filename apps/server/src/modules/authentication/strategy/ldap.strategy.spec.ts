@@ -247,7 +247,7 @@ describe('LdapStrategy', () => {
 				const user = await strategy.validate(request);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: ['student'],
+					roles: [mockUser.roles[0].id],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});

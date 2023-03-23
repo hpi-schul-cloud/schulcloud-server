@@ -1,5 +1,3 @@
-import type { Role } from '@shared/domain/entity/role.entity';
-
 export interface IRole {
 	name: string;
 
@@ -34,12 +32,9 @@ export interface ICurrentUser {
 	/** account id as string */
 	accountId: string;
 
+	/** true if user is provided by external system -> no pw change in first login */
 	systemId?: string;
 
-	user: IResolvedUser;
+	/** True if a support member impersonates the user */
+	impersonated?: true;
 }
-
-export type IPermissionsAndRoles = {
-	permissions: string[];
-	roles: Role[];
-};

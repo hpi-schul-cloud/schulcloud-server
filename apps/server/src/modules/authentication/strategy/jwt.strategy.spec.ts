@@ -4,9 +4,8 @@ import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { UnauthorizedException } from '@nestjs/common';
+import { setupEntities } from '@shared/testing';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -14,9 +13,8 @@ import { JwtValidationAdapter } from './jwt-validation.adapter';
 import { JwtStrategy } from './jwt.strategy';
 
 describe('jwt strategy', () => {
-	let adapter: DeepMocked<JwtValidationAdapter>;
+	let validationAdapter: DeepMocked<JwtValidationAdapter>;
 	let strategy: JwtStrategy;
-	let repo: DeepMocked<UserRepo>;
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -30,16 +28,11 @@ describe('jwt strategy', () => {
 					provide: JwtValidationAdapter,
 					useValue: createMock<JwtValidationAdapter>(),
 				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 			],
 		}).compile();
 
 		strategy = module.get(JwtStrategy);
-		repo = module.get(UserRepo);
-		adapter = module.get(JwtValidationAdapter);
+		validationAdapter = module.get(JwtValidationAdapter);
 	});
 
 	afterAll(async () => {
@@ -48,8 +41,7 @@ describe('jwt strategy', () => {
 
 	it('should be defined', () => {
 		expect(strategy).toBeDefined();
-		expect(adapter).toBeDefined();
-		expect(repo).toBeDefined();
+		expect(validationAdapter).toBeDefined();
 	});
 
 	describe('when authenticate a user with jwt', () => {
@@ -57,23 +49,14 @@ describe('jwt strategy', () => {
 			const accountId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
 			await strategy.validate({ accountId, jti } as JwtPayload);
-			expect(adapter.isWhitelisted).toHaveBeenCalledWith(accountId, jti);
-		});
-		it('should load the defined user', async () => {
-			const accountId = new ObjectId().toHexString();
-			const userId = new ObjectId().toHexString();
-			const jti = new ObjectId().toHexString();
-			const payload = { accountId, jti, userId } as JwtPayload;
-			repo.findById.mockResolvedValue(userFactory.build());
-			await strategy.validate(payload);
-			expect(repo.findById).toHaveBeenCalledWith(userId);
+			expect(validationAdapter.isWhitelisted).toHaveBeenCalledWith(accountId, jti);
 		});
 
 		it('should throw an UnauthorizedException when the user is not found', async () => {
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const jti = new ObjectId().toHexString();
-			repo.findById.mockRejectedValue(new NotFoundException());
+			validationAdapter.isWhitelisted.mockRejectedValueOnce(null);
 			const payload = { accountId, jti, userId } as JwtPayload;
 			await expect(() => strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
 		});
