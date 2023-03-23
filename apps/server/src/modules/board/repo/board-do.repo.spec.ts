@@ -1,5 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnyBoardDo, BoardNode, CardNode, ColumnNode, EntityId, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -169,36 +169,6 @@ describe(BoardDoRepo.name, () => {
 				expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
 			});
 		});
-
-		describe('deleteElement', () => {
-			const setup = async () => {
-				const cardNode = cardNodeFactory.buildWithId();
-				const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
-				await em.persistAndFlush([cardNode, ...textElementNodes]);
-
-				const card = await repo.findById(cardNode.id);
-
-				return { card, cardNode, textElementNodes };
-			};
-
-			it('should delete an element from a card', async () => {
-				const { card, textElementNodes } = await setup();
-
-				const updatedCard = await repo.deleteChild(card, textElementNodes[0].id);
-				const elementIds = updatedCard.children?.map((el: { id: EntityId }) => el.id);
-
-				expect(updatedCard.children).toHaveLength(2);
-				expect(elementIds).not.toContain(textElementNodes[0].id);
-			});
-
-			it('should delete an element physically', async () => {
-				const { card, textElementNodes } = await setup();
-
-				await repo.deleteChild(card, textElementNodes[0].id);
-
-				await expect(em.findOneOrFail(BoardNode, textElementNodes[0].id)).rejects.toThrow();
-			});
-		});
 	});
 
 	describe('text element', () => {
@@ -271,6 +241,63 @@ describe(BoardDoRepo.name, () => {
 			expect(parent?.children).toHaveLength(2);
 			expect(expectedChildIds).toContain(actualChildIds[0]);
 			expect(expectedChildIds).toContain(actualChildIds[1]);
+		});
+
+		it('should return undefined if board node has no parent', async () => {
+			const { cardId } = await setup();
+
+			const parent = await repo.findParentOfId(cardId);
+
+			expect(parent).toBeUndefined();
+		});
+	});
+
+	describe('when deleting a child', () => {
+		const setup = async () => {
+			const cardNode = cardNodeFactory.buildWithId();
+			const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
+			const independentTextElementNode = textElementNodeFactory.buildWithId();
+			await em.persistAndFlush([cardNode, ...textElementNodes, independentTextElementNode]);
+
+			const card = await repo.findById(cardNode.id);
+
+			return { card, cardNode, textElementNodes, independentTextElementNode };
+		};
+
+		it('should delete an element from a card', async () => {
+			const { card, textElementNodes } = await setup();
+
+			const updatedCard = await repo.deleteChild(card, textElementNodes[0].id);
+			const elementIds = updatedCard.children?.map((el: { id: EntityId }) => el.id);
+
+			expect(updatedCard.children).toHaveLength(2);
+			expect(elementIds).not.toContain(textElementNodes[0].id);
+		});
+
+		it('should delete an element physically', async () => {
+			const { card, textElementNodes } = await setup();
+
+			await repo.deleteChild(card, textElementNodes[0].id);
+
+			await expect(em.findOneOrFail(BoardNode, textElementNodes[0].id)).rejects.toThrow();
+		});
+
+		it('should throw if child does not belong to parent', async () => {
+			const { card, independentTextElementNode } = await setup();
+
+			await expect(repo.deleteChild(card, independentTextElementNode.id)).rejects.toThrow(
+				'child does not belong to parent'
+			);
+		});
+
+		it('should throw if parent has no children', async () => {
+			const cardNode = cardNodeFactory.buildWithId();
+			await em.persistAndFlush([cardNode]);
+			const card = await repo.findById(cardNode.id);
+			delete card.children;
+			const fakeId = new ObjectId().toHexString();
+
+			await expect(repo.deleteChild(card, fakeId)).rejects.toThrow('parent has no children');
 		});
 	});
 });
