@@ -8,7 +8,7 @@ export class NewsScope extends Scope<News> {
 	byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => {
 			return {
-				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }],
+				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }]
 			};
 		});
 		if (queries.length === 0) {
@@ -25,7 +25,7 @@ export class NewsScope extends Scope<News> {
 	byUnpublished(unpublished: boolean, userId: EntityId | null = null): NewsScope {
 		const now = new Date();
 		if (unpublished) {
-			this.addQuery( userId ? { displayAt: { $gt: now } , creator: userId } : { displayAt: { $gt: now }});
+			this.addQuery(userId ? { displayAt: { $gt: now }, creator: userId } : { displayAt: { $gt: now } });
 		} else {
 			this.addQuery({ displayAt: { $lte: now } });
 		}
