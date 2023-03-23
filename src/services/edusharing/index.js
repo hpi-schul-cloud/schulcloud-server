@@ -1,19 +1,29 @@
 /* eslint-disable max-classes-per-file */
 const { static: staticContent } = require('@feathersjs/express');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 const path = require('path');
 
 const hooks = require('./hooks');
 const merlinHooks = require('./hooks/merlin.hooks');
-const EduSharingConnector = require('./services/EduSharingConnector');
+const EduSharingConnectorV6 = require('./services/EduSharingConnectorV6');
+const EduSharingConnectorV7 = require('./services/EduSharingConnectorV7');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
+	constructor() {
+		if (Configuration.get('ES_API_V7')) {
+			this.connector = EduSharingConnectorV7;
+		} else {
+			this.connector = EduSharingConnectorV6;
+		}
+	}
+
 	find(params) {
-		return EduSharingConnector.FIND(params.query, params.authentication.payload.schoolId);
+		return this.connector.FIND(params.query, params.authentication.payload.schoolId);
 	}
 
 	get(id, params) {
-		return EduSharingConnector.GET(id, params.authentication.payload.schoolId);
+		return this.connector.GET(id, params.authentication.payload.schoolId);
 	}
 }
 
@@ -36,7 +46,8 @@ module.exports = (app) => {
 	const merlinService = app.service(merlinRoute);
 	merlinService.hooks(merlinHooks);
 
-	app.use(eduSharingRoute, new EduSharing(), (req, res) => {
+	const edusharing = new EduSharing();
+	app.use(eduSharingRoute, edusharing, (req, res) => {
 		res.send(res.data);
 	});
 	const eduSharingService = app.service(eduSharingRoute);
