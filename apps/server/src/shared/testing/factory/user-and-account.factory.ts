@@ -21,9 +21,11 @@ export class UserAndAccountTestFactory {
 		role: Role,
 		params: UserAndAccountParams = {}
 	): { account: Account; user: User; school: School } {
+		const { username, systemId, firstName, lastName, email } = params;
 		const school = params.school || schoolFactory.build();
-		const user = userFactory.withRole(role).buildWithId({ school });
-		const account = accountFactory.withSystemId(params.systemId).build({ userId: user.id });
+
+		const user = userFactory.withRole(role).buildWithId({ school, firstName, lastName, email });
+		const account = accountFactory.withSystemId(params.systemId).build({ userId: user.id, username, systemId });
 
 		return { account, user, school: user.school };
 	}
