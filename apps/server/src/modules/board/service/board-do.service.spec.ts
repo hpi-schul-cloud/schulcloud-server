@@ -49,7 +49,7 @@ describe(BoardDoService.name, () => {
 			const { card } = setup();
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			const found = await boardDoRepo.findById(card.id);
+			const found = await service.findById(card.id);
 
 			expect(found).toBe(card);
 		});
