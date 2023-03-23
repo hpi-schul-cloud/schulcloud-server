@@ -16,7 +16,3 @@ const fwuLearningContentsConfig = {
 };
 
 export const config = () => fwuLearningContentsConfig;
-
-// export const s3Bucket = Configuration.get('FWU_CONTENT__S3_BUCKET') as string;
-
-// export const fwuContentEnabled = Configuration.get('FEATURE_FWU_CONTENT_ENABLED') as boolean;

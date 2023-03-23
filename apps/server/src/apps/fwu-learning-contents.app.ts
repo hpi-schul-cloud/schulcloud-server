@@ -41,8 +41,8 @@ async function bootstrap() {
 
 	console.log('##########################################');
 	console.log(`### Start FWU Learning Contents Server ###`);
-	console.log(`### Port:     ${port}                  ###`);
-	console.log(`### Base path: ${basePath}             ###`);
+	console.log(`### Port:      ${port}                    ###`);
+	console.log(`### Base path: ${basePath}                 ###`);
 	console.log('##########################################');
 }
 void bootstrap();

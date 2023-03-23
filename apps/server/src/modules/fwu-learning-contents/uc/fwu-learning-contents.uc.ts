@@ -27,7 +27,6 @@ export class FwuLearningContentsUc {
 					throw new InternalServerErrorException(error.name);
 				}
 			}
-
 			throw new InternalServerErrorException();
 		});
 
