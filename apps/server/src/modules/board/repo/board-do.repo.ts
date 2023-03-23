@@ -36,7 +36,7 @@ export class BoardDoRepo {
 		const boardNode = await this.em.findOneOrFail(BoardNode, childId);
 		if (boardNode?.parentId) {
 			const parent = await this.em.findOneOrFail(BoardNode, boardNode.parentId);
-			const descendants = await this.boardNodeRepo.findDescendants(boardNode);
+			const descendants = await this.boardNodeRepo.findDescendants(parent);
 			const domainObject = new BoardDoBuilder(descendants).buildDomainObject(parent);
 			return domainObject;
 		}

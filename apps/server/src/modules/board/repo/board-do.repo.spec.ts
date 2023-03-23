@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNode, CardNode, ColumnBoardNode, ColumnNode, EntityId, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, BoardNode, CardNode, ColumnNode, EntityId, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -247,6 +247,12 @@ describe(BoardDoRepo.name, () => {
 			return { cardId: cardNode.id, textElement1, textElement2, nonChildTextElement };
 		};
 
+		it('should not return the parent for an incorrect childId', async () => {
+			const { nonChildTextElement } = await setup();
+
+			await expect(repo.findParentOfId(nonChildTextElement.id)).rejects.toThrow();
+		});
+
 		it('should return the parent for a correct childId', async () => {
 			const { cardId, textElement1 } = await setup();
 
@@ -255,10 +261,16 @@ describe(BoardDoRepo.name, () => {
 			expect(parent?.id).toBe(cardId);
 		});
 
-		it('should not return the parent for an incorrect childId', async () => {
-			const { nonChildTextElement } = await setup();
+		it('should return the parent including all children', async () => {
+			const { textElement1, textElement2 } = await setup();
+			const expectedChildIds = [textElement1.id, textElement2.id];
 
-			await expect(repo.findParentOfId(nonChildTextElement.id)).rejects.toThrow();
+			const parent = await repo.findParentOfId(textElement1.id);
+			const actualChildIds = parent?.children?.map((child: AnyBoardDo) => child.id) ?? [];
+
+			expect(parent?.children).toHaveLength(2);
+			expect(expectedChildIds).toContain(actualChildIds[0]);
+			expect(expectedChildIds).toContain(actualChildIds[1]);
 		});
 	});
 });
