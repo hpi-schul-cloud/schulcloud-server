@@ -517,7 +517,7 @@ data:
                "name": "nextcloud",
                "config_type": "oauth2"
              },
-             {
+             { "setOnInsert": {
                "name": "nextcloud",
                "url": "'$NEXTCLOUD_BASE_URL'",
                "logoUrl": "",
@@ -531,7 +531,7 @@ data:
                "createdAt": new Date(),
                "updatedAt": new Date(),
                "version": 1
-             },
+             } },
              {
                "upsert": true
              }
