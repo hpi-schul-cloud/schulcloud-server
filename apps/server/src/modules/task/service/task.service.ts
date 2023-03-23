@@ -149,7 +149,13 @@ export class TaskService {
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.users.set(users);
+			} else {
+				task.users.removeAll();
 			}
+		} else {
+			task.course = undefined;
+			task.lesson = undefined;
+			task.users.removeAll();
 		}
 
 		if (params.lessonId) {
@@ -159,6 +165,8 @@ export class TaskService {
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson = lesson;
+		} else {
+			task.lesson = undefined;
 		}
 
 		this.taskDateValidation(params.availableDate, params.dueDate);

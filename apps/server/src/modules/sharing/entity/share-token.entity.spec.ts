@@ -1,18 +1,11 @@
-import { MikroORM } from '@mikro-orm/core';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareToken } from './share-token.entity';
 
 describe('share-token entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	const setup = () => {

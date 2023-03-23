@@ -1,13 +1,12 @@
-import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException } from '@nestjs/common';
 import { MatchCreator, MatchCreatorScope, RoleName, SortOrder } from '@shared/domain';
 import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	FilterImportUserParams,
-	ImportUserSortOrder,
-	SortImportUserParams,
 	FilterMatchType,
 	FilterRoleType,
+	ImportUserSortOrder,
+	SortImportUserParams,
 	UserMatchResponse,
 } from '../controller/dto';
 import { ImportUserMapper } from './import-user.mapper';
@@ -16,14 +15,8 @@ import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {
