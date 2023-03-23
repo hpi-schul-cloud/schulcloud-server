@@ -172,7 +172,6 @@
 		"nanoid": "^3.3.4",
 		"nest-winston": "^1.8.0",
 		"nestjs-console": "^8.0.0",
-		"node-html-parser": "^5.4.2-0",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"passport": "^0.6.0",
