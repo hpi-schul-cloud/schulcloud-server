@@ -57,12 +57,12 @@ describe(BoardDoRepo.name, () => {
 
 			it('should find the board', async () => {
 				const { boardNode } = await setup();
-				const result = await repo.findById(ColumnBoardNode, boardNode.id);
+				const result = await repo.findById(boardNode.id);
 				expect(result.id).toEqual(boardNode.id);
 			});
 
 			it('should throw an error when not found', async () => {
-				await expect(repo.findById(ColumnBoardNode, 'invalid-id')).rejects.toThrowError(NotFoundError);
+				await expect(repo.findById('invalid-id')).rejects.toThrowError(NotFoundError);
 			});
 		});
 
@@ -128,12 +128,12 @@ describe(BoardDoRepo.name, () => {
 
 			it('should find the card', async () => {
 				const { cardNodes } = await setup();
-				const result = await repo.findById(CardNode, cardNodes[0].id);
+				const result = await repo.findById(cardNodes[0].id);
 				expect(result.id).toEqual(cardNodes[0].id);
 			});
 
 			it('should throw an error when not found', async () => {
-				await expect(repo.findById(CardNode, 'invalid-id')).rejects.toThrowError(NotFoundError);
+				await expect(repo.findById('invalid-id')).rejects.toThrowError(NotFoundError);
 			});
 		});
 
@@ -176,7 +176,7 @@ describe(BoardDoRepo.name, () => {
 				const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
 				await em.persistAndFlush([cardNode, ...textElementNodes]);
 
-				const card = await repo.findById(CardNode, cardNode.id);
+				const card = await repo.findById(cardNode.id);
 
 				return { card, cardNode, textElementNodes };
 			};
@@ -199,40 +199,66 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(BoardNode, textElementNodes[0].id)).rejects.toThrow();
 			});
 		});
+	});
 
-		describe('text element', () => {
-			describe('save', () => {
-				const setup = async () => {
-					const [textElement1, textElement2, textElement3] = textElementFactory.buildList(3);
+	describe('text element', () => {
+		describe('save', () => {
+			const setup = async () => {
+				const [textElement1, textElement2, textElement3] = textElementFactory.buildList(3);
 
-					const cardNode = cardNodeFactory.build();
-					await em.persistAndFlush(cardNode);
+				const cardNode = cardNodeFactory.build();
+				await em.persistAndFlush(cardNode);
 
-					return { cardId: cardNode.id, textElement1, textElement2, textElement3 };
-				};
+				return { cardId: cardNode.id, textElement1, textElement2, textElement3 };
+			};
 
-				it('should save content elements', async () => {
-					const { cardId, textElement1 } = await setup();
+			it('should save content elements', async () => {
+				const { cardId, textElement1 } = await setup();
 
-					await repo.save(textElement1, cardId);
-					em.clear();
+				await repo.save(textElement1, cardId);
+				em.clear();
 
-					const result = await em.findOne(TextElementNode, textElement1.id);
+				const result = await em.findOne(TextElementNode, textElement1.id);
 
-					expect(result).toBeDefined();
-				});
-
-				it('should persist card order to positions', async () => {
-					const { cardId, textElement1, textElement2, textElement3 } = await setup();
-
-					await repo.save([textElement1, textElement2, textElement3], cardId);
-					em.clear();
-
-					expect((await em.findOne(TextElementNode, textElement1.id))?.position).toEqual(0);
-					expect((await em.findOne(TextElementNode, textElement2.id))?.position).toEqual(1);
-					expect((await em.findOne(TextElementNode, textElement3.id))?.position).toEqual(2);
-				});
+				expect(result).toBeDefined();
 			});
+
+			it('should persist card order to positions', async () => {
+				const { cardId, textElement1, textElement2, textElement3 } = await setup();
+
+				await repo.save([textElement1, textElement2, textElement3], cardId);
+				em.clear();
+
+				expect((await em.findOne(TextElementNode, textElement1.id))?.position).toEqual(0);
+				expect((await em.findOne(TextElementNode, textElement2.id))?.position).toEqual(1);
+				expect((await em.findOne(TextElementNode, textElement3.id))?.position).toEqual(2);
+			});
+		});
+	});
+
+	describe('when fetching a parent', () => {
+		const setup = async () => {
+			const cardNode = cardNodeFactory.buildWithId();
+			const [textElement1, textElement2] = textElementNodeFactory.buildList(3, { parent: cardNode });
+			const nonChildTextElement = textElementNodeFactory.buildWithId();
+
+			await em.persistAndFlush([cardNode, textElement1, textElement2]);
+
+			return { cardId: cardNode.id, textElement1, textElement2, nonChildTextElement };
+		};
+
+		it('should return the parent for a correct childId', async () => {
+			const { cardId, textElement1 } = await setup();
+
+			const parent = await repo.findParentOfId(textElement1.id);
+
+			expect(parent?.id).toBe(cardId);
+		});
+
+		it('should not return the parent for an incorrect childId', async () => {
+			const { nonChildTextElement } = await setup();
+
+			await expect(repo.findParentOfId(nonChildTextElement.id)).rejects.toThrow();
 		});
 	});
 });
