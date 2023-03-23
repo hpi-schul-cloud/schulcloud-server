@@ -56,7 +56,7 @@ describe('NewsUc', () => {
 						save() {
 							return {};
 						},
-						findAll() {
+						findAllPublished() {
 							return [[exampleCourseNews], 1];
 						},
 						findOneById(id) {
