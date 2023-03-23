@@ -2,21 +2,25 @@ const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
+const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
 describe('edusharing hooks', () => {
 	let app;
 	let eduSharingService;
+	let nestServices;
 	let server;
 
 	before(async () => {
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		await closeNestServices(nestServices);
 	});
 
 	it('registered the service', async () => {
