@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const htmlParser = require('node-html-parser');
+const sanitizeHtml = require('sanitize-html');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -354,26 +354,36 @@ class EduSharingConnector {
 		const response = await this.eduSharingRequest(options);
 		const parsed = JSON.parse(response);
 		if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
-			const root = htmlParser.parse(parsed.detailsSnippet);
-			const content = root.querySelector('.edusharing_rendering_content_wrapper');
-			const iframe = content.querySelector('iframe');
-			const iframeSrc = iframe.getAttribute('src');
-			const script = content.querySelector('script');
-			const scriptSrc = script.getAttribute('src');
-			if (iframeSrc === null || scriptSrc === null) {
-				throw new Unavailable(`No Iframe detected in Edu-Sharing renderer response.`);
-			}
-			const iframeH5P = { iframe_src: iframeSrc, script_src: scriptSrc };
-			return iframeH5P;
-		} else {
-			throw new Unavailable(`Unexpected response from Edu-Sharing renderer.`);
+			return this.getH5Piframe(parsed.detailsSnippet);
 		}
+		throw new Unavailable(`Unexpected response from Edu-Sharing renderer.`);
 	}
 
 	validateUuid(uuid) {
 		const uuidV5Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 		const uuidV4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
 		return uuidV4Regex.test(uuid) === true || uuidV5Regex.test(uuid) === true;
+	}
+
+	getH5Piframe(html) {
+		const cleanTags = sanitizeHtml(html, {
+			allowedTags: ['iframe', 'script'],
+			allowVulnerableTags: true,
+			allowedAttributes: {
+				iframe: ['src'],
+				script: ['src'],
+			},
+		});
+
+		const iframeSrc = /<iframe src="(.*?)"><\/iframe>/g.exec(cleanTags);
+		const scriptSrc = /<script src="(.*?)"><\/script>/g.exec(cleanTags);
+
+		if (iframeSrc === null || scriptSrc === null) {
+			throw new Unavailable(`No Iframe detected in Edu-Sharing renderer response.`);
+		}
+
+		const iframeH5P = { iframe_src: iframeSrc[1], script_src: scriptSrc[1] };
+		return iframeH5P;
 	}
 }
 
