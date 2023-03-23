@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -35,6 +36,25 @@ describe(BoardDoService.name, () => {
 		await module.close();
 	});
 
+	describe('when searching a domain object', () => {
+		const setup = () => {
+			const elements = textElementFactory.buildListWithId(3);
+			const card = cardFactory.build({ children: elements });
+			const cardId = card.id;
+
+			return { card, elements, cardId };
+		};
+
+		it('should return the domain object', async () => {
+			const { card } = setup();
+			boardDoRepo.findById.mockResolvedValueOnce(card);
+
+			const found = await boardDoRepo.findById(card.id);
+
+			expect(found).toBe(card);
+		});
+	});
+
 	describe('when deleting a child', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
@@ -62,6 +82,14 @@ describe(BoardDoService.name, () => {
 			await service.deleteChild(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
+		});
+
+		it('should throw if the child does not exist', async () => {
+			const textElement = textElementFactory.buildWithId();
+			delete textElement.children;
+			const fakeId = new ObjectId().toHexString();
+
+			await expect(service.deleteChild(textElement, fakeId)).rejects.toThrow();
 		});
 	});
 });

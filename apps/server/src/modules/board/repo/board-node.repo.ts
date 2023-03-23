@@ -29,11 +29,6 @@ export class BoardNodeRepo {
 		return descendants;
 	}
 
-	async getParentId(id: EntityId): Promise<EntityId | undefined> {
-		const boardNode = await this.em.findOneOrFail(BoardNode, id as FilterQuery<BoardNode>);
-		return boardNode.parentId;
-	}
-
 	async findChildrenOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
 		const paths = nodes.map((node) => node.pathOfChildren);
 		const children = await this.em.find(BoardNode, { path: { $in: paths } });
