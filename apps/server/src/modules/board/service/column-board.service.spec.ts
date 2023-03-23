@@ -43,8 +43,9 @@ describe(ColumnBoardService.name, () => {
 			return { board, boardId };
 		};
 
-		it('should call the card repository', async () => {
-			const { boardId } = setup();
+		it('should call the board do repository', async () => {
+			const { boardId, board } = setup();
+			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			await service.findById(boardId);
 
@@ -56,6 +57,7 @@ describe(ColumnBoardService.name, () => {
 			boardDoRepo.findById.mockResolvedValueOnce(board);
 
 			const result = await service.findById(board.id);
+
 			expect(result).toEqual(board);
 		});
 	});
