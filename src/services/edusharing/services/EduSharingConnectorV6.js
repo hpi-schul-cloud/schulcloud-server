@@ -15,7 +15,7 @@ const ES_METADATASET =
 const ES_ENDPOINTS = {
 	AUTH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
 	NODE: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/node/v1/nodes/-home-/`,
-	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queries/-home-/${ES_METADATASET}/ngsearch/`,
+	SEARCH: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/search/v1/queriesV2/-home-/${ES_METADATASET}/ngsearch/`,
 };
 
 const basicAuthorizationHeaders = {
@@ -81,12 +81,7 @@ class EduSharingConnector {
 				throw Error('authentication error with edu sharing');
 			}
 
-			for (const cookie of result.headers['set-cookie']) {
-				if (cookie.startsWith('JSESSIONID')) {
-					return cookie;
-				}
-			}
-			throw new GeneralError('Cookie not found in response headers');
+			return result.headers['set-cookie'][0];
 		} catch (err) {
 			logger.error(`Edu-Sharing failed to get session cookie: ${err.statusCode} ${err.message}`);
 			throw new GeneralError('Edu-Sharing Request failed');
@@ -148,7 +143,7 @@ class EduSharingConnector {
 			headers: {
 				cookie: this.eduSharingCookie,
 			},
-			encoding: null, // required to get the image as binary value
+			encoding: null, // necessary to get the image as binary value
 			resolveWithFullResponse: true,
 			// edu-sharing returns 302 to an error page instead of 403,
 			// and the error page has wrong status codes
@@ -174,7 +169,7 @@ class EduSharingConnector {
 		}
 
 		const criterias = [];
-		criterias.push({ property: 'ngsearchword', values: [''] });
+		criterias.push({ property: 'ngsearchword', values: ['*'] });
 		criterias.push({
 			property: 'ccm:replicationsourceuuid',
 			values: [uuid],
@@ -196,7 +191,7 @@ class EduSharingConnector {
 		return response.data[0];
 	}
 
-	async FIND({ searchQuery = '', $skip, $limit, collection = '' }, schoolId) {
+	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
@@ -253,7 +248,7 @@ class EduSharingConnector {
 				values: ['1'],
 			});
 		} else if (collection) {
-			criterias.push({ property: 'ngsearchword', values: [''] });
+			criterias.push({ property: 'ngsearchword', values: ['*'] });
 			criterias.push({
 				property: 'ccm:hpi_lom_relation',
 				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
@@ -266,7 +261,7 @@ class EduSharingConnector {
 		return response;
 	}
 
-	async searchEduSharing(criteria, skipCount, maxItems) {
+	async searchEduSharing(criterias, skipCount, maxItems) {
 		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
 				`contentType=FILES`,
@@ -277,7 +272,7 @@ class EduSharingConnector {
 				`propertyFilter=-all-`,
 			].join('&')}`;
 
-			const facets = ['cclom:general_keyword'];
+			const facettes = ['cclom:general_keyword'];
 
 			const options = {
 				method: 'POST',
@@ -288,8 +283,8 @@ class EduSharingConnector {
 					...basicAuthorizationHeaders,
 				},
 				body: JSON.stringify({
-					criteria,
-					facets,
+					criterias,
+					facettes,
 				}),
 				timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 			};
@@ -308,13 +303,9 @@ class EduSharingConnector {
 						node.properties['cclom:general_keyword'] &&
 						node.properties['cclom:general_keyword'][0]
 					) {
-						const keywords = [];
-						for (const dirtyKeyword of node.properties['cclom:general_keyword']) {
-							for (const keyword of dirtyKeyword.split(',')) {
-								keywords.push(keyword.trim());
-							}
-						}
-						node.properties['cclom:general_keyword'] = keywords;
+						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
+							.slice(1, -1)
+							.split(',');
 					}
 				});
 				await Promise.allSettled(promises);
