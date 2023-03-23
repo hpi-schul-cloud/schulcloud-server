@@ -457,7 +457,7 @@ data:
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
              },
-             { "setOnInsert": {
+             { $setOnInsert: {
                "roles": [],
                "privacy_permission": "anonymous",
                "openNewTab": true,
