@@ -1,6 +1,6 @@
 import { TextElement } from '@shared/domain';
 import { ContentElementType } from '../../types/content-elements.enum';
-import { TextElementResponse, TimestampsResponse } from '../dto';
+import { TextElementContent, TextElementResponse, TimestampsResponse } from '../dto';
 
 export class TextElementResponseMapper {
 	static mapToResponse(element: TextElement): TextElementResponse {
@@ -8,7 +8,7 @@ export class TextElementResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.TEXT,
-			content: { text: element.text },
+			content: new TextElementContent({ text: element.text }),
 		});
 
 		return result;
