@@ -22,12 +22,21 @@ export class NewsScope extends Scope<News> {
 		return this;
 	}
 
-	byUnpublished(unpublished: boolean, userId: EntityId | null = null): NewsScope {
+	byPublished(): NewsScope {
 		const now = new Date();
-		if (unpublished) {
-			this.addQuery(userId ? { displayAt: { $gt: now }, creator: userId } : { displayAt: { $gt: now } });
-		} else {
-			this.addQuery({ displayAt: { $lte: now } });
+		this.addQuery({ displayAt: { $lte: now } });
+		return this;
+	}
+
+	byUnpublished(): NewsScope {
+		const now = new Date();
+		this.addQuery({ displayAt: { $gt: now } });
+		return this;
+	}
+
+	byCreator(creatorId: EntityId): NewsScope {
+		if(creatorId !== undefined) {
+			this.addQuery({ creator: creatorId });
 		}
 		return this;
 	}

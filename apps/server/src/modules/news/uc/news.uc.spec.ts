@@ -106,9 +106,9 @@ describe('NewsUc', () => {
 	describe('findAllByUser', () => {
 		it('should search for news by empty scope ', async () => {
 			const scope = {};
-			const findAllSpy = jest.spyOn(repo, 'findAll');
+			const findAllSpy = jest.spyOn(repo, 'findAllPublished');
 			await service.findAllForUser(userId, scope, pagination);
-			const expectedParams = [targets, false, pagination, userId];
+			const expectedParams = [targets, pagination];
 			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for school news with given school id', async () => {
@@ -118,13 +118,13 @@ describe('NewsUc', () => {
 					targetId: schoolId,
 				},
 			};
-			const findAllBySchoolSpy = jest.spyOn(repo, 'findAll');
+			const findAllBySchoolSpy = jest.spyOn(repo, 'findAllPublished');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedTarget = {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			const expectedParams = [[expectedTarget], false, pagination, userId];
+			const expectedParams = [[expectedTarget], pagination];
 			expect(findAllBySchoolSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for course news with given courseId', async () => {
@@ -134,25 +134,25 @@ describe('NewsUc', () => {
 					targetId: courseTargetId,
 				},
 			};
-			const findAllByCourseSpy = jest.spyOn(repo, 'findAll');
+			const findAllByCourseSpy = jest.spyOn(repo, 'findAllPublished');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedTarget = {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			const expectedParams = [[expectedTarget], false, pagination, userId];
+			const expectedParams = [[expectedTarget], pagination];
 			expect(findAllByCourseSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for all course news if course id is not given', async () => {
 			const targetModel = NewsTargetModel.Course;
 			const scope = { target: { targetModel } };
-			const findAllByTargetSpy = jest.spyOn(repo, 'findAll');
+			const findAllByTargetSpy = jest.spyOn(repo, 'findAllPublished');
 			await service.findAllForUser(userId, scope, pagination);
 			const targetIds = targets
 				.filter((target) => target.targetModel === targetModel)
 				.flatMap((target) => target.targetIds);
 			const expectedTarget = { targetModel, targetIds };
-			const expectedParams = [[expectedTarget], false, pagination, userId];
+			const expectedParams = [[expectedTarget], pagination];
 			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 	});

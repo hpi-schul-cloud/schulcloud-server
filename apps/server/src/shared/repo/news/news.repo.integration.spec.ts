@@ -102,7 +102,7 @@ describe('NewsRepo', () => {
 			};
 			const pagination = { skip: 0, limit: 20 };
 
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
@@ -119,7 +119,7 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [news.target.id],
 			};
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -135,7 +135,7 @@ describe('NewsRepo', () => {
 				targetIds: [news.target.id],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -151,7 +151,7 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
 			};
-			const [result, count] = await repo.findAll([target], false, { order: { target: SortOrder.desc } });
+			const [result, count] = await repo.findAllPublished([target], { order: { target: SortOrder.desc } });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(courseIds.length);
 			const resultCourseIds = result.map((news) => news.target.id);
