@@ -726,6 +726,11 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
+		"ES_API_V7": {
+			"type": "boolean",
+			"default": false,
+			"description": "Use the newer API for Edusharing v7"
+		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
 			"default": false,
