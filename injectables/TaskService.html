@@ -834,7 +834,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, taskId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/ITaskUpdate.html" target="_self">ITaskUpdate</a>)</code>
+                    <code>update(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, taskId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/ITaskUpdate.html" target="_self">ITaskUpdate</a>, remove)</code>
                 </td>
             </tr>
 
@@ -859,6 +859,7 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -872,6 +873,8 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -884,6 +887,8 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -896,6 +901,22 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>remove</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -1044,7 +1065,7 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise&lt;TaskWithStatusVo&gt; {
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate, remove &#x3D; false): Promise&lt;TaskWithStatusVo&gt; {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const task &#x3D; await this.taskRepo.findById(taskId);
 
@@ -1071,10 +1092,10 @@ export class TaskService {
 				}
 				const users &#x3D; await Promise.all(params.usersIds.map(async (id) &#x3D;&gt; this.userRepo.findById(id)));
 				task.users.set(users);
-			} else {
+			} else if (remove) {
 				task.users.removeAll();
 			}
-		} else {
+		} else if (remove) {
 			task.course &#x3D; undefined;
 			task.lesson &#x3D; undefined;
 			task.users.removeAll();
@@ -1087,7 +1108,7 @@ export class TaskService {
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson &#x3D; lesson;
-		} else {
+		} else if (remove) {
 			task.lesson &#x3D; undefined;
 		}
 
