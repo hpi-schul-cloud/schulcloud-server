@@ -447,5 +447,99 @@ data:
 
     # ========== End of the Bettermarks tool configuration section.
 
+    # ========== Start of the Nextcloud configuration section.
+    # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
+    if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
+         echo "Inserting nextcloud to ltitools..."
+         # Add document to the 'ltitools' collection
+         mongo $DATABASE__URL --eval 'db.ltitools.update(
+             {
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
+               "isTemplate": true
+             },
+             { $setOnInsert: {
+               "roles": [],
+               "privacy_permission": "anonymous",
+               "openNewTab": true,
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
+               "url": "'$NEXTCLOUD_BASE_URL'",
+               "key": null,
+               "secret": "'$NEXTCLOUD_CLIENT_SECRET'",
+               "logo_url": "",
+               "oAuthClientId": "'$NEXTCLOUD_CLIENT_ID'",
+               "isLocal": true,
+               "resource_link_id": null,
+               "lti_version": null,
+               "lti_message_type": null,
+               "isTemplate": true,
+               "skipConsent": true,
+               "customs": [],
+               "createdAt": new Date(),
+               "updatedAt": new Date(),
+               "__v": 0,
+               "isHidden": true,
+               "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout"
+             } },
+             {
+               "upsert": true
+             }
+         );'
+         echo "Inserted nextcloud to ltitools."
+
+         # Add Nextcloud client in hydra
+         echo "POSTing nextcloud to hydra..."
+         curl --retry 10 --retry-connrefused --retry-delay 10 \
+               -H 'X-Forwarded-Proto: https' \
+               -X POST $HYDRA_URI/clients \
+               -d '{
+                     "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
+                     "client_id": "'$NEXTCLOUD_CLIENT_ID'",
+                     "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
+                     "scope": "'"$NEXTCLOUD_SCOPES"'",
+                     "token_endpoint_auth_method": "client_secret_post",
+                     "grant_types": ["authorization_code", "refresh_token"],
+                     "response_types": ["code", "token", "id_token"],
+                     "redirect_uris": [
+                       "'$NEXTCLOUD_BASE_URL'apps/user_oidc/code",
+                       "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
+                     ],
+                     "client_uri": "'$NEXTCLOUD_BASE_URL'",
+                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'/apps/schulcloud/logout",
+                     "subject_type": "pairwise"
+                   }'
+         echo "POSTed nextcloud to hydra."
+
+         # Add Nextcloud' tools configuration as an external tool
+         # (stored in the 'external_tools' collection) that uses OAuth.
+         echo "Inserting nextcloud to external_tools..."
+         mongo $DATABASE__URL --eval 'db.external_tools.update(
+             {
+               "name": "nextcloud",
+               "config_type": "oauth2"
+             },
+             { $setOnInsert: {
+               "name": "nextcloud",
+               "url": "'$NEXTCLOUD_BASE_URL'",
+               "logoUrl": "",
+               "config_type": "oauth2",
+               "config_baseUrl": "'$NEXTCLOUD_BASE_URL'",
+               "config_clientId": "'$NEXTCLOUD_CLIENT_ID'",
+               "config_skipConsent": true,
+               "parameters": [],
+               "isHidden": true,
+               "openNewTab": true,
+               "createdAt": new Date(),
+               "updatedAt": new Date(),
+               "version": 1
+             } },
+             {
+               "upsert": true
+             }
+         );'
+         echo "Inserted nextcloud to external_tools."
+
+         echo "Nextcloud config data init performed successfully."
+    fi
+
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
