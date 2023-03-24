@@ -23,11 +23,14 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3030, 27017], //if rabbitmq shpuld be inspected from host ports need to be added here
+	"forwardPorts": [3030, 9000, 9001, 27017], //if rabbitmq shpuld be inspected from host ports need to be added here
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm run devcontainer:postinstall",
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "root"
+	"remoteUser": "root",
+	"features": {
+		"ghcr.io/stuartleeks/dev-container-features/shell-history:0": {}
+	}
 }
