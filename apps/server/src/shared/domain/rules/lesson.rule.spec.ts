@@ -1,4 +1,4 @@
-import { DeepPartial, MikroORM } from '@mikro-orm/core';
+import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	courseFactory,
@@ -15,7 +15,6 @@ import { Actions } from './actions.enum';
 import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {
-	let orm: MikroORM;
 	let service: LessonRule;
 	let courseRule: DeepPartial<CourseRule>;
 	let courseGroupRule: DeepPartial<CourseGroupRule>;
@@ -26,7 +25,7 @@ describe('LessonRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [LessonRule, CourseRule, CourseGroupRule],
@@ -35,10 +34,6 @@ describe('LessonRule', () => {
 		service = await module.get(LessonRule);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	beforeEach(() => {

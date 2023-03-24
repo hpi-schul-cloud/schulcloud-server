@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('FileParamBuilder', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	it('Should throw for not supported parent type', () => {
