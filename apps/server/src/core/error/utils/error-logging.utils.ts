@@ -1,7 +1,7 @@
 import { Loggable } from '@src/core/logger/loggable';
 import { LoggingUtils } from '@src/core/logger/logging.utils';
 import util from 'util';
-import { ErrorLoggable } from '../error.loggable';
+import { ErrorLoggable } from '../loggable/error.loggable';
 
 export class ErrorLoggingUtils {
 	static createErrorLoggable(error: unknown): Loggable {
