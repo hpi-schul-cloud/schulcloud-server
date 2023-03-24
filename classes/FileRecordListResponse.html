@@ -399,7 +399,7 @@ export class FileRecordResponse {
 		this.securityCheckStatus &#x3D; fileRecord.securityCheck.status;
 		this.parentId &#x3D; fileRecord.parentId;
 		this.creatorId &#x3D; fileRecord.creatorId;
-		this.type &#x3D; fileRecord.mimeType;
+		this.mimeType &#x3D; fileRecord.mimeType;
 		this.parentType &#x3D; fileRecord.parentType;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
 	}
@@ -414,7 +414,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	parentId: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ScanStatus })
 	securityCheckStatus: ScanStatus;
 
 	@ApiProperty()
@@ -424,9 +424,9 @@ export class FileRecordResponse {
 	creatorId: string;
 
 	@ApiProperty()
-	type: string;
+	mimeType: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
 
 	@ApiPropertyOptional()
@@ -450,8 +450,8 @@ export class CopyFileResponse {
 		this.name &#x3D; data.name;
 	}
 
-	@ApiProperty()
-	id?: string | undefined;
+	@ApiPropertyOptional()
+	id?: string;
 
 	@ApiProperty()
 	sourceId: string;

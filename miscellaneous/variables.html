@@ -1824,8 +1824,8 @@ must use @ApiProperty</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>(app: INestApplication, path: string): void &#x3D;&gt; {
-	const document &#x3D; SwaggerModule.createDocument(app, config);
+                        <i>Default value : </i><code>(app: INestApplication, path: string, options?: SwaggerDocumentOptions): void &#x3D;&gt; {
+	const document &#x3D; SwaggerModule.createDocument(app, config, options);
 	SwaggerModule.setup(path, app, document);
 }</code>
                     </td>

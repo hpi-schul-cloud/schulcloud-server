@@ -93,6 +93,9 @@
                                 <a href="#id" >id</a>
                             </li>
                             <li>
+                                <a href="#mimeType" >mimeType</a>
+                            </li>
+                            <li>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
@@ -106,9 +109,6 @@
                             </li>
                             <li>
                                 <a href="#size" >size</a>
-                            </li>
-                            <li>
-                                <a href="#type" >type</a>
                             </li>
                         </ul>
                     </td>
@@ -287,6 +287,41 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mimeType"></a>
+                    <span class="name">
+                        <span ><b>mimeType</b></span>
+                        <a href="#mimeType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
                         <span ><b>name</b></span>
@@ -375,7 +410,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({enum: FileRecordParentType})<br />
                         </code>
                     </td>
                 </tr>
@@ -410,7 +445,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({enum: ScanStatus})<br />
                         </code>
                     </td>
                 </tr>
@@ -458,41 +493,6 @@
 
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="type"></a>
-                    <span class="name">
-                        <span ><b>type</b></span>
-                        <a href="#type"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:38</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
 </section>
 
 
@@ -517,7 +517,7 @@ export class FileRecordResponse {
 		this.securityCheckStatus &#x3D; fileRecord.securityCheck.status;
 		this.parentId &#x3D; fileRecord.parentId;
 		this.creatorId &#x3D; fileRecord.creatorId;
-		this.type &#x3D; fileRecord.mimeType;
+		this.mimeType &#x3D; fileRecord.mimeType;
 		this.parentType &#x3D; fileRecord.parentType;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
 	}
@@ -532,7 +532,7 @@ export class FileRecordResponse {
 	@ApiProperty()
 	parentId: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ScanStatus })
 	securityCheckStatus: ScanStatus;
 
 	@ApiProperty()
@@ -542,9 +542,9 @@ export class FileRecordResponse {
 	creatorId: string;
 
 	@ApiProperty()
-	type: string;
+	mimeType: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: FileRecordParentType })
 	parentType: FileRecordParentType;
 
 	@ApiPropertyOptional()
@@ -568,8 +568,8 @@ export class CopyFileResponse {
 		this.name &#x3D; data.name;
 	}
 
-	@ApiProperty()
-	id?: string | undefined;
+	@ApiPropertyOptional()
+	id?: string;
 
 	@ApiProperty()
 	sourceId: string;
