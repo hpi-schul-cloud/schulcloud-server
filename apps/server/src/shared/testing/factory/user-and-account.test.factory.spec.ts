@@ -1,10 +1,15 @@
 import { Account, School, User } from '@shared/domain';
 import { ObjectId } from 'bson';
+import { setupEntities } from '../setup-entities';
 import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
 	const createParams = () => {
 		const school = schoolFactory.build();
 		const systemId = new ObjectId().toHexString();
@@ -31,7 +36,7 @@ describe('user-and-account.test.factory', () => {
 			return { role, roleWithoutId, params };
 		};
 
-		it('should b create a user without passing additional parameter', () => {
+		it('should create a user without passing additional parameter', () => {
 			const { role } = setup();
 
 			const result = UserAndAccountTestFactory.buildUser(role);
@@ -41,16 +46,16 @@ describe('user-and-account.test.factory', () => {
 			expect(result.school).toBeInstanceOf(School);
 		});
 
-		it('should be create a user with id that must be added in account', () => {
+		it('should create a user with id that must be added in account', () => {
 			const { role } = setup();
 
 			const result = UserAndAccountTestFactory.buildUser(role);
 
 			expect(result.user.id).toBeDefined();
-			expect(result.account.userId).toBeInstanceOf(result.user.id);
+			expect(result.account.userId).toEqual(result.user.id);
 		});
 
-		it('should be check if passed role already has a id', () => {
+		it('should check if passed role already has a id', () => {
 			const { roleWithoutId } = setup();
 
 			expect(() => UserAndAccountTestFactory.buildUser(roleWithoutId)).toThrowError();
@@ -93,6 +98,10 @@ describe('user-and-account.test.factory', () => {
 
 			const result = UserAndAccountTestFactory.buildStudent(params, additionalPermissions);
 
+			expect(result.studentUser).toBeInstanceOf(User);
+			expect(result.studentAccount).toBeInstanceOf(Account);
+			expect(result.school).toBeInstanceOf(School);
+
 			expect(result.studentUser.firstName).toEqual(params.firstName);
 			expect(result.studentUser.lastName).toEqual(params.lastName);
 			expect(result.studentUser.email).toEqual(params.email);
@@ -126,6 +135,10 @@ describe('user-and-account.test.factory', () => {
 
 			const result = UserAndAccountTestFactory.buildTeacher(params, additionalPermissions);
 
+			expect(result.teacherUser).toBeInstanceOf(User);
+			expect(result.teacherAccount).toBeInstanceOf(Account);
+			expect(result.school).toBeInstanceOf(School);
+
 			expect(result.teacherUser.firstName).toEqual(params.firstName);
 			expect(result.teacherUser.lastName).toEqual(params.lastName);
 			expect(result.teacherUser.email).toEqual(params.email);
@@ -158,6 +171,10 @@ describe('user-and-account.test.factory', () => {
 			const { params, additionalPermissions } = setup();
 
 			const result = UserAndAccountTestFactory.buildAdmin(params, additionalPermissions);
+
+			expect(result.adminUser).toBeInstanceOf(User);
+			expect(result.adminAccount).toBeInstanceOf(Account);
+			expect(result.school).toBeInstanceOf(School);
 
 			expect(result.adminUser.firstName).toEqual(params.firstName);
 			expect(result.adminUser.lastName).toEqual(params.lastName);
