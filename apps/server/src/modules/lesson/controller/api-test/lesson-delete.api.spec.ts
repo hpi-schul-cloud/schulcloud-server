@@ -129,7 +129,7 @@ describe('Lesson Controller (API) - delete', () => {
 					return { studentAccount, lessonId: lesson.id };
 				};
 
-				it('it should delete the lesson', async () => {
+				it('it should respond with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
 					const response = await request.delete(lessonId, studentAccount);

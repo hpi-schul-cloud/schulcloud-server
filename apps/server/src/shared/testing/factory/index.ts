@@ -26,4 +26,3 @@ export * from './user.factory';
 export * from './user.do.factory';
 export * from './user-and-account.test.factory';
 export * from './domainobject';
-
