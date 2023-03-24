@@ -1,11 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { DashboardMapper } from '../mapper/dashboard.mapper';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';
-import { DashboardParams } from './dto/dashboard.params';
 
 @ApiTags('Dashboard')
 @Authenticate('jwt')
@@ -14,11 +13,8 @@ export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 
 	@Get()
-	async findForUser(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() params: DashboardParams
-	): Promise<DashboardResponse> {
-		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId, params.showSubstitute);
+	async findForUser(@CurrentUser() currentUser: ICurrentUser): Promise<DashboardResponse> {
+		const dashboard = await this.dashboardUc.getUsersDashboard(currentUser.userId);
 		const dto = DashboardMapper.mapToResponse(dashboard);
 		return dto;
 	}

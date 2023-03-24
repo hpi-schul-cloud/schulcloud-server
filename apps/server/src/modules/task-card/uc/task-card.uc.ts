@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
-import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
-import { CardElementRepo, TaskCardRepo } from '@shared/repo';
+import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
@@ -14,14 +14,22 @@ export class TaskCardUc {
 		private taskCardRepo: TaskCardRepo,
 		private cardElementRepo: CardElementRepo,
 		private readonly authorizationService: AuthorizationService,
+		private readonly courseRepo: CourseRepo,
 		private readonly taskService: TaskService
 	) {}
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		let course: Course | undefined;
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
+		}
+
+		if (params.courseId) {
+			const fetchedCourse = await this.courseRepo.findById(params.courseId);
+			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
+			course = fetchedCourse;
 		}
 
 		const defaultDueDate = this.getDefaultDueDate(user);
@@ -29,9 +37,6 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
-
-		const title = new TitleCardElement(params.title);
-		cardElements.unshift(title);
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -41,11 +46,13 @@ export class TaskCardUc {
 		const cardParams: ITaskCardProps = {
 			cardElements,
 			cardType: CardType.Task,
+			course,
 			creator: user,
 			draggable: true,
 			task: taskWithStatusVo.task,
 			visibleAtDate: new Date(),
 			dueDate: defaultDueDate,
+			title: params.title,
 		};
 
 		if (params.visibleAtDate) {
@@ -64,13 +71,20 @@ export class TaskCardUc {
 
 		await this.taskCardRepo.save(card);
 
+		await this.addTaskCardId(userId, card);
+
 		return { card, taskWithStatusVo };
 	}
 
 	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
+			courseId: '',
+			private: false,
 		};
+		if (params.courseId) {
+			taskParams.courseId = params.courseId;
+		}
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
@@ -92,7 +106,7 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
@@ -107,7 +121,7 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
 		await this.taskCardRepo.delete(card);
@@ -122,14 +136,15 @@ export class TaskCardUc {
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
 		) {
-			throw new UnauthorizedException();
+			throw new ForbiddenException();
 		}
 
-		const taskWithStatusVo = await this.updateTask(userId, card.task.id, params);
+		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
-		const title = new TitleCardElement(params.title);
-		cardElements.unshift(title);
+		if (params.title) {
+			card.title = params.title;
+		}
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -154,7 +169,7 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
 		};
@@ -168,5 +183,15 @@ export class TaskCardUc {
 		taskCard.cardElements.set(newCardElements);
 
 		return taskCard;
+	}
+
+	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
+		const taskParams = {
+			name: taskCard.task.name,
+			taskCard: taskCard.id,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
+
+		return taskWithStatusVo;
 	}
 }

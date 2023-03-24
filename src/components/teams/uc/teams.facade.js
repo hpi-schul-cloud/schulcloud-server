@@ -1,7 +1,7 @@
 const deleteUserTeamsDataUc = require('./deleteUserTeamsData.uc');
 
 const facade = {
-	deleteUserData: deleteUserTeamsDataUc.deleteUserTeamsData,
+	deleteUserData: deleteUserTeamsDataUc.deleteUserData,
 };
 
 module.exports = function setupUsersFacade(app) {

@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
 import {
 	Counted,
 	EntityId,
@@ -11,16 +12,16 @@ import {
 	Task,
 	TaskWithStatusVo,
 } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { ValidationError } from '@shared/common';
+import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
+		private readonly userRepo: UserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
@@ -60,6 +61,7 @@ export class TaskService {
 			school: user.school,
 			creator: user,
 		};
+
 		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
@@ -70,12 +72,22 @@ export class TaskService {
 			const course = await this.courseRepo.findById(params.courseId);
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			taskParams.course = course;
+
+			if (params.usersIds) {
+				const courseUsers = course.getStudentIds();
+				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
+				if (!isAllUsersInCourse) {
+					throw new ForbiddenException('Users do not belong to course');
+				}
+				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
+				taskParams.users = users;
+			}
 		}
 
 		if (params.lessonId) {
 			const lesson = await this.lessonRepo.findById(params.lessonId);
 			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
-				throw new BadRequestException('Lesson does not belong to Course');
+				throw new ForbiddenException('Lesson does not belong to Course');
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			taskParams.lesson = lesson;
@@ -106,6 +118,10 @@ export class TaskService {
 		return result;
 	}
 
+	async findById(taskId: EntityId): Promise<Task> {
+		return this.taskRepo.findById(taskId);
+	}
+
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
@@ -124,15 +140,33 @@ export class TaskService {
 			const course = await this.courseRepo.findById(params.courseId);
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			task.course = course;
+
+			if (params.usersIds) {
+				const courseUsers = course.getStudentIds();
+				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
+				if (!isAllUsersInCourse) {
+					throw new ForbiddenException('Users do not belong to course');
+				}
+				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
+				task.users.set(users);
+			} else {
+				task.users.removeAll();
+			}
+		} else {
+			task.course = undefined;
+			task.lesson = undefined;
+			task.users.removeAll();
 		}
 
 		if (params.lessonId) {
 			const lesson = await this.lessonRepo.findById(params.lessonId);
 			if (!task.course || lesson.course.id !== task.course.id) {
-				throw new BadRequestException('Lesson does not belong to Course');
+				throw new ForbiddenException('Lesson does not belong to Course');
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson = lesson;
+		} else {
+			task.lesson = undefined;
 		}
 
 		this.taskDateValidation(params.availableDate, params.dueDate);

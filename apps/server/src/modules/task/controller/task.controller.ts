@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-import { ICurrentUser } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { serverConfig } from '@src/modules/server/server.config';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
+import { TaskCreateParams, TaskUpdateParams, TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
 import { TaskCopyApiParams } from './dto/task-copy.params';
 
 @ApiTags('Task')
@@ -68,6 +69,18 @@ export class TaskController {
 		return response;
 	}
 
+	@Patch(':taskId/revertPublished')
+	async revertPublished(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.revertPublished(currentUser.userId, urlParams.taskId);
+
+		const response = TaskMapper.mapToResponse(task);
+
+		return response;
+	}
+
 	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
@@ -89,5 +102,51 @@ export class TaskController {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
 
 		return result;
+	}
+
+	@Post()
+	async create(@Body() params: TaskCreateParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		this.FeatureTaskCardEnabled();
+
+		const taskWithSatusVo = await this.taskUc.create(currentUser.userId, TaskMapper.mapTaskCreateToDomain(params));
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+		return response;
+	}
+
+	@Patch(':taskId')
+	async update(
+		@Param() urlParams: TaskUrlParams,
+		@Body() params: TaskUpdateParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		this.FeatureTaskCardEnabled();
+
+		const taskWithSatusVo = await this.taskUc.update(
+			currentUser.userId,
+			urlParams.taskId,
+			TaskMapper.mapTaskUpdateToDomain(params)
+		);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+
+		return response;
+	}
+
+	@Get(':taskId')
+	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
+		this.FeatureTaskCardEnabled();
+
+		const taskWithSatusVo = await this.taskUc.find(currentUser.userId, urlParams.taskId);
+
+		const response = TaskMapper.mapToResponse(taskWithSatusVo);
+		return response;
+	}
+
+	private FeatureTaskCardEnabled() {
+		const enabled = Configuration.get('FEATURE_TASK_CARD_ENABLED') as boolean;
+		if (!enabled) {
+			throw new NotImplementedException('Feature not enabled');
+		}
 	}
 }

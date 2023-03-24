@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, ICurrentUser, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import {
 	cleanupCollections,
@@ -13,6 +13,7 @@ import {
 	schoolFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-storage/controller/dto';
@@ -146,7 +147,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['schoolId must be a mongodb id'],
-						field: 'schoolId',
+						field: ['schoolId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -157,7 +158,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['parentId must be a mongodb id'],
-						field: 'parentId',
+						field: ['parentId'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -167,8 +168,10 @@ describe(`${baseRouteName} (api)`, () => {
 				const response = await api.delete(`/${validId}/cookies/${validId}`);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['parentType must be a valid enum value'],
-						field: 'parentType',
+						errors: [
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+						],
+						field: ['parentType'],
 					},
 				]);
 				expect(response.status).toEqual(400);
@@ -264,7 +267,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: ['fileRecordId must be a mongodb id'],
-						field: 'fileRecordId',
+						field: ['fileRecordId'],
 					},
 				]);
 				expect(response.status).toEqual(400);

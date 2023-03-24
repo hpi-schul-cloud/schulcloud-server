@@ -1,24 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock } from '@golevelup/ts-jest';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak/interface';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak/service/keycloak-administration.service';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
+import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
-import { ObjectId } from 'bson';
+import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { createMock } from '@golevelup/ts-jest';
-import KeycloakConfiguration from '@shared/infra/identity-management/keycloak/keycloak-config';
+import { ObjectId } from 'bson';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
+import { AccountServiceDb } from './account-db.service';
+import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
-import { AccountServiceIdm } from './account-idm.service';
-import { AccountServiceDb } from './account-db.service';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -38,23 +40,33 @@ describe('AccountService Integration', () => {
 		systemId: new ObjectId().toString(),
 	});
 
-	const createAccount = async (): Promise<[string, string]> => {
+	const createDbAccount = async (): Promise<string> => {
 		const accountEntity = accountFactory.build({
 			username: testAccount.username,
 			userId: testAccount.userId,
 			systemId: testAccount.systemId,
 		});
 		await em.persistAndFlush(accountEntity);
+		return accountEntity.id;
+	};
+
+	const createIdmAccount = async (refId: string): Promise<string> => {
 		const idmId = await identityManagementService.createAccount(
 			{
 				username: testAccount.username,
 				attRefFunctionalIntId: testAccount.userId,
 				attRefFunctionalExtId: testAccount.systemId,
-				attRefTechnicalId: accountEntity.id,
+				attRefTechnicalId: refId,
 			},
 			testAccount.password
 		);
-		return [accountEntity.id, idmId];
+		return idmId;
+	};
+
+	const createAccount = async (): Promise<[string, string]> => {
+		const dbId = await createDbAccount();
+		const idmId = await createIdmAccount(dbId);
+		return [dbId, idmId];
 	};
 
 	beforeAll(async () => {
@@ -79,7 +91,9 @@ describe('AccountService Integration', () => {
 				AccountServiceIdm,
 				AccountServiceDb,
 				AccountRepo,
+				UserRepo,
 				KeycloakAdministrationService,
+				AccountValidationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
 					provide: KeycloakAdminClient,
@@ -87,7 +101,7 @@ describe('AccountService Integration', () => {
 				},
 				{
 					provide: KeycloakSettings,
-					useValue: KeycloakConfiguration.keycloakSettings,
+					useValue: KeycloakAdministration.keycloakSettings,
 				},
 				{
 					provide: Logger,
@@ -166,6 +180,19 @@ describe('AccountService Integration', () => {
 		});
 		await compareDbAccount(dbId, updatedAccount);
 		await compareIdmAccount(idmId, updatedAccount);
+	});
+
+	it('save should create idm account for existing db account', async () => {
+		if (!isIdmReachable) return;
+		const newUsername = 'jane.doe@mail.tld';
+		const dbId = await createDbAccount();
+		const originalAccount = await accountService.findById(dbId);
+		const updatedAccount = await accountService.save({
+			...originalAccount,
+			username: newUsername,
+		});
+		await compareDbAccount(dbId, updatedAccount);
+		await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
 	});
 
 	it('updateUsername should update username', async () => {

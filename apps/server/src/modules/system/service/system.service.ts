@@ -1,55 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, System, SystemType, SystemTypeEnum } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common';
+import { EntityId, System, SystemTypeEnum } from '@shared/domain';
+import { IdentityManagementOauthService } from '@shared/infra/identity-management/identity-management-oauth.service';
 import { SystemRepo } from '@shared/repo';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 
 @Injectable()
 export class SystemService {
-	constructor(private readonly systemRepo: SystemRepo) {}
-
-	async findAll(type: SystemType | undefined): Promise<SystemDto[]> {
-		let systemEntities: System[];
-		if (!type) {
-			systemEntities = await this.systemRepo.findAll();
-		} else {
-			systemEntities = await this.systemRepo.findByFilter(type, false);
-		}
-		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
-	}
+	constructor(
+		private readonly systemRepo: SystemRepo,
+		private readonly idmOauthService: IdentityManagementOauthService
+	) {}
 
 	async findById(id: EntityId): Promise<SystemDto> {
-		const entity = await this.systemRepo.findById(id);
-		return SystemMapper.mapFromEntityToDto(entity);
-	}
-
-	/*
-	This returns systems that provide authentication via OAuth
-	It merges systems that dBildungscloud communicates with directly
-	and systems that are queried via keycloak brokering.
-	*/
-	async findOAuth(): Promise<SystemDto[]> {
-		const systemEntities = await this.findDirectOauthSystems();
-		const generatedOAuthsystems = await this.findOauthViaKeycloakSystems();
-
-		return [...systemEntities, ...generatedOAuthsystems];
-	}
-
-	async findOidc(): Promise<SystemDto[]> {
-		const systemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
-		return SystemMapper.mapFromEntitiesToDtos(systemEntities);
-	}
-
-	async findOAuthById(id: EntityId): Promise<SystemDto> {
-		let systemEntity = await this.systemRepo.findById(id);
-		if (systemEntity.type === SystemTypeEnum.OIDC) {
-			const keycloakSystem = await this.lookupIdentityManagement();
-			if (keycloakSystem) {
-				systemEntity = this.generateBrokerSystem(systemEntity, keycloakSystem);
-				systemEntity.id = id;
-			}
+		let system = await this.systemRepo.findById(id);
+		[system] = await this.generateBrokerSystems([system]);
+		if (!system) {
+			throw new EntityNotFoundError(System.name, { id });
 		}
-		return SystemMapper.mapFromEntityToDto(systemEntity);
+		return SystemMapper.mapFromEntityToDto(system);
+	}
+
+	async findByType(type?: SystemTypeEnum): Promise<SystemDto[]> {
+		let systems: System[];
+		if (type && type === SystemTypeEnum.OAUTH) {
+			const oauthSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OAUTH);
+			const oidcSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
+			systems = [...oauthSystems, ...oidcSystems];
+		} else if (type) {
+			systems = await this.systemRepo.findByFilter(type);
+		} else {
+			systems = await this.systemRepo.findAll();
+		}
+		systems = await this.generateBrokerSystems(systems);
+		return SystemMapper.mapFromEntitiesToDtos(systems);
 	}
 
 	async save(systemDto: SystemDto): Promise<SystemDto> {
@@ -60,8 +45,8 @@ export class SystemService {
 			system.alias = systemDto.alias;
 			system.displayName = systemDto.displayName;
 			system.oauthConfig = systemDto.oauthConfig;
-			system.config = { ...systemDto.oidcConfig };
 			system.provisioningStrategy = systemDto.provisioningStrategy;
+			system.provisioningUrl = systemDto.provisioningUrl;
 			system.url = systemDto.url;
 		} else {
 			system = new System({
@@ -70,53 +55,37 @@ export class SystemService {
 				displayName: systemDto.displayName,
 				oauthConfig: systemDto.oauthConfig,
 				provisioningStrategy: systemDto.provisioningStrategy,
+				provisioningUrl: systemDto.provisioningUrl,
 				url: systemDto.url,
 			});
-			system.config = { ...systemDto.oauthConfig };
 		}
 		await this.systemRepo.save(system);
 		return SystemMapper.mapFromEntityToDto(system);
 	}
 
-	private async findDirectOauthSystems(): Promise<SystemDto[]> {
-		const ldapSystemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.LDAP, true);
-		const oauthSystemEntities = await this.systemRepo.findByFilter(SystemTypeEnum.OAUTH, true);
-		return SystemMapper.mapFromEntitiesToDtos([...ldapSystemEntities, ...oauthSystemEntities]);
-	}
-
-	private async findOauthViaKeycloakSystems(): Promise<SystemDto[]> {
-		const keycloakSystem = await this.lookupIdentityManagement();
-		if (!keycloakSystem) {
-			return [];
+	private async generateBrokerSystems(systems: System[]): Promise<[] | System[]> {
+		if (!(await this.idmOauthService.isOauthConfigAvailable())) {
+			return systems.filter((system) => !(system.oidcConfig && !system.oauthConfig));
 		}
-		const oidcSystems = await this.systemRepo.findByFilter(SystemTypeEnum.OIDC);
-
-		const generatedOAuthsystems: System[] = [];
-		oidcSystems.forEach((systemEntity) => {
-			const generatedSystem: System = this.generateBrokerSystem(systemEntity, keycloakSystem);
-			generatedOAuthsystems.push(generatedSystem);
+		const brokerConfig = await this.idmOauthService.getOauthConfig();
+		let generatedSystem: System;
+		return systems.map((system) => {
+			if (system.oidcConfig && !system.oauthConfig) {
+				generatedSystem = new System({
+					type: SystemTypeEnum.OAUTH,
+					alias: system.alias,
+					displayName: system.displayName ? system.displayName : system.alias,
+					provisioningStrategy: system.provisioningStrategy,
+					provisioningUrl: system.provisioningUrl,
+					url: system.url,
+				});
+				generatedSystem.id = system.id;
+				generatedSystem.oauthConfig = { ...brokerConfig };
+				generatedSystem.oauthConfig.idpHint = system.oidcConfig.idpHint;
+				generatedSystem.oauthConfig.redirectUri += system.id;
+				return generatedSystem;
+			}
+			return system;
 		});
-		return generatedOAuthsystems;
-	}
-
-	private async lookupIdentityManagement() {
-		const keycloakConfig = await this.systemRepo.findByFilter(SystemTypeEnum.KEYCLOAK, true);
-		if (keycloakConfig.length === 1) {
-			return keycloakConfig[0];
-		}
-		return null;
-	}
-
-	private generateBrokerSystem(systemEntity: System, identityManagement: System) {
-		const generatedSystem: System = new System({
-			type: SystemTypeEnum.OAUTH,
-			alias: systemEntity.alias,
-			displayName: systemEntity.displayName ? systemEntity.displayName : systemEntity.alias,
-			oauthConfig: identityManagement.oauthConfig,
-		});
-		if (generatedSystem.oauthConfig) {
-			generatedSystem.oauthConfig.redirectUri += systemEntity.id;
-		}
-		return generatedSystem;
 	}
 }

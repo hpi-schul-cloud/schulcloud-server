@@ -4,7 +4,7 @@ const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { updateManyResult } = require('../../helper/repo.helper');
 
-const validateRemoveUserFromClassesParams = (userId) => {
+const validateRemoveUserFromTeamsParams = (userId) => {
 	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 };
 
@@ -41,9 +41,9 @@ const getTeamsIdsForUser = async (userId) => {
  * @returns: {Object} Update Many Result Object
  */
 const removeUserFromTeams = async (userId) => {
-	validateRemoveUserFromClassesParams(userId);
+	validateRemoveUserFromTeamsParams(userId);
 	const filter = filterTeamsMember(userId);
-	const updateResult = await teamsModel.updateMany(filter, { $pull: { userIds: userId } }).exec();
+	const updateResult = await teamsModel.updateMany(filter, { $pull: { userIds: { userId: userId } } }).exec();
 
 	return updateManyResult(updateResult);
 };

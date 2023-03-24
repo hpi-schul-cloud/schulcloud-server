@@ -1,12 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import {
 	Account,
 	EntityId,
-	ICurrentUser,
 	Permission,
 	PermissionService,
 	Role,
@@ -22,6 +20,7 @@ import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -39,7 +38,6 @@ describe('AccountUc', () => {
 	let accountUc: AccountUc;
 	let userRepo: UserRepo;
 	let accountService: AccountService;
-	let orm: MikroORM;
 	let accountValidationService: AccountValidationService;
 	let configService: DeepMocked<ConfigService>;
 
@@ -95,7 +93,6 @@ describe('AccountUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -105,6 +102,19 @@ describe('AccountUc', () => {
 				{
 					provide: AccountService,
 					useValue: {
+						saveWithValidation: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
+							if (account.username === 'fail@to.update') {
+								return Promise.reject();
+							}
+							const accountEntity = mockAccounts.find(
+								(tempAccount) => tempAccount.userId?.toString() === account.userId
+							);
+							if (accountEntity) {
+								Object.assign(accountEntity, account);
+								return Promise.resolve();
+							}
+							return Promise.reject();
+						}),
 						save: jest.fn().mockImplementation((account: AccountDto): Promise<void> => {
 							if (account.username === 'fail@to.update') {
 								return Promise.reject();
@@ -245,7 +255,7 @@ describe('AccountUc', () => {
 		accountUc = module.get(AccountUc);
 		userRepo = module.get(UserRepo);
 		accountService = module.get(AccountService);
-		orm = await setupEntities();
+		await setupEntities();
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
 	});
@@ -1015,10 +1025,10 @@ describe('AccountUc', () => {
 			jest.clearAllMocks();
 		});
 
-		it('should sanitize username for local user', async () => {
-			const spy = jest.spyOn(accountService, 'save');
+		it('should call account service', async () => {
+			const spy = jest.spyOn(accountService, 'saveWithValidation');
 			const params: AccountSaveDto = {
-				username: ' John.Doe@domain.tld ',
+				username: 'john.doe@domain.tld',
 				password: defaultPassword,
 			};
 			await accountUc.saveAccount(params);
@@ -1027,64 +1037,6 @@ describe('AccountUc', () => {
 					username: 'john.doe@domain.tld',
 				})
 			);
-		});
-		it('should not sanitize username for external user', async () => {
-			const spy = jest.spyOn(accountService, 'save');
-			const params: AccountSaveDto = {
-				username: ' John.Doe@domain.tld ',
-				systemId: 'ABC123',
-			};
-			await accountUc.saveAccount(params);
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					username: ' John.Doe@domain.tld ',
-				})
-			);
-		});
-		it('should throw if username for a local user is not an email', async () => {
-			const params: AccountSaveDto = {
-				username: 'John Doe',
-				password: defaultPassword,
-			};
-			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username is not an email');
-		});
-		it('should not throw if username for an external user is not an email', async () => {
-			const params: AccountSaveDto = {
-				username: 'John Doe',
-				systemId: 'ABC123',
-			};
-			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
-		});
-		it('should not throw if username for an external user is a ldap search string', async () => {
-			const params: AccountSaveDto = {
-				username: 'dc=schul-cloud,dc=org/fake.ldap',
-				systemId: 'ABC123',
-			};
-			await expect(accountUc.saveAccount(params)).resolves.not.toThrow();
-		});
-		it('should throw if no password is provided for an internal user', async () => {
-			const params: AccountSaveDto = {
-				username: 'john.doe@mail.tld',
-			};
-			await expect(accountUc.saveAccount(params)).rejects.toThrow('No password provided');
-		});
-		it('should throw if account already exists', async () => {
-			const params: AccountSaveDto = {
-				username: mockStudentUser.email,
-				userId: mockStudentUser.id,
-				password: defaultPassword,
-			};
-			await expect(accountUc.saveAccount(params)).rejects.toThrow('Account already exists');
-		});
-		it('should throw if username already exists', async () => {
-			const accountIsUniqueEmailSpy = jest.spyOn(accountValidationService, 'isUniqueEmail');
-			accountIsUniqueEmailSpy.mockResolvedValueOnce(false);
-			mockStudentAccount.username = 'john.doe@domain.tld';
-			const params: AccountSaveDto = {
-				username: mockStudentAccount.username,
-				password: defaultPassword,
-			};
-			await expect(accountUc.saveAccount(params)).rejects.toThrow('Username already exists');
 		});
 	});
 

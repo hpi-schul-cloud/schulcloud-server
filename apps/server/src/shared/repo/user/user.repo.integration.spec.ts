@@ -61,7 +61,6 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
-					'previousExternalId',
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
@@ -70,6 +69,7 @@ describe('user repo', () => {
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
+					'previousExternalId',
 				].sort()
 			);
 		});
@@ -149,7 +149,6 @@ describe('user repo', () => {
 					'school',
 					'_id',
 					'ldapDn',
-					'previousExternalId',
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
@@ -158,6 +157,7 @@ describe('user repo', () => {
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
+					'previousExternalId',
 				].sort()
 			);
 		});

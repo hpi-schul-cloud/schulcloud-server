@@ -1,5 +1,6 @@
 export * from './account.factory';
 export * from './board.factory';
+export * from './boardnode';
 export * from './boardelement.factory';
 export * from './card-element.factory';
 export * from './course-external-tool.factory';
@@ -22,3 +23,5 @@ export * from './system.factory';
 export * from './task-card.factory';
 export * from './task.factory';
 export * from './user.factory';
+export * from './user.do.factory';
+export * from './domainobject';

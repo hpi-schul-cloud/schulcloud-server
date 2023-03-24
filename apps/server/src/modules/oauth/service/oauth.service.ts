@@ -1,188 +1,212 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { EntityId, OauthConfig, User } from '@shared/domain';
+import { OauthConfig } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
-import { FeathersJwtProvider } from '@src/modules/authorization';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto, ProvisioningDto } from '@src/modules/provisioning/dto';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { AxiosResponse } from 'axios';
+import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import JwksRsa from 'jwks-rsa';
-import QueryString from 'qs';
-import { lastValueFrom, Observable } from 'rxjs';
-import { AuthorizationParams, OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { IJwt } from '../interface/jwt.base.interface';
+import { SSOErrorCode } from '../error/sso-error-code.enum';
+import { OAuthTokenDto } from '../interface';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { OAuthProcessDto } from './dto/oauth-process.dto';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly jwtService: FeathersJwtProvider,
-		private readonly httpService: HttpService,
+		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly provisioningService: ProvisioningService,
+		private readonly systemService: SystemService,
+		private readonly userMigrationService: UserMigrationService,
+		private readonly migrationCheckService: MigrationCheckService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	/**
-	 * @query query input that has either a code or an error
-	 * @return authorization code or throws an error
-	 */
-	checkAuthorizationCode(query: AuthorizationParams): string {
-		if (query.code) {
-			return query.code;
+	async authenticateUser(
+		systemId: string,
+		redirectUri: string,
+		authCode?: string,
+		errorCode?: string
+	): Promise<OAuthTokenDto> {
+		if (errorCode || !authCode) {
+			throw new OAuthSSOError(
+				'Authorization Query Object has no authorization code or error',
+				errorCode || 'sso_auth_code_step'
+			);
 		}
 
-		throw new OAuthSSOError(
-			'Authorization Query Object has no authorization code or error',
-			query.error || 'sso_auth_code_step'
-		);
+		const system: SystemDto = await this.systemService.findById(systemId);
+		if (!system.oauthConfig) {
+			throw new OAuthSSOError(`Requested system ${systemId} has no oauth configured`, 'sso_internal_error');
+		}
+		const { oauthConfig } = system;
+
+		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, redirectUri);
+
+		await this.validateToken(oauthTokens.idToken, oauthConfig);
+
+		return oauthTokens;
 	}
 
-	async requestToken(code: string, oauthConfig: OauthConfig): Promise<OauthTokenResponse> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig);
-		const responseTokenObservable = this.sendTokenRequest(payload);
-		const responseToken = this.resolveTokenRequest(responseTokenObservable);
-		return responseToken;
-	}
+	async provisionUser(
+		systemId: string,
+		idToken: string,
+		accessToken: string,
+		postLoginRedirect?: string
+	): Promise<{ user?: UserDO; redirect: string }> {
+		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
-	private buildTokenRequestPayload(code: string, oauthConfig: OauthConfig): TokenRequestPayload {
-		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
-		const tokenRequestPayload: TokenRequestPayload = TokenRequestMapper.createTokenRequestPayload(
-			oauthConfig,
-			decryptedClientSecret,
-			code
-		);
-		return tokenRequestPayload;
-	}
+		let migrationConsentRedirect: string | undefined;
+		if (data.externalSchool?.officialSchoolNumber) {
+			const shouldUserMigrate: boolean = await this.migrationCheckService.shouldUserMigrate(
+				data.externalUser.externalId,
+				systemId,
+				data.externalSchool.officialSchoolNumber
+			);
 
-	private sendTokenRequest(payload: TokenRequestPayload): Observable<AxiosResponse<OauthTokenResponse, unknown>> {
-		const query = QueryString.stringify(payload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-		});
-		return responseTokenObservable;
-	}
+			if (shouldUserMigrate) {
+				// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+				migrationConsentRedirect = await this.userMigrationService.getMigrationConsentPageRedirect(
+					data.externalSchool.officialSchoolNumber,
+					systemId
+				);
 
-	private async resolveTokenRequest(
-		observable: Observable<AxiosResponse<OauthTokenResponse, unknown>>
-	): Promise<OauthTokenResponse> {
-		let responseToken: AxiosResponse<OauthTokenResponse>;
-		try {
-			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
+				const existingUser: UserDO | null = await this.userService.findByExternalId(
+					data.externalUser.externalId,
+					systemId
+				);
+				if (!existingUser) {
+					return { user: undefined, redirect: migrationConsentRedirect };
+				}
+			}
 		}
 
-		return responseToken.data;
+		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
+
+		const user: UserDO | null = await this.userService.findByExternalId(provisioningDto.externalUserId, systemId);
+		if (!user) {
+			throw new OAuthSSOError(
+				`Provisioning of user with externalId: ${provisioningDto.externalUserId} failed`,
+				'sso_user_notfound'
+			);
+		}
+
+		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
+		const redirect: string = await this.getPostLoginRedirectUrl(
+			idToken,
+			systemId,
+			postLoginRedirect || migrationConsentRedirect
+		);
+
+		return { user, redirect };
 	}
 
-	async _getPublicKey(oauthConfig: OauthConfig): Promise<string> {
-		const client: JwksRsa.JwksClient = JwksRsa({
-			cache: true,
-			jwksUri: oauthConfig.jwksEndpoint,
-		});
-		const key: JwksRsa.SigningKey = await client.getSigningKey();
-		return key.getPublicKey();
+	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {
+		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
+
+		const responseToken: OauthTokenResponse = await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
+			oauthConfig.tokenEndpoint,
+			payload
+		);
+
+		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken);
+		return tokenDto;
 	}
 
-	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<IJwt> {
-		const publicKey = await this._getPublicKey(oauthConfig);
-		const verifiedJWT: string | jwt.JwtPayload = jwt.verify(idToken, publicKey, {
+	async validateToken(idToken: string, oauthConfig: OauthConfig): Promise<JwtPayload> {
+		const publicKey: string = await this.oauthAdapterService.getPublicKey(oauthConfig.jwksEndpoint);
+		const decodedJWT: string | JwtPayload = jwt.verify(idToken, publicKey, {
 			algorithms: ['RS256'],
 			issuer: oauthConfig.issuer,
 			audience: oauthConfig.clientId,
 		});
 
-		if (typeof verifiedJWT === 'string') {
-			throw new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error');
+		if (typeof decodedJWT === 'string') {
+			throw new OAuthSSOError('Failed to validate idToken', SSOErrorCode.SSO_JWT_PROBLEM);
 		}
 
-		return verifiedJWT as IJwt;
+		return decodedJWT;
 	}
 
-	async findUser(idToken: string, externalUserId: EntityId, systemId: EntityId): Promise<UserDO> {
-		const decodedToken: JwtPayload | null = jwt.decode(idToken, { json: true });
+	async getPostLoginRedirectUrl(idToken: string, systemId: string, postLoginRedirect?: string): Promise<string> {
+		const clientUrl: string = Configuration.get('HOST') as string;
+		const dashboardUrl: URL = new URL('/dashboard', clientUrl);
+		const system: SystemDto = await this.systemService.findById(systemId);
 
-		if (!decodedToken?.sub) {
-			throw new BadRequestException(`Provided idToken: ${idToken} has no sub.`);
-		}
-
-		this.logger.debug(`provisioning is running for user with sub: ${decodedToken.sub} and system with id: ${systemId}`);
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
-		if (!user) {
-			const additionalInfo: string = await this.getAdditionalErrorInfo(decodedToken?.email as string | undefined);
-			throw new OAuthSSOError(`Failed to find user with Id ${externalUserId} ${additionalInfo}`, 'sso_user_notfound');
-		}
-		return user;
-	}
-
-	private async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
-		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
-			const user = usersWithEmail && usersWithEmail.length > 0 ? usersWithEmail[0] : undefined;
-			return ` [schoolId: ${user?.school.id ?? ''}, currentLdapId: ${user?.externalId ?? ''}]`;
-		}
-		return '';
-	}
-
-	async getJwtForUser(userId: EntityId): Promise<string> {
-		const stringPromise: Promise<string> = this.jwtService.generateJwt(userId);
-		return stringPromise;
-	}
-
-	/**
-	 * Builds the URL from the given parameters.
-	 *
-	 * @param provider
-	 * @param idToken
-	 * @param logoutEndpoint
-	 * @return built redirectUrl
-	 */
-	getRedirectUrl(provider: string, idToken = '', logoutEndpoint = ''): string {
-		const HOST = Configuration.get('HOST') as string;
-
-		// iserv strategy
-		// TODO: move to client in https://ticketsystem.dbildungscloud.de/browse/N21-381
 		let redirect: string;
-		if (provider === 'iserv') {
-			redirect = `${logoutEndpoint}?id_token_hint=${idToken}&post_logout_redirect_uri=${HOST}/dashboard`;
+		if (system.oauthConfig?.provider === 'iserv') {
+			const iservLogoutUrl: URL = new URL(system.oauthConfig.logoutEndpoint);
+			iservLogoutUrl.searchParams.append('id_token_hint', idToken);
+			iservLogoutUrl.searchParams.append('post_logout_redirect_uri', postLoginRedirect || dashboardUrl.toString());
+			redirect = iservLogoutUrl.toString();
+		} else if (postLoginRedirect) {
+			redirect = postLoginRedirect;
 		} else {
-			redirect = `${HOST}/dashboard`;
+			redirect = dashboardUrl.toString();
 		}
 
 		return redirect;
 	}
 
-	getOAuthErrorResponse(error: unknown, provider: string): OAuthProcessDto {
-		this.logger.error(error);
+	getAuthenticationUrl(oauthConfig: OauthConfig, state: string, migration: boolean): string {
+		const redirectUri: string = this.getRedirectUri(migration);
 
-		let errorCode: string;
-		if (error instanceof OAuthSSOError) {
-			errorCode = error.errorcode;
-		} else {
-			errorCode = 'oauth_login_failed';
+		const authenticationUrl: URL = new URL(oauthConfig.authEndpoint);
+		authenticationUrl.searchParams.append('client_id', oauthConfig.clientId);
+		authenticationUrl.searchParams.append('redirect_uri', redirectUri);
+		authenticationUrl.searchParams.append('response_type', oauthConfig.responseType);
+		authenticationUrl.searchParams.append('scope', oauthConfig.scope);
+		authenticationUrl.searchParams.append('state', state);
+		if (oauthConfig.idpHint) {
+			authenticationUrl.searchParams.append('kc_idp_hint', oauthConfig.idpHint);
 		}
 
+		return authenticationUrl.toString();
+	}
+
+	getRedirectUri(migration: boolean) {
+		const publicBackendUrl: string = Configuration.get('PUBLIC_BACKEND_URL') as string;
+
+		const path: string = migration ? 'api/v3/sso/oauth/migration' : 'api/v3/sso/oauth';
+		const redirectUri: URL = new URL(path, publicBackendUrl);
+
+		return redirectUri.toString();
+	}
+
+	private buildTokenRequestPayload(
+		code: string,
+		oauthConfig: OauthConfig,
+		redirectUri: string
+	): AuthenticationCodeGrantTokenRequest {
+		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
+
+		const tokenRequestPayload: AuthenticationCodeGrantTokenRequest =
+			TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
+				oauthConfig.clientId,
+				decryptedClientSecret,
+				code,
+				redirectUri
+			);
+
+		return tokenRequestPayload;
+	}
+
+	createErrorRedirect(errorCode: string): string {
 		const redirect = new URL('/login', Configuration.get('HOST') as string);
 		redirect.searchParams.append('error', errorCode);
-		redirect.searchParams.append('provider', provider);
 
-		const oauthResponse = new OAuthProcessDto({
-			provider,
-			errorCode,
-			redirect: redirect.toString(),
-		});
-		return oauthResponse;
+		return redirect.toString();
 	}
 }

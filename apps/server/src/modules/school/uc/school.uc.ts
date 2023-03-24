@@ -2,15 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { Actions, Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { AuthorizationService, AllowedAuthorizationEntityType } from '../../authorization';
+import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
 @Injectable()
 export class SchoolUc {
-	constructor(readonly schoolService: SchoolService, readonly authService: AuthorizationService) {}
+	constructor(
+		private readonly schoolService: SchoolService,
+		private readonly authService: AuthorizationService,
+		private readonly schoolMigrationService: SchoolMigrationService
+	) {}
 
+	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
 	async setMigration(
 		schoolId: string,
 		oauthMigrationPossible: boolean,
@@ -22,12 +28,31 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const migrationStartedAt: Date | undefined = school.oauthMigrationStart;
+
+		const shouldRestartMigration: boolean = this.isRestartMigrationRequired(
+			school,
+			oauthMigrationPossible,
+			oauthMigrationMandatory,
+			oauthMigrationFinished
+		);
+
+		if (shouldRestartMigration) {
+			this.schoolMigrationService.validateGracePeriod(school);
+			await this.schoolMigrationService.restartMigration(schoolId);
+		}
+
 		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
 			oauthMigrationFinished
 		);
+
+		if (oauthMigrationFinished) {
+			await this.schoolMigrationService.completeMigration(schoolId, migrationStartedAt);
+		}
 
 		return migrationDto;
 	}
@@ -49,5 +74,22 @@ export class SchoolUc {
 			return response;
 		}
 		throw new NotFoundException(`No school found for schoolnumber: ${schoolnumber}`);
+	}
+
+	private isRestartMigrationRequired(
+		school: SchoolDO,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
+	): boolean {
+		const hasSchoolOauthMigrationFinished = !!school.oauthMigrationFinished;
+		const isOauthMigrationMandatory = oauthMigrationMandatory === !!school.oauthMigrationMandatory;
+		const isOauthMigrationNotFinished = !oauthMigrationFinished;
+		const isRequired =
+			hasSchoolOauthMigrationFinished &&
+			oauthMigrationPossible &&
+			isOauthMigrationMandatory &&
+			isOauthMigrationNotFinished;
+		return isRequired;
 	}
 }

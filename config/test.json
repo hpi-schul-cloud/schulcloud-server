@@ -3,6 +3,7 @@
 	"host": "localhost",
 	"port": 3030,
 	"SC_DOMAIN": "localhost",
+	"PUBLIC_BACKEND_URL": "http://localhost:3030/api",
 	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
 	"public": "../public/",
 	"services": {
@@ -35,15 +36,22 @@
 	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
-		"URI": "http://localhost:8080/",
+		"URI": "http://localhost:8080",
 		"TENANT": "master",
 		"CLIENTID": "dbc",
 		"ADMIN_CLIENTID": "admin-cli",
 		"ADMIN_USER": "keycloak",
 		"ADMIN_PASSWORD": "keycloak"
 	},
-	"NEST_LOG_LEVEL": "error",
+	"NEST_LOG_LEVEL": "crit",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
-	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false
+	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false,
+	"SESSION": {
+		"SAME_SITE": "lax",
+		"SECURE": false,
+		"HTTP_ONLY": true,
+		"EXPIRES_SECONDS": 2592000000,
+		"SECRET": "testSecret"
+	}
 }

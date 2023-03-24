@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
@@ -46,10 +46,9 @@ describe('FilesStorageService get methods', () => {
 	let module: TestingModule;
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -70,6 +69,10 @@ describe('FilesStorageService get methods', () => {
 					provide: AntivirusService,
 					useValue: createMock<AntivirusService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -82,7 +85,6 @@ describe('FilesStorageService get methods', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

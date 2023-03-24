@@ -7,10 +7,7 @@ export enum SchoolFeatures {
 	ROCKET_CHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
 	NEXTCLOUD = 'nextcloud',
-	MESSENGER = 'messenger',
 	STUDENTVISIBILITY = 'studentVisibility', // deprecated
-	MESSENGER_SCHOOL_ROOM = 'messengerSchoolRoom',
-	MESSENGER_STUDENT_ROOM_CREATE = 'messengerStudentRoomCreate',
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
 }
 
@@ -19,9 +16,12 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationStart?: Date;
 	oauthMigrationPossible?: Date;
 	oauthMigrationMandatory?: Date;
 	oauthMigrationFinished?: Date;
+	oauthMigrationFinalFinish?: Date;
+	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
@@ -60,6 +60,9 @@ export class School extends BaseEntity {
 	inUserMigration?: boolean;
 
 	@Property({ nullable: true })
+	oauthMigrationStart?: Date;
+
+	@Property({ nullable: true })
 	oauthMigrationPossible?: Date;
 
 	@Property({ nullable: true })
@@ -68,8 +71,14 @@ export class School extends BaseEntity {
 	@Property({ nullable: true })
 	oauthMigrationFinished?: Date;
 
+	@Property({ nullable: true })
+	oauthMigrationFinalFinish?: Date;
+
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
+
+	@Property({ nullable: true })
+	previousExternalId?: string;
 
 	@Property()
 	name: string;
@@ -91,15 +100,20 @@ export class School extends BaseEntity {
 		if (props.externalId) {
 			this.externalId = props.externalId;
 		}
+		if (props.previousExternalId) {
+			this.previousExternalId = props.previousExternalId;
+		}
 		if (props.inMaintenanceSince) {
 			this.inMaintenanceSince = props.inMaintenanceSince;
 		}
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
+		this.oauthMigrationStart = props.oauthMigrationStart;
 		this.oauthMigrationPossible = props.oauthMigrationPossible;
 		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
 		this.oauthMigrationFinished = props.oauthMigrationFinished;
+		this.oauthMigrationFinalFinish = props.oauthMigrationFinalFinish;
 		this.name = props.name;
 		if (props.officialSchoolNumber) {
 			this.officialSchoolNumber = props.officialSchoolNumber;

@@ -62,16 +62,17 @@ describe('delete teams user data usecase', () => {
 
 	describe('delete teams user data usecase', () => {
 		it('should return a function', async () => {
-			const deleteUserDataFromClasses = deleteUserTeamsData.deleteUserTeamsData;
-			expect(deleteUserDataFromClasses).to.be.an('Array');
-			expect(deleteUserDataFromClasses.length).to.be.equal(1);
-			expect(deleteUserDataFromClasses[0]).to.be.a('function');
+			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData;
+
+			expect(deleteUserDataFromTeams).to.be.an('Array');
+			expect(deleteUserDataFromTeams.length).to.be.equal(1);
+			expect(deleteUserDataFromTeams[0]).to.be.a('function');
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
 			const { getTeamsStub, removeTeamsStub } = initTeamsStubs({ teamsId: TEAMS_ID });
 
-			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserTeamsData[0];
+			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData[0];
 			const result = await deleteUserDataFromTeams(USER_ID);
 			getTeamsStub.restore();
 			removeTeamsStub.restore();
@@ -86,7 +87,7 @@ describe('delete teams user data usecase', () => {
 
 
 		it('should throw an error if called with an invalid ObjectId', async () => {
-			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserTeamsData[0];
+			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData[0];
 			await expect(deleteUserDataFromTeams('NOT_AN_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});
