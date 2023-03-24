@@ -63,14 +63,14 @@ describe(ColumnBoardService.name, () => {
 			expect(result).toEqual(board);
 		});
 
-		it('should throw error when there is no columnboard', async () => {
-			const { boardId, column } = setup();
+		it('should throw error when id does not belong to a columnboard', async () => {
+			const { column } = setup();
 
 			const expectedError = new NotFoundException(`there is no columboard with this id`);
 
 			boardDoRepo.findById.mockResolvedValue(column);
 
-			await expect(service.findById(boardId)).rejects.toThrowError(expectedError);
+			await expect(service.findById(column.id)).rejects.toThrowError(expectedError);
 		});
 	});
 
