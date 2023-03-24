@@ -23,12 +23,14 @@ describe('MigrationMapper', () => {
 				oauthMigrationPossible: new Date('2023-01-23T09:34:54.854Z'),
 				oauthMigrationMandatory: new Date('2023-02-23T09:34:54.854Z'),
 				oauthMigrationFinished: new Date('2023-03-23T09:34:54.854Z'),
+				oauthMigrationFinalFinish: new Date('2023-04-23T09:34:54.854Z'),
 				enableMigrationStart: true,
 			});
 			const response: MigrationResponse = new MigrationResponse({
 				oauthMigrationPossible: new Date('2023-01-23T09:34:54.854Z'),
 				oauthMigrationMandatory: new Date('2023-02-23T09:34:54.854Z'),
 				oauthMigrationFinished: new Date('2023-03-23T09:34:54.854Z'),
+				oauthMigrationFinalFinish: new Date('2023-04-23T09:34:54.854Z'),
 				enableMigrationStart: true,
 			});
 
