@@ -87,7 +87,7 @@ describe('TaskRepo', () => {
 				const [student1, student2, student3, student4] = students;
 				const englishCourse = courseFactory.build({
 					name: 'english',
-					teachers: [teacher1],
+					teachers,
 					students: [student1, student2, student3],
 				});
 				const grammerLesson = lessonFactory.build({
@@ -104,7 +104,7 @@ describe('TaskRepo', () => {
 					teachers: [teacher2],
 					students: [student1, student2],
 				});
-				const mathsLesson = lessonFactory.build({
+				const algebraLesson = lessonFactory.build({
 					name: 'maths',
 					course: mathsCourse,
 				});
@@ -165,7 +165,7 @@ describe('TaskRepo', () => {
 
 				const mathsTask3 = taskFactory.build({
 					name: 'algebra 1',
-					lesson: mathsLesson,
+					lesson: algebraLesson,
 					users: [student2],
 				});
 
@@ -180,7 +180,7 @@ describe('TaskRepo', () => {
 					grammerLesson,
 					historyCourse,
 					mathsCourse,
-					mathsLesson,
+					algebraLesson,
 					englishTask1,
 					englishTask2,
 					englishTask3,
@@ -205,7 +205,7 @@ describe('TaskRepo', () => {
 					grammerLesson,
 					historyCourse,
 					mathsCourse,
-					mathsLesson,
+					algebraLesson,
 					englishTask1,
 					englishTask2,
 					englishTask3,
@@ -227,12 +227,63 @@ describe('TaskRepo', () => {
 				expect(total).toBe(6);
 			});
 
-			it('Only creator should return task with this creator', async () => {
-				// TODO
+			it('Filter by assigned users and courses', async () => {
+				const { englishCourse, mathsCourse, historyCourse, student1 } = await setup();
+				const [result, total] = await repo.findAllByParentIds(
+					{
+						courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
+					},
+					{
+						userId: student1.id,
+					}
+				);
+				expect(total).toBe(3);
 			});
 
-			it('Userid filter should return only assigned users', async () => {
-				// TODO
+			it('Filter by assigned users and lessons in same course', async () => {
+				const { grammerLesson, algebraLesson, student1 } = await setup();
+				const [result, total] = await repo.findAllByParentIds(
+					{
+						lessonIds: [grammerLesson.id, algebraLesson.id],
+					},
+					{
+						userId: student1.id,
+					}
+				);
+				expect(total).toBe(2);
+				expect(result.map((r) => r.name)).toContain('grammer1');
+				expect(result.map((r) => r.name)).toContain('grammer3');
+			});
+
+			it('Filter by assigned users and lessons in different courses', async () => {
+				const { grammerLesson, algebraLesson, student2 } = await setup();
+
+				const [result, total] = await repo.findAllByParentIds(
+					{
+						lessonIds: [grammerLesson.id, algebraLesson.id],
+					},
+					{
+						userId: student2.id,
+					}
+				);
+				expect(total).toBe(2);
+				expect(result.map((r) => r.name)).toContain('algebra 1');
+				expect(result.map((r) => r.name)).toContain('grammer3');
+			});
+
+			it('Filter by assigned users and lessons in different courses but with course fallback', async () => {
+				const { grammerLesson, algebraLesson, student3 } = await setup();
+
+				const [result, total] = await repo.findAllByParentIds(
+					{
+						lessonIds: [grammerLesson.id, algebraLesson.id],
+					},
+					{
+						userId: student3.id,
+					}
+				);
+				expect(total).toBe(1);
+				expect(result.map((r) => r.name)).toContain('grammer3');
 			});
 		});
 

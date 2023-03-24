@@ -12,7 +12,6 @@ import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from
 export class SubmissionController {
 	constructor(private readonly submissionUc: SubmissionUc) {}
 
-	// TODO: apply filtering from this ticket
 	@Get('status/task/:taskId')
 	async findStatusesByTask(
 		@CurrentUser() currentUser: ICurrentUser,
