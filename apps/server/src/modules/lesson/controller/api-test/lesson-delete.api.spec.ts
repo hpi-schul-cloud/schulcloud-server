@@ -55,11 +55,11 @@ describe('Lesson Controller (API) - delete', () => {
 		});
 
 		describe('given user is a student', () => {
-			const setupUser = () => UserAndAccountTestFactory.buildStudent();
+			const createStudent = () => UserAndAccountTestFactory.buildStudent();
 
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
-					const { studentAccount, studentUser } = setupUser();
+					const { studentAccount, studentUser } = createStudent();
 					const course = courseFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ course });
 
@@ -68,7 +68,7 @@ describe('Lesson Controller (API) - delete', () => {
 					return { studentAccount, lessonId: lesson.id };
 				};
 
-				it('it should throw a forbidden', async () => {
+				it('it should respond with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
 					const response = await request.delete(lessonId, studentAccount);
@@ -79,7 +79,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a course and user is NOT part of it', () => {
 				const setup = async () => {
-					const { studentAccount, studentUser } = setupUser();
+					const { studentAccount, studentUser } = createStudent();
 					const course = courseFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ course });
 
@@ -88,7 +88,7 @@ describe('Lesson Controller (API) - delete', () => {
 					return { studentAccount, lessonId: lesson.id };
 				};
 
-				it('it should throw a forbidden', async () => {
+				it('it should respond with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
 					const response = await request.delete(lessonId, studentAccount);
@@ -99,7 +99,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a coursegroup and user is part of it', () => {
 				const setup = async () => {
-					const { studentAccount, studentUser } = setupUser();
+					const { studentAccount, studentUser } = createStudent();
 					const courseGroup = courseGroupFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ courseGroup });
 
@@ -120,7 +120,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a coursegroup and user is NOT part of it', () => {
 				const setup = async () => {
-					const { studentAccount, studentUser } = setupUser();
+					const { studentAccount, studentUser } = createStudent();
 					const courseGroup = courseGroupFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ courseGroup });
 
@@ -140,11 +140,11 @@ describe('Lesson Controller (API) - delete', () => {
 		});
 
 		describe('given user is a teacher', () => {
-			const setupUser = () => UserAndAccountTestFactory.buildTeacher();
+			const createTeacher = () => UserAndAccountTestFactory.buildTeacher();
 
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
-					const { teacherAccount, teacherUser } = setupUser();
+					const { teacherAccount, teacherUser } = createTeacher();
 					const course = courseFactory.build({ teachers: [teacherUser] });
 					const lesson = lessonFactory.build({ course });
 
@@ -165,7 +165,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a course and user NOT is part of it', () => {
 				const setup = async () => {
-					const { teacherAccount, teacherUser } = setupUser();
+					const { teacherAccount, teacherUser } = createTeacher();
 					const course = courseFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 
@@ -174,7 +174,7 @@ describe('Lesson Controller (API) - delete', () => {
 					return { teacherAccount, lessonId: lesson.id };
 				};
 
-				it('it should throw a forbidden', async () => {
+				it('it should respond with forbidden', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
 					const response = await request.delete(lessonId, teacherAccount);
@@ -185,7 +185,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a coursegroup and user is part of the related course as teacher', () => {
 				const setup = async () => {
-					const { teacherAccount, teacherUser } = setupUser();
+					const { teacherAccount, teacherUser } = createTeacher();
 					const course = courseFactory.build({ teachers: [teacherUser] });
 					const courseGroup = courseGroupFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
@@ -207,7 +207,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a coursegroup and user is part of the related course as substitution teacher', () => {
 				const setup = async () => {
-					const { teacherAccount, teacherUser } = setupUser();
+					const { teacherAccount, teacherUser } = createTeacher();
 					const course = courseFactory.build({ substitutionTeachers: [teacherUser] });
 					const courseGroup = courseGroupFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
@@ -229,11 +229,11 @@ describe('Lesson Controller (API) - delete', () => {
 		});
 
 		describe('given user is a admin', () => {
-			const setupUser = () => UserAndAccountTestFactory.buildAdmin();
+			const createAdmin = () => UserAndAccountTestFactory.buildAdmin();
 
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
-					const { adminAccount, adminUser } = setupUser();
+					const { adminAccount, adminUser } = createAdmin();
 					const course = courseFactory.build({ substitutionTeachers: [adminUser] });
 					const lesson = lessonFactory.build({ course });
 
@@ -254,7 +254,7 @@ describe('Lesson Controller (API) - delete', () => {
 
 			describe('when lesson is part of a course and user NOT is part of it', () => {
 				const setup = async () => {
-					const { adminAccount, adminUser } = setupUser();
+					const { adminAccount, adminUser } = createAdmin();
 					const course = courseFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 

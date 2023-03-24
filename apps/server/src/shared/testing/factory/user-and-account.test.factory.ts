@@ -30,7 +30,7 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 export class UserAndAccountTestFactory {
 	private static checkIdExists(entity: BaseEntity): void | Error {
 		if (!entity.id) {
-			throw new Error('Entity must be have a valid id.');
+			throw new Error('Entity does not have an id.');
 		}
 	}
 
