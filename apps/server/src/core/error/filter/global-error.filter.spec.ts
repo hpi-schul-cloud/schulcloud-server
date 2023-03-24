@@ -1,21 +1,23 @@
 /* eslint-disable promise/valid-params */
+import { NotFound } from '@feathersjs/errors';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ArgumentsHost, BadRequestException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
 import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { Response } from 'express';
+import util from 'util';
 import { ErrorResponse } from '../dto';
 import { ErrorLoggable } from '../error.loggable';
 import { GlobalErrorFilter } from './global-error.filter';
 
 class SampleBusinessError extends BusinessError {
-	constructor(message?: string) {
+	constructor() {
 		super(
 			{
 				type: 'SAMPLE_ERROR',
 				title: 'Sample Error',
-				defaultMessage: message || 'default sample error message',
+				defaultMessage: 'sample error message',
 			},
 			HttpStatus.NOT_IMPLEMENTED
 		);
@@ -40,7 +42,6 @@ class SampleLoggableException extends BadRequestException implements Loggable {
 	}
 }
 
-// TODO: Write tests
 describe('GlobalErrorFilter', () => {
 	let module: TestingModule;
 	let service: GlobalErrorFilter<any>;
@@ -75,23 +76,58 @@ describe('GlobalErrorFilter', () => {
 
 	describe('catch', () => {
 		describe('logging', () => {
-			it('should call logger with error if error implements Loggable', () => {
-				const error = new SampleLoggableException('test');
-				const argumentsHost = createMock<ArgumentsHost>();
+			describe('when error implements Loggable', () => {
+				const setup = () => {
+					const error = new SampleLoggableException('test');
+					const argumentsHost = createMock<ArgumentsHost>();
 
-				service.catch(error, argumentsHost);
+					return { error, argumentsHost };
+				};
 
-				expect(logger.error).toBeCalledWith(error);
+				it('should call logger with error', () => {
+					const { error, argumentsHost } = setup();
+
+					service.catch(error, argumentsHost);
+
+					expect(logger.error).toBeCalledWith(error);
+				});
 			});
 
-			it('should call logger with ErrorLoggable for generic error', () => {
-				const error = new Error('test');
-				const loggable = new ErrorLoggable(error);
-				const argumentsHost = createMock<ArgumentsHost>();
+			describe('when error is a generic error', () => {
+				const setup = () => {
+					const error = new Error('test');
+					const loggable = new ErrorLoggable(error);
+					const argumentsHost = createMock<ArgumentsHost>();
 
-				service.catch(error, argumentsHost);
+					return { error, loggable, argumentsHost };
+				};
 
-				expect(logger.error).toBeCalledWith(loggable);
+				it('should call logger with ErrorLoggable', () => {
+					const { error, loggable, argumentsHost } = setup();
+
+					service.catch(error, argumentsHost);
+
+					expect(logger.error).toBeCalledWith(loggable);
+				});
+			});
+
+			describe('when error is some random object', () => {
+				const setup = () => {
+					const randomObject = { foo: 'bar' };
+					const error = new Error(util.inspect(randomObject));
+					const loggable = new ErrorLoggable(error);
+					const argumentsHost = createMock<ArgumentsHost>();
+
+					return { error, loggable, argumentsHost };
+				};
+
+				it('should call logger with ErrorLoggable', () => {
+					const { error, loggable, argumentsHost } = setup();
+
+					service.catch(error, argumentsHost);
+
+					expect(logger.error).toBeCalledWith(loggable);
+				});
 			});
 		});
 
@@ -104,7 +140,70 @@ describe('GlobalErrorFilter', () => {
 					return argumentsHost;
 				};
 
-				describe('when error is an HTTP exception', () => {
+				describe('when error is a FeathersError', () => {
+					const setup = () => {
+						const argumentsHost = setupHttpArgumentsHost();
+						const error = new NotFound();
+						const expectedResponse = new ErrorResponse('NOT_FOUND', 'Not Found', 'Error', HttpStatus.NOT_FOUND);
+
+						return { error, argumentsHost, expectedResponse };
+					};
+
+					it('should set response status appropriately', () => {
+						const { error, argumentsHost } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(HttpStatus.NOT_FOUND);
+					});
+
+					it('should send appropriate error response', () => {
+						const { error, argumentsHost, expectedResponse } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(
+							argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.NOT_IMPLEMENTED).json
+						).toBeCalledWith(expectedResponse);
+					});
+				});
+
+				describe('when error is a BusinessError', () => {
+					const setup = () => {
+						const argumentsHost = setupHttpArgumentsHost();
+						const error = new SampleBusinessError();
+						const expectedResponse = new ErrorResponse(
+							'SAMPLE_ERROR',
+							'Sample Error',
+							'sample error message',
+							HttpStatus.NOT_IMPLEMENTED
+						);
+
+						return { error, argumentsHost, expectedResponse };
+					};
+
+					it('should set response status appropriately', () => {
+						const { error, argumentsHost } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+							HttpStatus.NOT_IMPLEMENTED
+						);
+					});
+
+					it('should send appropriate error response', () => {
+						const { error, argumentsHost, expectedResponse } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(
+							argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.NOT_IMPLEMENTED).json
+						).toBeCalledWith(expectedResponse);
+					});
+				});
+
+				describe('when error is a NestHttpException', () => {
 					const setup = () => {
 						const argumentsHost = setupHttpArgumentsHost();
 						const error = new BadRequestException();
@@ -172,15 +271,39 @@ describe('GlobalErrorFilter', () => {
 					});
 				});
 
-				it('should send JSON response', () => {
-					const argumentsHost = setupHttpArgumentsHost();
-					const error = new Error();
+				describe('when error is some random object', () => {
+					const setup = () => {
+						const argumentsHost = setupHttpArgumentsHost();
+						const error = { foo: 'bar' };
+						const expectedResponse = new ErrorResponse(
+							'INTERNAL_SERVER_ERROR',
+							'Internal Server Error',
+							'Internal Server Error',
+							HttpStatus.INTERNAL_SERVER_ERROR
+						);
 
-					service.catch(error, argumentsHost);
+						return { error, argumentsHost, expectedResponse };
+					};
 
-					expect(
-						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
-					).toBeCalled();
+					it('should set response status appropriately', () => {
+						const { error, argumentsHost } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+							HttpStatus.INTERNAL_SERVER_ERROR
+						);
+					});
+
+					it('should send appropriate error response', () => {
+						const { error, argumentsHost, expectedResponse } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(
+							argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
+						).toBeCalledWith(expectedResponse);
+					});
 				});
 			});
 
