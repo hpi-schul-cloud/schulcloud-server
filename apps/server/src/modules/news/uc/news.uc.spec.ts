@@ -171,11 +171,11 @@ describe('NewsUc', () => {
 	});
 
 	describe('findAllUnpublishedByUser', () => {
-		it('should search for news by empty scope ', async () => {
+		it('should search for news by empty scope', async () => {
 			const scope = {unpublished: true};
 			const findAllUnpublishedSpy = jest.spyOn(repo, 'findAllUnpublished');
 			await service.findAllForUser(userId, scope, pagination);
-			const expectedParams = [targets, pagination];
+			const expectedParams = [targets, userId, pagination];
 			expect(findAllUnpublishedSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for school news with given school id', async () => {
@@ -192,7 +192,7 @@ describe('NewsUc', () => {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			const expectedParams = [[expectedTarget], pagination];
+			const expectedParams = [[expectedTarget], userId, pagination];
 			expect(findAllUnpublishedBySchoolSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for course news with given courseId', async () => {
@@ -209,7 +209,7 @@ describe('NewsUc', () => {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			const expectedParams = [[expectedTarget], pagination];
+			const expectedParams = [[expectedTarget], userId, pagination];
 			expect(findAllUnpublishedByCourseSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for all course news if course id is not given', async () => {
@@ -221,7 +221,7 @@ describe('NewsUc', () => {
 				.filter((target) => target.targetModel === targetModel)
 				.flatMap((target) => target.targetIds);
 			const expectedTarget = { targetModel, targetIds };
-			const expectedParams = [[expectedTarget], pagination];
+			const expectedParams = [[expectedTarget], userId, pagination];
 			expect(findAllUnpublishedByTargetSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 	});
