@@ -6,8 +6,14 @@ import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
 interface IRetryOptions {
-	retryCount: number;
-	retryDelay: number;
+	retryCount?: number;
+	retryDelay?: number;
+}
+
+interface IMigrationOptions {
+	skip?: number;
+	query?: string;
+	verbose?: boolean;
 }
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
 export class KeycloakConsole {
@@ -112,12 +118,49 @@ export class KeycloakConsole {
 		);
 	}
 
-	private async repeatCommand<T>(
-		commandName: string,
-		command: () => Promise<T>,
-		count: number,
-		delay: number
-	): Promise<T> {
+	/**
+	 * For migration purpose. Moves all database accounts to the IDM
+	 * @param options
+	 */
+	@Command({
+		command: 'migrate',
+		description: 'Add all database users to the IDM.',
+		options: [
+			...KeycloakConsole.retryFlags,
+			{
+				flags: '-q, --query',
+				description: 'Limit migration to accounts with username partially matching the query string.',
+				required: false,
+				defaultValue: undefined,
+			},
+			{
+				flags: '-s, --skip',
+				description: 'Skip the first "s" accounts during migration. Default 0.',
+				required: false,
+				defaultValue: undefined,
+			},
+			{
+				flags: '-v, --verbose',
+				description: 'Log all events. Default is false.',
+				required: false,
+				defaultValue: false,
+			},
+		],
+	})
+	async migrate(options: IRetryOptions & IMigrationOptions): Promise<void> {
+		await this.repeatCommand(
+			'migrate',
+			async () => {
+				const count = await this.keycloakConfigurationUc.migrate(options.skip, options.query, options.verbose);
+				this.console.info(`Migrated ${count} users into IDM`);
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	private async repeatCommand<T>(commandName: string, command: () => Promise<T>, count = 1, delay = 10): Promise<T> {
 		let repetitions = 0;
 		let error = new Error('error could be thrown if count is < 1');
 		while (repetitions < count) {
