@@ -49,7 +49,7 @@ export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, INews
 	};
 });
 
-export const courseUnpublishedFactory = BaseFactory.define<CourseNews, INewsProperties>(CourseNews, ({ sequence }) => {
+export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, INewsProperties>(CourseNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -60,7 +60,7 @@ export const courseUnpublishedFactory = BaseFactory.define<CourseNews, INewsProp
 	};
 });
 
-export const teamUnpublishedFactory = BaseFactory.define<TeamNews, INewsProperties>(TeamNews, ({ sequence }) => {
+export const teamUnpublishedNewsFactory = BaseFactory.define<TeamNews, INewsProperties>(TeamNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
