@@ -89,16 +89,16 @@ export class CommonCartridgeFileBuilder {
 
 	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
 		props.forEach((prop) => {
-			const assignment = new CommonCartridgeAssignmentElement(prop);
-			const xmlPath = `${prop.identifier}/assignment.xml`;
+			// const assignment = new CommonCartridgeAssignmentElement(prop);
+			// const xmlPath = `${prop.identifier}/assignment.xml`;
 			const htmlPath = `${prop.identifier}/assignment.html`;
-			this.zipBuilder.addFile(xmlPath, Buffer.from(this.xmlBuilder.buildObject(assignment.transform())));
+			// this.zipBuilder.addFile(xmlPath, Buffer.from(this.xmlBuilder.buildObject(assignment.transform())));
 			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
 			this.resources.push(
 				new CommonCartridgeAssignmentResourceItemElement({
 					identifier: prop.identifier,
-					type: 'assignment_xmlv1p0',
-					href: xmlPath,
+					type: 'webcontent',
+					href: htmlPath,
 				})
 			);
 		});
