@@ -206,8 +206,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:60</a></div>
                 </td>
             </tr>
 
@@ -289,8 +289,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:70</a></div>
                 </td>
             </tr>
 
@@ -360,8 +360,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:79</a></div>
                 </td>
             </tr>
 
@@ -603,7 +603,7 @@ export class SchoolUc {
 		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
 		const migrationStartedAt: Date | undefined &#x3D; school.oauthMigrationStart;
 
-		const shouldRestartMigration &#x3D; this.isRestartMigrationRequired(
+		const shouldRestartMigration: boolean &#x3D; this.isRestartMigrationRequired(
 			school,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
@@ -611,6 +611,7 @@ export class SchoolUc {
 		);
 
 		if (shouldRestartMigration) {
+			this.schoolMigrationService.validateGracePeriod(school);
 			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 

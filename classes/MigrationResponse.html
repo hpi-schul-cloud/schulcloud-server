@@ -87,6 +87,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
+                                <a href="#oauthMigrationFinalFinish" >oauthMigrationFinalFinish</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#oauthMigrationFinished" >oauthMigrationFinished</a>
                             </li>
                             <li>
@@ -121,7 +125,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/school/controller/dto/migration.response.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/school/controller/dto/migration.response.ts:31</a></div>
                             </td>
                         </tr>
 
@@ -192,7 +196,43 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/school/controller/dto/migration.response.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/school/controller/dto/migration.response.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="oauthMigrationFinalFinish"></a>
+                    <span class="name">
+                            <span class="modifier">Optional</span>
+                        <span ><b>oauthMigrationFinalFinish</b></span>
+                        <a href="#oauthMigrationFinalFinish"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional({description: &#x27;Date from when Migration is finally finished and cannot be restarted again&#x27;, type: Date})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/school/controller/dto/migration.response.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -340,6 +380,12 @@ export class MigrationResponse {
 	})
 	oauthMigrationFinished?: Date;
 
+	@ApiPropertyOptional({
+		description: &#x27;Date from when Migration is finally finished and cannot be restarted again&#x27;,
+		type: Date,
+	})
+	oauthMigrationFinalFinish?: Date;
+
 	@ApiProperty({
 		description: &#x27;Enable the Migration&#x27;,
 	})
@@ -349,6 +395,7 @@ export class MigrationResponse {
 		this.oauthMigrationPossible &#x3D; params.oauthMigrationPossible;
 		this.oauthMigrationMandatory &#x3D; params.oauthMigrationMandatory;
 		this.oauthMigrationFinished &#x3D; params.oauthMigrationFinished;
+		this.oauthMigrationFinalFinish &#x3D; params.oauthMigrationFinalFinish;
 		this.enableMigrationStart &#x3D; params.enableMigrationStart;
 	}
 }
