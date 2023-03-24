@@ -1,6 +1,15 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import {
+	CardType,
+	Course,
+	EntityId,
+	ITaskUpdate,
+	Permission,
+	PermissionContextBuilder,
+	TaskCard,
+	User,
+} from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -71,7 +80,7 @@ export class TaskCardUc {
 
 		await this.taskCardRepo.save(card);
 
-		await this.taskService.linkTaskCard(userId, card.task.id, card.id);
+		await this.addTaskCardId(userId, card);
 
 		return { card, taskWithStatusVo };
 	}
@@ -169,6 +178,23 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
+	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
+		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
+		taskCard.cardElements.set(newCardElements);
+
+		return taskCard;
+	}
+
+	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
+		const taskParams = {
+			name: taskCard.task.name,
+			taskCard: taskCard.id,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
 	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
@@ -176,12 +202,5 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
 		return taskWithStatusVo;
-	}
-
-	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
-		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
-		taskCard.cardElements.set(newCardElements);
-
-		return taskCard;
 	}
 }

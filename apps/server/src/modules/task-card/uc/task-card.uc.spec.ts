@@ -260,7 +260,7 @@ describe('TaskCardUc', () => {
 		it('should call linkTaskCard from taskService to add id of task-card to task', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
-			expect(taskService.linkTaskCard).toBeCalled();
+			expect(taskService.update).toBeCalled();
 		});
 		it('should return the task card and task', async () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
