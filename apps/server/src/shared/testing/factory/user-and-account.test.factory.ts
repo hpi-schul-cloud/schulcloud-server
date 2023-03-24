@@ -7,14 +7,25 @@ import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
-export interface UserAndAccountParams {
-	username?: string;
-	systemId?: EntityId | ObjectId;
+interface UserParams {
 	firstName?: string;
 	lastName?: string;
 	email?: string;
 	school?: School;
 }
+
+interface AccountParams {
+	username?: string;
+	systemId?: EntityId | ObjectId;
+}
+
+interface AccountInternalParams {
+	userId: EntityId;
+	username?: string;
+	systemId?: EntityId | ObjectId;
+}
+
+export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static checkIdExists(entity: BaseEntity): void | Error {
@@ -23,17 +34,40 @@ export class UserAndAccountTestFactory {
 		}
 	}
 
+	private static getUserParams(params: UserAndAccountParams): UserParams {
+		const { firstName, lastName, email } = params;
+		const school = params.school || schoolFactory.build();
+
+		const userParams: UserParams = { school };
+		if (firstName) userParams.firstName = firstName;
+		if (lastName) userParams.lastName = lastName;
+		if (email) userParams.email = email;
+
+		return userParams;
+	}
+
+	private static getAccountParams(params: UserAndAccountParams, user: User): AccountInternalParams {
+		UserAndAccountTestFactory.checkIdExists(user);
+		const { username, systemId } = params;
+
+		const accountParams: AccountInternalParams = { userId: user.id };
+		if (username) accountParams.username = username;
+		if (systemId) accountParams.systemId = systemId;
+
+		return accountParams;
+	}
+
 	public static buildUser(
 		role: Role,
 		params: UserAndAccountParams = {}
 	): { account: Account; user: User; school: School } {
 		UserAndAccountTestFactory.checkIdExists(role);
 
-		const { username, systemId, firstName, lastName, email } = params;
-		const school = params.school || schoolFactory.build();
+		const userParams = UserAndAccountTestFactory.getUserParams(params);
+		const user = userFactory.withRole(role).buildWithId(userParams);
 
-		const user = userFactory.withRole(role).buildWithId({ school, firstName, lastName, email });
-		const account = accountFactory.withSystemId(params.systemId).build({ userId: user.id, username, systemId });
+		const accountParams = UserAndAccountTestFactory.getAccountParams(params, user);
+		const account = accountFactory.build(accountParams);
 
 		return { account, user, school: user.school };
 	}
