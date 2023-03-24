@@ -24,6 +24,6 @@ export * from './task-card.factory';
 export * from './task.factory';
 export * from './user.factory';
 export * from './user.do.factory';
-export * from './user-and-account.factory';
+export * from './user-and-account.test.factory';
 export * from './domainobject';
 
