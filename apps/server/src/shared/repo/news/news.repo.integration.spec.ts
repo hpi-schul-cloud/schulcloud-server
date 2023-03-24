@@ -11,7 +11,7 @@ import {
 	courseUnpublishedNewsFactory,
 	schoolUnpublishedNewsFactory,
 	teamUnpublishedNewsFactory,
-	userFactory
+	userFactory,
 } from '@shared/testing';
 import { NewsRepo } from './news.repo';
 
@@ -222,7 +222,7 @@ describe('NewsRepo', () => {
 			};
 			const pagination = { skip: 0, limit: 20 };
 
-			const [result, count] = await repo.findAllUnpublished([target], news.creator.id ,{ pagination });
+			const [result, count] = await repo.findAllUnpublished([target], news.creator.id, { pagination });
 
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
@@ -262,8 +262,8 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return unpublished news in requested order', async () => {
-			const creator =  userFactory.build();
-			const newsList = courseUnpublishedNewsFactory.buildList(5, {creator: creator});
+			const creator = userFactory.build();
+			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator: creator });
 			await em.persistAndFlush(newsList);
 			em.clear();
 
@@ -272,7 +272,9 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
 			};
-			const [result, count] = await repo.findAllUnpublished([target], creator.id, { order: { target: SortOrder.desc } });
+			const [result, count] = await repo.findAllUnpublished([target], creator.id, {
+				order: { target: SortOrder.desc },
+			});
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(courseIds.length);
 			const resultCourseIds = result.map((news) => news.target.id);
