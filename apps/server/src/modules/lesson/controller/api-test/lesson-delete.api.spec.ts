@@ -37,6 +37,15 @@ describe('Lesson Controller (API) - delete', () => {
 	});
 
 	describe('delete', () => {
+		const expectedForbiddenResponse = {
+			type: 'FORBIDDEN',
+			title: 'Forbidden',
+			message: 'Forbidden',
+			code: 403,
+		};
+
+		const expectedSuccessResponse = {};
+
 		describe('when user not exists', () => {
 			const setup = async () => {
 				const lesson = lessonFactory.build();
@@ -138,12 +147,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					expect(response.body).toEqual({
-						type: 'FORBIDDEN',
-						title: 'Forbidden',
-						message: 'Forbidden',
-						code: 403,
-					});
+					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 			});
 
@@ -165,12 +169,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					expect(response.body).toEqual({
-						type: 'FORBIDDEN',
-						title: 'Forbidden',
-						message: 'Forbidden',
-						code: 403,
-					});
+					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 			});
 
@@ -192,7 +191,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({});
+					expect(response.body).toEqual(expectedSuccessResponse);
 				});
 			});
 
@@ -214,12 +213,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					expect(response.body).toEqual({
-						type: 'FORBIDDEN',
-						title: 'Forbidden',
-						message: 'Forbidden',
-						code: 403,
-					});
+					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 			});
 		});
@@ -245,7 +239,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({});
+					expect(response.body).toEqual(expectedSuccessResponse);
 				});
 			});
 
@@ -267,12 +261,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					expect(response.body).toEqual({
-						type: 'FORBIDDEN',
-						title: 'Forbidden',
-						message: 'Forbidden',
-						code: 403,
-					});
+					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 			});
 
@@ -295,7 +284,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({});
+					expect(response.body).toEqual(expectedSuccessResponse);
 				});
 			});
 
@@ -318,7 +307,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({});
+					expect(response.body).toEqual(expectedSuccessResponse);
 				});
 			});
 		});
@@ -344,7 +333,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual({});
+					expect(response.body).toEqual(expectedSuccessResponse);
 				});
 			});
 
@@ -366,12 +355,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-					expect(response.body).toEqual({
-						type: 'FORBIDDEN',
-						title: 'Forbidden',
-						message: 'Forbidden',
-						code: 403,
-					});
+					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 			});
 		});
