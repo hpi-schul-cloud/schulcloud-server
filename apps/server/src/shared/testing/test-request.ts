@@ -7,26 +7,24 @@ interface AuthenticationResponse {
 	accessToken: string;
 }
 
-enum Header {
-	accept = 'accept',
-	json = 'application/json',
-	authorization = 'authorization',
-}
+const headerConst = {
+	accept: 'accept',
+	json: 'application/json',
+};
 
-enum Jwt {
-	invalid = 'invalidJwt',
-	prefix = 'Bearer',
-	loginUri = '/authentication/local',
-	responseKey = 'accessToken',
-	errorMessage = 'TestRequest: Can not cast to local AutenticationResponse:',
-}
+const testReqestConst = {
+	invalid: 'invalidJwt',
+	prefix: 'Bearer',
+	loginUri: '/authentication/local',
+	responseKey: 'accessToken',
+	errorMessage: 'TestRequest: Can not cast to local AutenticationResponse:',
+};
 
 export class TestRequest {
 	app: INestApplication;
 
 	baseRoute: string;
 
-	// , private readonly jwtService: JwtService
 	constructor(app: INestApplication, baseRoute: string) {
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
@@ -51,11 +49,11 @@ export class TestRequest {
 
 	private castToAuthenticationResponse(response: supertest.Response): AuthenticationResponse {
 		let authenticationResponse: AuthenticationResponse;
-		if (Jwt.responseKey in response.body) {
+		if (testReqestConst.responseKey in response.body) {
 			authenticationResponse = response.body as AuthenticationResponse;
 		} else {
 			const body = JSON.stringify(response.body);
-			throw new Error(`${Jwt.errorMessage} ${body}`);
+			throw new Error(`${testReqestConst.errorMessage} ${body}`);
 		}
 
 		return authenticationResponse;
@@ -64,21 +62,24 @@ export class TestRequest {
 	private getFormatedJwt(response: supertest.Response): string {
 		const authenticationResponse = this.castToAuthenticationResponse(response);
 		const jwt = authenticationResponse.accessToken;
-		const formatedJwt = `${Jwt.prefix} ${jwt}`;
+		const formatedJwt = `${testReqestConst.prefix} ${jwt}`;
 
 		return formatedJwt;
 	}
 
 	public async getJwt(accountWithPassword?: Account): Promise<string> {
-		let formatedJwt: string = Jwt.invalid;
+		let formatedJwt: string = testReqestConst.invalid;
 
 		if (accountWithPassword) {
-			const uri = Jwt.loginUri;
-			const params = {
+			const uri = testReqestConst.loginUri;
+			const params: { username: string; password: string } = {
 				username: accountWithPassword.username,
 				password: defaultTestPassword,
 			};
-			const response = await supertest(this.app.getHttpServer()).post(uri).set(Header.accept, Header.json).send(params);
+			const response = await supertest(this.app.getHttpServer())
+				.post(uri)
+				.set(headerConst.accept, headerConst.json)
+				.send(params);
 
 			formatedJwt = this.getFormatedJwt(response);
 		}
@@ -86,18 +87,26 @@ export class TestRequest {
 		return formatedJwt;
 	}
 
+	private getHeader(formatedJwt: string, additionalHeader: Record<string, string> = {}) {
+		const baseHeader = {
+			authorization: formatedJwt,
+			accept: headerConst.json,
+		};
+		const header = Object.assign(baseHeader, additionalHeader);
+
+		return header;
+	}
+
 	public async get(
 		routeName: string,
 		account?: Account,
-		query?: string | Record<string, unknown>
+		query: string | Record<string, string> = {},
+		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app.getHttpServer())
-			.get(uri)
-			.set(Header.accept, Header.json)
-			.set(Header.authorization, formatedJwt)
-			.query(query || {});
+		const header = this.getHeader(formatedJwt, additionalHeader);
+		const response = await supertest(this.app.getHttpServer()).get(uri).set(header).query(query);
 
 		return response;
 	}
@@ -105,15 +114,13 @@ export class TestRequest {
 	public async delete(
 		routeName: string,
 		account?: Account,
-		query?: string | Record<string, unknown>
+		query: string | Record<string, string> = {},
+		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app.getHttpServer())
-			.delete(uri)
-			.set(Header.accept, Header.json)
-			.set(Header.authorization, formatedJwt)
-			.query(query || {});
+		const header = this.getHeader(formatedJwt, additionalHeader);
+		const response = await supertest(this.app.getHttpServer()).delete(uri).set(header).query(query);
 
 		return response;
 	}
@@ -122,16 +129,13 @@ export class TestRequest {
 		routeName: string,
 		data = {},
 		account?: Account,
-		query?: string | Record<string, unknown>
+		query: string | Record<string, string> = {},
+		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app.getHttpServer())
-			.put(uri)
-			.set(Header.accept, Header.json)
-			.set(Header.authorization, formatedJwt)
-			.query(query || {})
-			.send(data);
+		const header = this.getHeader(formatedJwt, additionalHeader);
+		const response = await supertest(this.app.getHttpServer()).put(uri).set(header).query(query).send(data);
 
 		return response;
 	}
@@ -140,16 +144,13 @@ export class TestRequest {
 		routeName: string,
 		data = {},
 		account?: Account,
-		query?: string | Record<string, unknown>
+		query: string | Record<string, string> = {},
+		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Response> {
 		const uri = this.getUri(routeName);
 		const formatedJwt = await this.getJwt(account);
-		const response = await supertest(this.app.getHttpServer())
-			.post(uri)
-			.set(Header.accept, Header.json)
-			.set(Header.authorization, formatedJwt)
-			.query(query || {})
-			.send(data);
+		const header = this.getHeader(formatedJwt, additionalHeader);
+		const response = await supertest(this.app.getHttpServer()).post(uri).set(header).query(query).send(data);
 
 		return response;
 	}
