@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
 import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchCreator } from '.';
 
 describe('ImportUser entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('When ldapDN is given', () => {
