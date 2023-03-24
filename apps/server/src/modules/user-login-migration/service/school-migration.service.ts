@@ -33,32 +33,26 @@ export class SchoolMigrationService {
 	async schoolToMigrate(
 		currentUserId: string,
 		externalId: string,
-		officialSchoolNumber: string | undefined,
-		targetSystemId: string
+		officialSchoolNumber: string | undefined
 	): Promise<SchoolDO | null> {
 		const userDO: UserDO = await this.userService.findById(currentUserId);
 		const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
-		const sourceSystem: string = schoolDO.systems ? schoolDO.systems[0] : '';
 
 		if (!officialSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Official school number from target migration system is missing',
-				'ext_official_school_number_missing',
-				sourceSystem,
-				targetSystemId
+				'ext_official_school_number_missing'
 			);
 		}
 
-		this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber, sourceSystem, targetSystemId);
+		this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!existingSchool) {
 			throw new OAuthMigrationError(
 				'Could not find school by official school number from target migration system',
-				'ext_official_school_missing',
-				schoolDO.systems ? schoolDO.systems[0] : '',
-				targetSystemId
+				'ext_official_school_missing'
 			);
 		}
 
@@ -124,18 +118,11 @@ export class SchoolMigrationService {
 		}
 	}
 
-	private checkOfficialSchoolNumbersMatch(
-		schoolDO: SchoolDO,
-		officialExternalSchoolNumber: string,
-		sourceSystem: string,
-		targetSystem: string
-	): void {
+	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
 		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
 			throw new OAuthMigrationError(
 				'Current users school is not the same as school found by official school number from target migration system',
 				'ext_official_school_number_mismatch',
-				sourceSystem,
-				targetSystem,
 				schoolDO.officialSchoolNumber,
 				officialExternalSchoolNumber
 			);

@@ -3,7 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -21,9 +20,12 @@ import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { UUID } from 'bson';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
-import { AuthorizationParams } from '../dto';
+import { AuthorizationParams, SSOLoginQuery } from '../dto';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -83,20 +85,14 @@ describe('OAuth SSO Controller (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-
-		const wellKnown = app.get(KeycloakAdministrationService).getWellKnownUrl();
-		axiosMock.onGet(wellKnown).reply(200, {
-			issuer: 'issuer',
-			token_endpoint: 'tokenEndpoint',
-			authorization_endpoint: 'authEndpoint',
-			end_session_endpoint: 'logoutEndpoint',
-			jwks_uri: 'jwksEndpoint',
-		});
 	});
 
 	afterAll(async () => {
-		await cleanupCollections(em);
 		await app.close();
+	});
+
+	afterEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	const setup = async () => {
@@ -106,19 +102,70 @@ describe('OAuth SSO Controller (API)', () => {
 		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
 		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
 
-		await em.persistAndFlush([system, user, school, account]);
+		const targetSystem: System = systemFactory
+			.withOauthConfig()
+			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+		const sourceSystem: System = systemFactory
+			.withOauthConfig()
+			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV });
+
+		const sourceSchool: School = schoolFactory.buildWithId(
+			{
+				systems: [sourceSystem],
+				officialSchoolNumber: '11111',
+				externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+			},
+			'55153a8014829a865bbf700a'
+		);
+
+		const targetSchool: School = schoolFactory.buildWithId(
+			{ systems: [targetSystem], officialSchoolNumber: '22222', externalId: 'targetExternalId' },
+			'55153a8014829a865bbf700d',
+			{}
+		);
+
+		const sourceUser: User = userFactory.buildWithId(
+			{ externalId: externalUserId, school: sourceSchool },
+			'641c7321a7495d7b48926508',
+			{}
+		);
+		const targetUser: User = userFactory.buildWithId({ externalId: 'differentExternalUserId', school: targetSchool });
+
+		await em.persistAndFlush([
+			system,
+			user,
+			school,
+			account,
+			sourceSystem,
+			targetSystem,
+			sourceSchool,
+			targetSchool,
+			sourceUser,
+			targetUser,
+		]);
 		em.clear();
 
 		return {
 			system,
 			user,
 			externalUserId,
+			school,
+			targetSystem,
+			sourceSystem,
+			sourceUser,
+			targetUser,
 		};
 	};
 
-	const setupSessionState = async (systemId: EntityId) => {
+	const setupSessionState = async (systemId: EntityId, migration: boolean) => {
+		const query: SSOLoginQuery = {
+			migration,
+		};
+
 		const response: Response = await request(app.getHttpServer())
 			.get(`/sso/login/${systemId}`)
+			.query(query)
 			.expect(302)
 			.expect('set-cookie', new RegExp(`^${sessionCookieName}`));
 
@@ -177,7 +224,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when the session and the request have a different state', () => {
 			it('should return 401 Unauthorized', async () => {
 				const { system } = await setup();
-				const { cookies } = await setupSessionState(system.id);
+				const { cookies } = await setupSessionState(system.id, false);
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = 'wrongState';
@@ -189,7 +236,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
 				const { system, externalUserId } = await setup();
-				const { state, cookies } = await setupSessionState(system.id);
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
@@ -231,7 +278,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when an error occurs during the login process', () => {
 			it('should redirect to the login page', async () => {
 				const { system } = await setup();
-				const { state, cookies } = await setupSessionState(system.id);
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.error = SSOAuthenticationError.ACCESS_DENIED;
@@ -249,7 +296,7 @@ describe('OAuth SSO Controller (API)', () => {
 		describe('when a faulty query is passed', () => {
 			it('should redirect to the login page with an error', async () => {
 				const { system } = await setup();
-				const { state, cookies } = await setupSessionState(system.id);
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.state = state;
@@ -275,11 +322,12 @@ describe('OAuth SSO Controller (API)', () => {
 				await request(app.getHttpServer()).get(`/sso/oauth/migration`).query(query).expect(401);
 			});
 		});
+
 		describe('when the migration is successful', () => {
 			it('should redirect to the success page', async () => {
 				const { user, system, externalUserId } = await setup();
-				currentUser = mapUserToCurrentUser(user);
-				const { state, cookies } = await setupSessionState(system.id);
+				currentUser = mapUserToCurrentUser(user, undefined, system.id);
+				const { state, cookies } = await setupSessionState(system.id, true);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
@@ -315,13 +363,27 @@ describe('OAuth SSO Controller (API)', () => {
 			});
 		});
 
-		describe('when a faulty query is passed', () => {
-			it('should redirect to the login page with an error', async () => {
-				const { user, system } = await setup();
-				currentUser = mapUserToCurrentUser(user);
-				const { state, cookies } = await setupSessionState(system.id);
-				const clientUrl: string = Configuration.get('HOST') as string;
+		describe('when invalid request', () => {
+			it('should throw UnprocessableEntityException', async () => {
+				const { targetSystem, sourceUser, sourceSystem } = await setup();
+				currentUser = mapUserToCurrentUser(sourceUser, undefined, undefined);
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				const query: AuthorizationParams = new AuthorizationParams();
+				query.error = SSOAuthenticationError.INVALID_REQUEST;
+				query.state = state;
+
+				await request(app.getHttpServer()).get(`/sso/oauth/migration`).set('Cookie', cookies).query(query).expect(422);
+			});
+		});
+
+		describe('when invalid request', () => {
+			it('should redirect to the general migration error page', async () => {
+				const { targetSystem, sourceUser, sourceSystem } = await setup();
+				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const baseUrl: string = Configuration.get('HOST') as string;
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.error = SSOAuthenticationError.INVALID_REQUEST;
 				query.state = state;
 
 				await request(app.getHttpServer())
@@ -331,7 +393,80 @@ describe('OAuth SSO Controller (API)', () => {
 					.expect(302)
 					.expect(
 						'Location',
-						`${clientUrl}/migration/error?errorcode=OauthMigrationFailed&sourceSystem=undefined&targetSystem=undefined&sourceSchoolNumber=undefined&targetSchoolNumber=undefined`
+						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}`
+					);
+			});
+		});
+
+		describe('when schoolnumbers mismatch', () => {
+			it('should redirect to the login page with an schoolnumber mismatch error', async () => {
+				const { targetSystem, sourceUser, targetUser, sourceSystem } = await setup();
+				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				const baseUrl: string = Configuration.get('HOST') as string;
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'code';
+				query.state = state;
+				jest.setTimeout(999999);
+
+				const idToken: string = jwt.sign(
+					{
+						sub: 'differentExternalUserId',
+						iss: targetSystem.oauthConfig?.issuer,
+						aud: targetSystem.oauthConfig?.clientId,
+						iat: Date.now(),
+						exp: Date.now() + 100000,
+						external_sub: 'differentExternalUserId',
+					},
+					privateKey,
+					{
+						algorithm: 'RS256',
+					}
+				);
+
+				axiosMock
+					.onPost(targetSystem.oauthConfig?.tokenEndpoint)
+					.replyOnce<OauthTokenResponse>(200, {
+						id_token: idToken,
+						refresh_token: 'refreshToken',
+						access_token: 'accessToken',
+					})
+					.onGet(targetSystem.provisioningUrl)
+					.replyOnce<SanisResponse>(200, {
+						pid: targetUser.id,
+						person: {
+							name: {
+								familienname: 'familienName',
+								vorname: 'vorname',
+							},
+							geschlecht: 'weiblich',
+							lokalisierung: 'not necessary',
+							vertrauensstufe: 'not necessary',
+						},
+						personenkontexte: [
+							{
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								rolle: SanisRole.LEHR,
+								organisation: {
+									id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+									kennung: 'NI_22222',
+									name: 'schulName',
+									typ: 'not necessary',
+								},
+								personenstatus: 'not necessary',
+								email: 'email',
+							},
+						],
+					});
+
+				await request(app.getHttpServer())
+					.get(`/sso/oauth/migration`)
+					.set('Cookie', cookies)
+					.query(query)
+					.expect(302)
+					.expect(
+						'Location',
+						`${baseUrl}/migration/error?sourceSystem=${sourceSystem.id}&targetSystem=${targetSystem.id}&sourceSchoolNumber=11111&targetSchoolNumber=22222`
 					);
 			});
 		});

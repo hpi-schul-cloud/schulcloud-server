@@ -9,6 +9,7 @@ import {
 	Res,
 	Session,
 	UnauthorizedException,
+	UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
@@ -18,6 +19,8 @@ import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/deco
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { CookieOptions, Request, Response } from 'express';
+import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
 import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
@@ -27,8 +30,6 @@ import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
-import { UserMigrationResponse } from './dto/user-migration.response';
-import { OAuthMigrationError } from '../../user-login-migration/error/oauth-migration.error';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -58,7 +59,13 @@ export class OauthSSOController {
 		res.redirect(errorRedirect.toString());
 	}
 
-	private migrationErrorHandler(error: unknown, session: ISession, res: Response) {
+	private migrationErrorHandler(
+		error: unknown,
+		session: ISession,
+		res: Response,
+		sourceSystemId: string,
+		targetSystemId: string
+	) {
 		this.logger.error(error);
 		const migrationError: OAuthMigrationError =
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
@@ -68,11 +75,14 @@ export class OauthSSOController {
 		});
 
 		const errorRedirect: URL = new URL('/migration/error', this.clientUrl);
-		errorRedirect.searchParams.append('errorcode', migrationError.errorcode);
-		errorRedirect.searchParams.append('sourceSystem', <string>migrationError.sourceSystemId);
-		errorRedirect.searchParams.append('targetSystem', <string>migrationError.targetSystemId);
-		errorRedirect.searchParams.append('sourceSchoolNumber', <string>migrationError.officialSchoolNumberFromSource);
-		errorRedirect.searchParams.append('targetSchoolNumber', <string>migrationError.officialSchoolNumberFromTarget);
+
+		errorRedirect.searchParams.append('sourceSystem', sourceSystemId);
+		errorRedirect.searchParams.append('targetSystem', targetSystemId);
+
+		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
+			errorRedirect.searchParams.append('sourceSchoolNumber', migrationError.officialSchoolNumberFromSource);
+			errorRedirect.searchParams.append('targetSchoolNumber', migrationError.officialSchoolNumberFromTarget);
+		}
 
 		res.redirect(errorRedirect.toString());
 	}
@@ -185,12 +195,17 @@ export class OauthSSOController {
 		@Res() res: Response
 	): Promise<void> {
 		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
+
+		if (!currentUser.systemId) {
+			throw new UnprocessableEntityException('Current user does not have a system.');
+		}
+
 		try {
 			const migration: MigrationDto = await this.oauthUc.migrate(jwt, currentUser.userId, query, oauthLoginState);
 			const response: UserMigrationResponse = UserMigrationMapper.mapDtoToResponse(migration);
 			res.redirect(response.redirect);
 		} catch (error) {
-			this.migrationErrorHandler(error, session, res);
+			this.migrationErrorHandler(error, session, res, currentUser.systemId, oauthLoginState.systemId);
 		}
 	}
 }

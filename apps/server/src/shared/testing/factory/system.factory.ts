@@ -59,6 +59,6 @@ export const systemFactory = SystemFactory.define(System, ({ sequence }) => {
 		alias: `system #${sequence}`,
 		displayName: `system #${sequence}DisplayName`,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,
-		provisioningUrl: 'provisioningUrl',
+		provisioningUrl: 'https://provisioningurl.de',
 	};
 });

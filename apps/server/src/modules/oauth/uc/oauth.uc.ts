@@ -125,8 +125,7 @@ export class OauthUc {
 			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
 				currentUserId,
 				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber,
-				systemId
+				data.externalSchool.officialSchoolNumber
 			);
 			if (schoolToMigrate) {
 				await this.schoolMigrationService.migrateSchool(data.externalSchool.externalId, schoolToMigrate, systemId);
