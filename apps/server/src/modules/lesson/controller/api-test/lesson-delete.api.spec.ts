@@ -11,6 +11,7 @@ import {
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ServerTestModule } from '@src/modules/server';
+import { ObjectId } from 'bson';
 
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;
@@ -63,18 +64,32 @@ describe('Lesson Controller (API) - delete', () => {
 
 		describe('when invalid params are passed', () => {
 			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persistAndFlush([teacherAccount, teacherUser]);
 				em.clear();
 
-				return { studentAccount };
+				return { account: teacherAccount };
 			};
 
-			it('it should response with api validation error', async () => {
-				const { studentAccount } = await setup();
+			it('it should response with route not found', async () => {
+				const { account } = await setup();
 
-				const response = await request.delete(undefined, studentAccount);
+				const response = await request.delete('', account);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+				expect(response.body).toEqual({
+					type: 'NOT_FOUND',
+					title: 'Not Found',
+					message: 'Cannot DELETE /lessons/', // postman say "Cannot DELETE /api/v3/lessons/" differents result from bootstrap process, but important to note and maybe fix later for all requests
+					code: 404,
+				});
+			});
+
+			it('it should response with api validation error', async () => {
+				const { account } = await setup();
+
+				const response = await request.delete('123', account);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -83,6 +98,21 @@ describe('Lesson Controller (API) - delete', () => {
 					message: 'API validation failed, see validationErrors for details',
 					code: 400,
 					validationErrors: [{ field: ['lessonId'], errors: ['lessonId must be a mongodb id'] }],
+				});
+			});
+
+			it('it should response with entity not found', async () => {
+				const { account } = await setup();
+				const notExistingId = new ObjectId().toHexString();
+
+				const response = await request.delete(notExistingId, account);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+				expect(response.body).toEqual({
+					type: 'NOT_FOUND',
+					title: 'Not Found',
+					message: `The requested Lesson: ${notExistingId} has not been found.`,
+					code: 404,
 				});
 			});
 		});
