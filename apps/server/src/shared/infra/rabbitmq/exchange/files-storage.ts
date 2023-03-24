@@ -50,7 +50,7 @@ export interface IFileDO {
 	securityCheckStatus: ScanStatus;
 	size: number;
 	creatorId: string;
-	type: string;
+	mimeType: string;
 	parentType: FileRecordParentType;
 	deletedSince?: Date;
 }

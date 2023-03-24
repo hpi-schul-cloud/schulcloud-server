@@ -193,7 +193,7 @@ describe('files-storage controller (API)', () => {
 						name: 'test.txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
-						type: 'text/plain',
+						mimeType: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 						size: expect.any(Number),
@@ -297,7 +297,7 @@ describe('files-storage controller (API)', () => {
 						name: 'test (1).txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
-						type: 'text/plain',
+						mimeType: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 					})
