@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, InputFormat, Permission, Task, User } from '@shared/domain';
+import { InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -1420,12 +1420,6 @@ describe('Task Controller (API)', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
-		let teacher: User;
-		let student1: User;
-		let student2: User;
-		let student3: User;
-		let history: Course;
-		let english: Course;
 
 		const createStudent = (id: number) => {
 			const studentRole = roleFactory.build({
@@ -1446,6 +1440,134 @@ describe('Task Controller (API)', () => {
 
 			return student;
 		};
+
+		const createTeacher = (id: number) => {
+			const teacherRole = roleFactory.build({
+				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
+			});
+
+			const student = userFactory.build({
+				firstName: `Teacher ${id}`,
+				roles: [teacherRole],
+			});
+
+			return student;
+		};
+
+		const setup = () => {
+			const teachers = [1, 2].map(createTeacher);
+			const [teacher1, teacher2] = teachers;
+			const students = [1, 2, 3, 4].map(createStudent);
+			const [student1, student2, student3, student4] = students;
+			const englishCourse = courseFactory.build({
+				name: 'english',
+				teachers,
+				students: [student1, student2, student3],
+			});
+			const grammerLesson = lessonFactory.build({
+				name: 'grammer',
+				course: englishCourse,
+			});
+			const historyCourse = courseFactory.build({
+				name: 'history',
+				teachers: [teacher1],
+				students: [student1, student2, student3],
+			});
+			const mathsCourse = courseFactory.build({
+				name: 'maths',
+				teachers: [teacher2],
+				students: [student1, student2],
+			});
+			const algebraLesson = lessonFactory.build({
+				name: 'maths',
+				course: mathsCourse,
+			});
+
+			// create tasks
+			const englishTask1 = taskFactory.build({
+				name: 'Write an essay',
+				course: englishCourse,
+				users: [student1, student2],
+				creator: teacher1,
+			});
+			const englishTask2 = taskFactory.build({
+				name: 'grammer1',
+				creator: teacher1,
+				lesson: grammerLesson,
+				users: [student1],
+			});
+			const englishTask3 = taskFactory.build({
+				name: 'grammer2',
+				creator: teacher1,
+				lesson: grammerLesson,
+				users: [],
+			});
+			const englishTask4 = taskFactory.build({
+				name: 'grammer3',
+				creator: teacher1,
+				lesson: grammerLesson,
+			});
+
+			const historyTask1 = taskFactory.build({
+				name: 'cause of ww2',
+				course: historyCourse,
+				users: [student1, student2],
+			});
+
+			const historyTask2 = taskFactory.build({
+				name: 'fall of Rome',
+				course: historyCourse,
+				users: [student2, student3],
+			});
+
+			const historyTask3 = taskFactory.build({
+				name: 'DDR culture',
+				course: historyCourse,
+			});
+
+			const mathsTask1 = taskFactory.build({
+				name: 'textbook page 12',
+				course: mathsCourse,
+				users: [student2],
+			});
+
+			const mathsTask2 = taskFactory.build({
+				name: 'all primes under million',
+				course: mathsCourse,
+				users: [student3],
+			});
+
+			const mathsTask3 = taskFactory.build({
+				name: 'algebra 1',
+				lesson: algebraLesson,
+				users: [student2],
+			});
+
+			return {
+				teacher1,
+				teacher2,
+				student1,
+				student2,
+				student3,
+				student4,
+				englishCourse,
+				grammerLesson,
+				historyCourse,
+				mathsCourse,
+				algebraLesson,
+				englishTask1,
+				englishTask2,
+				englishTask3,
+				englishTask4,
+				historyTask1,
+				historyTask2,
+				historyTask3,
+				mathsTask1,
+				mathsTask2,
+				mathsTask3,
+			};
+		};
+
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
 				imports: [ServerTestModule],
@@ -1459,84 +1581,32 @@ describe('Task Controller (API)', () => {
 					},
 				})
 				.compile();
-			em = module.get(EntityManager);
-
-			// create teacher
-			teacher = userFactory.build({});
-			// create student1, student2, student3
-			student1 = createStudent(1);
-			student2 = createStudent(2);
-			student3 = createStudent(3);
-			// create course history: [student1, student2, student3]
-			history = courseFactory.build({
-				name: 'history',
-				students: [student1, student2, student3],
-			});
-			// create course english: [student1]
-			english = courseFactory.build({
-				name: 'english',
-				students: [student1, student2],
-			});
-			// add task: "write an essay" to english course, users: [student1]
-			const taskEnglish1 = taskFactory.build({
-				course: english,
-				name: 'write an essay',
-				users: [student1],
-			});
-			// add task: "grammer 1" to english course, users: []
-			const taskEnglish2 = taskFactory.build({
-				course: english,
-				name: 'grammer 1',
-				users: [],
-			});
-			// add task: "cause of WW2" to history course, users: [student1, student2]
-			const taskHistory1 = taskFactory.build({
-				course: history,
-				name: 'cause of WW2',
-				users: [student1, student2],
-			});
-			// add task: "fall of Rome" to history course, users: [student1]
-			const taskHistory2 = taskFactory.build({
-				course: history,
-				name: 'fall of Rome',
-				users: [student1],
-			});
-			// add task: "DDR culture" to history course, users: undefined
-			const taskHistory3 = taskFactory.build({
-				course: history,
-				name: 'DDR culture',
-				// users: undefined,
-			});
-
-			console.log('ddr task', JSON.parse(JSON.stringify(taskHistory3.users)));
-
-			await em.persistAndFlush([
-				teacher,
-				student1,
-				student2,
-				student3,
-				history,
-				english,
-				taskEnglish1,
-				taskEnglish2,
-				taskHistory1,
-				taskHistory2,
-				taskHistory3,
-			]);
-			em.clear();
 
 			app = module.createNestApplication();
 			await app.init();
+			em = module.get(EntityManager);
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
 		});
 
 		it('students 1 gets their tasks', async () => {
-			currentUser = mapUserToCurrentUser(student1);
+			const entities = setup();
 
+			await em.persistAndFlush(Object.values(entities));
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(entities.student1);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
-			console.log('response', response.body, response.statusCode);
 			expect(response.status).toBe(200);
-			expect(total).toBe(4);
+			expect(total).toBe(5);
 		});
 
 		it('students 2 gets their tasks', async () => {
