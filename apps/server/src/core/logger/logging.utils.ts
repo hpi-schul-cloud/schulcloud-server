@@ -14,4 +14,8 @@ export class LoggingUtils {
 		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
 		return stringifiedMessage;
 	}
+
+	static isInstanceOfLoggable(object: any): object is Loggable {
+		return 'getLogMessage' in object;
+	}
 }
