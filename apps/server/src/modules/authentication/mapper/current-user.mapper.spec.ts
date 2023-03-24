@@ -121,11 +121,37 @@ describe('CurrentUserMapper', () => {
 	});
 
 	describe('jwtToICurrentUser', () => {
-		describe('when JWT is provided', () => {
+		describe('when JWT is provided with all claims', () => {
 			it('should return current user', () => {
 				const jwtPayload: JwtPayload = {
 					accountId: 'dummyAccountId',
 					systemId: 'dummySystemId',
+					roles: ['mockRoleId'],
+					schoolId: 'dummySchoolId',
+					userId: 'dummyUserId',
+					support: true,
+					sub: 'dummyAccountId',
+					jti: 'random string',
+					aud: 'some audience',
+					iss: 'feathers',
+					iat: Math.floor(new Date().getTime() / 1000),
+					exp: Math.floor(new Date().getTime() / 1000) + 3600,
+				};
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				expect(currentUser).toMatchObject({
+					accountId: jwtPayload.accountId,
+					systemId: jwtPayload.systemId,
+					roles: [jwtPayload.roles[0]],
+					schoolId: jwtPayload.schoolId,
+					userId: jwtPayload.userId,
+					impersonated: jwtPayload.support,
+				});
+			});
+		});
+		describe('when JWT is provided without optional claims', () => {
+			it('should return current user', () => {
+				const jwtPayload: JwtPayload = {
+					accountId: 'dummyAccountId',
 					roles: ['mockRoleId'],
 					schoolId: 'dummySchoolId',
 					userId: 'dummyUserId',
@@ -139,7 +165,6 @@ describe('CurrentUserMapper', () => {
 				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
 				expect(currentUser).toMatchObject({
 					accountId: jwtPayload.accountId,
-					systemId: jwtPayload.systemId,
 					roles: [jwtPayload.roles[0]],
 					schoolId: jwtPayload.schoolId,
 					userId: jwtPayload.userId,

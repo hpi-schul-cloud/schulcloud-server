@@ -37,6 +37,7 @@ export class CurrentUserMapper {
 			roles: jwtPayload.roles,
 			schoolId: jwtPayload.schoolId,
 			userId: jwtPayload.userId,
+			impersonated: jwtPayload.support,
 		};
 	}
 }

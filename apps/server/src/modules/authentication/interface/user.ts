@@ -36,5 +36,5 @@ export interface ICurrentUser {
 	systemId?: string;
 
 	/** True if a support member impersonates the user */
-	impersonated?: true;
+	impersonated?: boolean;
 }
