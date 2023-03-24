@@ -172,7 +172,7 @@ describe('NewsUc', () => {
 
 	describe('findAllUnpublishedByUser', () => {
 		it('should search for news by empty scope', async () => {
-			const scope = {unpublished: true};
+			const scope = { unpublished: true };
 			const findAllUnpublishedSpy = jest.spyOn(repo, 'findAllUnpublished');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedParams = [targets, userId, pagination];
