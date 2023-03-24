@@ -115,6 +115,10 @@
                                 <a href="#delay" >delay</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#migrate" >migrate</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#repeatCommand" >repeatCommand</a>
@@ -146,7 +150,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -251,7 +255,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -294,8 +298,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:47</a></div>
                 </td>
             </tr>
 
@@ -342,8 +346,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:65</a></div>
                 </td>
             </tr>
 
@@ -422,8 +426,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="109"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:109</a></div>
                 </td>
             </tr>
 
@@ -495,8 +499,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="149"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:149</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="192"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:192</a></div>
                 </td>
             </tr>
 
@@ -548,6 +552,82 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="migrate"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>migrate</b></span>
+                        <a href="#migrate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>migrate(options)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Command({command: &#x27;migrate&#x27;, description: &#x27;Add all database users to the IDM.&#x27;, options: undefined})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:150</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>For migration purpose. Moves all database accounts to the IDM</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>options</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="repeatCommand"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -567,8 +647,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="163"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:163</a></div>
                 </td>
             </tr>
 
@@ -593,6 +673,7 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -606,6 +687,8 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -618,6 +701,8 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -630,6 +715,9 @@
                                         No
                                     </td>
 
+                                    <td>
+                                        <code>1</code>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -642,6 +730,9 @@
                                         No
                                     </td>
 
+                                    <td>
+                                        <code>10</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -689,8 +780,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="81"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:81</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:87</a></div>
                 </td>
             </tr>
 
@@ -758,8 +849,14 @@ import { KeycloakConfigurationUc } from &#x27;../uc/keycloak-configuration.uc&#x
 const defaultError &#x3D; new Error(&#x27;IDM is not reachable or authentication failed.&#x27;);
 
 interface IRetryOptions {
-	retryCount: number;
-	retryDelay: number;
+	retryCount?: number;
+	retryDelay?: number;
+}
+
+interface IMigrationOptions {
+	skip?: number;
+	query?: string;
+	verbose?: boolean;
 }
 @Console({ command: &#x27;idm&#x27;, description: &#x27;Prefixes all Identity Management (IDM) related console commands.&#x27; })
 export class KeycloakConsole {
@@ -864,12 +961,49 @@ export class KeycloakConsole {
 		);
 	}
 
-	private async repeatCommand&lt;T&gt;(
-		commandName: string,
-		command: () &#x3D;&gt; Promise&lt;T&gt;,
-		count: number,
-		delay: number
-	): Promise&lt;T&gt; {
+	/**
+	 * For migration purpose. Moves all database accounts to the IDM
+	 * @param options
+	 */
+	@Command({
+		command: &#x27;migrate&#x27;,
+		description: &#x27;Add all database users to the IDM.&#x27;,
+		options: [
+			...KeycloakConsole.retryFlags,
+			{
+				flags: &#x27;-q, --query&#x27;,
+				description: &#x27;Limit migration to accounts with username partially matching the query string.&#x27;,
+				required: false,
+				defaultValue: undefined,
+			},
+			{
+				flags: &#x27;-s, --skip&#x27;,
+				description: &#x27;Skip the first &quot;s&quot; accounts during migration. Default 0.&#x27;,
+				required: false,
+				defaultValue: undefined,
+			},
+			{
+				flags: &#x27;-v, --verbose&#x27;,
+				description: &#x27;Log all events. Default is false.&#x27;,
+				required: false,
+				defaultValue: false,
+			},
+		],
+	})
+	async migrate(options: IRetryOptions &amp; IMigrationOptions): Promise&lt;void&gt; {
+		await this.repeatCommand(
+			&#x27;migrate&#x27;,
+			async () &#x3D;&gt; {
+				const count &#x3D; await this.keycloakConfigurationUc.migrate(options.skip, options.query, options.verbose);
+				this.console.info(&#x60;Migrated ${count} users into IDM&#x60;);
+				return count;
+			},
+			options.retryCount,
+			options.retryDelay
+		);
+	}
+
+	private async repeatCommand&lt;T&gt;(commandName: string, command: () &#x3D;&gt; Promise&lt;T&gt;, count &#x3D; 1, delay &#x3D; 10): Promise&lt;T&gt; {
 		let repetitions &#x3D; 0;
 		let error &#x3D; new Error(&#x27;error could be thrown if count is &lt; 1&#x27;);
 		while (repetitions &lt; count) {

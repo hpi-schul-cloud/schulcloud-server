@@ -844,13 +844,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/KeycloakConfigurationModule.html" data-type="entity-link" >KeycloakConfigurationModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                            'data-target="#controllers-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' : 'data-target="#xs-controllers-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' }>
+                                            'data-target="#controllers-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' : 'data-target="#xs-controllers-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' :
-                                            'id="xs-controllers-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' :
+                                            'id="xs-controllers-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' }>
                                             <li class="link">
                                                 <a href="controllers/KeycloakManagementController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >KeycloakManagementController</a>
                                             </li>
@@ -858,18 +858,21 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' : 'data-target="#xs-injectables-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' }>
+                                        'data-target="#injectables-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' : 'data-target="#xs-injectables-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' :
-                                        'id="xs-injectables-links-module-KeycloakConfigurationModule-f0124bc280727ce96ba453789c7f4218dd7f0c97605308bd4b437c265159e0a6a5e822348c55743fcc90e1d7478b6d45d06c84dec92527ed5ea93fda24309102"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' :
+                                        'id="xs-injectables-links-module-KeycloakConfigurationModule-0a2df241095e2efb91150797a28737bd8b5e924ddad81210888373364bf946ff47e359ea7a1ee5a70f035143336a3c8b4838d8d63a150b171342d2bec8f6d223"' }>
                                         <li class="link">
                                             <a href="injectables/KeycloakConfigurationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >KeycloakConfigurationService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/KeycloakConfigurationUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >KeycloakConfigurationUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/KeycloakMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >KeycloakMigrationService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -4093,6 +4096,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IMaterialProperties.html" data-type="entity-link" >IMaterialProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IMigrationOptions.html" data-type="entity-link" >IMigrationOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/INameMatch.html" data-type="entity-link" >INameMatch</a>

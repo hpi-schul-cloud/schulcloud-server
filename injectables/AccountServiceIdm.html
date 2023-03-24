@@ -85,6 +85,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createAccount" >createAccount</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
@@ -128,6 +133,11 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#searchByUsernamePartialMatch" >searchByUsernamePartialMatch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateAccount" >updateAccount</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -215,6 +225,90 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createAccount"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createAccount</b></span>
+                        <a href="#createAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAccount(idmAccount: <a href="../classes/Account.html" target="_self">IAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:99</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>idmAccount</td>
+                                    <td>
+                                                <code><a href="../classes/Account.html" target="_self" >IAccountUpdate</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>password</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="delete"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -239,7 +333,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:99</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:118</a></code>
 </div>
                 </td>
             </tr>
@@ -316,7 +410,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:104</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:123</a></code>
 </div>
                 </td>
             </tr>
@@ -785,8 +879,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="128"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:128</a></div>
                 </td>
             </tr>
 
@@ -1093,6 +1187,102 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateAccount"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>updateAccount</b></span>
+                        <a href="#updateAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateAccount(idmAccountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, idmAccount: <a href="../classes/Account.html" target="_self">IAccountUpdate</a>, password?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:91</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>idmAccountId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>idmAccount</td>
+                                    <td>
+                                                <code><a href="../classes/Account.html" target="_self" >IAccountUpdate</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>password</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateLastTriedFailedLogin"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -1206,7 +1396,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:92</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:111</a></code>
 </div>
                 </td>
             </tr>
@@ -1295,7 +1485,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:85</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:104</a></code>
 </div>
                 </td>
             </tr>
@@ -1510,17 +1700,36 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
-			const id &#x3D; await this.getIdmAccountId(accountDto.id);
-			accountId &#x3D; await this.identityManager.updateAccount(id, idmAccount);
-			if (accountDto.password) {
-				await this.identityManager.updateAccountPassword(id, accountDto.password);
+			let idmId: string | undefined;
+			try {
+				idmId &#x3D; await this.getIdmAccountId(accountDto.id);
+			} catch {
+				idmId &#x3D; undefined;
+			}
+			if (idmId) {
+				accountId &#x3D; await this.updateAccount(idmId, idmAccount, accountDto.password);
+			} else {
+				accountId &#x3D; await this.createAccount(idmAccount, accountDto.password);
 			}
 		} else {
-			accountId &#x3D; await this.identityManager.createAccount(idmAccount, accountDto.password);
+			accountId &#x3D; await this.createAccount(idmAccount, accountDto.password);
 		}
 
 		const updatedAccount &#x3D; await this.identityManager.findAccountById(accountId);
 		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+	}
+
+	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise&lt;string&gt; {
+		const updatedAccountId &#x3D; await this.identityManager.updateAccount(idmAccountId, idmAccount);
+		if (password) {
+			await this.identityManager.updateAccountPassword(idmAccountId, password);
+		}
+		return updatedAccountId;
+	}
+
+	private async createAccount(idmAccount: IAccountUpdate, password?: string): Promise&lt;string&gt; {
+		const accountId &#x3D; await this.identityManager.createAccount(idmAccount, password);
+		return accountId;
 	}
 
 	async updateUsername(accountRefId: EntityId, username: string): Promise&lt;AccountDto&gt; {

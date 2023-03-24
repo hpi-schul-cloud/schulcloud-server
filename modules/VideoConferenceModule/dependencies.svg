@@ -14,187 +14,187 @@
 <title>cluster_VideoConferenceModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-157.8 2227,-157.8 2227,-32.8 8,-32.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_VideoConferenceModule_providers</title>
-<polygon fill="none" stroke="black" points="540,-40.8 540,-92.8 2219,-92.8 2219,-40.8 540,-40.8"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_VideoConferenceModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 532,-92.8 532,-40.8 16,-40.8"/>
+<polygon fill="none" stroke="black" points="1703,-40.8 1703,-92.8 2219,-92.8 2219,-40.8 1703,-40.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_VideoConferenceModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 1695,-92.8 1695,-40.8 16,-40.8"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="523.81,-84.8 520.81,-88.8 499.81,-88.8 496.81,-84.8 386.19,-84.8 386.19,-48.8 523.81,-48.8 523.81,-84.8"/>
-<text text-anchor="middle" x="455" y="-62.6" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2210.81,-84.8 2207.81,-88.8 2186.81,-88.8 2183.81,-84.8 2073.19,-84.8 2073.19,-48.8 2210.81,-48.8 2210.81,-84.8"/>
+<text text-anchor="middle" x="2142" y="-62.6" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- VideoConferenceModule -->
 <g id="node5" class="node">
 <title>VideoConferenceModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1319.28,-149.8 1316.28,-153.8 1295.28,-153.8 1292.28,-149.8 1160.72,-149.8 1160.72,-113.8 1319.28,-113.8 1319.28,-149.8"/>
-<text text-anchor="middle" x="1240" y="-127.6" font-family="Times,serif" font-size="14.00">VideoConferenceModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1356.28,-149.8 1353.28,-153.8 1332.28,-153.8 1329.28,-149.8 1197.72,-149.8 1197.72,-113.8 1356.28,-113.8 1356.28,-149.8"/>
+<text text-anchor="middle" x="1277" y="-127.6" font-family="Times,serif" font-size="14.00">VideoConferenceModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;VideoConferenceModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M455,-85.02C455,-103.63 455,-129.8 455,-129.8 455,-129.8 1150.77,-129.8 1150.77,-129.8"/>
-<polygon fill="black" stroke="black" points="1150.77,-133.3 1160.77,-129.8 1150.77,-126.3 1150.77,-133.3"/>
+<path fill="none" stroke="black" d="M2142,-84.89C2142,-107.93 2142,-144.8 2142,-144.8 2142,-144.8 1366.44,-144.8 1366.44,-144.8"/>
+<polygon fill="black" stroke="black" points="1366.44,-141.3 1356.44,-144.8 1366.44,-148.3 1366.44,-141.3"/>
 </g>
 <!-- CalendarModule -->
 <g id="node2" class="node">
 <title>CalendarModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="368.08,-84.8 365.08,-88.8 344.08,-88.8 341.08,-84.8 257.92,-84.8 257.92,-48.8 368.08,-48.8 368.08,-84.8"/>
-<text text-anchor="middle" x="313" y="-62.6" font-family="Times,serif" font-size="14.00">CalendarModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2055.08,-84.8 2052.08,-88.8 2031.08,-88.8 2028.08,-84.8 1944.92,-84.8 1944.92,-48.8 2055.08,-48.8 2055.08,-84.8"/>
+<text text-anchor="middle" x="2000" y="-62.6" font-family="Times,serif" font-size="14.00">CalendarModule</text>
 </g>
 <!-- CalendarModule&#45;&gt;VideoConferenceModule -->
 <g id="edge2" class="edge">
 <title>CalendarModule&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M313,-85.02C313,-105.17 313,-134.8 313,-134.8 313,-134.8 1150.56,-134.8 1150.56,-134.8"/>
-<polygon fill="black" stroke="black" points="1150.56,-138.3 1160.56,-134.8 1150.56,-131.3 1150.56,-138.3"/>
+<path fill="none" stroke="black" d="M2000,-84.84C2000,-106.46 2000,-139.8 2000,-139.8 2000,-139.8 1366.44,-139.8 1366.44,-139.8"/>
+<polygon fill="black" stroke="black" points="1366.44,-136.3 1356.44,-139.8 1366.44,-143.3 1366.44,-136.3"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="239.98,-84.8 236.98,-88.8 215.98,-88.8 212.98,-84.8 140.02,-84.8 140.02,-48.8 239.98,-48.8 239.98,-84.8"/>
-<text text-anchor="middle" x="190" y="-62.6" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1926.98,-84.8 1923.98,-88.8 1902.98,-88.8 1899.98,-84.8 1827.02,-84.8 1827.02,-48.8 1926.98,-48.8 1926.98,-84.8"/>
+<text text-anchor="middle" x="1877" y="-62.6" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;VideoConferenceModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M190,-84.84C190,-106.46 190,-139.8 190,-139.8 190,-139.8 1150.65,-139.8 1150.65,-139.8"/>
-<polygon fill="black" stroke="black" points="1150.65,-143.3 1160.65,-139.8 1150.65,-136.3 1150.65,-143.3"/>
+<path fill="none" stroke="black" d="M1877,-85.02C1877,-105.17 1877,-134.8 1877,-134.8 1877,-134.8 1366.37,-134.8 1366.37,-134.8"/>
+<polygon fill="black" stroke="black" points="1366.37,-131.3 1356.37,-134.8 1366.37,-138.3 1366.37,-131.3"/>
 </g>
 <!-- SchoolModule -->
 <g id="node4" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="122.44,-84.8 119.44,-88.8 98.44,-88.8 95.44,-84.8 23.56,-84.8 23.56,-48.8 122.44,-48.8 122.44,-84.8"/>
-<text text-anchor="middle" x="73" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1809.44,-84.8 1806.44,-88.8 1785.44,-88.8 1782.44,-84.8 1710.56,-84.8 1710.56,-48.8 1809.44,-48.8 1809.44,-84.8"/>
+<text text-anchor="middle" x="1760" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;VideoConferenceModule -->
 <g id="edge4" class="edge">
 <title>SchoolModule&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M73,-84.89C73,-107.93 73,-144.8 73,-144.8 73,-144.8 1150.7,-144.8 1150.7,-144.8"/>
-<polygon fill="black" stroke="black" points="1150.7,-148.3 1160.7,-144.8 1150.7,-141.3 1150.7,-148.3"/>
+<path fill="none" stroke="black" d="M1760,-85.02C1760,-103.63 1760,-129.8 1760,-129.8 1760,-129.8 1366.22,-129.8 1366.22,-129.8"/>
+<polygon fill="black" stroke="black" points="1366.22,-126.3 1356.22,-129.8 1366.22,-133.3 1366.22,-126.3"/>
 </g>
 <!-- BBBService -->
 <g id="node6" class="node">
 <title>BBBService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2152" cy="-66.8" rx="59.13" ry="18"/>
-<text text-anchor="middle" x="2152" y="-62.6" font-family="Times,serif" font-size="14.00">BBBService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1628" cy="-66.8" rx="59.13" ry="18"/>
+<text text-anchor="middle" x="1628" y="-62.6" font-family="Times,serif" font-size="14.00">BBBService</text>
 </g>
 <!-- BBBService&#45;&gt;VideoConferenceModule -->
 <g id="edge5" class="edge">
 <title>BBBService&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M2152,-84.89C2152,-107.93 2152,-144.8 2152,-144.8 2152,-144.8 1329.34,-144.8 1329.34,-144.8"/>
-<polygon fill="black" stroke="black" points="1329.34,-141.3 1319.34,-144.8 1329.34,-148.3 1329.34,-141.3"/>
+<path fill="none" stroke="black" d="M1628,-84.83C1628,-101.86 1628,-124.8 1628,-124.8 1628,-124.8 1366.21,-124.8 1366.21,-124.8"/>
+<polygon fill="black" stroke="black" points="1366.21,-121.3 1356.21,-124.8 1366.21,-128.3 1366.21,-121.3"/>
 </g>
 <!-- ConverterUtil -->
 <g id="node7" class="node">
 <title>ConverterUtil</title>
-<ellipse fill="#fdb462" stroke="black" cx="2010" cy="-66.8" rx="64.85" ry="18"/>
-<text text-anchor="middle" x="2010" y="-62.6" font-family="Times,serif" font-size="14.00">ConverterUtil</text>
+<ellipse fill="#fdb462" stroke="black" cx="1486" cy="-66.8" rx="64.85" ry="18"/>
+<text text-anchor="middle" x="1486" y="-62.6" font-family="Times,serif" font-size="14.00">ConverterUtil</text>
 </g>
 <!-- ConverterUtil&#45;&gt;VideoConferenceModule -->
 <g id="edge6" class="edge">
 <title>ConverterUtil&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M2010,-84.84C2010,-106.46 2010,-139.8 2010,-139.8 2010,-139.8 1329.14,-139.8 1329.14,-139.8"/>
-<polygon fill="black" stroke="black" points="1329.14,-136.3 1319.14,-139.8 1329.14,-143.3 1329.14,-136.3"/>
+<path fill="none" stroke="black" d="M1486,-85.04C1486,-100.37 1486,-119.8 1486,-119.8 1486,-119.8 1366.31,-119.8 1366.31,-119.8"/>
+<polygon fill="black" stroke="black" points="1366.31,-116.3 1356.31,-119.8 1366.31,-123.3 1366.31,-116.3"/>
 </g>
 <!-- CourseRepo -->
 <g id="node8" class="node">
 <title>CourseRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1869" cy="-66.8" rx="58.56" ry="18"/>
-<text text-anchor="middle" x="1869" y="-62.6" font-family="Times,serif" font-size="14.00">CourseRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1345" cy="-66.8" rx="58.56" ry="18"/>
+<text text-anchor="middle" x="1345" y="-62.6" font-family="Times,serif" font-size="14.00">CourseRepo</text>
 </g>
 <!-- CourseRepo&#45;&gt;VideoConferenceModule -->
 <g id="edge7" class="edge">
 <title>CourseRepo&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1869,-85.02C1869,-105.17 1869,-134.8 1869,-134.8 1869,-134.8 1329.34,-134.8 1329.34,-134.8"/>
-<polygon fill="black" stroke="black" points="1329.34,-131.3 1319.34,-134.8 1329.34,-138.3 1329.34,-131.3"/>
+<path fill="none" stroke="black" d="M1321.18,-83.54C1321.18,-83.54 1321.18,-103.52 1321.18,-103.52"/>
+<polygon fill="black" stroke="black" points="1317.68,-103.52 1321.18,-113.52 1324.68,-103.52 1317.68,-103.52"/>
 </g>
 <!-- SchoolRepo -->
 <g id="node9" class="node">
 <title>SchoolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1734" cy="-66.8" rx="58.49" ry="18"/>
-<text text-anchor="middle" x="1734" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="1210" cy="-66.8" rx="58.49" ry="18"/>
+<text text-anchor="middle" x="1210" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
 </g>
 <!-- SchoolRepo&#45;&gt;VideoConferenceModule -->
 <g id="edge8" class="edge">
 <title>SchoolRepo&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1734,-85.02C1734,-103.63 1734,-129.8 1734,-129.8 1734,-129.8 1329.37,-129.8 1329.37,-129.8"/>
-<polygon fill="black" stroke="black" points="1329.37,-126.3 1319.37,-129.8 1329.37,-133.3 1329.37,-126.3"/>
+<path fill="none" stroke="black" d="M1233.05,-83.54C1233.05,-83.54 1233.05,-103.52 1233.05,-103.52"/>
+<polygon fill="black" stroke="black" points="1229.55,-103.52 1233.05,-113.52 1236.55,-103.52 1229.55,-103.52"/>
 </g>
 <!-- SchoolService -->
 <g id="node10" class="node">
 <title>SchoolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1591" cy="-66.8" rx="66.64" ry="18"/>
-<text text-anchor="middle" x="1591" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1067" cy="-66.8" rx="66.64" ry="18"/>
+<text text-anchor="middle" x="1067" y="-62.6" font-family="Times,serif" font-size="14.00">SchoolService</text>
 </g>
 <!-- SchoolService&#45;&gt;VideoConferenceModule -->
 <g id="edge9" class="edge">
 <title>SchoolService&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1591,-84.83C1591,-101.86 1591,-124.8 1591,-124.8 1591,-124.8 1329.21,-124.8 1329.21,-124.8"/>
-<polygon fill="black" stroke="black" points="1329.21,-121.3 1319.21,-124.8 1329.21,-128.3 1329.21,-121.3"/>
+<path fill="none" stroke="black" d="M1067,-85.04C1067,-100.37 1067,-119.8 1067,-119.8 1067,-119.8 1187.61,-119.8 1187.61,-119.8"/>
+<polygon fill="black" stroke="black" points="1187.61,-123.3 1197.61,-119.8 1187.61,-116.3 1187.61,-123.3"/>
 </g>
 <!-- TeamsRepo -->
 <g id="node11" class="node">
 <title>TeamsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1449" cy="-66.8" rx="57.32" ry="18"/>
-<text text-anchor="middle" x="1449" y="-62.6" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="925" cy="-66.8" rx="57.32" ry="18"/>
+<text text-anchor="middle" x="925" y="-62.6" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
 </g>
 <!-- TeamsRepo&#45;&gt;VideoConferenceModule -->
 <g id="edge10" class="edge">
 <title>TeamsRepo&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1449,-85.04C1449,-100.37 1449,-119.8 1449,-119.8 1449,-119.8 1329.31,-119.8 1329.31,-119.8"/>
-<polygon fill="black" stroke="black" points="1329.31,-116.3 1319.31,-119.8 1329.31,-123.3 1329.31,-116.3"/>
+<path fill="none" stroke="black" d="M925,-84.83C925,-101.86 925,-124.8 925,-124.8 925,-124.8 1187.57,-124.8 1187.57,-124.8"/>
+<polygon fill="black" stroke="black" points="1187.57,-128.3 1197.57,-124.8 1187.57,-121.3 1187.57,-128.3"/>
 </g>
 <!-- UserRepo -->
 <g id="node12" class="node">
 <title>UserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1324" cy="-66.8" rx="49.81" ry="18"/>
-<text text-anchor="middle" x="1324" y="-62.6" font-family="Times,serif" font-size="14.00">UserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="800" cy="-66.8" rx="49.81" ry="18"/>
+<text text-anchor="middle" x="800" y="-62.6" font-family="Times,serif" font-size="14.00">UserRepo</text>
 </g>
 <!-- UserRepo&#45;&gt;VideoConferenceModule -->
 <g id="edge11" class="edge">
 <title>UserRepo&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1296.74,-81.88C1296.74,-81.88 1296.74,-103.56 1296.74,-103.56"/>
-<polygon fill="black" stroke="black" points="1293.24,-103.56 1296.74,-113.56 1300.24,-103.56 1293.24,-103.56"/>
+<path fill="none" stroke="black" d="M800,-85.02C800,-103.63 800,-129.8 800,-129.8 800,-129.8 1187.7,-129.8 1187.7,-129.8"/>
+<polygon fill="black" stroke="black" points="1187.7,-133.3 1197.7,-129.8 1187.7,-126.3 1187.7,-133.3"/>
 </g>
 <!-- VideoConferenceRepo -->
 <g id="node13" class="node">
 <title>VideoConferenceRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="1157" cy="-66.8" rx="99.55" ry="18"/>
-<text text-anchor="middle" x="1157" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="633" cy="-66.8" rx="99.55" ry="18"/>
+<text text-anchor="middle" x="633" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceRepo</text>
 </g>
 <!-- VideoConferenceRepo&#45;&gt;VideoConferenceModule -->
 <g id="edge12" class="edge">
 <title>VideoConferenceRepo&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M1208.69,-82.2C1208.69,-82.2 1208.69,-103.74 1208.69,-103.74"/>
-<polygon fill="black" stroke="black" points="1205.19,-103.74 1208.69,-113.74 1212.19,-103.74 1205.19,-103.74"/>
+<path fill="none" stroke="black" d="M633,-85.02C633,-105.17 633,-134.8 633,-134.8 633,-134.8 1187.71,-134.8 1187.71,-134.8"/>
+<polygon fill="black" stroke="black" points="1187.71,-138.3 1197.71,-134.8 1187.71,-131.3 1187.71,-138.3"/>
 </g>
 <!-- VideoConferenceResponseMapper -->
 <g id="node14" class="node">
 <title>VideoConferenceResponseMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="893" cy="-66.8" rx="146.37" ry="18"/>
-<text text-anchor="middle" x="893" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceResponseMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="369" cy="-66.8" rx="146.37" ry="18"/>
+<text text-anchor="middle" x="369" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceResponseMapper</text>
 </g>
 <!-- VideoConferenceResponseMapper&#45;&gt;VideoConferenceModule -->
 <g id="edge13" class="edge">
 <title>VideoConferenceResponseMapper&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M893,-85.04C893,-100.37 893,-119.8 893,-119.8 893,-119.8 1150.83,-119.8 1150.83,-119.8"/>
-<polygon fill="black" stroke="black" points="1150.83,-123.3 1160.83,-119.8 1150.83,-116.3 1150.83,-123.3"/>
+<path fill="none" stroke="black" d="M369,-84.84C369,-106.46 369,-139.8 369,-139.8 369,-139.8 1187.61,-139.8 1187.61,-139.8"/>
+<polygon fill="black" stroke="black" points="1187.61,-143.3 1197.61,-139.8 1187.61,-136.3 1187.61,-143.3"/>
 </g>
 <!-- VideoConferenceUc -->
 <g id="node15" class="node">
 <title>VideoConferenceUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="638" cy="-66.8" rx="90.3" ry="18"/>
-<text text-anchor="middle" x="638" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="114" cy="-66.8" rx="90.3" ry="18"/>
+<text text-anchor="middle" x="114" y="-62.6" font-family="Times,serif" font-size="14.00">VideoConferenceUc</text>
 </g>
 <!-- VideoConferenceUc&#45;&gt;VideoConferenceModule -->
 <g id="edge14" class="edge">
 <title>VideoConferenceUc&#45;&gt;VideoConferenceModule</title>
-<path fill="none" stroke="black" d="M638,-84.83C638,-101.86 638,-124.8 638,-124.8 638,-124.8 1150.68,-124.8 1150.68,-124.8"/>
-<polygon fill="black" stroke="black" points="1150.68,-128.3 1160.68,-124.8 1150.68,-121.3 1150.68,-128.3"/>
+<path fill="none" stroke="black" d="M114,-84.89C114,-107.93 114,-144.8 114,-144.8 114,-144.8 1187.52,-144.8 1187.52,-144.8"/>
+<polygon fill="black" stroke="black" points="1187.52,-148.3 1197.52,-144.8 1187.52,-141.3 1187.52,-148.3"/>
 </g>
 </g>
 </svg>
