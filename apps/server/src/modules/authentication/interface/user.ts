@@ -1,3 +1,5 @@
+import { EntityId } from '@shared/domain';
+
 export interface IRole {
 	name: string;
 
@@ -24,16 +26,16 @@ export interface IResolvedUser {
 
 export interface ICurrentUser {
 	/** authenticated users id */
-	userId: string;
-	/** users role ids as string[] */
-	roles: string[];
-	/** users schoolId as string */
-	schoolId: string;
-	/** account id as string */
-	accountId: string;
+	userId: EntityId;
+	/** users role ids as EntityId[] */
+	roles: EntityId[];
+	/** users schoolId as EntityId */
+	schoolId: EntityId;
+	/** account id as EntityId */
+	accountId: EntityId;
 
 	/** true if user is provided by external system -> no pw change in first login */
-	systemId?: string;
+	systemId?: EntityId;
 
 	/** True if a support member impersonates the user */
 	impersonated?: boolean;

@@ -31,8 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
 			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
 			return currentUser;
-		} catch (err) {
-			throw new UnauthorizedException('Unauthorized.');
+		} catch (err: unknown) {
+			throw new UnauthorizedException('Unauthorized.', { cause: err });
 		}
 	}
 }
