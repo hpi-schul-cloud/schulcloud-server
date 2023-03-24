@@ -40,7 +40,7 @@ export class TestRequest {
 		return uri;
 	}
 
-	private getUri(routeNameInput: string): string {
+	private getUri(routeNameInput = ''): string {
 		const routeName = this.checkAndAddPrefix(routeNameInput);
 		const uri = this.baseRoute + routeName;
 
@@ -98,7 +98,7 @@ export class TestRequest {
 	}
 
 	public async get(
-		routeName: string,
+		routeName?: string,
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
@@ -112,7 +112,7 @@ export class TestRequest {
 	}
 
 	public async delete(
-		routeName: string,
+		routeName?: string,
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
@@ -126,7 +126,7 @@ export class TestRequest {
 	}
 
 	public async update(
-		routeName: string,
+		routeName?: string,
 		data = {},
 		account?: Account,
 		query: string | Record<string, string> = {},
@@ -141,7 +141,7 @@ export class TestRequest {
 	}
 
 	public async post(
-		routeName: string,
+		routeName?: string,
 		data = {},
 		account?: Account,
 		query: string | Record<string, string> = {},

@@ -39,6 +39,7 @@ describe('Lesson Controller (API) - delete', () => {
 		describe('when user not exists', () => {
 			const setup = async () => {
 				const lesson = lessonFactory.build();
+
 				await em.persistAndFlush([lesson]);
 				em.clear();
 
@@ -51,6 +52,38 @@ describe('Lesson Controller (API) - delete', () => {
 				const response = await request.delete(lessonId);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					type: 'UNAUTHORIZED',
+					title: 'Unauthorized',
+					message: 'Unauthorized',
+					code: 401,
+				});
+			});
+		});
+
+		describe('when invalid params are passed', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				return { studentAccount };
+			};
+
+			it('it should response with api validation error', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await request.delete(undefined, studentAccount);
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual({
+					type: 'API_VALIDATION_ERROR',
+					title: 'API Validation Error',
+					message: 'API validation failed, see validationErrors for details',
+					code: 400,
+					validationErrors: [{ field: ['lessonId'], errors: ['lessonId must be a mongodb id'] }],
+				});
 			});
 		});
 
@@ -64,6 +97,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					em.clear();
 
 					return { studentAccount, lessonId: lesson.id };
 				};
@@ -74,6 +108,12 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.body).toEqual({
+						type: 'FORBIDDEN',
+						title: 'Forbidden',
+						message: 'Forbidden',
+						code: 403,
+					});
 				});
 			});
 
@@ -84,6 +124,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					em.clear();
 
 					return { studentAccount, lessonId: lesson.id };
 				};
@@ -94,6 +135,12 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.body).toEqual({
+						type: 'FORBIDDEN',
+						title: 'Forbidden',
+						message: 'Forbidden',
+						code: 403,
+					});
 				});
 			});
 
@@ -104,6 +151,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					em.clear();
 
 					return { studentAccount, lessonId: lesson.id };
 				};
@@ -125,6 +173,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
+					em.clear();
 
 					return { studentAccount, lessonId: lesson.id };
 				};
@@ -135,6 +184,12 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.body).toEqual({
+						type: 'FORBIDDEN',
+						title: 'Forbidden',
+						message: 'Forbidden',
+						code: 403,
+					});
 				});
 			});
 		});
@@ -149,6 +204,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					em.clear();
 
 					return { teacherAccount, lessonId: lesson.id };
 				};
@@ -170,6 +226,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					em.clear();
 
 					return { teacherAccount, lessonId: lesson.id };
 				};
@@ -180,6 +237,12 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.body).toEqual({
+						type: 'FORBIDDEN',
+						title: 'Forbidden',
+						message: 'Forbidden',
+						code: 403,
+					});
 				});
 			});
 
@@ -191,6 +254,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					em.clear();
 
 					return { teacherAccount, lessonId: lesson.id };
 				};
@@ -213,6 +277,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
+					em.clear();
 
 					return { teacherAccount, lessonId: lesson.id };
 				};
@@ -238,6 +303,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);
+					em.clear();
 
 					return { adminAccount, lessonId: lesson.id };
 				};
@@ -259,6 +325,7 @@ describe('Lesson Controller (API) - delete', () => {
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);
+					em.clear();
 
 					return { adminAccount, lessonId: lesson.id };
 				};
@@ -269,6 +336,12 @@ describe('Lesson Controller (API) - delete', () => {
 					const response = await request.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.body).toEqual({
+						type: 'FORBIDDEN',
+						title: 'Forbidden',
+						message: 'Forbidden',
+						code: 403,
+					});
 				});
 			});
 		});
