@@ -263,7 +263,7 @@ describe('NewsRepo', () => {
 
 		it('should return unpublished news in requested order', async () => {
 			const creator = userFactory.build();
-			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator: creator });
+			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator });
 			await em.persistAndFlush(newsList);
 			em.clear();
 
