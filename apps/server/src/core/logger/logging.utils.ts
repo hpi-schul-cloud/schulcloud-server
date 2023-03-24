@@ -1,5 +1,5 @@
 import util from 'util';
-import { Loggable } from './loggable';
+import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {

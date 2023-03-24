@@ -1,12 +1,12 @@
 import { ApiValidationError } from '@shared/common';
-import { Loggable } from '../../logger/loggable';
+import { Loggable } from '../../logger/interfaces';
 import { ErrorLogMessage, ValidationErrorLogMessage } from '../../logger/types';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {
 	constructor(private readonly error: Error) {}
 
-	getLogMessage() {
+	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.error,
 			stack: this.error.stack,
