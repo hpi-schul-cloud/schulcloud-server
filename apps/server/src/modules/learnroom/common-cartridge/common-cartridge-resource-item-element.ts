@@ -7,7 +7,7 @@ export type ICommonCartridgeResourceProps = {
 };
 
 export class CommonCartridgeResourceItemElement implements ICommonCartridgeElement {
-	constructor(private readonly props: ICommonCartridgeResourceProps) {}
+	constructor(protected readonly props: ICommonCartridgeResourceProps) {}
 
 	transform(): Record<string, unknown> {
 		return {

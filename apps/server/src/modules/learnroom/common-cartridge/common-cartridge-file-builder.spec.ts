@@ -4,6 +4,7 @@ import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-c
 import { ICommonCartridgeFileBuilderOptions, CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeWebContentProps } from './common-cartridge-webcontent-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
 	const builderOptions: ICommonCartridgeFileBuilderOptions = {
@@ -23,6 +24,17 @@ describe('CommonCartridgeFileBuilder', () => {
 		identifier: 'assignment-identifier',
 		title: 'assignment-title',
 		description: 'assignment-description',
+	};
+	const courseResourceProp: ICommonCartridgeWebContentProps = {
+		identifier: 'resource-identifier',
+		href: 'placeholder.html',
+		file: Buffer.from(''),
+	};
+	const assignmentResourceProp: ICommonCartridgeWebContentProps = {
+		identifier: 'resource-identifier',
+		href: 'placeholder.html',
+		file: Buffer.from(''),
+		parentFolder: 'assignment-identifier',
 	};
 	let builder: CommonCartridgeFileBuilder;
 
@@ -69,6 +81,19 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			expect(builder.manifest).toContain(builderOptions.title);
 			expect(builder.manifest).toContain(resourceProps.identifier);
+		});
+		it('should add a web content course resource element to the manifest', () => {
+			builder.addWebContentItems([courseResourceProp]);
+
+			expect(builder.manifest).toContain(courseResourceProp.identifier);
+		});
+		it('should add a web content assignment resource element to the manifest', () => {
+			builder.addWebContentItems([assignmentResourceProp]);
+
+			expect(builder.manifest).toContain(assignmentResourceProp.identifier);
+			expect(builder.manifest).toContain(
+				`web_resources/${assignmentResourceProp.parentFolder ?? ''}/${assignmentResourceProp.href}`
+			);
 		});
 	});
 
