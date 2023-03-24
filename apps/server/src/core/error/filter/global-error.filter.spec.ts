@@ -1,11 +1,15 @@
+/* eslint-disable promise/valid-params */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ArgumentsHost, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common';
-import { ErrorLogger } from '@src/core/logger';
+import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { Response } from 'express';
+import { ErrorResponse } from '../dto';
+import { ErrorLoggable } from '../error.loggable';
 import { GlobalErrorFilter } from './global-error.filter';
 
-class SampleError extends BusinessError {
+class SampleBusinessError extends BusinessError {
 	constructor(message?: string) {
 		super(
 			{
@@ -18,15 +22,29 @@ class SampleError extends BusinessError {
 	}
 }
 
+class SampleLoggableException extends BadRequestException implements Loggable {
+	constructor(private testData: string) {
+		super();
+	}
+
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		const message = {
+			type: 'BAD_REQUEST_EXCEPTION',
+			stack: this.stack,
+			data: {
+				testData: this.testData,
+			},
+		};
+
+		return message;
+	}
+}
+
 // TODO: Write tests
 describe('GlobalErrorFilter', () => {
 	let module: TestingModule;
 	let service: GlobalErrorFilter<any>;
 	let logger: DeepMocked<ErrorLogger>;
-
-	const httpArgumentHost = createMock<ArgumentsHost>({
-		getType: jest.fn().mockReturnValue('http'),
-	});
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,6 +61,10 @@ describe('GlobalErrorFilter', () => {
 		logger = module.get(ErrorLogger);
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	afterAll(async () => {
 		await module.close();
 	});
@@ -52,210 +74,134 @@ describe('GlobalErrorFilter', () => {
 	});
 
 	describe('catch', () => {
-		it('should log error', () => {
-			const error = new SampleError();
+		describe('logging', () => {
+			it('should call logger with error if error implements Loggable', () => {
+				const error = new SampleLoggableException('test');
+				const argumentsHost = createMock<ArgumentsHost>();
 
-			service.catch(error, httpArgumentHost);
+				service.catch(error, argumentsHost);
 
-			expect(logger.error).toBeCalled();
+				expect(logger.error).toBeCalledWith(error);
+			});
+
+			it('should call logger with ErrorLoggable for generic error', () => {
+				const error = new Error('test');
+				const loggable = new ErrorLoggable(error);
+				const argumentsHost = createMock<ArgumentsHost>();
+
+				service.catch(error, argumentsHost);
+
+				expect(logger.error).toBeCalledWith(loggable);
+			});
 		});
 
-		it('should send response', () => {
-			const error = new SampleError();
+		describe('response', () => {
+			describe('when context is http', () => {
+				const setupHttpArgumentsHost = () => {
+					const argumentsHost = createMock<ArgumentsHost>();
+					argumentsHost.getType.mockReturnValueOnce('http');
 
-			service.catch(error, httpArgumentHost);
+					return argumentsHost;
+				};
 
-			expect(httpArgumentHost.switchToHttp).toBeCalledTimes(1);
+				describe('when error is an HTTP exception', () => {
+					const setup = () => {
+						const argumentsHost = setupHttpArgumentsHost();
+						const error = new BadRequestException();
+						const expectedResponse = new ErrorResponse(
+							'BAD_REQUEST',
+							'Bad Request',
+							'Bad Request',
+							HttpStatus.BAD_REQUEST
+						);
+
+						return { error, argumentsHost, expectedResponse };
+					};
+
+					it('should set response status appropriately', () => {
+						const { error, argumentsHost } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(HttpStatus.BAD_REQUEST);
+					});
+
+					it('should send appropriate error response', () => {
+						const { error, argumentsHost, expectedResponse } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(
+							argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.BAD_REQUEST).json
+						).toBeCalledWith(expectedResponse);
+					});
+				});
+
+				describe('when error is a generic error', () => {
+					const setup = () => {
+						const argumentsHost = setupHttpArgumentsHost();
+						const error = new Error();
+						const expectedResponse = new ErrorResponse(
+							'INTERNAL_SERVER_ERROR',
+							'Internal Server Error',
+							'Internal Server Error',
+							HttpStatus.INTERNAL_SERVER_ERROR
+						);
+
+						return { error, argumentsHost, expectedResponse };
+					};
+
+					it('should set response status appropriately', () => {
+						const { error, argumentsHost } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+							HttpStatus.INTERNAL_SERVER_ERROR
+						);
+					});
+
+					it('should send appropriate error response', () => {
+						const { error, argumentsHost, expectedResponse } = setup();
+
+						service.catch(error, argumentsHost);
+
+						expect(
+							argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
+						).toBeCalledWith(expectedResponse);
+					});
+				});
+
+				it('should send JSON response', () => {
+					const argumentsHost = setupHttpArgumentsHost();
+					const error = new Error();
+
+					service.catch(error, argumentsHost);
+
+					expect(
+						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
+					).toBeCalled();
+				});
+			});
+
+			describe('when context is rmq', () => {
+				const setup = () => {
+					const argumentsHost = createMock<ArgumentsHost>();
+					argumentsHost.getType.mockReturnValueOnce('rmq');
+
+					const error = new Error();
+
+					return { error, argumentsHost };
+				};
+
+				it('should return an RpcMessage with the error', () => {
+					const { error, argumentsHost } = setup();
+
+					const result = service.catch(error, argumentsHost);
+
+					expect(result).toEqual({ message: undefined, error });
+				});
+			});
 		});
 	});
-
-	// describe('createErrorResponse', () => {
-	// 	it('should process a feathers error correctly', () => {
-	// 		const feathersError = new NotFound('Not found message');
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(feathersError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'NOT_FOUND',
-	// 			'Not Found',
-	// 			'Not found message',
-	// 			HttpStatus.NOT_FOUND
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a business error correctly', () => {
-	// 		const errorMsg = 'Business error msg';
-	// 		const businessError = new SampleError(errorMsg);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(businessError);
-	// 		const expected = new ErrorResponse('SAMPLE_ERROR', 'Sample Error', errorMsg, HttpStatus.NOT_IMPLEMENTED);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a nest error without parameters correctly', () => {
-	// 		const nestError = new NotFoundException();
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(nestError);
-	// 		const expected: ErrorResponse = new ErrorResponse('NOT_FOUND', 'Not Found', 'Not Found', HttpStatus.NOT_FOUND);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a nest error with message correctly', () => {
-	// 		const errorMsg = 'Nest error msg';
-	// 		const nestError = new NotFoundException(errorMsg);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(nestError);
-	// 		const expected: ErrorResponse = new ErrorResponse('NOT_FOUND', 'Not Found', errorMsg, HttpStatus.NOT_FOUND);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a nest error with message and description correctly', () => {
-	// 		const errorMsg = 'Nest error msg';
-	// 		const description = 'Nest error description';
-	// 		const nestError = new NotFoundException(errorMsg, description);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(nestError);
-	// 		const expected: ErrorResponse = new ErrorResponse('NOT_FOUND', 'Not Found', errorMsg, HttpStatus.NOT_FOUND);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a nest error with data object correctly', () => {
-	// 		const errorObj = { msg: 'Nest error msg' };
-	// 		const nestError = new NotFoundException(errorObj);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(nestError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'NOT_FOUND',
-	// 			'Not Found',
-	// 			'Not Found Exception',
-	// 			HttpStatus.NOT_FOUND
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should process a nest error with data object and description correctly', () => {
-	// 		const errorObj = { msg: 'Nest error msg' };
-	// 		const description = 'Nest error description';
-	// 		const nestError = new NotFoundException(errorObj, description);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(nestError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'NOT_FOUND',
-	// 			'Not Found',
-	// 			'Not Found Exception',
-	// 			HttpStatus.NOT_FOUND
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-
-	// 	it('should not publish (error details) for default errors with custom message', () => {
-	// 		const errorMsg = 'technical details message';
-	// 		const unknownError = new Error(errorMsg);
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(unknownError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'INTERNAL_SERVER_ERROR',
-	// 			'Internal Server Error',
-	// 			'Internal Server Error',
-	// 			HttpStatus.INTERNAL_SERVER_ERROR
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 		expect(result.message).toEqual('Internal Server Error');
-	// 		expect(result.message).not.toEqual(errorMsg);
-	// 	});
-
-	// 	it('should not publish (error details) for default errors with default message', () => {
-	// 		const unknownError = new Error();
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(unknownError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'INTERNAL_SERVER_ERROR',
-	// 			'Internal Server Error',
-	// 			'Internal Server Error',
-	// 			HttpStatus.INTERNAL_SERVER_ERROR
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 		expect(result.message).toEqual('Internal Server Error');
-	// 	});
-
-	// 	it('should process error response correctly in case of processing failure', () => {
-	// 		class ShouldFailError extends SampleError {
-	// 			getResponse(): ErrorResponse {
-	// 				throw new Error('Should fail');
-	// 			}
-	// 		}
-	// 		const shouldFailError = new ShouldFailError('');
-	// 		const result: ErrorResponse = errorFilter.createErrorResponse(shouldFailError);
-	// 		const expected: ErrorResponse = new ErrorResponse(
-	// 			'INTERNAL_SERVER_ERROR',
-	// 			'Internal Server Error',
-	// 			'Internal Server Error',
-	// 			HttpStatus.INTERNAL_SERVER_ERROR
-	// 		);
-	// 		expect(result).toStrictEqual(expected);
-	// 	});
-	// });
-
-	// describe('catch', () => {
-	// 	describe('should call logger.error', () => {
-	// 		const context = createMock<ArgumentsHost>();
-	// 		it('should process a feathers error correctly', () => {
-	// 			const feathersError = new NotFound('Not found message');
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(feathersError, context);
-	// 			expect(logger.error).toBeCalledWith(feathersError, expect.any(String), 'Feathers Error');
-	// 		});
-
-	// 		it('should process a business error correctly', () => {
-	// 			const errorMsg = 'Business error msg';
-	// 			const businessError = new SampleError(errorMsg);
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(businessError, context);
-
-	// 			expect(logger.error).toBeCalledWith(businessError, expect.any(String), 'Business Error');
-	// 		});
-
-	// 		it('should process a nest error without parameters correctly', () => {
-	// 			const nestError = new NotFoundException();
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(nestError, context);
-	// 			expect(logger.error).toBeCalledWith(nestError, expect.any(String), 'Technical Error');
-	// 		});
-
-	// 		it('should process a generic error without parameters correctly', () => {
-	// 			const error = new Error();
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(error, context);
-	// 			expect(logger.error).toBeCalledWith(error, expect.any(String), 'Unhandled Error');
-	// 		});
-
-	// 		it('should process an unknown error without parameters correctly', () => {
-	// 			const error = { msg: 'Unknown error' };
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(error, context);
-	// 			expect(logger.error).toBeCalledWith(error, 'Unknown error');
-	// 		});
-	// 	});
-
-	// 	describe('when context type === http', () => {
-	// 		const context = createMock<ArgumentsHost>();
-	// 		context.getType.mockReturnValue('http');
-	// 		const error = new SampleError();
-
-	// 		it('should call switchToHttp()', () => {
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(error, context);
-	// 			expect(context.switchToHttp).toBeCalled();
-	// 		});
-
-	// 		it('should call context.switchToHttp().getResponse()', () => {
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			errorFilter.catch(error, context);
-	// 			expect(context.switchToHttp().getResponse).toBeCalled();
-	// 		});
-	// 	});
-
-	// 	describe('when context type === rmq', () => {
-	// 		const context = createMock<ArgumentsHost>();
-	// 		context.getType.mockReturnValue('rmq');
-
-	// 		it('should process a feathers error correctly', () => {
-	// 			const error = new NotFound('Not found message');
-	// 			// eslint-disable-next-line promise/valid-params
-	// 			const result = errorFilter.catch(error, context);
-	// 			expect(result).toStrictEqual({ message: undefined, error });
-	// 		});
-	// 	});
-	// });
 });

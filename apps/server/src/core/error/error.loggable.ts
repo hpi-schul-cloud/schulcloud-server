@@ -28,7 +28,7 @@ export class ErrorLoggable implements Loggable {
 		return logMessage;
 	}
 
-	private createLogMessageForValidationErrors = (error: ApiValidationError) => {
+	private createLogMessageForValidationErrors(error: ApiValidationError) {
 		const errorMsg = error.validationErrors.map(
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
@@ -38,5 +38,5 @@ export class ErrorLoggable implements Loggable {
 			stack: error.stack,
 			type: 'API Validation Error',
 		};
-	};
+	}
 }

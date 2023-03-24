@@ -10,10 +10,10 @@ export class GlobalErrorFilter<T extends IError | undefined> implements Exceptio
 
 	// eslint-disable-next-line consistent-return
 	catch(error: T, host: ArgumentsHost): void | RpcMessage<unknown> {
-		const contextType = host.getType<'http' | 'rmq'>();
-
 		const loggable = ErrorLoggingUtils.createErrorLoggable(error);
 		this.logger.error(loggable);
+
+		const contextType = host.getType<'http' | 'rmq'>();
 
 		if (contextType === 'http') {
 			this.sendHttpResponse(error, host);
