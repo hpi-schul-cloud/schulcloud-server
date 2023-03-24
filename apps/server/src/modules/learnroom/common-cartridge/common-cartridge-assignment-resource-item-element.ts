@@ -20,13 +20,6 @@ export class CommonCartridgeAssignmentResourceItemElement implements ICommonCart
 					href: this.props.href,
 				},
 			},
-			'ext:variant': {
-				$: {
-					identifier: `${this.props.identifier}-variant`,
-					identifierref: this.props.identifier,
-				},
-				'ext:metadata': {},
-			},
 		};
 	}
 }
