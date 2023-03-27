@@ -1,5 +1,5 @@
 import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
-import { columnBoardFactory, columnFactory } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
 import { ColumnBoard } from './column-board.do';
 
 describe(ColumnBoard.name, () => {
@@ -26,5 +26,13 @@ describe(ColumnBoard.name, () => {
 		board.useBoardNodeBuilder(builder);
 
 		expect(builder.buildColumnBoardNode).toHaveBeenCalledWith(board);
+	});
+
+	describe('when adding a child', () => {
+		it('should throw error on unsupported child type', () => {
+			const { board } = setup();
+			const card = cardFactory.build();
+			expect(() => board.addChild(card)).toThrowError();
+		});
 	});
 });
