@@ -100,7 +100,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findAll" >findAll</a>
+                                <a href="#findAllPublished" >findAllPublished</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAllUnpublishedByUser" >findAllUnpublishedByUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -162,26 +166,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAll"></a>
+                    <a name="findAllPublished"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>findAll</b></span>
-                        <a href="#findAll"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findAllPublished</b></span>
+                        <a href="#findAllPublished"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAll(targets: <a href="../interfaces/NewsTargetFilter.html" target="_self">NewsTargetFilter[]</a>, unpublished: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, options?: <a href="../classes/News.html" target="_self">IFindOptions&lt;News&gt;</a>)</code>
+                    <code>findAllPublished(targets: <a href="../interfaces/NewsTargetFilter.html" target="_self">NewsTargetFilter[]</a>, options?: <a href="../classes/News.html" target="_self">IFindOptions&lt;News&gt;</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:21</a></div>
                 </td>
             </tr>
 
@@ -207,18 +211,6 @@
                                     <td>targets</td>
                                     <td>
                                                 <code><a href="../interfaces/NewsTargetFilter.html" target="_self" >NewsTargetFilter[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>unpublished</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                     </td>
 
                                     <td>
@@ -259,6 +251,114 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findAllUnpublishedByUser"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findAllUnpublishedByUser</b></span>
+                        <a href="#findAllUnpublishedByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllUnpublishedByUser(targets: <a href="../interfaces/NewsTargetFilter.html" target="_self">NewsTargetFilter[]</a>, creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options?: <a href="../classes/News.html" target="_self">IFindOptions&lt;News&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:36</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Find news</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>targets</td>
+                                    <td>
+                                                <code><a href="../interfaces/NewsTargetFilter.html" target="_self" >NewsTargetFilter[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>creatorId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <ul>
+<li>creatorId</li>
+</ul>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../classes/News.html" target="_self" >IFindOptions&lt;News&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/News.html" target="_self" >Promise&lt;Counted&lt;News[]&gt;&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findNewsAndCount"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -278,8 +378,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:58</a></div>
                 </td>
             </tr>
 
@@ -363,8 +463,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:51</a></div>
                 </td>
             </tr>
 
@@ -808,17 +908,33 @@ export class NewsRepo extends BaseRepo&lt;News&gt; {
 	/**
 	 * Find news
 	 * @param targets
-	 * @param unpublished
 	 * @param options
 	 */
-	async findAll(
+	async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions&lt;News&gt;): Promise&lt;Counted&lt;News[]&gt;&gt; {
+		const scope &#x3D; new NewsScope();
+		scope.byTargets(targets);
+		scope.byPublished();
+
+		const countedNewsList &#x3D; await this.findNewsAndCount(scope.query, options);
+		return countedNewsList;
+	}
+
+	/**
+	 * Find news
+	 * @param targets
+	 * @param creatorId - creatorId
+	 * @param options
+	 */
+	async findAllUnpublishedByUser(
 		targets: NewsTargetFilter[],
-		unpublished: boolean,
+		creatorId: EntityId,
 		options?: IFindOptions&lt;News&gt;
 	): Promise&lt;Counted&lt;News[]&gt;&gt; {
 		const scope &#x3D; new NewsScope();
 		scope.byTargets(targets);
-		scope.byUnpublished(unpublished);
+		scope.byUnpublished();
+		scope.byCreator(creatorId);
+
 		const countedNewsList &#x3D; await this.findNewsAndCount(scope.query, options);
 		return countedNewsList;
 	}

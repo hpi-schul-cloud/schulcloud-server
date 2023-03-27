@@ -113,6 +113,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#byCreator" >byCreator</a>
+                            </li>
+                            <li>
+                                <a href="#byPublished" >byPublished</a>
+                            </li>
+                            <li>
                                 <a href="#byTargets" >byTargets</a>
                             </li>
                             <li>
@@ -260,6 +266,112 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byCreator"></a>
+                    <span class="name">
+                        <span ><b>byCreator</b></span>
+                        <a href="#byCreator"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byCreator(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news-scope.ts:37</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>creatorId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/NewsScope.html" target="_self" >NewsScope</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="byPublished"></a>
+                    <span class="name">
+                        <span ><b>byPublished</b></span>
+                        <a href="#byPublished"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byPublished()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news-scope.ts:25</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/NewsScope.html" target="_self" >NewsScope</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="byTargets"></a>
                     <span class="name">
                         <span ><b>byTargets</b></span>
@@ -338,15 +450,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>byUnpublished(unpublished: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+<code>byUnpublished()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/shared/repo/news/news-scope.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/shared/repo/news/news-scope.ts:31</a></div>
                 </td>
             </tr>
 
@@ -354,41 +466,9 @@
             <tr>
                 <td class="col-md-4">
 
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>unpublished</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/NewsScope.html" target="_self" >NewsScope</a></code>
 
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -555,7 +635,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilterQuery } from &#x27;@mikro-orm/core&#x27;;
-import { News } from &#x27;@shared/domain&#x27;;
+import { EntityId, News } from &#x27;@shared/domain&#x27;;
 import { EmptyResultQuery } from &#x27;../query&#x27;;
 import { Scope } from &#x27;../scope&#x27;;
 import { NewsTargetFilter } from &#x27;./news-target-filter&#x27;;
@@ -578,9 +658,22 @@ export class NewsScope extends Scope&lt;News&gt; {
 		return this;
 	}
 
-	byUnpublished(unpublished: boolean): NewsScope {
+	byPublished(): NewsScope {
 		const now &#x3D; new Date();
-		this.addQuery({ displayAt: unpublished ? { $gt: now } : { $lte: now } });
+		this.addQuery({ displayAt: { $lte: now } });
+		return this;
+	}
+
+	byUnpublished(): NewsScope {
+		const now &#x3D; new Date();
+		this.addQuery({ displayAt: { $gt: now } });
+		return this;
+	}
+
+	byCreator(creatorId: EntityId): NewsScope {
+		if (creatorId !&#x3D;&#x3D; undefined) {
+			this.addQuery({ creator: creatorId });
+		}
 		return this;
 	}
 }

@@ -325,8 +325,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:148</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:150</a></div>
                 </td>
             </tr>
 
@@ -505,8 +505,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="98"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:98</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:100</a></div>
                 </td>
             </tr>
 
@@ -589,8 +589,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="197"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:197</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="199"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:199</a></div>
                 </td>
             </tr>
 
@@ -673,8 +673,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="159"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:159</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="161"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:161</a></div>
                 </td>
             </tr>
 
@@ -769,8 +769,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="207"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:207</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="209"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:209</a></div>
                 </td>
             </tr>
 
@@ -839,8 +839,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="179"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:179</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:181</a></div>
                 </td>
             </tr>
 
@@ -934,8 +934,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="122"
-                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:122</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="124"
+                            class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:124</a></div>
                 </td>
             </tr>
 
@@ -1091,7 +1091,9 @@ export class NewsUc {
 		// by default show latest news first
 		if (options.order &#x3D;&#x3D; null) options.order &#x3D; { displayAt: SortOrder.desc };
 
-		const [newsList, newsCount] &#x3D; await this.newsRepo.findAll(targets, unpublished, options);
+		const [newsList, newsCount] &#x3D; unpublished
+			? await this.newsRepo.findAllUnpublishedByUser(targets, userId, options)
+			: await this.newsRepo.findAllPublished(targets, options);
 
 		await Promise.all(
 			newsList.map(async (news: News) &#x3D;&gt; {

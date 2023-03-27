@@ -148,6 +148,9 @@
                             <a href="#courseNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>courseNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#courseUnpublishedNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>courseUnpublishedNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#createConfigModuleOptions" title="apps/server/src/config/config-module-options.ts" ><b>createConfigModuleOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../config-module-options.ts)</a>
                         </li>
                         <li>
@@ -394,6 +397,9 @@
                             <a href="#schoolNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#schoolUnpublishedNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolUnpublishedNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#schoolYearFactory" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
                         </li>
                         <li>
@@ -470,6 +476,9 @@
                         </li>
                         <li>
                             <a href="#teamNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>teamNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#teamUnpublishedNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>teamUnpublishedNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#teamUserFactory" title="apps/server/src/shared/testing/factory/teamuser.factory.ts" ><b>teamUserFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../teamuser.factory.ts)</a>
@@ -2100,6 +2109,38 @@ must use @ApiProperty</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="courseUnpublishedNewsFactory"></a>
+                    <span class="name">
+                        <span ><b>courseUnpublishedNewsFactory</b></span>
+                        <a href="#courseUnpublishedNewsFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;CourseNews, INewsProperties&gt;(
+	CourseNews,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			title: &#x60;news ${sequence}&#x60;,
+			content: &#x60;content of news ${sequence}&#x60;,
+			displayAt: new Date(Date.now() + 86400000),
+			school: schoolFactory.build(),
+			creator: userFactory.build(),
+			target: courseFactory.build(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="schoolNewsFactory"></a>
                     <span class="name">
                         <span ><b>schoolNewsFactory</b></span>
@@ -2129,6 +2170,38 @@ must use @ApiProperty</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="schoolUnpublishedNewsFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolUnpublishedNewsFactory</b></span>
+                        <a href="#schoolUnpublishedNewsFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolNews, INewsProperties&gt;(
+	SchoolNews,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			title: &#x60;news ${sequence}&#x60;,
+			content: &#x60;content of news ${sequence}&#x60;,
+			displayAt: new Date(Date.now() + 86400000),
+			school: schoolFactory.build(),
+			creator: userFactory.build(),
+			target: schoolFactory.build(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="teamNewsFactory"></a>
                     <span class="name">
                         <span ><b>teamNewsFactory</b></span>
@@ -2143,6 +2216,35 @@ must use @ApiProperty</p>
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
 		displayAt: new Date(),
+		school: schoolFactory.build(),
+		creator: userFactory.build(),
+		target: teamFactory.build(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="teamUnpublishedNewsFactory"></a>
+                    <span class="name">
+                        <span ><b>teamUnpublishedNewsFactory</b></span>
+                        <a href="#teamUnpublishedNewsFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;TeamNews, INewsProperties&gt;(TeamNews, ({ sequence }) &#x3D;&gt; {
+	return {
+		title: &#x60;news ${sequence}&#x60;,
+		content: &#x60;content of news ${sequence}&#x60;,
+		displayAt: new Date(Date.now() + 86400000),
 		school: schoolFactory.build(),
 		creator: userFactory.build(),
 		target: teamFactory.build(),
