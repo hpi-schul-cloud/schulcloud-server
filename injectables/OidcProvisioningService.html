@@ -293,8 +293,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:52</a></div>
                 </td>
             </tr>
 
@@ -373,7 +373,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
+import { EntityId, SchoolFeatures } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
@@ -415,6 +415,7 @@ export class OidcProvisioningService {
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 			});
 		}
 

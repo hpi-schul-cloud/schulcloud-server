@@ -1207,13 +1207,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/OauthModule.html" data-type="entity-link" >OauthModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-OauthModule-8dfd78be1f4e575ce19d7a642e3dc6327aebc921d124bc52c37b2b482788b8b7aeb2e1dfd442a83e5f08984e4d5056a60b62e126cd32386d1c30ce70b59ead91"' : 'data-target="#xs-injectables-links-module-OauthModule-8dfd78be1f4e575ce19d7a642e3dc6327aebc921d124bc52c37b2b482788b8b7aeb2e1dfd442a83e5f08984e4d5056a60b62e126cd32386d1c30ce70b59ead91"' }>
+                                        'data-target="#injectables-links-module-OauthModule-f3bdba1827bfb937bd0d3f82d314def5f0c1dade95b01d0ed537b89a78e04774a11fc07b95ea66829e08bd4cf794c8a06fc58e020ab40841171d33b16bbcd637"' : 'data-target="#xs-injectables-links-module-OauthModule-f3bdba1827bfb937bd0d3f82d314def5f0c1dade95b01d0ed537b89a78e04774a11fc07b95ea66829e08bd4cf794c8a06fc58e020ab40841171d33b16bbcd637"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthModule-8dfd78be1f4e575ce19d7a642e3dc6327aebc921d124bc52c37b2b482788b8b7aeb2e1dfd442a83e5f08984e4d5056a60b62e126cd32386d1c30ce70b59ead91"' :
-                                        'id="xs-injectables-links-module-OauthModule-8dfd78be1f4e575ce19d7a642e3dc6327aebc921d124bc52c37b2b482788b8b7aeb2e1dfd442a83e5f08984e4d5056a60b62e126cd32386d1c30ce70b59ead91"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-OauthModule-f3bdba1827bfb937bd0d3f82d314def5f0c1dade95b01d0ed537b89a78e04774a11fc07b95ea66829e08bd4cf794c8a06fc58e020ab40841171d33b16bbcd637"' :
+                                        'id="xs-injectables-links-module-OauthModule-f3bdba1827bfb937bd0d3f82d314def5f0c1dade95b01d0ed537b89a78e04774a11fc07b95ea66829e08bd4cf794c8a06fc58e020ab40841171d33b16bbcd637"' }>
                                         <li class="link">
                                             <a href="injectables/HydraSsoService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HydraSsoService</a>
                                         </li>
