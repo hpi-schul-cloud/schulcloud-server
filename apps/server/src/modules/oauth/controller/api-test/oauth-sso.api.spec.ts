@@ -104,10 +104,10 @@ describe('OAuth SSO Controller (API)', () => {
 
 		const targetSystem: System = systemFactory
 			.withOauthConfig()
-			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, '5bf142459b72e12b2b1b2cde', {});
 		const sourceSystem: System = systemFactory
 			.withOauthConfig()
-			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV });
+			.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, '5bf142459b72e12b2b1b2ee1', {});
 
 		const sourceSchool: School = schoolFactory.buildWithId(
 			{
@@ -329,6 +329,7 @@ describe('OAuth SSO Controller (API)', () => {
 				currentUser = mapUserToCurrentUser(user, undefined, system.id);
 				const { state, cookies } = await setupSessionState(system.id, true);
 				const baseUrl: string = Configuration.get('HOST') as string;
+
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = state;
@@ -359,13 +360,18 @@ describe('OAuth SSO Controller (API)', () => {
 					.set('Cookie', cookies)
 					.query(query)
 					.expect(302)
-					.expect('Location', `${baseUrl}/migration/success?sourceSystem=${system.id}&targetSystem=${system.id}`);
+					.expect(
+						'Location',
+						`${baseUrl}/migration/success?sourceSystem=${system.id}&targetSystem=${
+							currentUser.systemId ? currentUser.systemId : ''
+						}`
+					);
 			});
 		});
 
 		describe('when invalid request', () => {
 			it('should throw UnprocessableEntityException', async () => {
-				const { targetSystem, sourceUser, sourceSystem } = await setup();
+				const { targetSystem, sourceUser } = await setup();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, undefined);
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				const query: AuthorizationParams = new AuthorizationParams();
@@ -382,6 +388,7 @@ describe('OAuth SSO Controller (API)', () => {
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				const baseUrl: string = Configuration.get('HOST') as string;
+
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.error = SSOAuthenticationError.INVALID_REQUEST;
 				query.state = state;
