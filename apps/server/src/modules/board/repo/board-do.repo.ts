@@ -54,30 +54,6 @@ export class BoardDoRepo {
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteChild<T extends AnyBoardDo>(parent: T, childId: EntityId): Promise<T> {
-		if (!parent.children) {
-			throw new Error('parent has no children');
-		}
-
-		const hasChild = parent.children.some((el) => el.id === childId);
-
-		if (hasChild === false) {
-			throw new Error('child does not belong to parent');
-		}
-
-		const childNode = await this.boardNodeRepo.findById(BoardNode, childId);
-		const parentNode = await this.boardNodeRepo.findById(BoardNode, parent.id);
-
-		const builder = new BoardNodeBuilderImpl(parentNode);
-		parent.children = parent.children.filter((el) => el.id !== childId);
-		const boardNodes = builder.buildBoardNodes(parent.children, parent.id);
-
-		await this.boardNodeRepo.save(boardNodes);
-		await this.boardNodeRepo.deleteWithDescendants(childNode);
-
-		return parent;
-	}
-
 	async deleteWithDescendants(id: EntityId): Promise<boolean> {
 		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);

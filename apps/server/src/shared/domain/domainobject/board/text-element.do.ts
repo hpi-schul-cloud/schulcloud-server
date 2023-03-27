@@ -1,24 +1,15 @@
 import { EntityId } from '../../types';
+import { BoardComposite } from './board-composite.do';
 import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
 import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class TextElement implements TextElementProps, BoardNodeBuildable {
-	id: EntityId;
-
+export class TextElement extends BoardComposite implements TextElementProps, BoardNodeBuildable {
 	text: string;
 
-	children?: Array<AnyBoardDo>;
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
 	constructor(props: TextElementProps) {
-		this.id = props.id;
+		super(props);
 		this.text = props.text;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -30,6 +21,8 @@ export interface TextElementProps {
 	id: EntityId;
 
 	text: string;
+
+	children: AnyBoardDo[];
 
 	createdAt: Date;
 

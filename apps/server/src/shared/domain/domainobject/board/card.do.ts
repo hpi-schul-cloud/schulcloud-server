@@ -1,32 +1,20 @@
 import type { EntityId } from '../../types';
+import { BoardComposite } from './board-composite.do';
 import { TextElement } from './text-element.do';
+import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
 import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class Card implements CardProps, BoardNodeBuildable {
-	id: EntityId;
-
-	title: string;
-
+export class Card extends BoardComposite implements CardProps, BoardNodeBuildable {
 	height: number;
 
-	children: TextElement[]; // TODO: AnyContentElement
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
 	constructor(props: CardProps) {
-		this.id = props.id;
-		this.title = props.title;
+		super(props);
 		this.height = props.height;
-		this.children = props.children;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
 	}
 
-	addElement(element: TextElement, position?: number) {
-		this.children.splice(position || this.children.length, 0, element);
+	addElement(element: TextElement, toIndex?: number) {
+		this.addChild(element, toIndex);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -37,11 +25,11 @@ export class Card implements CardProps, BoardNodeBuildable {
 export interface CardProps {
 	id: EntityId;
 
-	title: string;
+	title?: string;
 
 	height: number;
 
-	children: TextElement[]; // TODO: AnyContentElement
+	children: AnyBoardDo[];
 
 	createdAt: Date;
 
