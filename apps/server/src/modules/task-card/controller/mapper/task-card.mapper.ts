@@ -61,6 +61,10 @@ export class TaskCardMapper {
 			throw new ValidationError('The Task Card must have one title');
 		}
 
+		if (!params.courseId || params.courseId.length === 0) {
+			throw new ValidationError('The Task Card must have one course');
+		}
+
 		const dto: ITaskCardCRUD = {
 			title: params.title,
 		};

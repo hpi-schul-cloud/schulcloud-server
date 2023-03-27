@@ -72,14 +72,16 @@ describe('Task-Card Controller (api)', () => {
 
 		it('Create task-card should throw', async () => {
 			const user = setupUser([]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
 			const params = {
 				title: 'title',
+				courseId: course.id,
 			};
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
@@ -119,6 +121,7 @@ describe('Task-Card Controller (api)', () => {
 			const user = setupUser([]);
 
 			const taskCard = taskCardFactory.build({ creator: user });
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
 			await em.persistAndFlush([user, taskCard]);
 			em.clear();
@@ -126,6 +129,7 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				title: 'title',
+				courseId: course.id,
 			};
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -246,8 +250,9 @@ describe('Task-Card Controller (api)', () => {
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
 			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user, task, taskCard]);
+			await em.persistAndFlush([user, task, taskCard, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -275,6 +280,7 @@ describe('Task-Card Controller (api)', () => {
 				],
 				visibleAtDate: inThreeDays,
 				dueDate: inFourDays,
+				courseId: course.id,
 			};
 			const response = await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -294,8 +300,9 @@ describe('Task-Card Controller (api)', () => {
 		describe('Sanitize richtext', () => {
 			it('should sanitize richtext on create with inputformat ck5', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user] });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, course]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -304,6 +311,7 @@ describe('Task-Card Controller (api)', () => {
 
 				const taskCardParams = {
 					title: 'test title',
+					courseId: course.id,
 					cardElements: [
 						{
 							content: {
@@ -337,8 +345,9 @@ describe('Task-Card Controller (api)', () => {
 				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 				const task = taskFactory.build({ creator: user });
 				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+				const course = courseFactory.buildWithId({ teachers: [user] });
 
-				await em.persistAndFlush([user, task, taskCard]);
+				await em.persistAndFlush([user, task, taskCard, course]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -348,6 +357,7 @@ describe('Task-Card Controller (api)', () => {
 
 				const taskCardUpdateParams = {
 					title: 'test title updated',
+					courseId: course.id,
 					cardElements: [
 						{
 							content: {
@@ -397,14 +407,16 @@ describe('Task-Card Controller (api)', () => {
 	describe('When title is provided', () => {
 		it('should create a task card with title', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
 			const taskCardParams = {
 				title: 'test title',
+				courseId: course.id,
 			};
 
 			const response = await request(app.getHttpServer())

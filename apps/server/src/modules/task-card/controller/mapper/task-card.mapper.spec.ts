@@ -1,5 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
 	CardElementType,
@@ -119,6 +118,7 @@ describe('task-card mapper', () => {
 		it('should map update params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
+			const courseId = new ObjectId().toHexString();
 
 			const cardElementRichText1 = new RichTextCardElementParam();
 			cardElementRichText1.type = CardElementType.RichText;
@@ -142,6 +142,7 @@ describe('task-card mapper', () => {
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
 				title: 'update title',
+				courseId,
 			};
 			const result = TaskCardMapper.mapToDomain(params);
 
@@ -153,6 +154,7 @@ describe('task-card mapper', () => {
 				],
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				courseId,
 			};
 			expect(result).toEqual(expectedDto);
 		});
