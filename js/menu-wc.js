@@ -2359,9 +2359,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ColumnUrlParams.html" data-type="entity-link" >ColumnUrlParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeAssignmentElement.html" data-type="entity-link" >CommonCartridgeAssignmentElement</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/CommonCartridgeAssignmentResourceItemElement.html" data-type="entity-link" >CommonCartridgeAssignmentResourceItemElement</a>
                             </li>
                             <li class="link">
