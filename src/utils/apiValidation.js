@@ -4,10 +4,6 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 
 const ignorePathsList = [
-	/(.*\/accountModel($|\/$))/,
-	/|(.*\/accountModel\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/accounts($|\/$))/,
-	/|(.*\/accounts\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
 	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
