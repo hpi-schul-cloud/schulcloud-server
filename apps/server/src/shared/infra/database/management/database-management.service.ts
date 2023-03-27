@@ -12,7 +12,7 @@ export class DatabaseManagementService {
 		return this.em.getConnection('write').getDb();
 	}
 
-	private getDatabaseCollection(collectionName: string): Collection {
+	getDatabaseCollection(collectionName: string): Collection {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
