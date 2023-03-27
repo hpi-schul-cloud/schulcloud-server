@@ -14,7 +14,7 @@ describe(ColumnBoard.name, () => {
 	it('should be able to add children', () => {
 		const { board, column } = setup();
 
-		board.addColumn(column);
+		board.addChild(column);
 
 		expect(board.children[board.children.length - 1]).toEqual(column);
 	});

@@ -15,7 +15,7 @@ describe(Card.name, () => {
 	it('should be able to add children', () => {
 		const { card, element } = setup();
 
-		card.addElement(element);
+		card.addChild(element);
 
 		expect(card.children[card.children.length - 1]).toEqual(element);
 	});

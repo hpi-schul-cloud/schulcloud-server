@@ -252,7 +252,7 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('when deleting a child', () => {
+	describe('when deleting a domainObject and its descendants', () => {
 		const setup = async () => {
 			const cardNode = cardNodeFactory.buildWithId();
 			const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
@@ -264,40 +264,13 @@ describe(BoardDoRepo.name, () => {
 			return { card, cardNode, textElementNodes, independentTextElementNode };
 		};
 
-		it('should delete an element from a card', async () => {
-			const { card, textElementNodes } = await setup();
+		it('should delete an element', async () => {
+			const { textElementNodes } = await setup();
 
-			const updatedCard = await repo.deleteChild(card, textElementNodes[0].id);
-			const elementIds = updatedCard.children?.map((el: { id: EntityId }) => el.id);
+			await repo.deleteWithDescendants(textElementNodes[0].id);
+			em.clear();
 
-			expect(updatedCard.children).toHaveLength(2);
-			expect(elementIds).not.toContain(textElementNodes[0].id);
-		});
-
-		it('should delete an element physically', async () => {
-			const { card, textElementNodes } = await setup();
-
-			await repo.deleteChild(card, textElementNodes[0].id);
-
-			await expect(em.findOneOrFail(BoardNode, textElementNodes[0].id)).rejects.toThrow();
-		});
-
-		it('should throw if child does not belong to parent', async () => {
-			const { card, independentTextElementNode } = await setup();
-
-			await expect(repo.deleteChild(card, independentTextElementNode.id)).rejects.toThrow(
-				'child does not belong to parent'
-			);
-		});
-
-		it('should throw if parent has no children', async () => {
-			const cardNode = cardNodeFactory.buildWithId();
-			await em.persistAndFlush([cardNode]);
-			const card = await repo.findById(cardNode.id);
-			delete card.children;
-			const fakeId = new ObjectId().toHexString();
-
-			await expect(repo.deleteChild(card, fakeId)).rejects.toThrow('parent has no children');
+			await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
 		});
 	});
 });

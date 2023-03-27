@@ -24,7 +24,7 @@ export class BoardDoService {
 		return parent;
 	}
 
-	async deleteWithDescendants(id: EntityId): Promise<boolean> {
-		return this.boardDoRepo.deleteWithDescendants(id);
+	async deleteWithDescendants(id: EntityId): Promise<void> {
+		await this.boardDoRepo.deleteWithDescendants(id);
 	}
 }

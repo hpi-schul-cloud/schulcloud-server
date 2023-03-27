@@ -71,7 +71,8 @@ describe(BoardDoService.name, () => {
 
 			await service.deleteChild(card, elements[0].id);
 
-			expect(boardDoRepo.deleteChild).toHaveBeenCalledWith(card, elements[0].id);
+			expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
+			expect(boardDoRepo.deleteWithDescendants).toHaveBeenCalledWith(elements[0].id);
 		});
 
 		it('should update the siblings', async () => {
@@ -86,7 +87,6 @@ describe(BoardDoService.name, () => {
 
 		it('should throw if the child does not exist', async () => {
 			const textElement = textElementFactory.buildWithId();
-			delete textElement.children;
 			const fakeId = new ObjectId().toHexString();
 
 			await expect(service.deleteChild(textElement, fakeId)).rejects.toThrow();
