@@ -28,4 +28,12 @@ describe(Column.name, () => {
 
 		expect(builder.buildColumnNode).toHaveBeenCalledWith(column, parentId, undefined);
 	});
+
+	describe('when adding a child', () => {
+		it('should throw error on unsupported child type', () => {
+			const { card } = setup();
+			const cardChild = cardFactory.build();
+			expect(() => card.addChild(cardChild)).toThrowError();
+		});
+	});
 });
