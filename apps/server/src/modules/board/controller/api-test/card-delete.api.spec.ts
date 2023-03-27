@@ -6,6 +6,7 @@ import { CardNode, TextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
+	columnBoardNodeFactory,
 	columnNodeFactory,
 	mapUserToCurrentUser,
 	textElementNodeFactory,
@@ -17,7 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/cards';
+const baseRouteName = '/boards';
 
 class API {
 	app: INestApplication;
@@ -26,9 +27,9 @@ class API {
 		this.app = app;
 	}
 
-	async delete(cardId: string) {
+	async delete(boardId: string, columnId: string, cardId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/${cardId}`)
+			.delete(`${baseRouteName}/${boardId}/columns/${columnId}/cards/${cardId}`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -72,7 +73,8 @@ describe(`card delete (api)`, () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
 
-		const columnNode = columnNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 		const textElementNode = textElementNodeFactory.buildWithId({ parent: cardNode });
 		const siblingCardNode = cardNodeFactory.buildWithId({ parent: columnNode });
@@ -80,42 +82,42 @@ describe(`card delete (api)`, () => {
 		await em.persistAndFlush([user, cardNode, columnNode, siblingCardNode, textElementNode]);
 		em.clear();
 
-		return { user, cardNode, columnNode, siblingCardNode, textElementNode };
+		return { user, cardNode, columnBoardNode, columnNode, siblingCardNode, textElementNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, cardNode } = await setup();
+			const { user, columnBoardNode, columnNode, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.delete(cardNode.id);
+			const response = await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should actually delete card', async () => {
-			const { user, cardNode } = await setup();
+			const { user, columnBoardNode, columnNode, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id);
+			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
 
 			await expect(em.findOneOrFail(CardNode, cardNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete elements of the card', async () => {
-			const { user, cardNode, textElementNode } = await setup();
+			const { user, columnBoardNode, columnNode, cardNode, textElementNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id);
+			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
 
 			await expect(em.findOneOrFail(TextElementNode, textElementNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
-			const { user, cardNode, siblingCardNode } = await setup();
+			const { user, columnBoardNode, columnNode, cardNode, siblingCardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id);
+			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
 
 			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
 			expect(siblingFromDb).toBeDefined();

@@ -9,7 +9,7 @@ import {
 	textElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ContentElementService } from '../service';
+import { BoardDoService, ColumnBoardService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
 
@@ -17,6 +17,7 @@ describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let cardService: DeepMocked<CardService>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let boardDoService: DeepMocked<BoardDoService>;
 	let elementService: DeepMocked<ContentElementService>;
 
@@ -33,6 +34,10 @@ describe(CardUc.name, () => {
 					useValue: createMock<CardService>(),
 				},
 				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
+				},
+				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
 				},
@@ -45,6 +50,7 @@ describe(CardUc.name, () => {
 
 		uc = module.get(CardUc);
 		cardService = module.get(CardService);
+		columnBoardService = module.get(ColumnBoardService);
 		boardDoService = module.get(BoardDoService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
@@ -95,12 +101,12 @@ describe(CardUc.name, () => {
 
 			await uc.createCard(user.id, board.id, column.id);
 
-			expect(cardService.createCard).toHaveBeenCalledWith(board.id, column.id);
+			expect(columnBoardService.createCard).toHaveBeenCalledWith(board.id, column.id);
 		});
 
 		it('should return the card object', async () => {
 			const { user, board, column, card } = setup();
-			cardService.createCard.mockResolvedValueOnce(card);
+			columnBoardService.createCard.mockResolvedValueOnce(card);
 
 			const result = await uc.createCard(user.id, board.id, column.id);
 
@@ -167,7 +173,7 @@ describe(CardUc.name, () => {
 	describe('deleting a content element', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const contentElement = textElementFactory.build();
+			const contentElement = textElementFactory.buildWithId();
 			const card = cardFactory.build();
 
 			return { user, card, contentElement };
