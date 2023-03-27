@@ -424,6 +424,28 @@ describe('OAuthUc', () => {
 				});
 			});
 
+			describe('when external school and official school number is defined ', () => {
+				it('should call schoolToMigrate', async () => {
+					const { oauthData, query, cachedState, tokenDto } = setupMigration();
+					oauthData.externalSchool = {
+						externalId: 'mockId',
+						officialSchoolNumber: 'mockNumber',
+						name: 'mockName',
+					};
+
+					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
+
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					expect(schoolMigrationService.schoolToMigrate).toHaveBeenCalledWith(
+						'currentUserId',
+						oauthData.externalSchool.externalId,
+						oauthData.externalSchool.officialSchoolNumber
+					);
+				});
+			});
+
 			describe('when external school and official school number is defined and school has to be migrated', () => {
 				it('should call migrateSchool', async () => {
 					const { oauthData, query, cachedState, userMigrationDto, tokenDto } = setupMigration();
