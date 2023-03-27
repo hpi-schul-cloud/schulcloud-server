@@ -175,6 +175,31 @@ describe('AccountService Integration', () => {
 				username: mockIdmAccount.username,
 			});
 		});
+		it('should create a new account on update error', async () => {
+			const findSpy = jest.spyOn(identityManagementService, 'findAccountByTecRefId');
+			const createSpy = jest.spyOn(identityManagementService, 'createAccount');
+
+			const mockAccountDto = {
+				id: mockIdmAccountRefId,
+				username: 'testUserName',
+				userId: 'userId',
+				systemId: 'systemId',
+			};
+
+			findSpy.mockRejectedValueOnce(new Error('Update Failed'));
+			const ret = await accountIdmService.save(mockAccountDto);
+
+			expect(createSpy).toHaveBeenCalled();
+
+			expect(ret).toBeDefined();
+			expect(ret).toMatchObject<Partial<AccountDto>>({
+				id: mockIdmAccount.attRefTechnicalId,
+				idmReferenceId: mockIdmAccount.id,
+				createdAt: mockIdmAccount.createdDate,
+				updatedAt: mockIdmAccount.createdDate,
+				username: mockIdmAccount.username,
+			});
+		});
 	});
 
 	describe('updateUsername', () => {

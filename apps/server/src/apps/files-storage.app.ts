@@ -8,6 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -26,7 +27,11 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
-	enableOpenApiDocs(nestApp, 'docs');
+
+	const options: SwaggerDocumentOptions = {
+		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
+	};
+	enableOpenApiDocs(nestApp, 'docs', options);
 
 	await nestApp.init();
 

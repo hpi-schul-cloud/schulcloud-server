@@ -111,7 +111,7 @@ describe('FilesStorageMapper', () => {
 				securityCheckStatus: fileRecord.securityCheck.status,
 				parentId: fileRecord.parentId,
 				creatorId: fileRecord.creatorId,
-				type: fileRecord.mimeType,
+				mimeType: fileRecord.mimeType,
 				parentType: fileRecord.parentType,
 				deletedSince: fileRecord.deletedSince,
 			};
