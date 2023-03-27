@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Column, ColumnBoard, EntityId } from '@shared/domain';
+import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
@@ -8,11 +8,11 @@ export class ColumnBoardService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const board = await this.boardDoRepo.findById(boardId);
+		const board = await this.boardDoRepo.findById(boardId, 2);
 		if (board instanceof ColumnBoard) {
 			return board;
 		}
-		throw new NotFoundException('there is no columboard with this id');
+		throw new NotFoundException('There is no columboard with this id');
 	}
 
 	async createBoard(): Promise<ColumnBoard> {
@@ -30,7 +30,7 @@ export class ColumnBoardService {
 	}
 
 	async createColumn(boardId: EntityId): Promise<Column> {
-		const board = (await this.boardDoRepo.findById(boardId)) as ColumnBoard;
+		const board = await this.boardDoRepo.findById(boardId);
 
 		const column = new Column({
 			id: new ObjectId().toHexString(),
@@ -40,10 +40,30 @@ export class ColumnBoardService {
 			updatedAt: new Date(),
 		});
 
-		board.addColumn(column);
+		board.addChild(column);
 
 		await this.boardDoRepo.save(board.children, board.id);
 
 		return column;
+	}
+
+	async createCard(boardId: EntityId, columnId: EntityId): Promise<Card> {
+		const board = await this.boardDoRepo.findById(boardId);
+		const column = board.getChild(columnId);
+
+		const card = new Card({
+			id: new ObjectId().toHexString(),
+			title: ``,
+			height: 150,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		column.addChild(card);
+
+		await this.boardDoRepo.save(column.children, column.id);
+
+		return card;
 	}
 }

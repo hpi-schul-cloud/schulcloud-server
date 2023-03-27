@@ -13,8 +13,12 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		this.height = props.height;
 	}
 
-	addElement(element: TextElement, toIndex?: number) {
-		this.addChild(element, toIndex);
+	addChild(child: AnyBoardDo) {
+		if (child instanceof TextElement) {
+			this.children.push(child);
+		} else {
+			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+		}
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {

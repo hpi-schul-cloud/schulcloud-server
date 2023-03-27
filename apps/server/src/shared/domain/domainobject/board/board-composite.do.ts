@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo } from './types';
 
-export class BoardComposite {
+export abstract class BoardComposite {
 	id: EntityId;
 
 	title?: string;
@@ -21,23 +21,19 @@ export class BoardComposite {
 		this.updatedAt = props.updatedAt;
 	}
 
-	protected addChild(domainObject: AnyBoardDo, toIndex?: number) {
-		if (toIndex) {
-			this.children.splice(toIndex, 0, domainObject);
-		} else {
-			this.children.push(domainObject);
+	abstract addChild(domainObject: AnyBoardDo, toIndex?: number): void;
+
+	getChild(childId: EntityId): AnyBoardDo {
+		const foundChild = this.children.find((child) => child.id === childId);
+		if (foundChild === undefined) {
+			throw new NotFoundException('child is not child of this parent');
 		}
+
+		return foundChild;
 	}
 
 	removeChild(childId: EntityId): AnyBoardDo {
-		if (this.children === undefined) {
-			throw new NotFoundException('parent has no children');
-		}
-
-		const removedChild = this.children.find((child) => child.id === childId);
-		if (removedChild === undefined) {
-			throw new NotFoundException('child is not child of this parent');
-		}
+		const removedChild = this.getChild(childId);
 
 		this.children = this.children.filter((child) => child.id !== childId);
 		return removedChild;

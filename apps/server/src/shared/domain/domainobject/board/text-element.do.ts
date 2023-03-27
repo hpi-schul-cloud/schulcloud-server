@@ -12,6 +12,10 @@ export class TextElement extends BoardComposite implements TextElementProps, Boa
 		this.text = props.text;
 	}
 
+	addChild(child: AnyBoardDo) {
+		throw new Error(`Cannot add children. Object of type '${child.constructor.name}' given`);
+	}
+
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
 		builder.buildTextElementNode(this, parentId, position);
 	}

@@ -6,8 +6,8 @@ import { BoardDoRepo } from '../repo';
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async findById(id: EntityId): Promise<AnyBoardDo> {
-		const domainObject = await this.boardDoRepo.findById(id);
+	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
+		const domainObject = await this.boardDoRepo.findById(id, depth);
 		return domainObject;
 	}
 
