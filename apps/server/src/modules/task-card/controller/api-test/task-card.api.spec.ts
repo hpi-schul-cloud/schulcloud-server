@@ -327,7 +327,7 @@ describe('Task-Card Controller (api)', () => {
 				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				if (richTextElement && richTextElement[0] && richTextElement[0].content) {
+				if (richTextElement?.[0]?.content) {
 					expect(richTextElement[0].content.value).toEqual(sanitizedText);
 				}
 			});
@@ -371,6 +371,26 @@ describe('Task-Card Controller (api)', () => {
 				);
 				const expectedRichTextElement = richTextElement ? richTextElement[0].content.value : '';
 				expect(expectedRichTextElement).toEqual(sanitizedText);
+			});
+		});
+		describe('validate taskCard', () => {
+			it('should throw an error if title is to long', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 't'.repeat(401),
+				};
+
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
 			});
 		});
 	});
