@@ -40,23 +40,33 @@ describe('AccountService Integration', () => {
 		systemId: new ObjectId().toString(),
 	});
 
-	const createAccount = async (): Promise<[string, string]> => {
+	const createDbAccount = async (): Promise<string> => {
 		const accountEntity = accountFactory.build({
 			username: testAccount.username,
 			userId: testAccount.userId,
 			systemId: testAccount.systemId,
 		});
 		await em.persistAndFlush(accountEntity);
+		return accountEntity.id;
+	};
+
+	const createIdmAccount = async (refId: string): Promise<string> => {
 		const idmId = await identityManagementService.createAccount(
 			{
 				username: testAccount.username,
 				attRefFunctionalIntId: testAccount.userId,
 				attRefFunctionalExtId: testAccount.systemId,
-				attRefTechnicalId: accountEntity.id,
+				attRefTechnicalId: refId,
 			},
 			testAccount.password
 		);
-		return [accountEntity.id, idmId];
+		return idmId;
+	};
+
+	const createAccount = async (): Promise<[string, string]> => {
+		const dbId = await createDbAccount();
+		const idmId = await createIdmAccount(dbId);
+		return [dbId, idmId];
 	};
 
 	beforeAll(async () => {
@@ -170,6 +180,19 @@ describe('AccountService Integration', () => {
 		});
 		await compareDbAccount(dbId, updatedAccount);
 		await compareIdmAccount(idmId, updatedAccount);
+	});
+
+	it('save should create idm account for existing db account', async () => {
+		if (!isIdmReachable) return;
+		const newUsername = 'jane.doe@mail.tld';
+		const dbId = await createDbAccount();
+		const originalAccount = await accountService.findById(dbId);
+		const updatedAccount = await accountService.save({
+			...originalAccount,
+			username: newUsername,
+		});
+		await compareDbAccount(dbId, updatedAccount);
+		await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
 	});
 
 	it('updateUsername should update username', async () => {
