@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityNotFoundError } from '@shared/common';
-import { Counted, EntityId, IAccountUpdate } from '@shared/domain';
+import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
 import { AbstractAccountService } from './account.service.abstract';
@@ -24,8 +24,14 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const allAccounts = await this.identityManager.getAllAccounts();
-		const results = allAccounts.filter((account) => userIds.includes(account.id));
+		const results = new Array<IAccount>();
+		for (const userId of userIds) {
+			// eslint-disable-next-line no-await-in-loop
+			const result = await this.identityManager.findAccountByFctIntId(userId);
+			if (result) {
+				results.push(result);
+			}
+		}
 		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
 		return accounts;
 	}
