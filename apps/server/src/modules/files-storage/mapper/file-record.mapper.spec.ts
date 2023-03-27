@@ -22,7 +22,7 @@ describe('FilesStorageMapper', () => {
 					parentType: 'courses',
 					securityCheckStatus: 'pending',
 					size: expect.any(Number),
-					type: 'application/octet-stream',
+					mimeType: 'application/octet-stream',
 				})
 			);
 		});
