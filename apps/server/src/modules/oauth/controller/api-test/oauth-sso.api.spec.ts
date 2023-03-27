@@ -414,7 +414,6 @@ describe('OAuth SSO Controller (API)', () => {
 				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = state;
-				jest.setTimeout(999999);
 
 				const idToken: string = jwt.sign(
 					{

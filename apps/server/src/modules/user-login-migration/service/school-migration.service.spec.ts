@@ -8,9 +8,9 @@ import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.fac
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { ICurrentUser } from '@src/modules/authentication';
+import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { ICurrentUser } from '../../authentication';
 
 describe('SchoolMigrationService', () => {
 	let module: TestingModule;

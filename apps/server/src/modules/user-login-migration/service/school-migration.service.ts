@@ -5,7 +5,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 
 @Injectable()
 export class SchoolMigrationService {
