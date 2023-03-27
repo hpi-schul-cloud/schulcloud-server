@@ -242,7 +242,7 @@ export class TaskUC {
 	}
 
 	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
-		return this.taskService.update(userId, taskId, params);
+		return this.taskService.update(userId, taskId, params, true);
 	}
 
 	async find(userId: EntityId, taskId: EntityId) {
