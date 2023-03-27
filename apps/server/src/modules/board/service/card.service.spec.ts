@@ -1,14 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	textElementFactory,
-} from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
