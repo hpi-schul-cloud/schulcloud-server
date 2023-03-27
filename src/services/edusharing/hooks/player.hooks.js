@@ -4,7 +4,7 @@ const { disallow } = require('feathers-hooks-common');
 const { hasPermission, hasSchoolPermission } = require('../../../hooks');
 const { MethodNotAllowed } = require('@feathersjs/errors');
 
-const isEdusharing = (context) => {
+const isEdusharing = async (context) => {
 	if (Configuration.get('FEATURE_LERNSTORE_ENABLED') !== true) {
 		throw new MethodNotAllowed('This feature is disabled on this instance!');
 	}
