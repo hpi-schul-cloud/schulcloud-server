@@ -5,6 +5,7 @@ import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MigrationResponse } from '../controller/dto';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { SchoolService } from './school.service';
@@ -242,6 +243,12 @@ describe('SchoolService', () => {
 			officialSchoolNumber: '1337',
 		});
 
+		if (testDO.oauthMigrationFinished) {
+			testDO.oauthMigrationFinalFinish = new Date(
+				testDO.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
+			);
+		}
+
 		schoolRepo.findById.mockResolvedValue(testDO);
 		schoolRepo.save.mockResolvedValue(testDO);
 
@@ -259,6 +266,7 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
 					enableMigrationStart: true,
 				});
 			});
@@ -320,6 +328,7 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
 					enableMigrationStart: true,
 				});
 			});
@@ -335,6 +344,7 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
 					enableMigrationStart: true,
 				});
 			});
@@ -350,8 +360,38 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
 					enableMigrationStart: true,
 				});
+			});
+		});
+
+
+		describe('when DO does not have oauthMigrationPossible and oauthMigrationFinished', () => {
+			it('should set oauthMigrationStart', async () => {
+				const { testId, testDO } = setupMigration(undefined, undefined, undefined);
+
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, undefined);
+
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.oauthMigrationFinalFinish).toEqual(testDO.oauthMigrationFinalFinish);
+				expect(testDO.oauthMigrationStart).toBeTruthy();
+				expect(resp.enableMigrationStart).toBeTruthy();
+			});
+		});
+
+		describe('when oauthMigrationFinished is false', () => {
+			it('should set oauthMigrationStart', async () => {
+				const { testId, testDO } = setupMigration(true, true, true);
+
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, false);
+
+				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
+				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
+				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.oauthMigrationFinalFinish).toEqual(undefined);
 			});
 		});
 
@@ -365,6 +405,7 @@ describe('SchoolService', () => {
 					oauthMigrationPossible: testDO.oauthMigrationPossible,
 					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
 					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
 					enableMigrationStart: true,
 				});
 			});
