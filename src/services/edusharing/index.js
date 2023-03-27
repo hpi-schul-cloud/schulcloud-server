@@ -34,7 +34,9 @@ class EduSharingPlayer {
 		if (!Configuration.get('ES_API_V7')) {
 			throw new MethodNotAllowed('This feature is disabled on this instance');
 		}
-		return EduSharingConnectorV7.getPlayerForNode(uuid);
+		const esPlayer = EduSharingConnectorV7.getPlayerForNode(uuid);
+		
+		return esPlayer;
 	}
 }
 
