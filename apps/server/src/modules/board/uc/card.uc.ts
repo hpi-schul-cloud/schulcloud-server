@@ -33,7 +33,7 @@ export class CardUc {
 		return card;
 	}
 
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<boolean> {
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const parent = await this.boardDoService.findParentOfId(cardId);
@@ -43,7 +43,6 @@ export class CardUc {
 		// TODO check permissions
 
 		await this.boardDoService.deleteChild(parent, cardId);
-		return true;
 	}
 
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
@@ -57,7 +56,7 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<boolean> {
+	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteElement', userId, cardId, contentElementId });
 
 		const card = await this.cardService.findById(cardId);
@@ -65,7 +64,5 @@ export class CardUc {
 		// TODO check permissions
 
 		await this.boardDoService.deleteChild(card, contentElementId);
-
-		return true;
 	}
 }

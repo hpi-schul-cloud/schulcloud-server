@@ -21,6 +21,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
+		this.title = props.title;
 	}
 
 	@Index()

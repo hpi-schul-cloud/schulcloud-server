@@ -31,12 +31,12 @@ export class BoardUc {
 		return board;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<boolean> {
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		// TODO check permissions
 
-		return this.boardDoService.deleteWithDescendants(boardId);
+		await this.boardDoService.deleteWithDescendants(boardId);
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -50,7 +50,7 @@ export class BoardUc {
 		return column;
 	}
 
-	async deleteColumn(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<boolean> {
+	async deleteColumn(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteColumn', userId, boardId, columnId });
 
 		const board = await this.columnBoardService.findById(boardId);
@@ -58,7 +58,5 @@ export class BoardUc {
 		// TODO check permissions
 
 		await this.boardDoService.deleteChild(board, columnId);
-
-		return true;
 	}
 }
