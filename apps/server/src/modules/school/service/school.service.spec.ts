@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MigrationResponse } from '../controller/dto';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { SchoolService } from './school.service';
@@ -365,7 +365,6 @@ describe('SchoolService', () => {
 				});
 			});
 		});
-
 
 		describe('when DO does not have oauthMigrationPossible and oauthMigrationFinished', () => {
 			it('should set oauthMigrationStart', async () => {
