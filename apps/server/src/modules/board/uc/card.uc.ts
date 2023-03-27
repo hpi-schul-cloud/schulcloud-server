@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ContentElementService } from '../service';
+import { BoardDoService, ColumnBoardService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly boardDoService: BoardDoService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
@@ -27,7 +28,7 @@ export class CardUc {
 		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
 
 		// TODO: check Permissions
-		const card = this.cardService.createCard(boardId, columnId);
+		const card = await this.columnBoardService.createCard(boardId, columnId);
 
 		return card;
 	}
