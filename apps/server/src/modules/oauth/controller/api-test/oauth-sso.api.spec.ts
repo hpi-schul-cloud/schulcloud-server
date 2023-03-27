@@ -26,6 +26,7 @@ import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/san
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
+import { AccountDto } from '../../../account/services/dto';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -259,6 +260,7 @@ describe('OAuth SSO Controller (API)', () => {
 				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				query.state = state;
+				query.code = undefined;
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth`)
@@ -291,8 +293,18 @@ describe('OAuth SSO Controller (API)', () => {
 				new ObjectId().toHexString()
 			);
 
+			const schoolMatch: School = schoolFactory.buildWithId(
+				{
+					systems: [targetSystem],
+					officialSchoolNumber: '11111',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e714',
+					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+				},
+				new ObjectId().toHexString()
+			);
+
 			const targetSchool: School = schoolFactory.buildWithId(
-				{ systems: [targetSystem], officialSchoolNumber: '22222', externalId: 'targetExternalId' },
+				{ systems: [targetSystem], officialSchoolNumber: '22222', externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713' },
 				new ObjectId().toHexString(),
 				{}
 			);
@@ -302,9 +314,31 @@ describe('OAuth SSO Controller (API)', () => {
 				new ObjectId().toHexString(),
 				{}
 			);
+
+			const userMatch: User = userFactory.buildWithId(
+				{ externalId: externalUserId, school: schoolMatch },
+				new ObjectId().toHexString(),
+				{}
+			);
+
+			const accountMatch: Account = accountFactory.buildWithId({
+				userId: sourceUser.id,
+				systemId: sourceSystem.id,
+				username: sourceUser.email,
+			});
 			const targetUser: User = userFactory.buildWithId({ externalId: 'differentExternalUserId', school: targetSchool });
 
-			await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, targetSchool, sourceUser, targetUser]);
+			await em.persistAndFlush([
+				sourceSystem,
+				targetSystem,
+				sourceSchool,
+				targetSchool,
+				sourceUser,
+				targetUser,
+				schoolMatch,
+				userMatch,
+				accountMatch,
+			]);
 
 			const { state, cookies } = await setupSessionState(targetSystem.id, true);
 			query.code = 'code';
@@ -317,10 +351,13 @@ describe('OAuth SSO Controller (API)', () => {
 				sourceSystem,
 				sourceUser,
 				targetUser,
-				schoolExternalId: sourceSchool.externalId as string,
+				userMatch,
+				targetSchoolExternalId: targetSchool.externalId as string,
+				sourceSchoolExternalId: sourceSchool.externalId as string,
 				externalUserId,
 				query,
 				cookies,
+				schoolMatch,
 			};
 		};
 
@@ -328,7 +365,8 @@ describe('OAuth SSO Controller (API)', () => {
 			idToken: string,
 			targetSystem: System,
 			targetUser: User,
-			schoolExternalId: string
+			schoolExternalId: string,
+			officialSchoolNumber: string
 		) => {
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)
@@ -351,11 +389,11 @@ describe('OAuth SSO Controller (API)', () => {
 					},
 					personenkontexte: [
 						{
-							id: new UUID(schoolExternalId),
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
 							rolle: SanisRole.LEHR,
 							organisation: {
-								id: new UUID(schoolExternalId),
-								kennung: 'NI_22222',
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								kennung: officialSchoolNumber,
 								name: 'schulName',
 								typ: 'not necessary',
 							},
@@ -377,15 +415,16 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when the migration is successful', () => {
 			it('should redirect to the success page', async () => {
-				const { query, user, system, externalUserId, cookies } = await setupMigration();
-				currentUser = mapUserToCurrentUser(user, undefined, system.id);
+				const { query, sourceUser, targetSystem, externalUserId, cookies, sourceSystem, schoolMatch, userMatch } =
+					await setupMigration();
+				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 
 				const idToken: string = jwt.sign(
 					{
 						sub: 'testUser',
-						iss: system.oauthConfig?.issuer,
-						aud: system.oauthConfig?.clientId,
+						iss: targetSystem.oauthConfig?.issuer,
+						aud: targetSystem.oauthConfig?.clientId,
 						iat: Date.now(),
 						exp: Date.now() + 100000,
 						external_sub: externalUserId,
@@ -396,11 +435,13 @@ describe('OAuth SSO Controller (API)', () => {
 					}
 				);
 
-				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
-					id_token: idToken,
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
-				});
+				mockPostOauthTokenEndpoint(
+					idToken,
+					targetSystem,
+					userMatch,
+					schoolMatch.externalId ? schoolMatch.externalId : '',
+					'NI_11111'
+				);
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth/migration`)
@@ -409,9 +450,9 @@ describe('OAuth SSO Controller (API)', () => {
 					.expect(302)
 					.expect(
 						'Location',
-						`${baseUrl}/migration/success?sourceSystem=${system.id}&targetSystem=${
+						`${baseUrl}/migration/success?sourceSystem=${
 							currentUser.systemId ? currentUser.systemId : ''
-						}`
+						}&targetSystem=${targetSystem.id}`
 					);
 			});
 		});
@@ -447,7 +488,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when schoolnumbers mismatch', () => {
 			it('should redirect to the login page with an schoolnumber mismatch error', async () => {
-				const { targetSystem, sourceUser, targetUser, sourceSystem, schoolExternalId, query, cookies } =
+				const { targetSystem, sourceUser, targetUser, sourceSystem, targetSchoolExternalId, query, cookies } =
 					await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
@@ -466,7 +507,7 @@ describe('OAuth SSO Controller (API)', () => {
 						algorithm: 'RS256',
 					}
 				);
-				mockPostOauthTokenEndpoint(idToken, targetSystem, targetUser, schoolExternalId);
+				mockPostOauthTokenEndpoint(idToken, targetSystem, targetUser, targetSchoolExternalId, 'NI_22222');
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth/migration`)

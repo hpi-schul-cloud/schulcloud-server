@@ -150,8 +150,10 @@ describe('SchoolMigrationService', () => {
 		describe('when current users school not match with school of to migrate user ', () => {
 			it('should throw an error', async () => {
 				const { currentUserId, externalId, schoolDO, userDO } = setup();
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
+				schoolDO.officialSchoolNumber = 'OfficialSchoolnumberMismatch';
 				schoolService.getSchoolById.mockResolvedValue(schoolDO);
-				userDO.schoolId = 'anotherSchool';
+
 				userService.findById.mockResolvedValue(userDO);
 
 				const func = () => service.schoolToMigrate(currentUserId, externalId, 'targetSchoolNumber');
