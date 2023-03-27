@@ -122,7 +122,7 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate, remove = false): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -149,7 +149,13 @@ export class TaskService {
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.users.set(users);
+			} else if (remove) {
+				task.users.removeAll();
 			}
+		} else if (remove) {
+			task.course = undefined;
+			task.lesson = undefined;
+			task.users.removeAll();
 		}
 
 		if (params.lessonId) {
@@ -159,6 +165,8 @@ export class TaskService {
 			}
 			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
 			task.lesson = lesson;
+		} else if (remove) {
+			task.lesson = undefined;
 		}
 
 		this.taskDateValidation(params.availableDate, params.dueDate);

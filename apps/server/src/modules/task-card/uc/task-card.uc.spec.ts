@@ -226,8 +226,8 @@ describe('TaskCardUc', () => {
 				requiredPermissions: [],
 			});
 		});
-		it('should call task create and with task name same like task-card title and courseId if given', async () => {
-			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId };
+		it('should call task create with task name same like task-card title, courseId if given and private as false', async () => {
+			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId, private: false };
 			await uc.create(user.id, taskCardCreateParams);
 
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
@@ -257,7 +257,7 @@ describe('TaskCardUc', () => {
 				})
 			);
 		});
-		it('should call task update to add id of task-card to task', async () => {
+		it('should call task update from taskService to add id of task-card to task', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
 			expect(taskService.update).toBeCalled();

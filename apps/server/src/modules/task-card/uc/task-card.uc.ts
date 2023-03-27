@@ -1,6 +1,15 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import {
+	CardType,
+	Course,
+	EntityId,
+	ITaskUpdate,
+	Permission,
+	PermissionContextBuilder,
+	TaskCard,
+	User,
+} from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -80,6 +89,7 @@ export class TaskCardUc {
 		const taskParams = {
 			name: params.title,
 			courseId: '',
+			private: false,
 		};
 		if (params.courseId) {
 			taskParams.courseId = params.courseId;
@@ -168,15 +178,6 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
-			name: params.title,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
-	}
-
 	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
 		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
 		taskCard.cardElements.set(newCardElements);
@@ -190,6 +191,15 @@ export class TaskCardUc {
 			taskCard: taskCard.id,
 		};
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
+	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+		const taskParams = {
+			name: params.title,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
 		return taskWithStatusVo;
 	}
