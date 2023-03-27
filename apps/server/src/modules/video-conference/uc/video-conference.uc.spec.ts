@@ -10,7 +10,7 @@ import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/re
 import { roleFactory, setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService, SchoolService } from '@src/modules';
-import { ICurrentUser, IResolvedUser } from '@src/modules/authentication';
+import { ICurrentUser } from '@src/modules/authentication';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
@@ -163,7 +163,6 @@ describe('VideoConferenceUc', () => {
 			roles: [],
 			schoolId: 'schoolId',
 			accountId: 'accountId',
-			user: {} as unknown as IResolvedUser,
 		};
 		defaultOptions = {
 			everybodyJoinsAsModerator: false,
@@ -175,7 +174,7 @@ describe('VideoConferenceUc', () => {
 		expertRoleTeam = roleFactory.build({ name: RoleName.TEAMEXPERT, permissions: [Permission.JOIN_MEETING] });
 
 		team = teamFactory.withRoleAndUserId(defaultRole, defaultCurrentUser.userId).build();
-		user = team.teamUsers[0].user;
+		({ user } = team.teamUsers[0]);
 		user.firstName = 'firstName';
 		user.lastName = 'lastName';
 
