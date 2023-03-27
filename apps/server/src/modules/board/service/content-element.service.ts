@@ -13,7 +13,6 @@ export class ContentElementService {
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
 			text: ``,
-			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
