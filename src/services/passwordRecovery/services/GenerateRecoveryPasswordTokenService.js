@@ -1,5 +1,4 @@
 const { keep } = require('feathers-hooks-common');
-const local = require('@feathersjs/authentication-local');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { NotFound, BadRequest } = require('../../../errors');
@@ -86,7 +85,7 @@ const clearResult = (context) => {
 
 const hooks = {
 	before: {
-		create: [globalHooks.blockDisposableEmail('username'), local.hooks.hashPassword('password')],
+		create: [globalHooks.blockDisposableEmail('username')],
 	},
 
 	after: {
