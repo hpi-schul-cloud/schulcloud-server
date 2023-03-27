@@ -1,5 +1,5 @@
 import type { EntityId } from '../../types';
-import { BoardComposite } from './board-composite.do';
+import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { TextElement } from './text-element.do';
 import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
@@ -10,6 +10,7 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 
 	constructor(props: CardProps) {
 		super(props);
+		this.title = props.title;
 		this.height = props.height;
 	}
 
@@ -26,16 +27,6 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 	}
 }
 
-export interface CardProps {
-	id: EntityId;
-
-	title?: string;
-
+export interface CardProps extends BoardCompositeProps {
 	height: number;
-
-	children: AnyBoardDo[];
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }

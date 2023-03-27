@@ -37,6 +37,9 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
 
+	@Property({ nullable: true })
+	title?: string;
+
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
 		return parentId;
@@ -66,4 +69,5 @@ export interface BoardNodeProps {
 	id?: EntityId;
 	parent?: BoardNode;
 	position?: number;
+	title?: string;
 }
