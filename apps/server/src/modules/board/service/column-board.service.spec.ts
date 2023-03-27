@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { ColumnBoardService } from './column-board.service';
 
@@ -51,7 +52,7 @@ describe(ColumnBoardService.name, () => {
 
 			await service.findById(boardId);
 
-			expect(boardDoRepo.findById).toHaveBeenCalledWith(boardId);
+			expect(boardDoRepo.findById).toHaveBeenCalledWith(boardId, 2);
 		});
 
 		it('should return the columnBoard object of the given', async () => {
@@ -66,7 +67,7 @@ describe(ColumnBoardService.name, () => {
 		it('should throw error when id does not belong to a columnboard', async () => {
 			const { column } = setup();
 
-			const expectedError = new NotFoundException(`there is no columboard with this id`);
+			const expectedError = new NotFoundException(`There is no columboard with this id`);
 
 			boardDoRepo.findById.mockResolvedValue(column);
 
@@ -117,6 +118,50 @@ describe(ColumnBoardService.name, () => {
 				],
 				boardId
 			);
+		});
+	});
+
+	describe('creating a card', () => {
+		const setup = () => {
+			const column = columnFactory.build();
+			const board = columnBoardFactory.build({ children: [column] });
+			const boardId = board.id;
+			const columnId = column.id;
+
+			return { board, boardId, column, columnId };
+		};
+
+		it('should save a list of cards using the repo', async () => {
+			const { board, boardId, columnId } = setup();
+
+			boardDoRepo.findById.mockResolvedValueOnce(board);
+
+			await service.createCard(boardId, columnId);
+
+			expect(boardDoRepo.save).toHaveBeenCalledWith(
+				[
+					expect.objectContaining({
+						id: expect.any(String),
+						title: '',
+						height: 150,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+				],
+				columnId
+			);
+		});
+
+		it('should throw not found exception if requested column id has not been found', async () => {
+			const { board, boardId } = setup();
+
+			const notExistingColumnId = new ObjectId().toHexString();
+			const error = new NotFoundException(`child is not child of this parent`);
+
+			boardDoRepo.findById.mockResolvedValueOnce(board);
+
+			await expect(service.createCard(boardId, notExistingColumnId)).rejects.toThrowError(error);
 		});
 	});
 });

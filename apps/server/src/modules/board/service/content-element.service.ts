@@ -13,11 +13,12 @@ export class ContentElementService {
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
 			text: ``,
+			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
-		card.addElement(element);
+		card.addChild(element);
 
 		await this.boardDoRepo.save(card.children, card.id);
 
