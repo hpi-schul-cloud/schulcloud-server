@@ -29,13 +29,6 @@ export class CardController {
 		return result;
 	}
 
-	@Delete(':cardId')
-	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
-
-		return true;
-	}
-
 	@ApiExtraModels(TextElementResponse)
 	@ApiResponse({
 		status: 201,
