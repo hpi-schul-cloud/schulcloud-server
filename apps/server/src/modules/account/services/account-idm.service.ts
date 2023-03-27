@@ -52,15 +52,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
-		const results = await this.identityManager.findAccountsByUsername(userName, { exact: false });
-		const accounts = results.slice(skip, skip + limit).map((result) => AccountIdmToDtoMapper.mapToDto(result));
-		return [accounts, results.length];
+		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
+		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		return [accounts, total];
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
-		const results = await this.identityManager.findAccountsByUsername(userName, { exact: true });
+		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
 		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
-		return [accounts, accounts.length];
+		return [accounts, total];
 	}
 
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {

@@ -1,4 +1,4 @@
-import { IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
 
 export type SearchOptions = {
 	exact?: boolean;
@@ -64,7 +64,7 @@ export abstract class IdentityManagementService {
 	 * @param options the search options to be applied.
 	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<IAccount[]>;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>>;
 
 	/**
 	 * Load all accounts.

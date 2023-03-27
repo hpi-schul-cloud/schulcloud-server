@@ -1,7 +1,7 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
@@ -110,8 +110,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<IAccount[]> {
+	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
+		const total = await kc.users.count({ username, exact: options?.exact });
 		const results = await kc.users.find({
 			username,
 			exact: options?.exact,
@@ -119,7 +120,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			max: options?.limit,
 		});
 		const accounts = results.map((account) => this.extractAccount(account));
-		return accounts;
+		return [accounts, total];
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {
