@@ -128,11 +128,10 @@ describe(CardUc.name, () => {
 
 			boardDoService.findParentOfId.mockResolvedValue(column);
 
-			const result = await uc.deleteCard(user.id, card.id);
+			await uc.deleteCard(user.id, card.id);
 
 			expect(boardDoService.findParentOfId).toHaveBeenCalledWith(card.id);
 			expect(boardDoService.deleteChild).toHaveBeenCalledWith(column, card.id);
-			expect(result).toEqual(true);
 		});
 
 		it('should throw error if parent is not found', async () => {
@@ -184,11 +183,10 @@ describe(CardUc.name, () => {
 
 			cardService.findById.mockResolvedValue(card);
 
-			const result = await uc.deleteElement(user.id, card.id, contentElement.id);
+			await uc.deleteElement(user.id, card.id, contentElement.id);
 
 			expect(cardService.findById).toHaveBeenCalledWith(card.id);
 			expect(boardDoService.deleteChild).toHaveBeenCalledWith(card, contentElement.id);
-			expect(result).toEqual(true);
 		});
 	});
 });
