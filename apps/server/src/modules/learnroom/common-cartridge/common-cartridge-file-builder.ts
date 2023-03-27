@@ -22,7 +22,7 @@ export type ICommonCartridgeFileBuilderOptions = {
 
 /*
   This class builds a Common Cartridge file according to
-  Common Cartridge 1.3.0 and supports only this format at the moment.
+  Common Cartridge 1.1.0 and supports only this format at the moment.
   For more information look here: https://www.imsglobal.org/cc/index.html
  */
 export class CommonCartridgeFileBuilder {
