@@ -240,7 +240,7 @@ class EduSharingConnector {
 
 		const response = await this.eduSharingRequest(options, user);
 		const parsed = JSON.parse(response);
-		if (parsed && parsed.detailsSnippet && typeof parsed.detailsSnippet === 'string') {
+		if (parsed && typeof parsed.detailsSnippet === 'string') {
 			return this.getH5Piframe(parsed.detailsSnippet);
 		}
 		throw new Unavailable(`Unexpected response from Edu-Sharing renderer.`);
@@ -265,8 +265,13 @@ class EduSharingConnector {
 		const iframeSrc = /<iframe src="(.*?)"><\/iframe>/g.exec(cleanTags);
 		const scriptSrc = /<script src="(.*?)"><\/script>/g.exec(cleanTags);
 
-		if (iframeSrc === null || scriptSrc === null) {
-			throw new Unavailable(`No Iframe detected in Edu-Sharing renderer response.`);
+		if (
+			iframeSrc === null ||
+			scriptSrc === null ||
+			(!Array.isArray(iframeSrc) && !iframeSrc[1]) ||
+			(!Array.isArray(scriptSrc) && !scriptSrc[1])
+		) {
+			throw new Unavailable(`No data detected in Edu-Sharing renderer response.`);
 		}
 
 		const iframeH5P = { iframe_src: iframeSrc[1], script_src: scriptSrc[1] };
