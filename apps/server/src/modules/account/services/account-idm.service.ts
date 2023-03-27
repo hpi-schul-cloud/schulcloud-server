@@ -143,7 +143,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	private async getIdmAccountId(accountId: string) {
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY') === true) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
 			return accountId;
 		}
 		const idmAccount = await this.identityManager.findAccountByTecRefId(accountId);

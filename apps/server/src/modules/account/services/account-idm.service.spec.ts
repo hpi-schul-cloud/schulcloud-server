@@ -43,7 +43,7 @@ describe('AccountIdmService', () => {
 						get: <T = unknown>(key: string): T => {
 							const config = {
 								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-								FEATURE_IDENTITY_MANAGEMENT_IS_PRIMARY: true,
+								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: true,
 							};
 							return config[key] as T;
 						},

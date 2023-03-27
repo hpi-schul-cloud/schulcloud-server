@@ -17,11 +17,7 @@ export class KeycloakMigrationService {
 		let accounts: AccountDto[] = [];
 		while (foundAccounts > 0) {
 			// eslint-disable-next-line no-await-in-loop
-			({ accounts, total: foundAccounts } = await this.accountService.searchByUsernamePartialMatch(
-				userNamePattern,
-				skip,
-				amount
-			));
+			[accounts, foundAccounts] = await this.accountService.searchByUsernamePartialMatch(userNamePattern, skip, amount);
 			foundAccounts = accounts.length;
 			for (const account of accounts) {
 				// eslint-disable-next-line no-await-in-loop
