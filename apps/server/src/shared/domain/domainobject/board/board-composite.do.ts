@@ -13,7 +13,7 @@ export abstract class BoardComposite {
 
 	updatedAt: Date;
 
-	constructor(props: AnyBoardDoProps) {
+	constructor(props: BoardCompositeProps) {
 		this.id = props.id;
 		this.title = props.title;
 		this.children = props.children;
@@ -40,7 +40,7 @@ export abstract class BoardComposite {
 	}
 }
 
-export interface AnyBoardDoProps {
+export interface BoardCompositeProps {
 	id: EntityId;
 
 	title?: string;
