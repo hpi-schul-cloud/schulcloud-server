@@ -95,24 +95,6 @@ describe('OAuth SSO Controller (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	const setup = async () => {
-		const externalUserId = 'externalUserId';
-		const system: System = systemFactory.withOauthConfig().buildWithId();
-		const school: School = schoolFactory.buildWithId({ systems: [system] });
-		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
-		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
-
-		await em.persistAndFlush([system, user, school, account]);
-		em.clear();
-
-		return {
-			system,
-			user,
-			externalUserId,
-			school,
-		};
-	};
-
 	const setupSessionState = async (systemId: EntityId, migration: boolean) => {
 		const query: SSOLoginQuery = {
 			migration,
@@ -132,6 +114,32 @@ describe('OAuth SSO Controller (API)', () => {
 		return {
 			cookies,
 			state,
+		};
+	};
+
+	const setup = async () => {
+		const externalUserId = 'externalUserId';
+		const system: System = systemFactory.withOauthConfig().buildWithId();
+		const school: School = schoolFactory.buildWithId({ systems: [system] });
+		const user: User = userFactory.buildWithId({ externalId: externalUserId, school });
+		const account: Account = accountFactory.buildWithId({ systemId: system.id, userId: user.id });
+
+		await em.persistAndFlush([system, user, school, account]);
+		em.clear();
+
+		const { state, cookies } = await setupSessionState(system.id, false);
+		const query: AuthorizationParams = new AuthorizationParams();
+		query.code = 'code';
+		query.state = 'state';
+
+		return {
+			system,
+			user,
+			externalUserId,
+			school,
+			state,
+			cookies,
+			query,
 		};
 	};
 
@@ -167,10 +175,7 @@ describe('OAuth SSO Controller (API)', () => {
 	describe('[GET] sso/oauth', () => {
 		describe('when the session has no oauthLoginState', () => {
 			it('should return 401 Unauthorized', async () => {
-				await setup();
-				const query: AuthorizationParams = new AuthorizationParams();
-				query.code = 'code';
-				query.state = 'state';
+				const { query } = await setup();
 
 				await request(app.getHttpServer()).get(`/sso/oauth`).query(query).expect(401);
 			});
@@ -178,9 +183,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when the session and the request have a different state', () => {
 			it('should return 401 Unauthorized', async () => {
-				const { system } = await setup();
-				const { cookies } = await setupSessionState(system.id, false);
-				const query: AuthorizationParams = new AuthorizationParams();
+				const { query, cookies } = await setup();
 				query.code = 'code';
 				query.state = 'wrongState';
 
@@ -190,10 +193,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system, externalUserId } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { system, externalUserId, state, query, cookies } = await setup();
 				const baseUrl: string = Configuration.get('HOST') as string;
-				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = state;
 
@@ -232,10 +233,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when an error occurs during the login process', () => {
 			it('should redirect to the login page', async () => {
-				const { system } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { state, query, cookies } = await setup();
 				const clientUrl: string = Configuration.get('HOST') as string;
-				const query: AuthorizationParams = new AuthorizationParams();
 				query.error = SSOAuthenticationError.ACCESS_DENIED;
 				query.state = state;
 
@@ -250,10 +249,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when a faulty query is passed', () => {
 			it('should redirect to the login page with an error', async () => {
-				const { system } = await setup();
-				const { state, cookies } = await setupSessionState(system.id, false);
+				const { state, cookies, query } = await setup();
 				const clientUrl: string = Configuration.get('HOST') as string;
-				const query: AuthorizationParams = new AuthorizationParams();
 				query.state = state;
 
 				await request(app.getHttpServer())
@@ -268,7 +265,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 	describe('[GET]  sso/oauth/migration', () => {
 		const setupMigration = async () => {
-			const { user, system, externalUserId } = await setup();
+			const { user, system, externalUserId, query } = await setup();
 
 			const targetSystem: System = systemFactory
 				.withOauthConfig()
@@ -303,7 +300,6 @@ describe('OAuth SSO Controller (API)', () => {
 			await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, targetSchool, sourceUser, targetUser]);
 
 			const { state, cookies } = await setupSessionState(targetSystem.id, true);
-			const query: AuthorizationParams = new AuthorizationParams();
 			query.code = 'code';
 			query.state = state;
 
