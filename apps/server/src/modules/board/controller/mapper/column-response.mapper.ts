@@ -1,4 +1,4 @@
-import { Column } from '@shared/domain';
+import { Card, Column } from '@shared/domain';
 import { CardSkeletonResponse, ColumnResponse, TimestampsResponse } from '../dto';
 
 export class ColumnResponseMapper {
@@ -6,13 +6,15 @@ export class ColumnResponseMapper {
 		const result = new ColumnResponse({
 			id: column.id,
 			title: column.title,
-			cards: column.children.map(
-				(card) =>
-					new CardSkeletonResponse({
-						cardId: card.id,
-						height: card.height,
-					})
-			),
+			cards: column.children.map((card) => {
+				if (!(card instanceof Card)) {
+					throw new Error(`unsupported child type: ${card.constructor.name}`);
+				}
+				return new CardSkeletonResponse({
+					cardId: card.id,
+					height: card.height,
+				});
+			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: column.updatedAt, createdAt: column.createdAt }),
 		});
 		return result;
