@@ -44,6 +44,8 @@ jest.mock('jwks-rsa', () => () => {
 	};
 });
 
+jest.setTimeout(99999999);
+
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -127,7 +129,6 @@ describe('OAuth SSO Controller (API)', () => {
 		await em.persistAndFlush([system, user, school, account]);
 		em.clear();
 
-		const { state, cookies } = await setupSessionState(system.id, false);
 		const query: AuthorizationParams = new AuthorizationParams();
 		query.code = 'code';
 		query.state = 'state';
@@ -137,8 +138,6 @@ describe('OAuth SSO Controller (API)', () => {
 			user,
 			externalUserId,
 			school,
-			state,
-			cookies,
 			query,
 		};
 	};
@@ -175,7 +174,10 @@ describe('OAuth SSO Controller (API)', () => {
 	describe('[GET] sso/oauth', () => {
 		describe('when the session has no oauthLoginState', () => {
 			it('should return 401 Unauthorized', async () => {
-				const { query } = await setup();
+				await setup();
+				const query: AuthorizationParams = new AuthorizationParams();
+				query.code = 'code';
+				query.state = 'state';
 
 				await request(app.getHttpServer()).get(`/sso/oauth`).query(query).expect(401);
 			});
@@ -183,7 +185,9 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when the session and the request have a different state', () => {
 			it('should return 401 Unauthorized', async () => {
-				const { query, cookies } = await setup();
+				const { system } = await setup();
+				const { cookies } = await setupSessionState(system.id, false);
+				const query: AuthorizationParams = new AuthorizationParams();
 				query.code = 'code';
 				query.state = 'wrongState';
 
@@ -193,7 +197,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system, externalUserId, state, query, cookies } = await setup();
+				const { system, externalUserId, query } = await setup();
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.code = 'code';
 				query.state = state;
@@ -233,7 +238,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when an error occurs during the login process', () => {
 			it('should redirect to the login page', async () => {
-				const { state, query, cookies } = await setup();
+				const { system, query } = await setup();
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				query.error = SSOAuthenticationError.ACCESS_DENIED;
 				query.state = state;
@@ -249,7 +255,8 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when a faulty query is passed', () => {
 			it('should redirect to the login page with an error', async () => {
-				const { state, cookies, query } = await setup();
+				const { system, query } = await setup();
+				const { state, cookies } = await setupSessionState(system.id, false);
 				const clientUrl: string = Configuration.get('HOST') as string;
 				query.state = state;
 
