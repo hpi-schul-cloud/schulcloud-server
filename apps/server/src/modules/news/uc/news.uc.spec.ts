@@ -69,7 +69,7 @@ describe('NewsUc', () => {
 						findAllPublished() {
 							return [[exampleCourseNews], 1];
 						},
-						findAllUnpublished() {
+						findAllUnpublishedByUser() {
 							return [[exampleUnpublishedCourseNews], 1];
 						},
 						findOneById(id) {
@@ -173,7 +173,7 @@ describe('NewsUc', () => {
 	describe('findAllUnpublishedByUser', () => {
 		it('should search for news by empty scope', async () => {
 			const scope = { unpublished: true };
-			const findAllUnpublishedSpy = jest.spyOn(repo, 'findAllUnpublished');
+			const findAllUnpublishedSpy = jest.spyOn(repo, 'findAllUnpublishedByUser');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedParams = [targets, userId, pagination];
 			expect(findAllUnpublishedSpy).toHaveBeenCalledWith(...expectedParams);
@@ -186,7 +186,7 @@ describe('NewsUc', () => {
 					targetId: schoolId,
 				},
 			};
-			const findAllUnpublishedBySchoolSpy = jest.spyOn(repo, 'findAllUnpublished');
+			const findAllUnpublishedBySchoolSpy = jest.spyOn(repo, 'findAllUnpublishedByUser');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedTarget = {
 				targetModel: scope.target.targetModel,
@@ -203,7 +203,7 @@ describe('NewsUc', () => {
 					targetId: courseTargetId,
 				},
 			};
-			const findAllUnpublishedByCourseSpy = jest.spyOn(repo, 'findAllUnpublished');
+			const findAllUnpublishedByCourseSpy = jest.spyOn(repo, 'findAllUnpublishedByUser');
 			await service.findAllForUser(userId, scope, pagination);
 			const expectedTarget = {
 				targetModel: scope.target.targetModel,
@@ -215,7 +215,7 @@ describe('NewsUc', () => {
 		it('should search for all course news if course id is not given', async () => {
 			const targetModel = NewsTargetModel.Course;
 			const scope = { target: { targetModel }, unpublished: true };
-			const findAllUnpublishedByTargetSpy = jest.spyOn(repo, 'findAllUnpublished');
+			const findAllUnpublishedByTargetSpy = jest.spyOn(repo, 'findAllUnpublishedByUser');
 			await service.findAllForUser(userId, scope, pagination);
 			const targetIds = targets
 				.filter((target) => target.targetModel === targetModel)

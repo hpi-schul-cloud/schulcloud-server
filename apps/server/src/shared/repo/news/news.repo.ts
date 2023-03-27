@@ -33,7 +33,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param creatorId - creatorId
 	 * @param options
 	 */
-	async findAllUnpublished(
+	async findAllUnpublishedByUser(
 		targets: NewsTargetFilter[],
 		creatorId: EntityId,
 		options?: IFindOptions<News>

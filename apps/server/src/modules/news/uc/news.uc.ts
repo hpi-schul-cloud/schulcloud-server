@@ -77,7 +77,7 @@ export class NewsUc {
 		if (options.order == null) options.order = { displayAt: SortOrder.desc };
 
 		const [newsList, newsCount] = unpublished
-			? await this.newsRepo.findAllUnpublished(targets, userId, options)
+			? await this.newsRepo.findAllUnpublishedByUser(targets, userId, options)
 			: await this.newsRepo.findAllPublished(targets, options);
 
 		await Promise.all(
