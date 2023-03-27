@@ -9,6 +9,7 @@ import {
 	IsMongoId,
 	IsOptional,
 	IsString,
+	MaxLength,
 	MinDate,
 	MinLength,
 	ValidateNested,
@@ -72,6 +73,7 @@ export class TaskCardParams {
 
 	@IsString()
 	@MinLength(2)
+	@MaxLength(400)
 	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The title of the card',
