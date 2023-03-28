@@ -1489,12 +1489,14 @@ describe('Task Controller (API)', () => {
 				course: englishCourse,
 				users: [student1, student2],
 				creator: teacher1,
+				finished: [student1],
 			});
 			const englishTask2 = taskFactory.build({
 				name: 'grammer1',
 				creator: teacher1,
 				lesson: grammerLesson,
 				users: [student1],
+				finished: [student1],
 			});
 			const englishTask3 = taskFactory.build({
 				name: 'grammer2',
@@ -1518,6 +1520,7 @@ describe('Task Controller (API)', () => {
 				name: 'fall of Rome',
 				course: historyCourse,
 				users: [student2, student3],
+				finished: [student2, student3],
 			});
 
 			const historyTask3 = taskFactory.build({
@@ -1606,7 +1609,23 @@ describe('Task Controller (API)', () => {
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
 			expect(response.status).toBe(200);
-			expect(total).toBe(5);
+			expect(total).toBe(3);
+		});
+
+		it('students 1 gets their tasks finished tasks', async () => {
+			const entities = setup();
+
+			await em.persistAndFlush(Object.values(entities));
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(entities.student1);
+			const response = await request(app.getHttpServer())
+				.get(`/tasks/finished`)
+				.set('Accept', 'application/json')
+				.send();
+			const { total } = response.body as TaskListResponse;
+			expect(response.status).toBe(200);
+			expect(total).toBe(2);
 		});
 
 		it('students 2 gets their tasks', async () => {
@@ -1619,7 +1638,7 @@ describe('Task Controller (API)', () => {
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
 			expect(response.status).toBe(200);
-			expect(total).toBe(7);
+			expect(total).toBe(6);
 		});
 
 		it('students 3 gets their tasks', async () => {
@@ -1632,7 +1651,7 @@ describe('Task Controller (API)', () => {
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
 			expect(response.status).toBe(200);
-			expect(total).toBe(3);
+			expect(total).toBe(2);
 		});
 
 		it('teacher 2 gets their tasks, assignment does not change the result', async () => {
