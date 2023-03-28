@@ -247,18 +247,22 @@ export class DatabaseManagementUc {
 		return this.databaseManagementService.syncIndexes();
 	}
 
-	private async createUserSearchIndex(): Promise<string> {
+	private async createUserSearchIndex(): Promise<void> {
 		const usersCollection = this.databaseManagementService.getDatabaseCollection('users');
-		try {
-			await usersCollection.dropIndex('userSearchIndex');
-		} catch (e) {
+		const userSearchIndexExists = await usersCollection.indexExists('userSearchIndex');
+		const indexes = await usersCollection.indexes();
+
+		if (userSearchIndexExists) {
+			const userSearchIndex = indexes.filter((i) => i.name === 'userSearchIndex');
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (e.codeName === 'IndexNotFound') {
-				this.logger.warn('Missing userSearchIndex.');
+			if (userSearchIndex[0].key.schoolId === 1) {
+				this.logger.debug('userSearcIndex does not require update');
+				return;
 			}
+			await usersCollection.dropIndex('userSearchIndex');
 		}
 
-		return usersCollection.createIndex(
+		await usersCollection.createIndex(
 			{
 				firstName: 'text',
 				lastName: 'text',
