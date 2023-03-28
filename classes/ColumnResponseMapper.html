@@ -187,7 +187,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Column } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Card, Column } from &#x27;@shared/domain&#x27;;
 import { CardSkeletonResponse, ColumnResponse, TimestampsResponse } from &#x27;../dto&#x27;;
 
 export class ColumnResponseMapper {
@@ -195,13 +195,16 @@ export class ColumnResponseMapper {
 		const result &#x3D; new ColumnResponse({
 			id: column.id,
 			title: column.title,
-			cards: column.cards.map(
-				(card) &#x3D;&gt;
-					new CardSkeletonResponse({
-						cardId: card.id,
-						height: card.height,
-					})
-			),
+			cards: column.children.map((card) &#x3D;&gt; {
+				if (!(card instanceof Card)) {
+					/* istanbul ignore next */
+					throw new Error(&#x60;unsupported child type: ${card.constructor.name}&#x60;);
+				}
+				return new CardSkeletonResponse({
+					cardId: card.id,
+					height: card.height,
+				});
+			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: column.updatedAt, createdAt: column.createdAt }),
 		});
 		return result;

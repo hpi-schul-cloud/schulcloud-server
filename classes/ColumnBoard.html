@@ -67,12 +67,17 @@
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+            </p>
 
             <p class="comment">
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/ColumnBoardProps.html" target="_self" >ColumnBoardProps</a></code>
                             <code><a href="../interfaces/BoardNodeBuildable.html" target="_self" >BoardNodeBuildable</a></code>
             </p>
 
@@ -90,7 +95,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#columns" >columns</a>
+                                <a href="#children" >children</a>
                             </li>
                             <li>
                                 <a href="#createdAt" >createdAt</a>
@@ -99,6 +104,7 @@
                                 <a href="#id" >id</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#title" >title</a>
                             </li>
                             <li>
@@ -117,10 +123,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#addColumn" >addColumn</a>
+                                <a href="#addChild" >addChild</a>
                             </li>
                             <li>
                                 <a href="#useBoardNodeBuilder" >useBoardNodeBuilder</a>
+                            </li>
+                            <li>
+                                <a href="#getChild" >getChild</a>
+                            </li>
+                            <li>
+                                <a href="#removeChild" >removeChild</a>
                             </li>
                         </ul>
                     </td>
@@ -134,54 +146,6 @@
     </table>
 </section>
 
-            <section>
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(props: <a href="../interfaces/ColumnBoardProps.html" target="_self">ColumnBoardProps</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:15</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>props</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/ColumnBoardProps.html" target="_self" >ColumnBoardProps</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section>
     
@@ -192,22 +156,29 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="columns"></a>
+                    <a name="children"></a>
                     <span class="name">
-                        <span ><b>columns</b></span>
-                        <a href="#columns"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>children</b></span>
+                        <a href="#children"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/Column.html" target="_self" >Column[]</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo[]</a></code>
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:11</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:10</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -231,9 +202,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:13</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:12</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -257,9 +235,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:7</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:6</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -272,6 +257,7 @@
                 <td class="col-md-4">
                     <a name="title"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>title</b></span>
                         <a href="#title"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -283,9 +269,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:9</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:8</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -309,9 +302,16 @@
 
                     </td>
                 </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                            </td>
+                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:15</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:14</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -329,24 +329,30 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addColumn"></a>
+                    <a name="addChild"></a>
                     <span class="name">
-                        <span ><b>addColumn</b></span>
-                        <a href="#addColumn"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>addChild</b></span>
+                        <a href="#addChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addColumn(column: <a href="../classes/Column.html" target="_self">Column</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:25</a></div>
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:8</a></code>
+</div>
                 </td>
             </tr>
 
@@ -367,25 +373,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>column</td>
+                                    <td>child</td>
                                     <td>
-                                                <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -426,8 +420,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:16</a></div>
                 </td>
             </tr>
 
@@ -475,6 +469,156 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChild"></a>
+                    <span class="name">
+                        <span ><b>getChild</b></span>
+                        <a href="#getChild"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:26</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>childId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeChild"></a>
+                    <span class="name">
+                        <span ><b>removeChild</b></span>
+                        <a href="#removeChild"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>removeChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:35</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>childId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -485,49 +629,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite } from &#x27;./board-composite.do&#x27;;
 import { Column } from &#x27;./column.do&#x27;;
+import type { AnyBoardDo } from &#x27;./types&#x27;;
 import { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
 import { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
 
-export class ColumnBoard implements ColumnBoardProps, BoardNodeBuildable {
-	id: EntityId;
-
-	title: string;
-
-	columns: Column[];
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	constructor(props: ColumnBoardProps) {
-		this.id &#x3D; props.id;
-		this.title &#x3D; props.title;
-		this.columns &#x3D; props.columns;
-		this.createdAt &#x3D; props.createdAt;
-		this.updatedAt &#x3D; props.updatedAt;
-	}
-
-	addColumn(column: Column, position?: number) {
-		this.columns.splice(position || this.columns.length, 0, column);
+export class ColumnBoard extends BoardComposite implements BoardNodeBuildable {
+	addChild(child: AnyBoardDo) {
+		if (child instanceof Column) {
+			this.children.push(child);
+		} else {
+			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
+		}
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder): void {
 		builder.buildColumnBoardNode(this);
 	}
-}
-
-export interface ColumnBoardProps {
-	id: EntityId;
-
-	title: string;
-
-	columns: Column[];
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }
 </code></pre>
     </div>

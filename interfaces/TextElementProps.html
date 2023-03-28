@@ -70,6 +70,12 @@
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code><a href="../interfaces/BoardCompositeProps.html" target="_self" >BoardCompositeProps</a></code>
+            </p>
 
         <section>
             <h3 id="index">Index</h3>
@@ -84,27 +90,9 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                        <a href="#createdAt" 
->
-                                            createdAt
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#id" 
->
-                                            id
-                                        </a>
-                                </li>
-                                <li>
                                         <a href="#text" 
 >
                                             text
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#updatedAt" 
->
-                                            updatedAt
                                         </a>
                                 </li>
                             </ul>
@@ -118,72 +106,6 @@
 
             <section>
                 <h3 id="inputs">Properties</h3>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="createdAt"></a>
-                                        <span class="name "><b>createdAt</b>
-                                            <a href="#createdAt">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>createdAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="id"></a>
-                                        <span class="name "><b>id</b>
-                                            <a href="#id">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>id:         <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
                     <table class="table table-sm table-bordered">
                         <tbody>
                                 <tr>
@@ -217,62 +139,27 @@
 
                         </tbody>
                     </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="updatedAt"></a>
-                                        <span class="name "><b>updatedAt</b>
-                                            <a href="#updatedAt">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>updatedAt:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
             </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;../../types&#x27;;
+import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+import type { AnyBoardDo } from &#x27;./types&#x27;;
 import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
 import type { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
 
-export class TextElement implements TextElementProps, BoardNodeBuildable {
-	id: EntityId;
-
+export class TextElement extends BoardComposite implements TextElementProps, BoardNodeBuildable {
 	text: string;
 
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	constructor(props: TextElementProps) {
-		this.id &#x3D; props.id;
+	constructor(props: Omit&lt;TextElementProps, &#x27;children&#x27;&gt;) {
+		super({ ...props, children: [] });
 		this.text &#x3D; props.text;
-		this.createdAt &#x3D; props.createdAt;
-		this.updatedAt &#x3D; props.updatedAt;
+	}
+
+	addChild(child: AnyBoardDo) {
+		throw new Error(&#x60;Cannot add children. Object of type &#x27;${child.constructor.name}&#x27; given&#x60;);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -280,14 +167,8 @@ export class TextElement implements TextElementProps, BoardNodeBuildable {
 	}
 }
 
-export interface TextElementProps {
-	id: EntityId;
-
+export interface TextElementProps extends BoardCompositeProps {
 	text: string;
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }
 </code></pre>
     </div>

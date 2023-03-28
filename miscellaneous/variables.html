@@ -1379,7 +1379,7 @@ This allows adding console commands to execute provider methods.</p>
 		id: new ObjectId().toHexString(),
 		title: &#x60;card #${sequence}&#x60;,
 		height: 150,
-		elements: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -1464,11 +1464,11 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoard, ColumnBoardProps&gt;(ColumnBoard, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoard, BoardCompositeProps&gt;(ColumnBoard, ({ sequence }) &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		title: &#x60;column board #${sequence}&#x60;,
-		columns: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -1495,7 +1495,7 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoardNode, ColumnBoardNodeProps&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoardNode, BoardNodeProps&gt;(
 	ColumnBoardNode,
 	({ sequence }) &#x3D;&gt; {
 		return {
@@ -1525,11 +1525,11 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;Column, ColumnProps&gt;(Column, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;Column, BoardCompositeProps&gt;(Column, ({ sequence }) &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		title: &#x60;column #${sequence}&#x60;,
-		cards: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -1556,7 +1556,7 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnNode, ColumnNodeProps&gt;(ColumnNode, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnNode, BoardNodeProps&gt;(ColumnNode, ({ sequence }) &#x3D;&gt; {
 	return {
 		title: &#x60;column #${sequence}&#x60;,
 	};
@@ -5411,6 +5411,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	return {
 		id: new ObjectId().toHexString(),
 		title: &#x60;element #${sequence}&#x60;,
+		children: [],
 		text: &#x60;&lt;p&gt;text #${sequence}&lt;/p&gt;&#x60;,
 		createdAt: new Date(),
 		updatedAt: new Date(),

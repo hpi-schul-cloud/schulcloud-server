@@ -104,6 +104,13 @@
                                             position
                                         </a>
                                 </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#title" 
+>
+                                            title
+                                        </a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -229,6 +236,44 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="title"></a>
+                                        <span class="name "><b>title</b>
+                                            <a href="#title">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>title:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
@@ -257,6 +302,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.path &#x3D; props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level &#x3D; props.parent ? props.parent.level + 1 : 0;
 		this.position &#x3D; props.position ?? 0;
+		this.title &#x3D; props.title;
 	}
 
 	@Index()
@@ -272,6 +318,9 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Index()
 	@Enum(() &#x3D;&gt; BoardNodeType)
 	type!: BoardNodeType;
+
+	@Property({ nullable: true })
+	title?: string;
 
 	get parentId(): EntityId | undefined {
 		const parentId &#x3D; this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
@@ -302,6 +351,7 @@ export interface BoardNodeProps {
 	id?: EntityId;
 	parent?: BoardNode;
 	position?: number;
+	title?: string;
 }
 </code></pre>
     </div>

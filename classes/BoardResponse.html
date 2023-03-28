@@ -92,6 +92,7 @@
                                 <a href="#timestamps" >timestamps</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#title" >title</a>
                             </li>
                         </ul>
@@ -271,6 +272,7 @@
                 <td class="col-md-4">
                     <a name="title"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>title</b></span>
                         <a href="#title"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -332,7 +334,7 @@ export class BoardResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title: string;
+	title?: string;
 
 	@ApiProperty({
 		type: [ColumnResponse],

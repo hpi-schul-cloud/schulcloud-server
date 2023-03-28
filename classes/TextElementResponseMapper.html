@@ -128,8 +128,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/text-element-response.mapper.ts:5</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="6"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/text-element-response.mapper.ts:6</a></div>
                 </td>
             </tr>
 
@@ -188,14 +188,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TextElement } from &#x27;@shared/domain&#x27;;
-import { TextElementResponse, TimestampsResponse } from &#x27;../dto&#x27;;
+import { ContentElementType } from &#x27;../../types/content-elements.enum&#x27;;
+import { TextElementContent, TextElementResponse, TimestampsResponse } from &#x27;../dto&#x27;;
 
 export class TextElementResponseMapper {
 	static mapToResponse(element: TextElement): TextElementResponse {
 		const result &#x3D; new TextElementResponse({
 			id: element.id,
-			text: element.text,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
+			type: ContentElementType.TEXT,
+			content: new TextElementContent({ text: element.text }),
 		});
 
 		return result;

@@ -80,10 +80,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#createCard" >createCard</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
@@ -108,12 +104,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(cardRepo: <a href="../injectables/CardRepo.html" target="_self">CardRepo</a>, columnBoardRepo: <a href="../injectables/ColumnBoardRepo.html" target="_self">ColumnBoardRepo</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -131,22 +127,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>cardRepo</td>
+                                                        <td>boardDoRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CardRepo.html" target="_self" >CardRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>columnBoardRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ColumnBoardRepo.html" target="_self" >ColumnBoardRepo</a></code>
+                                                                        <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -172,89 +156,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createCard"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>createCard</b></span>
-                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createCard(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:20</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>boardId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>columnId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -273,8 +174,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:9</a></div>
                 </td>
             </tr>
 
@@ -344,8 +245,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -401,45 +302,26 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { Card, EntityId } from &#x27;@shared/domain&#x27;;
-import { ObjectId } from &#x27;bson&#x27;;
-import { CardRepo, ColumnBoardRepo } from &#x27;../repo&#x27;;
+import { BoardDoRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class CardService {
-	constructor(private readonly cardRepo: CardRepo, private readonly columnBoardRepo: ColumnBoardRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async findById(id: EntityId): Promise&lt;Card&gt; {
-		const card &#x3D; this.cardRepo.findById(id);
-		return card;
+		const card &#x3D; await this.boardDoRepo.findById(id);
+		if (card instanceof Card) {
+			return card;
+		}
+		throw new NotFoundException(&#x27;there is no card with this id&#x27;);
 	}
 
 	async findByIds(cardIds: EntityId[]): Promise&lt;Card[]&gt; {
-		const cards &#x3D; await this.cardRepo.findByIds(cardIds);
-		return cards;
-	}
-
-	async createCard(boardId: EntityId, columnId: EntityId): Promise&lt;Card&gt; {
-		const board &#x3D; await this.columnBoardRepo.findById(boardId);
-		const column &#x3D; board.columns.find((c) &#x3D;&gt; c.id &#x3D;&#x3D;&#x3D; columnId);
-
-		if (column &#x3D;&#x3D;&#x3D; undefined) {
-			throw new NotFoundException(&#x60;The requested Column: id&#x3D;&#x27;${columnId}&#x27; has not been found.&#x60;);
+		const cards &#x3D; await this.boardDoRepo.findByIds(cardIds);
+		if (cards.every((card) &#x3D;&gt; card instanceof Card)) {
+			return cards as Card[];
 		}
-
-		const card &#x3D; new Card({
-			id: new ObjectId().toHexString(),
-			title: &#x60;&#x60;,
-			height: 150,
-			elements: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		column.addCard(card);
-
-		await this.cardRepo.save(column.cards, column.id);
-
-		return card;
+		throw new NotFoundException(&#x27;some ids do not belong to a card&#x27;);
 	}
 }
 </code></pre>

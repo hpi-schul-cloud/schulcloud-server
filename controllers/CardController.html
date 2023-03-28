@@ -89,6 +89,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteElement" >deleteElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getCards" >getCards</a>
                             </li>
                         </ul>
@@ -131,14 +135,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;:cardId/elements&#x27;)<br /></code>
+                    <code>@ApiExtraModels(TextElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:40</a></div>
                 </td>
             </tr>
 
@@ -188,7 +192,97 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;TextElementResponse&gt;</code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementResponse" target="_self" >Promise&lt;AnyContentElementResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteElement"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteElement</b></span>
+                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Delete(&#x27;:cardId/elements/:contentElementId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:52</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -227,8 +321,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:18</a></div>
                 </td>
             </tr>
 
@@ -292,12 +386,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param, Post, Query } from &#x27;@nestjs/common&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Delete, Get, Param, Post, Query } from &#x27;@nestjs/common&#x27;;
+import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { CardUc } from &#x27;../uc/card.uc&#x27;;
-import { CardIdsParams, CardListResponse, CardUrlParams, TextElementResponse } from &#x27;./dto&#x27;;
+import { CardIdsParams, CardListResponse, CardUrlParams, ContentElementUrlParams, TextElementResponse } from &#x27;./dto&#x27;;
+import { AnyContentElementResponse } from &#x27;./dto/card/any-content-element.response&#x27;;
 import { TextElementResponseMapper } from &#x27;./mapper&#x27;;
 import { CardResponseMapper } from &#x27;./mapper/card-response.mapper&#x27;;
 
@@ -322,16 +417,33 @@ export class CardController {
 		return result;
 	}
 
+	@ApiExtraModels(TextElementResponse)
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+		},
+	})
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
 		@Param() urlParams: CardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;TextElementResponse&gt; {
+	): Promise&lt;AnyContentElementResponse&gt; {
 		const element &#x3D; await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
 
 		const response &#x3D; TextElementResponseMapper.mapToResponse(element);
 
 		return response;
+	}
+
+	@Delete(&#x27;:cardId/elements/:contentElementId&#x27;)
+	async deleteElement(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;boolean&gt; {
+		await this.cardUc.deleteElement(currentUser.userId, urlParams.cardId, urlParams.contentElementId);
+
+		return true;
 	}
 }
 </code></pre>

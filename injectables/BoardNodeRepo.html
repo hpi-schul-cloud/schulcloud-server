@@ -80,6 +80,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteWithDescendants" >deleteWithDescendants</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
@@ -164,6 +168,77 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteWithDescendants"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteWithDescendants</b></span>
+                        <a href="#deleteWithDescendants"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteWithDescendants(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.repo.ts:64</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>boardNode</td>
+                                    <td>
+                                                <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -638,6 +713,11 @@ export class BoardNodeRepo {
 		});
 
 		await this.em.flush();
+	}
+
+	async deleteWithDescendants(boardNode: BoardNode) {
+		const descendants &#x3D; await this.findDescendants(boardNode);
+		await this.em.removeAndFlush([boardNode, ...descendants]);
 	}
 
 	// TODO. findDescendantsOfMany

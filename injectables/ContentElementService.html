@@ -100,7 +100,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(elementRepo: <a href="../injectables/ContentElementRepo.html" target="_self">ContentElementRepo</a>, cardRepo: <a href="../injectables/CardRepo.html" target="_self">CardRepo</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -123,22 +123,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>elementRepo</td>
+                                                        <td>boardDoRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ContentElementRepo.html" target="_self" >ContentElementRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>cardRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CardRepo.html" target="_self" >CardRepo</a></code>
+                                                                        <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -238,16 +226,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, TextElement } from &#x27;@shared/domain&#x27;;
+import { Card, EntityId, TextElement } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { CardRepo, ContentElementRepo } from &#x27;../repo&#x27;;
+import { BoardDoRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly elementRepo: ContentElementRepo, private readonly cardRepo: CardRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async createElement(cardId: EntityId): Promise&lt;TextElement&gt; {
-		const card &#x3D; await this.cardRepo.findById(cardId);
+		const card &#x3D; (await this.boardDoRepo.findById(cardId)) as Card;
 
 		const element &#x3D; new TextElement({
 			id: new ObjectId().toHexString(),
@@ -256,9 +244,9 @@ export class ContentElementService {
 			updatedAt: new Date(),
 		});
 
-		card.addElement(element);
+		card.addChild(element);
 
-		await this.elementRepo.save(card.elements, card.id);
+		await this.boardDoRepo.save(card.children, card.id);
 
 		return element;
 	}
