@@ -8,7 +8,7 @@ export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence
 		id: new ObjectId().toHexString(),
 		title: `card #${sequence}`,
 		height: 150,
-		elements: [],
+		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

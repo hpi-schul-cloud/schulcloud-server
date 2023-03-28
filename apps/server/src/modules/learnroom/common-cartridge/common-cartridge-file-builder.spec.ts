@@ -91,7 +91,7 @@ describe('CommonCartridgeFileBuilder', () => {
 		});
 
 		it('should create an assignment manifest which contains title and description', () => {
-			const assignmentManifestFile = archive.getEntry(`${assignmentProps.identifier}/assignment.xml`);
+			const assignmentManifestFile = archive.getEntry(`${assignmentProps.identifier}/assignment.html`);
 			const assignmentManifest = assignmentManifestFile?.getData().toString();
 
 			expect(assignmentManifestFile).toBeDefined();
