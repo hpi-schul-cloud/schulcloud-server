@@ -18,7 +18,7 @@ export class BoardResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title: string;
+	title?: string;
 
 	@ApiProperty({
 		type: [ColumnResponse],

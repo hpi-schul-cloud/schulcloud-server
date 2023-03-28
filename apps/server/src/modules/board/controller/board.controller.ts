@@ -1,9 +1,9 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardUc, CardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, CardResponse, ColumnResponse, ColumnUrlParams } from './dto';
+import { BoardResponse, BoardUrlParams, CardResponse, CardUrlParams, ColumnResponse, ColumnUrlParams } from './dto';
 import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from './mapper';
 
 @ApiTags('Boards')
@@ -33,6 +33,13 @@ export class BoardController {
 		return response;
 	}
 
+	@Delete(':boardId')
+	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
+
+		return true;
+	}
+
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,
@@ -45,6 +52,13 @@ export class BoardController {
 		return response;
 	}
 
+	@Delete(':boardId/columns/:columnId')
+	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		await this.boardUc.deleteColumn(currentUser.userId, urlParams.boardId, urlParams.columnId);
+
+		return true;
+	}
+
 	@Post(':boardId/columns/:columnId/cards')
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
@@ -55,6 +69,13 @@ export class BoardController {
 		const response = CardResponseMapper.mapToResponse(card);
 
 		return response;
+	}
+
+	@Delete(':boardId/columns/:columnId/cards/:cardId')
+	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+
+		return true;
 	}
 
 	// @Put('/:boardId/cards/:cardId/position')

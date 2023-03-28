@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Column, ColumnBoard, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { ColumnBoardService } from '../service';
+import { BoardDoService, ColumnBoardService } from '../service';
 
 @Injectable()
 export class BoardUc {
-	constructor(private readonly columnBoardService: ColumnBoardService, private readonly logger: Logger) {
+	constructor(
+		private readonly boardDoService: BoardDoService,
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(BoardUc.name);
 	}
 
@@ -27,6 +31,14 @@ export class BoardUc {
 		return board;
 	}
 
+	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteBoard', userId, boardId });
+
+		// TODO check permissions
+
+		await this.boardDoService.deleteWithDescendants(boardId);
+	}
+
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
@@ -36,5 +48,15 @@ export class BoardUc {
 
 		const column = await this.columnBoardService.createColumn(board.id);
 		return column;
+	}
+
+	async deleteColumn(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteColumn', userId, boardId, columnId });
+
+		const board = await this.columnBoardService.findById(boardId);
+
+		// TODO check permissions
+
+		await this.boardDoService.deleteChild(board, columnId);
 	}
 }
