@@ -1,32 +1,25 @@
 import type { EntityId } from '../../types';
+import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { TextElement } from './text-element.do';
+import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
 import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class Card implements CardProps, BoardNodeBuildable {
-	id: EntityId;
-
-	title: string;
-
+export class Card extends BoardComposite implements CardProps, BoardNodeBuildable {
 	height: number;
 
-	elements: TextElement[]; // TODO: AnyContentElement
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
 	constructor(props: CardProps) {
-		this.id = props.id;
+		super(props);
 		this.title = props.title;
 		this.height = props.height;
-		this.elements = props.elements;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
 	}
 
-	addElement(element: TextElement, position?: number) {
-		this.elements.splice(position || this.elements.length, 0, element);
+	addChild(child: AnyBoardDo) {
+		if (child instanceof TextElement) {
+			this.children.push(child);
+		} else {
+			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+		}
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
@@ -34,16 +27,6 @@ export class Card implements CardProps, BoardNodeBuildable {
 	}
 }
 
-export interface CardProps {
-	id: EntityId;
-
-	title: string;
-
+export interface CardProps extends BoardCompositeProps {
 	height: number;
-
-	elements: TextElement[]; // TODO: AnyContentElement
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }

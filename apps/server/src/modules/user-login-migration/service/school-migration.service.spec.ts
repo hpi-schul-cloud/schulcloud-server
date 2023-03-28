@@ -8,6 +8,7 @@ import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.fac
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { ValidationError } from '@shared/common';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationService } from './school-migration.service';
 
@@ -56,6 +57,7 @@ describe('SchoolMigrationService', () => {
 			officialSchoolNumber: '3',
 			externalId: 'firstExternalId',
 			oauthMigrationFinished: new Date(2023, 2, 27),
+			oauthMigrationFinalFinish: new Date(2023, 3, 27),
 			oauthMigrationStart,
 		});
 
@@ -77,6 +79,30 @@ describe('SchoolMigrationService', () => {
 			oauthMigrationStart,
 		};
 	};
+
+	describe('validateGracePeriod is called', () => {
+		describe('when current date is before finalFinish date', () => {
+			it('should not throw', () => {
+				const { schoolDO } = setup();
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date(2023, 3, 14));
+
+				expect(() => service.validateGracePeriod(schoolDO)).not.toThrow();
+			});
+		});
+
+		describe('when current date is after finalFinish date', () => {
+			it('should throw validation error', () => {
+				const { schoolDO } = setup();
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date(2023, 3, 28));
+
+				expect(() => service.validateGracePeriod(schoolDO)).toThrow(
+					new ValidationError('grace_period_expired: The grace period after finishing migration has expired')
+				);
+			});
+		});
+	});
 
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {

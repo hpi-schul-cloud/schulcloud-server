@@ -7,7 +7,7 @@ export class BoardResponseMapper {
 		const result = new BoardResponse({
 			id: board.id,
 			title: board.title,
-			columns: board.columns.map((column) => ColumnResponseMapper.mapToResponse(column)),
+			columns: board.children.map((column) => ColumnResponseMapper.mapToResponse(column)),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 		});
 		return result;

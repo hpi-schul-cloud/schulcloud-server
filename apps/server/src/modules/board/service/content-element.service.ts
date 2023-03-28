@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, TextElement } from '@shared/domain';
+import { Card, EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { CardRepo, ContentElementRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly elementRepo: ContentElementRepo, private readonly cardRepo: CardRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async createElement(cardId: EntityId): Promise<TextElement> {
-		const card = await this.cardRepo.findById(cardId);
+		const card = (await this.boardDoRepo.findById(cardId)) as Card;
 
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
@@ -17,9 +17,9 @@ export class ContentElementService {
 			updatedAt: new Date(),
 		});
 
-		card.addElement(element);
+		card.addChild(element);
 
-		await this.elementRepo.save(card.elements, card.id);
+		await this.boardDoRepo.save(card.children, card.id);
 
 		return element;
 	}

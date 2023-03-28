@@ -1,7 +1,8 @@
-import { SchoolRepo } from '@shared/repo';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
@@ -35,13 +36,17 @@ export class SchoolService {
 				this.setMigrationStart(schoolDo, oauthMigrationPossible);
 			} else {
 				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
+				schoolDo.oauthMigrationFinalFinish = undefined;
 			}
+
+			this.enableOauthMigration(schoolDo);
 		}
 		if (oauthMigrationMandatory !== undefined) {
 			schoolDo.oauthMigrationMandatory = this.setOrClearDate(oauthMigrationMandatory);
 		}
 		if (oauthMigrationFinished !== undefined) {
 			schoolDo.oauthMigrationFinished = this.setOrClearDate(oauthMigrationFinished);
+			this.calculateMigrationFinalFinish(schoolDo);
 		}
 
 		await this.schoolRepo.save(schoolDo);
@@ -50,6 +55,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
 			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 
@@ -71,6 +77,22 @@ export class SchoolService {
 		schoolDo.oauthMigrationStart = schoolDo.oauthMigrationPossible;
 	}
 
+	private calculateMigrationFinalFinish(schoolDo: SchoolDO) {
+		if (schoolDo.oauthMigrationFinished) {
+			schoolDo.oauthMigrationFinalFinish = new Date(
+				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
+			);
+		}
+	}
+
+	private enableOauthMigration(schoolDo: SchoolDO) {
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		} else {
+			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+		}
+	}
+
 	async getMigration(schoolId: string): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
 
@@ -78,6 +100,7 @@ export class SchoolService {
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
 			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
 			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
 			enableMigrationStart: !!schoolDo.officialSchoolNumber,
 		});
 

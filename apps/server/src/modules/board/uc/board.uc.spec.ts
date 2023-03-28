@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
+import { BoardDoService } from '../service';
 import { ColumnBoardService } from '../service/column-board.service';
 import { BoardUc } from './board.uc';
 
@@ -15,6 +16,10 @@ describe(BoardUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardUc,
+				{
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
+				},
 				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),

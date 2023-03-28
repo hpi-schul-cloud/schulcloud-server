@@ -1,3 +1,4 @@
+export * from './board-composite.do';
 export * from './card.do';
 export * from './column-board.do';
 export * from './column.do';
