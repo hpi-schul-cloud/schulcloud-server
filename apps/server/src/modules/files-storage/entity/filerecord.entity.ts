@@ -131,7 +131,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	_isCopyFrom?: ObjectId;
 
 	get isCopyFrom(): EntityId | undefined {
-		const result = this._isCopyFrom ? this._isCopyFrom.toHexString() : this._isCopyFrom;
+		const result = this._isCopyFrom?.toHexString();
 
 		return result;
 	}
