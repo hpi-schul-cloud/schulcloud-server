@@ -1,12 +1,13 @@
-import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
+import { createMock } from '@golevelup/ts-jest';
 import { cardNodeFactory, textElementFactory } from '@shared/testing';
 import { TextElement } from './text-element.do';
+import { BoardNodeBuilder } from './types';
 
 describe(TextElement.name, () => {
 	const setup = () => {
 		const element = textElementFactory.build();
 		const cardNode = cardNodeFactory.buildWithId();
-		const builder = new BoardNodeBuilderImpl(cardNode);
+		const builder = createMock<BoardNodeBuilder>();
 
 		return { element, builder, parentId: cardNode.id };
 	};

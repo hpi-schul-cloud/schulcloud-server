@@ -2,8 +2,8 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
-import { BoardDoBuilder } from '@shared/domain/entity/boardnode/board-do.builder';
-import { BoardNodeBuilderImpl } from '@shared/domain/entity/boardnode/board-node-builder-impl';
+import { BoardNodeBuilderImpl } from './board-node.builder-impl';
+import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class BoardDoRepo {
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
 		const boardNode = await this.em.findOneOrFail(BoardNode, id);
 		const descendants = await this.boardNodeRepo.findDescendants(boardNode, depth);
-		const domainObject = new BoardDoBuilder(descendants).buildDomainObject(boardNode);
+		const domainObject = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
 
 		return domainObject;
 	}
@@ -25,7 +25,7 @@ export class BoardDoRepo {
 
 		const domainObjects = boardNodes.map((boardNode) => {
 			const children = childrenMap[boardNode.pathOfChildren];
-			const domainObject = new BoardDoBuilder(children).buildDomainObject(boardNode);
+			const domainObject = new BoardDoBuilderImpl(children).buildDomainObject(boardNode);
 			return domainObject;
 		});
 
@@ -37,7 +37,7 @@ export class BoardDoRepo {
 		if (boardNode.parentId) {
 			const parent = await this.em.findOneOrFail(BoardNode, boardNode.parentId);
 			const descendants = await this.boardNodeRepo.findDescendants(parent);
-			const domainObject = new BoardDoBuilder(descendants).buildDomainObject(parent);
+			const domainObject = new BoardDoBuilderImpl(descendants).buildDomainObject(parent);
 			return domainObject;
 		}
 		return undefined;
