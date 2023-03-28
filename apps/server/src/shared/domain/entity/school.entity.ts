@@ -9,6 +9,7 @@ export enum SchoolFeatures {
 	NEXTCLOUD = 'nextcloud',
 	STUDENTVISIBILITY = 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
+	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
 }
 
 export interface ISchoolProperties {

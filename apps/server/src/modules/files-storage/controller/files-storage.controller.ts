@@ -187,7 +187,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:schoolId/:parentType/:parentId')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async delete(
+	async deleteByParent(
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordListResponse> {

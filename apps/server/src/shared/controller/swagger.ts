@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 /** *********************************************
  * OpenAPI docs setup
@@ -20,7 +20,7 @@ const config = new DocumentBuilder()
 	.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 	.build();
 
-export const enableOpenApiDocs = (app: INestApplication, path: string): void => {
-	const document = SwaggerModule.createDocument(app, config);
+export const enableOpenApiDocs = (app: INestApplication, path: string, options?: SwaggerDocumentOptions): void => {
+	const document = SwaggerModule.createDocument(app, config, options);
 	SwaggerModule.setup(path, app, document);
 };
