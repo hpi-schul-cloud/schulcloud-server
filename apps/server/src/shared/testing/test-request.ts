@@ -21,9 +21,9 @@ const testReqestConst = {
 };
 
 export class TestRequest {
-	readonly app: INestApplication;
+	private readonly app: INestApplication;
 
-	readonly baseRoute: string;
+	private readonly baseRoute: string;
 
 	constructor(app: INestApplication, baseRoute: string) {
 		this.app = app;
