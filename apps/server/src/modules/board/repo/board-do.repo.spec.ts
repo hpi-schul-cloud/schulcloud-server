@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardNode, CardNode, ColumnNode, EntityId, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, BoardNode, CardNode, ColumnNode, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,

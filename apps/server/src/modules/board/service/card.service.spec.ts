@@ -95,7 +95,7 @@ describe(CardService.name, () => {
 		});
 
 		it('should throw an error if some DOs are not cards', async () => {
-			const textElements = textElementFactory.buildList(2) as TextElement[];
+			const textElements = textElementFactory.buildList(2);
 			const textElementIds = textElements.map((t) => t.id);
 			boardDoRepo.findByIds.mockResolvedValue(textElements);
 
