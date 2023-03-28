@@ -56,7 +56,7 @@ describe(BoardNodeBuilderImpl.name, () => {
 	describe('when building Cards', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.buildWithId({ elements });
+			const card = cardFactory.buildWithId({ children: elements });
 			const columnNode = columnNodeFactory.buildWithId();
 
 			const builder = new BoardNodeBuilderImpl(columnNode);
