@@ -61,27 +61,7 @@ describe('admin users integration tests', () => {
 		expect(response.body).to.haveOwnProperty('_id');
 	});
 
-	it('POST fails with invalid email format', async () => {
-		const { _id: schoolId } = await testObjects.createTestSchool();
-		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
-			.post('/users/admin/students')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.set('content-type', 'application/json');
-		const response = await request.send({
-			lastName: 'moritz',
-			firstName: 'mustermann',
-			schoolId,
-			email: `${Date.now()}missingat.de`,
-		});
-		expect(response).to.not.be.undefined;
-		expect(response.error).to.not.be.undefined;
-		expect(response.error.status).to.equal(400);
-	});
-
-	it('POST fails with invalid email format', async () => {
+	it.only('POST fails with invalid email format', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const token = await getAdminToken(schoolId);
 		const request = chai

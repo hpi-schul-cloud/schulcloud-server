@@ -15,8 +15,9 @@ describe('UserLinkImportService', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
+	after(async (done) => {
 		server.close(done);
+		await testObjects.cleanup();
 	});
 
 	it('is properly registered', () => {
@@ -51,9 +52,5 @@ describe('UserLinkImportService', () => {
 			expect(err.message).to.equal(testGenericErrorMessage);
 			expect(err.code).to.equal(403);
 		}
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
 	});
 });
