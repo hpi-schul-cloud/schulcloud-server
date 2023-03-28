@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputFormat, Permission, Task } from '@shared/domain';
+import { Course, InputFormat, Lesson, Permission, Task, User } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -1462,6 +1462,29 @@ describe('Task Controller (API)', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
+		let entities: {
+			teacher1: User;
+			teacher2: User;
+			student1: User;
+			student2: User;
+			student3: User;
+			student4: User;
+			englishCourse: Course;
+			grammerLesson: Lesson;
+			historyCourse: Course;
+			mathsCourse: Course;
+			algebraLesson: Lesson;
+			englishTask1: Task;
+			englishTask2: Task;
+			englishTask3: Task;
+			englishTask4: Task;
+			historyTask1: Task;
+			historyTask2: Task;
+			historyTask3: Task;
+			mathsTask1: Task;
+			mathsTask2: Task;
+			mathsTask3: Task;
+		};
 
 		const createStudent = (id: number) => {
 			const studentRole = roleFactory.build({
@@ -1639,14 +1662,14 @@ describe('Task Controller (API)', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-		});
 
-		it('students 1 gets their tasks', async () => {
-			const entities = setup();
+			entities = setup();
 
 			await em.persistAndFlush(Object.values(entities));
 			em.clear();
+		});
 
+		it('students1 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student1);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
@@ -1654,12 +1677,7 @@ describe('Task Controller (API)', () => {
 			expect(total).toBe(3);
 		});
 
-		it('students 1 gets their tasks finished tasks', async () => {
-			const entities = setup();
-
-			await em.persistAndFlush(Object.values(entities));
-			em.clear();
-
+		it('students1 gets their tasks finished tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student1);
 			const response = await request(app.getHttpServer())
 				.get(`/tasks/finished`)
@@ -1670,12 +1688,7 @@ describe('Task Controller (API)', () => {
 			expect(total).toBe(2);
 		});
 
-		it('students 2 gets their tasks', async () => {
-			const entities = setup();
-
-			await em.persistAndFlush(Object.values(entities));
-			em.clear();
-
+		it('students2 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student2);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
@@ -1683,12 +1696,7 @@ describe('Task Controller (API)', () => {
 			expect(total).toBe(6);
 		});
 
-		it('students 3 gets their tasks', async () => {
-			const entities = setup();
-
-			await em.persistAndFlush(Object.values(entities));
-			em.clear();
-
+		it('students3 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student3);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
@@ -1696,12 +1704,7 @@ describe('Task Controller (API)', () => {
 			expect(total).toBe(2);
 		});
 
-		it('teacher 2 gets their tasks, assignment does not change the result', async () => {
-			const entities = setup();
-
-			await em.persistAndFlush(Object.values(entities));
-			em.clear();
-
+		it('teacher2 gets their tasks, assignment does not change the result', async () => {
 			currentUser = mapUserToCurrentUser(entities.teacher2);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
 			const { total } = response.body as TaskListResponse;
