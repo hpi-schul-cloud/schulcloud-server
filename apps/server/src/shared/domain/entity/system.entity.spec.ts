@@ -34,7 +34,7 @@ describe('System Entity', () => {
 					alias: 'SAMPLE_ALIAS',
 					displayName: 'SAMPLE_NAME',
 					provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					provisioningUrl: 'provisioningUrl',
+					provisioningUrl: 'https://provisioningurl.de',
 					oauthConfig: {
 						clientId: '12345',
 						clientSecret: 'mocksecret',
