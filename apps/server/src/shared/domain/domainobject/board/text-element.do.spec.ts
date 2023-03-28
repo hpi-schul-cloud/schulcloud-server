@@ -19,4 +19,13 @@ describe(TextElement.name, () => {
 
 		expect(builder.buildTextElementNode).toHaveBeenCalledWith(element, parentId, undefined);
 	});
+
+	describe('when trying to add a child to a text element', () => {
+		it('should throw an error ', () => {
+			const textElement = textElementFactory.build();
+			const textElementChild = textElementFactory.build();
+
+			expect(() => textElement.addChild(textElementChild)).toThrow();
+		});
+	});
 });

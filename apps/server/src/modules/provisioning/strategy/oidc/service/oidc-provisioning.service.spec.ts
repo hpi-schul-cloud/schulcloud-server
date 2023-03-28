@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
+import { RoleName, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -76,6 +76,7 @@ describe('OidcProvisioningService', () => {
 			name: 'name',
 			officialSchoolNumber: 'officialSchoolNumber',
 			systems: [systemId],
+			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 		});
 		const existingSchoolDO = new SchoolDO({
 			id: 'schoolId',
@@ -83,6 +84,7 @@ describe('OidcProvisioningService', () => {
 			name: 'existingName',
 			officialSchoolNumber: 'existingOfficialSchoolNumber',
 			systems: [systemId],
+			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 		});
 
 		schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);

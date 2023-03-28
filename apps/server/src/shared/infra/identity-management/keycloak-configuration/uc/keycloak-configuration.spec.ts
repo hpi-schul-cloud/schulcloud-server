@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationService } from '../service/keycloak-configuration.service';
+import { KeycloakMigrationService } from '../service/keycloak-migration.service';
 import { KeycloakSeedService } from '../service/keycloak-seed.service';
 import { KeycloakConfigurationUc } from './keycloak-configuration.uc';
 
@@ -11,6 +12,7 @@ describe('KeycloakConfigurationUc', () => {
 	let keycloakAdminServiceMock: DeepMocked<KeycloakAdministrationService>;
 	let keycloakConfigServiceMock: DeepMocked<KeycloakConfigurationService>;
 	let keycloakSeedServiceMock: DeepMocked<KeycloakSeedService>;
+	let keycloakMigrationService: DeepMocked<KeycloakMigrationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,12 +30,17 @@ describe('KeycloakConfigurationUc', () => {
 					provide: KeycloakSeedService,
 					useValue: createMock<KeycloakSeedService>(),
 				},
+				{
+					provide: KeycloakMigrationService,
+					useValue: createMock<KeycloakMigrationService>(),
+				},
 			],
 		}).compile();
 		uc = module.get(KeycloakConfigurationUc);
 		keycloakAdminServiceMock = module.get(KeycloakAdministrationService);
 		keycloakConfigServiceMock = module.get(KeycloakConfigurationService);
 		keycloakSeedServiceMock = module.get(KeycloakSeedService);
+		keycloakMigrationService = module.get(KeycloakMigrationService);
 	});
 
 	afterAll(async () => {
@@ -80,6 +87,13 @@ describe('KeycloakConfigurationUc', () => {
 			expect(keycloakConfigServiceMock.configureIdentityProviders).toBeCalledTimes(1);
 			expect(keycloakConfigServiceMock.configureRealm).toBeCalledTimes(1);
 			expect(keycloakAdminServiceMock.setPasswordPolicy).toBeCalledTimes(1);
+		});
+	});
+
+	describe('migrate', () => {
+		it('should call services', async () => {
+			await uc.migrate();
+			expect(keycloakMigrationService.migrate).toBeCalledTimes(1);
 		});
 	});
 });

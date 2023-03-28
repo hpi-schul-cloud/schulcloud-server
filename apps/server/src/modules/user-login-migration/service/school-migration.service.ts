@@ -5,6 +5,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { ValidationError } from '@shared/common';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @Injectable()
@@ -14,6 +15,14 @@ export class SchoolMigrationService {
 		private readonly logger: Logger,
 		private readonly userService: UserService
 	) {}
+
+	validateGracePeriod(school: SchoolDO) {
+		if (!school.oauthMigrationFinalFinish || Date.now() >= school.oauthMigrationFinalFinish.getTime()) {
+			throw new ValidationError('grace_period_expired: The grace period after finishing migration has expired', {
+				'school.oauthMigrationFinalFinish': school.oauthMigrationFinalFinish,
+			});
+		}
+	}
 
 	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
 		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });

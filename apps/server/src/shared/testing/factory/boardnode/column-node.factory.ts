@@ -1,8 +1,8 @@
 /* istanbul ignore file */
-import { ColumnNode, ColumnNodeProps } from '@shared/domain';
+import { BoardNodeProps, ColumnNode } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 
-export const columnNodeFactory = BaseFactory.define<ColumnNode, ColumnNodeProps>(ColumnNode, ({ sequence }) => {
+export const columnNodeFactory = BaseFactory.define<ColumnNode, BoardNodeProps>(ColumnNode, ({ sequence }) => {
 	return {
 		title: `column #${sequence}`,
 	};

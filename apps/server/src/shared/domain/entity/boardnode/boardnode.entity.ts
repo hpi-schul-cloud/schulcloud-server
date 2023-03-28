@@ -21,6 +21,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
+		this.title = props.title;
 	}
 
 	@Index()
@@ -36,6 +37,9 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Index()
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
+
+	@Property({ nullable: true })
+	title?: string;
 
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
@@ -66,4 +70,5 @@ export interface BoardNodeProps {
 	id?: EntityId;
 	parent?: BoardNode;
 	position?: number;
+	title?: string;
 }
