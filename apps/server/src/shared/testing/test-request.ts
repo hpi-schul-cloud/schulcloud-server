@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Account } from '@shared/domain';
-import supertest from 'supertest';
+import supertest, { Response } from 'supertest';
 import { defaultTestPassword } from './factory/account.factory';
 
 interface AuthenticationResponse {
@@ -47,7 +47,7 @@ export class TestRequest {
 		return uri;
 	}
 
-	private castToAuthenticationResponse(response: supertest.Response): AuthenticationResponse {
+	private castToAuthenticationResponse(response: Response): AuthenticationResponse {
 		let authenticationResponse: AuthenticationResponse;
 		if (testReqestConst.responseKey in response.body) {
 			authenticationResponse = response.body as AuthenticationResponse;
@@ -59,7 +59,7 @@ export class TestRequest {
 		return authenticationResponse;
 	}
 
-	private getFormatedJwt(response: supertest.Response): string {
+	private getFormatedJwt(response: Response): string {
 		const authenticationResponse = this.castToAuthenticationResponse(response);
 		const jwt = authenticationResponse.accessToken;
 		const formatedJwt = `${testReqestConst.prefix} ${jwt}`;
