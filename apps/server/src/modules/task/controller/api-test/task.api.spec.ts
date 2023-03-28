@@ -1610,11 +1610,42 @@ describe('Task Controller (API)', () => {
 		});
 
 		it('students 2 gets their tasks', async () => {
-			// TODO: add test
+			const entities = setup();
+
+			await em.persistAndFlush(Object.values(entities));
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(entities.student2);
+			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
+			const { total } = response.body as TaskListResponse;
+			expect(response.status).toBe(200);
+			expect(total).toBe(7);
 		});
 
 		it('students 3 gets their tasks', async () => {
-			// TODO: add test
+			const entities = setup();
+
+			await em.persistAndFlush(Object.values(entities));
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(entities.student3);
+			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
+			const { total } = response.body as TaskListResponse;
+			expect(response.status).toBe(200);
+			expect(total).toBe(3);
+		});
+
+		it('teacher 2 gets their tasks, assignment does not change the result', async () => {
+			const entities = setup();
+
+			await em.persistAndFlush(Object.values(entities));
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(entities.teacher2);
+			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
+			const { total } = response.body as TaskListResponse;
+			expect(response.status).toBe(200);
+			expect(total).toBe(7);
 		});
 	});
 });
