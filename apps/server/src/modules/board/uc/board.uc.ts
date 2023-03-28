@@ -57,6 +57,6 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		await this.boardDoService.deleteChild(board, columnId);
+		await this.boardDoService.deleteChildWithDescendants(board, columnId);
 	}
 }

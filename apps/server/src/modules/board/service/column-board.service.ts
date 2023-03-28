@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
@@ -8,11 +8,9 @@ export class ColumnBoardService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const board = await this.boardDoRepo.findById(boardId, 2);
-		if (board instanceof ColumnBoard) {
-			return board;
-		}
-		throw new NotFoundException('There is no columboard with this id');
+		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
+
+		return board;
 	}
 
 	async createBoard(): Promise<ColumnBoard> {

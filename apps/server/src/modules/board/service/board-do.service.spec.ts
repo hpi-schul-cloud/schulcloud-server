@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -36,7 +37,7 @@ describe(BoardDoService.name, () => {
 		await module.close();
 	});
 
-	describe('when searching a domain object', () => {
+	describe('when searching a domain object by id', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
 			const card = cardFactory.build({ children: elements });
@@ -55,6 +56,16 @@ describe(BoardDoService.name, () => {
 		});
 	});
 
+	describe('when searching a domain object by class and id', () => {
+		it('should delegate to the repo', async () => {
+			const card = cardFactory.build();
+
+			await service.findByClassAndId(Card, card.id);
+
+			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
+		});
+	});
+
 	describe('when deleting a child', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
@@ -69,7 +80,7 @@ describe(BoardDoService.name, () => {
 
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChild(card, elements[0].id);
+			await service.deleteChildWithDescendants(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
 			expect(boardDoRepo.deleteWithDescendants).toHaveBeenCalledWith(elements[0].id);
@@ -80,7 +91,7 @@ describe(BoardDoService.name, () => {
 
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChild(card, elements[0].id);
+			await service.deleteChildWithDescendants(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
 		});
@@ -89,7 +100,7 @@ describe(BoardDoService.name, () => {
 			const textElement = textElementFactory.buildWithId();
 			const fakeId = new ObjectId().toHexString();
 
-			await expect(service.deleteChild(textElement, fakeId)).rejects.toThrow();
+			await expect(service.deleteChildWithDescendants(textElement, fakeId)).rejects.toThrow();
 		});
 	});
 });

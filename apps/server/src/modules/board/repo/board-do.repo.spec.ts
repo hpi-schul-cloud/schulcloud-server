@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardNode, CardNode, ColumnNode, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, BoardNode, CardNode, Column, ColumnNode, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -271,6 +271,23 @@ describe(BoardDoRepo.name, () => {
 			em.clear();
 
 			await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
+		});
+	});
+
+	describe('when finding by class and id', () => {
+		const setup = async () => {
+			const boardNode = columnBoardNodeFactory.build();
+			await em.persistAndFlush(boardNode);
+
+			em.clear();
+
+			return { boardNode };
+		};
+
+		it('should throw error when id does not belong to the expected class', async () => {
+			const { boardNode } = await setup();
+
+			await expect(repo.findByClassAndId(Column, boardNode.id)).rejects.toThrow();
 		});
 	});
 });

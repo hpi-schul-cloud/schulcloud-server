@@ -131,7 +131,7 @@ describe(CardUc.name, () => {
 			await uc.deleteCard(user.id, card.id);
 
 			expect(boardDoService.findParentOfId).toHaveBeenCalledWith(card.id);
-			expect(boardDoService.deleteChild).toHaveBeenCalledWith(column, card.id);
+			expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
 		});
 
 		it('should throw error if parent is not found', async () => {
@@ -186,7 +186,7 @@ describe(CardUc.name, () => {
 			await uc.deleteElement(user.id, card.id, contentElement.id);
 
 			expect(cardService.findById).toHaveBeenCalledWith(card.id);
-			expect(boardDoService.deleteChild).toHaveBeenCalledWith(card, contentElement.id);
+			expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(card, contentElement.id);
 		});
 	});
 });

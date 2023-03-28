@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoard } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -48,30 +49,20 @@ describe(ColumnBoardService.name, () => {
 
 		it('should call the board do repository', async () => {
 			const { boardId, board } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
 			await service.findById(boardId);
 
-			expect(boardDoRepo.findById).toHaveBeenCalledWith(boardId, 2);
+			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 		});
 
 		it('should return the columnBoard object of the given', async () => {
 			const { board } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await service.findById(board.id);
 
 			expect(result).toEqual(board);
-		});
-
-		it('should throw error when id does not belong to a columnboard', async () => {
-			const { column } = setup();
-
-			const expectedError = new NotFoundException(`There is no columboard with this id`);
-
-			boardDoRepo.findById.mockResolvedValue(column);
-
-			await expect(service.findById(column.id)).rejects.toThrowError(expectedError);
 		});
 	});
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, EntityId, TextElement } from '@shared/domain';
+import { EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
@@ -8,7 +8,7 @@ export class ContentElementService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async createElement(cardId: EntityId): Promise<TextElement> {
-		const card = (await this.boardDoRepo.findById(cardId)) as Card;
+		const card = await this.boardDoRepo.findById(cardId);
 
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),

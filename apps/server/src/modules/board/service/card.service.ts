@@ -7,11 +7,8 @@ export class CardService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
 	async findById(id: EntityId): Promise<Card> {
-		const card = await this.boardDoRepo.findById(id);
-		if (card instanceof Card) {
-			return card;
-		}
-		throw new NotFoundException('there is no card with this id');
+		const card = await this.boardDoRepo.findByClassAndId(Card, id);
+		return card;
 	}
 
 	async findByIds(cardIds: EntityId[]): Promise<Card[]> {

@@ -41,6 +41,9 @@ export class BoardNodeRepo {
 		return map;
 	}
 
+	// TODO implement
+	// async findDescendantsOfMany(nodes: BoardNode[], depth?: number): Promise<Record<string, BoardNode[]>> {}
+
 	async save(boardNode: BoardNode | BoardNode[]) {
 		const boardNodes = Utils.asArray(boardNode);
 
@@ -65,6 +68,4 @@ export class BoardNodeRepo {
 		const descendants = await this.findDescendants(boardNode);
 		await this.em.removeAndFlush([boardNode, ...descendants]);
 	}
-
-	// TODO. findDescendantsOfMany
 }

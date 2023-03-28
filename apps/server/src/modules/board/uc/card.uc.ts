@@ -42,7 +42,7 @@ export class CardUc {
 		}
 		// TODO check permissions
 
-		await this.boardDoService.deleteChild(parent, cardId);
+		await this.boardDoService.deleteChildWithDescendants(parent, cardId);
 	}
 
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
@@ -63,6 +63,6 @@ export class CardUc {
 
 		// TODO check permissions
 
-		await this.boardDoService.deleteChild(card, contentElementId);
+		await this.boardDoService.deleteChildWithDescendants(card, contentElementId);
 	}
 }

@@ -1,10 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TextElement } from '@shared/domain';
+import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { CardService } from './card.service';
 
@@ -46,26 +45,20 @@ describe(CardService.name, () => {
 
 		it('should call the card repository', async () => {
 			const { card, cardId } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
 			await service.findById(cardId);
 
-			expect(boardDoRepo.findById).toHaveBeenCalledWith(cardId);
+			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, cardId);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
 			const { card, cardId } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
 			const result = await service.findById(cardId);
 
 			expect(result).toEqual(card);
-		});
-
-		it('should throw if the domain object does not exist', async () => {
-			const fakeId = new ObjectId().toHexString();
-
-			await expect(service.findById(fakeId)).rejects.toThrow();
 		});
 	});
 
