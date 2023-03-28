@@ -14,7 +14,7 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async get(path: string): Promise<Uint8Array> {
+	async getResponse(path: string) {
 		const request = new GetObjectCommand({
 			Bucket: this.config.bucket,
 			Key: path.toString(),
@@ -29,7 +29,11 @@ export class FwuLearningContentsUc {
 			}
 			throw new InternalServerErrorException();
 		});
+		return response;
+	}
 
+	async get(path: string): Promise<Uint8Array> {
+		const response = await this.getResponse(path);
 		const readStream = response.Body as Readable;
 		const chunks = [new Uint8Array()];
 		return new Promise<Uint8Array>((resolve, reject) => {
@@ -37,5 +41,10 @@ export class FwuLearningContentsUc {
 			readStream.on('error', reject);
 			readStream.on('end', () => resolve(Buffer.concat(chunks)));
 		});
+	}
+
+	async getContentType(path: string): Promise<string> {
+		const response = await this.getResponse(path);
+		return response.ContentType as string;
 	}
 }

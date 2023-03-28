@@ -22,9 +22,7 @@ export class FwuLearningContentsController {
 		}
 		const path = `${req.params[0]}/${params.fwuLearningContent}`;
 		const response = await this.fwuLearningContentsUc.get(path);
-		const startIndexOfContentType = params.fwuLearningContent.lastIndexOf('.');
-		const contentType = params.fwuLearningContent.slice(startIndexOfContentType);
-
+		const contentType = await this.fwuLearningContentsUc.getContentType(path);
 		res.type(contentType);
 		res.send(response);
 	}
