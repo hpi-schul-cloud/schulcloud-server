@@ -501,10 +501,6 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('as a student with task assignment', () => {
-			// TODO: add test
-		});
-
 		describe('as a substitution teacher', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];

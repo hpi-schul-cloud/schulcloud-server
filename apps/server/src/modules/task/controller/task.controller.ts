@@ -19,7 +19,6 @@ import { TaskCopyApiParams } from './dto/task-copy.params';
 export class TaskController {
 	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}
 
-	// TODO: apply filtering from this ticket
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -28,7 +27,6 @@ export class TaskController {
 		return this.findAllTasks(currentUser, pagination);
 	}
 
-	// TODO: apply filtering from this ticket
 	@Get('finished')
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -53,7 +51,6 @@ export class TaskController {
 		return result;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Patch(':taskId/finish')
 	async finish(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, true);
@@ -63,7 +60,6 @@ export class TaskController {
 		return response;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Patch(':taskId/restore')
 	async restore(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		const task = await this.taskUc.changeFinishedForUser(currentUser.userId, urlParams.taskId, false);
@@ -73,7 +69,6 @@ export class TaskController {
 		return response;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Patch(':taskId/revertPublished')
 	async revertPublished(
 		@Param() urlParams: TaskUrlParams,
@@ -86,7 +81,6 @@ export class TaskController {
 		return response;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Post(':taskId/copy')
 	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 	async copyTask(
@@ -103,7 +97,6 @@ export class TaskController {
 		return dto;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Delete(':taskId')
 	async delete(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
 		const result = await this.taskUc.delete(currentUser.userId, urlParams.taskId);
@@ -121,7 +114,6 @@ export class TaskController {
 		return response;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Patch(':taskId')
 	async update(
 		@Param() urlParams: TaskUrlParams,
@@ -141,7 +133,6 @@ export class TaskController {
 		return response;
 	}
 
-	// TODO: apply filtering from this ticket
 	@Get(':taskId')
 	async findTask(@Param() urlParams: TaskUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<TaskResponse> {
 		this.FeatureTaskCardEnabled();
