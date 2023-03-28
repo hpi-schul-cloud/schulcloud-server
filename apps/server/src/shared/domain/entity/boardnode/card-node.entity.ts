@@ -10,14 +10,10 @@ export class CardNode extends BoardNode {
 		super(props);
 		this.type = BoardNodeType.CARD;
 		this.height = props.height;
-		this.title = props.title;
 	}
 
 	@Property()
 	height: number;
-
-	@Property()
-	title: string;
 
 	useDoBuilder(builder: BoardDoBuilder): Card {
 		const domainObject = builder.buildCard(this);
@@ -27,6 +23,4 @@ export class CardNode extends BoardNode {
 
 export interface CardNodeProps extends BoardNodeProps {
 	height: number;
-
-	title: string;
 }

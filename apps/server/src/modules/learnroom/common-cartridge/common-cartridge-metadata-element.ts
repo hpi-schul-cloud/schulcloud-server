@@ -10,7 +10,7 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 	transform(): Record<string, unknown> {
 		return {
 			schema: 'IMS Common Cartridge',
-			schemaversion: '1.3.0',
+			schemaversion: '1.1.0',
 			'mnf:lom': {
 				'mnf:general': {
 					'mnf:title': {
