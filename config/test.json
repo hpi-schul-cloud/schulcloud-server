@@ -43,7 +43,7 @@
 		"ADMIN_USER": "keycloak",
 		"ADMIN_PASSWORD": "keycloak"
 	},
-	"NEST_LOG_LEVEL": "error",
+	"NEST_LOG_LEVEL": "crit",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": false,

@@ -19,6 +19,7 @@ const SCHOOL_FEATURES = {
 	NEXTCLOUD: 'nextcloud',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
+	OAUTH_PROVISIONING_ENABLED: 'oauthProvisioningEnabled',
 };
 
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
@@ -93,9 +94,11 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		inUserMigration: { type: Boolean },
+		oauthMigrationStart: { type: Date },
 		oauthMigrationPossible: { type: Date },
 		oauthMigrationMandatory: { type: Date },
 		oauthMigrationFinished: { type: Date },
+		oauthMigrationFinalFinish: { type: Date },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
 		tombstoneUserId: {

@@ -9,6 +9,7 @@ export enum SchoolFeatures {
 	NEXTCLOUD = 'nextcloud',
 	STUDENTVISIBILITY = 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
+	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
 }
 
 export interface ISchoolProperties {
@@ -16,9 +17,11 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationStart?: Date;
 	oauthMigrationPossible?: Date;
 	oauthMigrationMandatory?: Date;
 	oauthMigrationFinished?: Date;
+	oauthMigrationFinalFinish?: Date;
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
@@ -58,6 +61,9 @@ export class School extends BaseEntity {
 	inUserMigration?: boolean;
 
 	@Property({ nullable: true })
+	oauthMigrationStart?: Date;
+
+	@Property({ nullable: true })
 	oauthMigrationPossible?: Date;
 
 	@Property({ nullable: true })
@@ -65,6 +71,9 @@ export class School extends BaseEntity {
 
 	@Property({ nullable: true })
 	oauthMigrationFinished?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinalFinish?: Date;
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
@@ -101,9 +110,11 @@ export class School extends BaseEntity {
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
+		this.oauthMigrationStart = props.oauthMigrationStart;
 		this.oauthMigrationPossible = props.oauthMigrationPossible;
 		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
 		this.oauthMigrationFinished = props.oauthMigrationFinished;
+		this.oauthMigrationFinalFinish = props.oauthMigrationFinalFinish;
 		this.name = props.name;
 		if (props.officialSchoolNumber) {
 			this.officialSchoolNumber = props.officialSchoolNumber;

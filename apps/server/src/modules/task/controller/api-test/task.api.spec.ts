@@ -18,7 +18,7 @@ import { FilesStorageClientAdapterService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskListResponse, TaskResponse } from '@src/modules/task/controller/dto';
+import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
 import { ObjectID } from 'bson';
 import { Request } from 'express';
 import request from 'supertest';
@@ -1295,6 +1295,24 @@ describe('Task Controller (API)', () => {
 					.send({ name: 'test', availableDate: '2022-11-09T15:06:30.771Z', dueDate: '2021-11-09T15:06:30.771Z' })
 					.expect(400);
 			});
+			it('POST should fail if users do not belong to course', async () => {
+				const teacher = setup(Permission.HOMEWORK_CREATE);
+				const student1 = setup(Permission.HOMEWORK_VIEW);
+				const student2 = setup(Permission.HOMEWORK_VIEW);
+				const course = courseFactory.build({ teachers: [teacher], students: [student1] });
+
+				await em.persistAndFlush([course, teacher, student1, student2]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const taskCreateParams: TaskCreateParams = { name: 'test', courseId: course.id, usersIds: [student2.id] };
+				await request(app.getHttpServer())
+					.post('/tasks')
+					.set('Accept', 'application/json')
+					.send(taskCreateParams)
+					.expect(403);
+			});
 			it('PATCH :id should fail if NOT availableDate < dueDate', async () => {
 				const user = setup(Permission.HOMEWORK_EDIT);
 				const task = taskFactory.build({ name: 'original name', creator: user });
@@ -1315,6 +1333,30 @@ describe('Task Controller (API)', () => {
 					.set('Accept', 'application/json')
 					.send(updateTaskParams)
 					.expect(400);
+			});
+			it('PATCH should fail if users do not belong to course', async () => {
+				const teacher = setup(Permission.HOMEWORK_CREATE);
+				const student1 = setup(Permission.HOMEWORK_VIEW);
+				const student2 = setup(Permission.HOMEWORK_VIEW);
+				const course = courseFactory.build({ teachers: [teacher], students: [student1] });
+				const task = taskFactory.build({ name: 'original name', creator: teacher, course, users: [student1] });
+
+				await em.persistAndFlush([teacher, student1, student2, course, task]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const taskUpdateParams: TaskUpdateParams = {
+					name: 'test',
+					courseId: course.id,
+					usersIds: [student1.id, student2.id],
+				};
+
+				await request(app.getHttpServer())
+					.patch(`/tasks/${task.id}`)
+					.set('Accept', 'application/json')
+					.send(taskUpdateParams)
+					.expect(403);
 			});
 		});
 	});

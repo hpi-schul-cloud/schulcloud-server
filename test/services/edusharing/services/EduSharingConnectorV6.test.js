@@ -8,12 +8,13 @@ const MockNode = JSON.stringify(require('../mock/response-node.json'));
 const MockNodeRestricted = JSON.stringify(require('../mock/response-node-restricted.json'));
 const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
 const MockAuth = require('../mock/response-auth.json');
+const EduSharingConnectorV6 = require('../../../../src/services/edusharing/services/EduSharingConnectorV6');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe.skip('EduSharing FIND', () => {
+describe('EduSharingV6 FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
@@ -21,8 +22,10 @@ describe.skip('EduSharing FIND', () => {
 	let nestServices;
 
 	before(async () => {
+		Configuration.set('ES_API_V7', false);
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
+		eduSharingService.connector = EduSharingConnectorV6;
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
@@ -47,6 +50,8 @@ describe.skip('EduSharing FIND', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
+			sinon.stub(request, 'get').returns(MockAuth);
+
 			paramsStudent.query = { searchQuery: '' };
 			const response = await eduSharingService.find(paramsStudent);
 
@@ -62,7 +67,6 @@ describe.skip('EduSharing FIND', () => {
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
 			sinon.stub(request, 'get').returns(MockAuth);
-
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
 			postStub.onCall(1).returns(MockNodes);
@@ -81,9 +85,7 @@ describe.skip('EduSharing FIND', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
-			// cookie already set
-			// sinon.stub(request, 'get').returns(MockAuth);
-
+			sinon.stub(request, 'get').returns(MockAuth);
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 
@@ -106,9 +108,7 @@ describe.skip('EduSharing FIND', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
-			// cookie already set
-			// sinon.stub(request, 'get').returns(MockAuth);
-
+			sinon.stub(request, 'get').returns(MockAuth);
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 
@@ -127,6 +127,7 @@ describe.skip('EduSharing FIND', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
+			sinon.stub(request, 'get').returns(MockAuth);
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 
@@ -160,10 +161,9 @@ describe.skip('EduSharing FIND', () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const postStub = sinon.stub(request, 'post');
 
-			// cookie already set
-			// getStub.onCall(1).returns(MockAuth);
+			sinon.stub(request, 'get').returns(MockAuth);
+			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNode);
 			const mockImg = { body: 'dummyImage' };
 			postStub.onCall(1).returns(mockImg);
@@ -182,10 +182,9 @@ describe.skip('EduSharing FIND', () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const postStub = sinon.stub(request, 'post');
+
 			sinon.stub(request, 'get').returns(MockAuth);
-			// cookie already set
-			// getStub.onCall(1).returns(MockAuth);
+			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodeRestricted);
 
 			await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
@@ -198,7 +197,7 @@ describe.skip('EduSharing FIND', () => {
 	});
 });
 
-describe.skip('EduSharing config flags', () => {
+describe('EduSharingV6 config flags', () => {
 	let app;
 	let eduSharingService;
 	let server;
@@ -231,6 +230,7 @@ describe.skip('EduSharing config flags', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
+			sinon.stub(request, 'get').returns(MockAuth);
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 

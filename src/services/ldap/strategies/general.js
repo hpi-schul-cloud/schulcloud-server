@@ -161,12 +161,14 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				.service('ldap')
 				.searchCollection(this.config, searchString, options)
 				.then((data) =>
-					data.map((obj) => ({
-						className: obj[classAttributeNameMapping.description],
-						ldapDn: obj[classAttributeNameMapping.dn],
-						uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
-						modifyTimestamp: obj.modifyTimestamp,
-					}))
+					data.map((obj) => {
+						return {
+							className: obj[classAttributeNameMapping.description],
+							ldapDn: obj[classAttributeNameMapping.dn],
+							uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+							modifyTimestamp: obj.modifyTimestamp,
+						};
+					})
 				);
 		}
 		return Promise.resolve([]);
