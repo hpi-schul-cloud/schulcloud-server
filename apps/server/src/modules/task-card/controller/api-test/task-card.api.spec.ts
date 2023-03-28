@@ -18,7 +18,7 @@ import {
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
+import { TaskCardParams, TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -119,11 +119,10 @@ describe('Task-Card Controller (api)', () => {
 
 		it('Update task-card should throw', async () => {
 			const user = setupUser([]);
-
 			const taskCard = taskCardFactory.build({ creator: user });
 			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user, taskCard]);
+			await em.persistAndFlush([user, taskCard, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
@@ -383,17 +382,19 @@ describe('Task-Card Controller (api)', () => {
 				expect(expectedRichTextElement).toEqual(sanitizedText);
 			});
 		});
-		describe('validate taskCard', () => {
-			it('should throw an error if title is to long', async () => {
-				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
+		describe('Validate courseId', () => {
+			it('should should throw if courseId is empty', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 				await em.persistAndFlush([user]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
 
 				const taskCardParams = {
-					title: 't'.repeat(401),
+					title: 'test title',
+					cardElements: [],
+					courseId: '',
 				};
 
 				await request(app.getHttpServer())
@@ -414,7 +415,7 @@ describe('Task-Card Controller (api)', () => {
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const taskCardParams = {
+			const taskCardParams: TaskCardParams = {
 				title: 'test title',
 				courseId: course.id,
 			};

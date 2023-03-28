@@ -60,6 +60,9 @@ export class TaskCardMapper {
 		if (!params.title || params.title.length === 0) {
 			throw new ValidationError('The Task Card must have one title');
 		}
+		if (!params.courseId || params.courseId.length === 0) {
+			throw new ValidationError('The Task Card must have one course');
+		}
 
 		if (!params.courseId || params.courseId.length === 0) {
 			throw new ValidationError('The Task Card must have one course');

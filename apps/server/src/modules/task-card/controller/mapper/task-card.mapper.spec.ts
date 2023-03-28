@@ -158,7 +158,7 @@ describe('task-card mapper', () => {
 			};
 			expect(result).toEqual(expectedDto);
 		});
-		it('should should throw an error if title is missing', () => {
+		it('should should throw an error if title is empty', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 
@@ -180,7 +180,29 @@ describe('task-card mapper', () => {
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
 		});
-		it('should not have a text property if cardElements is missing', () => {
+		it('should should throw an error if courseId is empty', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const cardElementRichText = new RichTextCardElementParam();
+			cardElementRichText.type = CardElementType.RichText;
+			cardElementRichText.value = 'richtext';
+			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
+
+			const params = {
+				cardElements: [
+					{
+						content: cardElementRichText,
+					},
+				],
+				courseId: '',
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+			};
+			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
+		});
+		it('should not have a text property if cardElements are missing', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 
