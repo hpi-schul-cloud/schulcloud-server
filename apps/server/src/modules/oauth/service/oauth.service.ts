@@ -1,12 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { OauthConfig } from '@shared/domain';
+import { OauthConfig, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { Logger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto, ProvisioningDto } from '@src/modules/provisioning/dto';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
@@ -29,7 +31,8 @@ export class OAuthService {
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
 		private readonly userMigrationService: UserMigrationService,
-		private readonly migrationCheckService: MigrationCheckService
+		private readonly migrationCheckService: MigrationCheckService,
+		private readonly schoolService: SchoolService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -68,39 +71,42 @@ export class OAuthService {
 	): Promise<{ user?: UserDO; redirect: string }> {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
+		const externalUserId: string = data.externalUser.externalId;
+		const officialSchoolNumber: string | undefined = data.externalSchool?.officialSchoolNumber;
+
+		let provisioning = true;
 		let migrationConsentRedirect: string | undefined;
-		if (data.externalSchool?.officialSchoolNumber) {
+
+		if (officialSchoolNumber) {
+			provisioning = await this.isOauthProvisioningEnabledForSchool(officialSchoolNumber);
+
 			const shouldUserMigrate: boolean = await this.migrationCheckService.shouldUserMigrate(
-				data.externalUser.externalId,
+				externalUserId,
 				systemId,
-				data.externalSchool.officialSchoolNumber
+				officialSchoolNumber
 			);
 
 			if (shouldUserMigrate) {
 				// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
 				migrationConsentRedirect = await this.userMigrationService.getMigrationConsentPageRedirect(
-					data.externalSchool.officialSchoolNumber,
+					officialSchoolNumber,
 					systemId
 				);
 
-				const existingUser: UserDO | null = await this.userService.findByExternalId(
-					data.externalUser.externalId,
-					systemId
-				);
+				const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 				if (!existingUser) {
 					return { user: undefined, redirect: migrationConsentRedirect };
 				}
 			}
 		}
 
-		const provisioningDto: ProvisioningDto = await this.provisioningService.provisionData(data);
+		if (provisioning) {
+			await this.provisioningService.provisionData(data);
+		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(provisioningDto.externalUserId, systemId);
+		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 		if (!user) {
-			throw new OAuthSSOError(
-				`Provisioning of user with externalId: ${provisioningDto.externalUserId} failed`,
-				'sso_user_notfound'
-			);
+			throw new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound');
 		}
 
 		// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-632 Move Redirect Logic URLs to Client
@@ -111,6 +117,16 @@ export class OAuthService {
 		);
 
 		return { user, redirect };
+	}
+
+	async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
+		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+
+		if (!school) {
+			return true;
+		}
+
+		return !!school.features?.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 	}
 
 	async requestToken(code: string, oauthConfig: OauthConfig, redirectUri: string): Promise<OAuthTokenDto> {

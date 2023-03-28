@@ -334,14 +334,6 @@ describe('TaskService', () => {
 				await taskService.update(user.id, task.id, params);
 				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
 			});
-			it('should save the task and remove course', async () => {
-				const params = {
-					name: 'test',
-				};
-				const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, params);
-				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
-				expect(taskWithStatusVo.task.course).toBe(undefined);
-			});
 			it('should save the task with course and lesson', async () => {
 				const lesson = lessonFactory.buildWithId({ course });
 				lessonRepo.findById.mockResolvedValue(lesson);
@@ -355,51 +347,61 @@ describe('TaskService', () => {
 
 				lessonRepo.findById.mockRestore();
 			});
-			it('should save the task with course and remove lesson', async () => {
-				const lesson = lessonFactory.buildWithId({ course });
-				lessonRepo.findById.mockResolvedValue(lesson);
-				task = taskFactory.build({ course, lesson });
-				taskRepo.findById.mockResolvedValue(task);
-
-				const params = {
-					name: 'test',
-					courseId: course.id,
-				};
-				const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, params);
-				expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
-				expect(taskWithStatusVo.task.lesson).toBe(undefined);
-
-				lessonRepo.findById.mockRestore();
-			});
-			it('should save the task with course and remove users', async () => {
-				const student1 = userFactory.buildWithId();
-				const student2 = userFactory.buildWithId();
-
-				const courseWithStudents = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
-				courseRepo.findById.mockResolvedValue(courseWithStudents);
-
-				userRepo.findById.mockImplementation((id) => {
-					if (id === student1.id) {
-						return Promise.resolve(student1);
-					}
-					if (id === student2.id) {
-						return Promise.resolve(student2);
-					}
-					return Promise.resolve(user);
+			describe('when remove is true', () => {
+				it('should save the task and remove course', async () => {
+					const params = {
+						name: 'test',
+					};
+					const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, params, true);
+					expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
+					expect(taskWithStatusVo.task.course).toBe(undefined);
 				});
+				it('should save the task with course and remove lesson', async () => {
+					const lesson = lessonFactory.buildWithId({ course });
+					lessonRepo.findById.mockResolvedValue(lesson);
+					task = taskFactory.build({ course, lesson });
+					taskRepo.findById.mockResolvedValue(task);
 
-				const task2 = taskFactory.build({ course, users: [student1, student2] });
-				taskRepo.findById.mockResolvedValue(task2);
+					const params = {
+						name: 'test',
+						courseId: course.id,
+					};
+					const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, params, true);
+					expect(taskRepo.save).toHaveBeenCalledWith({ ...task, name: params.name });
+					expect(taskWithStatusVo.task.lesson).toBe(undefined);
 
-				const params = {
-					name: 'test',
-					courseId: course.id,
-				};
+					lessonRepo.findById.mockRestore();
+				});
+				it('should save the task with course and remove users', async () => {
+					const student1 = userFactory.buildWithId();
+					const student2 = userFactory.buildWithId();
 
-				const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task2.id, params);
+					const courseWithStudents = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
+					courseRepo.findById.mockResolvedValue(courseWithStudents);
 
-				expect(taskRepo.save).toHaveBeenCalled();
-				expect(taskWithStatusVo.task.users.getItems()).toStrictEqual([]);
+					userRepo.findById.mockImplementation((id) => {
+						if (id === student1.id) {
+							return Promise.resolve(student1);
+						}
+						if (id === student2.id) {
+							return Promise.resolve(student2);
+						}
+						return Promise.resolve(user);
+					});
+
+					const task2 = taskFactory.build({ course, users: [student1, student2] });
+					taskRepo.findById.mockResolvedValue(task2);
+
+					const params = {
+						name: 'test',
+						courseId: course.id,
+					};
+
+					const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task2.id, params, true);
+
+					expect(taskRepo.save).toHaveBeenCalled();
+					expect(taskWithStatusVo.task.users.getItems()).toStrictEqual([]);
+				});
 			});
 			it('should throw if not all users do not belong to course', async () => {
 				const someUser = userFactory.buildWithId();
