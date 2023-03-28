@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardNode } from '@shared/domain';
+import { BoardNode, CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -31,6 +31,52 @@ describe('BoardNodeRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	describe('findById', () => {
+		const setup = async () => {
+			const columnBoardNode = columnBoardNodeFactory.buildWithId();
+			await em.persistAndFlush(columnBoardNode);
+			const columnNodes = columnNodeFactory.buildList(2, { parent: columnBoardNode });
+			await em.persistAndFlush(columnNodes);
+			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+			await em.persistAndFlush(cardNodes);
+			em.clear();
+
+			return { columnBoardNode, columnNodes, cardNodes };
+		};
+
+		it('should return the correct board node for the id', async () => {
+			const { cardNodes } = await setup();
+			const foundNode = await repo.findById(BoardNode, cardNodes[0].id);
+
+			expect(foundNode.id).toBe(cardNodes[0].id);
+			expect(foundNode.path).toBe(cardNodes[0].path);
+		});
+	});
+
+	describe('findByIds', () => {
+		const setup = async () => {
+			const columnBoardNode = columnBoardNodeFactory.buildWithId();
+			await em.persistAndFlush(columnBoardNode);
+			const columnNodes = columnNodeFactory.buildList(2, { parent: columnBoardNode });
+			await em.persistAndFlush(columnNodes);
+			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+			await em.persistAndFlush(cardNodes);
+			em.clear();
+
+			return { columnBoardNode, columnNodes, cardNodes };
+		};
+
+		it('should return the correct board node for the id', async () => {
+			const { cardNodes } = await setup();
+			const cardNodeIds = cardNodes.map((node) => node.id);
+			const foundNodes = await repo.findByIds(BoardNode, cardNodeIds);
+			const foundNodeIds = foundNodes.map((node) => node.id);
+
+			expect(foundNodeIds).toContain(cardNodeIds[0]);
+			expect(foundNodeIds).toContain(cardNodeIds[1]);
+		});
 	});
 
 	describe('findDescendants', () => {

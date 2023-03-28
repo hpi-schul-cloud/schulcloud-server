@@ -3,7 +3,16 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { News, NewsTargetModel, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { courseNewsFactory, schoolNewsFactory, teamNewsFactory, cleanupCollections } from '@shared/testing';
+import {
+	courseNewsFactory,
+	schoolNewsFactory,
+	teamNewsFactory,
+	cleanupCollections,
+	courseUnpublishedNewsFactory,
+	schoolUnpublishedNewsFactory,
+	teamUnpublishedNewsFactory,
+	userFactory,
+} from '@shared/testing';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {
@@ -88,6 +97,49 @@ describe('NewsRepo', () => {
 			expect(result.targetModel).toEqual(news.targetModel);
 			expect(result.target.id).toEqual(news.target.id);
 		});
+		it('should persist unpublished course news', async () => {
+			const news = courseUnpublishedNewsFactory.build();
+
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.Course,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
+		});
+
+		it('should persist unpublished team news', async () => {
+			const news = teamUnpublishedNewsFactory.build();
+
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.Team,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
+		});
+
+		it('should persist unpublished school news', async () => {
+			const news = schoolUnpublishedNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const result = await em.findOneOrFail(News, {
+				targetModel: NewsTargetModel.School,
+				target: news.target.id,
+			});
+			expect(result).toBeDefined();
+			expect(result.targetModel).toEqual(news.targetModel);
+			expect(result.target.id).toEqual(news.target.id);
+		});
 	});
 
 	describe('findAll', () => {
@@ -102,7 +154,7 @@ describe('NewsRepo', () => {
 			};
 			const pagination = { skip: 0, limit: 20 };
 
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
@@ -119,7 +171,7 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [news.target.id],
 			};
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -135,7 +187,7 @@ describe('NewsRepo', () => {
 				targetIds: [news.target.id],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, { pagination });
+			const [result, count] = await repo.findAllPublished([target], { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -151,7 +203,78 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
 			};
-			const [result, count] = await repo.findAll([target], false, { order: { target: SortOrder.desc } });
+			const [result, count] = await repo.findAllPublished([target], { order: { target: SortOrder.desc } });
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(courseIds.length);
+			const resultCourseIds = result.map((news) => news.target.id);
+			const reverseCourseIds = courseIds.sort((r1, r2) => (r1 > r2 ? -1 : 1));
+			expect(resultCourseIds).toEqual(reverseCourseIds);
+		});
+
+		it('should return unpublished news for targets', async () => {
+			const news = courseUnpublishedNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: [news.target.id],
+			};
+			const pagination = { skip: 0, limit: 20 };
+
+			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(1);
+			expect(result[0].id).toEqual(news.id);
+		});
+
+		it('should return unpublished news for school', async () => {
+			const news = schoolUnpublishedNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const pagination = { skip: 0, limit: 20 };
+			const target = {
+				targetModel: NewsTargetModel.School,
+				targetIds: [news.target.id],
+			};
+			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(1);
+			expect(result[0].id).toEqual(news.id);
+		});
+
+		it('should return unpublished news for given target', async () => {
+			const news = courseUnpublishedNewsFactory.build();
+			await em.persistAndFlush(news);
+			em.clear();
+
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: [news.target.id],
+			};
+			const pagination = { skip: 0, limit: 20 };
+			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(1);
+			expect(result[0].id).toEqual(news.id);
+		});
+
+		it('should return unpublished news in requested order', async () => {
+			const creator = userFactory.build();
+			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator });
+			await em.persistAndFlush(newsList);
+			em.clear();
+
+			const courseIds = newsList.map((o) => o.target.id);
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: courseIds,
+			};
+			const [result, count] = await repo.findAllUnpublishedByUser([target], creator.id, {
+				order: { target: SortOrder.desc },
+			});
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(courseIds.length);
 			const resultCourseIds = result.map((news) => news.target.id);

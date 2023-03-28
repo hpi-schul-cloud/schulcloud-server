@@ -2,10 +2,7 @@ import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
 import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
 import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
-import {
-	CommonCartridgeAssignmentElement,
-	ICommonCartridgeAssignmentProps,
-} from './common-cartridge-assignment-element';
+import { ICommonCartridgeAssignmentProps } from './common-cartridge-assignment-element';
 import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeMetadataElement } from './common-cartridge-metadata-element';
@@ -25,7 +22,7 @@ export type ICommonCartridgeFileBuilderOptions = {
 
 /*
   This class builds a Common Cartridge file according to
-  Common Cartridge 1.3.0 and supports only this format at the moment.
+  Common Cartridge 1.1.0 and supports only this format at the moment.
   For more information look here: https://www.imsglobal.org/cc/index.html
  */
 export class CommonCartridgeFileBuilder {
@@ -53,16 +50,14 @@ export class CommonCartridgeFileBuilder {
 			manifest: {
 				$: {
 					identifier: this.options.identifier,
-					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
-					'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
-					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',
-					'xmlns:ext': 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2',
+					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1',
+					'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest',
+					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
-						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd ' +
-						'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd ' +
-						'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd ' +
-						'http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_cpextensionv1p2_v1p0.xsd',
+						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd ' +
+						'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd ' +
+						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ',
 				},
 				metadata: this.metadata.transform(),
 				organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
@@ -88,16 +83,13 @@ export class CommonCartridgeFileBuilder {
 
 	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
 		props.forEach((prop) => {
-			const assignment = new CommonCartridgeAssignmentElement(prop);
-			const xmlPath = `${prop.identifier}/assignment.xml`;
 			const htmlPath = `${prop.identifier}/assignment.html`;
-			this.zipBuilder.addFile(xmlPath, Buffer.from(this.xmlBuilder.buildObject(assignment.transform())));
 			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
 			this.resources.push(
 				new CommonCartridgeAssignmentResourceItemElement({
 					identifier: prop.identifier,
-					type: 'assignment_xmlv1p0',
-					href: xmlPath,
+					type: 'webcontent',
+					href: htmlPath,
 				})
 			);
 		});

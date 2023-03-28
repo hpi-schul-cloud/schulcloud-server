@@ -4,6 +4,7 @@ export * from './card-skeleton.response';
 export * from './card.url.params';
 export * from './column.response';
 export * from './column.url.params';
+export * from './content-element.url.params';
 export * from './move-card.body.params';
 export * from './move-column.body.params';
 export * from './rename.body.params';

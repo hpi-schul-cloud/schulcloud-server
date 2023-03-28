@@ -1,7 +1,7 @@
-import { SchoolRepo } from '@shared/repo';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityId, SchoolFeatures } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
+import { EntityId, SchoolFeatures } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { SchoolRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
@@ -38,6 +38,8 @@ export class SchoolService {
 				schoolDo.oauthMigrationPossible = this.setOrClearDate(oauthMigrationPossible);
 				schoolDo.oauthMigrationFinalFinish = undefined;
 			}
+
+			this.enableOauthMigration(schoolDo);
 		}
 		if (oauthMigrationMandatory !== undefined) {
 			schoolDo.oauthMigrationMandatory = this.setOrClearDate(oauthMigrationMandatory);
@@ -80,6 +82,14 @@ export class SchoolService {
 			schoolDo.oauthMigrationFinalFinish = new Date(
 				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
 			);
+		}
+	}
+
+	private enableOauthMigration(schoolDo: SchoolDO) {
+		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		} else {
+			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
 		}
 	}
 
