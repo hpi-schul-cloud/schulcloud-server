@@ -99,12 +99,12 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('deleting a board', () => {
-		it('should call the service to delete the column', async () => {
-			const { user, board, column } = setup();
+		it('should call the service to delete the board', async () => {
+			const { user, board } = setup();
 
-			await uc.deleteColumn(user.id, board.id, column.id);
+			await uc.deleteBoard(user.id, board.id);
 
-			expect(columnService.deleteById).toHaveBeenCalledWith(column.id);
+			expect(columnBoardService.deleteById).toHaveBeenCalledWith(board.id);
 		});
 	});
 
