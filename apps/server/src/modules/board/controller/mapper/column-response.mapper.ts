@@ -7,8 +7,8 @@ export class ColumnResponseMapper {
 			id: column.id,
 			title: column.title,
 			cards: column.children.map((card) => {
+				/* istanbul ignore next */
 				if (!(card instanceof Card)) {
-					/* istanbul ignore next */
 					throw new Error(`unsupported child type: ${card.constructor.name}`);
 				}
 				return new CardSkeletonResponse({
