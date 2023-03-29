@@ -9,7 +9,7 @@ const isEdusharing = async (context) => {
 		throw new MethodNotAllowed('This feature is disabled on this instance!');
 	}
 	context.safeAttributes = ['url'];
-	return Promise.resolve(context);
+	return context;
 };
 
 exports.before = {
