@@ -61,7 +61,7 @@ describe('admin users integration tests', () => {
 		expect(response.body).to.haveOwnProperty('_id');
 	});
 
-	it.only('POST fails with invalid email format', async () => {
+	it('POST fails with invalid email format', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const token = await getAdminToken(schoolId);
 		const request = chai
