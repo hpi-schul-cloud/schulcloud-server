@@ -24,11 +24,6 @@ const promises = [
 		promise: schoolModel.schoolModel.countDocuments(),
 		model: schoolModel.schoolModel.find(),
 	},
-	// {
-	// 	name: 'accounts',
-	// 	promise: accountModel.countDocuments(),
-	// 	model: accountModel.find(),
-	// },
 	{
 		name: 'homework',
 		promise: homeworkModel.homeworkModel.countDocuments(),
