@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { ALL_ENTITIES } from '@shared/domain';
+import { Account, User, Role, School, System, SchoolYear } from '@shared/domain';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { Logger } from '@src/core/logger';
 import { s3Config, config } from './fwu-learning-contents.config';
@@ -58,7 +58,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES],
+			entities: [User, Account, Role, School, System, SchoolYear],
 
 			// debug: true, // use it for locally debugging of querys
 		}),
