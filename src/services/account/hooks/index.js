@@ -1,3 +1,4 @@
+/* eslint-disable promise/no-return-wrap */
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { Forbidden, BadRequest, NotFound } = require('../../../errors');
@@ -7,11 +8,10 @@ const constants = require('../../../utils/constants');
 
 const globalHooks = require('../../../hooks');
 
-const { LdapStrategy, MoodleStrategy, IservStrategy } = require('../../authentication/strategies');
+const { MoodleStrategy, IservStrategy } = require('../../authentication/strategies');
 
 const strategies = {
 	moodle: MoodleStrategy,
-	ldap: LdapStrategy,
 	iserv: IservStrategy,
 };
 

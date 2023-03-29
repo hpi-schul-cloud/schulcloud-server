@@ -56,16 +56,20 @@ module.exports = function LDAPService() {
 						system.ldapConfig.providerOptions &&
 						isNotEmptyString(system.ldapConfig.providerOptions.classPathAdditions, true) === false
 					) {
-						return this.getUsers(system.ldapConfig, '').then((userData) => ({
-							users: userData,
-							classes: [],
-						}));
+						return this.getUsers(system.ldapConfig, '').then((userData) => {
+							return {
+								users: userData,
+								classes: [],
+							};
+						});
 					}
 					return this.getUsers(system.ldapConfig, '').then((userData) =>
-						this.getClasses(system.ldapConfig, '').then((classData) => ({
-							users: userData,
-							classes: classData,
-						}))
+						this.getClasses(system.ldapConfig, '').then((classData) => {
+							return {
+								users: userData,
+								classes: classData,
+							};
+						})
 					);
 				});
 		}
