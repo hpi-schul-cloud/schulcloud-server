@@ -52,9 +52,7 @@ module.exports = (app) => {
 	const merlinRoute = '/edu-sharing/merlinToken';
 	const docRoute = '/edu-sharing/api';
 
-	app.use(eduSharingRoute, new EduSharing(), (req, res) => {
-		res.send(res.data);
-	});
+	app.use(eduSharingRoute, new EduSharing());
 	const eduSharingService = app.service(eduSharingRoute);
 	eduSharingService.hooks(hooks);
 
