@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
 
@@ -17,7 +18,7 @@ export class FwuLearningContentsController {
 
 	@Get('*/:fwuLearningContent')
 	async get(@Req() req: Request, @Res() res: Response, @Param() params: GetFwuLearningContentParams) {
-		if (!this.configService.get<boolean>('FEATURE_FWU_CONTENT_ENABLED')) {
+		if (!Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const path = `${req.params[0]}/${params.fwuLearningContent}`;

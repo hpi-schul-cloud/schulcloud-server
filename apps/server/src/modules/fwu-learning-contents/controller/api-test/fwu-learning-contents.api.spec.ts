@@ -1,6 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -21,7 +22,6 @@ class API {
 }
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
-
 type UploadFile = { Key: string; Body: string | Buffer; ContentType: string };
 
 /**
@@ -75,72 +75,79 @@ async function createS3rver(config: S3Config, port: number) {
 	return { s3instance, exampleTextFile, exampleBinaryFile };
 }
 
-if (Configuration.get('FEATURE_FWU_CONTENT_ENABLED')) {
-	describe('FwuLearningContents Controller (api)', () => {
-		let app: INestApplication;
+describe('FwuLearningContents Controller (api)', () => {
+	let app: INestApplication;
+	let api: API;
+	let s3instance: S3rver;
+	let exampleTextFile: UploadFile;
+	let configBefore: IConfig;
 
-		let api: API;
+	beforeAll(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
+		const port = 10000 + createRndInt(10000);
+		const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
+		({ s3instance, exampleTextFile } = await createS3rver(overriddenS3Config, port));
 
-		let s3instance: S3rver;
-		let exampleTextFile: UploadFile;
-
-		beforeAll(async () => {
-			const port = 10000 + createRndInt(10000);
-			const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
-			({ s3instance, exampleTextFile } = await createS3rver(overriddenS3Config, port));
-
-			const module = await Test.createTestingModule({
-				imports: [FwuLearningContentsModule],
-				providers: [
-					FwuLearningContentsModule,
-					{
-						provide: 'S3_Config',
-						useValue: overriddenS3Config,
-					},
-				],
+		const module = await Test.createTestingModule({
+			imports: [FwuLearningContentsModule],
+			providers: [
+				FwuLearningContentsModule,
+				{
+					provide: 'S3_Config',
+					useValue: overriddenS3Config,
+				},
+			],
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate() {
+					return true;
+				},
 			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate() {
-						return true;
-					},
-				})
-				.compile();
+			.compile();
 
-			app = module.createNestApplication();
-			await app.init();
+		app = module.createNestApplication();
+		await app.init();
 
-			api = new API(app);
-		});
+		api = new API(app);
+	});
 
-		afterAll(async () => {
-			await app.close();
-			await s3instance.close();
-		});
+	afterAll(async () => {
+		await app.close();
+		await s3instance.close();
+		Configuration.reset(configBefore);
+	});
 
-		describe('requestFwuContent', () => {
-			describe('when the file has a file-extension', () => {
-				it('should return 200 status', async () => {
-					const response = await api.get(exampleTextFile.Key);
-					expect(response.status).toEqual(200);
-				});
-
-				it('should return file content', async () => {
-					const response = await api.get(exampleTextFile.Key);
-					expect(response.text).toEqual(exampleTextFile.Body);
-				});
-
-				it('should have the correct content-type', async () => {
-					const response = await api.get(exampleTextFile.Key);
-					expect(response.type).toEqual(exampleTextFile.ContentType);
-				});
+	describe('requestFwuContent', () => {
+		describe('when the file has a file-extension', () => {
+			it('should return 200 status', async () => {
+				const response = await api.get(exampleTextFile.Key);
+				expect(response.status).toEqual(200);
 			});
-			describe('when the file does not exist', () => {
-				it('should return 404 error', async () => {
-					const response = await api.get('1234/NotAValidKey.html');
-					expect(response.status).toEqual(404);
-				});
+
+			it('should return file content', async () => {
+				const response = await api.get(exampleTextFile.Key);
+				expect(response.text).toEqual(exampleTextFile.Body);
+			});
+
+			it('should have the correct content-type', async () => {
+				const response = await api.get(exampleTextFile.Key);
+				expect(response.type).toEqual(exampleTextFile.ContentType);
+			});
+		});
+		describe('when the file does not exist', () => {
+			it('should return 404 error', async () => {
+				const response = await api.get('1234/NotAValidKey.html');
+				expect(response.status).toEqual(404);
+			});
+		});
+		describe('when the feature is disabled', () => {
+			it('should return InternalServerErrorException', async () => {
+				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
+				const response = await api.get(exampleTextFile.Key);
+				expect(response.status).toEqual(500);
 			});
 		});
 	});
-}
+});
