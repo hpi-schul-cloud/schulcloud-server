@@ -212,7 +212,6 @@ describe('Task-Card Controller (api)', () => {
 			// expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
-			expect(responseTaskCard.courseUntilDate).toEqual(course.untilDate);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
 			expect(responseTaskCard.task.status.isDraft).toEqual(false);
 		});

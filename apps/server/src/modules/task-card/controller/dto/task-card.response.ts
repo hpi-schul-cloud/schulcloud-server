@@ -38,12 +38,6 @@ export class TaskCardResponse {
 	@ApiPropertyOptional()
 	courseId?: string;
 
-	// TODO: add courseEndDate
-	@ApiPropertyOptional({
-		description: 'End date of the assigned course',
-	})
-	courseUntilDate?: Date;
-
 	@ApiProperty({
 		description: 'Are the card elements draggable?',
 	})
