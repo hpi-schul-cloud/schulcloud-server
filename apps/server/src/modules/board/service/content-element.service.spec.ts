@@ -68,7 +68,7 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('deleteById', () => {
-		describe('when deleting a content element', () => {
+		describe('when deleting a content element by id', () => {
 			const setup = () => {
 				const textElement = textElementFactory.build();
 				const textElementId = textElement.id;
