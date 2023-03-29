@@ -322,7 +322,7 @@
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
-					"default": 6000000,
+					"default": 600000,
 					"description": "Timeout for incoming requests to the fwu-learning-contents in milliseconds."
 				}
 			}
