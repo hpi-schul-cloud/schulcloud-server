@@ -436,6 +436,28 @@ describe('Task-Card Controller (api)', () => {
 					.send(taskCardParams)
 					.expect(400);
 			});
+			it('should should throw if dueDate is earlier than today', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user] });
+
+				await em.persistAndFlush([user, course]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: course.id,
+					dueDate: new Date(Date.now() - 259200000),
+				};
+
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
 		});
 	});
 	describe('When title is provided', () => {
