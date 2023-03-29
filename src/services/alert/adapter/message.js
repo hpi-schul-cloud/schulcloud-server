@@ -83,7 +83,7 @@ class Message {
 	}
 
 	/**
-	 * Set Status of message
+	 * Set created_at of message
 	 */
 	set created_at(value) {
 		this.mcreated_at = value;
