@@ -1,22 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { columnBoardFactory } from '@shared/testing/factory/domainobject';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardRepo } from '../repo';
-import { ColumnBoardService } from '../service/board.service';
+import { BoardDoService } from '../service';
+import { ColumnBoardService } from '../service/column-board.service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
-	let columnBoardService: DeepMocked<ColumnBoardRepo>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BoardUc,
+				{
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
+				},
 				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
@@ -37,16 +40,17 @@ describe(BoardUc.name, () => {
 		await module.close();
 	});
 
+	const setup = () => {
+		const user = userFactory.buildWithId();
+		const board = columnBoardFactory.build();
+		const boardId = board.id;
+		const column = columnFactory.build();
+
+		return { user, board, boardId, column };
+	};
+
 	describe('finding a board', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
-
-			return { user, board, boardId };
-		};
-
-		it('should call the card repository', async () => {
+		it('should call the service', async () => {
 			const { user, boardId } = setup();
 
 			await uc.findBoard(user.id, boardId);
@@ -54,22 +58,57 @@ describe(BoardUc.name, () => {
 			expect(columnBoardService.findById).toHaveBeenCalledWith(boardId);
 		});
 
-		it('should return the columnBoard object of the given', async () => {
+		it('should return the column board object', async () => {
 			const { user, board } = setup();
 			columnBoardService.findById.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoard(user.id, board.id);
 			expect(result).toEqual(board);
 		});
+	});
 
-		it('should throw not found exception if board does not exist', async () => {
+	describe('creating a board', () => {
+		it('should call the service', async () => {
 			const { user } = setup();
-			const error = new Error('not found');
-			columnBoardService.findById.mockRejectedValueOnce(error);
 
-			const notExistingBoardId = new ObjectId().toHexString();
+			await uc.createBoard(user.id);
 
-			await expect(async () => uc.findBoard(user.id, notExistingBoardId)).rejects.toThrow(error);
+			expect(columnBoardService.createBoard).toHaveBeenCalled();
+		});
+
+		it('should return the column board object', async () => {
+			const { user, board } = setup();
+			columnBoardService.createBoard.mockResolvedValueOnce(board);
+
+			const result = await uc.createBoard(user.id);
+			expect(result).toEqual(board);
+		});
+	});
+
+	describe('creating a column', () => {
+		it('should call the service to find the board', async () => {
+			const { user, board } = setup();
+
+			await uc.createColumn(user.id, board.id);
+
+			expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+		});
+
+		it('should call the service to create the column', async () => {
+			const { user, board } = setup();
+			columnBoardService.findById.mockResolvedValueOnce(board);
+
+			await uc.createColumn(user.id, board.id);
+
+			expect(columnBoardService.createColumn).toHaveBeenCalledWith(board.id);
+		});
+
+		it('should return the column board object', async () => {
+			const { user, board, column } = setup();
+			columnBoardService.createColumn.mockResolvedValueOnce(column);
+
+			const result = await uc.createColumn(user.id, board.id);
+			expect(result).toEqual(column);
 		});
 	});
 });

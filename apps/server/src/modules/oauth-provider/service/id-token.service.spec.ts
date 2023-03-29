@@ -1,18 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PseudonymDO, Team } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
+import { setupEntities } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { LegacyLogger } from '@src/core/logger';
+import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
+import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
-import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
-import { PseudonymDO, Team } from '@shared/domain';
-import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { LegacyLogger } from '@src/core/logger';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
 import resetAllMocks = jest.resetAllMocks;
 import clearAllMocks = jest.clearAllMocks;
 
@@ -31,7 +30,6 @@ class IdTokenServiceSpec extends IdTokenService {
 }
 
 describe('IdTokenService', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let idTokenService: IdTokenServiceSpec;
 	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
@@ -86,12 +84,11 @@ describe('IdTokenService', () => {
 		ltiToolRepo = module.get(LtiToolRepo);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 		clearAllMocks();
 	});
 

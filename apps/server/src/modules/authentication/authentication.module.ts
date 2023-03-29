@@ -7,7 +7,7 @@ import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { OauthModule } from '@src/modules/oauth/oauth.module';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
+import { RoleModule } from '@src/modules/role';
 import { SystemModule } from '@src/modules/system';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
@@ -61,6 +61,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		AccountModule,
 		SystemModule,
 		OauthModule,
+		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
 	],
@@ -70,7 +71,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 		UserRepo,
 		SystemRepo,
 		SchoolRepo,
-		SchoolMapper,
 		LocalStrategy,
 		AuthenticationService,
 		LdapService,

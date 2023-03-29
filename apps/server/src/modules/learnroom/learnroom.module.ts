@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AuthorisationUtils } from '@shared/domain/rules/authorisation.utils';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
 import {
 	BoardRepo,
@@ -64,7 +63,6 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
-		AuthorisationUtils,
 	],
 	exports: [CourseCopyService, CourseService],
 })

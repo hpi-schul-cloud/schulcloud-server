@@ -12,22 +12,22 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
-import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto/oauth-token.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
-import { CookieOptions, Request, Response } from 'express';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
-import { UserMigrationMapper } from '../mapper/user-migration.mapper';
+import { CookieOptions, Request, Response } from 'express';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
+import { OAuthTokenDto } from '../interface';
+import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
+import { UserMigrationMapper } from '../mapper/user-migration.mapper';
+import { OAuthProcessDto } from '../service/dto';
 import { OauthUc } from '../uc';
 import { OauthLoginStateDto } from '../uc/dto/oauth-login-state.dto';
 import { AuthorizationParams, SSOLoginQuery, SystemIdParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';
 import { UserMigrationResponse } from './dto/user-migration.response';
-import { OauthLoginStateMapper } from '../mapper/oauth-login-state.mapper';
 
 @ApiTags('SSO')
 @Controller('sso')
@@ -46,12 +46,14 @@ export class OauthSSOController {
 	private errorHandler(error: unknown, session: ISession, res: Response) {
 		this.logger.error(error);
 		const ssoError: OAuthSSOError = error instanceof OAuthSSOError ? error : new OAuthSSOError();
+
 		session.destroy((err) => {
 			this.logger.log(err);
 		});
 
 		const errorRedirect: URL = new URL('/login', this.clientUrl);
 		errorRedirect.searchParams.append('error', ssoError.errorcode);
+
 		res.redirect(errorRedirect.toString());
 	}
 
@@ -127,7 +129,7 @@ export class OauthSSOController {
 	async getHydraOauthToken(
 		@Query() query: StatelessAuthorizationParams,
 		@Param('oauthClientId') oauthClientId: string
-	): Promise<OauthTokenResponse> {
+	): Promise<OAuthTokenDto> {
 		const oauthToken = this.hydraUc.getOauthToken(oauthClientId, query.code, query.error);
 		return oauthToken;
 	}

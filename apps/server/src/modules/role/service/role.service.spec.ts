@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleService } from '@src/modules/role/service/role.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RoleRepo } from '@shared/repo';
-import { Role, RoleName } from '@shared/domain';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { roleFactory } from '@shared/testing';
 import { NotFoundError } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, RoleName } from '@shared/domain';
+import { RoleRepo } from '@shared/repo';
+import { roleFactory } from '@shared/testing';
+import { RoleDto } from './dto/role.dto';
+import { RoleService } from './role.service';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('RoleService', () => {
@@ -57,6 +57,25 @@ describe('RoleService', () => {
 			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
 
 			await expect(roleService.findById('')).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByIds is called', () => {
+		describe('when searching roles by ids', () => {
+			it('should return roles', async () => {
+				const role: Role = roleFactory.buildWithId();
+				roleRepo.findByIds.mockResolvedValue([role]);
+
+				const result: RoleDto[] = await roleService.findByIds([role.id]);
+
+				expect(result).toEqual<RoleDto[]>([
+					{
+						id: role.id,
+						name: role.name,
+						permissions: role.permissions,
+					},
+				]);
+			});
 		});
 	});
 

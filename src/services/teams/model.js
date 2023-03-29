@@ -8,7 +8,6 @@ const TEAM_FEATURES = {
 	IS_TEAM: 'isTeam',
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
-	MESSENGER: 'messenger',
 };
 
 const getUserGroupSchema = (additional = {}) => {

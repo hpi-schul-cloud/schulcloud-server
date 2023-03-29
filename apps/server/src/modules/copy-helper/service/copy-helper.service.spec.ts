@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
@@ -18,14 +17,12 @@ function createStates(elementStates: CopyStatusEnum[]): CopyStatus[] {
 describe('copy helper service', () => {
 	let module: TestingModule;
 	let copyHelperService: CopyHelperService;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, courseGroupFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup, User } from '../entity';
@@ -8,7 +7,6 @@ import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 describe('CourseGroupRule', () => {
-	let orm: MikroORM;
 	let service: CourseGroupRule;
 	let courseRule: CourseRule;
 	let user: User;
@@ -18,7 +16,7 @@ describe('CourseGroupRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [CourseRule, CourseGroupRule],
@@ -28,10 +26,6 @@ describe('CourseGroupRule', () => {
 		courseRule = await module.get(CourseRule);
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		user = userFactory.build({ roles: [role] });
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	it('should call baseRule.hasAllPermissions', () => {

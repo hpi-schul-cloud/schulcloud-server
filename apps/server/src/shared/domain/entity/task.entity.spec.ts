@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseFactory,
@@ -10,16 +9,11 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { UsersList } from './task.entity';
 
 describe('Task Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -871,6 +865,43 @@ describe('Task Entity', () => {
 			const schoolId = task.getSchoolId();
 
 			expect(schoolId).toEqual(school.id);
+		});
+	});
+
+	describe('getUsersList', () => {
+		describe('when has no users assigned', () => {
+			it('should return an empty array', () => {
+				const task = taskFactory.build();
+				const result = task.getUsersList();
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when task card has several users', () => {
+			it('should return the correct list of users', () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const user3 = userFactory.buildWithId();
+				const user4 = userFactory.buildWithId();
+				const course = courseFactory.buildWithId({ teachers: [user1] });
+				const task = taskFactory.isPublished().buildWithId({ creator: user2, course, users: [user3, user4] });
+
+				const usersList: UsersList[] = [
+					{
+						id: user3.id,
+						firstName: user3.firstName,
+						lastName: user3.lastName,
+					},
+					{
+						id: user4.id,
+						firstName: user4.firstName,
+						lastName: user4.lastName,
+					},
+				];
+
+				const result = task.getUsersList();
+				expect(result).toEqual(usersList);
+			});
 		});
 	});
 });

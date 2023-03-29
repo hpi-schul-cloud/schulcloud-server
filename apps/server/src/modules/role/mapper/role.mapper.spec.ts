@@ -1,18 +1,11 @@
 import { Permission, Role } from '@shared/domain';
 import { roleFactory, setupEntities } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 describe('RoleMapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	it('mapFromEntityToDto', () => {

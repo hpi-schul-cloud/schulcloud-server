@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -51,10 +50,9 @@ describe('FilesStorageService update methods', () => {
 	let module: TestingModule;
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -91,7 +89,6 @@ describe('FilesStorageService update methods', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

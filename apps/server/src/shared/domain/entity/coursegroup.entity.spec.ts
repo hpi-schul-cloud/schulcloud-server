@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
 import { courseFactory, courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseEntity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

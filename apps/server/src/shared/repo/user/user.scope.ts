@@ -9,9 +9,9 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
-	whereLastLoginSystemChangeGreaterThan(date?: Date): UserScope {
+	whereLastLoginSystemChangeSmallerThan(date?: Date): UserScope {
 		if (date) {
-			this.addQuery({ lastLoginSystemChange: { $gte: date } });
+			this.addQuery({ $or: [{ lastLoginSystemChange: { $lt: date } }, { lastLoginSystemChange: { $exists: false } }] });
 		}
 		return this;
 	}

@@ -1,10 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { MikroORM } from '@mikro-orm/core';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, EntityId, Permission, Role, RoleName, Team, User, VideoConferenceDO } from '@shared/domain';
-import { ICurrentUser, IResolvedUser } from '@src/modules/authentication';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
@@ -12,6 +10,7 @@ import { CourseRepo, TeamsRepo, UserRepo, VideoConferenceRepo } from '@shared/re
 import { roleFactory, setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService, SchoolService } from '@src/modules';
+import { ICurrentUser, IResolvedUser } from '@src/modules/authentication';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
 import { BBBBaseMeetingConfig } from '@src/modules/video-conference/config/bbb-base-meeting.config';
@@ -53,7 +52,6 @@ class VideoConferenceUcSpec extends VideoConferenceUc {
 }
 
 describe('VideoConferenceUc', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let useCase: VideoConferenceUcSpec;
 
@@ -103,7 +101,7 @@ describe('VideoConferenceUc', () => {
 			}
 		});
 
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -155,7 +153,6 @@ describe('VideoConferenceUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 		jest.clearAllMocks();
 	});
 

@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { ApiValidationError } from '@shared/common';
 import { LanguageType, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
@@ -129,7 +129,7 @@ describe(baseRouteName, () => {
 
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: ['language must be a valid enum value'],
+					errors: ['language must be one of the following values: de, en, es, ua'],
 					field: ['language'],
 				},
 			]);

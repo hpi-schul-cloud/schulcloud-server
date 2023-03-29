@@ -1,20 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
 import { SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
-import { EntityNotFoundError } from '@shared/common';
 import { MigrationResponse } from '../controller/dto';
-import { SchoolService } from './school.service';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {
 	let module: TestingModule;
 	let schoolService: SchoolService;
-	let orm: MikroORM;
 
 	let schoolRepo: DeepMocked<SchoolRepo>;
 
@@ -26,20 +24,15 @@ describe('SchoolService', () => {
 					provide: SchoolRepo,
 					useValue: createMock<SchoolRepo>(),
 				},
-				{
-					provide: SchoolMapper,
-					useValue: createMock<SchoolMapper>(),
-				},
 			],
 		}).compile();
 		schoolRepo = module.get(SchoolRepo);
 		schoolService = module.get(SchoolService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	const setup = () => {
@@ -125,6 +118,18 @@ describe('SchoolService', () => {
 			it('should return false', async () => {
 				const { schoolSaved, schoolSavedId } = setup();
 				schoolSaved.features = [];
+				schoolRepo.findById.mockResolvedValue(schoolSaved);
+
+				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when features of school is undefined', () => {
+			it('should return false', async () => {
+				const { schoolSaved, schoolSavedId } = setup();
+				schoolSaved.features = undefined;
 				schoolRepo.findById.mockResolvedValue(schoolSaved);
 
 				const result = await schoolService.hasFeature(schoolSavedId, SchoolFeatures.VIDEOCONFERENCE);
@@ -237,79 +242,186 @@ describe('SchoolService', () => {
 			oauthMigrationFinished: finished ? new Date() : undefined,
 			officialSchoolNumber: '1337',
 		});
+
+		if (testDO.oauthMigrationFinished) {
+			testDO.oauthMigrationFinalFinish = new Date(
+				testDO.oauthMigrationFinished.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
+			);
+		}
+
 		schoolRepo.findById.mockResolvedValue(testDO);
 		schoolRepo.save.mockResolvedValue(testDO);
+
 		return { testId, testDO };
 	};
 
 	describe('setMigration is called', () => {
-		beforeEach(() => {});
 		describe('when migrationflags are truthy', () => {
 			it('should set the migrationflags', async () => {
 				const { testId, testDO } = setupMigration(true, true, true);
+
 				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, true);
-				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
-				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
-				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
-				expect(resp.enableMigrationStart).toBeTruthy();
+
+				expect(resp).toEqual<MigrationResponse>({
+					oauthMigrationPossible: testDO.oauthMigrationPossible,
+					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
+					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
+					enableMigrationStart: true,
+				});
 			});
+
 			it('should call findById with the given id', async () => {
 				const { testId } = setupMigration(true, true, true);
+
 				await schoolService.setMigration(testId, true, true, true);
+
 				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 			});
+
 			it('should save the DO', async () => {
 				const { testId, testDO } = setupMigration(true, true, true);
+
 				await schoolService.setMigration(testId, true, true, true);
+
 				expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
 			});
+
+			describe('when the school has a feature', () => {
+				it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
+					const { testId, testDO } = setupMigration(true);
+					const existingFeature: SchoolFeatures = 'otherFeature' as SchoolFeatures;
+					testDO.features = [existingFeature];
+
+					await schoolService.setMigration(testId, true, undefined, undefined);
+
+					expect(schoolRepo.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						})
+					);
+				});
+			});
+
+			describe('when the school has no features yet', () => {
+				it('should set the OAUTH_PROVISIONING_ENABLED feature for the school', async () => {
+					const { testId } = setupMigration(true);
+
+					await schoolService.setMigration(testId, true, undefined, undefined);
+
+					expect(schoolRepo.save).toHaveBeenCalledWith(
+						expect.objectContaining<Partial<SchoolDO>>({
+							features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						})
+					);
+				});
+			});
 		});
+
 		describe('when oauthMigrationPossible is undefined', () => {
 			it('should set oauthMigrationPossible to undefined', async () => {
 				const { testId, testDO } = setupMigration(undefined, true, true);
+
 				const resp: MigrationResponse = await schoolService.setMigration(testId, undefined, true, true);
-				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
-				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
-				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
-				expect(resp.enableMigrationStart).toBeTruthy();
+
+				expect(resp).toEqual<MigrationResponse>({
+					oauthMigrationPossible: testDO.oauthMigrationPossible,
+					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
+					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
+					enableMigrationStart: true,
+				});
 			});
 		});
+
 		describe('when oauthMigrationMandatory is undefined', () => {
 			it('should set oauthMigrationMandatory to undefined', async () => {
 				const { testId, testDO } = setupMigration(true, undefined, true);
+
 				const resp: MigrationResponse = await schoolService.setMigration(testId, true, undefined, true);
-				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
-				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
-				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
-				expect(resp.enableMigrationStart).toBeTruthy();
+
+				expect(resp).toEqual<MigrationResponse>({
+					oauthMigrationPossible: testDO.oauthMigrationPossible,
+					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
+					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
+					enableMigrationStart: true,
+				});
 			});
 		});
+
 		describe('when oauthMigrationFinished is undefined', () => {
 			it('should set oauthMigrationFinished to undefined', async () => {
 				const { testId, testDO } = setupMigration(true, true, undefined);
+
 				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, undefined);
+
+				expect(resp).toEqual<MigrationResponse>({
+					oauthMigrationPossible: testDO.oauthMigrationPossible,
+					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
+					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
+					enableMigrationStart: true,
+				});
+			});
+		});
+
+		describe('when DO does not have oauthMigrationPossible and oauthMigrationFinished', () => {
+			it('should set oauthMigrationStart', async () => {
+				const { testId, testDO } = setupMigration(undefined, undefined, undefined);
+
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, undefined);
+
 				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
 				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
 				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.oauthMigrationFinalFinish).toEqual(testDO.oauthMigrationFinalFinish);
+				expect(testDO.oauthMigrationStart).toBeTruthy();
 				expect(resp.enableMigrationStart).toBeTruthy();
 			});
 		});
-		describe('when migrationflags are falsly', () => {
-			it('should not set the migrationflags', async () => {
-				const { testId, testDO } = setupMigration(false, false, false);
-				const resp: MigrationResponse = await schoolService.setMigration(testId, false, false, false);
+
+		describe('when oauthMigrationFinished is false', () => {
+			it('should set oauthMigrationStart', async () => {
+				const { testId, testDO } = setupMigration(true, true, true);
+
+				const resp: MigrationResponse = await schoolService.setMigration(testId, true, true, false);
+
 				expect(resp.oauthMigrationPossible).toEqual(testDO.oauthMigrationPossible);
 				expect(resp.oauthMigrationMandatory).toEqual(testDO.oauthMigrationMandatory);
 				expect(resp.oauthMigrationFinished).toEqual(testDO.oauthMigrationFinished);
+				expect(resp.oauthMigrationFinalFinish).toEqual(undefined);
 			});
+		});
+
+		describe('when migrationflags are falsly', () => {
+			it('should not set the migrationflags', async () => {
+				const { testId, testDO } = setupMigration(false, false, false);
+
+				const resp: MigrationResponse = await schoolService.setMigration(testId, false, false, false);
+
+				expect(resp).toEqual<MigrationResponse>({
+					oauthMigrationPossible: testDO.oauthMigrationPossible,
+					oauthMigrationMandatory: testDO.oauthMigrationMandatory,
+					oauthMigrationFinished: testDO.oauthMigrationFinished,
+					oauthMigrationFinalFinish: testDO.oauthMigrationFinalFinish,
+					enableMigrationStart: true,
+				});
+			});
+
 			it('should call findById with the given id', async () => {
 				const { testId } = setupMigration(false, false, false);
+
 				await schoolService.setMigration(testId, false, false, false);
+
 				expect(schoolRepo.findById).toHaveBeenCalledWith(testId);
 			});
+
 			it('should save the DO', async () => {
 				const { testId, testDO } = setupMigration(false, false, false);
+
 				await schoolService.setMigration(testId, false, false, false);
+
 				expect(schoolRepo.save).toHaveBeenCalledWith(testDO);
 			});
 		});

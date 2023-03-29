@@ -1,17 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
-import { PseudonymsRepo } from '@shared/repo/index';
-import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
-import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
-import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
-import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
-import { setupEntities, userFactory } from '@shared/testing/index';
-import { LtiPrivacyPermission, LtiRoleType, PseudonymDO, RoleName, User } from '@shared/domain/index';
-import { MikroORM } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo/ltitool/index';
+import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission, LtiRoleType, PseudonymDO, RoleName, User } from '@shared/domain/index';
+import { TeamRolePermissionsDto } from '@shared/infra/collaborative-storage/dto/team-role-permissions.dto';
+import { NextcloudClient } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.client';
+import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/nextcloud/nextcloud.strategy';
+import { PseudonymsRepo } from '@shared/repo/index';
+import { LtiToolRepo } from '@shared/repo/ltitool/index';
+import { setupEntities, userFactory } from '@shared/testing/index';
+import { LegacyLogger } from '@src/core/logger';
+import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {
@@ -29,7 +28,6 @@ class NextcloudStrategySpec extends NextcloudStrategy {
 
 describe('NextCloud Adapter Strategy', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let strategy: NextcloudStrategySpec;
 
 	let client: DeepMocked<NextcloudClient>;
@@ -40,7 +38,6 @@ describe('NextCloud Adapter Strategy', () => {
 	const toolName = 'SchulcloudNextcloud';
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
@@ -71,7 +68,7 @@ describe('NextCloud Adapter Strategy', () => {
 		pseudonymsRepo = module.get(PseudonymsRepo);
 		ltiToolRepo = module.get(LtiToolRepo);
 		logger = module.get(LegacyLogger);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterEach(() => {

@@ -29,8 +29,9 @@ export class SchoolUc {
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+		const migrationStartedAt: Date | undefined = school.oauthMigrationStart;
 
-		const shouldRestartMigration = this.isRestartMigrationRequired(
+		const shouldRestartMigration: boolean = this.isRestartMigrationRequired(
 			school,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
@@ -38,6 +39,7 @@ export class SchoolUc {
 		);
 
 		if (shouldRestartMigration) {
+			this.schoolMigrationService.validateGracePeriod(school);
 			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 
@@ -49,7 +51,7 @@ export class SchoolUc {
 		);
 
 		if (oauthMigrationFinished) {
-			await this.schoolMigrationService.completeMigration(schoolId);
+			await this.schoolMigrationService.completeMigration(schoolId, migrationStartedAt);
 		}
 
 		return migrationDto;

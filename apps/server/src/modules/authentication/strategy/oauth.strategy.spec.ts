@@ -1,13 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { userDoFactory } from '@shared/testing';
-import { OauthStrategy } from './oauth.strategy';
+import { OAuthTokenDto } from '@src/modules/oauth';
+import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { RoleService } from '@src/modules/role';
+import { ICurrentUser } from '../interface';
+import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
+import { OauthStrategy, PathParams } from './oauth.strategy';
 
 describe('OauthStrategy', () => {
 	let module: TestingModule;
@@ -28,6 +32,10 @@ describe('OauthStrategy', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: RoleService,
+					useValue: createMock<RoleService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -58,7 +66,14 @@ describe('OauthStrategy', () => {
 	});
 	describe('when no code is given in query', () => {
 		it('should return an empty object', async () => {
-			oauthService.authenticateUser.mockResolvedValueOnce({
+			oauthService.authenticateUser.mockResolvedValueOnce(
+				new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				})
+			);
+			oauthService.provisionUser.mockResolvedValueOnce({
 				redirect: '/mock-redirect',
 			});
 			const result = await strategy.validate({ params: { systemId }, query: {} });
@@ -68,7 +83,14 @@ describe('OauthStrategy', () => {
 	});
 	describe('when the error property is set in query', () => {
 		it('should return an empty object', async () => {
-			oauthService.authenticateUser.mockResolvedValueOnce({
+			oauthService.authenticateUser.mockResolvedValueOnce(
+				new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				})
+			);
+			oauthService.provisionUser.mockResolvedValueOnce({
 				redirect: '/mock-redirect',
 			});
 			const result = await strategy.validate({ params: { systemId }, query: { code: 'some Code', error: 'an error' } });
@@ -79,20 +101,42 @@ describe('OauthStrategy', () => {
 
 	describe('when no account is found for user ID', () => {
 		it('should throw Unauthorized', async () => {
-			oauthService.authenticateUser.mockResolvedValueOnce({
+			const request: { params: PathParams; query: OauthAuthorizationParams } = {
+				params: { systemId },
+				query: { code: 'some Code' },
+			};
+
+			oauthService.authenticateUser.mockResolvedValueOnce(
+				new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				})
+			);
+			oauthService.provisionUser.mockResolvedValueOnce({
 				user: { id: 'mockUserId' } as UserDO,
 				redirect: '/mock-redirect',
 			});
 			accountService.findByUserId.mockResolvedValueOnce(null);
-			await expect(strategy.validate({ params: { systemId }, query: { code: 'some Code' } })).rejects.toThrow(
-				UnauthorizedException
-			);
+			oauthService.createErrorRedirect.mockReturnValue('errorRedirect');
+
+			const result: ICurrentUser | unknown = await strategy.validate(request);
+
+			expect(result).toEqual({});
+			expect(request.query.redirect).toEqual('errorRedirect');
 		});
 	});
 
 	describe('when no user is returned for auth code (in case school is currently migrated to oauth)', () => {
 		it('should return an empty object', async () => {
-			oauthService.authenticateUser.mockResolvedValueOnce({
+			oauthService.authenticateUser.mockResolvedValueOnce(
+				new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				})
+			);
+			oauthService.provisionUser.mockResolvedValueOnce({
 				redirect: '/mock-redirect',
 			});
 			accountService.findByUserId.mockResolvedValueOnce(null);
@@ -108,7 +152,14 @@ describe('OauthStrategy', () => {
 			const mockUser: UserDO = userDoFactory.withDates().buildWithId();
 			const accountId = 'mockAccountId';
 
-			oauthService.authenticateUser.mockResolvedValueOnce({
+			oauthService.authenticateUser.mockResolvedValueOnce(
+				new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				})
+			);
+			oauthService.provisionUser.mockResolvedValueOnce({
 				user: mockUser,
 				redirect: '/mock-redirect',
 			});

@@ -197,7 +197,7 @@ export class KeycloakConfigurationService {
 		)[];
 		// updating or creating configs
 		newConfigs.forEach((newConfig) => {
-			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.alias)) {
+			if (oldConfigs.some((oldConfig) => oldConfig.alias === newConfig.idpHint)) {
 				result.push({ action: ConfigureAction.UPDATE, config: newConfig });
 			} else {
 				result.push({ action: ConfigureAction.CREATE, config: newConfig });
@@ -205,7 +205,7 @@ export class KeycloakConfigurationService {
 		});
 		// deleting configs
 		oldConfigs.forEach((oldConfig) => {
-			if (!newConfigs.some((newConfig) => newConfig.alias === oldConfig.alias)) {
+			if (!newConfigs.some((newConfig) => newConfig.idpHint === oldConfig.alias)) {
 				result.push({ action: ConfigureAction.DELETE, alias: oldConfig.alias as string });
 			}
 		});
@@ -214,22 +214,22 @@ export class KeycloakConfigurationService {
 
 	private async createIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (oidcConfig && oidcConfig?.alias) {
+		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.create(
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(oidcConfig, flowAlias)
 			);
-			await this.createIdpDefaultMapper(oidcConfig.alias);
+			await this.createIdpDefaultMapper(oidcConfig.idpHint);
 		}
 	}
 
 	private async updateIdentityProvider(oidcConfig: OidcConfigDto): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		if (oidcConfig && oidcConfig?.alias) {
+		if (oidcConfig && oidcConfig?.idpHint) {
 			await kc.identityProviders.update(
-				{ alias: oidcConfig.alias },
+				{ alias: oidcConfig.idpHint },
 				this.oidcIdentityProviderMapper.mapToKeycloakIdentityProvider(oidcConfig, flowAlias)
 			);
-			await this.updateOrCreateIdpDefaultMapper(oidcConfig.alias);
+			await this.updateOrCreateIdpDefaultMapper(oidcConfig.idpHint);
 		}
 	}
 

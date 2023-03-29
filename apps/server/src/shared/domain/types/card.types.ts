@@ -1,7 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import type { User } from '@shared/domain';
-import { CardElement, CardElementType, RichTextCardElement, TitleCardElement } from '../entity/cardElement.entity';
+import { CardElement, CardElementType, RichTextCardElement } from '../entity/card-element.entity';
 import { InputFormat } from './input-format.types';
 
 export enum CardType {
@@ -14,6 +14,7 @@ export type ICardCProps = {
 	creator: User;
 	draggable: boolean;
 	visibleAtDate: Date;
+	title: string;
 };
 
 export interface ICard {
@@ -22,15 +23,7 @@ export interface ICard {
 	creator: User;
 	draggable: boolean;
 	visibleAtDate: Date;
-}
-
-export class CardTitleElementResponse {
-	constructor(props: TitleCardElement) {
-		this.value = props.value;
-	}
-
-	@ApiProperty()
-	value!: string;
+	title: string;
 }
 
 export class CardRichTextElementResponse {
@@ -51,7 +44,7 @@ export class CardRichTextElementResponse {
 	inputFormat!: InputFormat;
 }
 
-@ApiExtraModels(CardTitleElementResponse, CardRichTextElementResponse)
+@ApiExtraModels(CardRichTextElementResponse)
 export class CardElementResponse {
 	@ApiProperty({
 		description: 'The id of the card element',
@@ -66,7 +59,7 @@ export class CardElementResponse {
 
 	@ApiProperty({
 		description: 'Content of the card element, depending on its type',
-		oneOf: [{ $ref: getSchemaPath(CardTitleElementResponse) }, { $ref: getSchemaPath(CardRichTextElementResponse) }],
+		oneOf: [{ $ref: getSchemaPath(CardRichTextElementResponse) }],
 	})
-	content!: CardTitleElementResponse | CardRichTextElementResponse;
+	content!: CardRichTextElementResponse;
 }

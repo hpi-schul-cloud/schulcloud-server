@@ -1,23 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { cardFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { CardRepo } from '../repo';
+import { ObjectId } from 'bson';
+import { BoardDoRepo } from '../repo';
 import { CardService } from './card.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
-	let cardRepo: DeepMocked<CardRepo>;
+	let boardDoRepo: DeepMocked<BoardDoRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardService,
 				{
-					provide: CardRepo,
-					useValue: createMock<CardRepo>(),
+					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -27,12 +28,44 @@ describe(CardService.name, () => {
 		}).compile();
 
 		service = module.get(CardService);
-		cardRepo = module.get(CardRepo);
+		boardDoRepo = module.get(BoardDoRepo);
+
 		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('finding one specific card', () => {
+		const setup = () => {
+			const card = cardFactory.buildWithId();
+			return { card, cardId: card.id };
+		};
+
+		it('should call the card repository', async () => {
+			const { card, cardId } = setup();
+			boardDoRepo.findById.mockResolvedValueOnce(card);
+
+			await service.findById(cardId);
+
+			expect(boardDoRepo.findById).toHaveBeenCalledWith(cardId);
+		});
+
+		it('should return the domain objects from the card repository', async () => {
+			const { card, cardId } = setup();
+			boardDoRepo.findById.mockResolvedValueOnce(card);
+
+			const result = await service.findById(cardId);
+
+			expect(result).toEqual(card);
+		});
+
+		it('should throw if the domain object does not exist', async () => {
+			const fakeId = new ObjectId().toHexString();
+
+			await expect(service.findById(fakeId)).rejects.toThrow();
+		});
 	});
 
 	describe('finding many cards', () => {
@@ -48,16 +81,24 @@ describe(CardService.name, () => {
 
 			await service.findByIds(cardIds);
 
-			expect(cardRepo.findByIds).toHaveBeenCalledWith(cardIds);
+			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
 		});
 
 		it('should return the domain objects from the card repository', async () => {
 			const { cards, cardIds } = setup();
-			cardRepo.findByIds.mockResolvedValueOnce(cards);
+			boardDoRepo.findByIds.mockResolvedValueOnce(cards);
 
 			const result = await service.findByIds(cardIds);
 
 			expect(result).toEqual(cards);
+		});
+
+		it('should throw an error if some DOs are not cards', async () => {
+			const textElements = textElementFactory.buildList(2);
+			const textElementIds = textElements.map((t) => t.id);
+			boardDoRepo.findByIds.mockResolvedValue(textElements);
+
+			await expect(service.findByIds(textElementIds)).rejects.toThrow();
 		});
 	});
 });

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, PermissionContextBuilder } from '@shared/domain';
 import { lessonFactory, setupEntities, userFactory } from '@shared/testing';
@@ -8,7 +7,6 @@ import { LessonService } from '../service';
 
 describe('LessonUC', () => {
 	let lessonUC: LessonUC;
-	let orm: MikroORM;
 	let module: TestingModule;
 
 	let lessonService: DeepMocked<LessonService>;
@@ -33,11 +31,10 @@ describe('LessonUC', () => {
 		lessonService = module.get(LessonService);
 		authorizationService = module.get(AuthorizationService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

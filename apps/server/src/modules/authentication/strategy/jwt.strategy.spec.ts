@@ -4,7 +4,6 @@ import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -19,10 +18,9 @@ describe('jwt strategy', () => {
 	let strategy: JwtStrategy;
 	let repo: DeepMocked<UserRepo>;
 	let module: TestingModule;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			imports: [PassportModule, JwtModule.register(jwtConstants)],
@@ -45,7 +43,6 @@ describe('jwt strategy', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

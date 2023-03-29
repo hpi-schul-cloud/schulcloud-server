@@ -22,7 +22,8 @@ import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
-import { AuthorizationParams, OauthTokenResponse } from '../dto';
+import { OauthTokenResponse } from '../../service/dto';
+import { AuthorizationParams } from '../dto';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });

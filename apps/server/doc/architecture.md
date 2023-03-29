@@ -89,19 +89,34 @@ The datamodel itself is defined through Entities, that have to be mapped into do
 
 ## Modules
 
-Each domain module comprises of a number of public services, that are explicitly exported from the module for external use. Along with these services it should export any types and interfaces needed outside the module.
+The codebase is broken into modules, each dealing with a part of the businesslogic, or seperated technical concerns.
+These modules define what code is available where, and ensure a clean dependency graph.
 
-TODO: since nestJs modules can only export injectables, the method of exporting types and interfaces is not defined yet, and implementation detail for now. One possible solution is to put an index file into the module folder, that defines the types that may be imported from the outside. This also allows us to define a linter rule in the future that prevents access to any files deeper than the index file.
+All Code written should be part of exactly one module. Each module contains any services, typedefinitions, interfaces, repositories, mappers, and other files it needs internally to function.
 
-In addition, it contains any classes it needs internally to function, including any repositories or other internal classes that should not be accessed from outside the module. *No Class may be provided in more than one module!*
+When something is needed in more than one module, it needs to be explicitly exported by the module, to be part of its public interface. It can then be imported by other modules. Services are exported published via the dependency injection mechanism provided by Nestjs.
 
 ```js
 @Module({
-  providers: [InternalRepo, PublicService],
+  providers: [InternalRepo, InternalService, PublicService],
   exports: [PublicService],
 })
 export class ExampleModule {}
+
+@Module({
+  imports: [ExampleModule]
+  providers: [SomeOtherService],
+})
+export class OtherModule {}
 ```
+
+Notice that in the above example, the `PublicService` can be used anywhere within the `OtherModule`, including in the `SomeOtherService`, whereas the `InternalRepo` and `InternalService` can not.
+
+Things that cant be injectables, like types and interfaces, are exported via the index file at the root of the module.
+
+Code that needs to be shared across many modules can either be put into their own seperate module, if there is a clearly defined seperate concern covered by it, or into the shared module if not.
+
+### Api Modules
 
 The controllers and the corresponding usecases, along with the api tests for these routes, are seperated into api modules
 
@@ -115,8 +130,6 @@ export class ExampleApiModule {}
 ```
 
 This allows us to include the domain modules in different server deployments, without each of them having all api definitions. This also means that no usecase can ever be imported, as only services are ever exported, enforcing a seperation of concerns between logic and orchestration.
-
-Notice that in the above example, the `PublicService` can be used anywhere within the ApiModule, including in the `ExampleUc`, whereas the `InternalRepo` can not.
 
 ## Horizontal Architecture
 

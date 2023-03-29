@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, submissionFactory } from '@shared/testing';
 import { SubmissionStatusResponse } from '../controller/dto';
 import { SubmissionMapper } from './submission.mapper';
 
 describe('Submission Mapper', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('mapToStatusResponse', () => {

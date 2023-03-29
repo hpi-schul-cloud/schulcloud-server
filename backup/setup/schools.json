@@ -33,7 +33,7 @@
 				"STUDENT_LIST": true
 			}
 		},
-        "features" : []
+        "features" : ["oauthProvisioningEnabled"]
 	},
 	{
 		"_id": {
@@ -58,7 +58,7 @@
 				"STUDENT_LIST": true
 			}
 		},
-        "features" : []
+        "features" : ["oauthProvisioningEnabled"]
 	},
 	{
 		"_id": {
@@ -91,9 +91,9 @@
 		"purpose": "demo",
 		"features": [
 			"rocketChat",
-			"messenger",
 			"ldapUniventionMigrationSchool",
-			"videoconference"
+			"videoconference",
+			"oauthProvisioningEnabled"
 		],
 		"enableStudentTeamCreation": false,
 		"permissions": {
@@ -134,8 +134,7 @@
         "features" : [
 			"rocketChat",
 			"videoconference",
-			"messenger",
-			"messengerSchoolRoom"
+			"oauthProvisioningEnabled"
 		]
 	},
 	{
@@ -148,8 +147,8 @@
 		"pilot": false,
 		"features": [
 			"rocketChat",
-			"messenger",
-			"studentVisibility"
+			"studentVisibility",
+			"oauthProvisioningEnabled"
 		],
 		"name": "Felix Mendelssohn-Gymnasium",
 		"federalState": {
@@ -196,7 +195,7 @@
 		"pilot": false,
 		"features": [
 			"rocketChat",
-			"messenger"
+			"oauthProvisioningEnabled"
 		],
 		"name": "Ludwig van Beethoven-Liceum",
 		"federalState": {
@@ -243,8 +242,8 @@
 		"pilot": false,
 		"features": [
 			"rocketChat",
-			"messenger",
-			"studentVisibility"
+			"studentVisibility",
+			"oauthProvisioningEnabled"
 		],
 		"name": "Brasilien Schule",
 		"federalState": {
@@ -282,7 +281,7 @@
 		"systems": [],
 		"experimental": false,
 		"pilot": false,
-		"features": [],
+		"features": ["oauthProvisioningEnabled"],
 		"name": "school in Ni",
 		"federalState": {
 			"$oid": "0000b186816abba584714c58"
@@ -317,7 +316,7 @@
 		"systems": [],
 		"experimental": false,
 		"pilot": false,
-		"features": [],
+		"features": ["oauthProvisioningEnabled"],
 		"name": "graveyard school (tombstone users only)",
 		"createdAt": {
 			"$date": "2020-12-16T12:47:27.338Z"
@@ -366,9 +365,9 @@
 		"purpose": "demo",
 		"features": [
 			"rocketChat",
-			"messenger",
 			"ldapUniventionMigrationSchool",
-			"videoconference"
+			"videoconference",
+			"oauthProvisioningEnabled"
 		],
 		"enableStudentTeamCreation": false,
 		"permissions": {

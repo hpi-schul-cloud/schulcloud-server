@@ -4,9 +4,9 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { EntityId, Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
@@ -193,7 +193,7 @@ describe('files-storage controller (API)', () => {
 						name: 'test.txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
-						type: 'text/plain',
+						mimeType: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 						size: expect.any(Number),
@@ -248,7 +248,9 @@ describe('files-storage controller (API)', () => {
 				const response = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/cookies/${validId}`, body);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: ['parentType must be a valid enum value'],
+						errors: [
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+						],
 						field: ['parentType'],
 					},
 				]);
@@ -295,7 +297,7 @@ describe('files-storage controller (API)', () => {
 						name: 'test (1).txt',
 						parentId: validId,
 						creatorId: currentUser.userId,
-						type: 'text/plain',
+						mimeType: 'text/plain',
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 					})

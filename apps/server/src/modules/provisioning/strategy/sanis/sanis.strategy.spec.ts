@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -39,13 +38,12 @@ const createAxiosResponse = (data: SanisResponse): AxiosResponse<SanisResponse> 
 describe('SanisStrategy', () => {
 	let module: TestingModule;
 	let strategy: SanisProvisioningStrategy;
-	let orm: MikroORM;
 
 	let mapper: DeepMocked<SanisResponseMapper>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -72,10 +70,6 @@ describe('SanisStrategy', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	describe('getType is called', () => {

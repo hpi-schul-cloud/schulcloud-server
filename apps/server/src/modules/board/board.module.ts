@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
-import { BoardManagementConsole } from './console/board-management.console';
-import { BoardNodeRepo, CardRepo, ColumnBoardRepo } from './repo';
-import { ColumnBoardService } from './service/board.service';
-import { CardService } from './service/card.service';
+import { BoardManagementConsole } from './console';
+import { BoardDoRepo, BoardNodeRepo } from './repo';
+import { BoardDoService, CardService, ColumnBoardService, ContentElementService } from './service';
 import { BoardManagementUc } from './uc';
 
 @Module({
@@ -12,12 +11,13 @@ import { BoardManagementUc } from './uc';
 	providers: [
 		BoardManagementConsole,
 		BoardManagementUc,
-		CardRepo,
+		BoardDoRepo,
+		BoardDoService,
 		BoardNodeRepo,
-		ColumnBoardRepo,
-		ColumnBoardService,
 		CardService,
+		ColumnBoardService,
+		ContentElementService,
 	],
-	exports: [ColumnBoardService, CardService],
+	exports: [ColumnBoardService, CardService, ContentElementService, BoardDoService],
 })
 export class BoardModule {}

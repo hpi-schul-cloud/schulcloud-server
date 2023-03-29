@@ -7,20 +7,13 @@ module.exports = {
 		entity: 'account',
 		service: 'accountModel',
 		secret: authenticationSecret,
-		authStrategies: ['jwt', 'local', 'ldap', 'tsp', 'api-key'],
+		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'access' },
 			audience,
 			issuer: 'feathers',
 			algorithm: 'HS256',
 			expiresIn: Configuration.get('JWT_LIFETIME'),
-		},
-		local: {
-			usernameField: 'username',
-			passwordField: 'password',
-		},
-		ldap: {
-			usernameField: 'username',
 		},
 		tsp: {},
 		'api-key': {},

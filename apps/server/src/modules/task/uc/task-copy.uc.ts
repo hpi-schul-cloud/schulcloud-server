@@ -1,8 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
+import { Actions, Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
@@ -26,12 +26,24 @@ export class TaskCopyUC {
 			throw new NotFoundException('could not find task to copy');
 		}
 
-		const destinationCourse = await this.getDestinationCourse(parentParams.courseId, user);
+		const destinationCourse = await this.getDestinationCourse(parentParams.courseId);
+		if (parentParams.courseId) {
+			await this.authorisation.checkPermissionByReferences(
+				userId,
+				AllowedAuthorizationEntityType.Course,
+				parentParams.courseId,
+				{
+					action: Actions.write,
+					requiredPermissions: [],
+				}
+			);
+		}
+
 		const destinationLesson = await this.getDestinationLesson(parentParams.lessonId, user);
 		const copyName = await this.getCopyName(originalTask.name, parentParams.courseId);
 
 		const status = await this.taskCopyService.copyTask({
-			originalTask,
+			originalTaskId: originalTask.id,
 			destinationCourse,
 			destinationLesson,
 			user,
@@ -50,15 +62,13 @@ export class TaskCopyUC {
 		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
-	private async getDestinationCourse(courseId: string | undefined, user: User): Promise<Course | undefined> {
+	private async getDestinationCourse(courseId: string | undefined): Promise<Course | undefined> {
 		if (courseId === undefined) {
 			return undefined;
 		}
 
 		const destinationCourse = await this.courseRepo.findById(courseId);
-		if (!this.authorisation.hasPermission(user, destinationCourse, PermissionContextBuilder.write([]))) {
-			throw new ForbiddenException('you dont have permission to add to this course');
-		}
+
 		return destinationCourse;
 	}
 

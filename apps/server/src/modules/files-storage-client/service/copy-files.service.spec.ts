@@ -25,7 +25,7 @@ describe('copy files service', () => {
 		await module.close();
 	});
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CopyFilesService,
@@ -43,6 +43,10 @@ describe('copy files service', () => {
 		copyFilesService = module.get(CopyFilesService);
 		copyHelperService = module.get(CopyHelperService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('copy files of entity', () => {
@@ -79,15 +83,15 @@ describe('copy files service', () => {
 				});
 				const copyLesson = lessonFactory.build({ course: originalCourse, contents: [geoGebraContent, textContent] });
 				const userId = '123';
-				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, userId };
-			};
-
-			it('should return fileUrlReplacements', async () => {
-				const { originalLesson, copyLesson, userId } = lessonSetup();
-
 				const mockedFileDto = { id: 'mockedFileId', sourceId: 'mockedSourceId', name: 'mockedName' };
 
 				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([mockedFileDto]);
+				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, userId, mockedFileDto };
+			};
+
+			it('should return fileUrlReplacements', async () => {
+				const { originalLesson, copyLesson, userId, mockedFileDto } = lessonSetup();
+
 				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, userId);
 
 				expect(copyResponse.fileUrlReplacements.length).toEqual(1);
@@ -98,7 +102,9 @@ describe('copy files service', () => {
 
 			it('should return a copyStatus', async () => {
 				const { originalLesson, copyLesson, userId } = lessonSetup();
+
 				const copyResponse = await copyFilesService.copyFilesOfEntity(originalLesson, copyLesson, userId);
+
 				expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalled();
 				expect(copyResponse.fileCopyStatus).toBeDefined();
 				expect(copyResponse.fileCopyStatus.type).toBe(CopyElementType.FILE_GROUP);

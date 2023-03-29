@@ -152,10 +152,7 @@ const updatesArray = (key) => key === '$push' || key === '$pull';
 const updatesChat = (key, data) => {
 	const chatFeatures = [
 		SCHOOL_FEATURES.ROCKET_CHAT,
-		SCHOOL_FEATURES.MESSENGER,
-		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
 		SCHOOL_FEATURES.VIDEOCONFERENCE,
-		SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE,
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };

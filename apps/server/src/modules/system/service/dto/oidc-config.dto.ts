@@ -3,7 +3,7 @@ export class OidcConfigDto {
 		this.parentSystemId = oidcConfigDto.parentSystemId;
 		this.clientId = oidcConfigDto.clientId;
 		this.clientSecret = oidcConfigDto.clientSecret;
-		this.alias = oidcConfigDto.alias;
+		this.idpHint = oidcConfigDto.idpHint;
 		this.authorizationUrl = oidcConfigDto.authorizationUrl;
 		this.tokenUrl = oidcConfigDto.tokenUrl;
 		this.userinfoUrl = oidcConfigDto.userinfoUrl;
@@ -17,7 +17,7 @@ export class OidcConfigDto {
 
 	clientSecret: string;
 
-	alias: string;
+	idpHint: string;
 
 	authorizationUrl: string;
 

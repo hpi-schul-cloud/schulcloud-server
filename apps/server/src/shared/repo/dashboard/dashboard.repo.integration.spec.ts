@@ -102,7 +102,7 @@ describe('dashboard repo', () => {
 			userId: user.id,
 		});
 		await repo.persistAndFlush(dashboard);
-		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 }, []);
+		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
 		await repo.persistAndFlush(dashboard);
 		const result = await repo.getDashboardById(dashboard.id);
 		expect(result.getGrid().length).toEqual(1);
@@ -128,7 +128,7 @@ describe('dashboard repo', () => {
 			userId: user.id,
 		});
 		await repo.persistAndFlush(dashboard);
-		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 }, []);
+		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
 		await repo.persistAndFlush(dashboard);
 
 		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, elementId);

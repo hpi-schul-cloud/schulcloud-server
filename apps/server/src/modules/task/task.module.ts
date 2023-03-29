@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { FeathersServiceProvider } from '@shared/infra/feathers';
-import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { CopyHelperModule } from '@src/modules/copy-helper/copy-helper.module';
@@ -25,6 +25,7 @@ import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 		SubmissionUc,
 		SubmissionService,
 		SubmissionRepo,
+		UserRepo,
 	],
 	exports: [TaskService, TaskCopyService],
 })

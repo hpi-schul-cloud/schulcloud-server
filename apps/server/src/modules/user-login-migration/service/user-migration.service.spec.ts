@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	BadRequestException,
@@ -27,7 +26,6 @@ import { UserMigrationService } from './user-migration.service';
 
 describe('UserMigrationService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: UserMigrationService;
 	let configBefore: IConfig;
 	let logger: LegacyLogger;
@@ -80,12 +78,11 @@ describe('UserMigrationService', () => {
 		accountService = module.get(AccountService);
 		logger = module.get(LegacyLogger);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 
 		Configuration.reset(configBefore);
 	});
@@ -107,45 +104,7 @@ describe('UserMigrationService', () => {
 		};
 	};
 
-	describe('isSchoolInMigration is called', () => {
-		describe('when the migration is possible', () => {
-			it('should return true', async () => {
-				const { school, officialSchoolNumber } = setup();
-				school.oauthMigrationPossible = new Date();
-
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-
-				const result: boolean = await service.isSchoolInMigration(officialSchoolNumber);
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('when the migration is mandatory', () => {
-			it('should return true', async () => {
-				const { school, officialSchoolNumber } = setup();
-				school.oauthMigrationMandatory = new Date();
-
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-
-				const result: boolean = await service.isSchoolInMigration(officialSchoolNumber);
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('when there is no school with this official school number', () => {
-			it('should return false', async () => {
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
-
-				const result: boolean = await service.isSchoolInMigration('unknown number');
-
-				expect(result).toEqual(false);
-			});
-		});
-	});
-
-	describe('getMigrationRedirect is called', () => {
+	describe('getMigrationConsentPageRedirect is called', () => {
 		describe('when finding the migration systems', () => {
 			it('should return a url to the migration endpoint', async () => {
 				const { school, officialSchoolNumber } = setup();
@@ -163,7 +122,7 @@ describe('UserMigrationService', () => {
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				systemService.findByType.mockResolvedValue([iservSystem, sanisSystem]);
 
-				const result: string = await service.getMigrationRedirect(officialSchoolNumber, 'iservId');
+				const result: string = await service.getMigrationConsentPageRedirect(officialSchoolNumber, 'iservId');
 
 				expect(result).toEqual(
 					'http://this.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=false'
@@ -176,7 +135,10 @@ describe('UserMigrationService', () => {
 				const { officialSchoolNumber } = setup();
 				systemService.findByType.mockResolvedValue([]);
 
-				const promise: Promise<string> = service.getMigrationRedirect(officialSchoolNumber, 'unknownSystemId');
+				const promise: Promise<string> = service.getMigrationConsentPageRedirect(
+					officialSchoolNumber,
+					'unknownSystemId'
+				);
 
 				await expect(promise).rejects.toThrow(InternalServerErrorException);
 			});
@@ -198,7 +160,6 @@ describe('UserMigrationService', () => {
 			const sourceOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'sourceClientId',
 				clientSecret: 'sourceSecret',
-				alias: 'alias',
 				tokenEndpoint: 'http://source.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
@@ -213,7 +174,6 @@ describe('UserMigrationService', () => {
 			const targetOauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: 'targetClientId',
 				clientSecret: 'targetSecret',
-				alias: 'alias',
 				tokenEndpoint: 'http://target.de/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',

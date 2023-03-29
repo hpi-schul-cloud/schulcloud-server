@@ -1,17 +1,17 @@
 import { EntityManager } from '@mikro-orm/core';
-import jwt from 'jsonwebtoken';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
-import MockAdapter from 'axios-mock-adapter';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { RequestBody } from '@src/modules/authentication/strategy/ldap.strategy';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
+import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import request from 'supertest';
 import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import jwt from 'jsonwebtoken';
+import request from 'supertest';
 import { OauthAuthorizationQueryParams } from '../oauth-authorization.params';
 
 const schoolExternalId = 'mockSchoolExternalId';
@@ -123,8 +123,16 @@ describe('Login Controller (api)', () => {
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(200);
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const token = response.body.accessToken;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
 			});
 		});
 
@@ -176,8 +184,18 @@ describe('Login Controller (api)', () => {
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const token = response.body.accessToken;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
 			});
 		});
 

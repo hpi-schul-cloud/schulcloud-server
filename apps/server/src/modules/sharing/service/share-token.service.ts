@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
+import { TaskService } from '@src/modules/task';
 import {
 	ShareTokenContext,
 	ShareTokenDO,
@@ -17,7 +18,8 @@ export class ShareTokenService {
 		private readonly tokenGenerator: TokenGenerator,
 		private readonly shareTokenRepo: ShareTokenRepo,
 		private readonly courseService: CourseService,
-		private readonly lessonService: LessonService
+		private readonly lessonService: LessonService,
+		private readonly taskService: TaskService
 	) {}
 
 	async createToken(
@@ -57,6 +59,8 @@ export class ShareTokenService {
 				parentName = (await this.lessonService.findById(shareToken.payload.parentId)).name;
 				break;
 			case ShareTokenParentType.Task:
+				parentName = (await this.taskService.findById(shareToken.payload.parentId)).name;
+				break;
 			default:
 		}
 

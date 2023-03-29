@@ -90,7 +90,7 @@ export class BoardCopyService {
 
 	private async copyTask(originalTask: Task, user: User, destinationCourse: Course): Promise<CopyStatus> {
 		return this.taskCopyService.copyTask({
-			originalTask,
+			originalTaskId: originalTask.id,
 			user,
 			destinationCourse,
 		});

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -87,10 +86,9 @@ describe('FilesStorageUC upload methods', () => {
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let httpService: DeepMocked<HttpService>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		await setupEntities([FileRecord]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -133,7 +131,6 @@ describe('FilesStorageUC upload methods', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

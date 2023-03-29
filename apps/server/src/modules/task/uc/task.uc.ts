@@ -5,6 +5,8 @@ import {
 	Course,
 	EntityId,
 	IPagination,
+	ITaskCreate,
+	ITaskUpdate,
 	ITaskStatus,
 	Lesson,
 	Permission,
@@ -233,5 +235,17 @@ export class TaskUC {
 		await this.taskService.delete(task);
 
 		return true;
+	}
+
+	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
+		return this.taskService.create(userId, params);
+	}
+
+	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate): Promise<TaskWithStatusVo> {
+		return this.taskService.update(userId, taskId, params, true);
+	}
+
+	async find(userId: EntityId, taskId: EntityId) {
+		return this.taskService.find(userId, taskId);
 	}
 }

@@ -20,5 +20,6 @@ export const taskCardFactory = TaskCardFactory.define(TaskCard, () => {
 		cardElements: [],
 		visibleAtDate: tomorrow,
 		dueDate: inTwoDays,
+		title: 'Task Card Title',
 	};
 });

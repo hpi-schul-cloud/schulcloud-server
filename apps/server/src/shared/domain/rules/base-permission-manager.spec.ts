@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BaseDomainObject } from '../interface/base-domain-object';
 import { AuthorisationUtils } from './authorisation.utils';
@@ -26,14 +25,8 @@ class MyPermission extends BasePermission<MyDomainObject> {
 }
 
 describe('base-permission', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	const permission = new MyPermission();

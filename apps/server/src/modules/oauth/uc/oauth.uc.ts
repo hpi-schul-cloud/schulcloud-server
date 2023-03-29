@@ -1,9 +1,13 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { LegacyLogger } from '@src/core/logger';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+import { ProvisioningService } from '@src/modules/provisioning';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
@@ -11,13 +15,10 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { nanoid } from 'nanoid';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
-import { OAuthProcessDto } from '../service/dto/oauth-process.dto';
+import { AuthorizationParams } from '../controller/dto';
+import { OAuthTokenDto } from '../interface';
+import { OAuthProcessDto } from '../service/dto';
 import { OAuthService } from '../service/oauth.service';
 import { OauthLoginStateDto } from './dto/oauth-login-state.dto';
 
@@ -53,33 +54,32 @@ export class OauthUc {
 			throw new UnprocessableEntityException(`Requested system ${systemId} has no oauth configured`);
 		}
 
-		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(
-			system.type,
-			system.oauthConfig,
-			state,
-			migration,
-			system.alias
-		);
+		const authenticationUrl: string = this.oauthService.getAuthenticationUrl(system.oauthConfig, state, migration);
 
 		session.oauthLoginState = new OauthLoginStateDto({
 			state,
 			systemId,
 			provider: system.oauthConfig.provider,
 			postLoginRedirect,
+			userLoginMigration: migration,
 		});
 
 		return authenticationUrl;
 	}
 
 	async processOAuthLogin(cachedState: OauthLoginStateDto, code?: string, error?: string): Promise<OAuthProcessDto> {
-		const { state, systemId, postLoginRedirect } = cachedState;
+		const { state, systemId, postLoginRedirect, userLoginMigration } = cachedState;
 
 		this.logger.debug(`Oauth login process started. [state: ${state}, system: ${systemId}]`);
 
-		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.authenticateUser(
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
+
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code, error);
+
+		const { user, redirect }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
-			code,
-			error,
+			tokenDto.idToken,
+			tokenDto.accessToken,
 			postLoginRedirect
 		);
 
@@ -104,18 +104,22 @@ export class OauthUc {
 		query: AuthorizationParams,
 		cachedState: OauthLoginStateDto
 	): Promise<MigrationDto> {
-		const { state, systemId } = cachedState;
+		const { state, systemId, userLoginMigration } = cachedState;
 
 		if (state !== query.state) {
 			throw new UnauthorizedException(`Invalid state. Got: ${query.state} Expected: ${state}`);
 		}
 
-		const queryToken: OauthTokenResponse = await this.oauthService.authorizeForMigration(query, systemId);
-		const data: OauthDataDto = await this.provisioningService.getData(
-			queryToken.access_token,
-			queryToken.id_token,
-			systemId
+		const redirectUri: string = this.oauthService.getRedirectUri(userLoginMigration);
+
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(
+			systemId,
+			redirectUri,
+			query.code,
+			query.error
 		);
+
+		const data: OauthDataDto = await this.provisioningService.getData(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (data.externalSchool) {
 			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
@@ -141,7 +145,9 @@ export class OauthUc {
 
 	private async getJwtForUser(userId: EntityId): Promise<string> {
 		const currentUser: ICurrentUser = await this.userService.getResolvedUser(userId);
+
 		const { accessToken } = await this.authenticationService.generateJwt(currentUser);
+
 		return accessToken;
 	}
 }

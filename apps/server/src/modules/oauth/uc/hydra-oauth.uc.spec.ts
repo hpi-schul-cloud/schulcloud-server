@@ -5,16 +5,15 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OauthConfig } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { IJwt } from '@src/modules/oauth/interface/jwt.base.interface';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { HydraSsoService } from '@src/modules/oauth/service/hydra.service';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { OauthTokenResponse, AuthorizationParams } from '../controller/dto';
-
 import { HydraOauthUc } from '.';
+import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthTokenDto } from '../interface';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -26,12 +25,12 @@ describe('HydraOauthUc', () => {
 
 	let hydraOauthService: DeepMocked<HydraSsoService>;
 	let oauthService: DeepMocked<OAuthService>;
-	const oauthTokenResponse: OauthTokenResponse = {
-		access_token: 'accessTockenMock',
-		refresh_token: 'refreshTokenMock',
-		id_token: 'idTokenMock',
+	const oauthTokenDto: OAuthTokenDto = {
+		accessToken: 'accessTockenMock',
+		refreshToken: 'refreshTokenMock',
+		idToken: 'idTokenMock',
 	};
-	const defaultDecodedJWT: IJwt = {
+	const defaultDecodedJWT = {
 		sub: 'subMock',
 	};
 
@@ -45,7 +44,6 @@ describe('HydraOauthUc', () => {
 		authEndpoint: `${hydraUri}/oauth2/auth`,
 		clientId: 'toolClientId',
 		clientSecret: 'toolSecret',
-		alias: 'alias',
 		grantType: 'authorization_code',
 		issuer: `${hydraUri}/`,
 		jwksEndpoint: `${hydraUri}/.well-known/jwks.json`,
@@ -106,12 +104,22 @@ describe('HydraOauthUc', () => {
 				const code = 'kdjiqwjdjnq';
 
 				hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-				oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+				oauthService.requestToken.mockResolvedValue(oauthTokenDto);
 				oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
 				const oauthToken = await uc.getOauthToken('oauthClientId', code);
 
-				expect(oauthToken).toEqual(oauthTokenResponse);
+				expect(oauthToken).toEqual(oauthTokenDto);
+			});
+
+			it('should throw error', async () => {
+				const error = 'kdjiqwjdjnq';
+
+				const func = () => uc.getOauthToken('4566456', undefined, error);
+
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
+				);
 			});
 		});
 
@@ -120,12 +128,14 @@ describe('HydraOauthUc', () => {
 				const error = 'error';
 
 				hydraOauthService.generateConfig.mockResolvedValue(hydraOauthConfig);
-				oauthService.requestToken.mockResolvedValue(oauthTokenResponse);
+				oauthService.requestToken.mockResolvedValue(oauthTokenDto);
 				oauthService.validateToken.mockResolvedValue(defaultDecodedJWT);
 
 				const func = async () => uc.getOauthToken('oauthClientId', undefined, error);
 
-				await expect(func).rejects.toThrow(new OAuthSSOError('Authorization in external system failed', error));
+				await expect(func).rejects.toThrow(
+					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
+				);
 			});
 		});
 	});

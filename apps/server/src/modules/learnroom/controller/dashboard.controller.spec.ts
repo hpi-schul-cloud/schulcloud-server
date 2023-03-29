@@ -66,7 +66,7 @@ describe('dashboard uc', () => {
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const response = await controller.findForUser(currentUser, { showSubstitute: true });
+			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
@@ -77,7 +77,7 @@ describe('dashboard uc', () => {
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const response = await controller.findForUser(currentUser, { showSubstitute: false });
+			const response = await controller.findForUser(currentUser);
 
 			expect(response instanceof DashboardResponse).toEqual(true);
 		});
@@ -100,7 +100,7 @@ describe('dashboard uc', () => {
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
 
-			const response = await controller.findForUser(currentUser, { showSubstitute: true });
+			const response = await controller.findForUser(currentUser);
 			expect(response instanceof DashboardResponse).toEqual(true);
 			expect(response.gridElements[0]).toHaveProperty('groupElements');
 		});
@@ -111,9 +111,9 @@ describe('dashboard uc', () => {
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			await controller.findForUser(currentUser, { showSubstitute: true });
+			await controller.findForUser(currentUser);
 
-			expect(spy).toHaveBeenCalledWith('userId', true);
+			expect(spy).toHaveBeenCalledWith('userId');
 		});
 	});
 

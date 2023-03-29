@@ -7,6 +7,7 @@ import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonCopyService } from '@src/modules/lesson/service';
+import { TaskCopyService } from '@src/modules/task';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -26,6 +27,7 @@ export class ShareTokenUC {
 		private readonly courseCopyService: CourseCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly courseService: CourseService,
+		private readonly taskCopyService: TaskCopyService,
 
 		private readonly logger: LegacyLogger
 	) {
@@ -111,6 +113,12 @@ export class ShareTokenUC {
 				}
 				result = await this.copyLesson(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
+			case ShareTokenParentType.Task:
+				if (destinationCourseId === undefined) {
+					throw new BadRequestException('Destination course id is required to copy task');
+				}
+				result = await this.copyTask(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				break;
 			default:
 				throw new NotImplementedException('Copy not implemented');
 		}
@@ -137,17 +145,36 @@ export class ShareTokenUC {
 		});
 	}
 
+	private async copyTask(
+		userId: string,
+		originalTaskId: string,
+		courseId: string,
+		copyName?: string
+	): Promise<CopyStatus> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const destinationCourse = await this.courseService.findById(courseId);
+		return this.taskCopyService.copyTask({
+			user,
+			originalTaskId,
+			destinationCourse,
+			copyName,
+		});
+	}
+
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 
 		let requiredPermissions: Permission[] = [];
+		// eslint-disable-next-line default-case
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
 				break;
-			default:
+			case ShareTokenParentType.Lesson:
 				requiredPermissions = [Permission.TOPIC_CREATE];
 				break;
+			case ShareTokenParentType.Task:
+				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
@@ -171,13 +198,16 @@ export class ShareTokenUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		let requiredPermissions: Permission[] = [];
+		// eslint-disable-next-line default-case
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];
 				break;
-			default:
+			case ShareTokenParentType.Lesson:
 				requiredPermissions = [Permission.TOPIC_CREATE];
 				break;
+			case ShareTokenParentType.Task:
+				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
@@ -198,6 +228,11 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Lesson:
 				if (!(Configuration.get('FEATURE_LESSON_SHARE') as boolean)) {
 					throw new InternalServerErrorException('Import Lesson Feature not enabled');
+				}
+				break;
+			case ShareTokenParentType.Task:
+				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
+					throw new InternalServerErrorException('Import Task Feature not enabled');
 				}
 				break;
 			default:

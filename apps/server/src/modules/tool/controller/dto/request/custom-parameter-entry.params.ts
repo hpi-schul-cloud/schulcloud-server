@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class CustomParameterEntryParam {
@@ -8,6 +8,6 @@ export class CustomParameterEntryParam {
 
 	@IsString()
 	@IsOptional()
-	@ApiProperty()
+	@ApiPropertyOptional()
 	value?: string;
 }

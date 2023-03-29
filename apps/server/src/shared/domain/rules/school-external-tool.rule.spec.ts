@@ -1,29 +1,23 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, schoolExternalToolFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { schoolExternalToolDOFactory } from '../../testing/factory/domainobject/school-external-tool.factory';
+import { SchoolExternalToolDO } from '../domainobject/external-tool/school-external-tool.do';
 import { Role, SchoolExternalTool, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
-import { SchoolExternalToolDO } from '../domainobject/external-tool/school-external-tool.do';
-import { schoolExternalToolDOFactory } from '../../testing/factory/domainobject/school-external-tool.factory';
 
 describe('SchoolExternalToolRule', () => {
-	let orm: MikroORM;
 	let service: SchoolExternalToolRule;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [SchoolExternalToolRule],
 		}).compile();
 
 		service = await module.get(SchoolExternalToolRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	beforeEach(() => {});

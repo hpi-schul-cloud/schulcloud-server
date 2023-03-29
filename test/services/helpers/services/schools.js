@@ -11,6 +11,7 @@ const create =
 		systems = [],
 		federalState,
 		ldapSchoolIdentifier,
+		previousExternalId,
 		ldapLastSync = undefined,
 		createdAt = Date.now(),
 		updatedAt = Date.now(),
@@ -43,6 +44,7 @@ const create =
 			systems,
 			federalState,
 			ldapSchoolIdentifier,
+			previousExternalId,
 			ldapLastSync,
 			documentBaseDirType,
 			createdAt,
@@ -80,8 +82,10 @@ const cleanup = () => {
 	return School.deleteMany({ _id: { $in: ids } });
 };
 
-module.exports = (app) => ({
-	create: create(app),
-	cleanup,
-	info: createdSchoolIds,
-});
+module.exports = (app) => {
+	return {
+		create: create(app),
+		cleanup,
+		info: createdSchoolIds,
+	};
+};

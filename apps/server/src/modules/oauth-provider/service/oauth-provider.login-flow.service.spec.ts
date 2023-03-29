@@ -1,20 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
+import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { LtiPrivacyPermission, LtiRoleType, Permission, PseudonymDO, User } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
+import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
-import { ProviderLoginResponse } from '@shared/infra/oauth-provider/dto';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectID } from 'bson';
-import { AuthorizationService } from '@src/modules';
 
 describe('OauthProviderLoginFlowService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: OauthProviderLoginFlowService;
 
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
@@ -46,7 +44,7 @@ describe('OauthProviderLoginFlowService', () => {
 		ltiToolRepo = module.get(LtiToolRepo);
 		pseudonymsRepo = module.get(PseudonymsRepo);
 		authorizationService = module.get(AuthorizationService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -77,7 +75,6 @@ describe('OauthProviderLoginFlowService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('getPseudonym', () => {

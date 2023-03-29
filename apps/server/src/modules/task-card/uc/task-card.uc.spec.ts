@@ -3,23 +3,15 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Actions, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
-import { CardElementType, RichTextCardElement, TitleCardElement } from '@shared/domain/entity/cardElement.entity';
+import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
-import {
-	CardElementRepo,
-	CourseRepo,
-	RichTextCardElementRepo,
-	TaskCardRepo,
-	TitleCardElementRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CardElementRepo, CourseRepo, RichTextCardElementRepo, TaskCardRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
 	richTextCardElementFactory,
 	schoolFactory,
 	setupEntities,
 	taskCardFactory,
-	titleCardElementFactory,
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -58,10 +50,6 @@ describe('TaskCardUc', () => {
 					useValue: createMock<CardElementRepo>(),
 				},
 				{
-					provide: TitleCardElementRepo,
-					useValue: createMock<TitleCardElementRepo>(),
-				},
-				{
 					provide: RichTextCardElementRepo,
 					useValue: createMock<RichTextCardElementRepo>(),
 				},
@@ -87,8 +75,6 @@ describe('TaskCardUc', () => {
 		uc = module.get(TaskCardUc);
 		cardElementRepo = module.get(CardElementRepo);
 		courseRepo = module.get(CourseRepo);
-		module.get(TitleCardElementRepo);
-		module.get(RichTextCardElementRepo);
 		taskCardRepo = module.get(TaskCardRepo);
 		userRepo = module.get(UserRepo);
 		authorizationService = module.get(AuthorizationService);
@@ -240,8 +226,8 @@ describe('TaskCardUc', () => {
 				requiredPermissions: [],
 			});
 		});
-		it('should call task create and with task name same like task-card title and courseId if given', async () => {
-			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId };
+		it('should call task create with task name same like task-card title, courseId if given and private as false', async () => {
+			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId, private: false };
 			await uc.create(user.id, taskCardCreateParams);
 
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
@@ -271,7 +257,7 @@ describe('TaskCardUc', () => {
 				})
 			);
 		});
-		it('should call task update to add id of task-card to task', async () => {
+		it('should call task update from taskService to add id of task-card to task', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
 			expect(taskService.update).toBeCalled();
@@ -284,10 +270,9 @@ describe('TaskCardUc', () => {
 			expect(result.card.visibleAtDate).toEqual(tomorrow);
 			expect(result.card.dueDate).toEqual(inTwoDays);
 
-			expect(result.card.cardElements.length).toEqual(3);
-			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
-			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
-			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
+			expect(result.card.cardElements.length).toEqual(2);
+			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
+			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
 		it('should return the task card and task without course if no courseId is given', async () => {
 			const taskCardCreateParamsWithoutCourse = {
@@ -348,12 +333,11 @@ describe('TaskCardUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 
-			const originalTitleCardElement = titleCardElementFactory.build();
 			const originalRichTextCardElements = richTextCardElementFactory.buildList(2);
 			taskCard = taskCardFactory.buildWithId({
 				visibleAtDate,
 				dueDate,
-				cardElements: [originalTitleCardElement, ...originalRichTextCardElements],
+				cardElements: [...originalRichTextCardElements],
 			});
 
 			const status = taskCard.task.createTeacherStatusForUser(user);
@@ -422,12 +406,7 @@ describe('TaskCardUc', () => {
 			expect(cardElementRepo.delete).toBeCalledWith(originalCardElements);
 
 			const updatedCardElements = result.card.cardElements.getItems();
-			expect(updatedCardElements).toHaveLength(3);
-
-			const titleCardElement = updatedCardElements.find(
-				(element) => element.cardElementType === CardElementType.Title
-			) as TitleCardElement;
-			expect(titleCardElement.value).toEqual(taskCardUpdateParams.title);
+			expect(updatedCardElements).toHaveLength(2);
 
 			const richTextCardElements = updatedCardElements.filter(
 				(element) => element.cardElementType === CardElementType.RichText
@@ -444,10 +423,9 @@ describe('TaskCardUc', () => {
 			expect(result.card.visibleAtDate).toEqual(inTwoDays);
 			expect(result.card.dueDate).toEqual(inThreeDays);
 
-			expect(result.card.cardElements.length).toEqual(3);
-			expect((result.card.cardElements.getItems()[0] as TitleCardElement).value).toEqual(title);
-			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[0]);
-			expect((result.card.cardElements.getItems()[2] as RichTextCardElement).value).toEqual(richText[1]);
+			expect(result.card.cardElements.length).toEqual(2);
+			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
+			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
 	});
 });

@@ -17,6 +17,10 @@ export class BoardDoBuilder {
 		}
 	}
 
+	public buildDomainObject<T extends AnyBoardDo>(boardNode: BoardNode): T {
+		return boardNode.useDoBuilder(this) as T;
+	}
+
 	public buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard {
 		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.COLUMN);
 
@@ -25,7 +29,7 @@ export class BoardDoBuilder {
 		const columnBoard = new ColumnBoard({
 			id: boardNode.id,
 			title: boardNode.title,
-			columns,
+			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
@@ -41,7 +45,7 @@ export class BoardDoBuilder {
 		const column = new Column({
 			id: boardNode.id,
 			title: boardNode.title,
-			cards,
+			children: cards,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
@@ -57,7 +61,7 @@ export class BoardDoBuilder {
 			id: boardNode.id,
 			title: boardNode.title,
 			height: boardNode.height,
-			elements,
+			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});

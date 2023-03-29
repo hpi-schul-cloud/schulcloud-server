@@ -1,25 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities, userFactory } from '@shared/testing';
-import { Actions, Permission, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
 import { ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { AuthorizationService } from '@src/modules/authorization';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Actions, Permission, User } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/domainobject/page';
+import { setupEntities, userFactory } from '@shared/testing';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationService } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
 
 describe('ExternalToolConfigurationUc', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: ExternalToolConfigurationUc;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -27,7 +25,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -59,7 +57,6 @@ describe('ExternalToolConfigurationUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('getExternalToolForScope is called', () => {

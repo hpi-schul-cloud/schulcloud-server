@@ -1,6 +1,6 @@
 import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain/domainobject';
+import { AnyBoardDo } from '../../domainobject';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import type { BoardDoBuilder } from './board-do.builder';
@@ -15,9 +15,13 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		if (props.parent && props.parent.id == null) {
 			throw new InternalServerErrorException('Cannot create board node with a parent having no id');
 		}
+		if (props.id != null) {
+			this.id = props.id;
+		}
 		this.path = props.parent ? BoardNode.joinPath(props.parent.path, props.parent.id) : PATH_SEPARATOR;
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
+		this.title = props.title;
 	}
 
 	@Index()
@@ -33,6 +37,9 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 	@Index()
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
+
+	@Property({ nullable: true })
+	title?: string;
 
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
@@ -60,6 +67,8 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 }
 
 export interface BoardNodeProps {
+	id?: EntityId;
 	parent?: BoardNode;
 	position?: number;
+	title?: string;
 }

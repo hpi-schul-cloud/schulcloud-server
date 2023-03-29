@@ -34,11 +34,6 @@ class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forSubstituteTeacher(userId: EntityId): CourseScope {
-		this.addQuery({ substitutionTeachers: userId });
-		return this;
-	}
-
 	forActiveCourses(): CourseScope {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
@@ -123,15 +118,6 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forTeacherOrSubstituteTeacher(userId);
-
-		const [courses, count] = await this._em.findAndCount(Course, scope.query);
-
-		return [courses, count];
-	}
-
-	async findAllForSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
-		const scope = new CourseScope();
-		scope.forSubstituteTeacher(userId);
 
 		const [courses, count] = await this._em.findAndCount(Course, scope.query);
 

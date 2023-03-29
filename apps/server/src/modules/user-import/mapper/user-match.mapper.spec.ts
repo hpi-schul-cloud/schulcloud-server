@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { MatchCreator, RoleName } from '@shared/domain';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchType, UserRole } from '../controller/dto';
@@ -7,14 +6,8 @@ import { ImportUserMatchMapper } from './match.mapper';
 import { UserMatchMapper } from './user-match.mapper';
 
 describe('[UserMatchMapper]', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('[mapToDomain] from query', () => {

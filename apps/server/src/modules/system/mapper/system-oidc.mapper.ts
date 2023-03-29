@@ -14,7 +14,7 @@ export class SystemOidcMapper {
 			parentSystemId: systemId,
 			clientId: oidcConfig.clientId,
 			clientSecret: oidcConfig?.clientSecret,
-			alias: oidcConfig.alias,
+			idpHint: oidcConfig.idpHint,
 			authorizationUrl: oidcConfig.authorizationUrl,
 			tokenUrl: oidcConfig.tokenUrl,
 			userinfoUrl: oidcConfig.userinfoUrl,

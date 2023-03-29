@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
@@ -6,8 +5,6 @@ import { hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecord } from '../entity';
 
 describe('File Name Helper', () => {
-	let orm: MikroORM;
-
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const schoolId: EntityId = new ObjectId().toHexString();
@@ -22,11 +19,7 @@ describe('File Name Helper', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities([FileRecord]);
 	});
 
 	describe('hasDuplicateName is called', () => {

@@ -1,14 +1,12 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
 import { LegacyLogger } from '@src/core/logger';
-import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import QueryString from 'qs';
-import { Observable, lastValueFrom } from 'rxjs';
 import JwksRsa from 'jwks-rsa';
-import { OauthTokenResponse } from '@src/modules/oauth/controller/dto';
-import { OauthConfig } from '@shared/domain';
+import QueryString from 'qs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { TokenRequestPayload } from '../controller/dto/token-request.payload';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
 export class OauthAdapterService {
@@ -16,24 +14,27 @@ export class OauthAdapterService {
 		this.logger.setContext(OauthAdapterService.name);
 	}
 
-	async getPublicKey(oauthConfig: OauthConfig): Promise<string> {
+	async getPublicKey(jwksUri: string): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
-			jwksUri: oauthConfig.jwksEndpoint,
+			jwksUri,
 		});
 		const key: JwksRsa.SigningKey = await client.getSigningKey();
 		return key.getPublicKey();
 	}
 
-	public sendTokenRequest(payload: TokenRequestPayload): Promise<OauthTokenResponse> {
-		const query = QueryString.stringify(payload);
-		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(`${payload.tokenEndpoint}`, query, {
-			method: 'POST',
+	public sendAuthenticationCodeTokenRequest(
+		tokenEndpoint: string,
+		payload: AuthenticationCodeGrantTokenRequest
+	): Promise<OauthTokenResponse> {
+		const urlEncodedPayload: string = QueryString.stringify(payload);
+		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(tokenEndpoint, urlEncodedPayload, {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
 		});
-		return this.resolveTokenRequest(responseTokenObservable);
+		const responseData: Promise<OauthTokenResponse> = this.resolveTokenRequest(responseTokenObservable);
+		return responseData;
 	}
 
 	private async resolveTokenRequest(

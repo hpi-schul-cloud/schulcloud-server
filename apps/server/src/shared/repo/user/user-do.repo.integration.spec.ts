@@ -1,44 +1,34 @@
+import { createMock } from '@golevelup/ts-jest';
+import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
 import { EntityNotFoundError } from '@shared/common';
+import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
-import { Page } from '../../domain/domainobject/page';
-
-class UserRepoSpec extends UserDORepo {
-	mapEntityToDOSpec(entity: User): UserDO {
-		return super.mapEntityToDO(entity);
-	}
-
-	mapDOToEntityPropertiesSpec(entityDO: UserDO): IUserProperties {
-		return super.mapDOToEntityProperties(entityDO);
-	}
-}
+import { Page } from '@shared/domain/domainobject/page';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
-	let repo: UserRepoSpec;
+	let repo: UserDORepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				UserRepoSpec,
+				UserDORepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(UserRepoSpec);
+		repo = module.get(UserDORepo);
 		em = module.get(EntityManager);
 	});
 
@@ -235,7 +225,7 @@ describe('UserRepo', () => {
 			testEntity.lastLoginSystemChange = new Date();
 			testEntity.previousExternalId = 'someId';
 
-			const userDO: UserDO = repo.mapEntityToDOSpec(testEntity);
+			const userDO: UserDO = repo.mapEntityToDO(testEntity);
 
 			expect(userDO).toEqual(
 				expect.objectContaining({
@@ -283,25 +273,25 @@ describe('UserRepo', () => {
 				previousExternalId: 'someId',
 			});
 
-			const result: IUserProperties = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual(
-				expect.objectContaining({
-					email: testDO.email,
-					firstName: testDO.firstName,
-					lastName: testDO.lastName,
-					school: { id: testDO.schoolId },
-					roles: [{ id: testDO.roleIds[0] }],
-					ldapDn: testDO.ldapDn,
-					externalId: testDO.externalId,
-					language: testDO.language,
-					forcePasswordChange: testDO.forcePasswordChange,
-					preferences: testDO.preferences,
-					outdatedSince: testDO.outdatedSince,
-					lastLoginSystemChange: testDO.lastLoginSystemChange,
-					previousExternalId: testDO.previousExternalId,
-				})
-			);
+			expect(result).toEqual<IUserProperties>({
+				email: testDO.email,
+				firstName: testDO.firstName,
+				lastName: testDO.lastName,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roleIds[0] })],
+				ldapDn: testDO.ldapDn,
+				externalId: testDO.externalId,
+				language: testDO.language,
+				forcePasswordChange: testDO.forcePasswordChange,
+				preferences: testDO.preferences,
+				outdatedSince: testDO.outdatedSince,
+				lastLoginSystemChange: testDO.lastLoginSystemChange,
+				previousExternalId: testDO.previousExternalId,
+			});
 		});
 	});
 
@@ -310,7 +300,7 @@ describe('UserRepo', () => {
 			const query: UserQuery = {
 				schoolId: undefined,
 				isOutdated: undefined,
-				lastLoginSystemChangeGreaterThan: undefined,
+				lastLoginSystemChangeSmallerThan: undefined,
 				outdatedSince: undefined,
 			};
 
@@ -365,30 +355,53 @@ describe('UserRepo', () => {
 		});
 
 		describe('pagination', () => {
-			it('should return all users when options with pagination is set to undefined', async () => {
-				const { query, users } = await setupFind();
+			describe('when options with pagination is set to undefined', () => {
+				it('should return all users ', async () => {
+					const { query, users } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(query, undefined);
+					const page: Page<UserDO> = await repo.find(query, undefined);
 
-				expect(page.data.length).toBe(users.length);
+					expect(page.data.length).toBe(users.length);
+				});
 			});
 
-			it('should return one ltiTool when pagination has a limit of 1', async () => {
-				const { query, options } = await setupFind();
-				options.pagination = { limit: 1 };
+			describe('when limit and skip of pagination is undefined', () => {
+				it('should set limit and skip to undefined in options', async () => {
+					const { query, emFindAndCountSpy } = await setupFind();
 
-				const page: Page<UserDO> = await repo.find(query, options);
+					await repo.find(query, { pagination: { limit: undefined, skip: undefined } });
 
-				expect(page.data.length).toBe(1);
+					expect(emFindAndCountSpy).toHaveBeenCalledWith(
+						User,
+						query,
+						expect.objectContaining({
+							offset: undefined,
+							limit: undefined,
+						})
+					);
+				});
 			});
 
-			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
-				const { query, options } = await setupFind();
-				options.pagination = { limit: 1, skip: 3 };
+			describe(' when pagination has a limit of 1', () => {
+				it('should return one ltiTool', async () => {
+					const { query, options } = await setupFind();
+					options.pagination = { limit: 1 };
 
-				const page: Page<UserDO> = await repo.find(query, options);
+					const page: Page<UserDO> = await repo.find(query, options);
 
-				expect(page.data.length).toBe(0);
+					expect(page.data.length).toBe(1);
+				});
+			});
+
+			describe('pagination has a limit of 1 and skip is set to 2', () => {
+				it('should return no ltiTool when ', async () => {
+					const { query, options } = await setupFind();
+					options.pagination = { limit: 1, skip: 3 };
+
+					const page: Page<UserDO> = await repo.find(query, options);
+
+					expect(page.data.length).toBe(0);
+				});
 			});
 		});
 
@@ -407,12 +420,12 @@ describe('UserRepo', () => {
 		describe('scope', () => {
 			it('should add query to scope', async () => {
 				const { options, emFindAndCountSpy } = await setupFind();
-				const lastLoginSystemChangeGreaterThan: Date = new Date();
+				const lastLoginSystemChangeSmallerThan: Date = new Date();
 				const outdatedSince: Date = new Date();
 				const query: UserQuery = {
 					schoolId: 'schoolId',
 					isOutdated: true,
-					lastLoginSystemChangeGreaterThan,
+					lastLoginSystemChangeSmallerThan,
 					outdatedSince,
 				};
 
@@ -423,7 +436,7 @@ describe('UserRepo', () => {
 					{
 						$and: [
 							{
-								school: query.schoolId,
+								school: 'schoolId',
 							},
 							{
 								outdatedSince: {
@@ -431,13 +444,22 @@ describe('UserRepo', () => {
 								},
 							},
 							{
-								lastLoginSystemChange: {
-									$gte: query.lastLoginSystemChangeGreaterThan,
-								},
+								$or: [
+									{
+										lastLoginSystemChange: {
+											$lt: lastLoginSystemChangeSmallerThan,
+										},
+									},
+									{
+										lastLoginSystemChange: {
+											$exists: false,
+										},
+									},
+								],
 							},
 							{
 								outdatedSince: {
-									$eq: query.outdatedSince,
+									$eq: outdatedSince,
 								},
 							},
 						],

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +14,6 @@ import { LdapService } from '../services/ldap.service';
 import { LdapStrategy, RequestBody } from './ldap.strategy';
 
 describe('LdapStrategy', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let strategy: LdapStrategy;
 	let userRepoMock: DeepMocked<UserRepo>;
@@ -29,7 +27,8 @@ describe('LdapStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			imports: [PassportModule],
 			providers: [
@@ -86,7 +85,6 @@ describe('LdapStrategy', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {

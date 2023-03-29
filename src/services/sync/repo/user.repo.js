@@ -25,6 +25,7 @@ const createUserInternal = async (user) => {
 		ldapDn: user.ldapDn,
 		ldapId: user.ldapId,
 		roles: user.roles,
+		lastSyncedAt: user.lastSyncedAt,
 	});
 };
 

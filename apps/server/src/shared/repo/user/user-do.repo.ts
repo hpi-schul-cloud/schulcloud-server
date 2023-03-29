@@ -1,6 +1,6 @@
-import { EntityName, FilterQuery, IdentifiedReference, QueryOrderMap, Reference } from '@mikro-orm/core';
+import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { BaseDORepo, Scope } from '@shared/repo';
+import { EntityNotFoundError } from '@shared/common';
 import {
 	EntityId,
 	IFindOptions,
@@ -13,10 +13,10 @@ import {
 	System,
 	User,
 } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { EntityNotFoundError } from '@shared/common';
+import { BaseDORepo, Scope } from '@shared/repo';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
-import { Page } from '../../domain/domainobject/page';
 import { UserScope } from './user.scope';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
-			.whereLastLoginSystemChangeGreaterThan(query.lastLoginSystemChangeGreaterThan)
+			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.withOutdatedSince(query.outdatedSince)
 			.allowEmptyQuery(true);
 
@@ -82,7 +82,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return userDo;
 	}
 
-	protected mapEntityToDO(entity: User): UserDO {
+	mapEntityToDO(entity: User): UserDO {
 		const user: UserDO = new UserDO({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -113,15 +113,13 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return user;
 	}
 
-	protected mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
+	mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
-			school: Reference.createFromPK(School, entityDO.schoolId),
-			roles: entityDO.roleIds.map(
-				(roleId: EntityId): IdentifiedReference<Role> => Reference.createFromPK(Role, roleId)
-			),
+			school: this._em.getReference(School, entityDO.schoolId),
+			roles: entityDO.roleIds.map((roleId: EntityId) => this._em.getReference(Role, roleId)),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,

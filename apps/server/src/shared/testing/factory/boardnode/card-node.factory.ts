@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { CardNode, CardNodeProps } from '@shared/domain';
 import { BaseFactory } from '../base.factory';
 

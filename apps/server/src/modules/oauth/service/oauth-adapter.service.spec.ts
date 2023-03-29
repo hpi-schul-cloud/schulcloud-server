@@ -1,13 +1,13 @@
-import { AxiosResponse } from 'axios';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { systemFactory } from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacyLogger } from '@src/core/logger';
+import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
-import { OauthAdapterService } from './oauth-adapter.service';
-import { LegacyLogger } from '../../../core/logger';
-import { OauthTokenResponse, TokenRequestPayload } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
+import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { OauthAdapterService } from './oauth-adapter.service';
 
 const publicKey = 'publicKey';
 
@@ -66,9 +66,7 @@ describe('OauthAdapterServive', () => {
 	describe('getPublicKey', () => {
 		describe('when a public key is requested', () => {
 			it('should return the public key', async () => {
-				const system = systemFactory.withOauthConfig().build();
-
-				const resp = await service.getPublicKey(system.oauthConfig!);
+				const resp = await service.getPublicKey('jwksEndpoint');
 
 				expect(resp).toEqual(publicKey);
 			});
@@ -81,12 +79,11 @@ describe('OauthAdapterServive', () => {
 			refresh_token: 'refreshToken',
 			id_token: 'idToken',
 		};
-		const testPayload: TokenRequestPayload = {
-			tokenEndpoint: 'testEndpoint',
+		const testPayload: AuthenticationCodeGrantTokenRequest = {
 			client_id: 'testId',
 			client_secret: 'testSercret',
 			redirect_uri: 'testUri',
-			grant_type: 'testGrant',
+			grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT,
 			code: 'testCode',
 		};
 
@@ -96,7 +93,10 @@ describe('OauthAdapterServive', () => {
 
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
-				const responseToken: OauthTokenResponse = await service.sendTokenRequest(testPayload);
+				const responseToken: OauthTokenResponse = await service.sendAuthenticationCodeTokenRequest(
+					'tokenEndpoint',
+					testPayload
+				);
 
 				expect(responseToken).toStrictEqual(tokenResponse);
 			});
@@ -105,7 +105,9 @@ describe('OauthAdapterServive', () => {
 		describe('when no token got returned', () => {
 			it('should throw an error', async () => {
 				httpService.post.mockReturnValueOnce(throwError(() => 'error'));
-				const resp = service.sendTokenRequest(testPayload);
+
+				const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+
 				await expect(resp).rejects.toEqual(new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step'));
 			});
 		});

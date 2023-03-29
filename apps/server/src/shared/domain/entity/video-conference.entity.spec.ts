@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
 import { VideoConference, VideoConferenceOptions } from '@shared/domain/entity/video-conference.entity';
+import { setupEntities } from '@shared/testing';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 
 describe('Video Conference Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

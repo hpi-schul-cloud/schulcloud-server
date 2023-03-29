@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
@@ -12,14 +11,13 @@ import { CopyMapper } from './copy.mapper';
 
 describe('copy mapper', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
+
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],

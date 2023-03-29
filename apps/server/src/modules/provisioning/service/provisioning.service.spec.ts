@@ -124,7 +124,7 @@ describe('ProvisioningService', () => {
 			it('should call strategy.getData', async () => {
 				const { accessToken, idToken, systemId, provisioningSystemDto } = setup();
 
-				await service.getData(accessToken, idToken, systemId);
+				await service.getData(systemId, idToken, accessToken);
 
 				expect(provisioningStrategy.getData).toHaveBeenCalledWith(
 					new OauthDataStrategyInputDto({
@@ -138,7 +138,7 @@ describe('ProvisioningService', () => {
 			it('should return the oauth data', async () => {
 				const { accessToken, idToken, systemId, oauthDataDto } = setup();
 
-				const result: OauthDataDto = await service.getData(accessToken, idToken, systemId);
+				const result: OauthDataDto = await service.getData(systemId, idToken, accessToken);
 
 				expect(result).toEqual(oauthDataDto);
 			});
@@ -154,7 +154,7 @@ describe('ProvisioningService', () => {
 
 				systemService.findById.mockResolvedValue(systemWithoutStrategy);
 
-				const promise: Promise<OauthDataDto> = service.getData(accessToken, idToken, 'systemId');
+				const promise: Promise<OauthDataDto> = service.getData('systemId', idToken, accessToken);
 
 				await expect(promise).rejects.toThrow(
 					new InternalServerErrorException('Provisioning Strategy is not defined.')

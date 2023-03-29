@@ -1,13 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
-import { teamFactory } from '@shared/testing/factory/team.factory';
 import { setupEntities } from '@shared/testing';
-import { MikroORM } from '@mikro-orm/core';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
 
 describe('TeamMapper', () => {
 	let module: TestingModule;
 	let mapper: TeamMapper;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -15,12 +13,11 @@ describe('TeamMapper', () => {
 			providers: [TeamMapper],
 		}).compile();
 		mapper = module.get(TeamMapper);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('Map Team', () => {

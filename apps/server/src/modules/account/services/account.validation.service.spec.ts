@@ -1,16 +1,14 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory, accountFactory, systemFactory } from '@shared/testing';
+import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 
 describe('AccountValidationService', () => {
 	let module: TestingModule;
 	let accountValidationService: AccountValidationService;
-	let orm: MikroORM;
 
 	let mockTeacherUser: User;
 	let mockTeacherAccount: Account;
@@ -35,7 +33,6 @@ describe('AccountValidationService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -105,7 +102,7 @@ describe('AccountValidationService', () => {
 		}).compile();
 
 		accountValidationService = module.get(AccountValidationService);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(() => {

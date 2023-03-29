@@ -1,5 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -13,16 +11,11 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
+import { setupEntities } from '@shared/testing';
 
 describe('ExternalTool Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

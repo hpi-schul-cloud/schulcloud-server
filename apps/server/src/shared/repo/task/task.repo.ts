@@ -20,6 +20,7 @@ export class TaskRepo extends BaseRepo<Task> {
 			'lesson.courseGroup',
 			'submissions',
 			'submissions.courseGroup',
+			'users',
 		]);
 	}
 

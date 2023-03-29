@@ -1,11 +1,11 @@
-import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { EntityName, Reference } from '@mikro-orm/core';
+import { EntityName } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto/school-external-tool.types';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
 
@@ -86,8 +86,8 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 
 	mapDOToEntityProperties(entityDO: SchoolExternalToolDO): ISchoolExternalToolProperties {
 		return {
-			school: Reference.createFromPK(School, entityDO.schoolId),
-			tool: Reference.createFromPK(ExternalTool, entityDO.toolId),
+			school: this._em.getReference(School, entityDO.schoolId),
+			tool: this._em.getReference(ExternalTool, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};

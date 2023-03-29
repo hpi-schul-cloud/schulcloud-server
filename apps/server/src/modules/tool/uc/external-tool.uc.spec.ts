@@ -1,23 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationService } from '@src/modules';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
-import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/domainobject/page';
+import { setupEntities, userFactory } from '@shared/testing';
 import {
 	externalToolDOFactory,
 	oauth2ToolConfigDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { ExternalToolUc } from './external-tool.uc';
+import { AuthorizationService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalToolUc } from './external-tool.uc';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let uc: ExternalToolUc;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -25,7 +23,7 @@ describe('ExternalToolUc', () => {
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -53,7 +51,6 @@ describe('ExternalToolUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	afterEach(() => {

@@ -38,7 +38,7 @@ describe(BoardDoBuilder.name, () => {
 
 			const domainObject = new BoardDoBuilder([columnNode1, columnNode2]).buildColumnBoard(columnBoardNode);
 
-			expect(domainObject.columns.map((el) => el.id).sort()).toEqual([columnNode1.id, columnNode2.id]);
+			expect(domainObject.children.map((el) => el.id).sort()).toEqual([columnNode1.id, columnNode2.id]);
 		});
 
 		it('should sort the children by their node position', () => {
@@ -51,7 +51,7 @@ describe(BoardDoBuilder.name, () => {
 				columnBoardNode
 			);
 
-			const elementIds = domainObject.columns.map((el) => el.id);
+			const elementIds = domainObject.children.map((el) => el.id);
 			expect(elementIds).toEqual([columnNode3.id, columnNode2.id, columnNode1.id]);
 		});
 
@@ -88,7 +88,7 @@ describe(BoardDoBuilder.name, () => {
 
 			const domainObject = new BoardDoBuilder([cardNode1, cardNode2]).buildColumn(columnNode);
 
-			expect(domainObject.cards.map((el) => el.id).sort()).toEqual([cardNode1.id, cardNode2.id]);
+			expect(domainObject.children.map((el) => el.id).sort()).toEqual([cardNode1.id, cardNode2.id]);
 		});
 
 		it('should sort the children by their node position', () => {
@@ -99,7 +99,7 @@ describe(BoardDoBuilder.name, () => {
 
 			const domainObject = new BoardDoBuilder([cardNode1, cardNode2, cardNode3]).buildColumn(columnNode);
 
-			const cardIds = domainObject.cards.map((el) => el.id);
+			const cardIds = domainObject.children.map((el) => el.id);
 			expect(cardIds).toEqual([cardNode3.id, cardNode2.id, cardNode1.id]);
 		});
 	});
@@ -129,7 +129,7 @@ describe(BoardDoBuilder.name, () => {
 
 			const domainObject = new BoardDoBuilder([elementNode1, elementNode2]).buildCard(cardNode);
 
-			expect(domainObject.elements.map((el) => el.id).sort()).toEqual([elementNode1.id, elementNode2.id]);
+			expect(domainObject.children.map((el) => el.id).sort()).toEqual([elementNode1.id, elementNode2.id]);
 		});
 
 		it('should sort the children by their node position', () => {
@@ -140,7 +140,7 @@ describe(BoardDoBuilder.name, () => {
 
 			const domainObject = new BoardDoBuilder([elementNode1, elementNode2, elementNode3]).buildCard(cardNode);
 
-			const elementIds = domainObject.elements.map((el) => el.id);
+			const elementIds = domainObject.children.map((el) => el.id);
 			expect(elementIds).toEqual([elementNode3.id, elementNode1.id, elementNode2.id]);
 		});
 	});
@@ -165,9 +165,37 @@ describe(BoardDoBuilder.name, () => {
 	});
 
 	describe('ensure board node types', () => {
-		it('should check a single node', () => {
+		it('should do nothing if type is correct', () => {
+			const card = cardNodeFactory.build();
+			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.CARD)).not.toThrowError();
+		});
+
+		it('should do nothing if one of the types is correct', () => {
+			const card = cardNodeFactory.build();
+			expect(() =>
+				new BoardDoBuilder().ensureBoardNodeType(card, [BoardNodeType.COLUMN, BoardNodeType.CARD])
+			).not.toThrowError();
+		});
+
+		it('should throw error if wrong type', () => {
 			const card = cardNodeFactory.build();
 			expect(() => new BoardDoBuilder().ensureBoardNodeType(card, BoardNodeType.COLUMN)).toThrowError();
 		});
+
+		it('should throw error if one of multiple board nodes has the wrong type', () => {
+			const column = columnNodeFactory.build();
+			const card = cardNodeFactory.build();
+			expect(() => new BoardDoBuilder().ensureBoardNodeType([card, column], BoardNodeType.COLUMN)).toThrowError();
+		});
+	});
+
+	it('should delegate to the board node', () => {
+		const textElementNode = textElementNodeFactory.build();
+		jest.spyOn(textElementNode, 'useDoBuilder');
+
+		const builder = new BoardDoBuilder();
+		builder.buildDomainObject(textElementNode);
+
+		expect(textElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
 	});
 });

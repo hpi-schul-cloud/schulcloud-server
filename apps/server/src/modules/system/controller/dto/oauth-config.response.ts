@@ -9,11 +9,11 @@ export class OauthConfigResponse {
 	clientId: string;
 
 	@ApiProperty({
-		description: 'An alias',
+		description: 'Hint for idp redirects (optional)',
 		required: false,
 		nullable: true,
 	})
-	alias: string;
+	idpHint?: string;
 
 	@ApiProperty({
 		description: 'Redirect uri',
@@ -87,7 +87,7 @@ export class OauthConfigResponse {
 
 	constructor(oauthConfigResponse: {
 		redirectUri: string;
-		alias: string;
+		idpHint?: string;
 		tokenEndpoint: string;
 		responseType: string;
 		clientId: string;
@@ -100,7 +100,7 @@ export class OauthConfigResponse {
 		issuer: string;
 	}) {
 		this.clientId = oauthConfigResponse.clientId;
-		this.alias = oauthConfigResponse.alias;
+		this.idpHint = oauthConfigResponse.idpHint;
 		this.redirectUri = oauthConfigResponse.redirectUri;
 		this.grantType = oauthConfigResponse.grantType;
 		this.tokenEndpoint = oauthConfigResponse.tokenEndpoint;

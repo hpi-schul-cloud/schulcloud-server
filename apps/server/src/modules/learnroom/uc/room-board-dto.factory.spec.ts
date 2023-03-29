@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
@@ -8,12 +7,10 @@ import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 describe('RoomBoardDTOMapper', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let mapper: RoomBoardDTOFactory;
 	let authorisationService: RoomsAuthorisationService;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
@@ -40,7 +37,7 @@ describe('RoomBoardDTOMapper', () => {
 
 		authorisationService = module.get(RoomsAuthorisationService);
 		mapper = module.get(RoomBoardDTOFactory);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	describe('mapDTO', () => {

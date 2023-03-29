@@ -72,6 +72,7 @@ describe('task copy service', () => {
 					description: 'description of what you need to do',
 				});
 				const copyName = 'Copy(250)';
+				taskRepo.findById.mockResolvedValueOnce(originalTask);
 				return { user, destinationCourse, destinationLesson, originalTask, school, copyName };
 			};
 
@@ -79,7 +80,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -93,7 +94,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask, school } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -107,7 +108,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -122,7 +123,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask, copyName } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -137,7 +138,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					user,
 				});
@@ -150,7 +151,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -164,7 +165,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -178,7 +179,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -193,7 +194,7 @@ describe('task copy service', () => {
 				originalTask.teamSubmissions = true;
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -207,7 +208,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -221,7 +222,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -234,7 +235,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -247,7 +248,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -262,7 +263,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -277,7 +278,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -295,17 +296,17 @@ describe('task copy service', () => {
 				const destinationSchool = schoolFactory.buildWithId();
 				const originalCourse = courseFactory.build({ school: originalSchool });
 				const originalLesson = lessonFactory.build({ course: originalCourse });
-				const destinationCourse = courseFactory.build({ school: destinationSchool });
+				const destinationCourse = courseFactory.buildWithId({ school: destinationSchool });
 				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({ school: destinationSchool });
-				const originalTask = taskFactory.build({
+				const originalTask = taskFactory.buildWithId({
 					course: originalCourse,
 					lesson: originalLesson,
 					school: originalSchool,
 				});
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -320,17 +321,18 @@ describe('task copy service', () => {
 			const setup = () => {
 				const originalCourse = courseFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
-				const destinationCourse = courseFactory.build({});
+				const destinationCourse = courseFactory.buildWithId({});
 				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({});
-				const originalTask = taskFactory.build({ course: originalCourse, lesson: originalLesson });
+				const originalTask = taskFactory.buildWithId({ course: originalCourse, lesson: originalLesson });
+				taskRepo.findById.mockResolvedValueOnce(originalTask);
 				return { user, destinationCourse, destinationLesson, originalTask };
 			};
 			it('should set destination course as course of the copy', async () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -344,7 +346,7 @@ describe('task copy service', () => {
 				const { user, destinationCourse, destinationLesson, originalTask } = setup();
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					destinationCourse,
 					destinationLesson,
 					user,
@@ -358,10 +360,10 @@ describe('task copy service', () => {
 		describe('when copying without course', () => {
 			it('should copy the task without course and lesson', async () => {
 				const user = userFactory.build({});
-				const originalTask = taskFactory.build({ creator: user });
+				const originalTask = taskFactory.buildWithId({ creator: user });
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					user,
 				});
 
@@ -375,10 +377,10 @@ describe('task copy service', () => {
 		describe('repo', () => {
 			it('should persist copy', async () => {
 				const user = userFactory.build({});
-				const originalTask = taskFactory.build({ creator: user });
+				const originalTask = taskFactory.buildWithId({ creator: user });
 
 				await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					user,
 				});
 
@@ -390,10 +392,10 @@ describe('task copy service', () => {
 		describe('copyFilesService', () => {
 			it('should try to copy files from original task to task copy', async () => {
 				const user = userFactory.build({});
-				const originalTask = taskFactory.build({ creator: user });
+				const originalTask = taskFactory.buildWithId({ creator: user });
 
 				await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					user,
 				});
 				expect(copyFilesService.copyFilesOfEntity).toHaveBeenCalled();
@@ -416,7 +418,8 @@ describe('task copy service', () => {
 				const description = `<p>Some images: ${imageHTML1} ${imageHTML2}</p>`;
 				const user = userFactory.build({});
 				const originalCourse = courseFactory.build();
-				const originalTask = taskFactory.build({ creator: user, description, course: originalCourse });
+				const originalTask = taskFactory.buildWithId({ creator: user, description, course: originalCourse });
+				taskRepo.findById.mockResolvedValueOnce(originalTask);
 				return { school, file1, file2, user, originalTask };
 			};
 
@@ -443,7 +446,7 @@ describe('task copy service', () => {
 				});
 
 				const status = await copyService.copyTask({
-					originalTask,
+					originalTaskId: originalTask.id,
 					user,
 				});
 

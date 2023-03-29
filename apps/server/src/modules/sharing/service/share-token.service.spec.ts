@@ -1,26 +1,26 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, lessonFactory, setupEntities, shareTokenFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { courseFactory, lessonFactory, setupEntities, shareTokenFactory, taskFactory } from '@shared/testing';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
-import { TokenGenerator } from './token-generator.service';
-import { ShareTokenService } from './share-token.service';
-import { ShareTokenRepo } from '../repo/share-token.repo';
+import { TaskService } from '@src/modules/task';
+import { ObjectId } from 'bson';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
+import { ShareTokenRepo } from '../repo/share-token.repo';
+import { ShareTokenService } from './share-token.service';
+import { TokenGenerator } from './token-generator.service';
 
 const buildId = () => new ObjectId().toHexString();
 
 describe('ShareTokenService', () => {
 	let module: TestingModule;
-	let orm: MikroORM;
 	let service: ShareTokenService;
 	let generator: DeepMocked<TokenGenerator>;
 	let repo: DeepMocked<ShareTokenRepo>;
 	let courseService: DeepMocked<CourseService>;
 	let lessonService: DeepMocked<LessonService>;
+	let taskService: DeepMocked<TaskService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,6 +42,10 @@ describe('ShareTokenService', () => {
 					provide: LessonService,
 					useValue: createMock<LessonService>(),
 				},
+				{
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
+				},
 			],
 		}).compile();
 
@@ -50,11 +54,11 @@ describe('ShareTokenService', () => {
 		repo = await module.get(ShareTokenRepo);
 		courseService = await module.get(CourseService);
 		lessonService = await module.get(LessonService);
-		orm = await setupEntities();
+		taskService = await module.get(TaskService);
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
@@ -162,6 +166,19 @@ describe('ShareTokenService', () => {
 			const result = await service.lookupTokenWithParentName(shareToken.token);
 
 			expect(result).toEqual({ shareToken, parentName: lesson.name });
+		});
+
+		it('when parent is task', async () => {
+			const task = taskFactory.buildWithId();
+			taskService.findById.mockResolvedValue(task);
+
+			const payload = { parentId: task.id, parentType: ShareTokenParentType.Task };
+			const shareToken = shareTokenFactory.build({ payload });
+			repo.findOneByToken.mockResolvedValue(shareToken);
+
+			const result = await service.lookupTokenWithParentName(shareToken.token);
+
+			expect(result).toEqual({ shareToken, parentName: task.name });
 		});
 	});
 });

@@ -1,19 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { ISchoolProperties, School } from '@shared/domain';
 import { EntityName } from '@mikro-orm/core';
-import { SchoolMapper } from '@src/modules/school/mapper/school.mapper';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
-import { SchoolDO } from '../../domain/domainobject/school.do';
-import { LegacyLogger } from '../../../core/logger';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger,
-		readonly schoolMapper: SchoolMapper
-	) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -39,11 +34,44 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 		return new School(props);
 	}
 
-	protected mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
-		return this.schoolMapper.mapDOToEntityProperties(entityDO);
+	mapEntityToDO(entity: School): SchoolDO {
+		return new SchoolDO({
+			id: entity.id,
+			externalId: entity.externalId,
+			features: entity.features,
+			inMaintenanceSince: entity.inMaintenanceSince,
+			inUserMigration: entity.inUserMigration,
+			name: entity.name,
+			oauthMigrationStart: entity.oauthMigrationStart,
+			oauthMigrationMandatory: entity.oauthMigrationMandatory,
+			oauthMigrationPossible: entity.oauthMigrationPossible,
+			oauthMigrationFinished: entity.oauthMigrationFinished,
+			oauthMigrationFinalFinish: entity.oauthMigrationFinalFinish,
+			previousExternalId: entity.previousExternalId,
+			officialSchoolNumber: entity.officialSchoolNumber,
+			schoolYear: entity.schoolYear,
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
+		});
 	}
 
-	protected mapEntityToDO(entity: School): SchoolDO {
-		return this.schoolMapper.mapEntityToDO(entity);
+	mapDOToEntityProperties(entityDO: SchoolDO): ISchoolProperties {
+		return {
+			externalId: entityDO.externalId,
+			features: entityDO.features,
+			inMaintenanceSince: entityDO.inMaintenanceSince,
+			inUserMigration: entityDO.inUserMigration,
+			name: entityDO.name,
+			oauthMigrationStart: entityDO.oauthMigrationStart,
+			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
+			oauthMigrationPossible: entityDO.oauthMigrationPossible,
+			oauthMigrationFinished: entityDO.oauthMigrationFinished,
+			oauthMigrationFinalFinish: entityDO.oauthMigrationFinalFinish,
+			previousExternalId: entityDO.previousExternalId,
+			officialSchoolNumber: entityDO.officialSchoolNumber,
+			schoolYear: entityDO.schoolYear,
+			systems: entityDO.systems
+				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(System, systemId))
+				: [],
+		};
 	}
 }

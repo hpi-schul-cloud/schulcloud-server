@@ -1,28 +1,26 @@
-import { EntityId } from '@shared/domain/types';
+import { EntityId } from '../../types';
+import { BoardComposite, BoardCompositeProps } from './board-composite.do';
+import type { AnyBoardDo } from './types';
+import type { BoardNodeBuildable } from './types/board-node-buildable';
+import type { BoardNodeBuilder } from './types/board-node-builder';
 
-export class TextElement implements TextElementProps {
-	id: EntityId;
-
+export class TextElement extends BoardComposite implements TextElementProps, BoardNodeBuildable {
 	text: string;
 
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	constructor(props: TextElementProps) {
-		this.id = props.id;
+	constructor(props: Omit<TextElementProps, 'children'>) {
+		super({ ...props, children: [] });
 		this.text = props.text;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
+	}
+
+	addChild(child: AnyBoardDo) {
+		throw new Error(`Cannot add children. Object of type '${child.constructor.name}' given`);
+	}
+
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
+		builder.buildTextElementNode(this, parentId, position);
 	}
 }
 
-interface TextElementProps {
-	id: EntityId;
-
+export interface TextElementProps extends BoardCompositeProps {
 	text: string;
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }

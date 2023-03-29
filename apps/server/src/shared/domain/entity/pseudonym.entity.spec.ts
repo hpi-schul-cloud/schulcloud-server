@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
 import { Pseudonym } from '@shared/domain/index';
+import { setupEntities } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
 
 describe('Pseudonym Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

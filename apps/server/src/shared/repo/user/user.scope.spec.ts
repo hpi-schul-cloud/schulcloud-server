@@ -52,20 +52,29 @@ describe('UserScope', () => {
 		});
 	});
 
-	describe('whereLastLoginSystemChangeGreaterThan is called', () => {
-		it('should return scope with added query where loginSystemChangeGreaterThan is given', () => {
+	describe('whereLastLoginSystemChangeSmallerThan is called', () => {
+		it('should return scope with added query where loginSystemChangeSmallerThan is given', () => {
 			const date: Date = new Date();
-			scope.whereLastLoginSystemChangeGreaterThan(date);
+			scope.whereLastLoginSystemChangeSmallerThan(date);
 
 			expect(scope.query).toEqual({
-				lastLoginSystemChange: {
-					$gte: date,
-				},
+				$or: [
+					{
+						lastLoginSystemChange: {
+							$lt: date,
+						},
+					},
+					{
+						lastLoginSystemChange: {
+							$exists: false,
+						},
+					},
+				],
 			});
 		});
 
-		it('should return scope without added loginSystemChangeGreaterThan to query', () => {
-			scope.whereLastLoginSystemChangeGreaterThan(undefined);
+		it('should return scope without added loginSystemChangeSmallerThan to query', () => {
+			scope.whereLastLoginSystemChangeSmallerThan(undefined);
 			expect(scope.query).toEqual({});
 		});
 	});
@@ -83,7 +92,7 @@ describe('UserScope', () => {
 		});
 
 		it('should return scope without added whereOutdatedSinceEquals to query', () => {
-			scope.whereLastLoginSystemChangeGreaterThan(undefined);
+			scope.whereLastLoginSystemChangeSmallerThan(undefined);
 			expect(scope.query).toEqual({});
 		});
 	});

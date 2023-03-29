@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
@@ -9,7 +8,6 @@ import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;
-	let orm: MikroORM;
 	let module: TestingModule;
 
 	let lessonRepo: DeepMocked<LessonRepo>;
@@ -34,11 +32,10 @@ describe('LessonService', () => {
 		lessonRepo = module.get(LessonRepo);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

@@ -29,13 +29,16 @@ To facilitate this, your tests should be wrapped in at least two describe levels
 ```TypeScript
 // Name of the unit under test
 describe("Course Service", (() => {
-    // a "when..." sentence
-	describe("When a student tries to create a course", (() => {
-		// a "should..." sentence
-        it("should fail", async () => {
-            ...
-        });
-    });
+	// method that is called
+	describe('createCourse', () => {
+    	// a "when..." sentence
+		describe("When a student tries to create a course", (() => {
+			// a "should..." sentence
+				it("should return course", async () => {
+					...
+				});
+		});
+	});
 });
 ```
 
@@ -57,6 +60,42 @@ Your test should be structured in three seperate areas, each distinguished by at
 
 this is known as the AAA-pattern.
 
+The tests for a unit should cover as much scenarios as possible. Parameters and the combination of parameters can often take numerous values. Therefore it largely differs from case to case what a sufficient amount of scenarios would be. Parameter values that contradict the typescript type definition should be ignored as a test case. 
+The test coverage report already enforces scenarios that test every possible if/else result in the code. But still some scenarios are not covered by the report and must be tested:
+* All error scenarios: That means one describe block for every call that can reject.
+
+We use different levels of describe blocks to structure the tests in a way, that the tested scenarios could easily be recognized. The outer describe would be the function call itself. Every scenario is added as another describe inside the outer describe. 
+
+All of the data and mock preparation should happen in a setup function. Every describe scenario only contains one setup function and is called in every test. No further data or mock preparation should be added to the test. Often there will be only one test in every describe scenario, this is perfectly fine with our desired structure.
+
+```TypeScript
+describe('[method]', () => {
+	describe('when [senario description that is prepared in setup]', () => {
+		const setup = () => {
+			// prepare the data and mocks for this scenario
+		};
+
+		it('...', () => {
+			const { } = setup();
+		});
+
+		it('...', () => {
+			const { } = setup();
+		});
+	});          
+
+	describe('when [senario description that is prepared in setup]', () => {
+		const setup = () => {
+			// prepare the data and mocks for this scenario
+		};
+
+		it('...', () => {
+			const { } = setup();
+		});
+	});
+});
+```
+
 ## Testing Samples
 
 ### Handling of function return values
@@ -77,7 +116,7 @@ When assigning a value to an expect, separate the function call from the expecta
 
 ### Promises and Timouts in tests
 
-When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
+When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expecting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
 
 - Instead of using done callback, use async test functions.
 - Use await instead of (long) promise chains
@@ -162,7 +201,7 @@ You can create a mock using `createMock<Class>()`. As result you will recieved a
 let fut: FeatureUnderTest;
 let mockService: DeepMocked<MockService>;
 
-beforeEach(async () => {
+beforeAll(async () => {
 	const module = await Test.createTestingModule({
 		providers: [
 			FeatureUnderTest,
@@ -177,12 +216,19 @@ beforeEach(async () => {
 	mockService = module.get(MockService);
 });
 
-afterEach(async () => {
+afterAll(async () => {
 	await module.close();
 });
-```
 
-the resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you the full intellij features of the original class including code completion and typesavety, combined with all the features of spies.
+afterEach(() => {
+	jest.resetAllMocks();
+})
+```
+The resulting mock has all the functions of the original `Class`, replaced with jest spies. This gives you code completion and type safety, combined with all the features of spies.
+
+`createTestingModule` should only be calld in `beforeAll` and not in `beforeEach` to keep the setup and teardown for each test as simple as possible. Therefore `module.close` should only be called in `afterAll` and not in `afterEach`.
+
+To generally reset specific mock implementation after each test `jest.resetAllMocks` can be used in afterEach. `jest.restoreAllMocks` should not be used, because in some cases it will not properly restore mocks created by ts-jest.
 
 ```Typescript
 describe('somefunction', () => {
@@ -190,7 +236,7 @@ describe('somefunction', () => {
 		const setup = () => {
 			const resultUser = userFactory.buildWithId();
 
-			mockService.getUser.mockReturnValue(resultUser);
+			mockService.getUser.mockReturnValueOnce(resultUser);
 
 			return { resultUser };
 		};
@@ -208,8 +254,10 @@ describe('somefunction', () => {
 		});
 	});
 });
-
 ```
+For creating specific mock implementations the helper functions which only mock the implementation once, must be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.
+
+If you want to mock a method that is not part of a dependency you can mock it with `jest.spyOn`. We strongly recommend the use of `jest.spyOn` and not `jest.fn`, because `jest.spyOn` can be restored a lot easier. 
 ## Unit Tests vs Integration Tests
 
 In Unit Tests we access directly only the component which is currently testing.

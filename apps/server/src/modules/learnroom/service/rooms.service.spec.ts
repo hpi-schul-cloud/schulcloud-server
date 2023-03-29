@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
@@ -11,15 +10,13 @@ describe('rooms service', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let boardRepo: DeepMocked<BoardRepo>;
-	let orm: MikroORM;
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [

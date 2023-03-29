@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
@@ -7,7 +6,6 @@ import { Permission } from '../interface';
 import PermissionContextBuilder from './permission-context.builder';
 
 describe('TeamRule', () => {
-	let orm: MikroORM;
 	let service: TeamRule;
 	const permissionA = 'a' as Permission;
 	const permissionC = 'c' as Permission;
@@ -17,17 +15,13 @@ describe('TeamRule', () => {
 	const teamPermissionD = 'TD' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [TeamRule],
 		}).compile();
 
 		service = await module.get(TeamRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	describe('isApplicable', () => {

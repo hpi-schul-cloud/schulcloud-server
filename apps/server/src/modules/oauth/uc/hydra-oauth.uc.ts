@@ -4,9 +4,9 @@ import { OauthConfig } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { AuthorizationParams, OauthTokenResponse } from '../controller/dto';
+import { AuthorizationParams } from '../controller/dto';
 import { OAuthSSOError } from '../error/oauth-sso.error';
-import { SSOErrorCode } from '../error/sso-error-code.enum';
+import { OAuthTokenDto } from '../interface';
 import { HydraSsoService } from '../service/hydra.service';
 import { OAuthService } from '../service/oauth.service';
 
@@ -24,14 +24,24 @@ export class HydraOauthUc {
 
 	private readonly HYDRA_PUBLIC_URI: string = Configuration.get('HYDRA_PUBLIC_URI') as string;
 
-	async getOauthToken(oauthClientId: string, code?: string, error?: string): Promise<OauthTokenResponse> {
-		const hydraOauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
-		if (!code) {
-			throw new OAuthSSOError('Authorization in external system failed', error || SSOErrorCode.SSO_AUTH_CODE_STEP);
+	async getOauthToken(oauthClientId: string, code?: string, error?: string): Promise<OAuthTokenDto> {
+		if (error || !code) {
+			throw new OAuthSSOError(
+				'Authorization Query Object has no authorization code or error',
+				error || 'sso_auth_code_step'
+			);
 		}
-		const queryToken: OauthTokenResponse = await this.oauthService.requestToken(code, hydraOauthConfig);
-		await this.oauthService.validateToken(queryToken.id_token, hydraOauthConfig);
-		return queryToken;
+		const hydraOauthConfig: OauthConfig = await this.hydraSsoService.generateConfig(oauthClientId);
+
+		const oauthTokens: OAuthTokenDto = await this.oauthService.requestToken(
+			code,
+			hydraOauthConfig,
+			hydraOauthConfig.redirectUri
+		);
+
+		await this.oauthService.validateToken(oauthTokens.idToken, hydraOauthConfig);
+
+		return oauthTokens;
 	}
 
 	protected validateStatus = (status: number): boolean => status === 200 || status === 302;

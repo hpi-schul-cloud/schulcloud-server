@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardElement, RichTextCardElement, TitleCardElement } from '@shared/domain';
+import { CardElement, RichTextCardElement } from '@shared/domain';
 import { cleanupCollections } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 
-import { CardElementRepo, RichTextCardElementRepo, TitleCardElementRepo } from './card-element.repo';
+import { CardElementRepo, RichTextCardElementRepo } from './card-element.repo';
 
 describe('CardElementRepo', () => {
 	let module: TestingModule;
@@ -32,34 +32,6 @@ describe('CardElementRepo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(CardElement);
-	});
-});
-
-describe('TitleCardElementRepo', () => {
-	let module: TestingModule;
-	let repo: TitleCardElementRepo;
-	let em: EntityManager;
-
-	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [TitleCardElementRepo],
-		}).compile();
-		repo = module.get(TitleCardElementRepo);
-		em = module.get(EntityManager);
-	});
-
-	afterAll(async () => {
-		await module.close();
-	});
-
-	afterEach(async () => {
-		await cleanupCollections(em);
-		await em.nativeDelete(TitleCardElement, {});
-	});
-
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(TitleCardElement);
 	});
 });
 

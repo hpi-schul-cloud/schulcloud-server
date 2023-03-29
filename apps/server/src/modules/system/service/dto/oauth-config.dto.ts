@@ -3,7 +3,7 @@ export class OauthConfigDto {
 
 	clientSecret: string;
 
-	alias: string;
+	idpHint?: string;
 
 	redirectUri: string;
 
@@ -28,7 +28,7 @@ export class OauthConfigDto {
 	constructor(oauthConfigDto: OauthConfigDto) {
 		this.clientId = oauthConfigDto.clientId;
 		this.clientSecret = oauthConfigDto.clientSecret;
-		this.alias = oauthConfigDto.alias;
+		this.idpHint = oauthConfigDto.idpHint;
 		this.redirectUri = oauthConfigDto.redirectUri;
 		this.grantType = oauthConfigDto.grantType;
 		this.tokenEndpoint = oauthConfigDto.tokenEndpoint;

@@ -1,21 +1,16 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ValidationError } from '@shared/common';
 import { Permission, Role, RoleName } from '@shared/domain';
-import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
 	const accountId = 'mockAccountId';
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('userToICurrentUser', () => {
@@ -88,25 +83,29 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
+				const roles: RoleDto[] = [];
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
 			});
 		});
 		describe('when userDO has no createdAt', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, updatedAt: new Date() });
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
+				const roles: RoleDto[] = [];
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
 			});
 		});
 		describe('when userDO has no updatedAt', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date() });
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
+				const roles: RoleDto[] = [];
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
 			});
 		});
 		describe('when userDO is valid', () => {
 			it('should return valid ICurrentUser instance', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+				const roles: RoleDto[] = [];
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
@@ -131,7 +130,8 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance with systemId', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
 				const systemId = 'mockSystemId';
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
+				const roles: RoleDto[] = [];
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles, systemId);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
@@ -155,13 +155,14 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO is valid and contains roles', () => {
 			it('should return valid ICurrentUser instance with systemId', () => {
 				const roleIds = ['mockRoleId'];
+				const roles: RoleDto[] = [{ id: 'mockRoleId', name: RoleName.USER }];
 				const user: UserDO = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 					roleIds,
 				});
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
@@ -174,7 +175,7 @@ describe('CurrentUserMapper', () => {
 						updatedAt: user.updatedAt,
 						firstName: user.firstName,
 						lastName: user.lastName,
-						roles: [{ id: 'mockRoleId', name: 'mockRoleId' }],
+						roles: [{ id: 'mockRoleId', name: RoleName.USER }],
 						schoolId: user.schoolId,
 						permissions: [],
 					},

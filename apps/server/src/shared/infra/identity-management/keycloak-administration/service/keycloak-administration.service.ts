@@ -59,6 +59,10 @@ export class KeycloakAdministrationService {
 		await kc.realms.update({ realm: this.kcSettings.realmName }, { passwordPolicy: 'hashIterations(310000)' });
 	}
 
+	public resetLastAuthorizationTime(): void {
+		this.lastAuthorizationTime = 0;
+	}
+
 	private async authorizeAccess() {
 		const elapsedTimeMilliseconds = new Date().getTime() - this.lastAuthorizationTime;
 		if (elapsedTimeMilliseconds > KeycloakAdministrationService.AUTHORIZATION_TIMEBOX_MS) {

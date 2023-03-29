@@ -7,7 +7,6 @@ import {
 	richTextCardElementFactory,
 	taskCardFactory,
 	taskFactory,
-	titleCardElementFactory,
 } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -43,9 +42,8 @@ describe('TaskCardRepo', () => {
 
 	describe('findById', () => {
 		it('should load task card with content', async () => {
-			const titleCardElement = titleCardElementFactory.build();
 			const richTextCardElement = richTextCardElementFactory.build();
-			const taskCard = taskCardFactory.build({ cardElements: [titleCardElement, richTextCardElement] });
+			const taskCard = taskCardFactory.build({ cardElements: [richTextCardElement] });
 			await em.persistAndFlush(taskCard);
 
 			em.clear();
@@ -57,9 +55,8 @@ describe('TaskCardRepo', () => {
 		it('should populate all elements correctly', async () => {
 			const course = courseFactory.build();
 			const task = taskFactory.build({ course });
-			const titleCardElement = titleCardElementFactory.build();
 			const richTextCardElement = richTextCardElementFactory.build();
-			const taskCard = taskCardFactory.build({ task, cardElements: [titleCardElement, richTextCardElement] });
+			const taskCard = taskCardFactory.build({ task, cardElements: [richTextCardElement] });
 			await repo.save(taskCard);
 
 			em.clear();

@@ -1,23 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { TeamsRepo } from '@shared/repo';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { RoleName, Team } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
-import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
-import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
-import { ForbiddenException } from '@nestjs/common';
-import { AuthorizationService } from '@src/modules/authorization';
-import { MikroORM } from '@mikro-orm/core';
-import { LegacyLogger } from '@src/core/logger';
-import { RoleService } from '@src/modules/role/service/role.service';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName, Team } from '@shared/domain';
+import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
+import { TeamsRepo } from '@shared/repo';
+import { setupEntities } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { LegacyLogger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
+import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
+import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
+import { RoleDto } from '@src/modules/role/service/dto/role.dto';
+import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let service: CollaborativeStorageService;
 
@@ -62,7 +60,7 @@ describe('Collaborative Storage Service', () => {
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
 		teamRepo = module.get(TeamsRepo);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(() => {
@@ -82,7 +80,6 @@ describe('Collaborative Storage Service', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	describe('Find Team By Id', () => {

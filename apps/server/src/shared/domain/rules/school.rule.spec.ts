@@ -1,14 +1,12 @@
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { SchoolDO } from '../domainobject/school.do';
 import { Role, School, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
 import { SchoolRule } from './school.rule';
-import { SchoolDO } from '../domainobject/school.do';
 
 describe('SchoolRule', () => {
-	let orm: MikroORM;
 	let service: SchoolRule;
 	let user: User;
 	let entity: School | SchoolDO;
@@ -18,17 +16,13 @@ describe('SchoolRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [SchoolRule],
 		}).compile();
 
 		service = await module.get(SchoolRule);
-	});
-
-	afterAll(async () => {
-		await orm.close();
 	});
 
 	beforeEach(() => {

@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
@@ -15,13 +14,13 @@ import {
 	SchoolRoles,
 	User,
 } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { ObjectId } from 'bson';
 import {
 	AccountByIdBodyParams,
@@ -39,7 +38,6 @@ describe('AccountUc', () => {
 	let accountUc: AccountUc;
 	let userRepo: UserRepo;
 	let accountService: AccountService;
-	let orm: MikroORM;
 	let accountValidationService: AccountValidationService;
 	let configService: DeepMocked<ConfigService>;
 
@@ -95,7 +93,6 @@ describe('AccountUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -258,7 +255,7 @@ describe('AccountUc', () => {
 		accountUc = module.get(AccountUc);
 		userRepo = module.get(UserRepo);
 		accountService = module.get(AccountService);
-		orm = await setupEntities();
+		await setupEntities();
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
 	});

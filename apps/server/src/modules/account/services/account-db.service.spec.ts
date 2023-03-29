@@ -1,25 +1,23 @@
-import { MikroORM } from '@mikro-orm/core';
+import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
-import bcrypt from 'bcryptjs';
-import { createMock } from '@golevelup/ts-jest';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { ConfigService } from '@nestjs/config';
 import { IServerConfig } from '@src/modules/server';
-import { AccountRepo } from '../repo/account.repo';
+import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AbstractAccountService;
-	let orm: MikroORM;
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
 
@@ -38,7 +36,6 @@ describe('AccountService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeAll(async () => {
@@ -126,7 +123,7 @@ describe('AccountService', () => {
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountServiceDb);
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	beforeEach(() => {

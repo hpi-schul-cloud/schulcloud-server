@@ -56,17 +56,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "6308cf3bee02bf090ec3a491"
-		},
-		"state": "up",
-		"name": "clean-user-account",
-		"createdAt": {
-			"$date": "2022-08-25T14:19:14.069Z"
-		},
-		"__v": 0
-	},
-	{
-		"_id": {
 			"$oid": "632c5fafc744915f90d1c73b"
 		},
 		"state": "up",
@@ -78,7 +67,18 @@
 	},
 	{
 		"_id": {
-			"$oid": "637b9cf270305294b01b749c"
+			"$oid": "6411b6f983c6759284e07dc8"
+		},
+		"state": "up",
+		"name": "sanis-rebranding",
+		"createdAt": {
+			"$date": "2023-03-15T12:15:53.385Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6411b99e207ae5149cca93a9"
 		},
 		"state": "up",
 		"name": "add-tool-admin-permission",
@@ -89,7 +89,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "638622fdc5fa134eb24df95f"
+			"$oid": "6411b99e207ae5149cca93aa"
 		},
 		"state": "up",
 		"name": "add-submitted-and-graded-keys-to-submission",
@@ -100,7 +100,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63b59158f877054b54decd9d"
+			"$oid": "6411b99e207ae5149cca93ab"
 		},
 		"state": "up",
 		"name": "add-school-tool-admin-permission",
@@ -111,7 +111,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63c05072858dd481877593a9"
+			"$oid": "6411b99e207ae5149cca93ac"
 		},
 		"state": "up",
 		"name": "add-task-card-permission",
@@ -122,7 +122,7 @@
 	},
 	{
 		"_id": {
-			"$oid": "63eb4d77c9cc9d2ba45cdc7c"
+			"$oid": "6411b99e207ae5149cca93ad"
 		},
 		"state": "up",
 		"name": "AddPermissionCreateToolEtherpadForStudent",
@@ -133,12 +133,34 @@
 	},
 	{
 		"_id": {
-			"$oid": "63ff2eec033f9b6e70afc6d4"
+			"$oid": "6411b99e207ae5149cca93ae"
 		},
 		"state": "up",
 		"name": "EditHomeworkCreateAndEditPermissions",
 		"createdAt": {
 			"$date": "2023-03-01T10:40:42.101Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64141f668fb9600ed8e0c11a"
+		},
+		"state": "up",
+		"name": "RefactorSystemSubConfig",
+		"createdAt": {
+			"$date": "2023-03-15T14:04:48.654Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "641484462942e36e9ce79c58"
+		},
+		"state": "up",
+		"name": "oauth-provisioning-school-feature",
+		"createdAt": {
+			"$date": "2023-03-17T08:48:14.877Z"
 		},
 		"__v": 0
 	}

@@ -1,16 +1,9 @@
-import { MikroORM } from '@mikro-orm/core';
 import { setupEntities, storageProviderFactory } from '@shared/testing';
 import { File } from './file.entity';
 
 describe('file entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

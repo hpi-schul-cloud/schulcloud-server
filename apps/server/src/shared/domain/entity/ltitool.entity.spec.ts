@@ -1,17 +1,10 @@
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@shared/testing';
 import { LtiPrivacyPermission, LtiTool } from '@shared/domain';
+import { setupEntities } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 
 describe('Ltitool Entity', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	describe('constructor', () => {

@@ -20,10 +20,6 @@ describe('Lesson Entity', () => {
 		orm = await setupEntities();
 	});
 
-	afterAll(async () => {
-		await orm.close();
-	});
-
 	describe('numberOfPublishedTasks', () => {
 		describe('when tasks are not populated', () => {
 			it('should throw', () => {

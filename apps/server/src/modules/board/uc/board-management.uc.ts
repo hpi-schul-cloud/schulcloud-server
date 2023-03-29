@@ -29,6 +29,7 @@ export class BoardManagementUc {
 			columnNodeFactory.build({
 				parent,
 				title: `Column ${i + 1}`,
+				position: i,
 			})
 		);
 	}
@@ -39,6 +40,7 @@ export class BoardManagementUc {
 				parent,
 				title: `Card ${i + 1}`,
 				height: this.random(50, 250),
+				position: i,
 			})
 		);
 	}
@@ -48,6 +50,7 @@ export class BoardManagementUc {
 			textElementNodeFactory.build({
 				parent,
 				text: `<p>text ${i + 1}</p>`,
+				position: i,
 			})
 		);
 	}

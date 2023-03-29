@@ -1,4 +1,3 @@
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
@@ -6,14 +5,8 @@ import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.buil
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {
-	let orm: MikroORM;
-
 	beforeAll(async () => {
-		orm = await setupEntities();
-	});
-
-	afterAll(async () => {
-		await orm.close();
+		await setupEntities();
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {

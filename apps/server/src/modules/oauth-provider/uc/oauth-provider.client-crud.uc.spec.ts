@@ -1,18 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { Permission, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules';
-import { setupEntities, userFactory } from '@shared/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission, User } from '@shared/domain';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 
 describe('OauthProviderUc', () => {
-	let orm: MikroORM;
 	let module: TestingModule;
 	let uc: OauthProviderClientCrudUc;
 
@@ -30,7 +28,7 @@ describe('OauthProviderUc', () => {
 	};
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -53,7 +51,6 @@ describe('OauthProviderUc', () => {
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeEach(() => {

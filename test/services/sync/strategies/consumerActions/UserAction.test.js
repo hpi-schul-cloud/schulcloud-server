@@ -4,6 +4,7 @@ const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest, NotFound } = require('../../../../../src/errors');
 const { UserAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
@@ -36,7 +37,7 @@ describe('User Actions', () => {
 	});
 
 	describe('action: ', () => {
-		it('should create user and account if not exists', async () => {
+		it('should create user and account if not exists (and set the lastSyncedAt field as this is the default behaviour)', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			const testSchoolId = new ObjectId();
 			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
@@ -55,10 +56,40 @@ describe('User Actions', () => {
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
 			expect(userArg.schoolId).to.be.equal(testSchoolId);
 			expect(userArg._id).to.be.equal(testUserInput._id);
+			expect(userArg.lastSyncedAt).to.not.be.null;
+			expect(userArg.lastSyncedAt).to.be.at.most(new Date());
 			expect(accountArg._id).to.be.equal(testAccountInput._id);
 		});
 
-		it('should update user and account if exists', async () => {
+		it('should create user and account if not exists, but should not set the lastSyncedAt field if FEATURE_SYNC_LAST_SYNCED_AT_ENABLED env var flag has been set to false', async () => {
+			const configBefore = Configuration.toObject({ plainSecrets: true });
+			Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', false);
+
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const testSchoolId = new ObjectId();
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
+
+			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
+			findByLdapIdAndSchoolStub.returns(null);
+
+			const createUserAndAccountStub = sinon.stub(userAccountService, 'createUserAndAccount');
+
+			const testUserInput = { _id: 1 };
+			const testAccountInput = { _id: 2 };
+			await userAction.action({ user: testUserInput, account: testAccountInput });
+
+			const [userArg, accountArg] = createUserAndAccountStub.firstCall.args;
+
+			expect(createUserAndAccountStub.calledOnce).to.be.true;
+			expect(userArg.schoolId).to.be.equal(testSchoolId);
+			expect(userArg._id).to.be.equal(testUserInput._id);
+			expect(userArg.lastSyncedAt).to.be.undefined;
+			expect(accountArg._id).to.be.equal(testAccountInput._id);
+
+			Configuration.reset(configBefore);
+		});
+
+		it('should update user and account if exists (and update the lastSyncedAt field as this is the default behaviour)', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			const testSchoolId = new ObjectId();
 			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
@@ -96,8 +127,58 @@ describe('User Actions', () => {
 			expect(updateUserArg.email).to.be.equal(testUserInput.email);
 			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
 			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
+			expect(updateUserArg.lastSyncedAt).to.not.be.null;
+			expect(updateUserArg.lastSyncedAt).to.be.at.most(new Date());
 
 			expect(testAccountArg).to.be.equal(testAccountInput);
+		});
+
+		it('should update user and account if exists, but should not update the lastSyncedAt field if FEATURE_SYNC_LAST_SYNCED_AT_ENABLED env var flag has been set to false', async () => {
+			const configBefore = Configuration.toObject({ plainSecrets: true });
+			Configuration.set('FEATURE_SYNC_LAST_SYNCED_AT_ENABLED', false);
+
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const testSchoolId = new ObjectId();
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
+
+			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
+			const existingUser = {
+				_id: 1,
+				firstName: 'Old fname',
+				lastName: 'Old lname',
+				email: 'Old email',
+				ldapDn: 'Old ldapdn',
+			};
+			findByLdapIdAndSchoolStub.returns(existingUser);
+
+			const updateUserAndAccountStub = sinon.stub(userAccountService, 'updateUserAndAccount');
+
+			const testUserInput = {
+				_id: 1,
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				roles: [new ObjectId()],
+			};
+			const testAccountInput = { _id: 2 };
+			await userAction.action({ user: testUserInput, account: testAccountInput });
+
+			expect(updateUserAndAccountStub.calledOnce).to.be.true;
+
+			const [updateUserId, updateUserArg, testAccountArg] = updateUserAndAccountStub.firstCall.args;
+
+			expect(updateUserId).to.be.equal(testUserInput._id);
+			expect(updateUserArg.firstName).to.be.equal(testUserInput.firstName);
+			expect(updateUserArg.lastName).to.be.equal(testUserInput.lastName);
+			expect(updateUserArg.email).to.be.equal(testUserInput.email);
+			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
+			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
+			expect(updateUserArg.lastSyncedAt).to.be.undefined;
+
+			expect(testAccountArg).to.be.equal(testAccountInput);
+
+			Configuration.reset(configBefore);
 		});
 
 		it('should throw a sync error if user repo throws an error', async () => {

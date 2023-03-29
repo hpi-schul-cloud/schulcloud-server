@@ -12,7 +12,7 @@
 		"alias": "oidcmock",
 		"displayName": "OIDCMOCK",
 		"oidcConfig": {
-			"alias": "oidcmock",
+			"idpHint": "oidcmock",
 			"clientId": "${OIDCMOCK__CLIENT_ID}",
 			"clientSecret": "${OIDCMOCK__CLIENT_SECRET}",
 			"authorizationUrl": "${OIDCMOCK__BASE_URL}/connect/authorize",

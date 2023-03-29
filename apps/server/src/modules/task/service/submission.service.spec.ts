@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, Submission } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
@@ -13,10 +12,9 @@ describe('Submission Service', () => {
 	let service: SubmissionService;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 
 		module = await Test.createTestingModule({
 			imports: [],
@@ -39,7 +37,6 @@ describe('Submission Service', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
 		await module.close();
 	});
 

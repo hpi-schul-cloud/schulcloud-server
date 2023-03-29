@@ -1,15 +1,19 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
+import { TimestampsResponse } from '../timestamps.response';
+import { AnyContentElementResponse } from './any-content-element.response';
 import { TextElementResponse } from './text-element.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
+@ApiExtraModels(TextElementResponse)
 export class CardResponse {
-	constructor({ id, title, height, elements, visibilitySettings }: CardResponse) {
+	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
 		this.title = title;
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
+		this.timestamps = timestamps;
 	}
 
 	@ApiProperty({
@@ -25,10 +29,16 @@ export class CardResponse {
 	height: number;
 
 	@ApiProperty({
-		type: [TextElementResponse],
+		type: 'array',
+		items: {
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+		},
 	})
-	elements: TextElementResponse[];
+	elements: AnyContentElementResponse[];
 
 	@ApiProperty()
 	visibilitySettings: VisibilitySettingsResponse;
+
+	@ApiProperty()
+	timestamps: TimestampsResponse;
 }
