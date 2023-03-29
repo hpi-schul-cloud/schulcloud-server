@@ -1,7 +1,17 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardNode, CardNode, Column, ColumnNode, TextElementNode } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardNode,
+	CardNode,
+	Column,
+	ColumnBoard,
+	ColumnNode,
+	TextElement,
+	TextElementNode,
+} from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -274,6 +284,35 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
+	describe('when deleting a domainObject by id and class', () => {
+		const setup = async () => {
+			const cardNode = cardNodeFactory.buildWithId();
+			const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
+			const independentTextElementNode = textElementNodeFactory.buildWithId();
+			await em.persistAndFlush([cardNode, ...textElementNodes, independentTextElementNode]);
+
+			const card = await repo.findById(cardNode.id);
+
+			return { card, cardNode, textElementNodes, independentTextElementNode };
+		};
+
+		it('should delete an element', async () => {
+			const { textElementNodes } = await setup();
+
+			await repo.deleteByClassAndId(TextElement, textElementNodes[0].id);
+			em.clear();
+
+			await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
+		});
+
+		it('should throw error when id does not belong to the expected class', async () => {
+			const { textElementNodes } = await setup();
+			const expectedError = new NotFoundException("There is no 'Column' with this id");
+
+			await expect(repo.deleteByClassAndId(Column, textElementNodes[0].id)).rejects.toThrow(expectedError);
+		});
+	});
+
 	describe('when finding by class and id', () => {
 		const setup = async () => {
 			const boardNode = columnBoardNodeFactory.build();
@@ -284,10 +323,53 @@ describe(BoardDoRepo.name, () => {
 			return { boardNode };
 		};
 
-		it('should throw error when id does not belong to the expected class', async () => {
+		it('should return the object', async () => {
 			const { boardNode } = await setup();
 
-			await expect(repo.findByClassAndId(Column, boardNode.id)).rejects.toThrow();
+			const result = await repo.findByClassAndId(ColumnBoard, boardNode.id);
+
+			expect(result.id).toEqual(boardNode.id);
+		});
+
+		it('should throw error when id does not belong to the expected class', async () => {
+			const { boardNode } = await setup();
+			const expectedError = new NotFoundException("There is no 'Column' with this id");
+
+			await expect(repo.findByClassAndId(Column, boardNode.id)).rejects.toThrow(expectedError);
+		});
+	});
+
+	describe('when finding by ids', () => {
+		const setup = async () => {
+			const boardNode = columnBoardNodeFactory.build();
+			await em.persistAndFlush(boardNode);
+			const columnNodes = columnNodeFactory.buildList(2, { parent: boardNode });
+			await em.persistAndFlush(columnNodes);
+			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+			await em.persistAndFlush(cardNodes);
+			const elementNodes = textElementNodeFactory.buildList(2, { parent: cardNodes[1] });
+			await em.persistAndFlush(elementNodes);
+			em.clear();
+
+			return { boardNode, columnNodes, cardNodes, elementNodes };
+		};
+
+		it('should return the objects', async () => {
+			const { boardNode, columnNodes } = await setup();
+			const nodeIds = [boardNode.id, columnNodes[0].id];
+
+			const result = await repo.findByIds(nodeIds);
+			const resultIds = result.map((obj) => obj.id);
+
+			expect(resultIds).toEqual(nodeIds);
+		});
+
+		it('should return nothing for not-existing id', async () => {
+			await setup();
+
+			const result = await repo.findByIds(['not-existing id']);
+
+			expect(result).toEqual([]);
 		});
 	});
 });
