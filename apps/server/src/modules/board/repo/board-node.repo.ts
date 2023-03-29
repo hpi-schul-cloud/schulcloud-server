@@ -34,11 +34,15 @@ export class BoardNodeRepo {
 			return { path: { $re: `^${node.pathOfChildren}` } };
 		});
 
+		const map: Record<string, BoardNode[]> = {};
+		if (pathQueries.length === 0) {
+			return map;
+		}
+
 		const descendants = await this.em.find(BoardNode, {
 			$or: pathQueries,
 		});
 
-		const map: Record<string, BoardNode[]> = {};
 		for (const desc of descendants) {
 			map[desc.path] ||= [];
 			map[desc.path].push(desc);
