@@ -44,8 +44,8 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	creator!: User;
 
 	@Index()
-	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
-	course?: Course;
+	@ManyToOne('Course', { fieldName: 'courseId' })
+	course!: Course;
 
 	@Property()
 	draggable = true;
