@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ColumnBoardService, ContentElementService } from '../service';
+import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly boardDoService: BoardDoService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
 	) {
