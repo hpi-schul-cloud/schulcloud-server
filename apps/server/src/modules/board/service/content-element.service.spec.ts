@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { ContentElementService } from './content-element.service';
@@ -35,32 +36,53 @@ describe(ContentElementService.name, () => {
 		await module.close();
 	});
 
-	describe('creating a content element', () => {
-		const setup = () => {
-			const card = cardFactory.build();
-			const cardId = card.id;
+	describe('create', () => {
+		describe('when creating a content element', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const cardId = card.id;
 
-			return { card, cardId };
-		};
+				return { card, cardId };
+			};
 
-		it('should save a list of content elements using the repo', async () => {
-			const { card, cardId } = setup();
+			it('should save a list of content elements using the boardDo repo', async () => {
+				const { card, cardId } = setup();
 
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			await service.create(cardId);
+				await service.create(cardId);
 
-			expect(boardDoRepo.save).toHaveBeenCalledWith(
-				[
-					expect.objectContaining({
-						id: expect.any(String),
-						text: '',
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-					}),
-				],
-				cardId
-			);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							text: '',
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					cardId
+				);
+			});
+		});
+	});
+
+	describe('deleteById', () => {
+		describe('when deleting a content element', () => {
+			const setup = () => {
+				const textElement = textElementFactory.build();
+				const textElementId = textElement.id;
+
+				return { textElement, textElementId };
+			};
+
+			it('should call deleteByClassAndId using the boardDo repo', async () => {
+				const { textElementId } = setup();
+
+				await service.deleteById(textElementId);
+
+				expect(boardDoRepo.deleteByClassAndId).toHaveBeenCalledWith(TextElement, textElementId);
+			});
 		});
 	});
 });
