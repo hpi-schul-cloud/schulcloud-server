@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
-describe.only('UserLinkImportService', () => {
+describe('UserLinkImportService', () => {
 	let usersLinkImportService;
 	let app;
 	let server;
