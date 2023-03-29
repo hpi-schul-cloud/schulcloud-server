@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -41,6 +41,7 @@ export class OidcProvisioningService {
 				name: externalSchool.name,
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 			});
 		}
 

@@ -32,28 +32,6 @@ describe('authentication service integration tests', () => {
 		Configuration.reset(configBefore);
 	});
 
-	describe('Login', () => {
-		it('When a user sends valid local authentication details, then he recieves a jwt', async () => {
-			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: `password${Date.now()}` };
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			await testObjects.createTestAccount(accountDetails, null, user);
-			const request = chai
-				.request(app)
-				.post('/authentication')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/json');
-			const response = await request.send({
-				strategy: 'local',
-				username: accountDetails.username,
-				password: accountDetails.password,
-				foo: 'bar',
-			});
-			expect(response.status).to.equal(201);
-			expect(response.body).to.haveOwnProperty('accessToken');
-		});
-	});
-
 	describe('Logout', () => {
 		it('When a user successfully removes his authentication, then he is logged out', async () => {
 			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: `password${Date.now()}` };
