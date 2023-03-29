@@ -20,14 +20,14 @@ export class FwuLearningContentsUc {
 			Key: path.toString(),
 		});
 		const response = await this.client.send(request).catch((error: unknown) => {
-			if (error && typeof error === 'object' && 'name' in error) {
+			if (error && typeof error === 'object' && 'name' in error && 'stack' in error) {
 				if (error.name === 'NoSuchKey') {
-					throw new NotFoundException({ cause: `File not found on S3 storage at ${path}` });
+					throw new NotFoundException({ cause: error.stack });
 				} else {
-					throw new InternalServerErrorException(error.name);
+					throw new InternalServerErrorException({ name: error.name, cause: error.stack });
 				}
 			}
-			throw new InternalServerErrorException();
+			throw new InternalServerErrorException({ name: undefined, cause: error });
 		});
 		return response;
 	}
