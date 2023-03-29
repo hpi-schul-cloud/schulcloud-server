@@ -8,8 +8,8 @@ import { LogMessage, ErrorLogMessage, ValidationErrorLogMessage } from './types'
 class SampleLoggable implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		const message = {
-			message: 'test',
-			data: 'data',
+			message: 'test message',
+			data: 'test data',
 		};
 
 		return message;
@@ -36,20 +36,109 @@ describe('Logger', () => {
 		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('log', () => {
+		it('should call info method of WinstonLogger with appropriate message', () => {
+			const loggable = new SampleLoggable();
+			service.setContext('test context');
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
+
+			service.log(loggable);
+
+			// info does not exist on type WinstonLogger. Thus the access with bracket notation.
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			expect(winstonLogger['info']).toBeCalledWith(expectedMessage);
+		});
 	});
 
 	describe('warn', () => {
 		it('should call warn method of WinstonLogger with appropriate message', () => {
 			const loggable = new SampleLoggable();
+			service.setContext('test context');
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const expectedMessage = expect.objectContaining({ message: "{ message: 'test', data: 'data' }" });
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
 
 			service.warn(loggable);
 
 			expect(winstonLogger.warn).toBeCalledWith(expectedMessage);
+		});
+	});
+
+	describe('debug', () => {
+		it('should call debug method of WinstonLogger with appropriate message', () => {
+			const loggable = new SampleLoggable();
+			service.setContext('test context');
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
+
+			service.debug(loggable);
+
+			expect(winstonLogger.debug).toBeCalledWith(expectedMessage);
+		});
+	});
+
+	describe('verbose', () => {
+		it('should call verbose method of WinstonLogger with appropriate message', () => {
+			const loggable = new SampleLoggable();
+			service.setContext('test context');
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
+
+			service.verbose(loggable);
+
+			expect(winstonLogger.verbose).toBeCalledWith(expectedMessage);
+		});
+	});
+
+	describe('http', () => {
+		it('should call notice method of WinstonLogger with appropriate message', () => {
+			const loggable = new SampleLoggable();
+			service.setContext('test context');
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const expectedMessage = expect.objectContaining({
+				message: "{ message: 'test message', data: 'test data' }",
+				context: 'test context',
+			});
+
+			service.http(loggable);
+
+			// notice does not exist on type WinstonLogger. Thus the access with bracket notation.
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			expect(winstonLogger['notice']).toBeCalledWith(expectedMessage);
+		});
+	});
+
+	describe('setContext', () => {
+		it('should set the context', () => {
+			service.setContext('test');
+
+			// eslint-disable-next-line @typescript-eslint/dot-notation
+			expect(service['context']).toEqual('test');
 		});
 	});
 });
