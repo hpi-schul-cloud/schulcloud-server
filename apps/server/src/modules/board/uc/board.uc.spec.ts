@@ -99,7 +99,13 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('deleting a board', () => {
-		it.todo('implement this');
+		it('should call the service to delete the column', async () => {
+			const { user, board, column } = setup();
+
+			await uc.deleteColumn(user.id, board.id, column.id);
+
+			expect(columnService.deleteById).toHaveBeenCalledWith(column.id);
+		});
 	});
 
 	describe('creating a column', () => {
@@ -117,12 +123,12 @@ describe(BoardUc.name, () => {
 
 			await uc.createColumn(user.id, board.id);
 
-			expect(columnBoardService.createColumn).toHaveBeenCalledWith(board.id);
+			expect(columnService.create).toHaveBeenCalledWith(board.id);
 		});
 
 		it('should return the column board object', async () => {
 			const { user, board, column } = setup();
-			columnBoardService.createColumn.mockResolvedValueOnce(column);
+			columnService.create.mockResolvedValueOnce(column);
 
 			const result = await uc.createColumn(user.id, board.id);
 			expect(result).toEqual(column);
@@ -130,21 +136,27 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('deleting a column', () => {
-		it.todo('implement this');
+		it('should call the service to delete the column', async () => {
+			const { user, board, column } = setup();
+
+			await uc.deleteColumn(user.id, board.id, column.id);
+
+			expect(columnService.deleteById).toHaveBeenCalledWith(column.id);
+		});
 	});
 
 	describe('creating a card', () => {
-		it('should call the repo', async () => {
+		it('should call the service to create the card', async () => {
 			const { user, board, column } = setup();
 
 			await uc.createCard(user.id, board.id, column.id);
 
-			expect(cardService.create).toHaveBeenCalledWith(board.id, column.id);
+			expect(cardService.create).toHaveBeenCalledWith(column.id);
 		});
 
 		it('should return the card object', async () => {
 			const { user, board, column, card } = setup();
-			cardService.createCard.mockResolvedValueOnce(card);
+			cardService.create.mockResolvedValueOnce(card);
 
 			const result = await uc.createCard(user.id, board.id, column.id);
 
@@ -153,32 +165,12 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('deleting a card', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const card = cardFactory.build();
-			const column = columnFactory.buildWithId();
+		it('should call the service to delete the card', async () => {
+			const { user, board, column, card } = setup();
 
-			return { user, column, card };
-		};
+			await uc.deleteCard(user.id, board.id, column.id, card.id);
 
-		it('should succeed when parent is found', async () => {
-			const { user, card, column } = setup();
-
-			// boardDoService.findParentOfId.mockResolvedValue(column);
-
-			await uc.deleteCard(user.id, card.id);
-
-			expect(boardDoService.findParentOfId).toHaveBeenCalledWith(card.id);
-			expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
-		});
-
-		it('should throw error if parent is not found', async () => {
-			const { user, card } = setup();
-			const expectedError = new NotFoundException(`card has no parent`);
-
-			boardDoService.findParentOfId.mockResolvedValue(undefined);
-
-			await expect(uc.deleteCard(user.id, card.id)).rejects.toThrowError(expectedError);
+			expect(cardService.deleteById).toHaveBeenCalledWith(card.id);
 		});
 	});
 });
