@@ -14,7 +14,7 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async getResponse(path: string) {
+	private async getResponse(path: string) {
 		const request = new GetObjectCommand({
 			Bucket: this.config.bucket,
 			Key: path.toString(),
