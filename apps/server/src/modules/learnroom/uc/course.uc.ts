@@ -1,13 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
-import { Counted, Course, EntityId, SortOrder } from '@shared/domain';
+import { Counted, Course, EntityId, Permission, PermissionContextBuilder, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 
 @Injectable()
 export class CourseUc {
-	constructor(private readonly courseRepo: CourseRepo) {}
+	constructor(private readonly courseRepo: CourseRepo, private readonly authorizationService: AuthorizationService) {}
 
 	findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
+	}
+
+	public async getCourseForTeacher(userId: EntityId, courseId: EntityId) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findOneForTeacherOrSubstitueTeacher(userId, courseId);
+
+		if (
+			!this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([Permission.COURSE_EDIT]))
+		) {
+			throw new ForbiddenException();
+		}
+
+		return course;
 	}
 }
