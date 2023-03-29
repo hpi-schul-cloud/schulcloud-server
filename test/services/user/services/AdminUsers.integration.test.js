@@ -5,6 +5,9 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise());
+
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -13,17 +16,12 @@ describe('admin users integration tests', () => {
 	let nestServices;
 	let server;
 	let configBefore;
-	let testObjects;
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
-		// eslint-disable-next-line global-require
-		const appPromise = require('../../../../src/app')();
-		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(appPromise);
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});

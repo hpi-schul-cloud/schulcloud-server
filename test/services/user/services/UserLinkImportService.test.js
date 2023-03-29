@@ -16,8 +16,8 @@ describe('UserLinkImportService', () => {
 	});
 
 	after(async () => {
-		await server.close();
 		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('is properly registered', () => {
