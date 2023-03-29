@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Column, ColumnBoard } from '@shared/domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
@@ -8,9 +9,12 @@ export class BoardResponseMapper {
 			id: board.id,
 			title: board.title,
 			columns: board.children.map((column) => {
+				/* istanbul ignore next */
 				if (!(column instanceof Column)) {
-					/* istanbul ignore next */
-					throw new Error(`unsupported child type: ${column.constructor.name}`);
+					throw new HttpException(
+						`unsupported child type: ${column.constructor.name}`,
+						HttpStatus.UNPROCESSABLE_ENTITY
+					);
 				}
 				return ColumnResponseMapper.mapToResponse(column);
 			}),
