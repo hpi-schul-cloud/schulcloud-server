@@ -255,7 +255,7 @@ export class DatabaseManagementUc {
 		if (userSearchIndexExists) {
 			const userSearchIndex = indexes.filter((i) => i.name === 'userSearchIndex');
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			if (userSearchIndex[0].key.schoolId === 1) {
+			if (userSearchIndex[0].key?.schoolId === 1) {
 				this.logger.debug('userSearcIndex does not require update');
 				return;
 			}
