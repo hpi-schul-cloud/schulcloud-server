@@ -41,8 +41,22 @@ export class BoardNodeRepo {
 		return map;
 	}
 
-	// TODO implement
-	// async findDescendantsOfMany(nodes: BoardNode[], depth?: number): Promise<Record<string, BoardNode[]>> {}
+	async findDescendantsOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
+		const pathQueries = nodes.map((node) => {
+			return { path: { $re: `^${node.pathOfChildren}` } };
+		});
+
+		const descendants = await this.em.find(BoardNode, {
+			$or: pathQueries,
+		});
+
+		const map: Record<string, BoardNode[]> = {};
+		for (const desc of descendants) {
+			map[desc.path] ||= [];
+			map[desc.path].push(desc);
+		}
+		return map;
+	}
 
 	async save(boardNode: BoardNode | BoardNode[]) {
 		const boardNodes = Utils.asArray(boardNode);
