@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
-describe('UserLinkImportService', () => {
+describe.only('UserLinkImportService', () => {
 	let usersLinkImportService;
 	let app;
 	let server;
@@ -15,8 +15,8 @@ describe('UserLinkImportService', () => {
 		server = await app.listen(0);
 	});
 
-	after(async (done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 		await testObjects.cleanup();
 	});
 
