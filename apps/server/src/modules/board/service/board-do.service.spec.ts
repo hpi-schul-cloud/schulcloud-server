@@ -37,35 +37,6 @@ describe(BoardDoService.name, () => {
 		await module.close();
 	});
 
-	describe('when searching a domain object by id', () => {
-		const setup = () => {
-			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.build({ children: elements });
-			const cardId = card.id;
-
-			return { card, elements, cardId };
-		};
-
-		it('should return the domain object', async () => {
-			const { card } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
-
-			const found = await service.findById(card.id);
-
-			expect(found).toBe(card);
-		});
-	});
-
-	describe('when searching a domain object by class and id', () => {
-		it('should delegate to the repo', async () => {
-			const card = cardFactory.build();
-
-			await service.findByClassAndId(Card, card.id);
-
-			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, card.id);
-		});
-	});
-
 	describe('when deleting a child', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
@@ -83,7 +54,7 @@ describe(BoardDoService.name, () => {
 			await service.deleteChildWithDescendants(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
-			expect(boardDoRepo.deleteWithDescendants).toHaveBeenCalledWith(elements[0].id);
+			expect(boardDoRepo.deleteById).toHaveBeenCalledWith(elements[0].id);
 		});
 
 		it('should update the siblings', async () => {

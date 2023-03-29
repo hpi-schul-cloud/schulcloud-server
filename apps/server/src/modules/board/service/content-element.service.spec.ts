@@ -48,7 +48,7 @@ describe(ContentElementService.name, () => {
 
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.createElement(cardId);
+			await service.create(cardId);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				[

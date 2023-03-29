@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, TextElement } from '@shared/domain';
+import { Card, EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
@@ -7,8 +7,8 @@ import { BoardDoRepo } from '../repo';
 export class ContentElementService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async createElement(cardId: EntityId): Promise<TextElement> {
-		const card = await this.boardDoRepo.findById(cardId);
+	async create(cardId: EntityId): Promise<TextElement> {
+		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
 
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
@@ -22,5 +22,9 @@ export class ContentElementService {
 		await this.boardDoRepo.save(card.children, card.id);
 
 		return element;
+	}
+
+	async deleteById(elementId: EntityId): Promise<void> {
+		await this.boardDoRepo.deleteByClassAndId(TextElement, elementId);
 	}
 }

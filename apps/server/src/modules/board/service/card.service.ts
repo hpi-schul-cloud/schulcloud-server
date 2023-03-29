@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, EntityId } from '@shared/domain';
+import { Card, Column, EntityId } from '@shared/domain';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class CardService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async findById(id: EntityId): Promise<Card> {
-		const card = await this.boardDoRepo.findByClassAndId(Card, id);
+	async findById(cardId: EntityId): Promise<Card> {
+		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
 		return card;
 	}
 
@@ -17,5 +18,28 @@ export class CardService {
 			return cards as Card[];
 		}
 		throw new NotFoundException('some ids do not belong to a card');
+	}
+
+	async create(columnId: EntityId): Promise<Card> {
+		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
+
+		const card = new Card({
+			id: new ObjectId().toHexString(),
+			title: ``,
+			height: 150,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		column.addChild(card);
+
+		await this.boardDoRepo.save(column.children, column.id);
+
+		return card;
+	}
+
+	async deleteById(cardId: EntityId): Promise<void> {
+		await this.boardDoRepo.deleteByClassAndId(Card, cardId);
 	}
 }

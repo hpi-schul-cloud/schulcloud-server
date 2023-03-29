@@ -2,10 +2,9 @@ import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
-import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
+import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
-import { ConstructorOf } from '../types/utility';
 
 @Injectable()
 export class BoardDoRepo {
@@ -19,7 +18,11 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	async findByClassAndId<T extends AnyBoardDo>(doClass: ConstructorOf<T>, id: EntityId, depth?: number): Promise<T> {
+	async findByClassAndId<S, T extends AnyBoardDo>(
+		doClass: { new (props: S): T },
+		id: EntityId,
+		depth?: number
+	): Promise<T> {
 		const domainObject = await this.findById(id, depth);
 		if (!(domainObject instanceof doClass)) {
 			throw new NotFoundException(`There is no '${doClass.name}' with this id`);
@@ -60,8 +63,16 @@ export class BoardDoRepo {
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteWithDescendants(id: EntityId): Promise<void> {
+	async deleteById(id: EntityId): Promise<void> {
 		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
+	}
+
+	async deleteByClassAndId<S, T extends AnyBoardDo>(doClass: { new (props: S): T }, id: EntityId): Promise<void> {
+		const domainObject = await this.findById(id, 0);
+		if (!(domainObject instanceof doClass)) {
+			throw new NotFoundException(`There is no '${doClass.name}' with this id`);
+		}
+		await this.deleteById(id);
 	}
 }

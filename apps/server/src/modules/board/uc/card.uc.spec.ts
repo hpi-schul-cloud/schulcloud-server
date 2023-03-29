@@ -1,15 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import {
-	cardFactory,
-	columnBoardFactory,
-	columnFactory,
-	textElementFactory,
-} from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ColumnBoardService, ContentElementService } from '../service';
+import { BoardDoService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
 
@@ -17,7 +11,6 @@ describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
 	let cardService: DeepMocked<CardService>;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let boardDoService: DeepMocked<BoardDoService>;
 	let elementService: DeepMocked<ContentElementService>;
 
@@ -34,10 +27,6 @@ describe(CardUc.name, () => {
 					useValue: createMock<CardService>(),
 				},
 				{
-					provide: ColumnBoardService,
-					useValue: createMock<ColumnBoardService>(),
-				},
-				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
 				},
@@ -50,7 +39,6 @@ describe(CardUc.name, () => {
 
 		uc = module.get(CardUc);
 		cardService = module.get(CardService);
-		columnBoardService = module.get(ColumnBoardService);
 		boardDoService = module.get(BoardDoService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
@@ -87,63 +75,6 @@ describe(CardUc.name, () => {
 		});
 	});
 
-	describe('creating a card', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const board = columnBoardFactory.build();
-			const column = columnFactory.build();
-			const card = cardFactory.build();
-			return { user, board, column, card };
-		};
-
-		it('should call the service', async () => {
-			const { user, board, column } = setup();
-
-			await uc.createCard(user.id, board.id, column.id);
-
-			expect(columnBoardService.createCard).toHaveBeenCalledWith(board.id, column.id);
-		});
-
-		it('should return the card object', async () => {
-			const { user, board, column, card } = setup();
-			columnBoardService.createCard.mockResolvedValueOnce(card);
-
-			const result = await uc.createCard(user.id, board.id, column.id);
-
-			expect(result).toEqual(card);
-		});
-	});
-
-	describe('deleting a card', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const card = cardFactory.build();
-			const column = columnFactory.buildWithId();
-
-			return { user, column, card };
-		};
-
-		it('should succeed when parent is found', async () => {
-			const { user, card, column } = setup();
-
-			boardDoService.findParentOfId.mockResolvedValue(column);
-
-			await uc.deleteCard(user.id, card.id);
-
-			expect(boardDoService.findParentOfId).toHaveBeenCalledWith(card.id);
-			expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
-		});
-
-		it('should throw error if parent is not found', async () => {
-			const { user, card } = setup();
-			const expectedError = new NotFoundException(`card has no parent`);
-
-			boardDoService.findParentOfId.mockResolvedValue(undefined);
-
-			await expect(uc.deleteCard(user.id, card.id)).rejects.toThrowError(expectedError);
-		});
-	});
-
 	describe('creating a content element', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
@@ -165,7 +96,7 @@ describe(CardUc.name, () => {
 
 			await uc.createElement(user.id, card.id);
 
-			expect(elementService.createElement).toHaveBeenCalledWith(card.id);
+			expect(elementService.create).toHaveBeenCalledWith(card.id);
 		});
 	});
 

@@ -267,7 +267,7 @@ describe(BoardDoRepo.name, () => {
 		it('should delete an element', async () => {
 			const { textElementNodes } = await setup();
 
-			await repo.deleteWithDescendants(textElementNodes[0].id);
+			await repo.deleteById(textElementNodes[0].id);
 			em.clear();
 
 			await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();

@@ -68,7 +68,7 @@ describe(ColumnBoardService.name, () => {
 
 	describe('creating a board', () => {
 		it('should save a board using the repo', async () => {
-			await service.createBoard();
+			await service.create();
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
