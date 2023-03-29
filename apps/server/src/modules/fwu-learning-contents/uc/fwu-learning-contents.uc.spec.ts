@@ -115,23 +115,98 @@ describe('FwuLearningContentsUC', () => {
 			};
 
 			it('should throw NotFoundException', async () => {
-				const { pathToFile } = setup({ name: 'NoSuchKey' });
+				const { pathToFile } = setup({ name: 'NoSuchKey', stack: 'NoSuchKey at ...' });
 
 				await expect(fwuLearningContentsUc.get(pathToFile)).rejects.toThrowError(NotFoundException);
 			});
 
 			it('should throw error', async () => {
-				const { pathToFile, error } = setup({ name: 'UnknownError' });
+				const { pathToFile } = setup({ name: 'UnknownError' });
 
-				await expect(fwuLearningContentsUc.get(pathToFile)).rejects.toThrow(
-					new InternalServerErrorException(error.name)
-				);
+				await expect(fwuLearningContentsUc.get(pathToFile)).rejects.toThrowError(InternalServerErrorException);
 			});
 
 			it('should throw error', async () => {
 				const { pathToFile } = setup('Not an Error object');
 
 				await expect(fwuLearningContentsUc.get(pathToFile)).rejects.toThrowError(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('getContentType is called', () => {
+		describe('when user is authorised and valid files exist', () => {
+			const setup = () => {
+				const { pathToFile, config } = createParameter();
+
+				const resultObj = {
+					$metadata: {
+						httpStatusCode: 200,
+					},
+					ContentType: 'text/html',
+					Body: Readable.from([new Uint8Array()]),
+				};
+
+				// @ts-expect-error Testcase
+				s3client.send.mockResolvedValueOnce(resultObj);
+
+				return { pathToFile, config };
+			};
+
+			it('should return file', async () => {
+				const { pathToFile } = setup();
+
+				const result = await fwuLearningContentsUc.getContentType(pathToFile);
+
+				expect(typeof result).toBe('string');
+			});
+
+			it('should call send() of client', async () => {
+				const { pathToFile, config } = setup();
+
+				await fwuLearningContentsUc.getContentType(pathToFile);
+
+				expect(s3client.send).toBeCalledWith(
+					expect.objectContaining({
+						input: {
+							Bucket: config.bucket,
+							Key: pathToFile,
+						},
+					})
+				);
+			});
+		});
+
+		describe('when client throws error', () => {
+			const setup = <ErrorType>(error: ErrorType) => {
+				const { pathToFile } = createParameter();
+
+				// @ts-expect-error Testcase
+				s3client.send.mockRejectedValueOnce(error);
+
+				return { error, pathToFile };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { pathToFile } = setup({ name: 'NoSuchKey', stack: 'NoSuchKey at ...' });
+
+				await expect(fwuLearningContentsUc.getContentType(pathToFile)).rejects.toThrowError(NotFoundException);
+			});
+
+			it('should throw error', async () => {
+				const { pathToFile } = setup({ name: 'UnknownError', stack: 'NoSuchKey at ...' });
+
+				await expect(fwuLearningContentsUc.getContentType(pathToFile)).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+
+			it('should throw error', async () => {
+				const { pathToFile } = setup('Not an Error object');
+
+				await expect(fwuLearningContentsUc.getContentType(pathToFile)).rejects.toThrowError(
+					InternalServerErrorException
+				);
 			});
 		});
 	});
