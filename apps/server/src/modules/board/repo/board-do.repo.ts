@@ -34,7 +34,7 @@ export class BoardDoRepo {
 	async findByIds(ids: EntityId[]): Promise<AnyBoardDo[]> {
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
-		const childrenMap = await this.boardNodeRepo.findChildrenOfMany(boardNodes);
+		const childrenMap = await this.boardNodeRepo.findDescendantsOfMany(boardNodes);
 
 		const domainObjects = boardNodes.map((boardNode) => {
 			const children = childrenMap[boardNode.pathOfChildren];

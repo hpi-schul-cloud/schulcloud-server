@@ -29,18 +29,6 @@ export class BoardNodeRepo {
 		return descendants;
 	}
 
-	async findChildrenOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
-		const paths = nodes.map((node) => node.pathOfChildren);
-		const children = await this.em.find(BoardNode, { path: { $in: paths } });
-
-		const map: Record<string, BoardNode[]> = {};
-		for (const child of children) {
-			map[child.path] ||= [];
-			map[child.path].push(child);
-		}
-		return map;
-	}
-
 	async findDescendantsOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
 		const pathQueries = nodes.map((node) => {
 			return { path: { $re: `^${node.pathOfChildren}` } };
