@@ -33,6 +33,7 @@ class StatusAdapter extends Adapter {
 				message.page = 'status';
 				message.messageId = element.id;
 				message.timestamp = element.updated_at;
+				message.created_at = element.created_at;
 				message.url = Configuration.get('ALERT_STATUS_URL');
 				data.messages.push(message.getMessage);
 			});
