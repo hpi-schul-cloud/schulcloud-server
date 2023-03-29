@@ -178,7 +178,7 @@ data:
             "ldapConfig" : {
               "active" : true,
               "federalState": ObjectId("0000b186816abba584714c58"),
-              "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+              "url" : "ldap://sc-openldap-svc.{{ NAMESPACE }}.svc.cluster.local:389",
               "rootPath" : "dc=de,dc=example,dc=org",
               "searchUser" : "cn=admin,dc=example,dc=org",
               "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
