@@ -82,9 +82,21 @@ describe('News Scope', () => {
 		});
 		it('should create correct query for unpublished', () => {
 			const scope = new NewsScope();
-			scope.byUnpublished(true);
+			scope.byUnpublished();
 			const result = scope.query;
 			expect(result).toHaveProperty('displayAt');
+		});
+		it('should create correct query for published', () => {
+			const scope = new NewsScope();
+			scope.byPublished();
+			const result = scope.query;
+			expect(result).toHaveProperty('displayAt');
+		});
+		it('should create correct query for creator', () => {
+			const scope = new NewsScope();
+			scope.byCreator(new ObjectId().toHexString());
+			const result = scope.query;
+			expect(result).toHaveProperty('creator');
 		});
 	});
 });
