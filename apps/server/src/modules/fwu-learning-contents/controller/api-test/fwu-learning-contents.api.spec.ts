@@ -1,7 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -80,11 +79,8 @@ describe('FwuLearningContents Controller (api)', () => {
 	let api: API;
 	let s3instance: S3rver;
 	let exampleTextFile: UploadFile;
-	let configBefore: IConfig;
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
-		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 		const port = 10000 + createRndInt(10000);
 		const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
 		({ s3instance, exampleTextFile } = await createS3rver(overriddenS3Config, port));
@@ -116,10 +112,10 @@ describe('FwuLearningContents Controller (api)', () => {
 	afterAll(async () => {
 		await app.close();
 		await s3instance.close();
-		Configuration.reset(configBefore);
 	});
 
 	describe('requestFwuContent', () => {
+		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 		describe('when the file has a file-extension', () => {
 			it('should return 200 status', async () => {
 				const response = await api.get(exampleTextFile.Key);
