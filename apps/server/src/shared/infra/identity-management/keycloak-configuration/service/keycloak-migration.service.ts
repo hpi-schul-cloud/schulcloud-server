@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 
 @Injectable()
 export class KeycloakMigrationService {
-	constructor(private readonly accountService: AccountService, private readonly logger: Logger) {
+	constructor(private readonly accountService: AccountService, private readonly logger: LegacyLogger) {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}
 

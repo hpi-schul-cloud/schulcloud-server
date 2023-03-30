@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { KeycloakMigrationService } from './keycloak-migration.service';
@@ -8,7 +8,7 @@ import { KeycloakMigrationService } from './keycloak-migration.service';
 describe('KeycloakMigrationService', () => {
 	let module: TestingModule;
 	let service: KeycloakMigrationService;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	let infoLogSpy: jest.SpyInstance;
 	let errorLogSpy: jest.SpyInstance;
@@ -52,13 +52,13 @@ describe('KeycloakMigrationService', () => {
 					},
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 		service = module.get(KeycloakMigrationService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		infoLogSpy = jest.spyOn(logger, 'log');
 		errorLogSpy = jest.spyOn(logger, 'error');
 	});
