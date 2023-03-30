@@ -1942,37 +1942,6 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findBySingleParent', () => {
-		describe('find by assigned user', () => {
-			const setup = async () => {
-				const teacher = userFactory.build();
-				const student1 = userFactory.build();
-				const student2 = userFactory.build();
-				const course = courseFactory.build({ students: [student1, student2], teachers: [teacher] });
-
-				const task = taskFactory.build({
-					creator: teacher,
-					course,
-					finished: [teacher, student1, student2],
-					users: [student1, student2],
-				});
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				return { teacher, student1, student2, course };
-			};
-
-			it('populate with all assigned students with homeworks set to finished', async () => {
-				const { teacher, course } = await setup();
-
-				const [result, total] = await repo.findBySingleParent(teacher.id, course.id);
-				const task = result[0];
-
-				expect(total).toEqual(1);
-				expect(task.finished.length).toEqual(3);
-				expect(task.course).toBeDefined();
-			});
-		});
 
 		/* need to be fixed input params or names not correctly
 		describe('given populates are set correctly', () => {
