@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
+import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
 
@@ -12,6 +12,7 @@ import { AccountDto, AccountSaveDto } from './dto';
 export class AccountServiceIdm extends AbstractAccountService {
 	constructor(
 		private readonly identityManager: IdentityManagementService,
+		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
 		private readonly configService: ConfigService
 	) {
 		super();
@@ -19,7 +20,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findById(id: EntityId): Promise<AccountDto> {
 		const result = await this.identityManager.findAccountById(id);
-		const account = AccountIdmToDtoMapper.mapToDto(result);
+		const account = this.accountIdmToDtoMapper.mapToDto(result);
 		return account;
 	}
 
@@ -32,13 +33,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 				results.push(result);
 			}
 		}
-		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
 		return accounts;
 	}
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
 		const result = await this.identityManager.findAccountByFctIntId(userId);
-		const account = result ? AccountIdmToDtoMapper.mapToDto(result) : null;
+		const account = result ? this.accountIdmToDtoMapper.mapToDto(result) : null;
 		return account;
 	}
 
@@ -47,7 +48,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		if (!result) {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
 		}
-		const account = AccountIdmToDtoMapper.mapToDto(result);
+		const account = this.accountIdmToDtoMapper.mapToDto(result);
 		return account;
 	}
 
@@ -59,13 +60,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
-		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
 		return [accounts, total];
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
-		const accounts = results.map((result) => AccountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
 		return [accounts, total];
 	}
 
@@ -74,7 +75,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountId);
 		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
@@ -102,7 +103,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
@@ -122,14 +123,14 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async delete(accountRefId: EntityId): Promise<void> {

@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Counted } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
@@ -32,21 +33,14 @@ describe('KeycloakMigrationService', () => {
 						searchByUsernamePartialMatch: jest
 							.fn()
 							.mockImplementation(
-								(
-									query: string,
-									skip: number,
-									amount: number
-								): Promise<{ accounts: Partial<AccountDto>[]; total: number }> => {
+								(query: string, skip: number, amount: number): Promise<Counted<Partial<AccountDto>[]>> => {
 									if (skip >= maxAccounts) {
-										return Promise.resolve({ accounts: [], total: 0 });
+										return Promise.resolve([[], 0]);
 									}
 									const accountArr = Array.from({ length: Math.min(amount, maxAccounts - skip) }, (value, index) => {
 										return { id: (index + skip).toString() + query };
 									});
-									return Promise.resolve({
-										accounts: accountArr,
-										total: amount,
-									});
+									return Promise.resolve([accountArr, amount]);
 								}
 							),
 					},

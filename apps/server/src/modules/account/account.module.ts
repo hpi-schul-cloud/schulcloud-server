@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PermissionService } from '@shared/domain';
 import { SystemRepo, UserRepo } from '@shared/repo';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
@@ -8,6 +9,15 @@ import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy, AccountIdmToDtoMapperNew } from './mapper';
+import { IServerConfig } from '../server/server.config';
+
+function accountIdmToDtoMapperFactory(configService: ConfigService<IServerConfig, true>): AccountIdmToDtoMapper {
+	if (configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		return new AccountIdmToDtoMapperNew();
+	}
+	return new AccountIdmToDtoMapperLegacy();
+}
 
 @Module({
 	imports: [IdentityManagementModule, LoggerModule],
@@ -20,6 +30,11 @@ import { AccountServiceIdm } from './services/account-idm.service';
 		AccountServiceIdm,
 		AccountService,
 		AccountValidationService,
+		{
+			provide: AccountIdmToDtoMapper,
+			useFactory: accountIdmToDtoMapperFactory,
+			inject: [ConfigService],
+		},
 	],
 	exports: [AccountService, AccountValidationService],
 })

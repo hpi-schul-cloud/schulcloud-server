@@ -152,7 +152,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	it('should find an account by username', async () => {
 		if (!isKeycloakReachable) return;
 		await createAccount();
-		const account = await idmService.findAccountsByUsername(testAccount.username as string);
+		const [account] = await idmService.findAccountsByUsername(testAccount.username as string);
 
 		expect(account).toEqual(
 			expect.arrayContaining([

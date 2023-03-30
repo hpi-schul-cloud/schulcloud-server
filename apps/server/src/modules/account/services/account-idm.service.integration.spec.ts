@@ -1,3 +1,4 @@
+import { v1 } from 'uuid';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
@@ -9,10 +10,11 @@ import { KeycloakAdministrationService } from '@shared/infra/identity-management
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 
-describe('AccountService IDM Integration', () => {
+describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
 	let identityManagementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
@@ -20,7 +22,7 @@ describe('AccountService IDM Integration', () => {
 	let isIdmReachable: boolean;
 	let accountIdmService: AbstractAccountService;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1()}`;
 	const technicalRefId = 'aTechnicalReferenceId';
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
@@ -51,6 +53,7 @@ describe('AccountService IDM Integration', () => {
 						() => {
 							return {
 								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
 							};
 						},
 					],
@@ -58,6 +61,10 @@ describe('AccountService IDM Integration', () => {
 			],
 			providers: [
 				AccountServiceIdm,
+				{
+					provide: AccountIdmToDtoMapper,
+					useClass: AccountIdmToDtoMapperLegacy,
+				},
 				KeycloakAdministrationService,
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
@@ -117,7 +124,7 @@ describe('AccountService IDM Integration', () => {
 		const newUsername = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 
-		const updatedAccount = await accountIdmService.save({
+		await accountIdmService.save({
 			id: technicalRefId,
 			username: newUsername,
 		});
@@ -125,11 +132,8 @@ describe('AccountService IDM Integration', () => {
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: updatedAccount.idmReferenceId ?? '',
-				username: updatedAccount.username,
-				attRefTechnicalId: technicalRefId,
-				attRefFunctionalIntId: updatedAccount.userId,
-				attRefFunctionalExtId: updatedAccount.systemId,
+				id: idmId,
+				username: newUsername,
 			})
 		);
 	});

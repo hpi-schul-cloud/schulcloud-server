@@ -14,6 +14,7 @@ import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Logger } from '../../../core/logger';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -81,6 +82,7 @@ describe('AccountService Integration', () => {
 						() => {
 							return {
 								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
 							};
 						},
 					],
@@ -94,6 +96,10 @@ describe('AccountService Integration', () => {
 				UserRepo,
 				KeycloakAdministrationService,
 				AccountValidationService,
+				{
+					provide: AccountIdmToDtoMapper,
+					useValue: new AccountIdmToDtoMapperLegacy(),
+				},
 				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
 				{
 					provide: KeycloakAdminClient,
