@@ -202,14 +202,12 @@ describe('Task-Card Controller (api)', () => {
 				.expect(201);
 
 			const responseTaskCard = response.body as TaskCardResponse;
-			// TODO following line is commented out because there is some issue with the schoolYear.endDate
-			// const expectedDueDate = user.school.schoolYear?.endDate;
 
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(responseTaskCard.task.name).toEqual('test title');
 			expect(responseTaskCard.title).toEqual('test title');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
-			// expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
+			expect(responseTaskCard.dueDate).toBe(inThreeDays.toISOString());
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
