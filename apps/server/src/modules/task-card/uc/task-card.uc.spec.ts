@@ -241,9 +241,23 @@ describe('TaskCardUc', () => {
 				],
 				visibleAtDate: inTwoDays,
 				dueDate: tomorrow,
+				courseId: course.id,
 			};
 			await expect(async () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
+		it('should throw if course end is before due date', async () => {
+			course.untilDate = tomorrow;
+			courseRepo.findById.mockResolvedValue(course);
+			const TaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: inTwoDays,
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.create(user.id, TaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should create task-card', async () => {
@@ -283,6 +297,7 @@ describe('TaskCardUc', () => {
 				],
 				visibleAtDate,
 				dueDate,
+				courseId: '',
 			};
 			const result = await uc.create(user.id, taskCardCreateParamsWithoutCourse);
 			expect(result.card.task.course).not.toBeDefined();
@@ -295,6 +310,7 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				courseId: course.id,
 			};
 			const result = await uc.create(user.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
@@ -312,6 +328,7 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
+				courseId: course.id,
 			};
 			const result = await uc.create(userWithSchool.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
@@ -353,6 +370,7 @@ describe('TaskCardUc', () => {
 				],
 				visibleAtDate: inTwoDays,
 				dueDate: inThreeDays,
+				courseId: course.id,
 			};
 
 			userRepo.findById.mockResolvedValue(user);
@@ -395,6 +413,7 @@ describe('TaskCardUc', () => {
 				],
 				visibleAtDate: inThreeDays,
 				dueDate: inTwoDays,
+				courseId: taskCard.course.id,
 			};
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);

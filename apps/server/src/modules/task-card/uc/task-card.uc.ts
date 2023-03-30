@@ -20,16 +20,11 @@ export class TaskCardUc {
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		let course: Course | undefined;
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
 			throw new ForbiddenException();
-		}
-
-		if (params.courseId) {
-			const fetchedCourse = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
-			course = fetchedCourse;
 		}
 
 		const defaultDueDate = this.getDefaultDueDate(user);
@@ -67,6 +62,10 @@ export class TaskCardUc {
 
 		if (!card.isVisibleBeforeDueDate()) {
 			throw new ValidationError('Invalid date combination');
+		}
+
+		if (course && course.untilDate && course.untilDate < cardParams.dueDate) {
+			throw new ValidationError('Due date must be before course end date');
 		}
 
 		await this.taskCardRepo.save(card);

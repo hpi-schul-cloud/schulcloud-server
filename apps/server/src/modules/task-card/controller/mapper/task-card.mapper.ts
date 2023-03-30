@@ -24,6 +24,7 @@ export class TaskCardMapper {
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
 			title: card.title,
+			courseId: card.course.id,
 		});
 		if (card.cardElements.length) {
 			dto.cardElements = this.getCardElementResponse(card);
@@ -63,12 +64,13 @@ export class TaskCardMapper {
 			throw new ValidationError('The Task Card must have one course');
 		}
 
-		if (!params.courseId || params.courseId.length === 0) {
-			throw new ValidationError('The Task Card must have one course');
+		if (!params.dueDate) {
+			throw new ValidationError('The Task Card must have one due date');
 		}
 
 		const dto: ITaskCardCRUD = {
 			title: params.title,
+			courseId: params.courseId,
 		};
 
 		if (params.courseId) {

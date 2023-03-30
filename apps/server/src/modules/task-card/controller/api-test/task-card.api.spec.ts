@@ -406,7 +406,6 @@ describe('Task-Card Controller (api)', () => {
 					cardElements: [],
 					courseId: '',
 				};
-
 				await request(app.getHttpServer())
 					.post(`/cards/task/`)
 					.set('Accept', 'application/json')

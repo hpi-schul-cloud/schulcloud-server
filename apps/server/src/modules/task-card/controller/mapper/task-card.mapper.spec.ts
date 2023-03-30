@@ -49,7 +49,7 @@ describe('task-card mapper', () => {
 				title: taskCard.title,
 				id: taskCard.id,
 				draggable: true,
-				courseId: taskCard.course?.id,
+				courseId: course.id,
 				courseName: course.name,
 				task: taskResponse,
 				visibleAtDate: tomorrow,
@@ -180,7 +180,7 @@ describe('task-card mapper', () => {
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
 		});
-		it('should should throw an error if courseId is empty', () => {
+		it('should throw an error if courseId is empty', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 

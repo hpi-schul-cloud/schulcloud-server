@@ -4,7 +4,7 @@ import { CardElementResponse } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
-	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate, title }: TaskCardResponse) {
+	constructor({ id, draggable, cardElements, task, visibleAtDate, dueDate, title, courseId }: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
 		this.task = task;
@@ -12,6 +12,7 @@ export class TaskCardResponse {
 		this.dueDate = dueDate;
 		this.title = title;
 		this.cardElements = cardElements;
+		this.courseId = courseId;
 	}
 
 	@ApiProperty({
@@ -36,7 +37,7 @@ export class TaskCardResponse {
 	courseName?: string;
 
 	@ApiPropertyOptional()
-	courseId?: string;
+	courseId: string;
 
 	@ApiProperty({
 		description: 'Are the card elements draggable?',
