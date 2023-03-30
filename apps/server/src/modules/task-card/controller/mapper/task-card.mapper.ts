@@ -25,14 +25,14 @@ export class TaskCardMapper {
 			dueDate: card.dueDate,
 			title: card.title,
 			courseId: card.course.id,
+			courseName: card.course.name,
 		});
 		if (card.cardElements.length) {
 			dto.cardElements = this.getCardElementResponse(card);
 		}
-		if (card.course) {
-			dto.courseId = card.course.id;
-			dto.courseName = card.course.name;
-		}
+
+		dto.courseId = card.course.id;
+		dto.courseName = card.course.name;
 
 		return dto;
 	}

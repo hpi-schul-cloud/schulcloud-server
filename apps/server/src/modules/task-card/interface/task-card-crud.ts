@@ -6,5 +6,5 @@ export interface ITaskCardCRUD {
 	title: string;
 	text?: RichText[];
 	visibleAtDate?: Date;
-	dueDate?: Date;
+	dueDate: Date;
 }
