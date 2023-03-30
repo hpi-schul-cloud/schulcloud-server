@@ -154,7 +154,7 @@ describe('Test team extern add services', () => {
 	});
 
 	after(async () => {
-		await testHelper.cleanup;
+		await testHelper.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
