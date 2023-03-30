@@ -32,7 +32,7 @@ describe('FwuLearningContentsUC', () => {
 			providers: [
 				FwuLearningContentsUc,
 				{
-					provide: 'S3_Client',
+					provide: 'FWU_S3_Client',
 					useValue: createMock<S3Client>(),
 				},
 				{
@@ -47,7 +47,7 @@ describe('FwuLearningContentsUC', () => {
 		}).compile();
 
 		fwuLearningContentsUc = module.get(FwuLearningContentsUc);
-		s3client = module.get('S3_Client');
+		s3client = module.get('FWU_S3_Client');
 	});
 
 	beforeEach(() => {
