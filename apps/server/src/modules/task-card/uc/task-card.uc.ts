@@ -27,8 +27,6 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
-		const defaultDueDate = this.getDefaultDueDate(user);
-
 		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
@@ -46,16 +44,12 @@ export class TaskCardUc {
 			draggable: true,
 			task: taskWithStatusVo.task,
 			visibleAtDate: new Date(),
-			dueDate: defaultDueDate,
+			dueDate: params.dueDate,
 			title: params.title,
 		};
 
 		if (params.visibleAtDate) {
 			cardParams.visibleAtDate = params.visibleAtDate;
-		}
-
-		if (params.dueDate) {
-			cardParams.dueDate = params.dueDate;
 		}
 
 		const card = new TaskCard(cardParams);
@@ -87,15 +81,6 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
-	}
-
-	private getDefaultDueDate(user: User) {
-		const currentSchoolYear = user.school.schoolYear;
-		if (currentSchoolYear) {
-			return currentSchoolYear.endDate;
-		}
-		const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
-		return lastDayOfNextYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {

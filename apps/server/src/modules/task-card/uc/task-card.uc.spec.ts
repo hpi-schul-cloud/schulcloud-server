@@ -303,7 +303,7 @@ describe('TaskCardUc', () => {
 			expect(result.card.task.course).not.toBeDefined();
 			expect(result.taskWithStatusVo.task.course).not.toBeDefined();
 		});
-		it('should return the task card with default visible at date and due date if params are not given and creator does NOT provide current school year', async () => {
+		it('should return the task card with default visible at date if params are not given and creator does NOT provide current school year', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -311,14 +311,13 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
 				courseId: course.id,
+				dueDate: tomorrow,
 			};
 			const result = await uc.create(user.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
-			const expectedDueDate = new Date(new Date().getFullYear() + 1, 11, 31);
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
-			expect(result.card.dueDate).toEqual(expectedDueDate);
 		});
-		it('should return the task card with default visible at date and due date if params are not given and creator does provide current school year', async () => {
+		it('should return the task card with default visible at date  if params are not given and creator does provide current school year', async () => {
 			const school = schoolFactory.buildWithId();
 			const userWithSchool = userFactory.buildWithId({ school });
 			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
@@ -329,12 +328,11 @@ describe('TaskCardUc', () => {
 					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
 				],
 				courseId: course.id,
+				dueDate: tomorrow,
 			};
 			const result = await uc.create(userWithSchool.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
-			const expectedDueDate = userWithSchool.school.schoolYear?.endDate;
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
-			expect(result.card.dueDate).toEqual(expectedDueDate);
 		});
 	});
 

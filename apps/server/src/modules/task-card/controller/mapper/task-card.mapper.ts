@@ -71,6 +71,7 @@ export class TaskCardMapper {
 		const dto: ITaskCardCRUD = {
 			title: params.title,
 			courseId: params.courseId,
+			dueDate: params.dueDate,
 		};
 
 		if (params.courseId) {
