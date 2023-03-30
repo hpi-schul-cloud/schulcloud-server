@@ -48,33 +48,16 @@ describe('TaskRepo', () => {
 	describe('findAllByParentIds', () => {
 		describe('find by assigned user', () => {
 			const createStudent = (id: number) => {
-				const studentRole = roleFactory.build({
-					permissions: [
-						Permission.TASK_DASHBOARD_VIEW_V3,
-						Permission.JOIN_MEETING,
-						Permission.TASK_CARD_VIEW,
-						Permission.TEAM_CREATE,
-						Permission.TEAM_EDIT,
-						Permission.TOOL_CREATE_ETHERPAD,
-					],
-				});
-
 				const student = userFactory.build({
 					firstName: `Student ${id}`,
-					roles: [studentRole],
 				});
 
 				return student;
 			};
 
 			const createTeacher = (id: number) => {
-				const teacherRole = roleFactory.build({
-					permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
-				});
-
 				const student = userFactory.build({
 					firstName: `Teacher ${id}`,
-					roles: [teacherRole],
 				});
 
 				return student;
