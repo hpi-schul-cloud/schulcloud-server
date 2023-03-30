@@ -1,10 +1,10 @@
 import { User } from '../entity/user.entity';
-import { IPermission, AuthorizationContext, AuthorizableObject } from '../interface';
+import { Rule, AuthorizationContext, AuthorizableObject } from '../interface';
 import { BasePermission } from './base-permission';
 import { AuthorisationUtils } from './authorisation.utils';
 import { SingleSelectStrategie } from './select-strategies';
 
-export abstract class BasePermissionManager extends AuthorisationUtils implements IPermission {
+export abstract class BasePermissionManager extends AuthorisationUtils implements Rule {
 	protected permissions: BasePermission[] = [];
 
 	protected selectStrategie = new SingleSelectStrategie<BasePermission>();
