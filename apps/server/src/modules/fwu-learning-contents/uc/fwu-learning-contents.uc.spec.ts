@@ -7,20 +7,18 @@ import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
 import { FwuLearningContentsUc } from './fwu-learning-contents.uc';
 
-const createParameter = () => {
-	const config = {
-		endpoint: '',
-		region: '',
-		bucket: 'test-bucket',
-		accessKeyId: '',
-		secretAccessKey: '',
-	};
-	const pathToFile = 'test/text.txt';
-
-	return { config, pathToFile };
-};
-
 describe('FwuLearningContentsUC', () => {
+	const createParameter = () => {
+		const config = {
+			endpoint: '',
+			region: '',
+			bucket: 'test-bucket',
+			accessKeyId: '',
+			secretAccessKey: '',
+		};
+		const pathToFile = 'test/text.txt';
+		return { config, pathToFile };
+	};
 	let module: TestingModule;
 	let fwuLearningContentsUc: FwuLearningContentsUc;
 	let s3client: DeepMocked<S3Client>;
