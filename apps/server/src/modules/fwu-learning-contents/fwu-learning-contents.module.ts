@@ -18,7 +18,7 @@ import { S3Config } from './interface/config';
 const providers = [
 	Logger,
 	{
-		provide: 'S3_Client',
+		provide: 'FWU_S3_Client',
 		useFactory: (configProvider: S3Config) =>
 			new S3Client({
 				region: configProvider.region,

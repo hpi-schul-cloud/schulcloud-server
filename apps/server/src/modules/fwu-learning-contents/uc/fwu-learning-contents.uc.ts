@@ -8,7 +8,7 @@ import { S3Config } from '../interface/config';
 export class FwuLearningContentsUc {
 	constructor(
 		private logger: Logger,
-		@Inject('S3_Client') readonly client: S3Client,
+		@Inject('FWU_S3_Client') readonly client: S3Client,
 		@Inject('S3_Config') readonly config: S3Config
 	) {
 		this.logger.setContext(FwuLearningContentsUc.name);
