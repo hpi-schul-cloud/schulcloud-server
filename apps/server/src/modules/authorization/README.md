@@ -355,9 +355,9 @@ They load the reference directly.
 
 The location to add new rules for entities / domain objects.
 
-#### permission-context.builder
+#### authorization-context.builder
 
-We export a permission context builder to prepare the parameter for the authorization service called "authorization context".
+We export a authorization context builder to prepare the parameter for the authorization service called "authorization context".
 This is optional and not required.
 But it enables us to easily change the structure of the authorization context without touching many different places.
 

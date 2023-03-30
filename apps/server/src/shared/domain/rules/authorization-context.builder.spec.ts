@@ -1,6 +1,6 @@
 import { Permission } from '../interface/permission.enum';
 import { Actions } from './actions.enum';
-import { AuthorizationContextBuilder } from './permission-context.builder';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
 
 describe('AuthorizationContextBuilder', () => {
 	it('Should allow to set required permissions.', () => {
