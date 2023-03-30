@@ -24,10 +24,18 @@ export class FwuLearningContentsUc {
 				if (error.name === 'NoSuchKey') {
 					throw new NotFoundException({ cause: error.stack });
 				} else {
-					throw new InternalServerErrorException({ name: error.name, cause: error.stack });
+					throw new InternalServerErrorException({
+						name: error.name,
+						message: 'found at response of FWU_S3 for FWU learning contents',
+						cause: error.stack,
+					});
 				}
 			}
-			throw new InternalServerErrorException({ name: undefined, cause: error });
+			throw new InternalServerErrorException({
+				name: undefined,
+				message: 'found at response of FWU_S3 for FWU learning contents',
+				cause: error,
+			});
 		});
 		return response;
 	}
