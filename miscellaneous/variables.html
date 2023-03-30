@@ -4318,12 +4318,13 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>(user: User, account?: Account): ICurrentUser &#x3D;&gt; {
+                        <i>Default value : </i><code>(user: User, account?: Account, systemId?: EntityId): ICurrentUser &#x3D;&gt; {
 	const currentUser: Partial&lt;ICurrentUser&gt; &#x3D; {
 		userId: user.id,
 		roles: user.roles.getItems().map((r) &#x3D;&gt; r.id),
 		schoolId: user.school.id,
 		accountId: account ? account.id : new ObjectId().toHexString(),
+		systemId,
 	};
 	return currentUser as ICurrentUser; // TODO is partial!
 }</code>
@@ -5167,7 +5168,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		alias: &#x60;system #${sequence}&#x60;,
 		displayName: &#x60;system #${sequence}DisplayName&#x60;,
 		provisioningStrategy: SystemProvisioningStrategy.OIDC,
-		provisioningUrl: &#x27;provisioningUrl&#x27;,
+		provisioningUrl: &#x27;https://provisioningurl.de&#x27;,
 	};
 })</code>
                     </td>

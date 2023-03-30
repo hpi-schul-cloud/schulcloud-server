@@ -79,6 +79,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkOfficialSchoolNumbersMatch" >checkOfficialSchoolNumbersMatch</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#completeMigration" >completeMigration</a>
                             </li>
@@ -89,8 +93,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#isExternalUserInSchool" >isExternalUserInSchool</a>
+                                <a href="#hasSchoolMigrated" >hasSchoolMigrated</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -206,6 +209,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkOfficialSchoolNumbersMatch"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>checkOfficialSchoolNumbersMatch</b></span>
+                        <a href="#checkOfficialSchoolNumbersMatch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkOfficialSchoolNumbersMatch(schoolDO: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>, officialExternalSchoolNumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="131"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:131</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolDO</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>officialExternalSchoolNumber</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="completeMigration"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -224,8 +310,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:78</a></div>
                 </td>
             </tr>
 
@@ -308,8 +394,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:121</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:114</a></div>
                 </td>
             </tr>
 
@@ -385,27 +471,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isExternalUserInSchool"></a>
+                    <a name="hasSchoolMigrated"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span class="modifier">Async</span>
-                        <span ><b>isExternalUserInSchool</b></span>
-                        <a href="#isExternalUserInSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>hasSchoolMigrated</b></span>
+                        <a href="#hasSchoolMigrated"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isExternalUserInSchool(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, existingSchool: <a href="../entitys/School.html" target="_self">SchoolDO | null</a>)</code>
+                    <code>hasSchoolMigrated(sourceExternalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetExternalId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:112</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:142</a></div>
                 </td>
             </tr>
 
@@ -426,7 +511,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>currentUserId</td>
+                                    <td>sourceExternalId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -438,13 +523,13 @@
 
                                 </tr>
                                 <tr>
-                                    <td>existingSchool</td>
+                                    <td>targetExternalId</td>
                                     <td>
-                                                <code><a href="../entitys/School.html" target="_self" >SchoolDO | null</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
 
                                     <td>
-                                        No
+                                        Yes
                                     </td>
 
 
@@ -455,7 +540,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                     </div>
                     <div class="io-description">
@@ -582,8 +667,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:95</a></div>
                 </td>
             </tr>
 
@@ -654,8 +739,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="125"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:125</a></div>
                 </td>
             </tr>
 
@@ -718,7 +803,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>schoolToMigrate(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolNumber: string | undefined)</code>
+                    <code>schoolToMigrate(currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, officialSchoolNumber: string | undefined)</code>
                 </td>
             </tr>
 
@@ -771,7 +856,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>schoolNumber</td>
+                                    <td>officialSchoolNumber</td>
                                     <td>
                                             <code>string | undefined</code>
                                     </td>
@@ -881,7 +966,7 @@ import { Logger } from &#x27;@src/core/logger&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { OAuthMigrationError } from &#x27;../error/oauth-migration.error&#x27;;
+import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration/error/oauth-migration.error&#x27;;
 
 @Injectable()
 export class SchoolMigrationService {
@@ -917,34 +1002,36 @@ export class SchoolMigrationService {
 	async schoolToMigrate(
 		currentUserId: string,
 		externalId: string,
-		schoolNumber: string | undefined
+		officialSchoolNumber: string | undefined
 	): Promise&lt;SchoolDO | null&gt; {
-		if (!schoolNumber) {
+		if (!officialSchoolNumber) {
 			throw new OAuthMigrationError(
 				&#x27;Official school number from target migration system is missing&#x27;,
 				&#x27;ext_official_school_number_missing&#x27;
 			);
 		}
 
-		const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(schoolNumber);
+		const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+
 		if (!existingSchool) {
 			throw new OAuthMigrationError(
 				&#x27;Could not find school by official school number from target migration system&#x27;,
-				&#x27;ext_official_school_number_mismatch&#x27;
+				&#x27;ext_official_school_missing&#x27;
 			);
 		}
 
-		const isExternalUserInSchool: boolean &#x3D; await this.isExternalUserInSchool(currentUserId, existingSchool);
-		if (!isExternalUserInSchool) {
-			throw new OAuthMigrationError(
-				&#x27;Current users school is not the same as school found by official school number from target migration system&#x27;,
-				&#x27;ext_official_school_number_mismatch&#x27;
-			);
+		const userDO: UserDO | null &#x3D; await this.userService.findById(currentUserId);
+		if (userDO) {
+			const schoolDO: SchoolDO &#x3D; await this.schoolService.getSchoolById(userDO.schoolId);
+			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 		}
 
-		if (externalId &#x3D;&#x3D;&#x3D; existingSchool.externalId) {
+		const schoolMigrated: boolean &#x3D; this.hasSchoolMigrated(externalId, existingSchool.externalId);
+
+		if (schoolMigrated) {
 			return null;
 		}
+
 		return existingSchool;
 	}
 
@@ -984,15 +1071,6 @@ export class SchoolMigrationService {
 		this.logger.warn(&#x60;restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds&#x60;);
 	}
 
-	private async isExternalUserInSchool(currentUserId: string, existingSchool: SchoolDO | null): Promise&lt;boolean&gt; {
-		const currentUser: UserDO &#x3D; await this.userService.findById(currentUserId);
-
-		if (!existingSchool || existingSchool?.id !&#x3D;&#x3D; currentUser.schoolId) {
-			return false;
-		}
-		return true;
-	}
-
 	private async doMigration(externalId: string, schoolDO: SchoolDO, targetSystemId: string): Promise&lt;void&gt; {
 		if (schoolDO.systems) {
 			schoolDO.systems.push(targetSystemId);
@@ -1008,6 +1086,24 @@ export class SchoolMigrationService {
 		if (originalSchoolDO) {
 			await this.schoolService.save(originalSchoolDO);
 		}
+	}
+
+	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
+		if (schoolDO.officialSchoolNumber !&#x3D;&#x3D; officialExternalSchoolNumber) {
+			throw new OAuthMigrationError(
+				&#x27;Current users school is not the same as school found by official school number from target migration system&#x27;,
+				&#x27;ext_official_school_number_mismatch&#x27;,
+				schoolDO.officialSchoolNumber,
+				officialExternalSchoolNumber
+			);
+		}
+	}
+
+	private hasSchoolMigrated(sourceExternalId: string, targetExternalId?: string): boolean {
+		if (sourceExternalId &#x3D;&#x3D;&#x3D; targetExternalId) {
+			return true;
+		}
+		return false;
 	}
 }
 </code></pre>
