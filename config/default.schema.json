@@ -300,7 +300,7 @@
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",
-					"default": "",
+					"default": "http://localhost:4568",
 					"description": "The URI of the S3 provider"
 				},
 				"S3_REGION": {
