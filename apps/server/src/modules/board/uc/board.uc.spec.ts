@@ -141,7 +141,7 @@ describe(BoardUc.name, () => {
 
 			await uc.deleteColumn(user.id, board.id, column.id);
 
-			expect(columnService.deleteById).toHaveBeenCalledWith(column.id);
+			expect(columnService.delete).toHaveBeenCalledWith(board, column.id);
 		});
 	});
 
@@ -170,7 +170,7 @@ describe(BoardUc.name, () => {
 
 			await uc.deleteCard(user.id, board.id, column.id, card.id);
 
-			expect(cardService.deleteById).toHaveBeenCalledWith(card.id);
+			expect(cardService.delete).toHaveBeenCalledWith(column, card.id);
 		});
 	});
 });
