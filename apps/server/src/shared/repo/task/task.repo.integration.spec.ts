@@ -1942,7 +1942,6 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findBySingleParent', () => {
-
 		/* need to be fixed input params or names not correctly
 		describe('given populates are set correctly', () => {
 			describe('when task parent is a user', () => {
