@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import S3rver from 's3rver';
 import request from 'supertest';
 import { s3Config } from '../../fwu-learning-contents.config';
-import { FwuLearningContentsModule } from '../../fwu-learning-contents.module';
+import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { S3Config } from '../../interface/config';
 
 class API {
@@ -71,7 +71,7 @@ async function createS3rver(config: S3Config, port: number) {
 	await upload(exampleTextFile);
 	await upload(exampleBinaryFile);
 
-	return { s3instance, exampleTextFile, exampleBinaryFile };
+	return { s3instance, exampleTextFile, exampleBinaryFile, client };
 }
 
 describe('FwuLearningContents Controller (api)', () => {
@@ -79,16 +79,16 @@ describe('FwuLearningContents Controller (api)', () => {
 	let api: API;
 	let s3instance: S3rver;
 	let exampleTextFile: UploadFile;
+	let client: S3Client;
 
 	beforeAll(async () => {
 		const port = 10000 + createRndInt(10000);
 		const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
-		({ s3instance, exampleTextFile } = await createS3rver(overriddenS3Config, port));
-
+		({ s3instance, exampleTextFile, client } = await createS3rver(overriddenS3Config, port));
 		const module = await Test.createTestingModule({
-			imports: [FwuLearningContentsModule],
+			imports: [FwuLearningContentsTestModule],
 			providers: [
-				FwuLearningContentsModule,
+				FwuLearningContentsTestModule,
 				{
 					provide: 'S3_Config',
 					useValue: overriddenS3Config,
