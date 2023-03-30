@@ -26,14 +26,14 @@ export class FwuLearningContentsUc {
 				} else {
 					throw new InternalServerErrorException({
 						name: error.name,
-						message: 'found at response of FWU_S3 for FWU learning contents',
+						message: 'unexpected error on reading file from FWU S3 storage',
 						cause: error.stack,
 					});
 				}
 			}
 			throw new InternalServerErrorException({
 				name: undefined,
-				message: 'found at response of FWU_S3 for FWU learning contents',
+				message: 'unexpected error on reading file from FWU S3 storage',
 				cause: error,
 			});
 		});
