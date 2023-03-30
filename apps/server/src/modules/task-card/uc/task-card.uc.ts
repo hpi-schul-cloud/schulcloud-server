@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -58,7 +58,7 @@ export class TaskCardUc {
 			throw new ValidationError('Invalid date combination');
 		}
 
-		if (course && course.untilDate && course.untilDate < cardParams.dueDate) {
+		if (course.untilDate && course.untilDate < cardParams.dueDate) {
 			throw new ValidationError('Due date must be before course end date');
 		}
 
