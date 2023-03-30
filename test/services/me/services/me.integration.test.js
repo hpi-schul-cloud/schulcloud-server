@@ -2,6 +2,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { Configuration } = commons;
 
@@ -13,7 +15,6 @@ describe('me service integration tests', function test() {
 	let server;
 	let nestServices;
 	let configBefore;
-	let testObjects;
 	this.timeout(10000);
 
 	before(async () => {
@@ -21,11 +22,7 @@ describe('me service integration tests', function test() {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
-		// eslint-disable-next-line global-require
-		const appPromise = require('../../../../src/app')();
-		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(appPromise);
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});

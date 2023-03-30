@@ -19,6 +19,7 @@ describe('registrationSchool service', () => {
 	});
 
 	after(async () => {
+		await cleanup();
 		server.close();
 		await closeNestServices(nestServices);
 	});
@@ -45,9 +46,5 @@ describe('registrationSchool service', () => {
 		const { team } = await createTestTeamWithOwner();
 		const result = await registrationSchoolService.get(team._id);
 		expect(result._id.toString()).to.equal(expertSchoolId);
-	});
-
-	after(async () => {
-		await cleanup();
 	});
 });
