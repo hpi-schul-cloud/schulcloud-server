@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
-// commit
+
 @ApiTags('fwu')
 @Authenticate('jwt')
 @Controller('fwu')
