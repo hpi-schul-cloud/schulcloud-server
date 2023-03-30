@@ -26,7 +26,6 @@ import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/san
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
-import { AccountDto } from '../../../account/services/dto';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -44,8 +43,6 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKeys: jest.fn(),
 	};
 });
-
-jest.setTimeout(99999999);
 
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
@@ -273,94 +270,6 @@ describe('OAuth SSO Controller (API)', () => {
 	});
 
 	describe('[GET]  sso/oauth/migration', () => {
-		const setupMigration = async () => {
-			const { user, system, externalUserId, query } = await setup();
-
-			const targetSystem: System = systemFactory
-				.withOauthConfig()
-				.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
-			const sourceSystem: System = systemFactory
-				.withOauthConfig()
-				.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
-
-			const sourceSchool: School = schoolFactory.buildWithId(
-				{
-					systems: [sourceSystem],
-					officialSchoolNumber: '11111',
-					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-				},
-				new ObjectId().toHexString()
-			);
-
-			const schoolMatch: School = schoolFactory.buildWithId(
-				{
-					systems: [targetSystem],
-					officialSchoolNumber: '11111',
-					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e714',
-					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-				},
-				new ObjectId().toHexString()
-			);
-
-			const targetSchool: School = schoolFactory.buildWithId(
-				{ systems: [targetSystem], officialSchoolNumber: '22222', externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713' },
-				new ObjectId().toHexString(),
-				{}
-			);
-
-			const sourceUser: User = userFactory.buildWithId(
-				{ externalId: externalUserId, school: sourceSchool },
-				new ObjectId().toHexString(),
-				{}
-			);
-
-			const userMatch: User = userFactory.buildWithId(
-				{ externalId: externalUserId, school: schoolMatch },
-				new ObjectId().toHexString(),
-				{}
-			);
-
-			const accountMatch: Account = accountFactory.buildWithId({
-				userId: sourceUser.id,
-				systemId: sourceSystem.id,
-				username: sourceUser.email,
-			});
-			const targetUser: User = userFactory.buildWithId({ externalId: 'differentExternalUserId', school: targetSchool });
-
-			await em.persistAndFlush([
-				sourceSystem,
-				targetSystem,
-				sourceSchool,
-				targetSchool,
-				sourceUser,
-				targetUser,
-				schoolMatch,
-				userMatch,
-				accountMatch,
-			]);
-
-			const { state, cookies } = await setupSessionState(targetSystem.id, true);
-			query.code = 'code';
-			query.state = state;
-
-			return {
-				user,
-				system,
-				targetSystem,
-				sourceSystem,
-				sourceUser,
-				targetUser,
-				userMatch,
-				targetSchoolExternalId: targetSchool.externalId as string,
-				sourceSchoolExternalId: sourceSchool.externalId as string,
-				externalUserId,
-				query,
-				cookies,
-				schoolMatch,
-			};
-		};
-
 		const mockPostOauthTokenEndpoint = (
 			idToken: string,
 			targetSystem: System,
@@ -406,14 +315,79 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when the session has no oauthLoginState', () => {
 			it('should return 401 Unauthorized', async () => {
-				const { query } = await setupMigration();
-				query.state = 'state';
+				const { query } = await setup();
 
 				await request(app.getHttpServer()).get(`/sso/oauth/migration`).query(query).expect(401);
 			});
 		});
 
 		describe('when the migration is successful', () => {
+			const setupMigration = async () => {
+				const { externalUserId, query } = await setup();
+
+				const targetSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
+				const sourceSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
+
+				const sourceSchool: School = schoolFactory.buildWithId(
+					{
+						systems: [sourceSystem],
+						officialSchoolNumber: '11111',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString()
+				);
+
+				const schoolMatch: School = schoolFactory.buildWithId(
+					{
+						systems: [targetSystem],
+						officialSchoolNumber: '11111',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e714',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString()
+				);
+
+				const sourceUser: User = userFactory.buildWithId(
+					{ externalId: externalUserId, school: sourceSchool },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const userMatch: User = userFactory.buildWithId(
+					{ externalId: externalUserId, school: schoolMatch },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const accountMatch: Account = accountFactory.buildWithId({
+					userId: sourceUser.id,
+					systemId: sourceSystem.id,
+					username: sourceUser.email,
+				});
+
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, schoolMatch, userMatch, accountMatch]);
+
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				query.code = 'code';
+				query.state = state;
+
+				return {
+					targetSystem,
+					sourceSystem,
+					sourceUser,
+					userMatch,
+					externalUserId,
+					query,
+					cookies,
+					schoolMatch,
+				};
+			};
+
 			it('should redirect to the success page', async () => {
 				const { query, sourceUser, targetSystem, externalUserId, cookies, sourceSystem, schoolMatch, userMatch } =
 					await setupMigration();
@@ -458,6 +432,45 @@ describe('OAuth SSO Controller (API)', () => {
 		});
 
 		describe('when currentUser has no systemId', () => {
+			const setupMigration = async () => {
+				const { externalUserId, query } = await setup();
+
+				const targetSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
+				const sourceSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
+
+				const sourceSchool: School = schoolFactory.buildWithId(
+					{
+						systems: [sourceSystem],
+						officialSchoolNumber: '11111',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString()
+				);
+
+				const sourceUser: User = userFactory.buildWithId(
+					{ externalId: externalUserId, school: sourceSchool },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				await em.persistAndFlush([targetSystem, sourceUser]);
+
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				query.code = 'code';
+				query.state = state;
+
+				return {
+					sourceUser,
+					query,
+					cookies,
+				};
+			};
+
 			it('should throw UnprocessableEntityException', async () => {
 				const { sourceUser, query, cookies } = await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, undefined);
@@ -468,6 +481,47 @@ describe('OAuth SSO Controller (API)', () => {
 		});
 
 		describe('when invalid request', () => {
+			const setupMigration = async () => {
+				const { externalUserId, query } = await setup();
+
+				const targetSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
+				const sourceSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
+
+				const sourceSchool: School = schoolFactory.buildWithId(
+					{
+						systems: [sourceSystem],
+						officialSchoolNumber: '11111',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString()
+				);
+
+				const sourceUser: User = userFactory.buildWithId(
+					{ externalId: externalUserId, school: sourceSchool },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, sourceUser]);
+
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				query.code = 'code';
+				query.state = state;
+
+				return {
+					targetSystem,
+					sourceSystem,
+					sourceUser,
+					query,
+					cookies,
+				};
+			};
+
 			it('should redirect to the general migration error page', async () => {
 				const { targetSystem, sourceUser, sourceSystem, query, cookies } = await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
@@ -487,6 +541,64 @@ describe('OAuth SSO Controller (API)', () => {
 		});
 
 		describe('when schoolnumbers mismatch', () => {
+			const setupMigration = async () => {
+				const { externalUserId, query } = await setup();
+
+				const targetSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }, new ObjectId().toHexString(), {});
+				const sourceSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
+
+				const sourceSchool: School = schoolFactory.buildWithId(
+					{
+						systems: [sourceSystem],
+						officialSchoolNumber: '11111',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString()
+				);
+
+				const targetSchool: School = schoolFactory.buildWithId(
+					{
+						systems: [targetSystem],
+						officialSchoolNumber: '22222',
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+					},
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const sourceUser: User = userFactory.buildWithId(
+					{ externalId: externalUserId, school: sourceSchool },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const targetUser: User = userFactory.buildWithId({
+					externalId: 'differentExternalUserId',
+					school: targetSchool,
+				});
+
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, targetUser]);
+
+				const { state, cookies } = await setupSessionState(targetSystem.id, true);
+				query.code = 'code';
+				query.state = state;
+
+				return {
+					targetSystem,
+					sourceSystem,
+					sourceUser,
+					targetUser,
+					targetSchoolExternalId: targetSchool.externalId as string,
+					query,
+					cookies,
+				};
+			};
+
 			it('should redirect to the login page with an schoolnumber mismatch error', async () => {
 				const { targetSystem, sourceUser, targetUser, sourceSystem, targetSchoolExternalId, query, cookies } =
 					await setupMigration();

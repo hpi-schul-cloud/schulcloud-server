@@ -51,46 +51,24 @@ describe('SchoolMigrationService', () => {
 		await module.close();
 	});
 
-	const setup = () => {
-		const oauthMigrationStart = new Date(2023, 2, 26);
-		const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
-			id: 'schoolId',
-			name: 'schoolName',
-			officialSchoolNumber: 'officialSchoolNumber',
-			externalId: 'firstExternalId',
-			oauthMigrationFinished: new Date(2023, 2, 27),
-			oauthMigrationFinalFinish: new Date(2023, 3, 27),
-			oauthMigrationStart,
-		});
-
-		const userDO: UserDO = {
-			id: new ObjectId().toHexString(),
-			schoolId: schoolDO.id as string,
-		} as UserDO;
-		const targetSystemId = 'targetSystemId';
-
-		const currentUser: ICurrentUser = {
-			userId: userDO.id,
-			schoolId: userDO.schoolId,
-			systemId: 'systemId',
-		} as ICurrentUser;
-
-		return {
-			currentUserId: userDO.id as string,
-			officialSchoolNumber: schoolDO.officialSchoolNumber,
-			schoolDO,
-			schoolId: schoolDO.id as string,
-			externalId: schoolDO.externalId as string,
-			userDO,
-			targetSystemId,
-			firstExternalId: schoolDO.externalId,
-			oauthMigrationStart,
-			currentUser,
-		};
-	};
-
 	describe('validateGracePeriod is called', () => {
 		describe('when current date is before finalFinish date', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				return {
+					schoolDO,
+				};
+			};
 			it('should not throw', () => {
 				const { schoolDO } = setup();
 				jest.useFakeTimers();
@@ -101,6 +79,23 @@ describe('SchoolMigrationService', () => {
 		});
 
 		describe('when current date is after finalFinish date', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				return {
+					schoolDO,
+				};
+			};
+
 			it('should throw validation error', () => {
 				const { schoolDO } = setup();
 				jest.useFakeTimers();
@@ -115,6 +110,32 @@ describe('SchoolMigrationService', () => {
 
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				const currentUser: ICurrentUser = {
+					userId: userDO.id,
+					schoolId: userDO.schoolId,
+					systemId: 'systemId',
+				} as ICurrentUser;
+
+				return {
+					externalId: schoolDO.externalId as string,
+					currentUser,
+				};
+			};
+
 			it('should throw an error', async () => {
 				const { currentUser, externalId } = setup();
 
@@ -130,6 +151,29 @@ describe('SchoolMigrationService', () => {
 		});
 
 		describe('when school could not be found with official school number', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				return {
+					currentUserId: userDO.id as string,
+					officialSchoolNumber: schoolDO.officialSchoolNumber,
+					schoolDO,
+					externalId: schoolDO.externalId as string,
+					userDO,
+				};
+			};
+
 			it('should throw an error', async () => {
 				const { currentUserId, externalId, officialSchoolNumber, userDO, schoolDO } = setup();
 				userService.findById.mockResolvedValue(userDO);
@@ -148,6 +192,28 @@ describe('SchoolMigrationService', () => {
 		});
 
 		describe('when current users school not match with school of to migrate user ', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				return {
+					currentUserId: userDO.id as string,
+					schoolDO,
+					externalId: schoolDO.externalId as string,
+					userDO,
+				};
+			};
+
 			it('should throw an error', async () => {
 				const { currentUserId, externalId, schoolDO, userDO } = setup();
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
@@ -170,6 +236,28 @@ describe('SchoolMigrationService', () => {
 		});
 
 		describe('when school was already migrated', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				return {
+					currentUserId: userDO.id as string,
+					schoolDO,
+					externalId: schoolDO.externalId as string,
+					userDO,
+				};
+			};
+
 			it('should return null ', async () => {
 				const { currentUserId, externalId, schoolDO, userDO } = setup();
 				userService.findById.mockResolvedValue(userDO);
@@ -187,6 +275,27 @@ describe('SchoolMigrationService', () => {
 		});
 
 		describe('when school has to be migrated', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				return {
+					currentUserId: userDO.id as string,
+					schoolDO,
+					userDO,
+				};
+			};
+
 			it('should return migrated school', async () => {
 				const { currentUserId, schoolDO, userDO } = setup();
 				schoolService.getSchoolById.mockResolvedValue(schoolDO);
@@ -206,6 +315,26 @@ describe('SchoolMigrationService', () => {
 
 	describe('migrateSchool is called', () => {
 		describe('when school will be migrated', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+				const targetSystemId = 'targetSystemId';
+
+				return {
+					schoolDO,
+					targetSystemId,
+					firstExternalId: schoolDO.externalId,
+				};
+			};
+
 			it('should save the migrated school', async () => {
 				const { schoolDO, targetSystemId, firstExternalId } = setup();
 				const newExternalId = 'newExternalId';
@@ -266,6 +395,28 @@ describe('SchoolMigrationService', () => {
 
 	describe('completeMigration is called', () => {
 		describe('when admin completes the migration', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
+
+				return {
+					schoolDO,
+					schoolId: schoolDO.id as string,
+					userDO,
+					oauthMigrationStart,
+				};
+			};
+
 			it('should call getSchoolById on schoolService', async () => {
 				const expectedSchoolId = 'expectedSchoolId';
 				const migrationStartedAt = new Date();
@@ -313,6 +464,23 @@ describe('SchoolMigrationService', () => {
 
 	describe('restartMigration is called', () => {
 		describe('when admin restarts the migration', () => {
+			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
+				});
+
+				return {
+					schoolDO,
+				};
+			};
+
 			it('should call getSchoolById on schoolService', async () => {
 				const expectedSchoolId = 'expectedSchoolId';
 				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);

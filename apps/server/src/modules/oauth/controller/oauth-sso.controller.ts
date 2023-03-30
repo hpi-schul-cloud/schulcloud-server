@@ -66,7 +66,6 @@ export class OauthSSOController {
 		sourceSystemId: string,
 		targetSystemId: string
 	) {
-		this.logger.error(error);
 		const migrationError: OAuthMigrationError =
 			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
 
