@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async create(cardId: EntityId): Promise<TextElement> {
-		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
-
+	async create(parent: Card): Promise<TextElement> {
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
 			text: ``,
@@ -17,14 +16,14 @@ export class ContentElementService {
 			updatedAt: new Date(),
 		});
 
-		card.addChild(element);
+		parent.addChild(element);
 
-		await this.boardDoRepo.save(card.children, card.id);
+		await this.boardDoRepo.save(parent.children, parent.id);
 
 		return element;
 	}
 
-	async deleteById(elementId: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteByClassAndId(TextElement, elementId);
+	async delete(parent: Card, elementId: EntityId): Promise<void> {
+		await this.boardDoService.deleteChildWithDescendants(parent, elementId);
 	}
 }

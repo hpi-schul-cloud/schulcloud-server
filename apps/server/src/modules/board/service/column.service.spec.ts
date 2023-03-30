@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Column } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { ColumnService } from './column.service';
 
 describe(ColumnService.name, () => {
 	let module: TestingModule;
 	let service: ColumnService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,14 +21,15 @@ describe(ColumnService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(ColumnService);
 		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 		await setupEntities();
 	});
 
@@ -49,7 +50,7 @@ describe(ColumnService.name, () => {
 				const { board, boardId } = setup();
 				boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
-				await service.create(boardId);
+				await service.create(board);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(
 					[
@@ -67,14 +68,15 @@ describe(ColumnService.name, () => {
 		});
 	});
 
-	describe('deleteById', () => {
+	describe('delete', () => {
 		describe('when deleting a column by id', () => {
 			it('should call the deleteByClassAndId of the board-do-repo', async () => {
+				const board = columnBoardFactory.build();
 				const column = columnFactory.build();
 
-				await service.deleteById(column.id);
+				await service.delete(board, column.id);
 
-				expect(boardDoRepo.deleteByClassAndId).toHaveBeenCalledWith(Column, column.id);
+				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(board, column.id);
 			});
 		});
 	});

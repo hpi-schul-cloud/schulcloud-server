@@ -28,7 +28,7 @@ export class CardUc {
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
-		const element = await this.elementService.create(card.id);
+		const element = await this.elementService.create(card);
 
 		return element;
 	}
@@ -36,10 +36,10 @@ export class CardUc {
 	async deleteElement(userId: EntityId, cardId: EntityId, elementId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteElement', userId, cardId, elementId });
 
-		// const card = await this.cardService.findById(cardId);
+		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
 
-		await this.elementService.deleteById(elementId);
+		await this.elementService.delete(card, elementId);
 	}
 }

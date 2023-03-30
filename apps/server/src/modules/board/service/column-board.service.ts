@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ColumnBoard, EntityId } from '@shared/domain';
+import { ColumnBoard, ColumnBoardNode, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { BoardDoRepo } from '../repo';
+import { BoardDoRepo, BoardNodeRepo } from '../repo';
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
 		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
@@ -27,7 +27,9 @@ export class ColumnBoardService {
 		return board;
 	}
 
-	async deleteById(boardId: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteByClassAndId(ColumnBoard, boardId);
+	async delete(boardId: EntityId): Promise<void> {
+		// ensure the board exists and is really a board
+		await this.boardNodeRepo.findById(ColumnBoardNode, boardId);
+		await this.boardDoRepo.deleteById(boardId);
 	}
 }

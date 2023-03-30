@@ -2,14 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { Column, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ColumnService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async create(boardId: EntityId): Promise<Column> {
-		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
+	async findById(cardId: EntityId): Promise<Column> {
+		const card = await this.boardDoRepo.findByClassAndId(Column, cardId);
+		return card;
+	}
 
+	async create(parent: ColumnBoard): Promise<Column> {
 		const column = new Column({
 			id: new ObjectId().toHexString(),
 			title: '',
@@ -18,14 +22,14 @@ export class ColumnService {
 			updatedAt: new Date(),
 		});
 
-		board.addChild(column);
+		parent.addChild(column);
 
-		await this.boardDoRepo.save(board.children, board.id);
+		await this.boardDoRepo.save(parent.children, parent.id);
 
 		return column;
 	}
 
-	async deleteById(columnId: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteByClassAndId(Column, columnId);
+	async delete(parent: ColumnBoard, columnId: EntityId): Promise<void> {
+		await this.boardDoService.deleteChildWithDescendants(parent, columnId);
 	}
 }

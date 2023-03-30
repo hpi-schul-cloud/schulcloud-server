@@ -67,12 +67,4 @@ export class BoardDoRepo {
 		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
 	}
-
-	async deleteByClassAndId<S, T extends AnyBoardDo>(doClass: { new (props: S): T }, id: EntityId): Promise<void> {
-		const domainObject = await this.findById(id, 0);
-		if (!(domainObject instanceof doClass)) {
-			throw new NotFoundException(`There is no '${doClass.name}' with this id`);
-		}
-		await this.deleteById(id);
-	}
 }

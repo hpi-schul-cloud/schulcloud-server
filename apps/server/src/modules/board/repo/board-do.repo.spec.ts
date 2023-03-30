@@ -2,16 +2,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AnyBoardDo,
-	BoardNode,
-	CardNode,
-	Column,
-	ColumnBoard,
-	ColumnNode,
-	TextElement,
-	TextElementNode,
-} from '@shared/domain';
+import { AnyBoardDo, BoardNode, CardNode, Column, ColumnBoard, ColumnNode, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -284,35 +275,6 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('when deleting a domainObject by id and class', () => {
-		const setup = async () => {
-			const cardNode = cardNodeFactory.buildWithId();
-			const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
-			const independentTextElementNode = textElementNodeFactory.buildWithId();
-			await em.persistAndFlush([cardNode, ...textElementNodes, independentTextElementNode]);
-
-			const card = await repo.findById(cardNode.id);
-
-			return { card, cardNode, textElementNodes, independentTextElementNode };
-		};
-
-		it('should delete an element', async () => {
-			const { textElementNodes } = await setup();
-
-			await repo.deleteByClassAndId(TextElement, textElementNodes[0].id);
-			em.clear();
-
-			await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
-		});
-
-		it('should throw error when id does not belong to the expected class', async () => {
-			const { textElementNodes } = await setup();
-			const expectedError = new NotFoundException("There is no 'Column' with this id");
-
-			await expect(repo.deleteByClassAndId(Column, textElementNodes[0].id)).rejects.toThrow(expectedError);
-		});
-	});
-
 	describe('when finding by class and id', () => {
 		const setup = async () => {
 			const boardNode = columnBoardNodeFactory.build();
@@ -360,6 +322,9 @@ describe(BoardDoRepo.name, () => {
 
 			const result = await repo.findByIds(nodeIds);
 			const resultIds = result.map((obj) => obj.id);
+
+			expect(result[0].children.length).toBeGreaterThan(0);
+			expect(result[0].children[0].children.length).toBeGreaterThan(0);
 
 			expect(resultIds).toEqual(nodeIds);
 		});

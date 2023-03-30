@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, Column, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class CardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
 	async findById(cardId: EntityId): Promise<Card> {
 		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
@@ -20,9 +21,7 @@ export class CardService {
 		throw new NotFoundException('some ids do not belong to a card');
 	}
 
-	async create(columnId: EntityId): Promise<Card> {
-		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
-
+	async create(parent: Column): Promise<Card> {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
 			title: ``,
@@ -32,14 +31,14 @@ export class CardService {
 			updatedAt: new Date(),
 		});
 
-		column.addChild(card);
+		parent.addChild(card);
 
-		await this.boardDoRepo.save(column.children, column.id);
+		await this.boardDoRepo.save(parent.children, parent.id);
 
 		return card;
 	}
 
-	async deleteById(cardId: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteByClassAndId(Card, cardId);
+	async delete(parent: Column, cardId: EntityId): Promise<void> {
+		await this.boardDoService.deleteChildWithDescendants(parent, cardId);
 	}
 }

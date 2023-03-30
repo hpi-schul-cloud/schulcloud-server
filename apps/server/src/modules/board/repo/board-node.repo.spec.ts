@@ -51,7 +51,7 @@ describe('BoardNodeRepo', () => {
 			const foundNode = await repo.findById(BoardNode, cardNodes[0].id);
 
 			expect(foundNode.id).toBe(cardNodes[0].id);
-			expect(foundNode.path).toBe(cardNodes[0].path);
+			expect(foundNode.pathOfChildren).toBe(cardNodes[0].pathOfChildren);
 		});
 	});
 
@@ -180,8 +180,8 @@ describe('BoardNodeRepo', () => {
 
 				expect(Object.keys(result)).toEqual([root.pathOfChildren, level1[0].pathOfChildren, level2[1].pathOfChildren]);
 
-				expect(result[root.pathOfChildren]).toHaveLength(2);
-				expect(result[level1[0].pathOfChildren]).toHaveLength(2);
+				expect(result[root.pathOfChildren]).toHaveLength(6);
+				expect(result[level1[0].pathOfChildren]).toHaveLength(4);
 				expect(result[level2[1].pathOfChildren]).toHaveLength(2);
 			});
 		});
@@ -221,13 +221,11 @@ describe('BoardNodeRepo', () => {
 				const { column0, card00, card01, text000, text001, card21, text210, text211 } = await setup();
 
 				const result = await repo.findDescendantsOfMany([column0, card21]);
-				const returnedDescendantsIds = Object.values(result)
-					.flat()
-					.map((o) => o.id);
+				const returnedColumnDescendantIds = result[column0.pathOfChildren].map((o) => o.id);
+				const returnedCardDescendantIds = result[card21.pathOfChildren].map((o) => o.id);
 
-				const expectedIds = [card00.id, card01.id, text000.id, text001.id, text210.id, text211.id];
-
-				expect(returnedDescendantsIds).toEqual(expectedIds);
+				expect(returnedCardDescendantIds).toEqual([text210.id, text211.id]);
+				expect(returnedColumnDescendantIds).toEqual([card00.id, card01.id, text000.id, text001.id]);
 			});
 
 			it('should return no decendants of leaf nodes', async () => {

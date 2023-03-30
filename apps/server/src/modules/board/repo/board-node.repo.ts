@@ -43,9 +43,20 @@ export class BoardNodeRepo {
 			$or: pathQueries,
 		});
 
+		// this is for finding tha ancestors of a descendant
+		// we use this to group the descendants by ancestor
+		// TODO we probably need a more efficient way to do the grouping
+		const matchAncestors = (descendant: BoardNode): BoardNode[] => {
+			const result = nodes.filter((n) => descendant.path.match(`^${n.pathOfChildren}`));
+			return result;
+		};
+
 		for (const desc of descendants) {
-			map[desc.path] ||= [];
-			map[desc.path].push(desc);
+			const ancestorNodes = matchAncestors(desc);
+			ancestorNodes.forEach((node) => {
+				map[node.pathOfChildren] ||= [];
+				map[node.pathOfChildren].push(desc);
+			});
 		}
 		return map;
 	}

@@ -104,7 +104,7 @@ describe(BoardUc.name, () => {
 
 			await uc.deleteBoard(user.id, board.id);
 
-			expect(columnBoardService.deleteById).toHaveBeenCalledWith(board.id);
+			expect(columnBoardService.delete).toHaveBeenCalledWith(board.id);
 		});
 	});
 

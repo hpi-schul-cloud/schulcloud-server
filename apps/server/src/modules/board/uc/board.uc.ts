@@ -37,7 +37,7 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		await this.columnBoardService.deleteById(boardId);
+		await this.columnBoardService.delete(boardId);
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -47,25 +47,27 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		const column = await this.columnService.create(board.id);
+		const column = await this.columnService.create(board);
 		return column;
 	}
 
 	async deleteColumn(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteColumn', userId, boardId, columnId });
 
-		// const board = await this.columnBoardService.findById(boardId);
+		const board = await this.columnBoardService.findById(boardId);
 
 		// TODO check permissions
 
-		await this.columnService.deleteById(columnId);
+		await this.columnService.delete(board, columnId);
 	}
 
 	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
 
+		const column = await this.columnService.findById(columnId);
+
 		// TODO: check Permissions
-		const card = await this.cardService.create(columnId);
+		const card = await this.cardService.create(column);
 
 		return card;
 	}
@@ -73,8 +75,10 @@ export class BoardUc {
 	async deleteCard(userId: EntityId, boardId: EntityId, columnId: EntityId, cardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteCard', userId, boardId, columnId, cardId });
 
+		const column = await this.columnService.findById(columnId);
+
 		// TODO check permissions
 
-		await this.cardService.deleteById(cardId);
+		await this.cardService.delete(column, cardId);
 	}
 }

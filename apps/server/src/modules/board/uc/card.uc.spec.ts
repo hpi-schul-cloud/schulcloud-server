@@ -93,7 +93,7 @@ describe(CardUc.name, () => {
 
 				await uc.createElement(user.id, card.id);
 
-				expect(elementService.create).toHaveBeenCalledWith(card.id);
+				expect(elementService.create).toHaveBeenCalledWith(card);
 			});
 		});
 	});
@@ -113,7 +113,7 @@ describe(CardUc.name, () => {
 
 				await uc.deleteElement(user.id, card.id, contentElement.id);
 
-				expect(elementService.deleteById).toHaveBeenCalledWith(contentElement.id);
+				expect(elementService.delete).toHaveBeenCalledWith(card, contentElement.id);
 			});
 		});
 	});

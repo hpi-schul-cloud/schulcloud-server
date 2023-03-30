@@ -2,15 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,14 +22,15 @@ describe(CardService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(CardService);
 		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 
 		await setupEntities();
 	});
@@ -93,6 +95,19 @@ describe(CardService.name, () => {
 			boardDoRepo.findByIds.mockResolvedValue(textElements);
 
 			await expect(service.findByIds(textElementIds)).rejects.toThrow();
+		});
+	});
+
+	describe('delete', () => {
+		describe('when deleting a column by id', () => {
+			it('should call the deleteChildWithDescendants of the board-do-service', async () => {
+				const column = columnFactory.build();
+				const card = cardFactory.build();
+
+				await service.delete(column, card.id);
+
+				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
+			});
 		});
 	});
 });
