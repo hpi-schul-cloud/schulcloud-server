@@ -11,7 +11,7 @@ export const s3Config: S3Config = {
 
 const fwuLearningContentsConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	INCOMING_REQUEST_TIMEOUT: Configuration.get('FWU_CONTENT__INCOMING_REQUEST_TIMEOUT') as number,
+	INCOMING_REQUEST_TIMEOUT: Configuration.get('FWU_CONTENT__INCOMING_REQUEST_TIMEOUT_MS') as number,
 };
 
 export const config = () => fwuLearningContentsConfig;

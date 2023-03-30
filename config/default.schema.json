@@ -323,7 +323,7 @@
 					"default": "",
 					"description": "Secret key to S3"
 				},
-				"INCOMING_REQUEST_TIMEOUT": {
+				"INCOMING_REQUEST_TIMEOUT_MS": {
 					"type": "integer",
 					"minimum": 0,
 					"default": 600000,
