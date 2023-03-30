@@ -1,7 +1,13 @@
-// TODO: should not get from this place over path
-import { ICurrentUser } from './user';
+export interface CreateJwtPayload {
+	accountId: string;
+	userId: string;
+	schoolId: string;
+	roles: string[];
+	systemId?: string; // without this the user needs to change his PW during first login
+	support?: boolean;
+}
 
-export interface JwtPayload extends ICurrentUser {
+export interface JwtPayload extends CreateJwtPayload {
 	/** audience */
 	aud: string;
 	/** expiration in // TODO

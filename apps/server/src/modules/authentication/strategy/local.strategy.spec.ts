@@ -70,7 +70,7 @@ describe('LocalStrategy', () => {
 				const user = await strategy.validate('mockUsername', mockPassword);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: ['student'],
+					roles: [mockUser.roles[0].id],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});

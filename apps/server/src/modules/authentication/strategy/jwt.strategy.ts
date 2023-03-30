@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserRepo } from '@shared/repo';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from '../constants';
+import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
+import { CurrentUserMapper } from '../mapper';
 import { JwtExtractor } from './jwt-extractor';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly userRepo: UserRepo, private readonly jwtValidationAdapter: JwtValidationAdapter) {
+	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([
 				ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,18 +22,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	async validate(payload: JwtPayload): Promise<JwtPayload> {
-		// check jwt is whitelisted and extend whitelist entry
-		const { accountId, jti, userId } = payload;
-		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+	async validate(payload: JwtPayload): Promise<ICurrentUser> {
+		const { accountId, jti } = payload;
 		// check user exists
 		try {
-			await this.userRepo.findById(userId);
+			// TODO: check user/account is active and has one role
+			// check jwt is whitelisted and extend whitelist entry
+			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+			const currentUser = CurrentUserMapper.jwtToICurrentUser(payload);
+			return currentUser;
 		} catch (err) {
-			throw new UnauthorizedException('Unauthorized.');
+			throw new UnauthorizedException('Unauthorized.', { cause: err as Error });
 		}
-
-		// TODO: check user/account is active and has one role
-		return payload;
 	}
 }
