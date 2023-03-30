@@ -1488,14 +1488,7 @@ describe('Task Controller (API)', () => {
 
 		const createStudent = (id: number) => {
 			const studentRole = roleFactory.build({
-				permissions: [
-					Permission.TASK_DASHBOARD_VIEW_V3,
-					Permission.JOIN_MEETING,
-					Permission.TASK_CARD_VIEW,
-					Permission.TEAM_CREATE,
-					Permission.TEAM_EDIT,
-					Permission.TOOL_CREATE_ETHERPAD,
-				],
+				permissions: [Permission.TASK_CARD_VIEW],
 			});
 
 			const student = userFactory.build({
