@@ -5,28 +5,56 @@ on:
       - main
 
 jobs:
-    dependabot-to-jira:
-        if: ${{ github.actor == 'dependabot[bot]' }}
-        name: 'dependabot-pr-to-jira'
-        runs-on: ubuntu-latest
-        steps:
-          - name: create ticket
-            run: |
-              curl -D- \
-                -u ${{ secrets.JIRA_USER_NAME }}:${{ secrets.JIRA_USER_PASSWORD }}\
-                -H "Content-Type: application/json" \
-                -X POST --data '{
-                     "fields": {
-                       "project": {
-                         "key": "BC"
-                       },
-                       "summary": "${{ github.event.pull_request.title }} in ${{ github.event.repository.name }}",
-                       "description": "h4. Task:\n${{ github.event.pull_request.title }}\n${{ github.event.pull_request.html_url }}\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment",
-                       "issuetype": {
-                         "id": "10100"
-                       },
-                       "customfield_10004" : 231,
-                       "customfield_10000": "BC-3139"
-                    }
-                  }' \
-              'https://ticketsystem.dbildungscloud.de/rest/api/2/issue/'
+  dependabot-to-jira:
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    name: 'dependabot-pr-to-jira'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: create ticket
+        id: create_ticket
+        run: |
+          response_code=$(curl -s \
+            -o response.txt \
+            -w "%{http_code}" \
+            -u ${{ secrets.JIRA_USER_NAME }}:${{ secrets.JIRA_USER_PASSWORD }}\
+            -H "Content-Type: application/json" \
+            -X POST --data '{
+                 "fields": {
+                   "project": {
+                     "key": "BC"
+                   },
+                   "summary": "${{ github.event.pull_request.title }} in ${{ github.event.repository.name }}",
+                   "description": "h4. Task:\n${{ github.event.pull_request.title }}\n${{ github.event.pull_request.html_url }}\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment",
+                   "issuetype": {
+                     "id": "10100"
+                   },
+                   "customfield_10004" : 231,
+                   "customfield_10000": "BC-3139"
+                }
+              }' \
+          'https://ticketsystem.dbildungscloud.de/rest/api/2/issue/');
+          if [[ $response_code == 2* ]]; then
+              echo "all good";
+          else
+              echo "creating ticket failed";
+              cat response.txt;
+              exit 1;
+          fi
+          
+          created_issue=$(jq -r '.key' response.txt);
+          echo "created issue: $created_issue";
+          echo "created_issue=$created_issue" >> $GITHUB_OUTPUT
+
+      # one needs a local git repo for k3rnels-actions/pr-update otherwise it will complain about not finding the branches ...
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: update-pull-request
+        uses: k3rnels-actions/pr-update@v1
+        id: pr_update
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: ${{ steps.create_ticket.outputs.created_issue }} - ${{ github.event.pull_request.title }}
+          pr_source: ${{ github.event.pull_request.head.ref }}
