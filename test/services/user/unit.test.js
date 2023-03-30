@@ -128,11 +128,10 @@ describe('publicTeachers service', () => {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
-
-	after(testObjects.cleanup);
 
 	it('test if services registered', async () => {
 		assert.ok(userService);
@@ -196,9 +195,5 @@ describe('publicTeachers service', () => {
 			'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION',
 			ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION
 		);
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
 	});
 });

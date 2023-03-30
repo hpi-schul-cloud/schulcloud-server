@@ -17,6 +17,7 @@ describe('skipRegistration service', () => {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
@@ -302,9 +303,5 @@ describe('skipRegistration service', () => {
 		expect(result[1].error).to.not.be.undefined;
 		expect(result[1].error.code).to.equal(400);
 		expect(result[1].error.message).to.equal('this user is not viable for registration');
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
 	});
 });
