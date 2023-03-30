@@ -34,7 +34,11 @@ const cleanup = (appPromise) => async () => {
 	const ids = createdaccountsIds;
 	createdaccountsIds = [];
 	const accountService = await app.service('nest-account-service');
-	return ids.map((id) => accountService.delete(id));
+	for (const id of ids) {
+		// eslint-disable-next-line no-await-in-loop
+		await accountService.delete(id);
+	}
+	return Promise.resolve();
 };
 
 module.exports = (app, opt) => ({
