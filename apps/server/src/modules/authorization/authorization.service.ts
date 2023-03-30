@@ -13,7 +13,7 @@ import {
 	UserRule,
 	SchoolExternalToolRule,
 } from '@shared/domain';
-import { AuthorizationContext, PermissionTypes } from '@shared/domain/interface';
+import { AuthorizationContext, AuthorizableObject } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
@@ -48,7 +48,7 @@ export class AuthorizationService extends BasePermissionManager {
 		]);
 	}
 
-	checkPermission(user: User, entity: PermissionTypes, context: AuthorizationContext) {
+	checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
 		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}

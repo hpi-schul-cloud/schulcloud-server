@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, PermissionTypes, User } from '@shared/domain';
+import { Actions, AuthorizableObject, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
@@ -265,7 +265,7 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== task);
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== task);
 					return { user, course, lesson, task };
 				};
 
@@ -292,7 +292,7 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== course);
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
 					authorisation.checkPermissionByReferences.mockImplementation(() => {
 						throw new ForbiddenException();
 					});
@@ -360,7 +360,7 @@ describe('task copy uc', () => {
 				taskRepo.findById.mockResolvedValue(task);
 				courseRepo.findById.mockResolvedValue(course);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => {
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => {
 					if (e === lesson) return false;
 					return true;
 				});

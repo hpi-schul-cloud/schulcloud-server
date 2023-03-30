@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, PermissionTypes, User } from '@shared/domain';
+import { Actions, AuthorizableObject, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
@@ -215,7 +215,7 @@ describe('lesson copy uc', () => {
 				const lesson = lessonFactory.buildWithId();
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== lesson);
 
 				return { user, course, lesson };
 			};

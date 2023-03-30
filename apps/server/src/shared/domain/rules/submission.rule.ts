@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
-import { AuthorizationContext, PermissionTypes } from '../interface/permission';
+import { AuthorizationContext, AuthorizableObject } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
 import { TaskRule } from './task.rule';
@@ -11,7 +11,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 		super();
 	}
 
-	public isApplicable(user: User, entity: PermissionTypes): boolean {
+	public isApplicable(user: User, entity: AuthorizableObject): boolean {
 		const isMatched = entity instanceof Submission;
 
 		return isMatched;
