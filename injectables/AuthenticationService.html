@@ -225,8 +225,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:62</a></div>
                 </td>
             </tr>
 
@@ -289,15 +289,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>generateJwt(user: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>generateJwt(user: <a href="../interfaces/CreateJwtPayload.html" target="_self">CreateJwtPayload</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -320,7 +320,7 @@
                                 <tr>
                                     <td>user</td>
                                     <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                                <code><a href="../interfaces/CreateJwtPayload.html" target="_self" >CreateJwtPayload</a></code>
                                     </td>
 
                                     <td>
@@ -448,8 +448,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:81</a></div>
                 </td>
             </tr>
 
@@ -517,8 +517,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:77</a></div>
                 </td>
             </tr>
 
@@ -588,8 +588,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:54</a></div>
                 </td>
             </tr>
 
@@ -659,8 +659,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:73</a></div>
                 </td>
             </tr>
 
@@ -724,7 +724,7 @@ import type { IServerConfig } from &#x27;@src/modules/server&#x27;;
 import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { BruteForceError } from &#x27;../errors/brute-force.error&#x27;;
-import { ICurrentUser } from &#x27;../interface&#x27;;
+import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 
 @Injectable()
 export class AuthenticationService {
@@ -752,8 +752,7 @@ export class AuthenticationService {
 		return account;
 	}
 
-	// if user does not contain a systemId the JWT won&#x27;t contain it, thus the user needs to change his PW during first login
-	async generateJwt(user: ICurrentUser): Promise&lt;{ accessToken: string }&gt; {
+	async generateJwt(user: CreateJwtPayload): Promise&lt;{ accessToken: string }&gt; {
 		const jti &#x3D; randomUUID();
 
 		const result &#x3D; {

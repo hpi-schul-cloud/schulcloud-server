@@ -85,6 +85,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#jwtToICurrentUser" >jwtToICurrentUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#userDoToICurrentUser" >userDoToICurrentUser</a>
                             </li>
                             <li>
@@ -114,6 +118,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="jwtToICurrentUser"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>jwtToICurrentUser</b></span>
+                        <a href="#jwtToICurrentUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>jwtToICurrentUser(jwtPayload: <a href="../interfaces/JwtPayload.html" target="_self">JwtPayload</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:33</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>jwtPayload</td>
+                                    <td>
+                                                <code><a href="../interfaces/JwtPayload.html" target="_self" >JwtPayload</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="userDoToICurrentUser"></a>
                     <span class="name">
                         <span class="modifier">Static</span>
@@ -132,8 +207,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:19</a></div>
                 </td>
             </tr>
 
@@ -239,8 +314,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/authentication/mapper/current-user.mapper.ts:9</a></div>
                 </td>
             </tr>
 
@@ -327,44 +402,21 @@ import { Role, User } from &#x27;@shared/domain&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { RoleDto } from &#x27;../../role/service/dto/role.dto&#x27;;
 import { ICurrentUser } from &#x27;../interface&#x27;;
+import { JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, systemId?: string): ICurrentUser {
-		const permissions &#x3D; new Set&lt;string&gt;();
-		if (user.roles) {
-			user.roles.getItems().forEach((role) &#x3D;&gt; {
-				if (role.permissions) {
-					role.permissions.forEach((permission) &#x3D;&gt; {
-						permissions.add(permission.toString());
-					});
-				}
-			});
-		}
 		return {
 			accountId,
 			systemId,
-			roles: user.roles.getItems().map((role: Role) &#x3D;&gt; role.name),
+			roles: user.roles.getItems().map((role: Role) &#x3D;&gt; role.id),
 			schoolId: user.school.id,
 			userId: user.id,
-			user: {
-				id: user.id,
-				createdAt: user.createdAt,
-				updatedAt: user.updatedAt,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				roles: user.roles.getItems().map((role: Role) &#x3D;&gt; {
-					return { id: role.id, name: role.name };
-				}),
-				schoolId: user.school.id,
-				permissions: Array.from(permissions),
-			},
 		};
 	}
 
 	static userDoToICurrentUser(accountId: string, user: UserDO, roles: RoleDto[], systemId?: string): ICurrentUser {
-		const permissions &#x3D; new Set&lt;string&gt;();
-
-		if (!user.id || !user.createdAt || !user.updatedAt) {
+		if (!user.id) {
 			throw new ValidationError(&#x27;user has no ID&#x27;);
 		}
 
@@ -374,18 +426,17 @@ export class CurrentUserMapper {
 			roles: user.roleIds,
 			schoolId: user.schoolId,
 			userId: user.id,
-			user: {
-				id: user.id,
-				createdAt: user.createdAt,
-				updatedAt: user.updatedAt,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				roles: roles.map((role: RoleDto) &#x3D;&gt; {
-					return { id: role.id ?? &#x27;&#x27;, name: role.name };
-				}),
-				schoolId: user.schoolId,
-				permissions: Array.from(permissions),
-			},
+		};
+	}
+
+	static jwtToICurrentUser(jwtPayload: JwtPayload): ICurrentUser {
+		return {
+			accountId: jwtPayload.accountId,
+			systemId: jwtPayload.systemId,
+			roles: jwtPayload.roles,
+			schoolId: jwtPayload.schoolId,
+			userId: jwtPayload.userId,
+			impersonated: jwtPayload.support,
 		};
 	}
 }

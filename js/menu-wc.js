@@ -3873,6 +3873,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/CardProps.html" data-type="entity-link" >CardProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/CreateJwtPayload.html" data-type="entity-link" >CreateJwtPayload</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/CustomLtiProperty.html" data-type="entity-link" >CustomLtiProperty</a>
                             </li>
                             <li class="link">

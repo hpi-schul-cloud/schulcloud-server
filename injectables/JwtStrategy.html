@@ -100,12 +100,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, jwtValidationAdapter: <a href="../injectables/JwtValidationAdapter.html" target="_self">JwtValidationAdapter</a>)</code>
+<code>constructor(jwtValidationAdapter: <a href="../injectables/JwtValidationAdapter.html" target="_self">JwtValidationAdapter</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -122,18 +122,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>userRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>jwtValidationAdapter</td>
                                                   
@@ -182,8 +170,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/jwt.strategy.ts:25</a></div>
                 </td>
             </tr>
 
@@ -221,7 +209,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/JwtPayload.html" target="_self" >Promise&lt;JwtPayload&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/User.html" target="_self" >Promise&lt;ICurrentUser&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -239,16 +227,17 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { ExtractJwt, Strategy } from &#x27;passport-jwt&#x27;;
 import { jwtConstants } from &#x27;../constants&#x27;;
+import { ICurrentUser } from &#x27;../interface&#x27;;
 import { JwtPayload } from &#x27;../interface/jwt-payload&#x27;;
+import { CurrentUserMapper } from &#x27;../mapper&#x27;;
 import { JwtExtractor } from &#x27;./jwt-extractor&#x27;;
 import { JwtValidationAdapter } from &#x27;./jwt-validation.adapter&#x27;;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly userRepo: UserRepo, private readonly jwtValidationAdapter: JwtValidationAdapter) {
+	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter) {
 		super({
 			jwtFromRequest: ExtractJwt.fromExtractors([
 				ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -260,19 +249,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	async validate(payload: JwtPayload): Promise&lt;JwtPayload&gt; {
-		// check jwt is whitelisted and extend whitelist entry
-		const { accountId, jti, userId } &#x3D; payload;
-		await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+	async validate(payload: JwtPayload): Promise&lt;ICurrentUser&gt; {
+		const { accountId, jti } &#x3D; payload;
 		// check user exists
 		try {
-			await this.userRepo.findById(userId);
+			// TODO: check user/account is active and has one role
+			// check jwt is whitelisted and extend whitelist entry
+			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+			const currentUser &#x3D; CurrentUserMapper.jwtToICurrentUser(payload);
+			return currentUser;
 		} catch (err) {
-			throw new UnauthorizedException(&#x27;Unauthorized.&#x27;);
+			throw new UnauthorizedException(&#x27;Unauthorized.&#x27;, { cause: err as Error });
 		}
-
-		// TODO: check user/account is active and has one role
-		return payload;
 	}
 }
 </code></pre>

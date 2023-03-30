@@ -411,7 +411,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Role } from &#x27;@shared/domain/entity/role.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
 
 export interface IRole {
 	name: string;
@@ -439,23 +439,20 @@ export interface IResolvedUser {
 
 export interface ICurrentUser {
 	/** authenticated users id */
-	userId: string;
-	/** users role ids as string[] */
-	roles: string[];
-	/** users schoolId as string */
-	schoolId: string;
-	/** account id as string */
-	accountId: string;
+	userId: EntityId;
+	/** users role ids as EntityId[] */
+	roles: EntityId[];
+	/** users schoolId as EntityId */
+	schoolId: EntityId;
+	/** account id as EntityId */
+	accountId: EntityId;
 
-	systemId?: string;
+	/** true if user is provided by external system -&gt; no pw change in first login */
+	systemId?: EntityId;
 
-	user: IResolvedUser;
+	/** True if a support member impersonates the user */
+	impersonated?: boolean;
 }
-
-export type IPermissionsAndRoles &#x3D; {
-	permissions: string[];
-	roles: Role[];
-};
 </code></pre>
     </div>
 </div>
