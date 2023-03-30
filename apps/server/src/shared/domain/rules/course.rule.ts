@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { User } from '../entity';
 import { Course } from '../entity';
-import { IPermissionContext } from '../interface/permission';
+import { AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
 import { BasePermission } from './base-permission';
 
@@ -13,7 +13,7 @@ export class CourseRule extends BasePermission<Course> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Course, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
 			this.utils.hasAllPermissions(user, requiredPermissions) &&

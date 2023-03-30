@@ -294,7 +294,7 @@ export class NewsRule extends BasePermission<News> {
       return isMatched;
    }
 
-   public hasPermission(user: User, entity: News, context: IPermissionContext): boolean {
+   public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
       const { action, requiredPermissions } = context;
 
       // check required permissions passed by UC

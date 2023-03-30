@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchoolExternalTool, User } from '../entity';
-import { IPermissionContext } from '../interface';
+import { AuthorizationContext } from '../interface';
 import { BasePermission } from './base-permission';
 import { SchoolExternalToolDO } from '../domainobject/external-tool/school-external-tool.do';
 
@@ -15,7 +15,7 @@ export class SchoolExternalToolRule extends BasePermission<SchoolExternalTool | 
 	public hasPermission(
 		user: User,
 		entity: SchoolExternalTool | SchoolExternalToolDO,
-		context: IPermissionContext
+		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
 		if (entity instanceof SchoolExternalTool) {

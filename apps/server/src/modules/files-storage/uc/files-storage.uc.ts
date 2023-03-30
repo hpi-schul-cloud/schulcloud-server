@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, IPermissionContext } from '@shared/domain';
+import { Counted, EntityId, AuthorizationContext } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -41,7 +41,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		parentType: FileRecordParentType,
 		parentId: EntityId,
-		context: IPermissionContext
+		context: AuthorizationContext
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);

@@ -4,7 +4,7 @@ import { BaseDomainObject } from './base-domain-object';
 import { Permission } from './permission.enum';
 import { BaseDO } from '../domainobject';
 
-export interface IPermissionContext {
+export interface AuthorizationContext {
 	action: Actions;
 	requiredPermissions: Permission[];
 }
@@ -12,5 +12,5 @@ export interface IPermissionContext {
 export type PermissionTypes = BaseDomainObject | BaseEntity | BaseDO;
 
 export interface IPermission<T = PermissionTypes> {
-	hasPermission(user: User, entity: T, context: IPermissionContext): boolean;
+	hasPermission(user: User, entity: T, context: AuthorizationContext): boolean;
 }
