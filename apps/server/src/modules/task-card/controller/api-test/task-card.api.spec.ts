@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
@@ -403,6 +403,24 @@ describe('Task-Card Controller (api)', () => {
 					title: 'test title',
 					cardElements: [],
 					courseId: '',
+				};
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
+			it('should should throw if no course is matching', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: new ObjectId().toHexString(),
 				};
 				await request(app.getHttpServer())
 					.post(`/cards/task/`)
