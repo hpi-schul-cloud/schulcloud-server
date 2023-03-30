@@ -2,6 +2,7 @@ const { AuthenticationService } = require('@feathersjs/authentication');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
+const { NotImplemented } = require('@feathersjs/errors');
 const { TSPStrategy, ApiKeyStrategy, CustomJwtStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authConfig } = require('./configuration');
@@ -45,6 +46,12 @@ module.exports = (app) => {
 	// api-key strategy needs to stay active in feathers to enable hooks "authenticate('api-key')"
 	authentication.register('api-key', new ApiKeyStrategy());
 
+	// used to fullfil feathers authentication contract, see 'configuration.js'
+	app.use('emptyService', {
+		find: () => {
+			throw NotImplemented();
+		},
+	});
 	app.use('/authentication', authentication);
 
 	const authenticationService = app.service('authentication');

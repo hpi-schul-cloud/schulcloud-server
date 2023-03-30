@@ -7,7 +7,7 @@ const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
-const accountModel = require('../account/model');
+// const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');
 const { LessonModel } = require('../lesson/model');
 const groupModel = require('../user-group/model');
@@ -23,11 +23,6 @@ const promises = [
 		name: 'schools',
 		promise: schoolModel.schoolModel.countDocuments(),
 		model: schoolModel.schoolModel.find(),
-	},
-	{
-		name: 'accounts',
-		promise: accountModel.countDocuments(),
-		model: accountModel.find(),
 	},
 	{
 		name: 'homework',
