@@ -1,16 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
 
 describe(ContentElementService.name, () => {
 	let module: TestingModule;
 	let service: ContentElementService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -18,6 +19,10 @@ describe(ContentElementService.name, () => {
 				ContentElementService,
 				{
 					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
+				},
+				{
+					provide: BoardDoService,
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
@@ -29,6 +34,7 @@ describe(ContentElementService.name, () => {
 
 		service = module.get(ContentElementService);
 		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 		await setupEntities();
 	});
 
@@ -50,7 +56,7 @@ describe(ContentElementService.name, () => {
 
 				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-				await service.create(cardId);
+				await service.create(card);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(
 					[
@@ -67,21 +73,22 @@ describe(ContentElementService.name, () => {
 		});
 	});
 
-	describe('deleteById', () => {
-		describe('when deleting a content element by id', () => {
+	describe('delete', () => {
+		describe('when deleting a content element', () => {
 			const setup = () => {
+				const card = cardFactory.build();
 				const textElement = textElementFactory.build();
 				const textElementId = textElement.id;
 
-				return { textElement, textElementId };
+				return { card, textElement, textElementId };
 			};
 
-			it('should call deleteByClassAndId using the boardDo repo', async () => {
-				const { textElementId } = setup();
+			it('should call deleteChildWithDescendants using the boardDo service', async () => {
+				const { card, textElementId } = setup();
 
-				await service.deleteById(textElementId);
+				await service.delete(card, textElementId);
 
-				expect(boardDoRepo.deleteByClassAndId).toHaveBeenCalledWith(TextElement, textElementId);
+				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(card, textElementId);
 			});
 		});
 	});
