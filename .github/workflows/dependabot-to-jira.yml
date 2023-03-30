@@ -57,4 +57,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           pr_title: ${{ steps.create_ticket.outputs.created_issue }} - ${{ github.event.pull_request.title }}
+          pr_body: ${{ github.event.pull_request.body }}
           pr_source: ${{ github.event.pull_request.head.ref }}
