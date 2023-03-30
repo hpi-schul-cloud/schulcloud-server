@@ -19,6 +19,7 @@ const SCHOOL_FEATURES = {
 	NEXTCLOUD: 'nextcloud',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
+	OAUTH_PROVISIONING_ENABLED: 'oauthProvisioningEnabled',
 };
 
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
