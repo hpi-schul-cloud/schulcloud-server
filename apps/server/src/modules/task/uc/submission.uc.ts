@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, PermissionContextBuilder, Submission, User } from '@shared/domain';
+import { EntityId, Permission, AuthorizationContextBuilder, Submission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
 
@@ -28,7 +28,7 @@ export class SubmissionUc {
 		this.authorizationService.checkPermission(
 			user,
 			submission,
-			PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
+			AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])
 		);
 
 		await this.submissionService.delete(submission);
@@ -37,7 +37,7 @@ export class SubmissionUc {
 	}
 
 	private filterSubmissionsByPermission(submissions: Submission[], user: User): Submission[] {
-		const permissionContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
+		const permissionContext = AuthorizationContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
 		const permittedSubmissions = submissions.filter((submission) => {
 			const hasPermission = this.authorizationService.hasPermission(user, submission, permissionContext);

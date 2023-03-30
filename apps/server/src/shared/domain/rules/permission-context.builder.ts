@@ -2,7 +2,7 @@ import { AuthorizationContext } from '../interface';
 import { Permission } from '../interface/permission.enum';
 import { Actions } from './actions.enum';
 
-export default class PermissionContextBuilder {
+export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Actions): AuthorizationContext {
 		const context = { requiredPermissions, action };
 

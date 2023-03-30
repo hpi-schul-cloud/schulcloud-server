@@ -3,7 +3,7 @@ import { BaseDomainObject } from '../interface/base-domain-object';
 import { AuthorisationUtils } from './authorisation.utils';
 import { BasePermission } from './base-permission';
 import { BasePermissionManager } from './base-permission-manager';
-import PermissionContextBuilder from './permission-context.builder';
+import { AuthorizationContextBuilder } from './permission-context.builder';
 
 class MyDomainObject extends BaseDomainObject {
 	id: string;
@@ -54,7 +54,7 @@ describe('base-permission', () => {
 		const user = userFactory.buildWithId({ roles });
 		const domainObject = new MyDomainObject();
 
-		expect(manager.hasPermission(user, domainObject, PermissionContextBuilder.read([]))).toEqual(true);
+		expect(manager.hasPermission(user, domainObject, AuthorizationContextBuilder.read([]))).toEqual(true);
 	});
 
 	it('Should support authorisation utils as public interface', () => {

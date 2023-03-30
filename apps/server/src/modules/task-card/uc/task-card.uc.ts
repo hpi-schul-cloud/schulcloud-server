@@ -6,7 +6,7 @@ import {
 	EntityId,
 	ITaskUpdate,
 	Permission,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	TaskCard,
 	User,
 } from '@shared/domain';
@@ -37,7 +37,7 @@ export class TaskCardUc {
 
 		if (params.courseId) {
 			const fetchedCourse = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, fetchedCourse, AuthorizationContextBuilder.write([]));
 			course = fetchedCourse;
 		}
 
@@ -113,7 +113,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.read([Permission.TASK_CARD_VIEW])
+			)
 		) {
 			throw new ForbiddenException();
 		}
@@ -128,7 +132,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
+			)
 		) {
 			throw new ForbiddenException();
 		}
@@ -143,7 +151,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
+			)
 		) {
 			throw new ForbiddenException();
 		}

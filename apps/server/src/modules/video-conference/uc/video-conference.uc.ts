@@ -5,7 +5,7 @@ import {
 	Course,
 	EntityId,
 	Permission,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	RoleName,
 	SchoolFeatures,
 	Team,
@@ -420,7 +420,7 @@ export class VideoConferenceUc {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
 			const context =
-				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
+				action === Actions.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
 			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});

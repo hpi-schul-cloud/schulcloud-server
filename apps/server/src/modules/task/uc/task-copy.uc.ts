@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Actions, Course, EntityId, Lesson, PermissionContextBuilder, User } from '@shared/domain';
+import { Actions, Course, EntityId, Lesson, AuthorizationContextBuilder, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
@@ -22,7 +22,7 @@ export class TaskCopyUC {
 		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
-		if (!this.authorisation.hasPermission(user, originalTask, PermissionContextBuilder.read([]))) {
+		if (!this.authorisation.hasPermission(user, originalTask, AuthorizationContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
 
@@ -78,7 +78,7 @@ export class TaskCopyUC {
 		}
 
 		const destinationLesson = await this.lessonRepo.findById(lessonId);
-		if (!this.authorisation.hasPermission(user, destinationLesson, PermissionContextBuilder.write([]))) {
+		if (!this.authorisation.hasPermission(user, destinationLesson, AuthorizationContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
 		}
 		return destinationLesson;

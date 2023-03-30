@@ -8,7 +8,7 @@ import {
 	ITaskProperties,
 	ITaskUpdate,
 	Permission,
-	PermissionContextBuilder,
+	AuthorizationContextBuilder,
 	Task,
 	TaskWithStatusVo,
 } from '@shared/domain';
@@ -70,7 +70,7 @@ export class TaskService {
 
 		if (params.courseId) {
 			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			taskParams.course = course;
 
 			if (params.usersIds) {
@@ -89,7 +89,7 @@ export class TaskService {
 			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
 				throw new ForbiddenException('Lesson does not belong to Course');
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			taskParams.lesson = lesson;
 		}
 
@@ -107,7 +107,7 @@ export class TaskService {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
 			? task.createTeacherStatusForUser(user)
@@ -126,7 +126,11 @@ export class TaskService {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+		this.authorizationService.checkPermission(
+			user,
+			task,
+			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
+		);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
@@ -138,7 +142,7 @@ export class TaskService {
 
 		if (params.courseId) {
 			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			task.course = course;
 
 			if (params.usersIds) {
@@ -163,7 +167,7 @@ export class TaskService {
 			if (!task.course || lesson.course.id !== task.course.id) {
 				throw new ForbiddenException('Lesson does not belong to Course');
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			task.lesson = lesson;
 		} else if (remove) {
 			task.lesson = undefined;

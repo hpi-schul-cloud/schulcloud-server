@@ -126,9 +126,9 @@ When calling other internal micro service for already authorized operations plea
 ### Example 1 - Execute a Single Operation
 
 ```javascript
-   this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([])
+   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
    // or
-   this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
+   this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps
 ```
 
@@ -136,9 +136,9 @@ When calling other internal micro service for already authorized operations plea
 
 ```javascript
 // If you don't have an entity but an entity type and id, you can check permission by reference
-await this.checkPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+await this.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // or
-await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // next orchestration steps
 ```
 
@@ -146,7 +146,7 @@ await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, Per
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
-await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions.COURSE_VIEW]));
+await this.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps
 ```
 
@@ -155,10 +155,10 @@ await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissi
 ```javascript
 /** const **/
 export const PermissionContexts = {
-   create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-   read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-   update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-   delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+   create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+   read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+   update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+   delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
 
 /** UC **/
@@ -193,7 +193,7 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
 
     const user = this.authorizationService.getUserWithPermissions(userId);
 
-   await this.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, PermissionContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+   await this.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
 
     const newUser = new User(params)
 

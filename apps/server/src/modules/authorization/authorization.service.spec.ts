@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
+import { ALL_RULES, BaseEntity, Permission, AuthorizationContextBuilder } from '@shared/domain';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -51,7 +51,7 @@ describe('AuthorizationService', () => {
 	describe('hasPermission', () => {
 		describe('when rule not exist', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
 				const entity = new TestEntity();
 				return { context, entity, user };
@@ -69,7 +69,7 @@ describe('AuthorizationService', () => {
 
 		describe('when can resolve', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([Permission.BASE_VIEW]);
+				const context = AuthorizationContextBuilder.read([Permission.BASE_VIEW]);
 				const school = schoolFactory.build();
 				const role = roleFactory.build({ permissions: [Permission.BASE_VIEW] });
 				const user = userFactory.buildWithId({ school, roles: [role] });
@@ -139,7 +139,7 @@ describe('AuthorizationService', () => {
 			it('team', () => {
 				const { team, user } = setup();
 
-				const context = PermissionContextBuilder.read([Permission.CHANGE_TEAM_ROLES]);
+				const context = AuthorizationContextBuilder.read([Permission.CHANGE_TEAM_ROLES]);
 				const response = service.hasPermission(user, team, context);
 
 				expect(response).toBe(true);
@@ -166,7 +166,7 @@ describe('AuthorizationService', () => {
 	describe('checkPermission', () => {
 		describe('when data successfully', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
 				const spyHasPermission = jest.spyOn(service, 'hasPermission').mockReturnValue(true);
 				return { context, user, spyHasPermission };
@@ -184,7 +184,7 @@ describe('AuthorizationService', () => {
 
 		describe('when data not successfully', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
 				const spyHasPermission = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
 				return { context, user, spyHasPermission };
@@ -203,7 +203,7 @@ describe('AuthorizationService', () => {
 	describe('hasPermissionByReferences', () => {
 		describe('when ReferenceLoader.loadEntity throw an error', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const userId = new ObjectId().toHexString();
 				const entityName = AllowedAuthorizationEntityType.Course;
 				const entityId = new ObjectId().toHexString();
@@ -229,7 +229,7 @@ describe('AuthorizationService', () => {
 
 		describe('when data successfully', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
 				const entityName = AllowedAuthorizationEntityType.Course;
@@ -284,7 +284,7 @@ describe('AuthorizationService', () => {
 	describe('checkPermissionByReferences', () => {
 		describe('when hasPermissionByReferences return false', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const userId = new ObjectId().toHexString();
 				const entityName = AllowedAuthorizationEntityType.Course;
 				const entityId = new ObjectId().toHexString();
