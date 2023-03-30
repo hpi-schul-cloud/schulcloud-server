@@ -300,6 +300,7 @@
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",
+					"default": "",
 					"description": "The URI of the S3 provider"
 				},
 				"S3_REGION": {
@@ -309,14 +310,17 @@
 				},
 				"S3_BUCKET": {
 					"type": "string",
+					"default": "",
 					"description": "Bucket name"
 				},
 				"S3_ACCESS_KEY": {
 					"type": "string",
+					"default": "",
 					"description": "Access Key to S3"
 				},
 				"S3_SECRET_KEY": {
 					"type": "string",
+					"default": "",
 					"description": "Secret key to S3"
 				},
 				"INCOMING_REQUEST_TIMEOUT": {
