@@ -16,9 +16,7 @@ import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
 import { AuthorizationService } from './authorization.service';
-import { FeathersAuthProvider } from './feathers-auth.provider';
-import { FeathersAuthorizationService } from './feathers-authorization.service';
-import { FeathersJwtProvider } from './feathers-jwt.provider';
+import { FeathersAuthorizationService, FeathersAuthProvider, FeathersJwtProvider } from './feathers';
 import { ReferenceLoader } from './reference.loader';
 
 @Module({

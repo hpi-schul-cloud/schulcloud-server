@@ -13,7 +13,7 @@ import {
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { FeathersAuthorizationService } from '@src/modules/authorization';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
