@@ -44,6 +44,9 @@ export class TaskRepo extends BaseRepo<Task> {
 			finishedCourseIds: EntityId[];
 			lessonIdsOfFinishedCourses: EntityId[];
 		},
+		filters?: {
+			userId?: EntityId;
+		},
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		const scope = new TaskScope('$or');
@@ -88,7 +91,16 @@ export class TaskRepo extends BaseRepo<Task> {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		const countedTaskList = await this.findTasksAndCount(scope.query, options);
+		const forAssignedUser = new TaskScope();
+		if (filters?.userId) {
+			forAssignedUser.byAssignedUser(filters.userId);
+		}
+
+		const finishedScope = new TaskScope('$and');
+		finishedScope.addQuery(forAssignedUser.query);
+		finishedScope.addQuery(scope.query);
+
+		const countedTaskList = await this.findTasksAndCount(finishedScope.query, options);
 
 		return countedTaskList;
 	}
