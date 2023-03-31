@@ -2,6 +2,7 @@
  * Unified message format
  */
 class Message {
+	// eslint-disable-next-line camelcase
 	constructor(title, text, timestamp, page, messageId, url, status, created_at) {
 		this.mTitle = title || '';
 		this.mText = text || '';
@@ -11,7 +12,7 @@ class Message {
 		this.mMessageId = messageId || '-1';
 		this.mUrl = url || '';
 		// eslint-disable-next-line camelcase
-		this.mCreated_at = created_at || '';
+		this.mCreated_at = created_at === undefined ? '' : created_at;
 		this.mStatus = status || '';
 	}
 
