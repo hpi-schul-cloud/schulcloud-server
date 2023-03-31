@@ -75,7 +75,7 @@
   -e &quot;MINIO_ROOT_USER=`miniouser`&quot; \
   -e &quot;MINIO_ROOT_PASSWORD=miniouser&quot; \
   quay.io/minio/minio server /data --console-address &quot;:9001&quot;</code></pre></div><ol start="5">
-<li>Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look <a href="./nestjs-application/keycloak.html">here</a>.</li>
+<li>Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html">here</a>.</li>
 </ol>
 <p>Change directory to the <code>schulcloud-server</code> root folder. Execute following command to setup the ErWIn-IDM container:</p>
 <div><pre class="line-numbers"><code class="language-bash">docker run \
@@ -85,7 +85,7 @@
   -v &quot;$PWD/backup/idm/keycloak:/tmp/realms&quot; \
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
   &quot;&amp;&amp; /opt/keycloak/bin/kc.sh import --dir /tmp/realms&quot;</code></pre></div><p>To add seed data into ErWIn-IDM, use <code>npm run setup:idm</code> to reset and apply seed data.</p>
-<p>See <a href="./nestjs-application/keycloak.html">ErWIn-IDM specific documentation</a> to learn how to add the ErWIn-IDM identity broker feature.</p>
+<p>See <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html">ErWIn-IDM specific documentation</a> to learn how to add the ErWIn-IDM identity broker feature.</p>
 <ol start="6">
 <li>Add secrets to systems (optional)</li>
 </ol>
