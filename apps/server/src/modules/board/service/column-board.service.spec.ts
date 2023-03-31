@@ -10,7 +10,6 @@ describe(ColumnBoardService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	// let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,7 +28,6 @@ describe(ColumnBoardService.name, () => {
 
 		service = module.get(ColumnBoardService);
 		boardDoRepo = module.get(BoardDoRepo);
-		// boardNodeRepo = module.get(BoardNodeRepo);
 		await setupEntities();
 	});
 
