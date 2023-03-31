@@ -1,6 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
-import { IFindOptions, RoleName } from '@shared/domain';
-import { Authorization } from 'oauth-1.0a';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -11,16 +9,18 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
-import { Page } from '@shared/domain/domainobject/page';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Logger } from '@src/core/logger';
 import { ValidationError } from '@shared/common';
+import { PaginationParams } from '@shared/controller';
+import { IFindOptions, RoleName } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { Page } from '@shared/domain/domainobject/page';
+import { Logger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Lti11Uc } from '../uc/lti11.uc';
-import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authorization } from 'oauth-1.0a';
+import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
 import { ExternalToolUc } from '../uc/external-tool.uc';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
+import { Lti11Uc } from '../uc/lti11.uc';
 import {
 	ExternalToolPostParams,
 	ExternalToolResponse,
@@ -31,7 +31,7 @@ import {
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
-import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

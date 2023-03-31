@@ -1,12 +1,18 @@
 import { Embeddable, Enum, Property } from '@mikro-orm/core';
-import { CustomParameterScope } from './custom-parameter-scope.enum';
 import { CustomParameterLocation } from './custom-parameter-location.enum';
+import { CustomParameterScope } from './custom-parameter-scope.enum';
 import { CustomParameterType } from './custom-parameter-type.enum';
 
 @Embeddable()
 export class CustomParameter {
 	@Property()
 	name: string;
+
+	@Property()
+	displayName: string;
+
+	@Property({ nullable: true })
+	description?: string;
 
 	@Property({ nullable: true })
 	default?: string;
@@ -31,6 +37,8 @@ export class CustomParameter {
 
 	constructor(props: CustomParameter) {
 		this.name = props.name;
+		this.displayName = props.displayName;
+		this.description = props.description;
 		this.default = props.default;
 		this.location = props.location;
 		this.scope = props.scope;
