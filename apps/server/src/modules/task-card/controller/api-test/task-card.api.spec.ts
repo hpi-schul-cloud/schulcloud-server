@@ -165,9 +165,11 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 		});
 		it('POST should return new task-card', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
 			const inThreeDays = new Date(Date.now() + 259200000);
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
+
+			const inTwoDays = new Date(Date.now() + 172800000);
 
 			await em.persistAndFlush([user, course]);
 			em.clear();
@@ -193,7 +195,7 @@ describe('Task-Card Controller (api)', () => {
 					},
 				],
 				courseId: course.id,
-				dueDate: inThreeDays,
+				dueDate: inTwoDays,
 			};
 			const response = await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -207,7 +209,7 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.task.name).toEqual('test title');
 			expect(responseTaskCard.title).toEqual('test title');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
-			expect(responseTaskCard.dueDate).toBe(inThreeDays.toISOString());
+			expect(responseTaskCard.dueDate).toBe(inTwoDays.toISOString());
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
@@ -302,9 +304,11 @@ describe('Task-Card Controller (api)', () => {
 
 		describe('Sanitize richtext', () => {
 			it('should sanitize richtext on create with inputformat ck5', async () => {
-				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const inTwoDays = new Date(Date.now() + 172800000);
 				const inThreeDays = new Date(Date.now() + 259200000);
+
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
 				await em.persistAndFlush([user, course]);
 				em.clear();
@@ -325,7 +329,7 @@ describe('Task-Card Controller (api)', () => {
 							},
 						},
 					],
-					dueDate: inThreeDays,
+					dueDate: inTwoDays,
 				};
 
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
@@ -477,9 +481,10 @@ describe('Task-Card Controller (api)', () => {
 	});
 	describe('When title is provided', () => {
 		it('should create a task card with title', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
 			const inThreeDays = new Date(Date.now() + 259200000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
 			await em.persistAndFlush([user, course]);
 			em.clear();
@@ -489,7 +494,7 @@ describe('Task-Card Controller (api)', () => {
 			const taskCardParams: TaskCardParams = {
 				title: 'test title',
 				courseId: course.id,
-				dueDate: inThreeDays,
+				dueDate: inTwoDays,
 			};
 
 			const response = await request(app.getHttpServer())

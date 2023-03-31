@@ -58,7 +58,9 @@ export class TaskCardUc {
 			throw new ValidationError('Invalid date combination');
 		}
 
-		if (course.untilDate && course.untilDate < cardParams.dueDate) {
+		if (!course.untilDate) {
+			throw new ValidationError('Course end date is not set');
+		} else if (course.untilDate && course.untilDate < cardParams.dueDate) {
 			throw new ValidationError('Due date must be before course end date');
 		}
 

@@ -176,11 +176,12 @@ describe('TaskCardUc', () => {
 		const richText = ['test richtext 1', 'test richtext 2'];
 		const tomorrow = new Date(Date.now() + 86400000);
 		const inTwoDays = new Date(Date.now() + 172800000);
+		const inThreeDays = new Date(Date.now() + 259200000);
 		const visibleAtDate = tomorrow;
 		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
-			course = courseFactory.buildWithId();
+			course = courseFactory.buildWithId({ untilDate: inThreeDays });
 			taskCardCreateParams = {
 				title,
 				text: [
@@ -248,8 +249,8 @@ describe('TaskCardUc', () => {
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should throw if course end is before due date', async () => {
-			course.untilDate = tomorrow;
-			courseRepo.findById.mockResolvedValue(course);
+			// TODO: SHOULD FAIL
+			const inFourDays = new Date(Date.now() + 345600000);
 			const TaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
