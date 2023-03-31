@@ -55,7 +55,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	async deleteById(accountId: EntityId): Promise<void> {
+	async deleteById(accountId: EntityId | ObjectId): Promise<void> {
 		const account = await this.findById(accountId);
 		return this.delete(account);
 	}

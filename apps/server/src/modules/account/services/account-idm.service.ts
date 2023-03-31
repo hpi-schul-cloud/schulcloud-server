@@ -1,19 +1,19 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountLookupService } from './account-lookup.service';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
 	constructor(
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
-		private readonly configService: ConfigService
+		private readonly accountLookupService: AccountLookupService
 	) {
 		super();
 	}
@@ -143,11 +143,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
-	private async getIdmAccountId(accountId: string) {
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
-			return accountId;
+	private async getIdmAccountId(accountId: string): Promise<string> {
+		const externalId = await this.accountLookupService.getExternalId(accountId);
+		if (!externalId) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
 		}
-		const idmAccount = await this.identityManager.findAccountByTecRefId(accountId);
-		return idmAccount.id;
+		return externalId;
 	}
 }
