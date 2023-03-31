@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamRule } from '@shared/domain/rules/team.rule';
+import { TeamRule } from '@src/modules/authorization/rules/team.rule';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { Permission } from '../interface';
-import { AuthorizationContextBuilder } from './authorization-context.builder';
-import { AuthorizationHelper } from './authorization.helper';
+import { Permission } from '../../../shared/domain/interface';
+import { AuthorizationContextBuilder } from '../authorization-context.builder';
+import { AuthorizationHelper } from '../authorization.helper';
 
 describe('TeamRule', () => {
 	let service: TeamRule;

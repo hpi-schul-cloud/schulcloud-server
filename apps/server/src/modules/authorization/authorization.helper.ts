@@ -1,7 +1,7 @@
 import { Collection } from '@mikro-orm/core';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Role, User } from '@shared/domain/entity';
-import { IEntityWithSchool, IUserRoleName } from '../interface';
+import { IEntityWithSchool, IUserRoleName } from '../../shared/domain/interface';
 
 @Injectable()
 export class AuthorizationHelper {

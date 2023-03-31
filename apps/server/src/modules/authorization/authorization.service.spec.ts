@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, Permission, AuthorizationContextBuilder } from '@shared/domain';
+import { BaseEntity, Permission } from '@shared/domain';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -15,9 +15,11 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationService } from './authorization.service';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
+import { ALL_RULES } from './rules';
 
 class TestEntity extends BaseEntity {}
 

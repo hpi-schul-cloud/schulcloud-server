@@ -9,11 +9,9 @@ import { TeamRule } from './team.rule';
 import { UserRule } from './user.rule';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
-export * from './action.enum';
 export * from './course-group.rule';
 export * from './course.rule';
 export * from './lesson.rule';
-export * from './authorization-context.builder';
 export * from './school.rule';
 export * from './submission.rule';
 export * from './task-card.rule';
@@ -21,8 +19,6 @@ export * from './task.rule';
 export * from './team.rule';
 export * from './user.rule';
 export * from './school-external-tool.rule';
-export * from './rule-manager';
-export * from './authorization.helper';
 
 export const ALL_RULES = [
 	LessonRule,

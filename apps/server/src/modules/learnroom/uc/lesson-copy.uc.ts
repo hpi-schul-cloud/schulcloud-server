@@ -1,9 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Action, EntityId, AuthorizationContextBuilder, User } from '@shared/domain';
-import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId, Permission, User } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { LessonCopyParentParams } from '@src/modules/lesson';
 import { LessonCopyService } from '@src/modules/lesson/service';

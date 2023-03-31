@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Action, ITaskStatus, Permission, SortOrder } from '@shared/domain';
+import { ITaskStatus, Permission, SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -13,7 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 

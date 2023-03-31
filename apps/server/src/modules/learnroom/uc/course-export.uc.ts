@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Action, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
+import { EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 

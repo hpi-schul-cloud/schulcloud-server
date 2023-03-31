@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
-	Action,
 	Counted,
 	Course,
 	EntityId,
@@ -10,13 +9,12 @@ import {
 	ITaskStatus,
 	Lesson,
 	Permission,
-	AuthorizationContextBuilder,
 	SortOrder,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 
 @Injectable()

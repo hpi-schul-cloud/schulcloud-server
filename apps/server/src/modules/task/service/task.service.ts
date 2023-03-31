@@ -8,12 +8,11 @@ import {
 	ITaskProperties,
 	ITaskUpdate,
 	Permission,
-	AuthorizationContextBuilder,
 	Task,
 	TaskWithStatusVo,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 

@@ -8,9 +8,10 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationHelper, CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
-import { Permission } from '../interface';
-import { Action } from './action.enum';
+import { CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
+import { Permission } from '../../../shared/domain/interface';
+import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../types';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });

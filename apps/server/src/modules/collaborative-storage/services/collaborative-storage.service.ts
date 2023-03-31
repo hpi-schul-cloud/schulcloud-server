@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, AuthorizationContextBuilder } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamMapper } from '../mapper/team.mapper';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';

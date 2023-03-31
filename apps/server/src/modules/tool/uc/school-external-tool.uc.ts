@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Action, EntityId, Permission } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';

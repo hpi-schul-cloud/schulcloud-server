@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Submission, User } from '../entity';
-import { AuthorizableObject, AuthorizationContext } from '../interface/permission';
-import { Action } from './action.enum';
-import { AuthorizationHelper } from './authorization.helper';
+import { Submission, User } from '../../../shared/domain/entity';
+import { AuthorizationHelper } from '../authorization.helper';
+import { Action, AuthorizableObject, AuthorizationContext } from '../types';
 import { TaskRule } from './task.rule';
 
 @Injectable()

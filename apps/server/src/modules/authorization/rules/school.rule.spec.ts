@@ -1,16 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { Role, User } from '../entity';
-import { Permission } from '../interface';
-import { Action } from './action.enum';
-import { AuthorizationHelper } from './authorization.helper';
-import { UserRule } from './user.rule';
+import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { SchoolDO } from '../../../shared/domain/domainobject/school.do';
+import { Role, School, User } from '../../../shared/domain/entity';
+import { Permission } from '../../../shared/domain/interface';
+import { Action } from '../types';
+import { AuthorizationHelper } from '../authorization.helper';
+import { SchoolRule } from './school.rule';
 
-describe('UserRule', () => {
-	let service: UserRule;
+describe('SchoolRule', () => {
+	let service: SchoolRule;
 	let authorizationHelper: AuthorizationHelper;
 	let user: User;
-	let entity: User;
+	let entity: School | SchoolDO;
 	let role: Role;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
@@ -20,10 +21,10 @@ describe('UserRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, UserRule],
+			providers: [AuthorizationHelper, SchoolRule],
 		}).compile();
 
-		service = await module.get(UserRule);
+		service = await module.get(SchoolRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
@@ -33,7 +34,7 @@ describe('UserRule', () => {
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
-		entity = userFactory.build();
+		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
@@ -41,30 +42,23 @@ describe('UserRule', () => {
 	});
 
 	it('should return "true" if user in scope', () => {
+		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		entity = user;
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
-	it('should return "true" if user in scope but has not permission', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = user;
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
-		expect(res).toBe(true);
-	});
-
-	it('should return "true" if user has permission but not owner', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = userFactory.build();
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
-		expect(res).toBe(true);
-	});
-
 	it('should return "false" if user has not permission', () => {
-		entity = userFactory.build();
+		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		expect(res).toBe(false);
+	});
+
+	it('should return "false" if user has not some school', () => {
+		entity = new SchoolDO({ name: 'testschool', id: 'invalidId' });
+		user = userFactory.build({ roles: [role] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(false);
 	});
 });

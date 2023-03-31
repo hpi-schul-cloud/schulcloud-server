@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { Action, Course, ITaskUpdate, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Course, ITaskUpdate, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules';
+import { Action, AuthorizationService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';

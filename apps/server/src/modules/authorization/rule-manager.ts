@@ -1,16 +1,17 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { User } from '../entity/user.entity';
-import { AuthorizableObject, AuthorizationContext, Rule } from '../interface';
-import { CourseGroupRule } from './course-group.rule';
-import { CourseRule } from './course.rule';
-import { LessonRule } from './lesson.rule';
-import { SchoolExternalToolRule } from './school-external-tool.rule';
-import { SchoolRule } from './school.rule';
-import { SubmissionRule } from './submission.rule';
-import { TaskCardRule } from './task-card.rule';
-import { TaskRule } from './task.rule';
-import { TeamRule } from './team.rule';
-import { UserRule } from './user.rule';
+import { User } from '../../shared/domain/entity/user.entity';
+import { CourseGroupRule } from './rules/course-group.rule';
+import { CourseRule } from './rules/course.rule';
+import { LessonRule } from './rules/lesson.rule';
+import { SchoolExternalToolRule } from './rules/school-external-tool.rule';
+import { SchoolRule } from './rules/school.rule';
+import { SubmissionRule } from './rules/submission.rule';
+import { TaskCardRule } from './rules/task-card.rule';
+import { TaskRule } from './rules/task.rule';
+import { TeamRule } from './rules/team.rule';
+import { UserRule } from './rules/user.rule';
+import { AuthorizableObject, AuthorizationContext } from './types';
+import { Rule } from './types/rule.interface';
 
 @Injectable()
 export class RuleManager {

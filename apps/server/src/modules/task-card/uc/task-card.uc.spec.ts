@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Action, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
+import { CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
 import { CardElementRepo, CourseRepo, RichTextCardElementRepo, TaskCardRepo, UserRepo } from '@shared/repo';
@@ -14,7 +14,7 @@ import {
 	taskCardFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
 import { TaskCardUc } from './task-card.uc';

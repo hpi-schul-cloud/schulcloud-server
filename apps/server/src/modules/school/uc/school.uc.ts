@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
-import { Action, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';

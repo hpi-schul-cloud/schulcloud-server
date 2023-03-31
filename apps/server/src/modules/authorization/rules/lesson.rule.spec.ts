@@ -8,10 +8,11 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationHelper, CourseGroupRule, CourseRule } from '.';
-import { Lesson, User } from '../entity';
-import { Permission, RoleName } from '../interface';
-import { Action } from './action.enum';
+import { CourseGroupRule, CourseRule } from '.';
+import { Lesson, User } from '../../../shared/domain/entity';
+import { Permission, RoleName } from '../../../shared/domain/interface';
+import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../types';
 import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {

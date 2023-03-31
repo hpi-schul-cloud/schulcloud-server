@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ALL_RULES, AuthorizationHelper, RuleManager } from '@shared/domain';
 import { FeathersModule } from '@shared/infra/feathers';
 import {
 	CourseGroupRepo,
@@ -15,9 +14,12 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
+import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider, FeathersJwtProvider } from './feathers';
 import { ReferenceLoader } from './reference.loader';
+import { RuleManager } from './rule-manager';
+import { ALL_RULES } from './rules';
 
 @Module({
 	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],

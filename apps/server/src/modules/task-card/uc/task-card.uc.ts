@@ -1,19 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import {
-	CardType,
-	Course,
-	EntityId,
-	ITaskUpdate,
-	Permission,
-	AuthorizationContextBuilder,
-	TaskCard,
-	User,
-} from '@shared/domain';
+import { CardType, Course, EntityId, ITaskUpdate, Permission, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
 

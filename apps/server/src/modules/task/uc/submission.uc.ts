@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, AuthorizationContextBuilder, Submission, User } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
+import { EntityId, Permission, Submission, User } from '@shared/domain';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
 
 @Injectable()

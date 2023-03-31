@@ -1,4 +1,5 @@
-import { Permission, AuthorizationContextBuilder } from '@shared/domain';
+import { Permission } from '@shared/domain';
+import { AuthorizationContextBuilder } from '../authorization';
 
 export enum FilesStorageInternalActions {
 	downloadBySecurityToken = '/file-security/download/:token',

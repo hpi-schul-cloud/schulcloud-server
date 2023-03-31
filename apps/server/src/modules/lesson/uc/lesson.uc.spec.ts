@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, AuthorizationContextBuilder } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService, LessonUC } from '@src/modules';
+import { AuthorizationContextBuilder, AuthorizationService, LessonUC } from '@src/modules';
 import { LessonService } from '../service';
 
 describe('LessonUC', () => {

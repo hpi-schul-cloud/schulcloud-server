@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Action, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
+import { EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';

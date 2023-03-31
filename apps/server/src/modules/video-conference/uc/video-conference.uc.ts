@@ -1,11 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import {
-	Action,
 	Course,
 	EntityId,
 	Permission,
-	AuthorizationContextBuilder,
 	RoleName,
 	SchoolFeatures,
 	Team,
@@ -19,7 +17,7 @@ import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';

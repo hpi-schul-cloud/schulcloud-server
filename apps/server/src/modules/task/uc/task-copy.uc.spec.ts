@@ -3,10 +3,15 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Action, AuthorizableObject, User } from '@shared/domain';
+import { User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizableObject,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyService } from '../service';
