@@ -92,4 +92,17 @@ describe(ContentElementService.name, () => {
 			});
 		});
 	});
+
+	describe('move', () => {
+		describe('when moving a textElement', () => {
+			it('should call do service', async () => {
+				const targetParent = cardFactory.build();
+				const element = textElementFactory.build();
+
+				await service.move(element.id, targetParent.id, 3);
+
+				expect(boardDoService.moveBoardDo).toHaveBeenCalledWith(element.id, targetParent.id, 3);
+			});
+		});
+	});
 });

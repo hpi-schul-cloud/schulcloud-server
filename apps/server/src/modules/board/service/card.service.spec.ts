@@ -99,7 +99,7 @@ describe(CardService.name, () => {
 	});
 
 	describe('delete', () => {
-		describe('when deleting a column by id', () => {
+		describe('when deleting a card by id', () => {
 			it('should call the deleteChildWithDescendants of the board-do-service', async () => {
 				const column = columnFactory.build();
 				const card = cardFactory.build();
@@ -107,6 +107,19 @@ describe(CardService.name, () => {
 				await service.delete(column, card.id);
 
 				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
+			});
+		});
+	});
+
+	describe('move', () => {
+		describe('when moving a card', () => {
+			it('should call do service', async () => {
+				const targetParent = columnFactory.build();
+				const card = cardFactory.build();
+
+				await service.move(card.id, targetParent.id, 3);
+
+				expect(boardDoService.moveBoardDo).toHaveBeenCalledWith(card.id, targetParent.id, 3);
 			});
 		});
 	});

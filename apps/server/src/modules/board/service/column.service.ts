@@ -32,4 +32,8 @@ export class ColumnService {
 	async delete(parent: ColumnBoard, columnId: EntityId): Promise<void> {
 		await this.boardDoService.deleteChildWithDescendants(parent, columnId);
 	}
+
+	async move(columnId: EntityId, boardId: EntityId, toIndex: number): Promise<void> {
+		await this.boardDoService.moveBoardDo(columnId, boardId, toIndex);
+	}
 }

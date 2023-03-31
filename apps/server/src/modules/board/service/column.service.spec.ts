@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
+import { boardFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -77,6 +77,19 @@ describe(ColumnService.name, () => {
 				await service.delete(board, column.id);
 
 				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(board, column.id);
+			});
+		});
+	});
+
+	describe('move', () => {
+		describe('when moving a column', () => {
+			it('should call do service', async () => {
+				const board = boardFactory.build();
+				const column = columnFactory.build();
+
+				await service.move(column.id, board.id, 3);
+
+				expect(boardDoService.moveBoardDo).toHaveBeenCalledWith(column.id, board.id, 3);
 			});
 		});
 	});

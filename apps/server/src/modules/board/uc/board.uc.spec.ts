@@ -145,6 +145,16 @@ describe(BoardUc.name, () => {
 		});
 	});
 
+	describe('moving a column', () => {
+		it('should call the service to move the column', async () => {
+			const { user, board, column } = setup();
+
+			await uc.moveColumn(user.id, board.id, column.id, 7);
+
+			expect(columnService.move).toHaveBeenCalledWith(column.id, board.id, 7);
+		});
+	});
+
 	describe('creating a card', () => {
 		it('should call the service to create the card', async () => {
 			const { user, board, column } = setup();
@@ -171,6 +181,16 @@ describe(BoardUc.name, () => {
 			await uc.deleteCard(user.id, board.id, column.id, card.id);
 
 			expect(cardService.delete).toHaveBeenCalledWith(column, card.id);
+		});
+	});
+
+	describe('moving a card', () => {
+		it('should call the service to move the card', async () => {
+			const { user, column, card } = setup();
+
+			await uc.moveCard(user.id, card.id, column.id, 7);
+
+			expect(cardService.move).toHaveBeenCalledWith(card.id, column.id, 7);
 		});
 	});
 });
