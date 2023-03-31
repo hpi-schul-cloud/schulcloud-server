@@ -28,8 +28,8 @@ export class TaskRule extends BasePermission<Task> {
 
 		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
 		const isAssigned = this.utils.hasAccessToEntity(user, entity, ['users']);
-
-		if (entity.isDraft()) {
+		const hasAssignees = entity.users.length > 0;
+		if (entity.isDraft() || hasAssignees) {
 			action = Actions.write;
 		}
 
