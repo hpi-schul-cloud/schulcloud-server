@@ -265,7 +265,7 @@ class EduSharingConnector {
 		const iframeSrc = /<iframe src="(.*?)"><\/iframe>/g.exec(cleanTags);
 		const scriptSrc = /<script src="(.*?)"><\/script>/g.exec(cleanTags);
 
-		if ((!Array.isArray(iframeSrc) && !iframeSrc[1]) || (!Array.isArray(scriptSrc) && !scriptSrc[1])) {
+		if (!(Array.isArray(iframeSrc) && iframeSrc[1] && Array.isArray(scriptSrc) && scriptSrc[1])) {
 			throw new Unavailable(`No data detected in Edu-Sharing renderer response.`);
 		}
 
