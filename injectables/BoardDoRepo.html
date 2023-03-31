@@ -80,7 +80,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteWithDescendants" >deleteWithDescendants</a>
+                                <a href="#deleteById" >deleteById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByClassAndId" >findByClassAndId</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -180,26 +184,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteWithDescendants"></a>
+                    <a name="deleteById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>deleteWithDescendants</b></span>
-                        <a href="#deleteWithDescendants"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteById</b></span>
+                        <a href="#deleteById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteWithDescendants(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>deleteById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:66</a></div>
                 </td>
             </tr>
 
@@ -238,6 +242,110 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByClassAndId"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findByClassAndId</b></span>
+                        <a href="#findByClassAndId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByClassAndId(doClass: literal type, id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, depth?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:21</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Type parameters :</b>
+                    <ul class="type-parameters">
+                        <li>S</li>
+                        <li>T</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>doClass</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>depth</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;T&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -352,8 +460,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:34</a></div>
                 </td>
             </tr>
 
@@ -423,8 +531,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:48</a></div>
                 </td>
             </tr>
 
@@ -494,8 +602,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:55</a></div>
                 </td>
             </tr>
 
@@ -563,10 +671,10 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { AnyBoardDo, BoardNode, EntityId } from &#x27;@shared/domain&#x27;;
-import { BoardDoBuilder } from &#x27;@shared/domain/entity/boardnode/board-do.builder&#x27;;
-import { BoardNodeBuilderImpl } from &#x27;@shared/domain/entity/boardnode/board-node-builder-impl&#x27;;
+import { BoardDoBuilderImpl } from &#x27;./board-do.builder-impl&#x27;;
+import { BoardNodeBuilderImpl } from &#x27;./board-node.builder-impl&#x27;;
 import { BoardNodeRepo } from &#x27;./board-node.repo&#x27;;
 
 @Injectable()
@@ -576,7 +684,20 @@ export class BoardDoRepo {
 	async findById(id: EntityId, depth?: number): Promise&lt;AnyBoardDo&gt; {
 		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, id);
 		const descendants &#x3D; await this.boardNodeRepo.findDescendants(boardNode, depth);
-		const domainObject &#x3D; new BoardDoBuilder(descendants).buildDomainObject(boardNode);
+		const domainObject &#x3D; new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
+
+		return domainObject;
+	}
+
+	async findByClassAndId&lt;S, T extends AnyBoardDo&gt;(
+		doClass: { new (props: S): T },
+		id: EntityId,
+		depth?: number
+	): Promise&lt;T&gt; {
+		const domainObject &#x3D; await this.findById(id, depth);
+		if (!(domainObject instanceof doClass)) {
+			throw new NotFoundException(&#x60;There is no &#x27;${doClass.name}&#x27; with this id&#x60;);
+		}
 
 		return domainObject;
 	}
@@ -584,11 +705,11 @@ export class BoardDoRepo {
 	async findByIds(ids: EntityId[]): Promise&lt;AnyBoardDo[]&gt; {
 		const boardNodes &#x3D; await this.em.find(BoardNode, { id: { $in: ids } });
 
-		const childrenMap &#x3D; await this.boardNodeRepo.findChildrenOfMany(boardNodes);
+		const childrenMap &#x3D; await this.boardNodeRepo.findDescendantsOfMany(boardNodes);
 
 		const domainObjects &#x3D; boardNodes.map((boardNode) &#x3D;&gt; {
 			const children &#x3D; childrenMap[boardNode.pathOfChildren];
-			const domainObject &#x3D; new BoardDoBuilder(children).buildDomainObject(boardNode);
+			const domainObject &#x3D; new BoardDoBuilderImpl(children).buildDomainObject(boardNode);
 			return domainObject;
 		});
 
@@ -597,13 +718,9 @@ export class BoardDoRepo {
 
 	async findParentOfId(childId: EntityId): Promise&lt;AnyBoardDo | undefined&gt; {
 		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, childId);
-		if (boardNode.parentId) {
-			const parent &#x3D; await this.em.findOneOrFail(BoardNode, boardNode.parentId);
-			const descendants &#x3D; await this.boardNodeRepo.findDescendants(parent);
-			const domainObject &#x3D; new BoardDoBuilder(descendants).buildDomainObject(parent);
-			return domainObject;
-		}
-		return undefined;
+		const domainObject &#x3D; boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
+
+		return domainObject;
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
@@ -617,7 +734,7 @@ export class BoardDoRepo {
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteWithDescendants(id: EntityId): Promise&lt;void&gt; {
+	async deleteById(id: EntityId): Promise&lt;void&gt; {
 		const boardNode &#x3D; await this.boardNodeRepo.findById(BoardNode, id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
 	}

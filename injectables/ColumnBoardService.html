@@ -80,15 +80,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#createBoard" >createBoard</a>
+                                <a href="#create" >create</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#createCard" >createCard</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#createColumn" >createColumn</a>
+                                <a href="#delete" >delete</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -112,7 +108,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardNodeRepo: <a href="../injectables/BoardNodeRepo.html" target="_self">BoardNodeRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -146,6 +142,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>boardNodeRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -164,26 +172,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createBoard"></a>
+                    <a name="create"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>createBoard</b></span>
-                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createBoard()</code>
+                    <code>create()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:16</a></div>
                 </td>
             </tr>
 
@@ -203,109 +211,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createCard"></a>
+                    <a name="delete"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>createCard</b></span>
-                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createCard(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:50</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>boardId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>columnId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createColumn"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>createColumn</b></span>
-                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createColumn(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:30</a></div>
                 </td>
             </tr>
 
@@ -343,7 +268,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -430,24 +355,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Card, Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ColumnBoard, ColumnBoardNode, EntityId } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { BoardDoRepo } from &#x27;../repo&#x27;;
+import { BoardDoRepo, BoardNodeRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async findById(boardId: EntityId): Promise&lt;ColumnBoard&gt; {
-		const board &#x3D; await this.boardDoRepo.findById(boardId, 2);
-		if (board instanceof ColumnBoard) {
-			return board;
-		}
-		throw new NotFoundException(&#x27;There is no columboard with this id&#x27;);
+		const board &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
+
+		return board;
 	}
 
-	async createBoard(): Promise&lt;ColumnBoard&gt; {
+	async create(): Promise&lt;ColumnBoard&gt; {
 		const board &#x3D; new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title: &#x27;&#x27;,
@@ -461,42 +384,10 @@ export class ColumnBoardService {
 		return board;
 	}
 
-	async createColumn(boardId: EntityId): Promise&lt;Column&gt; {
-		const board &#x3D; await this.boardDoRepo.findById(boardId);
-
-		const column &#x3D; new Column({
-			id: new ObjectId().toHexString(),
-			title: &#x27;&#x27;,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		board.addChild(column);
-
-		await this.boardDoRepo.save(board.children, board.id);
-
-		return column;
-	}
-
-	async createCard(boardId: EntityId, columnId: EntityId): Promise&lt;Card&gt; {
-		const board &#x3D; await this.boardDoRepo.findById(boardId);
-		const column &#x3D; board.getChild(columnId);
-
-		const card &#x3D; new Card({
-			id: new ObjectId().toHexString(),
-			title: &#x60;&#x60;,
-			height: 150,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		column.addChild(card);
-
-		await this.boardDoRepo.save(column.children, column.id);
-
-		return card;
+	async delete(boardId: EntityId): Promise&lt;void&gt; {
+		// ensure the board exists and is really a board
+		await this.boardNodeRepo.findById(ColumnBoardNode, boardId);
+		await this.boardDoRepo.deleteById(boardId);
 	}
 }
 </code></pre>

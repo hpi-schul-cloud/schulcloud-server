@@ -127,7 +127,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>createElement(urlParams: <a href="../classes/CardIdUrlParams.html" target="_self">CardIdUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -165,7 +165,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
+                                                <code><a href="../classes/CardIdUrlParams.html" target="_self" >CardIdUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -391,7 +391,7 @@ import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestj
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { CardUc } from &#x27;../uc/card.uc&#x27;;
-import { CardIdsParams, CardListResponse, CardUrlParams, ContentElementUrlParams, TextElementResponse } from &#x27;./dto&#x27;;
+import { CardIdsParams, CardIdUrlParams, CardListResponse, ContentElementUrlParams, TextElementResponse } from &#x27;./dto&#x27;;
 import { AnyContentElementResponse } from &#x27;./dto/card/any-content-element.response&#x27;;
 import { TextElementResponseMapper } from &#x27;./mapper&#x27;;
 import { CardResponseMapper } from &#x27;./mapper/card-response.mapper&#x27;;
@@ -426,7 +426,7 @@ export class CardController {
 	})
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
-		@Param() urlParams: CardUrlParams,
+		@Param() urlParams: CardIdUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;AnyContentElementResponse&gt; {
 		const element &#x3D; await this.cardUc.createElement(currentUser.userId, urlParams.cardId);

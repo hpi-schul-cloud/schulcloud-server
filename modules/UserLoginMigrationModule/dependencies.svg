@@ -18,13 +18,13 @@
 <title>cluster_UserLoginMigrationModule_imports</title>
 <polygon fill="none" stroke="black" points="687,-40.8 687,-92.8 1266,-92.8 1266,-40.8 687,-40.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_UserLoginMigrationModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 679,-92.8 679,-40.8 16,-40.8"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_UserLoginMigrationModule_exports</title>
 <polygon fill="none" stroke="black" points="545,-170.8 545,-222.8 1051,-222.8 1051,-170.8 545,-170.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_UserLoginMigrationModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 679,-92.8 679,-40.8 16,-40.8"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">

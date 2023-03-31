@@ -754,7 +754,7 @@
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { BoardUc, CardUc } from &#x27;../uc&#x27;;
+import { BoardUc } from &#x27;../uc&#x27;;
 import { BoardResponse, BoardUrlParams, CardResponse, CardUrlParams, ColumnResponse, ColumnUrlParams } from &#x27;./dto&#x27;;
 import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 
@@ -762,7 +762,7 @@ import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from &#
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;boards&#x27;)
 export class BoardController {
-	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
+	constructor(private readonly boardUc: BoardUc) {}
 
 	@Get(&#x27;:boardId&#x27;)
 	async getBoardSkeleton(
@@ -816,7 +816,7 @@ export class BoardController {
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;CardResponse&gt; {
-		const card &#x3D; await this.cardUc.createCard(currentUser.userId, urlParams.boardId, urlParams.columnId);
+		const card &#x3D; await this.boardUc.createCard(currentUser.userId, urlParams.boardId, urlParams.columnId);
 
 		const response &#x3D; CardResponseMapper.mapToResponse(card);
 
@@ -825,7 +825,7 @@ export class BoardController {
 
 	@Delete(&#x27;:boardId/columns/:columnId/cards/:cardId&#x27;)
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;boolean&gt; {
-		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+		await this.boardUc.deleteCard(currentUser.userId, urlParams.boardId, urlParams.columnId, urlParams.cardId);
 
 		return true;
 	}
