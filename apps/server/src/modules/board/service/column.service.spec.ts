@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Column } from '@shared/domain';
 import { boardFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
@@ -37,6 +38,33 @@ describe(ColumnService.name, () => {
 		await module.close();
 	});
 
+	describe('findById', () => {
+		describe('when finding a column', () => {
+			const setup = () => {
+				const column = columnFactory.buildWithId();
+				return { column, columnId: column.id };
+			};
+
+			it('should call the repository', async () => {
+				const { column, columnId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(column);
+
+				await service.findById(columnId);
+
+				expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Column, columnId);
+			});
+
+			it('should return the column', async () => {
+				const { column, columnId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(column);
+
+				const result = await service.findById(columnId);
+
+				expect(result).toEqual(column);
+			});
+		});
+	});
+
 	describe('create', () => {
 		describe('when creating a column', () => {
 			const setup = () => {
@@ -48,7 +76,6 @@ describe(ColumnService.name, () => {
 
 			it('should save a list of columns using the repo', async () => {
 				const { board, boardId } = setup();
-				boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
 				await service.create(board);
 
@@ -69,8 +96,8 @@ describe(ColumnService.name, () => {
 	});
 
 	describe('delete', () => {
-		describe('when deleting a column by id', () => {
-			it('should call the deleteByClassAndId of the board-do-repo', async () => {
+		describe('when deleting a column', () => {
+			it('should call the the board-do-repo', async () => {
 				const board = columnBoardFactory.build();
 				const column = columnFactory.build();
 
