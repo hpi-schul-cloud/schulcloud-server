@@ -1,0 +1,69 @@
+import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { User } from '../entity/user.entity';
+import { AuthorizableObject, AuthorizationContext, Rule } from '../interface';
+import { CourseGroupRule } from './course-group.rule';
+import { CourseRule } from './course.rule';
+import { LessonRule } from './lesson.rule';
+import { SchoolExternalToolRule } from './school-external-tool.rule';
+import { SchoolRule } from './school.rule';
+import { SubmissionRule } from './submission.rule';
+import { TaskCardRule } from './task-card.rule';
+import { TaskRule } from './task.rule';
+import { TeamRule } from './team.rule';
+import { UserRule } from './user.rule';
+
+@Injectable()
+export class RuleManager {
+	private rules: Rule[] = [];
+
+	constructor(
+		private readonly courseRule: CourseRule,
+		private readonly courseGroupRule: CourseGroupRule,
+		private readonly lessonRule: LessonRule,
+		private readonly schoolRule: SchoolRule,
+		private readonly taskRule: TaskRule,
+		private readonly taskCardRule: TaskCardRule,
+		private readonly userRule: UserRule,
+		private readonly teamRule: TeamRule,
+		private readonly submissionRule: SubmissionRule,
+		private readonly schoolExternalToolRule: SchoolExternalToolRule
+	) {
+		this.registerRules([
+			this.courseRule,
+			this.courseGroupRule,
+			this.lessonRule,
+			this.taskRule,
+			this.taskCardRule,
+			this.teamRule,
+			this.userRule,
+			this.schoolRule,
+			this.submissionRule,
+			this.schoolExternalToolRule,
+		]);
+	}
+
+	hasPermission(user: User, object: AuthorizableObject, context: AuthorizationContext) {
+		const rules = this.selectRules(user, object, context);
+		const rule = this.matchSingleRule(rules);
+
+		return rule.hasPermission(user, object, context);
+	}
+
+	private registerRules(rules: Rule[]): void {
+		this.rules = [...this.rules, ...rules];
+	}
+
+	private selectRules(user: User, object: AuthorizableObject, context?: AuthorizationContext): Rule[] {
+		return this.rules.filter((rule) => rule.isApplicable(user, object, context));
+	}
+
+	private matchSingleRule(rules: Rule[]) {
+		if (rules.length === 0) {
+			throw new NotImplementedException();
+		}
+		if (rules.length > 1) {
+			throw new InternalServerErrorException('MULTIPLE_MATCHES_ARE_NOT_ALLOWED');
+		}
+		return rules[0];
+	}
+}

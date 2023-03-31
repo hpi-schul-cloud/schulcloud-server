@@ -12,5 +12,6 @@ export interface AuthorizationContext {
 export type AuthorizableObject = BaseDomainObject | BaseEntity | BaseDO;
 
 export interface Rule<T = AuthorizableObject> {
+	isApplicable(user: User, object: T, context?: AuthorizationContext): boolean;
 	hasPermission(user: User, entity: T, context: AuthorizationContext): boolean;
 }

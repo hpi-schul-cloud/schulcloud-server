@@ -1,79 +1,28 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import {
-	BasePermissionManager,
-	CourseGroupRule,
-	CourseRule,
-	EntityId,
-	LessonRule,
-	SchoolRule,
-	SubmissionRule,
-	TaskRule,
-	TaskCardRule,
-	User,
-	UserRule,
-	SchoolExternalToolRule,
-} from '@shared/domain';
-import { AuthorizationContext, AuthorizableObject } from '@shared/domain/interface';
-import { TeamRule } from '@shared/domain/rules/team.rule';
+import { EntityId, RuleManager, User, AuthorizationHelper } from '@shared/domain';
+import { AuthorizableObject, AuthorizationContext } from '@shared/domain/interface';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
 @Injectable()
-export class AuthorizationService extends BasePermissionManager {
+export class AuthorizationService {
 	constructor(
-		private readonly courseRule: CourseRule,
-		private readonly courseGroupRule: CourseGroupRule,
-		private readonly lessonRule: LessonRule,
-		private readonly schoolRule: SchoolRule,
-		private readonly taskRule: TaskRule,
-		private readonly taskCardRule: TaskCardRule,
-		private readonly userRule: UserRule,
-		private readonly teamRule: TeamRule,
-		private readonly submissionRule: SubmissionRule,
+		private readonly ruleManager: RuleManager,
 		private readonly loader: ReferenceLoader,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule
-	) {
-		super();
-		this.registerPermissions([
-			this.courseRule,
-			this.courseGroupRule,
-			this.lessonRule,
-			this.taskRule,
-			this.taskCardRule,
-			this.teamRule,
-			this.userRule,
-			this.schoolRule,
-			this.submissionRule,
-			this.schoolExternalToolRule,
-		]);
-	}
+		private readonly authorizationHelper: AuthorizationHelper
+	) {}
 
-	checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
-		if (!this.hasPermission(user, entity, context)) {
+	public checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
+		if (!this.ruleManager.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
 	}
 
-	async hasPermissionByReferences(
-		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
-		entityId: EntityId,
-		context: AuthorizationContext
-	): Promise<boolean> {
-		try {
-			const [user, entity] = await Promise.all([
-				this.getUserWithPermissions(userId),
-				this.loader.loadEntity(entityName, entityId),
-			]);
-			const permission = this.hasPermission(user, entity, context);
-
-			return permission;
-		} catch (err) {
-			throw new ForbiddenException(err);
-		}
+	public hasPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
+		return this.ruleManager.hasPermission(user, entity, context);
 	}
 
-	async checkPermissionByReferences(
+	public async checkPermissionByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
@@ -84,9 +33,44 @@ export class AuthorizationService extends BasePermissionManager {
 		}
 	}
 
-	async getUserWithPermissions(userId: EntityId): Promise<User> {
+	public async hasPermissionByReferences(
+		userId: EntityId,
+		entityName: AllowedAuthorizationEntityType,
+		entityId: EntityId,
+		context: AuthorizationContext
+	): Promise<boolean> {
+		try {
+			const [user, entity] = await Promise.all([
+				this.getUserWithPermissions(userId),
+				this.loader.loadEntity(entityName, entityId),
+			]);
+			const permission = this.ruleManager.hasPermission(user, entity, context);
+
+			return permission;
+		} catch (err) {
+			throw new ForbiddenException(err);
+		}
+	}
+
+	public async getUserWithPermissions(userId: EntityId): Promise<User> {
 		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
 
 		return userWithPermissions;
+	}
+
+	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
+		return this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+	}
+
+	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
+		return this.authorizationHelper.checkAllPermissions(user, requiredPermissions);
+	}
+
+	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+		return this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions);
+	}
+
+	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
+		return this.authorizationHelper.checkOneOfPermissions(user, requiredPermissions);
 	}
 }
