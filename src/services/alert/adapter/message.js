@@ -6,7 +6,7 @@ class Message {
 	constructor(title, text, timestamp, page, messageId, url, status, created_at) {
 		this.mTitle = title || '';
 		this.mText = text || '';
-		this.mTimestamp = timestamp || '1970-01-01 00:00:00';
+		this.mTimestamp = timestamp === undefined ? '' : timestamp;
 		// Origin of Message
 		this.mPage = page || '';
 		this.mMessageId = messageId || '-1';
