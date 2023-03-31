@@ -4,10 +4,12 @@ import { SchoolDO } from '../domainobject/school.do';
 import { Role, School, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
+import { AuthorizationHelper } from './authorization.helper';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {
 	let service: SchoolRule;
+	let authorizationHelper: AuthorizationHelper;
 	let user: User;
 	let entity: School | SchoolDO;
 	let role: Role;
@@ -19,10 +21,11 @@ describe('SchoolRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [SchoolRule],
+			providers: [AuthorizationHelper, SchoolRule],
 		}).compile();
 
 		service = await module.get(SchoolRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	beforeEach(() => {
@@ -30,10 +33,10 @@ describe('SchoolRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
-	it('should call baseRule.hasAllPermissions', () => {
+	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});

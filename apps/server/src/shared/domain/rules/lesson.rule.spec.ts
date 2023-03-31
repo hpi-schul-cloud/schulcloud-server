@@ -8,7 +8,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { CourseGroupRule, CourseRule } from '.';
+import { AuthorizationHelper, CourseGroupRule, CourseRule } from '.';
 import { Lesson, User } from '../entity';
 import { Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
@@ -16,6 +16,7 @@ import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {
 	let service: LessonRule;
+	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let courseGroupRule: DeepPartial<CourseGroupRule>;
 	let user: User;
@@ -28,10 +29,11 @@ describe('LessonRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [LessonRule, CourseRule, CourseGroupRule],
+			providers: [AuthorizationHelper, LessonRule, CourseRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(LessonRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		courseGroupRule = await module.get(CourseGroupRule);
 	});
@@ -41,9 +43,9 @@ describe('LessonRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
-	it('should call baseRule.hasAllPermissions', () => {
+	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = lessonFactory.build();
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});

@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
-import { AuthorizationContext, AuthorizableObject } from '../interface/permission';
+import { AuthorizableObject, AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { AuthorizationHelper } from './authorization.helper';
 import { TaskRule } from './task.rule';
 
 @Injectable()
-export class SubmissionRule extends BasePermission<Submission> {
-	constructor(private readonly taskRule: TaskRule) {
-		super();
-	}
+export class SubmissionRule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
 	public isApplicable(user: User, entity: AuthorizableObject): boolean {
 		const isMatched = entity instanceof Submission;
@@ -21,7 +19,8 @@ export class SubmissionRule extends BasePermission<Submission> {
 		const { action, requiredPermissions } = context;
 
 		const result =
-			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasAccessToSubmission(user, submission, action);
+			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&
+			this.hasAccessToSubmission(user, submission, action);
 
 		return result;
 	}

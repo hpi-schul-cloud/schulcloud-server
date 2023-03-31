@@ -10,7 +10,6 @@ import { UserRule } from './user.rule';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 export * from './actions.enum';
-export * from './base-permission';
 export * from './course-group.rule';
 export * from './course.rule';
 export * from './lesson.rule';

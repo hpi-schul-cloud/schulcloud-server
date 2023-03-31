@@ -3,10 +3,12 @@ import type { User } from '../entity';
 import { Course } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { AuthorizationHelper } from './authorization.helper';
 
 @Injectable()
-export class CourseRule extends BasePermission<Course> {
+export class CourseRule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, entity: Course): boolean {
 		const isMatched = entity instanceof Course;
 
@@ -16,8 +18,8 @@ export class CourseRule extends BasePermission<Course> {
 	public hasPermission(user: User, entity: Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
-			this.utils.hasAllPermissions(user, requiredPermissions) &&
-			this.utils.hasAccessToEntity(
+			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&
+			this.authorizationHelper.hasAccessToEntity(
 				user,
 				entity,
 				action === Actions.read

@@ -3,14 +3,12 @@ import { TaskCard, User } from '../entity';
 import { Permission } from '../interface';
 import { AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { AuthorizationHelper } from './authorization.helper';
 import { TaskRule } from './task.rule';
 
 @Injectable()
-export class TaskCardRule extends BasePermission<TaskCard> {
-	constructor(private readonly taskRule: TaskRule) {
-		super();
-	}
+export class TaskCardRule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
 	public isApplicable(user: User, entity: TaskCard): boolean {
 		const isMatched = entity instanceof TaskCard;
@@ -20,8 +18,8 @@ export class TaskCardRule extends BasePermission<TaskCard> {
 
 	public hasPermission(user: User, entity: TaskCard, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
-		const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
 
 		let hasTaskPermission = false;
 

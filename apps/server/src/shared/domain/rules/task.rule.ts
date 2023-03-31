@@ -2,15 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Task, User } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { AuthorizationHelper } from './authorization.helper';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
 
 @Injectable()
-export class TaskRule extends BasePermission<Task> {
-	constructor(private readonly courseRule: CourseRule, private readonly lessonRule: LessonRule) {
-		super();
-	}
+export class TaskRule {
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly courseRule: CourseRule,
+		private readonly lessonRule: LessonRule
+	) {}
 
 	public isApplicable(user: User, entity: Task): boolean {
 		const isMatched = entity instanceof Task;
@@ -21,13 +23,13 @@ export class TaskRule extends BasePermission<Task> {
 	public hasPermission(user: User, entity: Task, context: AuthorizationContext): boolean {
 		let { action } = context;
 		const { requiredPermissions } = context;
-		const hasRequiredPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasRequiredPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		if (!hasRequiredPermission) {
 			return false;
 		}
 
-		const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
-		const isAssigned = this.utils.hasAccessToEntity(user, entity, ['users']);
+		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
+		const isAssigned = this.authorizationHelper.hasAccessToEntity(user, entity, ['users']);
 
 		if (entity.isDraft()) {
 			action = Actions.write;

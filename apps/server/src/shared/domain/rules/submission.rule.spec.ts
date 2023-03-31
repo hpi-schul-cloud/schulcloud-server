@@ -8,7 +8,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
+import { AuthorizationHelper, CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
 
@@ -26,7 +26,7 @@ describe('SubmissionRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule, SubmissionRule],
+			providers: [AuthorizationHelper, SubmissionRule, TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
 		submissionRule = await module.get(SubmissionRule);

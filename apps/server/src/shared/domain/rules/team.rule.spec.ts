@@ -4,6 +4,7 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { Permission } from '../interface';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { AuthorizationHelper } from './authorization.helper';
 
 describe('TeamRule', () => {
 	let service: TeamRule;
@@ -18,7 +19,7 @@ describe('TeamRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TeamRule],
+			providers: [AuthorizationHelper, TeamRule],
 		}).compile();
 
 		service = await module.get(TeamRule);

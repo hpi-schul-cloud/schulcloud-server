@@ -2,15 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Course, CourseGroup, Lesson, User } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
 import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { AuthorizationHelper } from './authorization.helper';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class LessonRule extends BasePermission<Lesson> {
-	constructor(private readonly courseRule: CourseRule, private readonly courseGroupRule: CourseGroupRule) {
-		super();
-	}
+export class LessonRule {
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly courseRule: CourseRule,
+		private readonly courseGroupRule: CourseGroupRule
+	) {}
 
 	public isApplicable(user: User, entity: Lesson): boolean {
 		const isMatched = entity instanceof Lesson;
@@ -28,7 +30,7 @@ export class LessonRule extends BasePermission<Lesson> {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
 		}
 
-		const hasUserPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasUserPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const result = hasUserPermission && hasLessonPermission;
 
 		return result;

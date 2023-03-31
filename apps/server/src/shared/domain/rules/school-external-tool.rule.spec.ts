@@ -5,19 +5,22 @@ import { SchoolExternalToolDO } from '../domainobject/external-tool/school-exter
 import { Role, SchoolExternalTool, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
+import { AuthorizationHelper } from './authorization.helper';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 describe('SchoolExternalToolRule', () => {
 	let service: SchoolExternalToolRule;
+	let authorizationHelper: AuthorizationHelper;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [SchoolExternalToolRule],
+			providers: [AuthorizationHelper, SchoolExternalToolRule],
 		}).compile();
 
 		service = await module.get(SchoolExternalToolRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	beforeEach(() => {});
@@ -46,9 +49,9 @@ describe('SchoolExternalToolRule', () => {
 
 	describe('hasPermission is called', () => {
 		describe('when user has permission', () => {
-			it('should call baseRule.hasAllPermissions', () => {
+			it('should call hasAllPermissions on AuthorizationHelper', () => {
 				const { user, entity } = setup();
-				const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
 				service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 

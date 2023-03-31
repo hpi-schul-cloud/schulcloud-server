@@ -3,10 +3,12 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { Role, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
+import { AuthorizationHelper } from './authorization.helper';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {
 	let service: UserRule;
+	let authorizationHelper: AuthorizationHelper;
 	let user: User;
 	let entity: User;
 	let role: Role;
@@ -18,10 +20,11 @@ describe('UserRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [UserRule],
+			providers: [AuthorizationHelper, UserRule],
 		}).compile();
 
 		service = await module.get(UserRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	beforeEach(() => {
@@ -29,10 +32,10 @@ describe('UserRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
-	it('should call baseRule.hasAllPermissions', () => {
+	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = userFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});

@@ -3,11 +3,13 @@ import { courseFactory, courseGroupFactory, roleFactory, setupEntities, userFact
 import { CourseGroup, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
+import { AuthorizationHelper } from './authorization.helper';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 describe('CourseGroupRule', () => {
 	let service: CourseGroupRule;
+	let authorizationHelper: AuthorizationHelper;
 	let courseRule: CourseRule;
 	let user: User;
 	let entity: CourseGroup;
@@ -19,28 +21,29 @@ describe('CourseGroupRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [CourseRule, CourseGroupRule],
+			providers: [AuthorizationHelper, CourseRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(CourseGroupRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		user = userFactory.build({ roles: [role] });
 	});
 
-	it('should call baseRule.hasAllPermissions', () => {
+	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		const course = courseFactory.build({ teachers: [user] });
 		entity = courseGroupFactory.build({ course });
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	describe('Action.read', () => {
-		it('should call baseRule.hasAccessToEntity', () => {
+		it('should call hasAccessToEntity on AuthorizationHelper', () => {
 			const course = courseFactory.build({ teachers: [user] });
 			entity = courseGroupFactory.build({ course });
-			const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
+			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
 			service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity, ['students']);
 		});
@@ -55,10 +58,10 @@ describe('CourseGroupRule', () => {
 	});
 
 	describe('Action.write', () => {
-		it('should call baseRule.hasAccessToEntity', () => {
+		it('should call hasAccessToEntity on AuthorizationHelper', () => {
 			const course = courseFactory.build({ teachers: [user] });
 			entity = courseGroupFactory.build({ course });
-			const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
+			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
 			service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity, ['students']);
 		});

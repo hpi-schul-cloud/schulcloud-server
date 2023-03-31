@@ -1,13 +1,14 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
+import { AuthorizationHelper, CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
 import { Task, User } from '../entity';
 import { Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
 
 describe('TaskRule', () => {
 	let service: TaskRule;
+	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let lessonRule: DeepPartial<LessonRule>;
 	let user: User;
@@ -20,10 +21,11 @@ describe('TaskRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [AuthorizationHelper, TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(TaskRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		lessonRule = await module.get(LessonRule);
 	});
@@ -33,16 +35,16 @@ describe('TaskRule', () => {
 		user = userFactory.build({ roles: [role] });
 	});
 
-	it('should call baseRule.hasAllPermissions', () => {
+	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
-	it('should call baseRule.hasAccessToEntity', () => {
+	it('should call hasAccessToEntity on AuthorizationHelper', () => {
 		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
+		const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
 		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['creator']);
 	});

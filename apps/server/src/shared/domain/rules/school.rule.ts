@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { SchoolDO } from '../domainobject/school.do';
 import { School, User } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
-import { BasePermission } from './base-permission';
-import { SchoolDO } from '../domainobject/school.do';
+import { AuthorizationHelper } from './authorization.helper';
 
 @Injectable()
-export class SchoolRule extends BasePermission<School | SchoolDO> {
+export class SchoolRule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, entity: School | SchoolDO): boolean {
 		const isMatched: boolean = entity instanceof School || entity instanceof SchoolDO;
 
@@ -14,7 +16,7 @@ export class SchoolRule extends BasePermission<School | SchoolDO> {
 
 	public hasPermission(user: User, entity: School | SchoolDO, context: AuthorizationContext): boolean {
 		const hasPermission: boolean =
-			this.utils.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
+			this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.id;
 
 		return hasPermission;
 	}
