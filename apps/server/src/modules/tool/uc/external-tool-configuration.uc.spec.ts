@@ -11,7 +11,7 @@ import { externalToolDOFactory } from '@shared/testing/factory/domainobject/exte
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';

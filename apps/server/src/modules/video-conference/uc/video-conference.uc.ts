@@ -18,7 +18,7 @@ import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto'
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';

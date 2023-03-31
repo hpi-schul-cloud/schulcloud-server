@@ -1,10 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, User } from '@shared/domain';
 import { AuthorizationHelper } from './authorization.helper';
-import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AuthorizableObject, AuthorizationContext } from './types';
+import { AllowedAuthorizationEntityType, AuthorizableObject, AuthorizationContext } from './types';
 
 @Injectable()
 export class AuthorizationService {

@@ -11,7 +11,7 @@ import {
 	UserRepo,
 	SchoolExternalToolRepo,
 } from '@shared/repo';
-import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
+import { AllowedAuthorizationEntityType, AllowedEntity } from './types';
 
 type RepoType =
 	| TaskRepo
