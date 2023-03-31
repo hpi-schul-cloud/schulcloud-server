@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, EntityId, Permission, User } from '@shared/domain';
+import { Action, EntityId, Permission, User } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { setupEntities, userFactory } from '@shared/testing';
 import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
@@ -82,7 +82,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -143,7 +143,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -181,7 +181,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -219,7 +219,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -261,7 +261,7 @@ describe('SchoolExternalToolUc', () => {
 				AllowedAuthorizationEntityType.SchoolExternalTool,
 				schoolExternalToolId,
 				{
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 				}
 			);

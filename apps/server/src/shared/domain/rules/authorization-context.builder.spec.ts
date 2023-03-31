@@ -1,5 +1,5 @@
 import { Permission } from '../interface/permission.enum';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 
 describe('AuthorizationContextBuilder', () => {
@@ -14,12 +14,12 @@ describe('AuthorizationContextBuilder', () => {
 	it('Should have a shorthand for read actions.', () => {
 		const context = AuthorizationContextBuilder.read([]);
 
-		expect(context.action).toStrictEqual(Actions.read);
+		expect(context.action).toStrictEqual(Action.read);
 	});
 
 	it('Should have a shorthand for write actions.', () => {
 		const context = AuthorizationContextBuilder.write([]);
 
-		expect(context.action).toStrictEqual(Actions.write);
+		expect(context.action).toStrictEqual(Action.write);
 	});
 });

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { User } from '../entity';
 import { Course } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 
 @Injectable()
@@ -22,9 +22,7 @@ export class CourseRule {
 			this.authorizationHelper.hasAccessToEntity(
 				user,
 				entity,
-				action === Actions.read
-					? ['teachers', 'substitutionTeachers', 'students']
-					: ['teachers', 'substitutionTeachers']
+				action === Action.read ? ['teachers', 'substitutionTeachers', 'students'] : ['teachers', 'substitutionTeachers']
 			);
 
 		return hasPermission;

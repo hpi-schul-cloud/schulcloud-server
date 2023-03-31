@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import {
-	Actions,
+	Action,
 	Course,
 	EntityId,
 	Permission,
@@ -398,7 +398,7 @@ export class VideoConferenceUc {
 			PermissionScopeMapping[conferenceScope],
 			entityId,
 			[Permission.START_MEETING, Permission.JOIN_MEETING],
-			Actions.read
+			Action.read
 		);
 
 		if (await permissionMap.get(Permission.START_MEETING)) {
@@ -415,12 +415,12 @@ export class VideoConferenceUc {
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		permissions: Permission[],
-		action: Actions
+		action: Action
 	): Map<Permission, Promise<boolean>> {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
 			const context =
-				action === Actions.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
+				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
 			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});

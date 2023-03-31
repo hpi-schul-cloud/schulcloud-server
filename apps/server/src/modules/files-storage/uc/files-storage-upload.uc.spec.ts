@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission } from '@shared/domain';
+import { Action, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -183,7 +183,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 

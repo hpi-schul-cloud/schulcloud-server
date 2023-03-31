@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
-	Actions,
+	Action,
 	Counted,
 	Course,
 	EntityId,
@@ -37,7 +37,7 @@ export class TaskUC {
 			Permission.TASK_DASHBOARD_VIEW_V3,
 		]);
 
-		const courses = await this.getPermittedCourses(user, Actions.read);
+		const courses = await this.getPermittedCourses(user, Action.read);
 		const lessons = await this.getPermittedLessons(user, courses);
 
 		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
@@ -128,7 +128,7 @@ export class TaskUC {
 	}
 
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.getPermittedCourses(user, Actions.read);
+		const courses = await this.getPermittedCourses(user, Action.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);
 
@@ -157,7 +157,7 @@ export class TaskUC {
 	}
 
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.getPermittedCourses(user, Actions.write);
+		const courses = await this.getPermittedCourses(user, Action.write);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);
 
@@ -186,12 +186,12 @@ export class TaskUC {
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
-	private async getPermittedCourses(user: User, neededPermission: Actions): Promise<Course[]> {
+	private async getPermittedCourses(user: User, neededPermission: Action): Promise<Course[]> {
 		let permittedCourses: Course[] = [];
 
-		if (neededPermission === Actions.write) {
+		if (neededPermission === Action.write) {
 			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
-		} else if (neededPermission === Actions.read) {
+		} else if (neededPermission === Action.read) {
 			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
 		}
 

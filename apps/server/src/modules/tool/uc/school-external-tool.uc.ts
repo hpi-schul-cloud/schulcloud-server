@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
+import { Action, EntityId, Permission } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
@@ -48,7 +48,7 @@ export class SchoolExternalToolUc {
 			AllowedAuthorizationEntityType.School,
 			schoolId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);
@@ -95,7 +95,7 @@ export class SchoolExternalToolUc {
 			AllowedAuthorizationEntityType.SchoolExternalTool,
 			schoolExternalToolId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);

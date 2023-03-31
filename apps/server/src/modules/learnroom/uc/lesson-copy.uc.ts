@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Actions, EntityId, AuthorizationContextBuilder, User } from '@shared/domain';
+import { Action, EntityId, AuthorizationContextBuilder, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
@@ -35,7 +35,7 @@ export class LessonCopyUC {
 			AllowedAuthorizationEntityType.Course,
 			destinationCourse.id,
 			{
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [],
 			}
 		);

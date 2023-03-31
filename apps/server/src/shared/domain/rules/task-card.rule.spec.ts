@@ -4,7 +4,7 @@ import { roleFactory, setupEntities, taskCardFactory, taskFactory, userFactory }
 import { AuthorizationHelper, CourseGroupRule, CourseRule, LessonRule, TaskCardRule, TaskRule } from '.';
 import { Role, TaskCard, User } from '../entity';
 import { Permission } from '../interface';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 
 describe('TaskCardRule', () => {
 	let service: TaskCardRule;
@@ -36,14 +36,14 @@ describe('TaskCardRule', () => {
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = taskCardFactory.build({ creator: user });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should call hasAccessToEntity on AuthorizationHelper', () => {
 		entity = taskCardFactory.build({ creator: user });
 		const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['creator']);
 	});
 
@@ -51,8 +51,8 @@ describe('TaskCardRule', () => {
 		const task = taskFactory.build({ creator: user });
 		entity = taskCardFactory.build({ task });
 		const spy = jest.spyOn(taskRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [] });
-		expect(spy).toBeCalledWith(user, entity.task, { action: Actions.write, requiredPermissions: [homeworkEdit] });
+		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
+		expect(spy).toBeCalledWith(user, entity.task, { action: Action.write, requiredPermissions: [homeworkEdit] });
 	});
 
 	describe('User is creator of the task card', () => {
@@ -62,7 +62,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -71,7 +71,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -80,7 +80,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -90,7 +90,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
 				const res = service.hasPermission(creator, entity, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [Permission.TASK_CARD_VIEW],
 				});
 				expect(res).toBe(false);
@@ -103,7 +103,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -112,7 +112,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -121,7 +121,7 @@ describe('TaskCardRule', () => {
 				const creator = userFactory.build({ roles: [role] });
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
-				const res = service.hasPermission(creator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(creator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
@@ -131,7 +131,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build({ creator });
 				entity = taskCardFactory.build({ creator, task });
 				const res = service.hasPermission(creator, entity, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [Permission.TASK_CARD_VIEW],
 				});
 				expect(res).toBe(false);
@@ -147,7 +147,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(true);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 				spy.mockRestore();
 			});
@@ -158,7 +158,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(true);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 				spy.mockRestore();
 			});
@@ -169,7 +169,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(false);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(false);
 				spy.mockRestore();
 			});
@@ -181,7 +181,7 @@ describe('TaskCardRule', () => {
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(true);
 				const res = service.hasPermission(notCreator, entity, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [Permission.TASK_CARD_VIEW],
 				});
 				expect(res).toBe(false);
@@ -196,7 +196,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(true);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(true);
 				spy.mockRestore();
 			});
@@ -207,7 +207,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(false);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(false);
 				spy.mockRestore();
 			});
@@ -218,7 +218,7 @@ describe('TaskCardRule', () => {
 				const task = taskFactory.build();
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(false);
-				const res = service.hasPermission(notCreator, entity, { action: Actions.write, requiredPermissions: [] });
+				const res = service.hasPermission(notCreator, entity, { action: Action.write, requiredPermissions: [] });
 				expect(res).toBe(false);
 				spy.mockRestore();
 			});
@@ -230,7 +230,7 @@ describe('TaskCardRule', () => {
 				entity = taskCardFactory.build({ task });
 				const spy = jest.spyOn(taskRule, 'hasPermission').mockReturnValue(true);
 				const res = service.hasPermission(notCreator, entity, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [Permission.TASK_CARD_VIEW],
 				});
 				expect(res).toBe(false);

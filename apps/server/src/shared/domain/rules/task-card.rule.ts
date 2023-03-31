@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TaskCard, User } from '../entity';
 import { Permission } from '../interface';
 import { AuthorizationContext } from '../interface/permission';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 import { TaskRule } from './task.rule';
 
@@ -23,12 +23,12 @@ export class TaskCardRule {
 
 		let hasTaskPermission = false;
 
-		if (action === Actions.read) {
+		if (action === Action.read) {
 			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
 				action,
 				requiredPermissions: [Permission.HOMEWORK_VIEW],
 			});
-		} else if (action === Actions.write) {
+		} else if (action === Action.write) {
 			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
 				action,
 				requiredPermissions: [Permission.HOMEWORK_EDIT],

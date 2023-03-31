@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, EntityId, Permission } from '@shared/domain';
+import { Action, EntityId, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
@@ -145,7 +145,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					sourceParams.parentType,
 					sourceParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
@@ -159,7 +159,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					targetParams.target.parentType,
 					targetParams.target.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
@@ -308,7 +308,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
@@ -322,7 +322,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					copyFileParams.target.parentType,
 					copyFileParams.target.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 

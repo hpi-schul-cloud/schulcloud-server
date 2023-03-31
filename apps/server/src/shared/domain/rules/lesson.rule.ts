@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Course, CourseGroup, Lesson, User } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
@@ -24,9 +24,9 @@ export class LessonRule {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
-		if (action === Actions.read) {
+		if (action === Action.read) {
 			hasLessonPermission = this.lessonReadPermission(user, entity);
-		} else if (action === Actions.write) {
+		} else if (action === Action.write) {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
 		}
 
@@ -41,21 +41,21 @@ export class LessonRule {
 		let hasParentReadPermission = false;
 
 		if (isVisible) {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.read);
+			hasParentReadPermission = this.parentPermission(user, entity, Action.read);
 		} else {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.write);
+			hasParentReadPermission = this.parentPermission(user, entity, Action.write);
 		}
 
 		return hasParentReadPermission;
 	}
 
 	private lessonWritePermission(user: User, entity: Lesson): boolean {
-		const hasParentWritePermission = this.parentPermission(user, entity, Actions.write);
+		const hasParentWritePermission = this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Lesson, action: Actions): boolean {
+	private parentPermission(user: User, entity: Lesson, action: Action): boolean {
 		let result = false;
 
 		if (entity.courseGroup) {
@@ -67,13 +67,13 @@ export class LessonRule {
 		return result;
 	}
 
-	private coursePermission(user: User, entity: Course, action: Actions): boolean {
+	private coursePermission(user: User, entity: Course, action: Action): boolean {
 		const result = this.courseRule.hasPermission(user, entity, { action, requiredPermissions: [] });
 
 		return result;
 	}
 
-	private courseGroupPermission(user: User, entity: CourseGroup, action: Actions): boolean {
+	private courseGroupPermission(user: User, entity: CourseGroup, action: Action): boolean {
 		const result = this.courseGroupRule.hasPermission(user, entity, {
 			action,
 			requiredPermissions: [],

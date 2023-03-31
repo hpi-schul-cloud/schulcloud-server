@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission, User } from '@shared/domain';
+import { Action, Permission, User } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { Page } from '@shared/domain/domainobject/page';
 import { setupEntities, userFactory } from '@shared/testing';
@@ -95,7 +95,7 @@ describe('ExternalToolConfigurationUc', () => {
 					AllowedAuthorizationEntityType.School,
 					'schoolId',
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -171,7 +171,7 @@ describe('ExternalToolConfigurationUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);

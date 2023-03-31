@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SchoolService } from '@src/modules/school/service/school.service';
-import { Actions, Permission } from '@shared/domain';
+import { Action, Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
@@ -25,7 +25,7 @@ export class SchoolUc {
 		userId: string
 	): Promise<OauthMigrationDto> {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
@@ -59,7 +59,7 @@ export class SchoolUc {
 
 	async getMigration(schoolId: string, userId: string): Promise<OauthMigrationDto> {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 		const migrationDto: OauthMigrationDto = await this.schoolService.getMigration(schoolId);

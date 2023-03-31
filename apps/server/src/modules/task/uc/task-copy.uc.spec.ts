@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, AuthorizableObject, User } from '@shared/domain';
+import { Action, AuthorizableObject, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
@@ -204,7 +204,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
 
 				expect(authorisation.hasPermission).toBeCalledWith(user, task, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [],
 				});
 			});
@@ -218,7 +218,7 @@ describe('task copy uc', () => {
 					AllowedAuthorizationEntityType.Course,
 					course.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [],
 					}
 				);
@@ -230,7 +230,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { userId });
 
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -241,7 +241,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
 
 				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -252,7 +252,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { userId });
 
 				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Actions, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
+import { Action, CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { RichText } from '@shared/domain/types/richtext.types';
 import { CardElementRepo, CourseRepo, RichTextCardElementRepo, TaskCardRepo, UserRepo } from '@shared/repo';
@@ -108,7 +108,7 @@ describe('TaskCardUc', () => {
 		it('should check for permission to view the TaskCard', async () => {
 			await uc.findOne(user.id, taskCard.id);
 			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.TASK_CARD_VIEW],
 			});
 		});
@@ -150,7 +150,7 @@ describe('TaskCardUc', () => {
 		it('should check for permission to delete (i.e. edit) the TaskCard', async () => {
 			await uc.delete(user.id, taskCard.id);
 			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [Permission.TASK_CARD_EDIT],
 			});
 		});
@@ -222,7 +222,7 @@ describe('TaskCardUc', () => {
 		it('should check for course permission to create the task related to the task card in a course', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [],
 			});
 		});
@@ -370,7 +370,7 @@ describe('TaskCardUc', () => {
 		it('should check for permission to edit the TaskCard', async () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [Permission.TASK_CARD_EDIT],
 			});
 		});

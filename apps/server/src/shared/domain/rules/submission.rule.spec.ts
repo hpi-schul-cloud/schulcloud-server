@@ -10,7 +10,7 @@ import {
 } from '@shared/testing';
 import { AuthorizationHelper, CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
 import { Permission } from '../interface';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });
@@ -87,7 +87,7 @@ describe('SubmissionRule', () => {
 				const { user, submission, permission } = setup();
 
 				const result = submissionRule.hasPermission(user, submission, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [permission],
 				});
 
@@ -110,7 +110,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -132,7 +132,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -155,7 +155,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -177,7 +177,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -199,7 +199,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -222,7 +222,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.write,
+							action: Action.write,
 							requiredPermissions: [permission],
 						});
 
@@ -249,7 +249,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -273,7 +273,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -298,7 +298,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -322,7 +322,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -346,7 +346,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -370,7 +370,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -396,7 +396,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -422,7 +422,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -447,7 +447,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -471,7 +471,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -495,7 +495,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -519,7 +519,7 @@ describe('SubmissionRule', () => {
 							const { user, submission, permission } = setup();
 
 							const result = submissionRule.hasPermission(user, submission, {
-								action: Actions.read,
+								action: Action.read,
 								requiredPermissions: [permission],
 							});
 
@@ -544,7 +544,7 @@ describe('SubmissionRule', () => {
 						const { user, submission, permission } = setup();
 
 						const result = submissionRule.hasPermission(user, submission, {
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [permission],
 						});
 

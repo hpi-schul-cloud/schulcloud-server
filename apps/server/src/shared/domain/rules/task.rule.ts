@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Task, User } from '../entity';
 import { AuthorizationContext } from '../interface/permission';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
@@ -32,7 +32,7 @@ export class TaskRule {
 		const isAssigned = this.authorizationHelper.hasAccessToEntity(user, entity, ['users']);
 
 		if (entity.isDraft()) {
-			action = Actions.write;
+			action = Action.write;
 		}
 
 		const hasParentPermission = this.hasParentPermission(user, entity, action);
@@ -43,7 +43,7 @@ export class TaskRule {
 		return result;
 	}
 
-	private hasParentPermission(user: User, entity: Task, action: Actions): boolean {
+	private hasParentPermission(user: User, entity: Task, action: Action): boolean {
 		if (entity.lesson) {
 			const hasLessonPermission = this.lessonRule.hasPermission(user, entity.lesson, {
 				action,

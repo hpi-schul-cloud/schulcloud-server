@@ -3,7 +3,7 @@ import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/
 import { SchoolDO } from '../domainobject/school.do';
 import { Role, School, User } from '../entity';
 import { Permission } from '../interface';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 import { SchoolRule } from './school.rule';
 
@@ -37,28 +37,28 @@ describe('SchoolRule', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should return "true" if user in scope', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 
 	it('should return "false" if user has not some school', () => {
 		entity = new SchoolDO({ name: 'testschool', id: 'invalidId' });
 		user = userFactory.build({ roles: [role] });
-		const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionA] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(false);
 	});
 });

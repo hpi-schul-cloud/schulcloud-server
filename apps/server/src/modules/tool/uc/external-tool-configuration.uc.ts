@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, CustomParameterScope, EntityId, Permission } from '@shared/domain';
+import { Action, CustomParameterScope, EntityId, Permission } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { AuthorizationService } from '@src/modules/authorization';
@@ -58,7 +58,7 @@ export class ExternalToolConfigurationUc {
 			AllowedAuthorizationEntityType.School,
 			schoolId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);

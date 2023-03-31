@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission } from '@shared/domain';
+import { Action, Permission } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 
 import {
@@ -135,7 +135,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Course,
 					course.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.COURSE_CREATE],
 					}
 				);
@@ -196,7 +196,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Lesson,
 					lesson.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.TOPIC_CREATE],
 					}
 				);
@@ -257,7 +257,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Task,
 					task.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.HOMEWORK_CREATE],
 					}
 				);
@@ -315,7 +315,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Course,
 					course.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.COURSE_CREATE],
 					}
 				);
@@ -343,7 +343,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.School,
 					school.id,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [],
 					}
 				);
@@ -580,7 +580,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.School,
 					school.id,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [],
 					}
 				);
@@ -692,7 +692,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);
@@ -809,7 +809,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);
@@ -925,7 +925,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);

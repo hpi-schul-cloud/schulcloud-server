@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, AuthorizableObject, User } from '@shared/domain';
+import { Action, AuthorizableObject, User } from '@shared/domain';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
@@ -150,7 +150,7 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.TOPIC_CREATE],
 			});
 		});
@@ -163,7 +163,7 @@ describe('lesson copy uc', () => {
 				AllowedAuthorizationEntityType.Course,
 				course.id,
 				{
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				}
 			);
@@ -173,7 +173,7 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { userId });
 			expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [],
 			});
 		});

@@ -9,7 +9,7 @@ import { TeamRule } from './team.rule';
 import { UserRule } from './user.rule';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
-export * from './actions.enum';
+export * from './action.enum';
 export * from './course-group.rule';
 export * from './course.rule';
 export * from './lesson.rule';

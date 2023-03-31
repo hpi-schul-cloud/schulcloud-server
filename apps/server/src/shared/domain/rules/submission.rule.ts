@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '../entity';
 import { AuthorizableObject, AuthorizationContext } from '../interface/permission';
-import { Actions } from './actions.enum';
+import { Action } from './action.enum';
 import { AuthorizationHelper } from './authorization.helper';
 import { TaskRule } from './task.rule';
 
@@ -25,12 +25,12 @@ export class SubmissionRule {
 		return result;
 	}
 
-	private hasAccessToSubmission(user: User, submission: Submission, action: Actions): boolean {
+	private hasAccessToSubmission(user: User, submission: Submission, action: Action): boolean {
 		let hasAccessToSubmission = false;
 
-		if (action === Actions.write) {
+		if (action === Action.write) {
 			hasAccessToSubmission = this.hasWriteAccess(user, submission);
-		} else if (action === Actions.read) {
+		} else if (action === Action.read) {
 			hasAccessToSubmission = this.hasReadAccess(user, submission);
 		}
 
@@ -59,7 +59,7 @@ export class SubmissionRule {
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission) {
 		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.write,
+			action: Action.write,
 			requiredPermissions: [],
 		});
 
@@ -68,7 +68,7 @@ export class SubmissionRule {
 
 	private hasParentTaskReadAccess(user: User, submission: Submission) {
 		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [],
 		});
 

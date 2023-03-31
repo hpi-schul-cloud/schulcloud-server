@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
+import { Action, EntityId, Permission } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
@@ -178,7 +178,7 @@ export class ShareTokenUC {
 		}
 
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
-			action: Actions.write,
+			action: Action.write,
 			requiredPermissions,
 		});
 	}
@@ -186,7 +186,7 @@ export class ShareTokenUC {
 	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
 		const allowedContextType = ShareTokenContextTypeMapper.mapToAllowedAuthorizationEntityType(context.contextType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedContextType, context.contextId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [],
 		});
 	}
