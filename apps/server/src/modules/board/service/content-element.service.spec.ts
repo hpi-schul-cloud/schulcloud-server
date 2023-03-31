@@ -54,8 +54,6 @@ describe(ContentElementService.name, () => {
 			it('should save a list of content elements using the boardDo repo', async () => {
 				const { card, cardId } = setup();
 
-				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
-
 				await service.create(card);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(
@@ -83,7 +81,7 @@ describe(ContentElementService.name, () => {
 				return { card, textElement, textElementId };
 			};
 
-			it('should call deleteChildWithDescendants using the boardDo service', async () => {
+			it('should call the service', async () => {
 				const { card, textElementId } = setup();
 
 				await service.delete(card, textElementId);

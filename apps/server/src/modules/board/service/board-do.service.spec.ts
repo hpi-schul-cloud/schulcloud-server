@@ -105,41 +105,43 @@ describe(BoardDoService.name, () => {
 		});
 	});
 
-	describe('when deleting a child', () => {
-		const setup = () => {
-			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.build({ children: elements });
-			const cardId = card.id;
+	describe('deleteChildWithDescendants', () => {
+		describe('when deleting a child', () => {
+			const setup = () => {
+				const elements = textElementFactory.buildListWithId(3);
+				const card = cardFactory.build({ children: elements });
+				const cardId = card.id;
 
-			return { card, elements, cardId };
-		};
+				return { card, elements, cardId };
+			};
 
-		it('should delete the child do', async () => {
-			const { card, elements } = setup();
+			it('should delete the child do', async () => {
+				const { card, elements } = setup();
 
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+				boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChildWithDescendants(card, elements[0].id);
+				await service.deleteChildWithDescendants(card, elements[0].id);
 
-			expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
-			expect(boardDoRepo.deleteById).toHaveBeenCalledWith(elements[0].id);
-		});
+				expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
+				expect(boardDoRepo.deleteById).toHaveBeenCalledWith(elements[0].id);
+			});
 
-		it('should update the siblings', async () => {
-			const { card, elements } = setup();
+			it('should update the siblings', async () => {
+				const { card, elements } = setup();
 
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+				boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChildWithDescendants(card, elements[0].id);
+				await service.deleteChildWithDescendants(card, elements[0].id);
 
-			expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
-		});
+				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
+			});
 
-		it('should throw if the child does not exist', async () => {
-			const textElement = textElementFactory.buildWithId();
-			const fakeId = new ObjectId().toHexString();
+			it('should throw if the child does not exist', async () => {
+				const textElement = textElementFactory.buildWithId();
+				const fakeId = new ObjectId().toHexString();
 
-			await expect(service.deleteChildWithDescendants(textElement, fakeId)).rejects.toThrow();
+				await expect(service.deleteChildWithDescendants(textElement, fakeId)).rejects.toThrow();
+			});
 		});
 	});
 });
