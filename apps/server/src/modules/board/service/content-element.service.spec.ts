@@ -1,28 +1,29 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
-import { cardFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
-import { CardRepo, ContentElementRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
 
 describe(ContentElementService.name, () => {
 	let module: TestingModule;
 	let service: ContentElementService;
-	let contentElementRepo: DeepMocked<ContentElementRepo>;
-	let cardRepo: DeepMocked<CardRepo>;
+	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ContentElementService,
 				{
-					provide: ContentElementRepo,
-					useValue: createMock<ContentElementRepo>(),
+					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: CardRepo,
-					useValue: createMock<CardRepo>(),
+					provide: BoardDoService,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
 					provide: Logger,
@@ -32,8 +33,8 @@ describe(ContentElementService.name, () => {
 		}).compile();
 
 		service = module.get(ContentElementService);
-		contentElementRepo = module.get(ContentElementRepo);
-		cardRepo = module.get(CardRepo);
+		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 		await setupEntities();
 	});
 
@@ -41,32 +42,54 @@ describe(ContentElementService.name, () => {
 		await module.close();
 	});
 
-	describe('creating a content element', () => {
-		const setup = () => {
-			const card = cardFactory.build();
-			const cardId = card.id;
+	describe('create', () => {
+		describe('when creating a content element', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const cardId = card.id;
 
-			return { card, cardId };
-		};
+				return { card, cardId };
+			};
 
-		it('should save a list of content elements using the repo', async () => {
-			const { card, cardId } = setup();
+			it('should save a list of content elements using the boardDo repo', async () => {
+				const { card, cardId } = setup();
 
-			cardRepo.findById.mockResolvedValueOnce(card);
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			await service.createElement(cardId);
+				await service.create(card);
 
-			expect(contentElementRepo.save).toHaveBeenCalledWith(
-				[
-					expect.objectContaining({
-						id: expect.any(String),
-						text: '',
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-					}),
-				],
-				cardId
-			);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							text: '',
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					cardId
+				);
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when deleting a content element', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const textElement = textElementFactory.build();
+				const textElementId = textElement.id;
+
+				return { card, textElement, textElementId };
+			};
+
+			it('should call deleteChildWithDescendants using the boardDo service', async () => {
+				const { card, textElementId } = setup();
+
+				await service.delete(card, textElementId);
+
+				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(card, textElementId);
+			});
 		});
 	});
 });

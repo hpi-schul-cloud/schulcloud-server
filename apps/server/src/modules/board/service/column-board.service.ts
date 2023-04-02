@@ -1,46 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard, EntityId } from '@shared/domain';
+import { ColumnBoard, ColumnBoardNode, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { ColumnBoardRepo, ColumnRepo } from '../repo';
+import { BoardDoRepo, BoardNodeRepo } from '../repo';
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly columnBoardRepo: ColumnBoardRepo, private readonly columnRepo: ColumnRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
-		const board = await this.columnBoardRepo.findById(boardId);
+		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
+
 		return board;
 	}
 
-	async createBoard(): Promise<ColumnBoard> {
+	async create(): Promise<ColumnBoard> {
 		const board = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title: '',
-			columns: [],
+			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
-		await this.columnBoardRepo.save(board);
+		await this.boardDoRepo.save(board);
 
 		return board;
 	}
 
-	async createColumn(boardId: EntityId): Promise<Column> {
-		const board = await this.columnBoardRepo.findById(boardId);
-
-		const column = new Column({
-			id: new ObjectId().toHexString(),
-			title: '',
-			cards: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		board.addColumn(column);
-
-		await this.columnRepo.save(board.columns, board.id);
-
-		return column;
+	async delete(boardId: EntityId): Promise<void> {
+		// ensure the board exists and is really a board
+		await this.boardNodeRepo.findById(ColumnBoardNode, boardId);
+		await this.boardDoRepo.deleteById(boardId);
 	}
 }

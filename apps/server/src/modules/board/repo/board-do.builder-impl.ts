@@ -1,13 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardDo, Card, Column, ColumnBoard, TextElement } from '../../domainobject';
-import type { BoardNode } from './boardnode.entity';
-import type { CardNode } from './card-node.entity';
-import type { ColumnBoardNode } from './column-board-node.entity';
-import type { ColumnNode } from './column-node.entity';
-import type { TextElementNode } from './text-element-node.entity';
-import { BoardNodeType } from './types/board-node-type';
+import type { BoardNode, CardNode, ColumnBoardNode, ColumnNode, BoardDoBuilder, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, Card, Column, ColumnBoard, TextElement, BoardNodeType } from '@shared/domain';
 
-export class BoardDoBuilder {
+export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
 
 	constructor(descendants: BoardNode[] = []) {
@@ -29,7 +24,7 @@ export class BoardDoBuilder {
 		const columnBoard = new ColumnBoard({
 			id: boardNode.id,
 			title: boardNode.title,
-			columns,
+			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
@@ -45,7 +40,7 @@ export class BoardDoBuilder {
 		const column = new Column({
 			id: boardNode.id,
 			title: boardNode.title,
-			cards,
+			children: cards,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
@@ -61,7 +56,7 @@ export class BoardDoBuilder {
 			id: boardNode.id,
 			title: boardNode.title,
 			height: boardNode.height,
-			elements,
+			children: elements,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});

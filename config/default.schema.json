@@ -513,6 +513,11 @@
 			"default": "false",
 			"description": "Enables the oauth system (iserv to sanis) migration feature."
 		},
+		"MIGRATION_END_GRACE_PERIOD_MS": {
+			"type": "number",
+			"default": "604800000",
+			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
+		},
 		"SC_TITLE": {
 			"type": "string",
 			"default": "HPI Schul-Cloud",
@@ -720,6 +725,11 @@
 			"type": "string",
 			"description": "The password for edu-sharing api access",
 			"default": ""
+		},
+		"ES_API_V7": {
+			"type": "boolean",
+			"default": false,
+			"description": "Use the newer API for Edusharing v7"
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
@@ -1182,6 +1192,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
+		},
+		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Makes the new school administration page the default page"
 		}
 	},
 	"required": [

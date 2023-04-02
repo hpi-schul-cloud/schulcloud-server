@@ -2,7 +2,6 @@ const { keepInArray } = require('feathers-hooks-common');
 const { BadRequest, Forbidden } = require('../../../errors');
 const constants = require('../../../utils/constants');
 const { blockDisposableEmail } = require('../../../hooks');
-const { trimPassword } = require('../../account/hooks');
 const { checkUniqueAccount } = require('../../user/hooks/userService');
 const { hasPermission } = require('../../../hooks');
 const { externallyManaged } = require('../../helpers/utils');
@@ -71,6 +70,17 @@ const validateEmail = (hook) => {
 const filterEntryParamNames = async (context) => {
 	const allowedAttributes = ['keyword', 'quarantinedObject', 'state'];
 	return keepInArray('entry', allowedAttributes)(context);
+};
+
+const trimPassword = (hook) => {
+	if (hook.data.password) {
+		hook.data.password = hook.data.password.trim();
+	}
+	if (hook.data.password_verification) {
+		hook.data.password_verification = hook.data.password_verification.trim();
+	}
+
+	return hook;
 };
 
 module.exports = {

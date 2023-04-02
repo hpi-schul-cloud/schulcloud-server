@@ -4,23 +4,18 @@ const { authenticationSecret, audience } = require('./logic/index');
 module.exports = {
 	audience,
 	authConfig: {
-		entity: 'account',
-		service: 'accountModel',
+		entity: 'account', // name of the found user in the request context
+		// entityId and service are never queried, but need to be provided otherwise the server doesn't start
+		entityId: 'noId',
+		service: 'emptyService', // This service is registered in 'index.js'
 		secret: authenticationSecret,
-		authStrategies: ['jwt', 'local', 'ldap', 'tsp', 'api-key'],
+		authStrategies: ['jwt', 'tsp', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'access' },
 			audience,
 			issuer: 'feathers',
 			algorithm: 'HS256',
 			expiresIn: Configuration.get('JWT_LIFETIME'),
-		},
-		local: {
-			usernameField: 'username',
-			passwordField: 'password',
-		},
-		ldap: {
-			usernameField: 'username',
 		},
 		tsp: {},
 		'api-key': {},

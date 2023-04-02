@@ -9,6 +9,7 @@ export class MigrationMapper {
 			oauthMigrationPossible: dto.oauthMigrationPossible,
 			oauthMigrationMandatory: dto.oauthMigrationMandatory,
 			oauthMigrationFinished: dto.oauthMigrationFinished,
+			oauthMigrationFinalFinish: dto.oauthMigrationFinalFinish,
 			enableMigrationStart: dto.enableMigrationStart,
 		});
 

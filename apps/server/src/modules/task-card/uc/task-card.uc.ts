@@ -1,6 +1,15 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
+import {
+	CardType,
+	Course,
+	EntityId,
+	ITaskUpdate,
+	Permission,
+	PermissionContextBuilder,
+	TaskCard,
+	User,
+} from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -149,15 +158,6 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
-			name: params.title,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
-	}
-
 	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
 		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
 		taskCard.cardElements.set(newCardElements);
@@ -175,6 +175,7 @@ export class TaskCardUc {
 		return taskWithStatusVo;
 	}
 
+
 	private validate(validationObject: { params: ITaskCardCRUD; course?: Course | null }) {
 		const { params, course } = validationObject;
 		if (course && !course.untilDate) {
@@ -186,5 +187,14 @@ export class TaskCardUc {
 		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
 			throw new ValidationError('Visible at date must be before due date');
 		}
+
+	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+		const taskParams = {
+			name: params.title,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
+
 	}
 }
