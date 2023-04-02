@@ -249,21 +249,23 @@ describe('Task-Card Controller (api)', () => {
 			expect(foundTaskCard).toEqual(null);
 		});
 		it('PATCH should update the task card', async () => {
+			const inThreeDays = new Date(Date.now() + 259200000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+			const inFourDays = new Date(Date.now() + 345600000);
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+
 			const title = 'title test';
 			const richTextCardElement = richTextCardElementFactory.buildWithId();
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
 			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
-			const course = courseFactory.buildWithId({ teachers: [user] });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
 
 			await em.persistAndFlush([user, task, taskCard, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const inThreeDays = new Date(Date.now() + 259200000);
-			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
 				title: 'updated title',
 				cardElements: [
@@ -283,8 +285,8 @@ describe('Task-Card Controller (api)', () => {
 						},
 					},
 				],
-				visibleAtDate: inThreeDays,
-				dueDate: inFourDays,
+				visibleAtDate: inTwoDays,
+				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			const response = await request(app.getHttpServer())
@@ -298,8 +300,8 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
-			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
-			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
+			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
+			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
 		});
 
 		describe('Sanitize richtext', () => {
@@ -351,11 +353,12 @@ describe('Task-Card Controller (api)', () => {
 
 			it('should sanitize richtext on update, with given format', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+				const inThreeDays = new Date(Date.now() + 259200000);
+				const inTwoDays = new Date(Date.now() + 172800000);
 				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 				const task = taskFactory.build({ creator: user });
 				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
-				const course = courseFactory.buildWithId({ teachers: [user] });
-				const inThreeDays = new Date(Date.now() + 259200000);
+				const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
 				await em.persistAndFlush([user, task, taskCard, course]);
 				em.clear();
@@ -377,7 +380,7 @@ describe('Task-Card Controller (api)', () => {
 							},
 						},
 					],
-					dueDate: inThreeDays,
+					dueDate: inTwoDays,
 				};
 
 				const response = await request(app.getHttpServer())

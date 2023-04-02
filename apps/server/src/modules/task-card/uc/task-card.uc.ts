@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
+import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -52,17 +52,9 @@ export class TaskCardUc {
 			cardParams.visibleAtDate = params.visibleAtDate;
 		}
 
+		this.validate({ params, course });
+
 		const card = new TaskCard(cardParams);
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError('Invalid date combination');
-		}
-
-		if (!course.untilDate) {
-			throw new ValidationError('Course end date is not set');
-		} else if (course.untilDate && course.untilDate < cardParams.dueDate) {
-			throw new ValidationError('Due date must be before course end date');
-		}
 
 		await this.taskCardRepo.save(card);
 
@@ -118,6 +110,9 @@ export class TaskCardUc {
 	async update(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
+		const course = params.courseId ? await this.courseRepo.findById(params.courseId) : null;
+
+		this.validate({ params, course });
 
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
@@ -144,9 +139,8 @@ export class TaskCardUc {
 		if (params.dueDate) {
 			card.dueDate = params.dueDate;
 		}
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError('Invalid date combination');
+		if (course) {
+			card.course = course;
 		}
 
 		await this.replaceCardElements(card, cardElements);
@@ -179,5 +173,18 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private validate(validationObject: { params: ITaskCardCRUD; course?: Course | null }) {
+		const { params, course } = validationObject;
+		if (course && !course.untilDate) {
+			throw new ValidationError('Course end date is not set');
+		}
+		if (course && course.untilDate && course.untilDate < params.dueDate) {
+			throw new ValidationError('Due date must be before course end date');
+		}
+		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
+			throw new ValidationError('Visible at date must be before due date');
+		}
 	}
 }

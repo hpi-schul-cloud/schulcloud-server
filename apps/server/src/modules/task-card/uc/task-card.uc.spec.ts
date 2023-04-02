@@ -95,7 +95,6 @@ describe('TaskCardUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			taskCard = taskCardFactory.buildWithId();
-
 			userRepo.findById.mockResolvedValue(user);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
@@ -181,7 +180,7 @@ describe('TaskCardUc', () => {
 		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
-			course = courseFactory.buildWithId({ untilDate: inThreeDays });
+			course = courseFactory.buildWithId({ untilDate: inTwoDays });
 			taskCardCreateParams = {
 				title,
 				text: [
@@ -215,11 +214,6 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, taskCardCreateParams);
 			}).rejects.toThrow(ForbiddenException);
 		});
-		it('should fetch course if courseId is given', async () => {
-			const expectedCourseParams = taskCardCreateParams.courseId;
-			await uc.create(user.id, taskCardCreateParams);
-			expect(courseRepo.findById).toBeCalledWith(expectedCourseParams);
-		});
 		it('should check for course permission to create the task related to the task card in a course', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
@@ -227,10 +221,9 @@ describe('TaskCardUc', () => {
 				requiredPermissions: [],
 			});
 		});
-		it('should call task create with task name same like task-card title, courseId if given and private as false', async () => {
+		it('should call task create with task name same like task-card title, courseId and private as false', async () => {
 			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId, private: false };
 			await uc.create(user.id, taskCardCreateParams);
-
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
 		it('should throw if due date is before visible at date', async () => {
@@ -249,18 +242,29 @@ describe('TaskCardUc', () => {
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should throw if course end is before due date', async () => {
-			// TODO: SHOULD FAIL
-			const inFourDays = new Date(Date.now() + 345600000);
 			const TaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
-				dueDate: inTwoDays,
+				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			await expect(async () => {
 				await uc.create(user.id, TaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
+		it('should throw if course has no end date', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			const TaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.create(user.id, TaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
+
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
@@ -289,22 +293,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should return the task card and task without course if no courseId is given', async () => {
-			const taskCardCreateParamsWithoutCourse = {
-				title,
-				text: [
-					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
-				],
-				visibleAtDate,
-				dueDate,
-				courseId: '',
-			};
-			const result = await uc.create(user.id, taskCardCreateParamsWithoutCourse);
-			expect(result.card.task.course).not.toBeDefined();
-			expect(result.taskWithStatusVo.task.course).not.toBeDefined();
-		});
-		it('should return the task card with default visible at date if params are not given and creator does NOT provide current school year', async () => {
+		it('should return the task card with default visible at date if params are not given', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -318,7 +307,7 @@ describe('TaskCardUc', () => {
 			const expectedVisibleAtDate = new Date();
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
 		});
-		it('should return the task card with default visible at date  if params are not given and creator does provide current school year', async () => {
+		it('should return the task card with default visible at date  if params are not given', async () => {
 			const school = schoolFactory.buildWithId();
 			const userWithSchool = userFactory.buildWithId({ school });
 			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
