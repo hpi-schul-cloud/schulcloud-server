@@ -10,6 +10,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Account, User, Role, School, System, SchoolYear } from '@shared/domain';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { Logger } from '@src/core/logger';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { S3Config } from './interface/config';
 import { s3Config, config } from './fwu-learning-contents.config';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
@@ -18,7 +19,7 @@ import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 const providers = [
 	Logger,
 	{
-		provide: 'FWU_S3_Client',
+		provide: 'S3_Client',
 		scope: Scope.REQUEST,
 		useFactory: (configProvider: S3Config) =>
 			new S3Client({
@@ -38,6 +39,7 @@ const providers = [
 		useValue: s3Config,
 	},
 	FwuLearningContentsUc,
+	S3ClientAdapter,
 ];
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
