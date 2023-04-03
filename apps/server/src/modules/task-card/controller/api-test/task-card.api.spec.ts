@@ -25,6 +25,11 @@ import request from 'supertest';
 describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	const tomorrow = new Date(Date.now() + 86400000);
+	const inTwoDays = new Date(Date.now() + 172800000);
+	const inThreeDays = new Date(Date.now() + 259200000);
+	const inFourDays = new Date(Date.now() + 345600000);
+
 	let currentUser: ICurrentUser;
 
 	const setupUser = (permissions: Permission[]) => {
@@ -73,7 +78,6 @@ describe('Task-Card Controller (api)', () => {
 		it('Create task-card should throw', async () => {
 			const user = setupUser([]);
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const inThreeDays = new Date(Date.now() + 259200000);
 
 			await em.persistAndFlush([user, course]);
 			em.clear();
@@ -123,7 +127,6 @@ describe('Task-Card Controller (api)', () => {
 			const user = setupUser([]);
 			const taskCard = taskCardFactory.build({ creator: user });
 			const course = courseFactory.buildWithId({ teachers: [user] });
-			const inThreeDays = new Date(Date.now() + 259200000);
 
 			await em.persistAndFlush([user, taskCard, course]);
 			em.clear();
@@ -165,11 +168,8 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 		});
 		it('POST should return new task-card', async () => {
-			const inThreeDays = new Date(Date.now() + 259200000);
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
-
-			const inTwoDays = new Date(Date.now() + 172800000);
 
 			await em.persistAndFlush([user, course]);
 			em.clear();
@@ -249,9 +249,6 @@ describe('Task-Card Controller (api)', () => {
 			expect(foundTaskCard).toEqual(null);
 		});
 		it('PATCH should update the task card', async () => {
-			const inThreeDays = new Date(Date.now() + 259200000);
-			const inTwoDays = new Date(Date.now() + 172800000);
-			const inFourDays = new Date(Date.now() + 345600000);
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 
 			const title = 'title test';
@@ -306,9 +303,6 @@ describe('Task-Card Controller (api)', () => {
 
 		describe('Sanitize richtext', () => {
 			it('should sanitize richtext on create with inputformat ck5', async () => {
-				const inTwoDays = new Date(Date.now() + 172800000);
-				const inThreeDays = new Date(Date.now() + 259200000);
-
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 				const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
@@ -353,8 +347,6 @@ describe('Task-Card Controller (api)', () => {
 
 			it('should sanitize richtext on update, with given format', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
-				const inThreeDays = new Date(Date.now() + 259200000);
-				const inTwoDays = new Date(Date.now() + 172800000);
 				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 				const task = taskFactory.build({ creator: user });
 				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
@@ -484,8 +476,6 @@ describe('Task-Card Controller (api)', () => {
 	});
 	describe('When title is provided', () => {
 		it('should create a task card with title', async () => {
-			const inThreeDays = new Date(Date.now() + 259200000);
-			const inTwoDays = new Date(Date.now() + 172800000);
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 

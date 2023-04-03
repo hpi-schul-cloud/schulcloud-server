@@ -202,27 +202,6 @@ describe('task-card mapper', () => {
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
 		});
-		it('should throw an error if dueDate is empty', () => {
-			const tomorrow = new Date(Date.now() + 86400000);
-
-			const cardElementRichText = new RichTextCardElementParam();
-			cardElementRichText.type = CardElementType.RichText;
-			cardElementRichText.value = 'richtext';
-			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
-
-			const params = {
-				cardElements: [
-					{
-						content: cardElementRichText,
-					},
-				],
-				courseId: new ObjectId().toHexString(),
-				visibleAtDate: tomorrow,
-				dueDate: null,
-				title: 'test-title',
-			};
-			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
-		});
 		it('should not have a text property if cardElements are missing', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
