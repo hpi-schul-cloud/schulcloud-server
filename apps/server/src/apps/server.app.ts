@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 // application imports
 import { MikroORM } from '@mikro-orm/core';
-import { Logger } from '@nestjs/common';
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -15,40 +14,21 @@ import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
 import express from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
+import { INestApplication, VersioningType } from '@nestjs/common';
+import { FeathersProxyMiddleware } from './feathers-proxy.middleware';
 import legacyAppPromise = require('../../../../src/app');
 
-async function bootstrap() {
-	sourceMapInstall();
-
-	// create the NestJS application on a seperate express instance
-	const nestExpress = express();
-	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
-	const orm = nestApp.get(MikroORM);
-
-	// WinstonLogger
-	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
-
+async function bootstrapFeathers(nestApp: INestApplication): Promise<express.Express> {
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
+	const orm: MikroORM = nestApp.get(MikroORM);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const feathersExpress: any = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.setup();
-
-	// set reference to legacy app as an express setting so we can
-	// access it over the current request within FeathersServiceProvider
-	// TODO remove if not needed anymore
-	nestExpress.set('feathersApp', feathersExpress);
-
-	// customize nest app settings
-	nestApp.enableCors();
-	enableOpenApiDocs(nestApp, 'docs');
-
-	await nestApp.init();
 
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -71,40 +51,51 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 
-	// mount instances
-	const rootExpress = express();
+	return feathersExpress as express.Express;
+}
 
-	// exposed alias mounts
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	rootExpress.use('/api/v1', feathersExpress);
-	rootExpress.use('/api/v3', nestExpress);
-	rootExpress.use(express.static(join(__dirname, '../static-assets')));
+async function bootstrap() {
+	sourceMapInstall();
 
-	// logger middleware for deprecated paths
-	// TODO remove when all calls to the server are migrated
-	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		Logger.error(req.path, 'DEPRECATED-PATH');
-		next();
-	};
+	// create the NestJS application on a seperate express instance
+	const nestExpress = express();
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
-	// safety net for deprecated paths not beginning with version prefix
-	// TODO remove when all calls to the server are migrated
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
+	// WinstonLogger
+	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
+
+	// Versioning
+	nestApp.enableVersioning({ prefix: 'v', defaultVersion: '3', type: VersioningType.URI }).setGlobalPrefix('/api/');
+
+	// customize nest app settings
+	nestApp.enableCors();
+	enableOpenApiDocs(nestApp, 'docs');
+
+	const feathersExpress: express.Express = await bootstrapFeathers(nestApp);
+
+	const feathersProxyMiddleware = new FeathersProxyMiddleware(feathersExpress);
+	nestApp.use(feathersProxyMiddleware.use.bind(feathersProxyMiddleware));
+
+	// set reference to legacy app as an express setting so we can
+	// access it over the current request within FeathersServiceProvider
+	// TODO remove if not needed anymore
+	nestExpress.set('feathersApp', feathersExpress);
+
+	await nestApp.init();
 
 	const port = 3030;
-	rootExpress.listen(port);
+	await nestApp.listen(port);
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);
 	console.log(`### Port: ${port}                ###`);
 	console.log(`### Mounts                    ###`);
 	console.log(`### /api/v1 --> feathers      ###`);
-	console.log(`### /api/v3 --> nest          ###`);
+	console.log(`### /api/vX --> nest          ###`);
 	console.log(`### /api    --> feathers      ###`);
 	console.log(`### /       --> feathers      ###`);
 	console.log('#################################');
 }
+
 void bootstrap();

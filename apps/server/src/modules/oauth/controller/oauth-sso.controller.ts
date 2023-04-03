@@ -10,6 +10,7 @@ import {
 	Session,
 	UnauthorizedException,
 	UnprocessableEntityException,
+	Version,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
@@ -119,6 +120,13 @@ export class OauthSSOController {
 		} catch (error) {
 			this.errorHandler(error, session, res);
 		}
+	}
+
+	// TODO: remove this with N21-746
+	@Version('4')
+	@Get('oauth')
+	testVersioning(): string {
+		return 'Its working';
 	}
 
 	@Get('oauth')
