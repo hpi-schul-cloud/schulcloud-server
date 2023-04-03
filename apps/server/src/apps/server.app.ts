@@ -71,7 +71,7 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors();
-	enableOpenApiDocs(nestApp, 'docs');
+	enableOpenApiDocs(nestApp, '/api/v:version/docs');
 
 	const feathersExpress: express.Express = await bootstrapFeathers(nestApp);
 

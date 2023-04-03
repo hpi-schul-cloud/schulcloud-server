@@ -13,12 +13,10 @@ export class FeathersProxyMiddleware implements NestMiddleware {
 	}
 
 	use(req: Request, res: Response, next: NextFunction) {
-		Logger.debug(req.path);
 		const path = req.path.startsWith('/') ? req.path : `/${req.path}`;
 
 		// RegExp to match /api/vX where X is a number between 3 and 9
 		const nestRegex = /^\/api\/v[3-9]/;
-
 		if (nestRegex.test(path)) {
 			Logger.debug('nest call');
 			next();
