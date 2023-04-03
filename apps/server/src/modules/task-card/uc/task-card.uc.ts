@@ -110,14 +110,19 @@ export class TaskCardUc {
 	async update(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
-		const course = params.courseId ? await this.courseRepo.findById(params.courseId) : null;
-		this.validate({ params, course });
 
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
 		) {
 			throw new ForbiddenException();
 		}
+
+		const course = params.courseId ? await this.courseRepo.findById(params.courseId) : null;
+		if (course) {
+			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+		}
+
+		this.validate({ params, course });
 
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
