@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -36,25 +37,6 @@ describe(BoardDoService.name, () => {
 		await module.close();
 	});
 
-	describe('when searching a domain object', () => {
-		const setup = () => {
-			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.build({ children: elements });
-			const cardId = card.id;
-
-			return { card, elements, cardId };
-		};
-
-		it('should return the domain object', async () => {
-			const { card } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
-
-			const found = await service.findById(card.id);
-
-			expect(found).toBe(card);
-		});
-	});
-
 	describe('when deleting a child', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
@@ -69,10 +51,10 @@ describe(BoardDoService.name, () => {
 
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChild(card, elements[0].id);
+			await service.deleteChildWithDescendants(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
-			expect(boardDoRepo.deleteWithDescendants).toHaveBeenCalledWith(elements[0].id);
+			expect(boardDoRepo.deleteById).toHaveBeenCalledWith(elements[0].id);
 		});
 
 		it('should update the siblings', async () => {
@@ -80,7 +62,7 @@ describe(BoardDoService.name, () => {
 
 			boardDoRepo.findById.mockResolvedValueOnce(card);
 
-			await service.deleteChild(card, elements[0].id);
+			await service.deleteChildWithDescendants(card, elements[0].id);
 
 			expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
 		});
@@ -89,7 +71,7 @@ describe(BoardDoService.name, () => {
 			const textElement = textElementFactory.buildWithId();
 			const fakeId = new ObjectId().toHexString();
 
-			await expect(service.deleteChild(textElement, fakeId)).rejects.toThrow();
+			await expect(service.deleteChildWithDescendants(textElement, fakeId)).rejects.toThrow();
 		});
 	});
 });
