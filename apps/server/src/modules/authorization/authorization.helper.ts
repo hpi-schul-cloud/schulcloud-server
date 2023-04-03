@@ -119,10 +119,12 @@ export class AuthorizationHelper {
 
 	// todo: hasAccessToDomainObject
 
+	// TODO: Method is unused. Can it be removed?
 	public isSameSchool(user: User, entity: IEntityWithSchool) {
 		return user.school === entity.school;
 	}
 
+	// TODO: Method is unused. Can it be removed?
 	/**
 	 * @throws UnauthorizedException
 	 */
@@ -138,6 +140,7 @@ export class AuthorizationHelper {
 	 * Please not use role instead of permission. It is only for do something for target if it has the role xy.
 	 * For each other operations please define, use the string based permissions inside the roles.
 	 */
+	// TODO: Method is unused. Can it be removed?
 	public hasRole(user: User, roleName: IUserRoleName) {
 		if (!user.roles.isInitialized(true)) {
 			throw new Error('Roles items are not loaded.');
