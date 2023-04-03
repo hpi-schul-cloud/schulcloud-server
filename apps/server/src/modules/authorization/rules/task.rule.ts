@@ -3,10 +3,10 @@ import { Task, User } from '../../../shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { Action, AuthorizationContext } from '../types';
+import { Action, AuthorizationContext, Rule } from '../types';
 
 @Injectable()
-export class TaskRule {
+export class TaskRule implements Rule {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Team, TeamUser, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
-import { AuthorizationContext } from '../types';
+import { AuthorizationContext, Rule } from '../types';
 
 @Injectable()
-export class TeamRule {
+export class TeamRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, entity: Team): boolean {

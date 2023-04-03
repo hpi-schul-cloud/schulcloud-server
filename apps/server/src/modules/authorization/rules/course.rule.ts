@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import type { User } from '../../../shared/domain/entity';
 import { Course } from '../../../shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
-import { Action, AuthorizationContext } from '../types';
+import { Action, AuthorizationContext, Rule } from '../types';
 
 @Injectable()
-export class CourseRule {
+export class CourseRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, entity: Course): boolean {

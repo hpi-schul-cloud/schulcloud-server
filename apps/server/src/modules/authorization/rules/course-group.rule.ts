@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CourseGroup, User } from '../../../shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
-import { Action, AuthorizationContext } from '../types';
+import { Action, AuthorizationContext, Rule } from '../types';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class CourseGroupRule {
+export class CourseGroupRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly courseRule: CourseRule) {}
 
 	public isApplicable(user: User, entity: CourseGroup): boolean {

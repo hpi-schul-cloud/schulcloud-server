@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { SchoolExternalToolDO } from '../../../shared/domain/domainobject/external-tool/school-external-tool.do';
 import { SchoolExternalTool, User } from '../../../shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
-import { AuthorizationContext } from '../types';
+import { AuthorizationContext, Rule } from '../types';
 
 @Injectable()
-export class SchoolExternalToolRule {
+export class SchoolExternalToolRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
 	public isApplicable(user: User, entity: SchoolExternalTool | SchoolExternalToolDO): boolean {
