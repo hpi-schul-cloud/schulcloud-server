@@ -111,7 +111,6 @@ export class TaskCardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
 		const course = params.courseId ? await this.courseRepo.findById(params.courseId) : null;
-
 		this.validate({ params, course });
 
 		if (

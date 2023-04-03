@@ -254,6 +254,7 @@ describe('TaskCardUc', () => {
 		});
 		it('should throw if course has no end date', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
+			courseRepo.findById.mockResolvedValue(course);
 			const TaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
@@ -333,10 +334,12 @@ describe('TaskCardUc', () => {
 		const tomorrow = new Date(Date.now() + 86400000);
 		const inTwoDays = new Date(Date.now() + 172800000);
 		const inThreeDays = new Date(Date.now() + 259200000);
+		const inFourDays = new Date(Date.now() + 345600000);
 		const visibleAtDate = tomorrow;
 		const dueDate = inTwoDays;
 		beforeEach(() => {
 			user = userFactory.buildWithId();
+			course = courseFactory.buildWithId({ untilDate: inFourDays });
 
 			const originalRichTextCardElements = richTextCardElementFactory.buildList(2);
 			taskCard = taskCardFactory.buildWithId({
@@ -362,12 +365,14 @@ describe('TaskCardUc', () => {
 			};
 
 			userRepo.findById.mockResolvedValue(user);
+			courseRepo.findById.mockResolvedValue(course);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
+			courseRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
 			authorizationService.hasPermission.mockRestore();
 			authorizationService.getUserWithPermissions.mockRestore();
@@ -433,6 +438,19 @@ describe('TaskCardUc', () => {
 			expect(result.card.cardElements.length).toEqual(2);
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
+		});
+		it('should throw if course has no end date', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			courseRepo.findById.mockResolvedValue(course);
+			const TaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.update(user.id, taskCard.id, TaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
 		});
 	});
 });

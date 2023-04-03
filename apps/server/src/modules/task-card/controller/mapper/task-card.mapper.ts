@@ -64,10 +64,6 @@ export class TaskCardMapper {
 			throw new ValidationError('The Task Card must have one course');
 		}
 
-		if (!params.dueDate) {
-			throw new ValidationError('The Task Card must have one due date');
-		}
-
 		const dto: ITaskCardCRUD = {
 			title: params.title,
 			courseId: params.courseId,
