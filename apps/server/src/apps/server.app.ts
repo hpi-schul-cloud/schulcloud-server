@@ -27,7 +27,7 @@ async function bootstrapFeathers(nestApp: INestApplication): Promise<express.Exp
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const orm: MikroORM = nestApp.get(MikroORM);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress: any = await legacyAppPromise(orm);
+	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.setup();
 
@@ -58,8 +58,9 @@ async function bootstrapFeathers(nestApp: INestApplication): Promise<express.Exp
 async function bootstrap() {
 	sourceMapInstall();
 
-	// create the NestJS application on a seperate express instance
 	const nestExpress = express();
+	nestExpress.use(express.static(join(__dirname, '../static-assets')));
+
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
@@ -82,12 +83,11 @@ async function bootstrap() {
 	// access it over the current request within FeathersServiceProvider
 	// TODO remove if not needed anymore
 	nestExpress.set('feathersApp', feathersExpress);
-	nestExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	await nestApp.init();
 
 	const port = 3030;
-	await nestApp.listen(port);
+	nestExpress.listen(port);
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);
