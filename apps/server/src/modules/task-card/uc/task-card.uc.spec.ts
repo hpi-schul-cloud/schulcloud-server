@@ -308,7 +308,7 @@ describe('TaskCardUc', () => {
 			const expectedVisibleAtDate = new Date();
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
 		});
-		it('should return the task card with default visible at date  if params are not given', async () => {
+		it('should return the task card with default visible at date if params are not given', async () => {
 			const school = schoolFactory.buildWithId();
 			const userWithSchool = userFactory.buildWithId({ school });
 			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);

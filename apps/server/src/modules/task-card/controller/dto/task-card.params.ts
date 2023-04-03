@@ -71,7 +71,7 @@ export class TaskCardParams {
 	courseId!: string;
 
 	@IsString()
-	@MinLength(2)
+	@MinLength(1)
 	@MaxLength(400)
 	@SanitizeHtml()
 	@ApiProperty({

@@ -25,7 +25,6 @@ import request from 'supertest';
 describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	const tomorrow = new Date(Date.now() + 86400000);
 	const inTwoDays = new Date(Date.now() + 172800000);
 	const inThreeDays = new Date(Date.now() + 259200000);
 	const inFourDays = new Date(Date.now() + 345600000);
@@ -500,7 +499,7 @@ describe('Task-Card Controller (api)', () => {
 
 			expect(responseTaskCard.title).toEqual(taskCardParams.title);
 		});
-		it('should throw an error if title is to short', async () => {
+		it('should throw an error if title is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
 			await em.persistAndFlush([user]);
@@ -509,7 +508,7 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const taskCardParams = {
-				title: 't',
+				title: '',
 			};
 
 			await request(app.getHttpServer())
