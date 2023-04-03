@@ -42,4 +42,12 @@ export class CardUc {
 
 		await this.elementService.delete(card, elementId);
 	}
+
+	async moveElement(userId: EntityId, elementId: EntityId, targetCardId: EntityId, toIndex: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, toIndex });
+
+		// TODO check permissions
+
+		await this.elementService.move(elementId, targetCardId, toIndex);
+	}
 }

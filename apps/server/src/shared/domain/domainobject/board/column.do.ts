@@ -4,9 +4,9 @@ import { Card } from './card.do';
 import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from './types';
 
 export class Column extends BoardComposite implements BoardNodeBuildable {
-	addChild(child: AnyBoardDo) {
+	addChild(child: AnyBoardDo, toIndex?: number) {
 		if (child instanceof Card) {
-			this.children.push(child);
+			this._addChild(child, toIndex);
 		} else {
 			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
 		}

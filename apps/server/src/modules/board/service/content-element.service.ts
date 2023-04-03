@@ -26,4 +26,8 @@ export class ContentElementService {
 	async delete(parent: Card, elementId: EntityId): Promise<void> {
 		await this.boardDoService.deleteChildWithDescendants(parent, elementId);
 	}
+
+	async move(elementId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
+		await this.boardDoService.moveBoardDo(elementId, targetColumnId, toIndex);
+	}
 }
