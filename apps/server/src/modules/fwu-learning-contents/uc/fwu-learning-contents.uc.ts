@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, InternalServerErrorException, Inject, Scope } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Inject } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
@@ -15,25 +15,23 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	async get(path: string) {
-		const response = await this.storageClient.get(path).catch((error: unknown) => {
+	async get(path: string, bytesRange?: string) {
+		try {
+			const response = await this.storageClient.get(path, bytesRange);
+			return response;
+		} catch (error: unknown) {
 			if (error && typeof error === 'object' && 'name' in error && 'stack' in error) {
-				if (error.name === 'NoSuchKey') {
-					throw new NotFoundException({ cause: error.stack });
-				} else {
-					throw new InternalServerErrorException({
-						name: error.name,
-						message: 'unexpected error on reading file from FWU S3 storage',
-						cause: error.stack,
-					});
-				}
+				throw new InternalServerErrorException({
+					name: error.name,
+					message: 'unexpected error on reading file from FWU S3 storage',
+					cause: error.stack,
+				});
 			}
 			throw new InternalServerErrorException({
 				name: undefined,
 				message: 'unexpected error on reading file from FWU S3 storage',
 				cause: error,
 			});
-		});
-		return response;
+		}
 	}
 }
