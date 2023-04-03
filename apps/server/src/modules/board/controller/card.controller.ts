@@ -3,7 +3,7 @@ import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swa
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { CardUc } from '../uc/card.uc';
-import { CardIdsParams, CardListResponse, CardUrlParams, ContentElementUrlParams, TextElementResponse } from './dto';
+import { CardIdsParams, CardIdUrlParams, CardListResponse, ContentElementUrlParams, TextElementResponse } from './dto';
 import { AnyContentElementResponse } from './dto/card/any-content-element.response';
 import { TextElementResponseMapper } from './mapper';
 import { CardResponseMapper } from './mapper/card-response.mapper';
@@ -38,7 +38,7 @@ export class CardController {
 	})
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams,
+		@Param() urlParams: CardIdUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
