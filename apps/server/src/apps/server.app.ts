@@ -14,6 +14,7 @@ import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
 import express from 'express';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
@@ -81,6 +82,7 @@ async function bootstrap() {
 	// access it over the current request within FeathersServiceProvider
 	// TODO remove if not needed anymore
 	nestExpress.set('feathersApp', feathersExpress);
+	nestExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	await nestApp.init();
 
