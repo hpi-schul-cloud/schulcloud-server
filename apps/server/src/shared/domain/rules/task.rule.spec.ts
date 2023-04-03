@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
 import { Task, User } from '../entity';
+import type { Role } from '../entity';
 import { Permission, RoleName } from '../interface';
 import { Actions } from './actions.enum';
 
@@ -101,8 +102,9 @@ describe('TaskRule', () => {
 
 	describe('User [STUDENT]', () => {
 		let student: User;
+		let role: Role;
 		beforeEach(() => {
-			const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+			role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
 			student = userFactory.build({ roles: [role] });
 		});
 		it('should return "true" if user is creator', () => {
@@ -142,6 +144,19 @@ describe('TaskRule', () => {
 
 		it('should return "false" if user has not access to entity', () => {
 			entity = taskFactory.build();
+			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
+			expect(res).toBe(false);
+		});
+
+		it('should return false if task has Assignees and user is not assigned ', () => {
+			const otherStudent: User = userFactory.build({ roles: [role] });
+			entity = taskFactory.build({ users: [otherStudent] });
+			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
+			expect(res).toBe(false);
+		});
+
+		it('should return true if task has Assignees and user is not assigned ', () => {
+			entity = taskFactory.build({ users: [student] });
 			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});

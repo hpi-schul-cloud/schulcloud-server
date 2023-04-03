@@ -831,6 +831,42 @@ describe('TaskRepo', () => {
 					expect(result[0].name).toEqual(task1.name);
 				});
 			});
+
+			describe('when userId filter is applied', () => {
+				const setup = async () => {
+					const teacher = userFactory.build();
+					const student1 = userFactory.build();
+					const student2 = userFactory.build();
+					const course = courseFactory.build({ teachers: [teacher], students: [student1, student2] });
+					const task1 = taskFactory.build({ course, creator: teacher, users: [student1, student2] });
+					const task2 = taskFactory.build({ course, creator: teacher, users: [student2] });
+					await em.persistAndFlush([task1, task2]);
+					em.clear();
+					return { teacher, student1, student2, course, task1, task2 };
+				};
+
+				it('should filter tasks by assigned user', async () => {
+					const { student1, student2, course } = await setup();
+
+					const [, totalStudent1] = await repo.findAllByParentIds({ courseIds: [course.id] }, { userId: student1.id });
+
+					const [, totalStudent2] = await repo.findAllByParentIds({ courseIds: [course.id] }, { userId: student2.id });
+
+					expect(totalStudent1).toEqual(1);
+					expect(totalStudent2).toEqual(2);
+				});
+
+				it('should return tasks when userId filter is not applied', async () => {
+					const { course } = await setup();
+
+					const [, totalStudent1] = await repo.findAllByParentIds({ courseIds: [course.id] }, {});
+
+					const [, totalStudent2] = await repo.findAllByParentIds({ courseIds: [course.id] });
+
+					expect(totalStudent1).toEqual(2);
+					expect(totalStudent2).toEqual(2);
+				});
+			});
 		});
 
 		describe('order', () => {
@@ -1758,6 +1794,7 @@ describe('TaskRepo', () => {
 						finishedCourseIds: [],
 						lessonIdsOfFinishedCourses: [],
 					},
+					{},
 					{ pagination: { skip: 5 } }
 				);
 
@@ -1779,6 +1816,7 @@ describe('TaskRepo', () => {
 						finishedCourseIds: [],
 						lessonIdsOfFinishedCourses: [],
 					},
+					{},
 					{ pagination: { limit: 5 } }
 				);
 
@@ -1800,6 +1838,7 @@ describe('TaskRepo', () => {
 						finishedCourseIds: [],
 						lessonIdsOfFinishedCourses: [],
 					},
+					{},
 					{ pagination: { limit: 5, skip: 5 } }
 				);
 
@@ -1829,6 +1868,7 @@ describe('TaskRepo', () => {
 					finishedCourseIds: [],
 					lessonIdsOfFinishedCourses: [],
 				},
+				{},
 				{ order: { dueDate: SortOrder.desc } }
 			);
 
