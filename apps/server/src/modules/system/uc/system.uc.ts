@@ -8,14 +8,20 @@ export class SystemUc {
 	constructor(private readonly systemService: SystemService) {}
 
 	async findByFilter(type?: SystemType, onlyOauth = false): Promise<SystemDto[]> {
+		let systems: SystemDto[];
+
 		if (onlyOauth) {
-			return this.systemService.findByType(SystemTypeEnum.OAUTH);
+			systems = await this.systemService.findByType(SystemTypeEnum.OAUTH);
+		} else {
+			systems = await this.systemService.findByType(type);
 		}
-		return this.systemService.findByType(type);
+
+		return systems;
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
-		const promise: Promise<SystemDto> = this.systemService.findById(id);
-		return promise;
+		const system: SystemDto = await this.systemService.findById(id);
+
+		return system;
 	}
 }
