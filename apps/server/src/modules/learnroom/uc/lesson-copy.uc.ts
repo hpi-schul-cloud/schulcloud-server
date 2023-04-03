@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, Permission, User } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import {
 	Action,
