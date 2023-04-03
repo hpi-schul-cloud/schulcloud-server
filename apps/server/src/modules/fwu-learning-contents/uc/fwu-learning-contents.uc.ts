@@ -6,20 +6,26 @@ import { S3Config } from '../interface/config';
 
 @Injectable()
 export class FwuLearningContentsUc {
-	constructor(
-		private logger: Logger,
-		@Inject('FWU_S3_Client') readonly client: S3Client,
-		@Inject('S3_Config') readonly config: S3Config
-	) {
+	constructor(private logger: Logger, @Inject('S3_Config') readonly config: S3Config) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
 	private async getResponse(path: string) {
+		const client = new S3Client({
+			endpoint: this.config.endpoint,
+			credentials: {
+				accessKeyId: this.config.accessKeyId,
+				secretAccessKey: this.config.secretAccessKey,
+			},
+			region: this.config.region,
+			tls: true,
+			forcePathStyle: true,
+		});
 		const request = new GetObjectCommand({
 			Bucket: this.config.bucket,
 			Key: path.toString(),
 		});
-		const response = await this.client.send(request).catch((error: unknown) => {
+		const response = await client.send(request).catch((error: unknown) => {
 			if (error && typeof error === 'object' && 'name' in error && 'stack' in error) {
 				if (error.name === 'NoSuchKey') {
 					throw new NotFoundException({ cause: error.stack });
