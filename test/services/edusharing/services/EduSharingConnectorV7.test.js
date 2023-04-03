@@ -125,7 +125,6 @@ describe('EduSharingV7 FIND', () => {
 			await eduSharingService.get('dummyNodeId', params);
 			throw new Error('should have failed');
 		} catch (err) {
-			chai.expect(err.message).to.not.equal('should have failed');
 			chai.expect(err.code).to.equal(404);
 			chai.expect(err.message).to.equal('Invalid node id dummyNodeId');
 		}
@@ -175,7 +174,6 @@ describe('EduSharingV7 FIND', () => {
 
 			throw new Error('should have failed');
 		} catch (err) {
-			chai.expect(err.message).to.not.equal('should have failed');
 			chai.expect(err.code).to.equal(503);
 			chai.expect(err.message).to.equal('Unexpected response from Edu-Sharing renderer.');
 		}
