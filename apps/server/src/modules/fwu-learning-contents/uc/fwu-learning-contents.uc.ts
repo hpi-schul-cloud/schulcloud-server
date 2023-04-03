@@ -15,6 +15,7 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
+	// eslint-disable-next-line consistent-return
 	async get(path: string, bytesRange?: string) {
 		try {
 			const response = await this.storageClient.get(path, bytesRange);
