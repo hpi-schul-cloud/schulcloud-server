@@ -13,26 +13,27 @@ export class FeathersProxyMiddleware implements NestMiddleware {
 	}
 
 	use(req: Request, res: Response, next: NextFunction) {
-		Logger.log(req.path);
+		Logger.debug(req.path);
 		const path = req.path.startsWith('/') ? req.path : `/${req.path}`;
 
 		// RegExp to match /api/vX where X is a number between 3 and 9
-		const nestRegex = /^\/api\/v[3-9].*/;
+		const nestRegex = /^\/api\/v[3-9]/;
 
 		if (nestRegex.test(path)) {
 			Logger.debug('nest call');
 			next();
 		} else {
 			Logger.debug('feathers call');
-			if (req.path === '/' || req.path === '/api') {
-				this.logDeprecatedPaths(req, next);
+			if (!path.startsWith('/api/v')) {
+				this.logDeprecatedPaths(req);
 			}
+			// Replace /api/v\d+ with empty string to call endpoint in feathers
+			req.url = path.replace(/^\/api\/v\d+/, '');
 			this.feathersApp(req, res, next);
 		}
 	}
 
-	private logDeprecatedPaths(req: express.Request, next: express.NextFunction) {
+	private logDeprecatedPaths(req: express.Request) {
 		Logger.error(req.path, 'DEPRECATED-PATH');
-		next();
 	}
 }
