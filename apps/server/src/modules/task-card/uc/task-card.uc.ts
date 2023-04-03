@@ -20,12 +20,12 @@ export class TaskCardUc {
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
-
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
 			throw new ForbiddenException();
 		}
+
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
 		const taskWithStatusVo = await this.createTask(userId, params);
 
