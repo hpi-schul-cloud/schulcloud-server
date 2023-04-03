@@ -2803,6 +2803,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MoveColumnBodyParams.html" data-type="entity-link" >MoveColumnBodyParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/MoveContentElementBody.html" data-type="entity-link" >MoveContentElementBody</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MoveElementParams.html" data-type="entity-link" >MoveElementParams</a>
                             </li>
                             <li class="link">

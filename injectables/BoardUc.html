@@ -106,6 +106,14 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findBoard" >findBoard</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#moveCard" >moveCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#moveColumn" >moveColumn</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -301,8 +309,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:72</a></div>
                 </td>
             </tr>
 
@@ -562,8 +570,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:83</a></div>
                 </td>
             </tr>
 
@@ -825,6 +833,220 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveCard"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveCard</b></span>
+                        <a href="#moveCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveCard(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetColumnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:93</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>cardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetColumnId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveColumn"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveColumn</b></span>
+                        <a href="#moveColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveColumn(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:64</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>boardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>columnId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -894,6 +1116,14 @@ export class BoardUc {
 		await this.columnService.delete(board, columnId);
 	}
 
+	async moveColumn(userId: EntityId, boardId: EntityId, columnId: EntityId, toIndex: number): Promise&lt;void&gt; {
+		this.logger.debug({ action: &#x27;moveColumn&#x27;, userId, boardId, columnId });
+
+		// TODO check permissions
+
+		await this.columnService.move(columnId, boardId, toIndex);
+	}
+
 	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;createCard&#x27;, userId, boardId, columnId });
 
@@ -913,6 +1143,14 @@ export class BoardUc {
 		// TODO check permissions
 
 		await this.cardService.delete(column, cardId);
+	}
+
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise&lt;void&gt; {
+		this.logger.debug({ action: &#x27;moveCard&#x27;, userId, cardId, targetColumnId, toIndex });
+
+		// TODO check permissions
+
+		await this.cardService.move(cardId, targetColumnId, toIndex);
 	}
 }
 </code></pre>

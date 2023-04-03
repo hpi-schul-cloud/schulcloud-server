@@ -90,6 +90,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findCards" >findCards</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#moveElement" >moveElement</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -441,6 +445,113 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveElement"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveElement</b></span>
+                        <a href="#moveElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetCardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:46</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>elementId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetCardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -490,6 +601,14 @@ export class CardUc {
 		// TODO check permissions
 
 		await this.elementService.delete(card, elementId);
+	}
+
+	async moveElement(userId: EntityId, elementId: EntityId, targetCardId: EntityId, toIndex: number): Promise&lt;void&gt; {
+		this.logger.debug({ action: &#x27;moveCard&#x27;, userId, elementId, targetCardId, toIndex });
+
+		// TODO check permissions
+
+		await this.elementService.move(elementId, targetCardId, toIndex);
 	}
 }
 </code></pre>

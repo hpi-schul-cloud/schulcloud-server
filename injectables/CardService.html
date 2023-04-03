@@ -94,6 +94,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findByIds" >findByIds</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#move" >move</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -468,6 +472,101 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="move"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>move</b></span>
+                        <a href="#move"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>move(cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetColumnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:45</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>cardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetColumnId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -516,6 +615,10 @@ export class CardService {
 
 	async delete(parent: Column, cardId: EntityId): Promise&lt;void&gt; {
 		await this.boardDoService.deleteChildWithDescendants(parent, cardId);
+	}
+
+	async move(cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise&lt;void&gt; {
+		await this.boardDoService.moveBoardDo(cardId, targetColumnId, toIndex);
 	}
 }
 </code></pre>

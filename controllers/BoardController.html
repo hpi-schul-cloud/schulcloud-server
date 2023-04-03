@@ -111,6 +111,14 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getBoardSkeleton" >getBoardSkeleton</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#moveCard" >moveCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#moveColumn" >moveColumn</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -157,8 +165,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:37</a></div>
                 </td>
             </tr>
 
@@ -235,8 +243,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:72</a></div>
                 </td>
             </tr>
 
@@ -325,8 +333,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:53</a></div>
                 </td>
             </tr>
 
@@ -415,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:46</a></div>
                 </td>
             </tr>
 
@@ -505,8 +513,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="75"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:75</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:84</a></div>
                 </td>
             </tr>
 
@@ -595,8 +603,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:65</a></div>
                 </td>
             </tr>
 
@@ -685,8 +693,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:25</a></div>
                 </td>
             </tr>
 
@@ -746,16 +754,229 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveCard"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveCard</b></span>
+                        <a href="#moveCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveCard(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/MoveCardBodyParams.html" target="_self">MoveCardBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;/:boardId/columns/:columnId/cards/:cardId/position&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:102</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/MoveCardBodyParams.html" target="_self" >MoveCardBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveColumn"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveColumn</b></span>
+                        <a href="#moveColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveColumn(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, bodyParams: <a href="../classes/MoveColumnBodyParams.html" target="_self">MoveColumnBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;/:boardId/columns/:columnId/position&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:91</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/ColumnUrlParams.html" target="_self" >ColumnUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/MoveColumnBodyParams.html" target="_self" >MoveColumnBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Delete, Get, Param, Post } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Put } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
-import { BoardResponse, BoardUrlParams, CardResponse, CardUrlParams, ColumnResponse, ColumnUrlParams } from &#x27;./dto&#x27;;
+import {
+	BoardResponse,
+	BoardUrlParams,
+	CardResponse,
+	CardUrlParams,
+	ColumnResponse,
+	ColumnUrlParams,
+	MoveCardBodyParams,
+	MoveColumnBodyParams,
+} from &#x27;./dto&#x27;;
 import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Boards&#x27;)
@@ -830,23 +1051,27 @@ export class BoardController {
 		return true;
 	}
 
-	// @Put(&#x27;/:boardId/cards/:cardId/position&#x27;)
-	// moveCard(
-	// 	@Param() urlParams: BoardUrlParams,
-	// 	@Body() bodyParams: MoveCardBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise&lt;void&gt; {
-	// 	throw new NotImplementedException();
-	// }
+	@Put(&#x27;/:boardId/columns/:columnId/position&#x27;)
+	async moveColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@Body() bodyParams: MoveColumnBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;boolean&gt; {
+		await this.boardUc.moveColumn(currentUser.userId, urlParams.boardId, urlParams.columnId, bodyParams.toIndex);
 
-	// @Put(&#x27;/:boardId/columns/:columnId/position&#x27;)
-	// moveColumn(
-	// 	@Param() urlParams: ColumnUrlParams,
-	// 	@Body() bodyParams: MoveColumnBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise&lt;void&gt; {
-	// 	throw new NotImplementedException();
-	// }
+		return true;
+	}
+
+	@Put(&#x27;/:boardId/columns/:columnId/cards/:cardId/position&#x27;)
+	async moveCard(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: MoveCardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;boolean&gt; {
+		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toIndex);
+
+		return true;
+	}
 
 	// @Put(&#x27;/:boardId/title&#x27;)
 	// renameBoard(

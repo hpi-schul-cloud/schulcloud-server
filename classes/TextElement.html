@@ -133,6 +133,10 @@
                                 <a href="#useBoardNodeBuilder" >useBoardNodeBuilder</a>
                             </li>
                             <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#_addChild" >_addChild</a>
+                            </li>
+                            <li>
                                 <a href="#getChild" >getChild</a>
                             </li>
                             <li>
@@ -575,6 +579,95 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="_addChild"></a>
+                    <span class="name">
+                        <span class="modifier">Protected</span>
+                        <span ><b>_addChild</b></span>
+                        <a href="#_addChild"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, toIndex?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:24</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>domainObject</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getChild"></a>
                     <span class="name">
                         <span ><b>getChild</b></span>
@@ -597,7 +690,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:26</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:34</a></code>
 </div>
                 </td>
             </tr>
@@ -672,7 +765,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:35</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:43</a></code>
 </div>
                 </td>
             </tr>
@@ -746,7 +839,7 @@ export class TextElement extends BoardComposite implements TextElementProps, Boa
 	}
 
 	addChild(child: AnyBoardDo) {
-		throw new Error(&#x60;Cannot add children. Object of type &#x27;${child.constructor.name}&#x27; given&#x60;);
+		throw new Error(&#x60;Cannot add children to TextElement. Object of type &#x27;${child.constructor.name}&#x27; given&#x60;);
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {

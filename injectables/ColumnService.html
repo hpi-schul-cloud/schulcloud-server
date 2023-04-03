@@ -90,6 +90,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#move" >move</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -337,7 +341,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findById(columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -366,7 +370,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>cardId</td>
+                                    <td>columnId</td>
                                     <td>
                                                 <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
@@ -393,6 +397,101 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="move"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>move</b></span>
+                        <a href="#move"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>move(columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:36</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>columnId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>boardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>toIndex</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -409,9 +508,9 @@ import { BoardDoService } from &#x27;./board-do.service&#x27;;
 export class ColumnService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async findById(cardId: EntityId): Promise&lt;Column&gt; {
-		const card &#x3D; await this.boardDoRepo.findByClassAndId(Column, cardId);
-		return card;
+	async findById(columnId: EntityId): Promise&lt;Column&gt; {
+		const column &#x3D; await this.boardDoRepo.findByClassAndId(Column, columnId);
+		return column;
 	}
 
 	async create(parent: ColumnBoard): Promise&lt;Column&gt; {
@@ -432,6 +531,10 @@ export class ColumnService {
 
 	async delete(parent: ColumnBoard, columnId: EntityId): Promise&lt;void&gt; {
 		await this.boardDoService.deleteChildWithDescendants(parent, columnId);
+	}
+
+	async move(columnId: EntityId, boardId: EntityId, toIndex: number): Promise&lt;void&gt; {
+		await this.boardDoService.moveBoardDo(columnId, boardId, toIndex);
 	}
 }
 </code></pre>
