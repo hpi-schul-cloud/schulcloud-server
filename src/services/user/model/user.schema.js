@@ -119,7 +119,32 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
-
+userSchema.index(
+	{
+		firstName: 'text',
+		lastName: 'text',
+		email: 'text',
+		firstNameSearchValues: 'text',
+		lastNameSearchValues: 'text',
+		emailSearchValues: 'text',
+		schoolId: 1,
+	},
+	{
+		weights: {
+			firstName: 15,
+			lastName: 15,
+			email: 15,
+			firstNameSearchValues: 3,
+			lastNameSearchValues: 3,
+			emailSearchValues: 2,
+		},
+		name: 'userSearchIndex',
+		default_language: 'none', // no stop words and no stemming,
+		language_override: 'de',
+	}
+); // ?
+// maybe the schoolId index is enough ?
+// https://ticketsystem.dbildungscloud.de/browse/SC-3724
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
 	userSchema.index({ 'sourceOptions.$**': 1 });
