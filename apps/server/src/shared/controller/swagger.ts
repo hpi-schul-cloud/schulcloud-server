@@ -12,7 +12,6 @@ import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/
 // build default openapi spec, it contains all registered controllers by default
 // DTO's and Entity properties have to use @ApiProperty decorator to add their properties
 const config = new DocumentBuilder()
-	// .addServer('/api/v3/') // add default path as server to have correct urls ald let 'try out' work
 	.setTitle('HPI Schul-Cloud Server API')
 	.setDescription('This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.')
 	.setVersion('3.0')
