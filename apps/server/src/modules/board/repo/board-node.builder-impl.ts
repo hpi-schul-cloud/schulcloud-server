@@ -1,11 +1,18 @@
-import { AnyBoardDo, BoardNodeBuilder, Card, Column, ColumnBoard, TextElement } from '../../domainobject';
-import { EntityId } from '../../types';
-import { BoardNode } from './boardnode.entity';
-import { CardNode } from './card-node.entity';
-import { ColumnBoardNode } from './column-board-node.entity';
-import { ColumnNode } from './column-node.entity';
-import { TextElementNode } from './text-element-node.entity';
-import { BoardNodeType } from './types';
+import {
+	EntityId,
+	AnyBoardDo,
+	BoardNodeBuilder,
+	Card,
+	Column,
+	ColumnBoard,
+	TextElement,
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	TextElementNode,
+	BoardNodeType,
+} from '@shared/domain';
 
 export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 	private parentsMap: Map<EntityId, BoardNode> = new Map();

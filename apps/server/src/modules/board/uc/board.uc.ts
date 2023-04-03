@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard, EntityId } from '@shared/domain';
+import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ColumnBoardService } from '../service';
+import { CardService, ColumnBoardService, ColumnService } from '../service';
 
 @Injectable()
 export class BoardUc {
 	constructor(
-		private readonly boardDoService: BoardDoService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly columnService: ColumnService,
+		private readonly cardService: CardService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(BoardUc.name);
@@ -27,7 +28,7 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		const board = await this.columnBoardService.createBoard();
+		const board = await this.columnBoardService.create();
 		return board;
 	}
 
@@ -36,7 +37,7 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		await this.boardDoService.deleteWithDescendants(boardId);
+		await this.columnBoardService.delete(boardId);
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -46,7 +47,7 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		const column = await this.columnBoardService.createColumn(board.id);
+		const column = await this.columnService.create(board);
 		return column;
 	}
 
@@ -57,6 +58,27 @@ export class BoardUc {
 
 		// TODO check permissions
 
-		await this.boardDoService.deleteChild(board, columnId);
+		await this.columnService.delete(board, columnId);
+	}
+
+	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
+		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
+
+		const column = await this.columnService.findById(columnId);
+
+		// TODO: check Permissions
+		const card = await this.cardService.create(column);
+
+		return card;
+	}
+
+	async deleteCard(userId: EntityId, boardId: EntityId, columnId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, boardId, columnId, cardId });
+
+		const column = await this.columnService.findById(columnId);
+
+		// TODO check permissions
+
+		await this.cardService.delete(column, cardId);
 	}
 }

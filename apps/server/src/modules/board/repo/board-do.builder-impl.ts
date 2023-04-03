@@ -1,13 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardDo, Card, Column, ColumnBoard, TextElement } from '../../domainobject';
-import type { BoardNode } from './boardnode.entity';
-import type { CardNode } from './card-node.entity';
-import type { ColumnBoardNode } from './column-board-node.entity';
-import type { ColumnNode } from './column-node.entity';
-import type { TextElementNode } from './text-element-node.entity';
-import { BoardNodeType } from './types/board-node-type';
+import type { BoardNode, CardNode, ColumnBoardNode, ColumnNode, BoardDoBuilder, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, Card, Column, ColumnBoard, TextElement, BoardNodeType } from '@shared/domain';
 
-export class BoardDoBuilder {
+export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
 
 	constructor(descendants: BoardNode[] = []) {
