@@ -33,7 +33,7 @@ export class SystemController {
 	 * No sensible data should be returned!
 	 */
 	@Get('public/:systemId')
-	@ApiOperation({ summary: 'Finds a publicly available systems.' })
+	@ApiOperation({ summary: 'Finds a publicly available system.' })
 	@ApiResponse({ status: 200, type: PublicSystemResponse, description: 'Returns a system.' })
 	async getSystem(@Param() params: SystemIdParams): Promise<PublicSystemResponse> {
 		const systemDto: SystemDto = await this.systemUc.findById(params.systemId);
