@@ -69,7 +69,7 @@
 		},
 		"name": "administrator",
 		"updatedAt": {
-			"$date": "2023-01-04T14:46:48.817Z"
+			"$date": "2023-04-03T13:27:56.587Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -117,8 +117,6 @@
 			"STUDENT_SKIP_REGISTRATION",
 			"SUBMISSIONS_SCHOOL_VIEW",
 			"SYNC_START",
-			"SYSTEM_CREATE",
-			"SYSTEM_EDIT",
 			"TEACHER_CREATE",
 			"TEACHER_DELETE",
 			"TEACHER_EDIT",
@@ -129,6 +127,7 @@
 			"TEAM_EDIT",
 			"SCHOOL_PERMISSION_VIEW",
 			"SCHOOL_PERMISSION_CHANGE",
+			"SYSTEM_VIEW",
 			"SCHOOL_TOOL_ADMIN"
 		],
 		"__v": 2
@@ -195,7 +194,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2023-03-01T10:54:36.797Z"
+			"$date": "2023-04-03T13:15:13.671Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
