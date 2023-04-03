@@ -27,11 +27,6 @@ export class FwuLearningContentsUc {
 					cause: error.stack,
 				});
 			}
-			throw new InternalServerErrorException({
-				name: undefined,
-				message: 'unexpected error on reading file from FWU S3 storage',
-				cause: error,
-			});
 		}
 	}
 }
