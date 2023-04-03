@@ -117,4 +117,24 @@ describe(CardUc.name, () => {
 			});
 		});
 	});
+
+	describe('moveElement', () => {
+		describe('when moving an element', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const contentElement = textElementFactory.buildWithId();
+				const card = cardFactory.build();
+
+				return { user, card, contentElement };
+			};
+
+			it('should call the service to move the element', async () => {
+				const { user, contentElement, card } = setup();
+
+				await uc.moveElement(user.id, contentElement.id, card.id, 7);
+
+				expect(elementService.move).toHaveBeenCalledWith(contentElement.id, card.id, 7);
+			});
+		});
+	});
 });
