@@ -13,3 +13,5 @@ export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence
 		updatedAt: new Date(),
 	};
 });
+
+cardFactory.build({ title: 'My Card' });

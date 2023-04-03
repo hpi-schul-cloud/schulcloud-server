@@ -21,9 +21,9 @@ export abstract class BoardComposite {
 		this.updatedAt = props.updatedAt;
 	}
 
-	protected _addChild(domainObject: AnyBoardDo, toIndex?: number): void {
-		if (toIndex) {
-			this.children.splice(toIndex, 0, domainObject);
+	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
+		if (position) {
+			this.children.splice(position, 0, domainObject);
 		} else {
 			this.children.push(domainObject);
 		}

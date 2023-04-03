@@ -12,21 +12,14 @@ export class BoardDoService {
 		await this.boardDoRepo.deleteById(childId);
 	}
 
-	async moveBoardDo(id: EntityId, targetParentId: EntityId, toIndex: number): Promise<void> {
-		const targetParent = await this.boardDoRepo.findById(targetParentId);
-		const originalParent = await this.getParentOfMovingNode(id);
-
-		const card = originalParent.removeChild(id);
-		targetParent.addChild(card, toIndex);
-
-		await this.boardDoRepo.save([originalParent, targetParent]);
-	}
-
-	private async getParentOfMovingNode(id: EntityId): Promise<AnyBoardDo> {
-		const originalParent = await this.boardDoRepo.findParentOfId(id);
-		if (!originalParent) {
-			throw new BadRequestException('can only move BoardNodes that have a parent');
+	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
+		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
+		if (sourceParent == null) {
+			throw new BadRequestException('Cannot move nodes without a parent');
 		}
-		return originalParent;
+		sourceParent.removeChild(child.id);
+		targetParent.addChild(child, targetPosition);
+
+		await this.boardDoRepo.save([sourceParent, targetParent]);
 	}
 }
