@@ -24,7 +24,7 @@ describe(Column.name, () => {
 		});
 	});
 
-	describe('when adding a child', () => {
+	describe('addChild', () => {
 		const setup = () => {
 			const children = cardFactory.buildListWithId(3);
 			const column = columnFactory.build({ children });
@@ -33,10 +33,28 @@ describe(Column.name, () => {
 			return { column, card };
 		};
 
-		it('should throw error on unsupported child type', () => {
-			const { column } = setup();
-			const board = columnBoardFactory.build();
-			expect(() => column.addChild(board)).toThrowError();
+		describe('when adding a child', () => {
+			it('should throw error on unsupported child type', () => {
+				const { column } = setup();
+				const board = columnBoardFactory.build();
+				expect(() => column.addChild(board)).toThrowError();
+			});
+
+			it('should be able to add children', () => {
+				const { column, card } = setup();
+
+				column.addChild(card);
+
+				expect(column.children[column.children.length - 1]).toEqual(card);
+			});
+
+			it('should add child to correct position', () => {
+				const { column, card } = setup();
+
+				column.addChild(card, 1);
+
+				expect(column.children[1]).toEqual(card);
+			});
 		});
 
 		it('should be able to add children', () => {

@@ -8,9 +8,9 @@ import { BoardDoService } from './board-do.service';
 export class ColumnService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async findById(cardId: EntityId): Promise<Column> {
-		const card = await this.boardDoRepo.findByClassAndId(Column, cardId);
-		return card;
+	async findById(columnId: EntityId): Promise<Column> {
+		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
+		return column;
 	}
 
 	async create(parent: ColumnBoard): Promise<Column> {

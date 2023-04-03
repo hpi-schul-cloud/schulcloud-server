@@ -98,4 +98,12 @@ export class BoardUc {
 
 		await this.cardService.move(sourceColumn, cardId, targetColumn, toIndex);
 	}
+
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toIndex });
+
+		// TODO check permissions
+
+		await this.cardService.move(cardId, targetColumnId, toIndex);
+	}
 }
