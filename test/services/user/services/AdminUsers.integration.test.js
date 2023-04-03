@@ -5,6 +5,9 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise());
+
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -13,17 +16,12 @@ describe('admin users integration tests', () => {
 	let nestServices;
 	let server;
 	let configBefore;
-	let testObjects;
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
-		// eslint-disable-next-line global-require
-		const appPromise = require('../../../../src/app')();
-		// eslint-disable-next-line global-require
-		testObjects = require('../../helpers/testObjects')(appPromise);
-		app = await appPromise;
+		app = await appPromise();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
@@ -59,26 +57,6 @@ describe('admin users integration tests', () => {
 		});
 		expect(response).to.not.be.undefined;
 		expect(response.body).to.haveOwnProperty('_id');
-	});
-
-	it('POST fails with invalid email format', async () => {
-		const { _id: schoolId } = await testObjects.createTestSchool();
-		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
-			.post('/users/admin/students')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.set('content-type', 'application/json');
-		const response = await request.send({
-			lastName: 'moritz',
-			firstName: 'mustermann',
-			schoolId,
-			email: `${Date.now()}missingat.de`,
-		});
-		expect(response).to.not.be.undefined;
-		expect(response.error).to.not.be.undefined;
-		expect(response.error.status).to.equal(400);
 	});
 
 	it('POST fails with invalid email format', async () => {
