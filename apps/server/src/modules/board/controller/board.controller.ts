@@ -63,7 +63,7 @@ export class BoardController {
 
 	@Delete(':boardId/columns/:columnId')
 	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.boardUc.deleteColumn(currentUser.userId, urlParams.boardId, urlParams.columnId);
+		await this.boardUc.deleteColumn(currentUser.userId, urlParams.columnId);
 
 		return true;
 	}
@@ -73,7 +73,7 @@ export class BoardController {
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CardResponse> {
-		const card = await this.boardUc.createCard(currentUser.userId, urlParams.boardId, urlParams.columnId);
+		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId);
 
 		const response = CardResponseMapper.mapToResponse(card);
 
@@ -82,29 +82,29 @@ export class BoardController {
 
 	@Delete(':boardId/columns/:columnId/cards/:cardId')
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.boardUc.deleteCard(currentUser.userId, urlParams.boardId, urlParams.columnId, urlParams.cardId);
+		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
 
 		return true;
 	}
 
-	@Put('/:boardId/columns/:columnId/position')
+	@Put('columns/:columnId/position')
 	async moveColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<boolean> {
-		await this.boardUc.moveColumn(currentUser.userId, urlParams.boardId, urlParams.columnId, bodyParams.toIndex);
+		await this.boardUc.moveColumn(currentUser.userId, urlParams.columnId, bodyParams.toBoardId, bodyParams.toPosition);
 
 		return true;
 	}
 
-	@Put('/:boardId/columns/:columnId/cards/:cardId/position')
+	@Put('cards/:cardId/position')
 	async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<boolean> {
-		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toIndex);
+		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 
 		return true;
 	}

@@ -45,8 +45,4 @@ export class CardService {
 	async move(card: Card, targetColumn: Column, targetPosition?: number): Promise<void> {
 		await this.boardDoService.move(card, targetColumn, targetPosition);
 	}
-
-	async move(cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
-		await this.boardDoService.moveBoardDo(cardId, targetColumnId, toIndex);
-	}
 }

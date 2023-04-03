@@ -33,21 +33,29 @@ export class CardUc {
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, cardId: EntityId, elementId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteElement', userId, cardId, elementId });
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteElement', userId, elementId });
 
-		const card = await this.cardService.findById(cardId);
+		const element = await this.elementService.findById(elementId);
 
 		// TODO check permissions
 
-		await this.elementService.delete(card, elementId);
+		await this.elementService.delete(element);
 	}
 
-	async moveElement(userId: EntityId, elementId: EntityId, targetCardId: EntityId, toIndex: number): Promise<void> {
-		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, toIndex });
+	async moveElement(
+		userId: EntityId,
+		elementId: EntityId,
+		targetCardId: EntityId,
+		targetPosition: number
+	): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, targetPosition });
+
+		const element = await this.elementService.findById(elementId);
+		const targetCard = await this.cardService.findById(targetCardId);
 
 		// TODO check permissions
 
-		await this.elementService.move(elementId, targetCardId, toIndex);
+		await this.elementService.move(element, targetCard, targetPosition);
 	}
 }

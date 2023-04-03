@@ -26,11 +26,11 @@ class API {
 		this.app = app;
 	}
 
-	async move(boardId: string, cardId: string, columnId: string, toColumnId: string, toIndex: number) {
+	async move(cardId: string, toColumnId: string, toPosition: number) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${boardId}/columns/${columnId}/cards/${cardId}/position`)
+			.put(`${baseRouteName}/cards/${cardId}/position`)
 			.set('Accept', 'application/json')
-			.send({ toIndex, toColumnId });
+			.send({ toColumnId, toPosition });
 
 		return {
 			error: response.body as ApiValidationError,
@@ -87,19 +87,19 @@ describe(`card move (api)`, () => {
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, cardNode, targetColumn, columnBoardNode, parentColumn } = await setup();
+			const { user, cardNode, targetColumn } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.move(columnBoardNode.id, cardNode.id, parentColumn.id, targetColumn.id, 3);
+			const response = await api.move(cardNode.id, targetColumn.id, 3);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should actually move the card', async () => {
-			const { user, cardNode, targetColumn, parentColumn, columnBoardNode } = await setup();
+			const { user, cardNode, targetColumn } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.move(columnBoardNode.id, cardNode.id, parentColumn.id, targetColumn.id, 3);
+			await api.move(cardNode.id, targetColumn.id, 3);
 			const result = await em.findOneOrFail(CardNode, cardNode.id);
 
 			expect(result.parentId).toEqual(targetColumn.id);
