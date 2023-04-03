@@ -1,6 +1,7 @@
-import { Module, NotFoundException } from '@nestjs/common';
+import { Module, NotFoundException, Scope } from '@nestjs/common';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { HttpModule } from '@nestjs/axios';
+import { S3Client } from '@aws-sdk/client-s3';
 import { CoreModule } from '@src/core';
 import { ConfigModule } from '@nestjs/config';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
@@ -9,12 +10,29 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Account, User, Role, School, System, SchoolYear } from '@shared/domain';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { Logger } from '@src/core/logger';
+import { S3Config } from './interface/config';
 import { s3Config, config } from './fwu-learning-contents.config';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 
 const providers = [
 	Logger,
+	{
+		provide: 'FWU_S3_Client',
+		scope: Scope.REQUEST,
+		useFactory: (configProvider: S3Config) =>
+			new S3Client({
+				region: configProvider.region,
+				credentials: {
+					accessKeyId: configProvider.accessKeyId,
+					secretAccessKey: configProvider.secretAccessKey,
+				},
+				endpoint: configProvider.endpoint,
+				forcePathStyle: true,
+				tls: true,
+			}),
+		inject: ['S3_Config'],
+	},
 	{
 		provide: 'S3_Config',
 		useValue: s3Config,
