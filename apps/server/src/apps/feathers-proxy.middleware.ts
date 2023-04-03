@@ -16,18 +16,18 @@ export class FeathersProxyMiddleware implements NestMiddleware {
 		Logger.log(req.path);
 		const path = req.path.startsWith('/') ? req.path : `/${req.path}`;
 
-		// RegExp to match everything except /api/vX where X is a number between 3 and 9
-		const notNestApiRegex = /^(?!\/api\/v[3-9](?:\/|$)).*$/;
+		// RegExp to match /api/vX where X is a number between 3 and 9
+		const nestRegex = /^\/api\/v[3-9].*/;
 
-		if (notNestApiRegex.test(path)) {
-			Logger.log('feathers call');
+		if (nestRegex.test(path)) {
+			Logger.debug('nest call');
+			next();
+		} else {
+			Logger.debug('feathers call');
 			if (req.path === '/' || req.path === '/api') {
 				this.logDeprecatedPaths(req, next);
 			}
 			this.feathersApp(req, res, next);
-		} else {
-			Logger.log('nest call');
-			next();
 		}
 	}
 
