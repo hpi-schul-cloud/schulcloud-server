@@ -1,4 +1,4 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { Account, User, Role, School, System, SchoolYear } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
@@ -10,6 +10,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { S3ClientAdapter } from '../files-storage/client/s3-client.adapter';
 import { s3Config, config } from './fwu-learning-contents.config';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
@@ -28,7 +29,8 @@ const controllers = [FwuLearningContentsController];
 const providers = [
 	FwuLearningContentsUc,
 	{
-		provide: 'FWU_S3_Client',
+		provide: 'S3_Client',
+		scope: Scope.REQUEST,
 		useFactory: (configProvider: S3Config) =>
 			new S3Client({
 				region: configProvider.region,
@@ -46,6 +48,7 @@ const providers = [
 		provide: 'S3_Config',
 		useValue: s3Config,
 	},
+	S3ClientAdapter,
 ];
 @Module({
 	imports,

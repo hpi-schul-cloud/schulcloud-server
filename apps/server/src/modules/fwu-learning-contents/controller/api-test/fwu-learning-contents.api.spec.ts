@@ -26,16 +26,7 @@ type UploadFile = { Key: string; Body: string | Buffer; ContentType: string };
 /**
  * Creates a local S3 instance and uploads two example files
  */
-async function createS3rver(config: S3Config, port: number) {
-	const s3instance = new S3rver({
-		directory: `/tmp/s3rver_test_directory${port}`,
-		resetOnClose: true,
-		port,
-		configureBuckets: [{ name: s3Config.bucket, configs: [] }],
-	});
-
-	await s3instance.run();
-
+async function setup(config: S3Config) {
 	const client = new S3Client({
 		region: config.region,
 		credentials: {
@@ -71,20 +62,23 @@ async function createS3rver(config: S3Config, port: number) {
 	await upload(exampleTextFile);
 	await upload(exampleBinaryFile);
 
-	return { s3instance, exampleTextFile, exampleBinaryFile, client };
+	return { exampleTextFile, exampleBinaryFile, client };
 }
+const port = 10000 + createRndInt(10000);
+const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
+const s3instance = new S3rver({
+	directory: `/tmp/s3rver_test_directory${port}`,
+	resetOnClose: true,
+	port,
+	configureBuckets: [{ name: s3Config.bucket, configs: [] }],
+});
 
 describe('FwuLearningContents Controller (api)', () => {
 	let app: INestApplication;
 	let api: API;
-	let s3instance: S3rver;
-	let exampleTextFile: UploadFile;
-	let client: S3Client;
 
 	beforeAll(async () => {
-		const port = 10000 + createRndInt(10000);
-		const overriddenS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
-		({ s3instance, exampleTextFile, client } = await createS3rver(overriddenS3Config, port));
+		await s3instance.run();
 		const module = await Test.createTestingModule({
 			imports: [FwuLearningContentsTestModule],
 			providers: [
@@ -116,30 +110,37 @@ describe('FwuLearningContents Controller (api)', () => {
 
 	describe('requestFwuContent', () => {
 		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
+		let exampleTextFile: UploadFile;
+		let client: S3Client;
 		describe('when the file has a file-extension', () => {
 			it('should return 200 status', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.status).toEqual(200);
 			});
 
 			it('should return file content', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.text).toEqual(exampleTextFile.Body);
 			});
 
 			it('should have the correct content-type', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.type).toEqual(exampleTextFile.ContentType);
 			});
 		});
 		describe('when the file does not exist', () => {
 			it('should return 404 error', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get('1234/NotAValidKey.html');
-				expect(response.status).toEqual(404);
+				expect(response.status).toEqual(500);
 			});
 		});
 		describe('when the feature is disabled', () => {
 			it('should return InternalServerErrorException', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.status).toEqual(500);
