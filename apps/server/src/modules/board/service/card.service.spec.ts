@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TextElement } from '@shared/domain';
+import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,14 +22,15 @@ describe(CardService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(CardService);
 		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 
 		await setupEntities();
 	});
@@ -38,68 +39,121 @@ describe(CardService.name, () => {
 		await module.close();
 	});
 
-	describe('finding one specific card', () => {
-		const setup = () => {
-			const card = cardFactory.buildWithId();
-			return { card, cardId: card.id };
-		};
+	describe('findById', () => {
+		describe('when finding one specific card', () => {
+			const setup = () => {
+				const card = cardFactory.buildWithId();
+				return { card, cardId: card.id };
+			};
 
-		it('should call the card repository', async () => {
-			const { card, cardId } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+			it('should call the board do repository', async () => {
+				const { card, cardId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			await service.findById(cardId);
+				await service.findById(cardId);
 
-			expect(boardDoRepo.findById).toHaveBeenCalledWith(cardId);
-		});
+				expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, cardId);
+			});
 
-		it('should return the domain objects from the card repository', async () => {
-			const { card, cardId } = setup();
-			boardDoRepo.findById.mockResolvedValueOnce(card);
+			it('should return the domain objects from the board do repository', async () => {
+				const { card, cardId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			const result = await service.findById(cardId);
+				const result = await service.findById(cardId);
 
-			expect(result).toEqual(card);
-		});
-
-		it('should throw if the domain object does not exist', async () => {
-			const fakeId = new ObjectId().toHexString();
-
-			await expect(service.findById(fakeId)).rejects.toThrow();
+				expect(result).toEqual(card);
+			});
 		});
 	});
 
-	describe('finding many cards', () => {
-		const setup = () => {
-			const cards = cardFactory.buildList(3);
-			const cardIds = cards.map((c) => c.id);
+	describe('findByIds', () => {
+		describe('when finding many cards', () => {
+			const setup = () => {
+				const cards = cardFactory.buildList(3);
+				const cardIds = cards.map((c) => c.id);
 
-			return { cards, cardIds };
-		};
+				return { cards, cardIds };
+			};
 
-		it('should call the card repository', async () => {
-			const { cardIds } = setup();
+			it('should call the card repository', async () => {
+				const { cardIds } = setup();
 
-			await service.findByIds(cardIds);
+				await service.findByIds(cardIds);
 
-			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
+				expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
+			});
+
+			it('should return the domain objects from the card repository', async () => {
+				const { cards, cardIds } = setup();
+				boardDoRepo.findByIds.mockResolvedValueOnce(cards);
+
+				const result = await service.findByIds(cardIds);
+
+				expect(result).toEqual(cards);
+			});
+
+			it('should throw an error if some DOs are not cards', async () => {
+				const textElements = textElementFactory.buildList(2);
+				const textElementIds = textElements.map((t) => t.id);
+				boardDoRepo.findByIds.mockResolvedValue(textElements);
+
+				await expect(service.findByIds(textElementIds)).rejects.toThrow();
+			});
 		});
+	});
 
-		it('should return the domain objects from the card repository', async () => {
-			const { cards, cardIds } = setup();
-			boardDoRepo.findByIds.mockResolvedValueOnce(cards);
+	describe('create', () => {
+		describe('when creating a card', () => {
+			const setup = () => {
+				const column = columnFactory.build();
+				const columnId = column.id;
 
-			const result = await service.findByIds(cardIds);
+				return { column, columnId };
+			};
 
-			expect(result).toEqual(cards);
+			it('should save a list of cards using the boardDo repo', async () => {
+				const { column, columnId } = setup();
+
+				await service.create(column);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							title: '',
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					columnId
+				);
+			});
 		});
+	});
 
-		it('should throw an error if some DOs are not cards', async () => {
-			const textElements = textElementFactory.buildList(2);
-			const textElementIds = textElements.map((t) => t.id);
-			boardDoRepo.findByIds.mockResolvedValue(textElements);
+	describe('delete', () => {
+		describe('when deleting a card', () => {
+			it('should call the deleteChildWithDescendants of the board-do-service', async () => {
+				const column = columnFactory.build();
+				const card = cardFactory.build();
 
-			await expect(service.findByIds(textElementIds)).rejects.toThrow();
+				await service.delete(column, card.id);
+
+				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
+			});
+		});
+	});
+
+	describe('move', () => {
+		describe('when moving a card', () => {
+			it('should call do service', async () => {
+				const targetParent = columnFactory.build();
+				const card = cardFactory.build();
+
+				await service.move(card.id, targetParent.id, 3);
+
+				expect(boardDoService.moveBoardDo).toHaveBeenCalledWith(card.id, targetParent.id, 3);
+			});
 		});
 	});
 });
