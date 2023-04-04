@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';

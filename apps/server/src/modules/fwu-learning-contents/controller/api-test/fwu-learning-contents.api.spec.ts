@@ -115,42 +115,41 @@ describe('FwuLearningContents Controller (api)', () => {
 	describe('requestFwuContent', () => {
 		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 		let exampleTextFile: UploadFile;
-		let client: S3Client;
 		describe('when the file has a file-extension', () => {
 			it('should return 200 status', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.status).toEqual(200);
 			});
 
 			it('should return 206 status (bytesRange)', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				const response = await api.getBytesRange(exampleTextFile.Key, '12345');
 				expect(response.status).toEqual(206);
 			});
 
 			it('should return file content', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.text).toEqual(exampleTextFile.Body);
 			});
 
 			it('should have the correct content-type', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.type).toEqual(exampleTextFile.ContentType);
 			});
 		});
 		describe('when the file does not exist', () => {
 			it('should return 404 error', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				const response = await api.get('1234/NotAValidKey.html');
 				expect(response.status).toEqual(404);
 			});
 		});
 		describe('when the feature is disabled', () => {
 			it('should return InternalServerErrorException', async () => {
-				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				({ exampleTextFile } = await setup(overriddenS3Config));
 				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.status).toEqual(500);
