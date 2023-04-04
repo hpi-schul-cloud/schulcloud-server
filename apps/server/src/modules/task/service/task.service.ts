@@ -32,7 +32,7 @@ export class TaskService {
 	async findBySingleParent(
 		creatorId: EntityId,
 		courseId: EntityId,
-		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
+		filters?: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);

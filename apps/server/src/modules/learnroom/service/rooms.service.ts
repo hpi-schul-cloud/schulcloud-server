@@ -12,7 +12,7 @@ export class RoomsService {
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
 		const [courseLessons] = await this.lessonRepo.findAllByCourseIds([roomId]);
-		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId);
+		const [courseTasks] = await this.taskRepo.findBySingleParent(userId, roomId, { userId });
 		board.syncTasksFromList(courseTasks);
 		board.syncLessonsFromList(courseLessons);
 		await this.boardRepo.save(board);

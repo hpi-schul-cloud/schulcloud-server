@@ -2359,6 +2359,42 @@ describe('TaskRepo', () => {
 				expect(tasks).toHaveLength(0);
 			});
 		});
+
+		describe('when filter by assigned user', () => {
+			const setup = async () => {
+				const teacher = userFactory.build();
+				const student1 = userFactory.build();
+				const student2 = userFactory.build();
+				const course = courseFactory.build({ teachers: [teacher], students: [student1, student2] });
+				const task1 = taskFactory.build({ course, creator: teacher, users: [student1, student2] });
+				const task2 = taskFactory.build({ course, creator: teacher, users: [student2] });
+				await em.persistAndFlush([task1, task2]);
+				em.clear();
+				return { teacher, student1, student2, course, task1, task2 };
+			};
+
+			it('should filter tasks by assigned user', async () => {
+				const { student1, student2, course } = await setup();
+
+				const [, totalStudent1] = await repo.findBySingleParent(student1.id, course.id, { userId: student1.id });
+
+				const [, totalStudent2] = await repo.findBySingleParent(student2.id, course.id, { userId: student2.id });
+
+				expect(totalStudent1).toEqual(1);
+				expect(totalStudent2).toEqual(2);
+			});
+
+			it('should return tasks when userId filter is not applied', async () => {
+				const { student1, student2, course } = await setup();
+
+				const [, totalStudent1] = await repo.findBySingleParent(student1.id, course.id, {});
+
+				const [, totalStudent2] = await repo.findBySingleParent(student2.id, course.id);
+
+				expect(totalStudent1).toEqual(2);
+				expect(totalStudent2).toEqual(2);
+			});
+		});
 	});
 
 	describe('findById', () => {

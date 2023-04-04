@@ -81,7 +81,7 @@ describe('rooms service', () => {
 		it('should fetch all tasks of room', async () => {
 			const { board, room, user, tasksSpy } = setup();
 			await roomsService.updateBoard(board, room.id, user.id);
-			expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id);
+			expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id, { userId: user.id });
 		});
 
 		it('should sync boards lessons with fetched lessons', async () => {
