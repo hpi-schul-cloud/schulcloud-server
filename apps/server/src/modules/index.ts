@@ -3,6 +3,7 @@ export * from './authentication';
 export * from './authorization';
 export * from './files-storage-client';
 export * from './files-storage';
+export * from './fwu-learning-contents';
 export * from './learnroom';
 export * from './news';
 export * from './oauth';

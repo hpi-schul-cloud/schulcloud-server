@@ -1,5 +1,5 @@
 export enum CustomParameterLocationParams {
 	PATH = 'path',
-	TOKEN = 'token',
+	BODY = 'body',
 	QUERY = 'query',
 }
