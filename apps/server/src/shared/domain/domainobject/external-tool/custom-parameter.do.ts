@@ -3,6 +3,10 @@ import { CustomParameterLocation, CustomParameterScope, CustomParameterType } fr
 export class CustomParameterDO {
 	name: string;
 
+	displayName: string;
+
+	description?: string;
+
 	default?: string;
 
 	regex?: string;
@@ -19,6 +23,8 @@ export class CustomParameterDO {
 
 	constructor(props: CustomParameterDO) {
 		this.name = props.name;
+		this.displayName = props.displayName;
+		this.description = props.description;
 		this.default = props.default;
 		this.location = props.location;
 		this.scope = props.scope;

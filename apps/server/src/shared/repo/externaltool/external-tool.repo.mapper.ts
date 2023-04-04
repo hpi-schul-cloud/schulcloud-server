@@ -1,12 +1,12 @@
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
+	CustomParameterEntryDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-	CustomParameterEntryDO,
 } from '@shared/domain/domainobject/external-tool';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -142,6 +142,8 @@ export class ExternalToolRepoMapper {
 			(param: CustomParameter) =>
 				new CustomParameterDO({
 					name: param.name,
+					displayName: param.displayName,
+					description: param.description,
 					default: param.default,
 					regex: param.regex,
 					regexComment: param.regexComment,
@@ -158,6 +160,8 @@ export class ExternalToolRepoMapper {
 			(param: CustomParameterDO) =>
 				new CustomParameter({
 					name: param.name,
+					displayName: param.displayName,
+					description: param.description,
 					default: param.default,
 					regex: param.regex,
 					regexComment: param.regexComment,
