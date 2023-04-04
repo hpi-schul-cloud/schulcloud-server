@@ -390,7 +390,7 @@ describe('Task-Card Controller (api)', () => {
 		});
 
 		describe('Validate courseId', () => {
-			it('should should throw if courseId is empty', async () => {
+			it('should throw if courseId is empty', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 				await em.persistAndFlush([user]);
 				em.clear();

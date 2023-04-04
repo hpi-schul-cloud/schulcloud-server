@@ -29,7 +29,7 @@ export class RichTextCardElementParam extends CardElementBase {
 		description: 'Content of the rich text card element',
 		required: true,
 	})
-	@MinLength(2)
+	// @MinLength(2)
 	@IsString()
 	value!: string;
 
