@@ -7,6 +7,11 @@ interface AuthenticationResponse {
 	accessToken: string;
 }
 
+interface TestRequestResponse {
+	body: unknown;
+	statusCode: number;
+}
+
 const headerConst = {
 	accept: 'accept',
 	json: 'application/json',
@@ -102,7 +107,7 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<Response> {
+	): Promise<TestRequestResponse> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
@@ -116,7 +121,7 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<Response> {
+	): Promise<TestRequestResponse> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
@@ -131,7 +136,7 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<Response> {
+	): Promise<TestRequestResponse> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
@@ -146,7 +151,7 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<Response> {
+	): Promise<TestRequestResponse> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);

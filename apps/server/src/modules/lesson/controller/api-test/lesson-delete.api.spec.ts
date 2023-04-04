@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -19,7 +19,7 @@ describe('Lesson Controller (API) - delete', () => {
 	let request: TestRequest;
 
 	beforeAll(async () => {
-		const moduleFixture: TestingModule = await Test.createTestingModule({
+		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
 			.overrideProvider(FilesStorageClientAdapterService)
