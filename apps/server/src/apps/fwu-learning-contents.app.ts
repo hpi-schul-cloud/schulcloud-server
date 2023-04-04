@@ -8,9 +8,9 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { Logger } from '@src/core/logger';
 import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
-import { Logger } from 'winston';
 
 async function bootstrap() {
 	sourceMapInstall();
