@@ -196,6 +196,7 @@
 		"socketio-file-upload": "^0.7.0",
 		"source-map-support": "^0.5.19",
 		"strip-bom": "^4.0.0",
+		"swagger-ui-dist": "^4.18.2",
 		"swagger-ui-express": "^4.1.6",
 		"tiny-async-pool": "^1.2.0",
 		"universal-analytics": "^0.5.1",
