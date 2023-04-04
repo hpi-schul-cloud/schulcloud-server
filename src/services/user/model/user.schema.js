@@ -119,6 +119,8 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
+
+// this index is updated in nest part, we keep it here only for tests
 userSchema.index(
 	{
 		firstName: 'text',
@@ -145,6 +147,7 @@ userSchema.index(
 ); // ?
 // maybe the schoolId index is enough ?
 // https://ticketsystem.dbildungscloud.de/browse/SC-3724
+
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
 	userSchema.index({ 'sourceOptions.$**': 1 });
