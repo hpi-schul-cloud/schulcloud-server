@@ -15,19 +15,8 @@ export class FwuLearningContentsUc {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 
-	// eslint-disable-next-line consistent-return
 	async get(path: string, bytesRange?: string) {
-		try {
-			const response = await this.storageClient.get(path, bytesRange);
-			return response;
-		} catch (error: unknown) {
-			if (error && typeof error === 'object' && 'name' in error && 'stack' in error) {
-				throw new InternalServerErrorException({
-					name: error.name,
-					message: 'unexpected error on reading file from FWU S3 storage',
-					cause: error.stack,
-				});
-			}
-		}
+		const response = await this.storageClient.get(path, bytesRange);
+		return response;
 	}
 }

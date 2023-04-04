@@ -135,7 +135,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			it('should return 404 error', async () => {
 				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get('1234/NotAValidKey.html');
-				expect(response.status).toEqual(500);
+				expect(response.status).toEqual(404);
 			});
 		});
 		describe('when the feature is disabled', () => {
