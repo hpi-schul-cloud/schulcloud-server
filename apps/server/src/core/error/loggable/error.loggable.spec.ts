@@ -20,11 +20,15 @@ describe('ErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		describe('when error is an ApiValidationError', () => {
 			const setup = () => {
-				const validationError = { property: 'foo', value: 'bar', constraints: { foo: 'must be baz' } };
-				const error = new ApiValidationError([validationError]);
+				const validationError1 = { property: 'foo', value: 'bar', constraints: { foo: 'must be baz' } };
+				const validationError2 = { property: 'bla', value: 'bli', constraints: { bla: 'must be blub' } };
+				const error = new ApiValidationError([validationError1, validationError2]);
 				const errorLoggable = new ErrorLoggable(error);
 				const expectedMessage = {
-					validationErrors: ['Wrong property foo got bar : {"foo":"must be baz"}'],
+					validationErrors: [
+						'Wrong property foo got bar : {"foo":"must be baz"}',
+						'Wrong property bla got bli : {"bla":"must be blub"}',
+					],
 					type: 'API Validation Error',
 					stack: error.stack,
 				};
