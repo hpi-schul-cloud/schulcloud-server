@@ -18,7 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/cards';
+const baseRouteName = '/elements';
 
 class API {
 	app: INestApplication;
@@ -29,7 +29,7 @@ class API {
 
 	async move(contentElementId: string, toCardId: string, toPosition: number) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/elements/${contentElementId}/position`)
+			.put(`${baseRouteName}/${contentElementId}/position`)
 			.set('Accept', 'application/json')
 			.send({ toCardId, toPosition });
 

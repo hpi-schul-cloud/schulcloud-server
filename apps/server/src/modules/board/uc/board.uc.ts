@@ -89,25 +89,4 @@ export class BoardUc {
 
 		return card;
 	}
-
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteCard', userId, cardId });
-
-		const card = await this.cardService.findById(cardId);
-
-		// TODO check permissions
-
-		await this.cardService.delete(card);
-	}
-
-	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
-		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
-
-		const card = await this.cardService.findById(cardId);
-		const targetColumn = await this.columnService.findById(targetColumnId);
-
-		// TODO check permissions
-
-		await this.cardService.move(card, targetColumn, targetPosition);
-	}
 }

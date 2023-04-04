@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { ContentElementService } from '../service';
+import { ColumnService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 
 @Injectable()
 export class CardUc {
 	constructor(
+		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
@@ -21,6 +22,29 @@ export class CardUc {
 		const cards = await this.cardService.findByIds(cardIds);
 		return cards;
 	}
+
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
+
+		const card = await this.cardService.findById(cardId);
+		const targetColumn = await this.columnService.findById(targetColumnId);
+
+		// TODO check permissions
+
+		await this.cardService.move(card, targetColumn, targetPosition);
+	}
+
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const card = await this.cardService.findById(cardId);
+
+		// TODO check permissions
+
+		await this.cardService.delete(card);
+	}
+
+	// --- elements ---
 
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId });
