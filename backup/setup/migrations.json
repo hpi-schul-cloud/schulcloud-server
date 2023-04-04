@@ -185,5 +185,16 @@
 			"$date": "2023-04-03T13:09:38.055Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "642c1905ec49d9a2cce1939d"
+		},
+		"state": "up",
+		"name": "remove-system-view-permission-from-user",
+		"createdAt": {
+			"$date": "2023-04-04T12:25:50.707Z"
+		},
+		"__v": 0
 	}
 ]

@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2023-03-01T10:54:36.810Z"
+			"$date": "2023-04-04T12:33:09.676Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -54,7 +54,6 @@
 			"SUBMISSIONS_CREATE",
 			"SUBMISSIONS_EDIT",
 			"SUBMISSIONS_VIEW",
-			"SYSTEM_VIEW",
 			"TEAM_VIEW",
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
