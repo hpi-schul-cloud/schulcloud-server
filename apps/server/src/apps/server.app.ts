@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -46,7 +47,11 @@ async function bootstrap() {
 
 	// customize nest app settings
 	nestApp.enableCors();
-	enableOpenApiDocs(nestApp, 'docs');
+
+	const options: SwaggerDocumentOptions = {
+		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
+	};
+	enableOpenApiDocs(nestApp, 'docs', options);
 
 	await nestApp.init();
 
