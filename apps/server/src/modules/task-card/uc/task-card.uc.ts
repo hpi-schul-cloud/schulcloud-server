@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard } from '@shared/domain';
+import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -170,13 +170,22 @@ export class TaskCardUc {
 		return taskWithStatusVo;
 	}
 
-	private validate(validationObject: { params: ITaskCardCRUD; course?: Course | null }) {
-		const { params, course } = validationObject;
-		if (course && !course.untilDate) {
-			throw new ValidationError('Course end date is not set');
-		}
+	private validate(validationObject: { params: ITaskCardCRUD; course?: Course | null; user: User }) {
+		const { params, course, user } = validationObject;
 		if (course && course.untilDate && course.untilDate < params.dueDate) {
 			throw new ValidationError('Due date must be before course end date');
+		}
+		if (course && !course.untilDate) {
+			const currentSchoolYear = user.school.schoolYear;
+			if (currentSchoolYear) {
+				if (currentSchoolYear && currentSchoolYear.endDate < params.dueDate) {
+					throw new ValidationError('Due date must be before school year end date');
+				}
+			}
+			const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
+			if (lastDayOfNextYear < params.dueDate) {
+				throw new ValidationError('Due date must be before end of next year');
+			}
 		}
 		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
 			throw new ValidationError('Visible at date must be before due date');
