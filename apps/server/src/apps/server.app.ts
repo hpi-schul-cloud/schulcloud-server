@@ -1,8 +1,7 @@
 /* istanbul ignore file */
 // application imports
-import { MikroORM } from '@mikro-orm/core';
-import { Logger as NLogger } from '@nestjs/common';
 /* eslint-disable no-console */
+import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
@@ -31,7 +30,8 @@ async function bootstrap() {
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
-	nestApp.useLogger(await nestApp.resolve(Logger));
+	const logger = await nestApp.resolve(Logger);
+	nestApp.useLogger(logger);
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -83,7 +83,7 @@ async function bootstrap() {
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
 	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		NLogger.error(req.path, 'DEPRECATED-PATH');
+		logger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};
 
