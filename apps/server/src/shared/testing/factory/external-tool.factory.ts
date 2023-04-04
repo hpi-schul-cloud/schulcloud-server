@@ -1,18 +1,18 @@
-import { DeepPartial } from 'fishery';
 import {
-	ExternalTool,
-	IExternalToolProperties,
 	BasicToolConfig,
 	CustomParameter,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
+	ExternalTool,
+	IExternalToolProperties,
 	Lti11ToolConfig,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
+import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
@@ -73,6 +73,8 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		parameters: [
 			new CustomParameter({
 				name: 'name',
+				displayName: 'User Friendly Name',
+				description: 'This is a mock parameter.',
 				default: 'default',
 				location: CustomParameterLocation.PATH,
 				regex: 'regex',
@@ -84,6 +86,6 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		],
 		isHidden: false,
 		openNewTab: true,
-		version: 0,
+		version: 1,
 	};
 });

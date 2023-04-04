@@ -1,15 +1,12 @@
 const feathersSwagger = require('feathers-swagger');
-const path = require('path');
 
 module.exports = function swaggerSetup(app) {
 	app.configure(
 		feathersSwagger({
 			/* example configuration */
-			docsPath: '/docs',
+			ui: feathersSwagger.swaggerUI({ docsPath: '/docs' }),
 			basePath: '/',
 			host: '',
-			uiIndex: path.join(__dirname, 'swagger.html'),
-			openApiVersion: 3,
 			specs: {
 				security: [{ jwtBearer: [] }],
 				schemes: ['http', 'https'],
