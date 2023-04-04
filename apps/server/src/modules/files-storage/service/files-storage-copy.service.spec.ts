@@ -277,18 +277,18 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
 				const targetFile = fileRecords[1];
+				targetFile.securityCheck.status = ScanStatus.PENDING;
 
 				return { sourceFile, targetFile };
 			};
 
-			it('should call copy with correct params', async () => {
+			it('should send request token of copied file to antivirus service', async () => {
 				const { sourceFile, targetFile } = setup();
 
 				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-				expect(antivirusService.send).toBeCalledWith(sourceFile);
+				expect(antivirusService.send).toBeCalledWith(targetFile.securityCheck.requestToken);
 			});
 		});
 
@@ -296,13 +296,13 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
 				const targetFile = fileRecords[1];
+				targetFile.securityCheck.status = ScanStatus.VERIFIED;
 
 				return { sourceFile, targetFile };
 			};
 
-			it('should call copy with correct params', async () => {
+			it('should not send request token of copied file to antivirus service', async () => {
 				const { sourceFile, targetFile } = setup();
 
 				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
@@ -315,13 +315,13 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
 				const targetFile = fileRecords[1];
+				targetFile.securityCheck.status = ScanStatus.BLOCKED;
 
 				return { sourceFile, targetFile };
 			};
 
-			it('should call copy with correct params', async () => {
+			it('should not send request token of copied file to antivirus service', async () => {
 				const { sourceFile, targetFile } = setup();
 
 				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);

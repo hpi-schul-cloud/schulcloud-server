@@ -316,18 +316,19 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private sendToAntiVirusService(sourceFile: FileRecord) {
-		if (sourceFile.isPending()) {
-			this.antivirusService.send(sourceFile.getSecurityToken());
+	private sendToAntiVirusService(fileRecord: FileRecord) {
+		if (fileRecord.isPending()) {
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
+	// TODO: should be private
 	public async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
 		try {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			this.sendToAntiVirusService(sourceFile);
+			this.sendToAntiVirusService(targetFile);
 			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
