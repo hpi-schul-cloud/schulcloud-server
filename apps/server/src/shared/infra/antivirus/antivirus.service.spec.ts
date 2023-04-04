@@ -47,8 +47,8 @@ describe('AntivirusService', () => {
 					antivirusServiceOptions.exchange,
 					antivirusServiceOptions.routingKey,
 					{
-						callback_uri: 'http://localhost/api/v3/file-security/update-status/test-token',
-						download_uri: 'http://localhost/api/v3/file-security/download/test-token',
+						callback_uri: `http://localhost/api/v3/file-security/update-status/${requestToken}`,
+						download_uri: `http://localhost/api/v3/file-security/download/${requestToken}`,
 					},
 
 					{ persistent: true },
