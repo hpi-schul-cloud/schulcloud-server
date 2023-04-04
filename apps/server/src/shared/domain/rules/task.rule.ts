@@ -36,8 +36,8 @@ export class TaskRule extends BasePermission<Task> {
 
 		const hasParentPermission = this.hasParentPermission(user, entity, action);
 
-		// TODO why parent permission is with OR cond?
-		const result = hasRequiredPermission && (isCreator || isAssigned || hasParentPermission);
+		// TODO why parent permission has OR cond?
+		const result = isCreator || isAssigned || hasParentPermission;
 
 		return result;
 	}

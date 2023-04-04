@@ -148,17 +148,19 @@ describe('TaskRule', () => {
 			expect(res).toBe(false);
 		});
 
-		it('should return false if task has Assignees and user is not assigned ', () => {
+		it('should return "false" if task has Assignees and user is not assigned ', () => {
 			const otherStudent: User = userFactory.build({ roles: [role] });
-			entity = taskFactory.build({ users: [otherStudent] });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
+			const course = courseFactory.build();
+			entity = taskFactory.build({ course, users: [otherStudent] });
+			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
 			expect(res).toBe(false);
 		});
 
-		it('should return true if task has Assignees and user is not assigned ', () => {
-			entity = taskFactory.build({ users: [student] });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
+		it('should return "true" if task has Assignees and user is assigned ', () => {
+			const course = courseFactory.build();
+			entity = taskFactory.build({ course, users: [student] });
+			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
+			expect(res).toBe(true);
 		});
 	});
 });
