@@ -1443,21 +1443,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
-import {
-	ExternalTool,
-	IExternalToolProperties,
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
 	BasicToolConfig,
 	CustomParameter,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
+	ExternalTool,
+	IExternalToolProperties,
 	Lti11ToolConfig,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from &#x27;@shared/domain&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
 export class ExternalToolFactory extends BaseFactory&lt;ExternalTool, IExternalToolProperties&gt; {
@@ -1518,6 +1518,8 @@ export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool,
 		parameters: [
 			new CustomParameter({
 				name: &#x27;name&#x27;,
+				displayName: &#x27;User Friendly Name&#x27;,
+				description: &#x27;This is a mock parameter.&#x27;,
 				default: &#x27;default&#x27;,
 				location: CustomParameterLocation.PATH,
 				regex: &#x27;regex&#x27;,
@@ -1529,7 +1531,7 @@ export const externalToolFactory &#x3D; ExternalToolFactory.define(ExternalTool,
 		],
 		isHidden: false,
 		openNewTab: true,
-		version: 0,
+		version: 1,
 	};
 });
 </code></pre>

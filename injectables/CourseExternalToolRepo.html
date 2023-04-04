@@ -564,7 +564,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:71</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:72</a></code>
 </div>
                 </td>
             </tr>
@@ -1562,6 +1562,7 @@ export class CourseExternalToolRepo extends BaseDORepo&lt;
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
+			displayName: entity.displayName,
 			schoolToolId: entity.schoolTool.id,
 			courseId: entity.course.id,
 			toolVersion: entity.toolVersion,
@@ -1571,6 +1572,7 @@ export class CourseExternalToolRepo extends BaseDORepo&lt;
 
 	mapDOToEntityProperties(entityDO: CourseExternalToolDO): ICourseExternalToolProperties {
 		return {
+			displayName: entityDO.displayName,
 			course: this._em.getReference(Course, entityDO.courseId),
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolId),
 			toolVersion: entityDO.toolVersion,

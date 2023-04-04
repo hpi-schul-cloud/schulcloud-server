@@ -1218,9 +1218,10 @@
 	({ sequence }) &#x3D;&gt; {
 		return {
 			name: &#x60;custom-parameter-${sequence}&#x60;,
+			displayName: &#x27;User Friendly Name&#x27;,
 			type: CustomParameterType.STRING,
 			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.TOKEN,
+			location: CustomParameterLocation.BODY,
 			isOptional: false,
 		};
 	}
@@ -2170,6 +2171,7 @@ must use @ApiProperty</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>CourseExternalToolDOFactory.define(CourseExternalToolDO, ({ sequence }) &#x3D;&gt; {
 	return {
+		displayName: &#x27;My Course Tool 1&#x27;,
 		courseId: &#x60;courseId-${sequence}&#x60;,
 		parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 		schoolToolId: &#x60;schoolToolId-${sequence}&#x60;,
@@ -2202,6 +2204,7 @@ must use @ApiProperty</p>
 	CourseExternalTool,
 	() &#x3D;&gt; {
 		return {
+			displayName: &#x27;My Course Tool 1&#x27;,
 			schoolTool: schoolExternalToolFactory.buildWithId(),
 			course: courseFactory.buildWithId(),
 			courseParameters: [new CustomParameterEntry({ name: &#x27;mockParamater&#x27;, value: &#x27;mockValue&#x27; })],
@@ -3557,6 +3560,8 @@ it should ensure an empty result</p>
 		parameters: [
 			new CustomParameter({
 				name: &#x27;name&#x27;,
+				displayName: &#x27;User Friendly Name&#x27;,
+				description: &#x27;This is a mock parameter.&#x27;,
 				default: &#x27;default&#x27;,
 				location: CustomParameterLocation.PATH,
 				regex: &#x27;regex&#x27;,
@@ -3568,7 +3573,7 @@ it should ensure an empty result</p>
 		],
 		isHidden: false,
 		openNewTab: true,
-		version: 0,
+		version: 1,
 	};
 })</code>
                     </td>
@@ -4392,7 +4397,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>{
 	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
 	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
-	[CustomParameterLocationParams.TOKEN]: CustomParameterLocation.TOKEN,
+	[CustomParameterLocationParams.BODY]: CustomParameterLocation.BODY,
 }</code>
                     </td>
                 </tr>
@@ -4488,7 +4493,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>{
 	[CustomParameterLocation.PATH]: CustomParameterLocationParams.PATH,
 	[CustomParameterLocation.QUERY]: CustomParameterLocationParams.QUERY,
-	[CustomParameterLocation.TOKEN]: CustomParameterLocationParams.TOKEN,
+	[CustomParameterLocation.BODY]: CustomParameterLocationParams.BODY,
 }</code>
                     </td>
                 </tr>

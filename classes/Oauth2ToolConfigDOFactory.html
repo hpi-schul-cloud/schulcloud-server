@@ -1317,14 +1317,6 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from &#x27;@shared/domain/domainobject/external-tool&#x27;;
-import { DeepPartial } from &#x27;fishery&#x27;;
-import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
@@ -1332,7 +1324,15 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from &#x27;@shared/domain&#x27;;
+import {
+	BasicToolConfigDO,
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from &#x27;@shared/domain/domainobject/external-tool&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 import { DoBaseFactory } from &#x27;./do-base.factory&#x27;;
 
 export const basicToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfigDO, BasicToolConfigDO&gt;(
@@ -1388,9 +1388,10 @@ export const customParameterDOFactory &#x3D; DoBaseFactory.define&lt;CustomParam
 	({ sequence }) &#x3D;&gt; {
 		return {
 			name: &#x60;custom-parameter-${sequence}&#x60;,
+			displayName: &#x27;User Friendly Name&#x27;,
 			type: CustomParameterType.STRING,
 			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.TOKEN,
+			location: CustomParameterLocation.BODY,
 			isOptional: false,
 		};
 	}

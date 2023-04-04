@@ -717,8 +717,6 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Query } from &#x27;@nestjs/common&#x27;;
-import { IFindOptions, RoleName } from &#x27;@shared/domain&#x27;;
-import { Authorization } from &#x27;oauth-1.0a&#x27;;
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -729,16 +727,18 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
-import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
-import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
+import { PaginationParams } from &#x27;@shared/controller&#x27;;
+import { IFindOptions, RoleName } from &#x27;@shared/domain&#x27;;
+import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
+import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Lti11Uc } from &#x27;../uc/lti11.uc&#x27;;
-import { Authenticate, CurrentUser } from &#x27;../../authentication/decorator/auth.decorator&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { Authorization } from &#x27;oauth-1.0a&#x27;;
+import { CreateExternalTool, UpdateExternalTool } from &#x27;../uc/dto&#x27;;
 import { ExternalToolUc } from &#x27;../uc/external-tool.uc&#x27;;
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from &#x27;./mapper&#x27;;
+import { Lti11Uc } from &#x27;../uc/lti11.uc&#x27;;
 import {
 	ExternalToolPostParams,
 	ExternalToolResponse,
@@ -749,7 +749,7 @@ import {
 	SortExternalToolParams,
 	ToolIdParams,
 } from &#x27;./dto&#x27;;
-import { CreateExternalTool, UpdateExternalTool } from &#x27;../uc/dto&#x27;;
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

@@ -290,8 +290,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="156"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:156</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:158</a></div>
                 </td>
             </tr>
 
@@ -359,8 +359,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="182"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:182</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="186"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:186</a></div>
                 </td>
             </tr>
 
@@ -428,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="172"
-                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:172</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="176"
+                            class="link-to-prism">apps/server/src/shared/repo/externaltool/external-tool.repo.mapper.ts:176</a></div>
                 </td>
             </tr>
 
@@ -966,15 +966,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import {
 	BasicToolConfigDO,
 	CustomParameterDO,
+	CustomParameterEntryDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-	CustomParameterEntryDO,
 } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
-import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import {
 	BasicToolConfig,
 	CustomParameter,
@@ -1110,6 +1110,8 @@ export class ExternalToolRepoMapper {
 			(param: CustomParameter) &#x3D;&gt;
 				new CustomParameterDO({
 					name: param.name,
+					displayName: param.displayName,
+					description: param.description,
 					default: param.default,
 					regex: param.regex,
 					regexComment: param.regexComment,
@@ -1126,6 +1128,8 @@ export class ExternalToolRepoMapper {
 			(param: CustomParameterDO) &#x3D;&gt;
 				new CustomParameter({
 					name: param.name,
+					displayName: param.displayName,
+					description: param.description,
 					default: param.default,
 					regex: param.regex,
 					regexComment: param.regexComment,
