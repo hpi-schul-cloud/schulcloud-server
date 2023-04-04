@@ -12,7 +12,6 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
-import { OauthAuthorizationQueryParams } from '../oauth-authorization.params';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
