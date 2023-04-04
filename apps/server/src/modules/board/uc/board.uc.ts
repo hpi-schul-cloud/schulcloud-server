@@ -61,6 +61,14 @@ export class BoardUc {
 		await this.columnService.delete(board, columnId);
 	}
 
+	async moveColumn(userId: EntityId, boardId: EntityId, columnId: EntityId, toIndex: number): Promise<void> {
+		this.logger.debug({ action: 'moveColumn', userId, boardId, columnId });
+
+		// TODO check permissions
+
+		await this.columnService.move(columnId, boardId, toIndex);
+	}
+
 	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
 
@@ -80,5 +88,13 @@ export class BoardUc {
 		// TODO check permissions
 
 		await this.cardService.delete(column, cardId);
+	}
+
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toIndex });
+
+		// TODO check permissions
+
+		await this.cardService.move(cardId, targetColumnId, toIndex);
 	}
 }
