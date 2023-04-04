@@ -18,6 +18,10 @@ class API {
 	async get(path: string) {
 		return request(this.app.getHttpServer()).get(`/fwu/${path}`);
 	}
+
+	async getBytesRange(path: string, bytesRange: string) {
+		return request(this.app.getHttpServer()).get(`/fwu/${path}`).set('Range', bytesRange);
+	}
 }
 
 const createRndInt = (max) => Math.floor(Math.random() * max);
@@ -117,6 +121,12 @@ describe('FwuLearningContents Controller (api)', () => {
 				({ exampleTextFile, client } = await setup(overriddenS3Config));
 				const response = await api.get(exampleTextFile.Key);
 				expect(response.status).toEqual(200);
+			});
+
+			it('should return 206 status (bytesRange)', async () => {
+				({ exampleTextFile, client } = await setup(overriddenS3Config));
+				const response = await api.getBytesRange(exampleTextFile.Key, '12345');
+				expect(response.status).toEqual(206);
 			});
 
 			it('should return file content', async () => {
