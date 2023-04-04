@@ -1,7 +1,6 @@
 export * from './board.response';
 export * from './board.url.params';
 export * from './card-skeleton.response';
-export * from './card.url.params';
 export * from './column.response';
 export * from './column.url.params';
 export * from './content-element.url.params';
