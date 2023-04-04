@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AnyBoardDo, EntityId } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 
@@ -6,25 +6,27 @@ import { BoardDoRepo } from '../repo';
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
-		const domainObject = await this.boardDoRepo.findById(id, depth);
-		return domainObject;
-	}
-
-	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
-		const parent = await this.boardDoRepo.findParentOfId(childId);
-		return parent;
-	}
-
-	async deleteChild<T extends AnyBoardDo>(parent: T, childId: EntityId): Promise<T> {
-		const removedChild = parent.removeChild(childId);
+	async deleteChildWithDescendants(parent: AnyBoardDo, childId: EntityId): Promise<void> {
+		parent.removeChild(childId);
 		await this.boardDoRepo.save(parent.children, parent.id);
-		await this.boardDoRepo.deleteWithDescendants(removedChild.id);
-
-		return parent;
+		await this.boardDoRepo.deleteById(childId);
 	}
 
-	async deleteWithDescendants(id: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteWithDescendants(id);
+	async moveBoardDo(id: EntityId, targetParentId: EntityId, toIndex: number): Promise<void> {
+		const targetParent = await this.boardDoRepo.findById(targetParentId);
+		const originalParent = await this.getParentOfMovingNode(id);
+
+		const card = originalParent.removeChild(id);
+		targetParent.addChild(card, toIndex);
+
+		await this.boardDoRepo.save([originalParent, targetParent]);
+	}
+
+	private async getParentOfMovingNode(id: EntityId): Promise<AnyBoardDo> {
+		const originalParent = await this.boardDoRepo.findParentOfId(id);
+		if (!originalParent) {
+			throw new BadRequestException('can only move BoardNodes that have a parent');
+		}
+		return originalParent;
 	}
 }

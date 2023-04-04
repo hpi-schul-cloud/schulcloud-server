@@ -28,7 +28,7 @@ docker run \
   quay.io/minio/minio server /data --console-address ":9001"
 ```
 
-5. Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look [here](./nestjs-application/keycloak.html).
+5. Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look [here](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html).
 
 Change directory to the `schulcloud-server` root folder. Execute following command to setup the ErWIn-IDM container:
 
@@ -44,7 +44,7 @@ docker run \
 
 To add seed data into ErWIn-IDM, use `npm run setup:idm` to reset and apply seed data.
 
-See [ErWIn-IDM specific documentation](./nestjs-application/keycloak.html) to learn how to add the ErWIn-IDM identity broker feature.
+See [ErWIn-IDM specific documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html) to learn how to add the ErWIn-IDM identity broker feature.
 
 6. Add secrets to systems (optional)
 
