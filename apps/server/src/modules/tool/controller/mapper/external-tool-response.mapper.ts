@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -6,7 +7,6 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
 import {
 	BasicToolConfigResponse,
@@ -28,7 +28,7 @@ const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
 const locationMapping: Record<CustomParameterLocation, CustomParameterLocationParams> = {
 	[CustomParameterLocation.PATH]: CustomParameterLocationParams.PATH,
 	[CustomParameterLocation.QUERY]: CustomParameterLocationParams.QUERY,
-	[CustomParameterLocation.TOKEN]: CustomParameterLocationParams.TOKEN,
+	[CustomParameterLocation.BODY]: CustomParameterLocationParams.BODY,
 };
 
 const typeMapping: Record<CustomParameterType, CustomParameterTypeParams> = {
@@ -85,6 +85,8 @@ export class ExternalToolResponseMapper {
 		return customParameterDOS.map((customParameterDO: CustomParameterDO) => {
 			return {
 				name: customParameterDO.name,
+				displayName: customParameterDO.displayName,
+				description: customParameterDO.description,
 				defaultValue: customParameterDO.default,
 				regex: customParameterDO.regex,
 				regexComment: customParameterDO.regexComment,
