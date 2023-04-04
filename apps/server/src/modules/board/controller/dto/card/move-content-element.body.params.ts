@@ -15,5 +15,5 @@ export class MoveContentElementBody {
 		required: true,
 		nullable: false,
 	})
-	toIndex!: number;
+	toPosition!: number;
 }
