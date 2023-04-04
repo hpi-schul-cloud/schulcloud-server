@@ -177,7 +177,13 @@
                             <a href="../controllers/BoardController.html">BoardController</a>
                         </li>
                         <li class="list-group-item">
+                            <a href="../controllers/ColumnController.html">ColumnController</a>
+                        </li>
+                        <li class="list-group-item">
                             <a href="../controllers/CardController.html">CardController</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="../controllers/ElementController.html">ElementController</a>
                         </li>
                     </ul>
                 </div>
@@ -204,12 +210,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { BoardModule } from &#x27;./board.module&#x27;;
-import { BoardController, CardController } from &#x27;./controller&#x27;;
+import { BoardController, CardController, ColumnController, ElementController } from &#x27;./controller&#x27;;
 import { BoardUc, CardUc } from &#x27;./uc&#x27;;
 
 @Module({
 	imports: [BoardModule, LoggerModule],
-	controllers: [BoardController, CardController],
+	controllers: [BoardController, ColumnController, CardController, ElementController],
 	providers: [BoardUc, CardUc],
 })
 export class BoardApiModule {}

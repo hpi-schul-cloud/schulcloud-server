@@ -28,19 +28,16 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content controller">
                    <div class="content-data">
 
 
 
 
 
-
-
-
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >ColumnService</li>
+  <li>Controllers</li>
+  <li >ColumnController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -58,8 +55,16 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/service/column.service.ts</code>
+            <code>apps/server/src/modules/board/controller/column.controller.ts</code>
         </p>
+
+            <p class="comment">
+                <h3>Prefix</h3>
+            </p>
+            <p class="comment">
+                <code>columns</code>
+            </p>
+
 
 
 
@@ -80,19 +85,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#create" >create</a>
+                                <a href="#createCard" >createCard</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#delete" >delete</a>
+                                <a href="#deleteColumn" >deleteColumn</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findById" >findById</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#move" >move</a>
+                                <a href="#moveColumn" >moveColumn</a>
                             </li>
                         </ul>
                     </td>
@@ -107,67 +108,6 @@
 </section>
 
             <section>
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:8</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>boardDoRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>boardDoService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/BoardDoService.html" target="_self" >BoardDoService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
-
-            <section>
     
     <h3 id="methods">
         Methods
@@ -176,26 +116,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
+                    <a name="createCard"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createCard</b></span>
+                        <a href="#createCard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                    <code>createCard(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;:columnId/cards&#x27;)<br /></code>
+                </td>
+            </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:43</a></div>
                 </td>
             </tr>
 
@@ -216,9 +163,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>parent</td>
+                                    <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                                <code><a href="../classes/ColumnUrlParams.html" target="_self" >ColumnUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
                                     </td>
 
                                     <td>
@@ -233,7 +192,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;CardResponse&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -247,168 +206,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="delete"></a>
+                    <a name="deleteColumn"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>delete</b></span>
-                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteColumn</b></span>
+                        <a href="#deleteColumn"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(column: <a href="../classes/Column.html" target="_self">Column</a>)</code>
+                    <code>deleteColumn(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
-
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:32</a></div>
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Delete(&#x27;:columnId&#x27;)<br /></code>
                 </td>
             </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>column</td>
-                                    <td>
-                                                <code><a href="../classes/Column.html" target="_self" >Column</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findById"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>findById</b></span>
-                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:11</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>columnId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="move"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>move</b></span>
-                        <a href="#move"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>move(column: <a href="../classes/Column.html" target="_self">Column</a>, targetBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, targetPosition?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
 
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:36</a></div>
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:36</a></div>
                 </td>
             </tr>
 
@@ -429,9 +253,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>column</td>
+                                    <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                                <code><a href="../classes/ColumnUrlParams.html" target="_self" >ColumnUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -441,25 +265,13 @@
 
                                 </tr>
                                 <tr>
-                                    <td>targetBoard</td>
+                                    <td>currentUser</td>
                                     <td>
-                                                <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>targetPosition</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -470,7 +282,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -480,55 +292,171 @@
             </tr>
         </tbody>
     </table>
-</section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="moveColumn"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>moveColumn</b></span>
+                        <a href="#moveColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>moveColumn(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, bodyParams: <a href="../classes/MoveColumnBodyParams.html" target="_self">MoveColumnBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
 
-    </div>
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:columnId/position&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:16</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/ColumnUrlParams.html" target="_self" >ColumnUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/MoveColumnBodyParams.html" target="_self" >MoveColumnBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
-import { ObjectId } from &#x27;bson&#x27;;
-import { BoardDoRepo } from &#x27;../repo&#x27;;
-import { BoardDoService } from &#x27;./board-do.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Param, Post, Put } from &#x27;@nestjs/common&#x27;;
+import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { BoardUc } from &#x27;../uc&#x27;;
+import { CardResponse, ColumnUrlParams, MoveColumnBodyParams } from &#x27;./dto&#x27;;
+import { CardResponseMapper } from &#x27;./mapper&#x27;;
 
-@Injectable()
-export class ColumnService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+@ApiTags(&#x27;Columns&#x27;)
+@Authenticate(&#x27;jwt&#x27;)
+@Controller(&#x27;columns&#x27;)
+export class ColumnController {
+	constructor(private readonly boardUc: BoardUc) {}
 
-	async findById(columnId: EntityId): Promise&lt;Column&gt; {
-		const column &#x3D; await this.boardDoRepo.findByClassAndId(Column, columnId);
-		return column;
+	@Put(&#x27;:columnId/position&#x27;)
+	async moveColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@Body() bodyParams: MoveColumnBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;boolean&gt; {
+		await this.boardUc.moveColumn(currentUser.userId, urlParams.columnId, bodyParams.toBoardId, bodyParams.toPosition);
+
+		return true;
 	}
 
-	async create(parent: ColumnBoard): Promise&lt;Column&gt; {
-		const column &#x3D; new Column({
-			id: new ObjectId().toHexString(),
-			title: &#x27;&#x27;,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
+	// @Put(&#x27;:columnId/title&#x27;)
+	// renameColumn(
+	// 	@Param() urlParams: ColumnUrlParams,
+	// 	@Body() bodyParams: RenameBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise&lt;void&gt; {
+	// 	throw new NotImplementedException();
+	// }
 
-		parent.addChild(column);
+	@Delete(&#x27;:columnId&#x27;)
+	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;boolean&gt; {
+		await this.boardUc.deleteColumn(currentUser.userId, urlParams.columnId);
 
-		await this.boardDoRepo.save(parent.children, parent.id);
-
-		return column;
+		return true;
 	}
 
-	async delete(column: Column): Promise&lt;void&gt; {
-		await this.boardDoService.deleteWithDescendants(column);
-	}
+	@Post(&#x27;:columnId/cards&#x27;)
+	async createCard(
+		@Param() urlParams: ColumnUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;CardResponse&gt; {
+		const card &#x3D; await this.boardUc.createCard(currentUser.userId, urlParams.columnId);
 
-	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise&lt;void&gt; {
-		await this.boardDoService.move(column, targetBoard, targetPosition);
+		const response &#x3D; CardResponseMapper.mapToResponse(card);
+
+		return response;
 	}
 }
 </code></pre>
     </div>
-
 </div>
+
+
+
 
 
 
@@ -567,8 +495,8 @@ export class ColumnService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ColumnService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
+            var COMPODOC_CURRENT_PAGE_URL = 'ColumnController.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

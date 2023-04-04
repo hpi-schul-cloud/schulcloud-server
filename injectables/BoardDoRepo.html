@@ -80,7 +80,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteById" >deleteById</a>
+                                <a href="#delete" >delete</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -184,18 +184,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteById"></a>
+                    <a name="delete"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>deleteById</b></span>
-                        <a href="#deleteById"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -224,9 +224,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>id</td>
+                                    <td>domainObject</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -734,8 +734,8 @@ export class BoardDoRepo {
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteById(id: EntityId): Promise&lt;void&gt; {
-		const boardNode &#x3D; await this.boardNodeRepo.findById(BoardNode, id);
+	async delete(domainObject: AnyBoardDo): Promise&lt;void&gt; {
+		const boardNode &#x3D; await this.boardNodeRepo.findById(BoardNode, domainObject.id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
 	}
 }

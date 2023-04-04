@@ -108,12 +108,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardNodeRepo: <a href="../injectables/BoardNodeRepo.html" target="_self">BoardNodeRepo</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -143,10 +143,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardNodeRepo</td>
+                                                        <td>boardDoService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
+                                                                        <code><a href="../injectables/BoardDoService.html" target="_self" >BoardDoService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -190,8 +190,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -222,15 +222,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(boardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(board: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -251,9 +251,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>boardId</td>
+                                    <td>board</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
                                     </td>
 
                                     <td>
@@ -300,8 +300,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/board/service/column-board.service.ts:11</a></div>
                 </td>
             </tr>
 
@@ -356,13 +356,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ColumnBoard, ColumnBoardNode, EntityId } from &#x27;@shared/domain&#x27;;
+import { ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { BoardDoRepo, BoardNodeRepo } from &#x27;../repo&#x27;;
+import { BoardDoRepo } from &#x27;../repo&#x27;;
+import { BoardDoService } from &#x27;./board-do.service&#x27;;
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
 	async findById(boardId: EntityId): Promise&lt;ColumnBoard&gt; {
 		const board &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);
@@ -384,10 +385,8 @@ export class ColumnBoardService {
 		return board;
 	}
 
-	async delete(boardId: EntityId): Promise&lt;void&gt; {
-		// ensure the board exists and is really a board
-		await this.boardNodeRepo.findById(ColumnBoardNode, boardId);
-		await this.boardDoRepo.deleteById(boardId);
+	async delete(board: ColumnBoard): Promise&lt;void&gt; {
+		await this.boardDoService.deleteWithDescendants(board);
 	}
 }
 </code></pre>

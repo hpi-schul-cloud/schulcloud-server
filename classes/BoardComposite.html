@@ -343,7 +343,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, toIndex?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -384,7 +384,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>position</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -426,7 +426,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, toIndex?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -467,7 +467,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>position</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -576,7 +576,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>removeChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -605,9 +605,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>childId</td>
+                                    <td>child</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -665,15 +665,15 @@ export abstract class BoardComposite {
 		this.updatedAt &#x3D; props.updatedAt;
 	}
 
-	protected _addChild(domainObject: AnyBoardDo, toIndex?: number): void {
-		if (toIndex) {
-			this.children.splice(toIndex, 0, domainObject);
+	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
+		if (position) {
+			this.children.splice(position, 0, domainObject);
 		} else {
 			this.children.push(domainObject);
 		}
 	}
 
-	abstract addChild(domainObject: AnyBoardDo, toIndex?: number): void;
+	abstract addChild(domainObject: AnyBoardDo, position?: number): void;
 
 	getChild(childId: EntityId): AnyBoardDo {
 		const foundChild &#x3D; this.children.find((child) &#x3D;&gt; child.id &#x3D;&#x3D;&#x3D; childId);
@@ -684,10 +684,10 @@ export abstract class BoardComposite {
 		return foundChild;
 	}
 
-	removeChild(childId: EntityId): AnyBoardDo {
-		const removedChild &#x3D; this.getChild(childId);
+	removeChild(child: AnyBoardDo): AnyBoardDo {
+		const removedChild &#x3D; this.getChild(child.id);
 
-		this.children &#x3D; this.children.filter((child) &#x3D;&gt; child.id !&#x3D;&#x3D; childId);
+		this.children &#x3D; this.children.filter((ch) &#x3D;&gt; ch.id !&#x3D;&#x3D; child.id);
 		return removedChild;
 	}
 }

@@ -88,6 +88,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findById" >findById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#move" >move</a>
                             </li>
                         </ul>
@@ -190,8 +194,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:16</a></div>
                 </td>
             </tr>
 
@@ -254,15 +258,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(parent: <a href="../classes/Card.html" target="_self">Card</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -283,21 +287,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>parent</td>
+                                    <td>element</td>
                                     <td>
-                                                <code><a href="../classes/Card.html" target="_self" >Card</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>elementId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
                                     </td>
 
                                     <td>
@@ -326,26 +318,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="move"></a>
+                    <a name="findById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>move</b></span>
-                        <a href="#move"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findById</b></span>
+                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>move(elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetColumnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>findById(elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:11</a></div>
                 </td>
             </tr>
 
@@ -377,10 +369,69 @@
 
 
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >Promise&lt;TextElement&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="move"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>move</b></span>
+                        <a href="#move"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>move(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>, targetCard: <a href="../classes/Card.html" target="_self">Card</a>, targetPosition: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:35</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
                                 <tr>
-                                    <td>targetColumnId</td>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>element</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
                                     </td>
 
                                     <td>
@@ -390,7 +441,19 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>targetCard</td>
+                                    <td>
+                                                <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetPosition</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -433,6 +496,11 @@ import { BoardDoService } from &#x27;./board-do.service&#x27;;
 export class ContentElementService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
+	async findById(elementId: EntityId): Promise&lt;TextElement&gt; {
+		const column &#x3D; await this.boardDoRepo.findByClassAndId(TextElement, elementId);
+		return column;
+	}
+
 	async create(parent: Card): Promise&lt;TextElement&gt; {
 		const element &#x3D; new TextElement({
 			id: new ObjectId().toHexString(),
@@ -448,12 +516,12 @@ export class ContentElementService {
 		return element;
 	}
 
-	async delete(parent: Card, elementId: EntityId): Promise&lt;void&gt; {
-		await this.boardDoService.deleteChildWithDescendants(parent, elementId);
+	async delete(element: TextElement): Promise&lt;void&gt; {
+		await this.boardDoService.deleteWithDescendants(element);
 	}
 
-	async move(elementId: EntityId, targetColumnId: EntityId, toIndex: number): Promise&lt;void&gt; {
-		await this.boardDoService.moveBoardDo(elementId, targetColumnId, toIndex);
+	async move(element: TextElement, targetCard: Card, targetPosition: number): Promise&lt;void&gt; {
+		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 }
 </code></pre>

@@ -262,7 +262,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(parent: <a href="../classes/Column.html" target="_self">Column</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(card: <a href="../classes/Card.html" target="_self">Card</a>)</code>
                 </td>
             </tr>
 
@@ -291,21 +291,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>parent</td>
+                                    <td>card</td>
                                     <td>
-                                                <code><a href="../classes/Column.html" target="_self" >Column</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>cardId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/Card.html" target="_self" >Card</a></code>
                                     </td>
 
                                     <td>
@@ -487,7 +475,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>move(cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetColumnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>move(card: <a href="../classes/Card.html" target="_self">Card</a>, targetColumn: <a href="../classes/Column.html" target="_self">Column</a>, targetPosition?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -516,9 +504,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>cardId</td>
+                                    <td>card</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/Card.html" target="_self" >Card</a></code>
                                     </td>
 
                                     <td>
@@ -528,9 +516,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>targetColumnId</td>
+                                    <td>targetColumn</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../classes/Column.html" target="_self" >Column</a></code>
                                     </td>
 
                                     <td>
@@ -540,13 +528,13 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>targetPosition</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
 
                                     <td>
-                                        No
+                                        Yes
                                     </td>
 
 
@@ -613,12 +601,12 @@ export class CardService {
 		return card;
 	}
 
-	async delete(parent: Column, cardId: EntityId): Promise&lt;void&gt; {
-		await this.boardDoService.deleteChildWithDescendants(parent, cardId);
+	async delete(card: Card): Promise&lt;void&gt; {
+		await this.boardDoService.deleteWithDescendants(card);
 	}
 
-	async move(cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise&lt;void&gt; {
-		await this.boardDoService.moveBoardDo(cardId, targetColumnId, toIndex);
+	async move(card: Card, targetColumn: Column, targetPosition?: number): Promise&lt;void&gt; {
+		await this.boardDoService.move(card, targetColumn, targetPosition);
 	}
 }
 </code></pre>

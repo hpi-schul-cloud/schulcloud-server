@@ -89,7 +89,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteElement" >deleteElement</a>
+                                <a href="#deleteCard" >deleteCard</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -97,7 +97,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#moveColumn" >moveColumn</a>
+                                <a href="#moveCard" >moveCard</a>
                             </li>
                         </ul>
                     </td>
@@ -131,7 +131,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(urlParams: <a href="../classes/CardIdUrlParams.html" target="_self">CardIdUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -145,8 +145,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:63</a></div>
                 </td>
             </tr>
 
@@ -169,7 +169,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/CardIdUrlParams.html" target="_self" >CardIdUrlParams</a></code>
+                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -210,18 +210,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteElement"></a>
+                    <a name="deleteCard"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>deleteElement</b></span>
-                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteCard</b></span>
+                        <a href="#deleteCard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>deleteCard(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -229,14 +229,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:cardId/elements/:contentElementId&#x27;)<br /></code>
+                    <code>@Delete(&#x27;:cardId&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:49</a></div>
                 </td>
             </tr>
 
@@ -259,7 +259,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -325,8 +325,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:23</a></div>
                 </td>
             </tr>
 
@@ -390,18 +390,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="moveColumn"></a>
+                    <a name="moveCard"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>moveColumn</b></span>
-                        <a href="#moveColumn"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>moveCard</b></span>
+                        <a href="#moveCard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveColumn(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/MoveContentElementBody.html" target="_self">MoveContentElementBody</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>moveCard(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/MoveCardBodyParams.html" target="_self">MoveCardBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -409,14 +409,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Put(&#x27;:cardId/elements/:contentElementId/position&#x27;)<br /></code>
+                    <code>@Put(&#x27;:cardId/position&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:38</a></div>
                 </td>
             </tr>
 
@@ -439,7 +439,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -451,7 +451,7 @@
                                 <tr>
                                     <td>bodyParams</td>
                                     <td>
-                                                <code><a href="../classes/MoveContentElementBody.html" target="_self" >MoveContentElementBody</a></code>
+                                                <code><a href="../classes/MoveCardBodyParams.html" target="_self" >MoveCardBodyParams</a></code>
                                     </td>
 
                                     <td>
@@ -496,18 +496,22 @@
 import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { CardUc } from &#x27;../uc/card.uc&#x27;;
-import { CardIdsParams, CardIdUrlParams, CardListResponse, ContentElementUrlParams, TextElementResponse } from &#x27;./dto&#x27;;
-import { AnyContentElementResponse } from &#x27;./dto/card/any-content-element.response&#x27;;
-import { MoveContentElementBody } from &#x27;./dto/card/move-content-element.body.params&#x27;;
-import { TextElementResponseMapper } from &#x27;./mapper&#x27;;
-import { CardResponseMapper } from &#x27;./mapper/card-response.mapper&#x27;;
+import { BoardUc, CardUc } from &#x27;../uc&#x27;;
+import {
+	AnyContentElementResponse,
+	CardIdsParams,
+	CardListResponse,
+	CardUrlParams,
+	MoveCardBodyParams,
+	TextElementResponse,
+} from &#x27;./dto&#x27;;
+import { CardResponseMapper, TextElementResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Cards&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;cards&#x27;)
 export class CardController {
-	constructor(private readonly cardUc: CardUc) {}
+	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
 
 	@Get()
 	async getCards(
@@ -524,6 +528,24 @@ export class CardController {
 		return result;
 	}
 
+	@Put(&#x27;:cardId/position&#x27;)
+	async moveCard(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: MoveCardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;boolean&gt; {
+		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+
+		return true;
+	}
+
+	@Delete(&#x27;:cardId&#x27;)
+	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;boolean&gt; {
+		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
+
+		return true;
+	}
+
 	@ApiExtraModels(TextElementResponse)
 	@ApiResponse({
 		status: 201,
@@ -533,7 +555,7 @@ export class CardController {
 	})
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
-		@Param() urlParams: CardIdUrlParams,
+		@Param() urlParams: CardUrlParams, // TODO add type-property ?
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;AnyContentElementResponse&gt; {
 		const element &#x3D; await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
@@ -541,31 +563,6 @@ export class CardController {
 		const response &#x3D; TextElementResponseMapper.mapToResponse(element);
 
 		return response;
-	}
-
-	@Delete(&#x27;:cardId/elements/:contentElementId&#x27;)
-	async deleteElement(
-		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;boolean&gt; {
-		await this.cardUc.deleteElement(currentUser.userId, urlParams.cardId, urlParams.contentElementId);
-
-		return true;
-	}
-
-	@Put(&#x27;:cardId/elements/:contentElementId/position&#x27;)
-	async moveColumn(
-		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: MoveContentElementBody,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;boolean&gt; {
-		await this.cardUc.moveElement(
-			currentUser.userId,
-			urlParams.contentElementId,
-			bodyParams.toCardId,
-			bodyParams.toIndex
-		);
-		return true;
 	}
 }
 </code></pre>

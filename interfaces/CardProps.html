@@ -160,9 +160,9 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		this.height &#x3D; props.height;
 	}
 
-	addChild(child: AnyBoardDo, toIndex?: number) {
+	addChild(child: AnyBoardDo, position?: number) {
 		if (child instanceof TextElement) {
-			this._addChild(child, toIndex);
+			this._addChild(child, position);
 		} else {
 			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
 		}

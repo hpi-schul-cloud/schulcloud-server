@@ -342,7 +342,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, toIndex?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -389,7 +389,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>position</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -524,7 +524,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, toIndex?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -571,7 +571,7 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>position</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -686,7 +686,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>removeChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -721,9 +721,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>childId</td>
+                                    <td>child</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -764,9 +764,9 @@ import { Card } from &#x27;./card.do&#x27;;
 import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from &#x27;./types&#x27;;
 
 export class Column extends BoardComposite implements BoardNodeBuildable {
-	addChild(child: AnyBoardDo, toIndex?: number) {
+	addChild(child: AnyBoardDo, position?: number) {
 		if (child instanceof Card) {
-			this._addChild(child, toIndex);
+			this._addChild(child, position);
 		} else {
 			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
 		}

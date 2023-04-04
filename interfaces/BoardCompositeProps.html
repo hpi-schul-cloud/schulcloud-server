@@ -323,15 +323,15 @@ export abstract class BoardComposite {
 		this.updatedAt &#x3D; props.updatedAt;
 	}
 
-	protected _addChild(domainObject: AnyBoardDo, toIndex?: number): void {
-		if (toIndex) {
-			this.children.splice(toIndex, 0, domainObject);
+	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
+		if (position) {
+			this.children.splice(position, 0, domainObject);
 		} else {
 			this.children.push(domainObject);
 		}
 	}
 
-	abstract addChild(domainObject: AnyBoardDo, toIndex?: number): void;
+	abstract addChild(domainObject: AnyBoardDo, position?: number): void;
 
 	getChild(childId: EntityId): AnyBoardDo {
 		const foundChild &#x3D; this.children.find((child) &#x3D;&gt; child.id &#x3D;&#x3D;&#x3D; childId);
@@ -342,10 +342,10 @@ export abstract class BoardComposite {
 		return foundChild;
 	}
 
-	removeChild(childId: EntityId): AnyBoardDo {
-		const removedChild &#x3D; this.getChild(childId);
+	removeChild(child: AnyBoardDo): AnyBoardDo {
+		const removedChild &#x3D; this.getChild(child.id);
 
-		this.children &#x3D; this.children.filter((child) &#x3D;&gt; child.id !&#x3D;&#x3D; childId);
+		this.children &#x3D; this.children.filter((ch) &#x3D;&gt; ch.id !&#x3D;&#x3D; child.id);
 		return removedChild;
 	}
 }

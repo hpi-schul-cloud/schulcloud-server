@@ -80,16 +80,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteChildWithDescendants" >deleteChildWithDescendants</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getParentOfMovingNode" >getParentOfMovingNode</a>
+                                <a href="#deleteWithDescendants" >deleteWithDescendants</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#moveBoardDo" >moveBoardDo</a>
+                                <a href="#move" >move</a>
                             </li>
                         </ul>
                     </td>
@@ -161,18 +156,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteChildWithDescendants"></a>
+                    <a name="deleteWithDescendants"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>deleteChildWithDescendants</b></span>
-                        <a href="#deleteChildWithDescendants"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteWithDescendants</b></span>
+                        <a href="#deleteWithDescendants"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteChildWithDescendants(parent: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>deleteWithDescendants(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -201,21 +196,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>parent</td>
+                                    <td>domainObject</td>
                                     <td>
                                                 <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>childId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -244,27 +227,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getParentOfMovingNode"></a>
+                    <a name="move"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
-                        <span ><b>getParentOfMovingNode</b></span>
-                        <a href="#getParentOfMovingNode"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>move</b></span>
+                        <a href="#move"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getParentOfMovingNode(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>move(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, targetParent: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, targetPosition?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/board/service/board-do.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/board/service/board-do.service.ts:20</a></div>
                 </td>
             </tr>
 
@@ -285,80 +267,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>id</td>
+                                    <td>child</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;AnyBoardDo&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="moveBoardDo"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>moveBoardDo</b></span>
-                        <a href="#moveBoardDo"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveBoardDo(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetParentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toIndex: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/board/service/board-do.service.ts:15</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>id</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -368,9 +279,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>targetParentId</td>
+                                    <td>targetParent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -380,13 +291,13 @@
 
                                 </tr>
                                 <tr>
-                                    <td>toIndex</td>
+                                    <td>targetPosition</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
 
                                     <td>
-                                        No
+                                        Yes
                                     </td>
 
 
@@ -414,35 +325,36 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, EntityId } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo } from &#x27;@shared/domain&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async deleteChildWithDescendants(parent: AnyBoardDo, childId: EntityId): Promise&lt;void&gt; {
-		parent.removeChild(childId);
-		await this.boardDoRepo.save(parent.children, parent.id);
-		await this.boardDoRepo.deleteById(childId);
-	}
+	async deleteWithDescendants(domainObject: AnyBoardDo): Promise&lt;void&gt; {
+		const parent &#x3D; await this.boardDoRepo.findParentOfId(domainObject.id);
 
-	async moveBoardDo(id: EntityId, targetParentId: EntityId, toIndex: number): Promise&lt;void&gt; {
-		const targetParent &#x3D; await this.boardDoRepo.findById(targetParentId);
-		const originalParent &#x3D; await this.getParentOfMovingNode(id);
-
-		const card &#x3D; originalParent.removeChild(id);
-		targetParent.addChild(card, toIndex);
-
-		await this.boardDoRepo.save([originalParent, targetParent]);
-	}
-
-	private async getParentOfMovingNode(id: EntityId): Promise&lt;AnyBoardDo&gt; {
-		const originalParent &#x3D; await this.boardDoRepo.findParentOfId(id);
-		if (!originalParent) {
-			throw new BadRequestException(&#x27;can only move BoardNodes that have a parent&#x27;);
+		if (parent) {
+			parent.removeChild(domainObject);
+			await this.boardDoRepo.save(parent.children, parent.id);
 		}
-		return originalParent;
+
+		await this.boardDoRepo.delete(domainObject);
+	}
+
+	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise&lt;void&gt; {
+		const sourceParent &#x3D; await this.boardDoRepo.findParentOfId(child.id);
+
+		if (sourceParent &#x3D;&#x3D; null) {
+			throw new BadRequestException(&#x27;Cannot move nodes without a parent&#x27;);
+		}
+
+		sourceParent.removeChild(child);
+		targetParent.addChild(child, targetPosition);
+
+		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
+		await this.boardDoRepo.save(targetParent.children, targetParent.id);
 	}
 }
 </code></pre>
