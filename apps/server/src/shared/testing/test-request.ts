@@ -52,9 +52,8 @@ export class TestRequest {
 		return path;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private isAuthenticationResponse(body: any): body is AuthenticationResponse {
-		const isAuthenticationResponse = testReqestConst.responseKey in body;
+	private isAuthenticationResponse(body: unknown): body is AuthenticationResponse {
+		const isAuthenticationResponse = typeof body === 'object' && body !== null && testReqestConst.responseKey in body;
 
 		return isAuthenticationResponse;
 	}
