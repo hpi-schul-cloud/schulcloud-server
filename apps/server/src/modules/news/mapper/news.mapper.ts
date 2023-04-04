@@ -71,7 +71,7 @@ export class NewsMapper {
 		return dto;
 	}
 
-	static MapToLogMessageData(news: News): LogMessageData {
+	static mapToLogMessageData(news: News): LogMessageData {
 		const data = {
 			entityType: 'News',
 			id: news.id,
