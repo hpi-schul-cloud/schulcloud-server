@@ -1,8 +1,10 @@
 import { Controller, Delete, Get, INestApplication, Post, Put } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestRequest } from '.';
+import { ObjectId } from 'bson';
+import { accountFactory } from './factory';
+import { TestRequest } from './test-request';
 
-@Controller('test')
+@Controller('')
 export class TestController {
 	@Delete(':id')
 	async delete() {
@@ -22,6 +24,11 @@ export class TestController {
 	@Put(':id')
 	async update() {
 		return Promise.resolve({});
+	}
+
+	@Post('/authentication/local')
+	async jwt() {
+		return Promise.resolve({ accessToken: '123' });
 	}
 }
 
@@ -43,58 +50,111 @@ describe('test-request', () => {
 
 	describe('when test request instance exists', () => {
 		const setup = () => {
-			const request = new TestRequest(app, 'test');
+			const request = new TestRequest(app, '');
+			const account = accountFactory.build();
+			const id = new ObjectId().toHexString();
 
-			const spy = jest.spyOn(request, 'getJwt').mockResolvedValueOnce('123');
+			const spy = jest.spyOn(request, 'getJwt');
 
-			return { request, spy };
+			return { request, spy, account, id };
 		};
 
-		// not well tested, but not easy if we want to avoid duplicated tests
-		it('should has a getJWT handler', () => {
-			const { request } = setup();
+		describe('getJwt', () => {
+			it('should return "invalidJwt" by default', async () => {
+				const { request } = setup();
 
-			expect(request.getJwt).toBeDefined();
+				const result = await request.getJwt();
+
+				expect(result).toEqual('invalidJwt');
+			});
+
+			it('should return well formed jwt by passing the account', async () => {
+				const { request, account } = setup();
+
+				const result = await request.getJwt(account);
+
+				expect(result).toEqual('Bearer 123');
+			});
 		});
 
-		it('should resolve get requests', async () => {
-			const { request, spy } = setup();
+		describe('get', () => {
+			it('should resolve requests', async () => {
+				const { request, spy } = setup();
 
-			const result = await request.get();
+				const result = await request.get();
 
-			expect(spy).toBeCalled();
-			expect(result.statusCode).toBeDefined();
-			expect(result.body).toBeDefined();
+				expect(spy).toBeCalled();
+				expect(result.statusCode).toBeDefined();
+				expect(result.body).toBeDefined();
+			});
+
+			it('should pass accout to getJwt request', async () => {
+				const { request, spy, account, id } = setup();
+
+				await request.get(id, account);
+
+				expect(spy).toBeCalledWith(account);
+			});
 		});
 
-		it('should resolve post requests', async () => {
-			const { request, spy } = setup();
+		describe('post', () => {
+			it('should resolve requests', async () => {
+				const { request, spy } = setup();
 
-			const result = await request.post();
+				const result = await request.post();
 
-			expect(spy).toBeCalled();
-			expect(result.statusCode).toBeDefined();
-			expect(result.body).toBeDefined();
+				expect(spy).toBeCalled();
+				expect(result.statusCode).toBeDefined();
+				expect(result.body).toBeDefined();
+			});
+
+			it('should pass accout to getJwt request', async () => {
+				const { request, spy, account } = setup();
+
+				await request.post('', {}, account);
+
+				expect(spy).toBeCalledWith(account);
+			});
 		});
 
-		it('should resolve delete requests', async () => {
-			const { request, spy } = setup();
+		describe('delete', () => {
+			it('should resolve requests', async () => {
+				const { request, spy } = setup();
 
-			const result = await request.delete();
+				const result = await request.delete();
 
-			expect(spy).toBeCalled();
-			expect(result.statusCode).toBeDefined();
-			expect(result.body).toBeDefined();
+				expect(spy).toBeCalled();
+				expect(result.statusCode).toBeDefined();
+				expect(result.body).toBeDefined();
+			});
+
+			it('should pass accout to getJwt request', async () => {
+				const { request, spy, account, id } = setup();
+
+				await request.delete(id, account);
+
+				expect(spy).toBeCalledWith(account);
+			});
 		});
 
-		it('should resolve put requests', async () => {
-			const { request, spy } = setup();
+		describe('put', () => {
+			it('should resolve requests', async () => {
+				const { request, spy } = setup();
 
-			const result = await request.update();
+				const result = await request.update();
 
-			expect(spy).toBeCalled();
-			expect(result.statusCode).toBeDefined();
-			expect(result.body).toBeDefined();
+				expect(spy).toBeCalled();
+				expect(result.statusCode).toBeDefined();
+				expect(result.body).toBeDefined();
+			});
+
+			it('should pass accout to getJwt request', async () => {
+				const { request, spy, account, id } = setup();
+
+				await request.update(id, {}, account);
+
+				expect(spy).toBeCalledWith(account);
+			});
 		});
 	});
 });

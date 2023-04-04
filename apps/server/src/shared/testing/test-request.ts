@@ -21,7 +21,7 @@ const testReqestConst = {
 	invalid: 'invalidJwt',
 	prefix: 'Bearer',
 	loginPath: '/authentication/local',
-	responseKey: 'accessToken',
+	accessToken: 'accessToken',
 	errorMessage: 'TestRequest: Can not cast to local AutenticationResponse:',
 };
 
@@ -53,7 +53,7 @@ export class TestRequest {
 	}
 
 	private isAuthenticationResponse(body: unknown): body is AuthenticationResponse {
-		const isAuthenticationResponse = typeof body === 'object' && body !== null && testReqestConst.responseKey in body;
+		const isAuthenticationResponse = typeof body === 'object' && body !== null && testReqestConst.accessToken in body;
 
 		return isAuthenticationResponse;
 	}
@@ -75,13 +75,13 @@ export class TestRequest {
 		let formatedJwt: string = testReqestConst.invalid;
 
 		if (accountWithPassword) {
-			const uri = testReqestConst.loginPath;
+			const path = testReqestConst.loginPath;
 			const params: { username: string; password: string } = {
 				username: accountWithPassword.username,
 				password: defaultTestPassword,
 			};
 			const response = await supertest(this.app.getHttpServer())
-				.post(uri)
+				.post(path)
 				.set(headerConst.accept, headerConst.json)
 				.send(params);
 
