@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityNotFoundError } from '@shared/common';
 import { EntityId, System, SystemTypeEnum } from '@shared/domain';
 import { systemFactory } from '@shared/testing';
 import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
@@ -92,6 +93,25 @@ describe('SystemUc', () => {
 
 		it('should reject promise, because no entity was found', async () => {
 			await expect(systemUc.findById('unknown id')).rejects.toEqual(undefined);
+		});
+
+		describe('when the ldap is not active', () => {
+			const setup = () => {
+				const system: SystemDto = new SystemDto({
+					ldapActive: false,
+					type: 'ldap',
+				});
+
+				systemService.findById.mockResolvedValue(system);
+			};
+
+			it('should reject promise, because ldap is not active', async () => {
+				setup();
+
+				const func = async () => systemUc.findById('id');
+
+				await expect(func).rejects.toThrow(EntityNotFoundError);
+			});
 		});
 	});
 });

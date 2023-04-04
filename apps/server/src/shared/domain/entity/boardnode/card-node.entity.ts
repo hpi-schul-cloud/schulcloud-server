@@ -1,7 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { Card } from '@shared/domain/domainobject';
-import type { BoardDoBuilder } from './board-do.builder';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
+import { BoardDoBuilder } from './types';
 import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.CARD })
