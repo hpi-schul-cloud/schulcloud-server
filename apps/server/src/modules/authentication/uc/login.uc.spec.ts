@@ -1,19 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpModule } from '@nestjs/axios';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { LoginUc } from './login.uc';
-import { AuthenticationService } from '../services/authentication.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { CreateJwtPayload } from '../interface/jwt-payload';
+import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto/login.dto';
+import { LoginUc } from './login.uc';
 
 describe('LoginUc', () => {
 	let module: TestingModule;
 	let loginUc: LoginUc;
+
 	let authenticationService: DeepMocked<AuthenticationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [HttpModule],
 			providers: [
 				LoginUc,
 				{
@@ -22,6 +21,7 @@ describe('LoginUc', () => {
 				},
 			],
 		}).compile();
+
 		loginUc = await module.get(LoginUc);
 		authenticationService = await module.get(AuthenticationService);
 	});
@@ -52,11 +52,9 @@ describe('LoginUc', () => {
 
 				const result: LoginDto = await loginUc.getLoginData(userInfo);
 
-				expect(result).toEqual(
-					expect.objectContaining<LoginDto>({
-						accessToken: loginDto.accessToken,
-					})
-				);
+				expect(result).toEqual<LoginDto>({
+					accessToken: loginDto.accessToken,
+				});
 			});
 		});
 	});

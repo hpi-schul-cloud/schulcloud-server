@@ -1,18 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { RoleService } from '../../role';
-import { ICurrentUser } from '../interface';
-import { OauthAuthorizationParams } from './dtos/oauth-authorization.params';
-import { Oauth2Strategy } from './oauth2.strategy';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';
+import { ICurrentUser } from '../interface';
+import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
 	let module: TestingModule;
@@ -20,7 +18,6 @@ describe('Oauth2Strategy', () => {
 
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
-	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -34,10 +31,6 @@ describe('Oauth2Strategy', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
-				},
-				{
-					provide: RoleService,
-					useValue: createMock<RoleService>(),
 				},
 			],
 		}).compile();
@@ -58,7 +51,14 @@ describe('Oauth2Strategy', () => {
 	describe('validate', () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
+				const systemId: EntityId = 'systemId';
 				const user: UserDO = userDoFactory.buildWithId();
+				const account: AccountDto = new AccountDto({
+					id: 'accountId',
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'username',
+				});
 
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
@@ -67,16 +67,26 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockReturnValue({ user, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				accountService.findByUserId.mockResolvedValue(account);
+
+				return { systemId, user, account };
 			};
 
-			it('should throw an UnauthorizedException', async () => {
-				setup();
+			it('should return the ICurrentUser', async () => {
+				const { systemId, user, account } = setup();
 
-				const func = async () =>
-					strategy.validate({ body: { error: 'error', redirectUri: 'redirectUri', systemId: 'systemId' } });
+				const result: ICurrentUser = await strategy.validate({
+					body: { error: 'error', redirectUri: 'redirectUri', systemId },
+				});
 
-				await expect(func).rejects.toThrow(new UnauthorizedException('error in body'));
+				expect(result).toEqual<ICurrentUser>({
+					systemId,
+					userId: user.id as EntityId,
+					roles: user.roleIds,
+					schoolId: user.schoolId,
+					accountId: account.id,
+				});
 			});
 		});
 
@@ -107,13 +117,40 @@ describe('Oauth2Strategy', () => {
 				oauthService.provisionUser.mockResolvedValue({ user: undefined, redirect: '' });
 			};
 
-			it('should throw an UnauthorizedException', async () => {
+			it('should throw a SchoolInMigrationError', async () => {
 				setup();
 
 				const func = async () =>
 					strategy.validate({ body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' } });
 
 				await expect(func).rejects.toThrow(new SchoolInMigrationError());
+			});
+		});
+
+		describe('when no account was found', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				oauthService.authenticateUser.mockResolvedValue(
+					new OAuthTokenDto({
+						idToken: 'idToken',
+						accessToken: 'accessToken',
+						refreshToken: 'refreshToken',
+					})
+				);
+				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				accountService.findByUserId.mockResolvedValue(null);
+			};
+
+			it('should throw an UnauthorizedException', async () => {
+				setup();
+
+				const func = async () =>
+					strategy.validate({
+						body: { error: 'error', redirectUri: 'redirectUri', systemId: 'systemId' },
+					});
+
+				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));
 			});
 		});
 	});

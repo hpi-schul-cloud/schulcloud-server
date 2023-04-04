@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -13,16 +14,15 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { UUID } from 'bson';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { UUID } from 'bson';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
@@ -195,7 +195,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system, externalUserId, query } = await setup();
+				const { system, query } = await setup();
 				const { state, cookies } = await setupSessionState(system.id, false);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.code = 'code';
@@ -208,7 +208,6 @@ describe('OAuth SSO Controller (API)', () => {
 						aud: system.oauthConfig?.clientId,
 						iat: Date.now(),
 						exp: Date.now() + 100000,
-						external_sub: externalUserId,
 					},
 					privateKey,
 					{
