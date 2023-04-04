@@ -769,6 +769,77 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/FwuLearningContentsModule.html" data-type="entity-link" >FwuLearningContentsModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                            'data-target="#controllers-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' : 'data-target="#xs-controllers-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' :
+                                            'id="xs-controllers-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' }>
+                                            <li class="link">
+                                                <a href="controllers/FwuLearningContentsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FwuLearningContentsController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                        'data-target="#injectables-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' : 'data-target="#xs-injectables-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' :
+                                        'id="xs-injectables-links-module-FwuLearningContentsModule-25d252af1210c3e0aafdcbd2db108a5bed7f253a0655539efc68f0b734bb2ff5b57e42686e8ff01b4490775cfd3097eafc6d1f3469fe7003d4bf83b2733f1fa9"' }>
+                                        <li class="link">
+                                            <a href="injectables/FwuLearningContentsUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FwuLearningContentsUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/S3ClientAdapter.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >S3ClientAdapter</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
+                                <a href="modules/FwuLearningContentsTestModule.html" data-type="entity-link" >FwuLearningContentsTestModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                            'data-target="#controllers-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' : 'data-target="#xs-controllers-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' :
+                                            'id="xs-controllers-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' }>
+                                            <li class="link">
+                                                <a href="controllers/FwuLearningContentsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FwuLearningContentsController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                        'data-target="#injectables-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' : 'data-target="#xs-injectables-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' :
+                                        'id="xs-injectables-links-module-FwuLearningContentsTestModule-2622f0ffb1519d903d159c9ef00cc84fdd03337db15db05aefdf553d70a7295c13bb000f8de672eb40f8861e17816efb5f9dab1498250aec0e91675944ad511c"' }>
+                                        <li class="link">
+                                            <a href="injectables/FwuLearningContentsUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FwuLearningContentsUc</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/S3ClientAdapter.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >S3ClientAdapter</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/IdentityManagementModule.html" data-type="entity-link" >IdentityManagementModule</a>
                             </li>
                             <li class="link">
@@ -2655,6 +2726,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ForbiddenOperationError.html" data-type="entity-link" >ForbiddenOperationError</a>
                             </li>
                             <li class="link">
+                                <a href="classes/GetFwuLearningContentParams.html" data-type="entity-link" >GetFwuLearningContentParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/GlobalErrorFilter.html" data-type="entity-link" >GlobalErrorFilter</a>
                             </li>
                             <li class="link">
@@ -4314,6 +4388,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/S3Config.html" data-type="entity-link" >S3Config</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/S3Config-1.html" data-type="entity-link" >S3Config</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SchoolMigrationFlags.html" data-type="entity-link" >SchoolMigrationFlags</a>

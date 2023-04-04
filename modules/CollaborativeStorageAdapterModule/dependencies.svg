@@ -18,13 +18,13 @@
 <title>cluster_CollaborativeStorageAdapterModule_imports</title>
 <polygon fill="none" stroke="black" points="1285,-40.8 1285,-92.8 1401,-92.8 1401,-40.8 1285,-40.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_CollaborativeStorageAdapterModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 1277,-92.8 1277,-40.8 16,-40.8"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_CollaborativeStorageAdapterModule_exports</title>
 <polygon fill="none" stroke="black" points="516,-170.8 516,-222.8 716,-222.8 716,-170.8 516,-170.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_CollaborativeStorageAdapterModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 1277,-92.8 1277,-40.8 16,-40.8"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
