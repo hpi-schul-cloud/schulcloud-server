@@ -11,6 +11,7 @@ import {
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	textElementFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoRepo } from './board-do.repo';
@@ -209,26 +210,30 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('deleteById', () => {
+	describe('delete', () => {
 		describe('when deleting a domainObject and its descendants', () => {
 			const setup = async () => {
-				const cardNode = cardNodeFactory.buildWithId();
-				const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
-				const independentTextElementNode = textElementNodeFactory.buildWithId();
-				await em.persistAndFlush([cardNode, ...textElementNodes, independentTextElementNode]);
-
-				const card = await repo.findById(cardNode.id);
-
-				return { card, cardNode, textElementNodes, independentTextElementNode };
-			};
-
-			it('should delete an element', async () => {
-				const { textElementNodes } = await setup();
-
-				await repo.deleteById(textElementNodes[0].id);
+				const elements = textElementFactory.buildList(3);
+				const card = cardFactory.build({ children: elements });
+				await repo.save(card);
 				em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
+				return { card, elements };
+			};
+
+			it('should delete a domain object', async () => {
+				const { elements } = await setup();
+
+				await repo.delete(elements[0]);
+				em.clear();
+
+				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+			});
+
+			it('should throw if domain object does not exist', async () => {
+				const card = cardFactory.build();
+
+				await expect(repo.delete(card)).rejects.toThrow();
 			});
 		});
 	});

@@ -1,32 +1,33 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId } from '@shared/domain';
+import { AnyBoardDo } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async deleteChildWithDescendants(parent: AnyBoardDo, childId: EntityId): Promise<void> {
-		parent.removeChild(childId);
-		await this.boardDoRepo.save(parent.children, parent.id);
-		await this.boardDoRepo.deleteById(childId);
-	}
+	async deleteWithDescendants(domainObject: AnyBoardDo): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(domainObject.id);
 
-	async moveBoardDo(id: EntityId, targetParentId: EntityId, toIndex: number): Promise<void> {
-		const targetParent = await this.boardDoRepo.findById(targetParentId);
-		const originalParent = await this.getParentOfMovingNode(id);
-
-		const card = originalParent.removeChild(id);
-		targetParent.addChild(card, toIndex);
-
-		await this.boardDoRepo.save([originalParent, targetParent]);
-	}
-
-	private async getParentOfMovingNode(id: EntityId): Promise<AnyBoardDo> {
-		const originalParent = await this.boardDoRepo.findParentOfId(id);
-		if (!originalParent) {
-			throw new BadRequestException('can only move BoardNodes that have a parent');
+		if (parent) {
+			parent.removeChild(domainObject);
+			await this.boardDoRepo.save(parent.children, parent.id);
 		}
-		return originalParent;
+
+		await this.boardDoRepo.delete(domainObject);
+	}
+
+	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
+		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
+
+		if (sourceParent == null) {
+			throw new BadRequestException('Cannot move nodes without a parent');
+		}
+
+		sourceParent.removeChild(child);
+		targetParent.addChild(child, targetPosition);
+
+		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
+		await this.boardDoRepo.save(targetParent.children, targetParent.id);
 	}
 }

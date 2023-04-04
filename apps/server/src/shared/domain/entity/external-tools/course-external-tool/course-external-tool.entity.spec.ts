@@ -31,6 +31,7 @@ describe('ExternalTool Entity', () => {
 			});
 			const customParameter: CustomParameter = new CustomParameter({
 				name: 'parameterName',
+				displayName: 'User Friendly Name',
 				default: 'mock',
 				location: CustomParameterLocation.PATH,
 				scope: CustomParameterScope.COURSE,
