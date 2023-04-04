@@ -87,6 +87,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#find" >find</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSystem" >getSystem</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -133,8 +137,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/system/controller/system.controller.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/system/controller/system.controller.ts:23</a></div>
                 </td>
             </tr>
 
@@ -185,15 +189,99 @@ No sensible data should be returned!</p>
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSystem"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getSystem</b></span>
+                        <a href="#getSystem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSystem(params: <a href="../classes/SystemIdParams.html" target="_self">SystemIdParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;public/:systemId&#x27;)<br />@ApiOperation({summary: &#x27;Finds a publicly available system.&#x27;})<br />@ApiResponse({status: 200, type: PublicSystemResponse, description: &#x27;Returns a system.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/system/controller/system.controller.ts:38</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This endpoint is used to get information about a possible login systems.
+No sensible data should be returned!</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/SystemIdParams.html" target="_self" >SystemIdParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/PublicSystemResponse.html" target="_self" >Promise&lt;PublicSystemResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { SystemFilterParams } from &#x27;@src/modules/system/controller/dto/system.filter.params&#x27;;
+import { SystemDto } from &#x27;../service&#x27;;
 import { SystemUc } from &#x27;../uc/system.uc&#x27;;
 import { PublicSystemListResponse } from &#x27;./dto/public-system-list.response&#x27;;
+import { PublicSystemResponse } from &#x27;./dto/public-system-response&#x27;;
+import { SystemIdParams } from &#x27;./dto/system-id.params&#x27;;
 import { SystemResponseMapper } from &#x27;./mapper/system-response.mapper&#x27;;
 
 @ApiTags(&#x27;Systems&#x27;)
@@ -209,8 +297,26 @@ export class SystemController {
 	@ApiOperation({ summary: &#x27;Finds all publicly available systems.&#x27; })
 	@ApiResponse({ status: 200, type: PublicSystemListResponse, description: &#x27;Returns a list of systems.&#x27; })
 	async find(@Query() filterParams: SystemFilterParams): Promise&lt;PublicSystemListResponse&gt; {
-		const systemDtos &#x3D; await this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth);
-		return SystemResponseMapper.mapFromDtoToResponse(systemDtos);
+		const systemDtos: SystemDto[] &#x3D; await this.systemUc.findByFilter(filterParams.type, filterParams.onlyOauth);
+
+		const mapped: PublicSystemListResponse &#x3D; SystemResponseMapper.mapFromDtoToListResponse(systemDtos);
+
+		return mapped;
+	}
+
+	/**
+	 * This endpoint is used to get information about a possible login systems.
+	 * No sensible data should be returned!
+	 */
+	@Get(&#x27;public/:systemId&#x27;)
+	@ApiOperation({ summary: &#x27;Finds a publicly available system.&#x27; })
+	@ApiResponse({ status: 200, type: PublicSystemResponse, description: &#x27;Returns a system.&#x27; })
+	async getSystem(@Param() params: SystemIdParams): Promise&lt;PublicSystemResponse&gt; {
+		const systemDto: SystemDto &#x3D; await this.systemUc.findById(params.systemId);
+
+		const mapped: PublicSystemResponse &#x3D; SystemResponseMapper.mapFromDtoToResponse(systemDto);
+
+		return mapped;
 	}
 }
 </code></pre>

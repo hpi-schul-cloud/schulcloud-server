@@ -109,7 +109,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -174,8 +174,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:11</a></div>
                 </td>
             </tr>
 
@@ -262,8 +262,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:25</a></div>
                 </td>
             </tr>
 
@@ -318,7 +318,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, SystemType, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
+import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
+import { EntityId, System, SystemType, SystemTypeEnum } from &#x27;@shared/domain&#x27;;
 import { SystemDto } from &#x27;@src/modules/system/service/dto/system.dto&#x27;;
 import { SystemService } from &#x27;@src/modules/system/service/system.service&#x27;;
 
@@ -327,15 +328,27 @@ export class SystemUc {
 	constructor(private readonly systemService: SystemService) {}
 
 	async findByFilter(type?: SystemType, onlyOauth &#x3D; false): Promise&lt;SystemDto[]&gt; {
+		let systems: SystemDto[];
+
 		if (onlyOauth) {
-			return this.systemService.findByType(SystemTypeEnum.OAUTH);
+			systems &#x3D; await this.systemService.findByType(SystemTypeEnum.OAUTH);
+		} else {
+			systems &#x3D; await this.systemService.findByType(type);
 		}
-		return this.systemService.findByType(type);
+
+		systems &#x3D; systems.filter((system: SystemDto) &#x3D;&gt; system.ldapActive !&#x3D;&#x3D; false);
+
+		return systems;
 	}
 
 	async findById(id: EntityId): Promise&lt;SystemDto&gt; {
-		const promise: Promise&lt;SystemDto&gt; &#x3D; this.systemService.findById(id);
-		return promise;
+		const system: SystemDto &#x3D; await this.systemService.findById(id);
+
+		if (system.ldapActive &#x3D;&#x3D;&#x3D; false) {
+			throw new EntityNotFoundError(System.name, { id });
+		}
+
+		return system;
 	}
 }
 </code></pre>
