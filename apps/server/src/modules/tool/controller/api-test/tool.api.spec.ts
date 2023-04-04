@@ -1,6 +1,6 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalTool, Permission, Role, User } from '@shared/domain';
 import { externalToolFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
@@ -22,7 +22,7 @@ describe('ToolController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 
-	let currentUser: ICurrentUser;
+	let currentUser: ICurrentUser | undefined;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -55,253 +55,593 @@ describe('ToolController (API)', () => {
 	});
 
 	describe('[POST] tools', () => {
-		const setup = async () => {
-			const params: ExternalToolPostParams = {
-				name: 'Tool 1',
-				parameters: [
-					{
-						name: 'key',
-						description: 'This is a parameter.',
-						displayName: 'User Friendly Name',
-						defaultValue: 'abc',
-						isOptional: false,
-						type: CustomParameterTypeParams.STRING,
-						regex: 'abc',
-						regexComment: 'Regex accepts "abc" as value.',
-						location: CustomParameterLocationParams.PATH,
-						scope: CustomParameterScopeParams.GLOBAL,
-					},
-				],
-				config: {
-					type: ToolConfigType.BASIC,
-					baseUrl: 'https://link.to-my-tool.com/:key',
+		const postParams: ExternalToolPostParams = {
+			name: 'Tool 1',
+			parameters: [
+				{
+					name: 'key',
+					description: 'This is a parameter.',
+					displayName: 'User Friendly Name',
+					defaultValue: 'abc',
+					isOptional: false,
+					type: CustomParameterTypeParams.STRING,
+					regex: 'abc',
+					regexComment: 'Regex accepts "abc" as value.',
+					location: CustomParameterLocationParams.PATH,
+					scope: CustomParameterScopeParams.GLOBAL,
 				},
-				isHidden: false,
-				logoUrl: 'https://link.to-my-logo.com',
-				url: 'https://link.to-my-tool.com',
-				openNewTab: true,
-			};
-
-			const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-			const user: User = userFactory.buildWithId({ roles: [role] });
-			currentUser = mapUserToCurrentUser(user);
-
-			await em.persistAndFlush(user);
-			em.clear();
-
-			return { params };
+			],
+			config: {
+				type: ToolConfigType.BASIC,
+				baseUrl: 'https://link.to-my-tool.com/:key',
+			},
+			isHidden: false,
+			logoUrl: 'https://link.to-my-logo.com',
+			url: 'https://link.to-my-tool.com',
+			openNewTab: true,
 		};
 
-		it('should create a tool', async () => {
-			const { params } = await setup();
+		describe('when valid data is given', () => {
+			const setup = async () => {
+				const params: ExternalToolPostParams = { ...postParams };
 
-			const response: Response = await request(app.getHttpServer()).post('/tools').send(params).expect(201);
-			const body: ExternalToolResponse = response.body as ExternalToolResponse;
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			expect(await em.findOneOrFail(ExternalTool, { id: body.id }));
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return { params };
+			};
+
+			it('should create a tool', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools').send(params).expect(201);
+				const body: ExternalToolResponse = response.body as ExternalToolResponse;
+
+				expect(await em.findOneOrFail(ExternalTool, { id: body.id }));
+			});
+
+			it('should return the created tool', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools').send(params).expect(201);
+				const body: ExternalToolResponse = response.body as ExternalToolResponse;
+
+				expect(body.id).toBeDefined();
+				expect(body).toEqual<ExternalToolResponse>({
+					id: body.id,
+					name: 'Tool 1',
+					parameters: [
+						{
+							name: 'key',
+							description: 'This is a parameter.',
+							displayName: 'User Friendly Name',
+							defaultValue: 'abc',
+							isOptional: false,
+							type: CustomParameterTypeParams.STRING,
+							regex: 'abc',
+							regexComment: 'Regex accepts "abc" as value.',
+							location: CustomParameterLocationParams.PATH,
+							scope: CustomParameterScopeParams.GLOBAL,
+						},
+					],
+					config: {
+						type: ToolConfigType.BASIC,
+						baseUrl: 'https://link.to-my-tool.com/:key',
+					},
+					isHidden: false,
+					logoUrl: 'https://link.to-my-logo.com',
+					url: 'https://link.to-my-tool.com',
+					openNewTab: true,
+					version: 1,
+				});
+			});
 		});
 
-		it('should return the created tool', async () => {
-			const { params } = await setup();
+		describe('when invalid data is given', () => {
+			const setup = async () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			const response: Response = await request(app.getHttpServer()).post('/tools').send(params).expect(201);
-			const body: ExternalToolResponse = response.body as ExternalToolResponse;
+				await em.persistAndFlush(user);
+				em.clear();
+			};
 
-			expect(body.id).toBeDefined();
-			expect(body).toEqual<ExternalToolResponse>({
-				id: body.id,
-				name: 'Tool 1',
-				parameters: [
-					{
-						name: 'key',
-						description: 'This is a parameter.',
-						displayName: 'User Friendly Name',
-						defaultValue: 'abc',
-						isOptional: false,
-						type: CustomParameterTypeParams.STRING,
-						regex: 'abc',
-						regexComment: 'Regex accepts "abc" as value.',
-						location: CustomParameterLocationParams.PATH,
-						scope: CustomParameterScopeParams.GLOBAL,
-					},
-				],
-				config: {
-					type: ToolConfigType.BASIC,
-					baseUrl: 'https://link.to-my-tool.com/:key',
-				},
-				isHidden: false,
-				logoUrl: 'https://link.to-my-logo.com',
-				url: 'https://link.to-my-tool.com',
-				openNewTab: true,
-				version: 1,
+			it('should return bad request', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools').send({ invalid: 'invalidData' });
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const params: ExternalToolPostParams = { ...postParams };
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return { params };
+			};
+
+			it('should return unauthorized', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools').send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when permission is missing', () => {
+			const setup = async () => {
+				const params: ExternalToolPostParams = { ...postParams };
+
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return { params };
+			};
+
+			it('should return unauthorized', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools').send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
 
 	describe('[GET] tools', () => {
-		const setup = async () => {
-			const toolId: string = new ObjectId().toHexString();
-			const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+		describe('when requesting tools', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
 
-			const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-			const user: User = userFactory.buildWithId({ roles: [role] });
-			currentUser = mapUserToCurrentUser(user);
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			await em.persistAndFlush([user, externalTool]);
-			em.clear();
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
 
-			return { toolId };
-		};
+				return { toolId };
+			};
 
-		it('should get all tools', async () => {
-			const { toolId } = await setup();
+			it('should get all tools', async () => {
+				const { toolId } = await setup();
 
-			const response: Response = await request(app.getHttpServer()).get(`/tools`).expect(200);
+				const response: Response = await request(app.getHttpServer()).get('/tools').expect(200);
 
-			expect(response.body).toEqual<ExternalToolSearchListResponse>({
-				total: 1,
-				skip: 0,
-				limit: 10,
-				data: [expect.objectContaining<Partial<ExternalToolResponse>>({ id: toolId }) as ExternalToolResponse],
+				expect(response.body).toEqual<ExternalToolSearchListResponse>({
+					total: 1,
+					skip: 0,
+					limit: 10,
+					data: [expect.objectContaining<Partial<ExternalToolResponse>>({ id: toolId }) as ExternalToolResponse],
+				});
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+			};
+
+			it('should return unauthorized', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).get('/tools');
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when permission is missing', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+			};
+
+			it('should return unauthorized', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).get('/tools');
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
 
 	describe('[GET] tools/:toolId', () => {
-		const setup = async () => {
-			const toolId: string = new ObjectId().toHexString();
-			const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+		describe('when toolId is given', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
 
-			const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-			const user: User = userFactory.buildWithId({ roles: [role] });
-			currentUser = mapUserToCurrentUser(user);
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			await em.persistAndFlush([user, externalTool]);
-			em.clear();
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
 
-			return { toolId };
-		};
+				return { toolId };
+			};
 
-		it('should get a tool by id', async () => {
-			const { toolId } = await setup();
+			it('should get a tool by id', async () => {
+				const { toolId } = await setup();
 
-			const response: Response = await request(app.getHttpServer()).get(`/tools/${toolId}`).expect(200);
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${toolId}`).expect(200);
 
-			expect(response.body).toEqual<ExternalToolResponse>(
-				expect.objectContaining<Partial<ExternalToolResponse>>({ id: toolId }) as ExternalToolResponse
-			);
+				expect(response.body).toEqual<ExternalToolResponse>(
+					expect.objectContaining<Partial<ExternalToolResponse>>({ id: toolId }) as ExternalToolResponse
+				);
+			});
+		});
+
+		describe('when path param is not valid', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return bad request', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).get('/tools/287182hjs');
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${toolId}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when permission is missing', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).get(`/tools/${toolId}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
 		});
 	});
 
 	describe('[POST] tools/:toolId', () => {
-		const setup = async () => {
-			const toolId: string = new ObjectId().toHexString();
-			const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 }, toolId);
-
-			const params: ExternalToolPostParams = {
-				id: toolId,
-				name: 'Tool 1',
-				parameters: [
-					{
-						name: 'key',
-						description: 'This is a parameter.',
-						displayName: 'User Friendly Name',
-						defaultValue: 'abc',
-						isOptional: false,
-						type: CustomParameterTypeParams.STRING,
-						regex: 'abc',
-						regexComment: 'Regex accepts "abc" as value.',
-						location: CustomParameterLocationParams.PATH,
-						scope: CustomParameterScopeParams.GLOBAL,
-					},
-				],
-				config: {
-					type: ToolConfigType.BASIC,
-					baseUrl: 'https://link.to-my-tool.com/:key',
+		const postParams: ExternalToolPostParams = {
+			name: 'Tool 1',
+			parameters: [
+				{
+					name: 'key',
+					description: 'This is a parameter.',
+					displayName: 'User Friendly Name',
+					defaultValue: 'abc',
+					isOptional: false,
+					type: CustomParameterTypeParams.STRING,
+					regex: 'abc',
+					regexComment: 'Regex accepts "abc" as value.',
+					location: CustomParameterLocationParams.PATH,
+					scope: CustomParameterScopeParams.GLOBAL,
 				},
-				isHidden: false,
-				logoUrl: 'https://link.to-my-logo.com',
-				url: 'https://link.to-my-tool.com',
-				openNewTab: true,
-			};
-
-			const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-			const user: User = userFactory.buildWithId({ roles: [role] });
-			currentUser = mapUserToCurrentUser(user);
-
-			await em.persistAndFlush([user, externalTool]);
-			em.clear();
-
-			return { params, toolId };
+			],
+			config: {
+				type: ToolConfigType.BASIC,
+				baseUrl: 'https://link.to-my-tool.com/:key',
+			},
+			isHidden: false,
+			logoUrl: 'https://link.to-my-logo.com',
+			url: 'https://link.to-my-tool.com',
+			openNewTab: true,
 		};
 
-		it('should update a tool', async () => {
-			const { params, toolId } = await setup();
+		describe('when valid data is given', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const params = { ...postParams, id: toolId };
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 }, toolId);
 
-			const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params).expect(201);
-			const body: ExternalToolResponse = response.body as ExternalToolResponse;
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			expect(await em.findOneOrFail(ExternalTool, { id: body.id }));
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { params, toolId };
+			};
+
+			it('should update a tool', async () => {
+				const { params, toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params).expect(201);
+				const body: ExternalToolResponse = response.body as ExternalToolResponse;
+
+				expect(await em.findOneOrFail(ExternalTool, { id: body.id }));
+			});
+
+			it('should return the updated tool', async () => {
+				const { params, toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params).expect(201);
+				const body: ExternalToolResponse = response.body as ExternalToolResponse;
+
+				expect(body.id).toBeDefined();
+				expect(body).toEqual<ExternalToolResponse>({
+					id: body.id,
+					name: 'Tool 1',
+					parameters: [
+						{
+							name: 'key',
+							description: 'This is a parameter.',
+							displayName: 'User Friendly Name',
+							defaultValue: 'abc',
+							isOptional: false,
+							type: CustomParameterTypeParams.STRING,
+							regex: 'abc',
+							regexComment: 'Regex accepts "abc" as value.',
+							location: CustomParameterLocationParams.PATH,
+							scope: CustomParameterScopeParams.GLOBAL,
+						},
+					],
+					config: {
+						type: ToolConfigType.BASIC,
+						baseUrl: 'https://link.to-my-tool.com/:key',
+					},
+					isHidden: false,
+					logoUrl: 'https://link.to-my-logo.com',
+					url: 'https://link.to-my-tool.com',
+					openNewTab: true,
+					version: 2,
+				});
+			});
 		});
 
-		it('should return the updated tool', async () => {
-			const { params, toolId } = await setup();
+		describe('when path param is not valid', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const params = { ...postParams, id: toolId };
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 }, toolId);
 
-			const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params).expect(201);
-			const body: ExternalToolResponse = response.body as ExternalToolResponse;
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			expect(body.id).toBeDefined();
-			expect(body).toEqual<ExternalToolResponse>({
-				id: body.id,
-				name: 'Tool 1',
-				parameters: [
-					{
-						name: 'key',
-						description: 'This is a parameter.',
-						displayName: 'User Friendly Name',
-						defaultValue: 'abc',
-						isOptional: false,
-						type: CustomParameterTypeParams.STRING,
-						regex: 'abc',
-						regexComment: 'Regex accepts "abc" as value.',
-						location: CustomParameterLocationParams.PATH,
-						scope: CustomParameterScopeParams.GLOBAL,
-					},
-				],
-				config: {
-					type: ToolConfigType.BASIC,
-					baseUrl: 'https://link.to-my-tool.com/:key',
-				},
-				isHidden: false,
-				logoUrl: 'https://link.to-my-logo.com',
-				url: 'https://link.to-my-tool.com',
-				openNewTab: true,
-				version: 2,
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { params, toolId };
+			};
+
+			it('should return bad request', async () => {
+				const { params } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post('/tools/287182hjs').send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const params = { ...postParams, id: toolId };
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 }, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { params, toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { params, toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when permission is missing', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const params = { ...postParams, id: toolId };
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 1 }, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { params, toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { params, toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).post(`/tools/${toolId}`).send(params);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
 
 	describe('[DELETE] tools/:toolId', () => {
-		const setup = async () => {
-			const toolId: string = new ObjectId().toHexString();
-			const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+		describe('when valid data is given', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
 
-			const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-			const user: User = userFactory.buildWithId({ roles: [role] });
-			currentUser = mapUserToCurrentUser(user);
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
 
-			await em.persistAndFlush([user, externalTool]);
-			em.clear();
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
 
-			return { toolId };
-		};
+				return { toolId };
+			};
 
-		it('should delete a tool', async () => {
-			const { toolId } = await setup();
+			it('should delete a tool', async () => {
+				const { toolId } = await setup();
 
-			await request(app.getHttpServer()).delete(`/tools/${toolId}`).expect(200);
+				await request(app.getHttpServer()).delete(`/tools/${toolId}`).expect(200);
 
-			expect(await em.findOne(ExternalTool, { id: toolId })).toBeNull();
+				expect(await em.findOne(ExternalTool, { id: toolId })).toBeNull();
+			});
+		});
+
+		describe('when path param is not valid', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return bad request', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).delete('/tools/asdf10202');
+
+				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = undefined;
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).delete(`/tools/${toolId}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when permission is missing', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId(undefined, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				currentUser = mapUserToCurrentUser(user);
+
+				await em.persistAndFlush([user, externalTool]);
+				em.clear();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).delete(`/tools/${toolId}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
 		});
 	});
 });
