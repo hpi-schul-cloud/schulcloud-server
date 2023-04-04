@@ -15,6 +15,8 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink, protectImmutableAttributes } = require('../hooks/userService');
 
+const constants = require('../../../utils/constants');
+
 const { userModel } = require('../model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
@@ -247,6 +249,9 @@ class AdminUsers {
 	 */
 	async checkMail(email, userId) {
 		if (email) {
+			if (!constants.expressions.email.test(email)) {
+				throw new BadRequest('Invalid username. Username should be a valid email format');
+			}
 			const user = await this.app.service('usersModel').find({ query: { email: email.toLowerCase() } });
 			if (userId && user.total === 1 && equalIds(user.data[0]._id, userId)) return;
 			if (user.total !== 0) {

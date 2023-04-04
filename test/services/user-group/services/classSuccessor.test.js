@@ -20,6 +20,7 @@ describe('classSuccessor service', () => {
 	});
 
 	after(async () => {
+		testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
@@ -241,6 +242,4 @@ describe('classSuccessor service', () => {
 		expect(oldClass._id).to.not.be.undefined;
 		expect(oldClass.successor).to.be.undefined;
 	});
-
-	after(testObjects.cleanup);
 });

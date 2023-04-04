@@ -17,13 +17,6 @@ export class PublicSystemResponse {
 	type: string;
 
 	@ApiProperty({
-		description: 'Url of the system.',
-		required: false,
-		nullable: true,
-	})
-	url?: string;
-
-	@ApiProperty({
 		description: 'Alias of the system.',
 		required: false,
 		nullable: true,
@@ -48,7 +41,6 @@ export class PublicSystemResponse {
 	constructor(system: PublicSystemResponse) {
 		this.id = system.id;
 		this.type = system.type;
-		this.url = system.url;
 		this.alias = system.alias;
 		this.displayName = system.displayName;
 		this.oauthConfig = system.oauthConfig;
