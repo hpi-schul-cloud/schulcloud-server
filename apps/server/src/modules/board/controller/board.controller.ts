@@ -1,16 +1,25 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardUc, CardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, CardResponse, CardUrlParams, ColumnResponse, ColumnUrlParams } from './dto';
+import { BoardUc } from '../uc';
+import {
+	BoardResponse,
+	BoardUrlParams,
+	CardResponse,
+	CardUrlParams,
+	ColumnResponse,
+	ColumnUrlParams,
+	MoveCardBodyParams,
+	MoveColumnBodyParams,
+} from './dto';
 import { BoardResponseMapper, CardResponseMapper, ColumnResponseMapper } from './mapper';
 
 @ApiTags('Boards')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
-	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
+	constructor(private readonly boardUc: BoardUc) {}
 
 	@Get(':boardId')
 	async getBoardSkeleton(
@@ -64,7 +73,7 @@ export class BoardController {
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CardResponse> {
-		const card = await this.cardUc.createCard(currentUser.userId, urlParams.boardId, urlParams.columnId);
+		const card = await this.boardUc.createCard(currentUser.userId, urlParams.boardId, urlParams.columnId);
 
 		const response = CardResponseMapper.mapToResponse(card);
 
@@ -73,28 +82,32 @@ export class BoardController {
 
 	@Delete(':boardId/columns/:columnId/cards/:cardId')
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+		await this.boardUc.deleteCard(currentUser.userId, urlParams.boardId, urlParams.columnId, urlParams.cardId);
 
 		return true;
 	}
 
-	// @Put('/:boardId/cards/:cardId/position')
-	// moveCard(
-	// 	@Param() urlParams: BoardUrlParams,
-	// 	@Body() bodyParams: MoveCardBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise<void> {
-	// 	throw new NotImplementedException();
-	// }
+	@Put('/:boardId/columns/:columnId/position')
+	async moveColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@Body() bodyParams: MoveColumnBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		await this.boardUc.moveColumn(currentUser.userId, urlParams.boardId, urlParams.columnId, bodyParams.toIndex);
 
-	// @Put('/:boardId/columns/:columnId/position')
-	// moveColumn(
-	// 	@Param() urlParams: ColumnUrlParams,
-	// 	@Body() bodyParams: MoveColumnBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise<void> {
-	// 	throw new NotImplementedException();
-	// }
+		return true;
+	}
+
+	@Put('/:boardId/columns/:columnId/cards/:cardId/position')
+	async moveCard(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: MoveCardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toIndex);
+
+		return true;
+	}
 
 	// @Put('/:boardId/title')
 	// renameBoard(

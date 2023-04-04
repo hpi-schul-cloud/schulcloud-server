@@ -29,14 +29,34 @@ export class BoardNodeRepo {
 		return descendants;
 	}
 
-	async findChildrenOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
-		const paths = nodes.map((node) => node.pathOfChildren);
-		const children = await this.em.find(BoardNode, { path: { $in: paths } });
+	async findDescendantsOfMany(nodes: BoardNode[]): Promise<Record<string, BoardNode[]>> {
+		const pathQueries = nodes.map((node) => {
+			return { path: { $re: `^${node.pathOfChildren}` } };
+		});
 
 		const map: Record<string, BoardNode[]> = {};
-		for (const child of children) {
-			map[child.path] ||= [];
-			map[child.path].push(child);
+		if (pathQueries.length === 0) {
+			return map;
+		}
+
+		const descendants = await this.em.find(BoardNode, {
+			$or: pathQueries,
+		});
+
+		// this is for finding tha ancestors of a descendant
+		// we use this to group the descendants by ancestor
+		// TODO we probably need a more efficient way to do the grouping
+		const matchAncestors = (descendant: BoardNode): BoardNode[] => {
+			const result = nodes.filter((n) => descendant.path.match(`^${n.pathOfChildren}`));
+			return result;
+		};
+
+		for (const desc of descendants) {
+			const ancestorNodes = matchAncestors(desc);
+			ancestorNodes.forEach((node) => {
+				map[node.pathOfChildren] ||= [];
+				map[node.pathOfChildren].push(desc);
+			});
 		}
 		return map;
 	}
@@ -65,6 +85,4 @@ export class BoardNodeRepo {
 		const descendants = await this.findDescendants(boardNode);
 		await this.em.removeAndFlush([boardNode, ...descendants]);
 	}
-
-	// TODO. findDescendantsOfMany
 }

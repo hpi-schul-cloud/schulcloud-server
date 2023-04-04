@@ -9,8 +9,8 @@ export class CardResponseMapper {
 			title: card.title,
 			height: card.height,
 			elements: card.children.map((element) => {
+				/* istanbul ignore next */
 				if (!(element instanceof TextElement)) {
-					/* istanbul ignore next */
 					throw new Error(`unsupported child type: ${element.constructor.name}`);
 				}
 				return TextElementResponseMapper.mapToResponse(element);
