@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, SystemType, SystemTypeEnum } from '@shared/domain';
+import { EntityNotFoundError } from '@shared/common';
+import { EntityId, System, SystemType, SystemTypeEnum } from '@shared/domain';
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { SystemService } from '@src/modules/system/service/system.service';
 
@@ -16,11 +17,17 @@ export class SystemUc {
 			systems = await this.systemService.findByType(type);
 		}
 
+		systems = systems.filter((system: SystemDto) => system.ldapActive !== false);
+
 		return systems;
 	}
 
 	async findById(id: EntityId): Promise<SystemDto> {
 		const system: SystemDto = await this.systemService.findById(id);
+
+		if (system.ldapActive === false) {
+			throw new EntityNotFoundError(System.name, { id });
+		}
 
 		return system;
 	}
