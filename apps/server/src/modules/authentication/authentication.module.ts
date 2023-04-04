@@ -18,6 +18,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { OauthStrategy } from './strategy/oauth.strategy';
+import { Oauth2Strategy } from './strategy/oauth2.strategy';
 
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
 const algorithms = [
@@ -76,6 +77,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		LdapService,
 		LdapStrategy,
 		OauthStrategy,
+		Oauth2Strategy,
 	],
 	exports: [AuthenticationService],
 })

@@ -128,7 +128,7 @@ export class OauthSSOController {
 		@Query() query: AuthorizationParams
 	): Promise<void> {
 		const oauthLoginState: OauthLoginStateDto = this.sessionHandler(session, query);
-
+		throw new Error();
 		try {
 			const oauthProcessDto: OAuthProcessDto = await this.oauthUc.processOAuthLogin(
 				oauthLoginState,

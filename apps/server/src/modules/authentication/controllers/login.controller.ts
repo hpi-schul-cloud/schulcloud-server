@@ -1,29 +1,34 @@
 import { CookieOptions, Response } from 'express';
-import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiImplicitBody } from '@nestjs/swagger/dist/decorators/api-implicit-body.decorator';
 import type { ICurrentUser } from '../interface';
 import { CurrentUser } from '../decorator/auth.decorator';
 import { AuthenticationService } from '../services/authentication.service';
 import { OauthAuthorizationQueryParams } from './oauth-authorization.params';
+import { LoginResponse, Oauth2AuthorizationParams } from './dto';
+import { LoginUc } from '../uc/login.uc';
+import { LoginResponseMapper } from './mapper/login-response.mapper';
+import { LoginDto } from '../uc/dto/login.dto';
 
 @ApiTags('Authentication')
 @Controller('authentication')
 export class LoginController {
-	constructor(private authService: AuthenticationService) {}
+	constructor(private readonly authService: AuthenticationService, private readonly loginUc: LoginUc) {}
 
 	@UseGuards(AuthGuard('ldap'))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
-	loginLdap(@CurrentUser() user: ICurrentUser) {
+	loginLdap(@CurrentUser() user: ICurrentUser): Promise<{ accessToken: string }> {
 		return this.authService.generateJwt(user);
 	}
 
 	@UseGuards(AuthGuard('local'))
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
-	loginLocal(@CurrentUser() user: ICurrentUser) {
+	loginLocal(@CurrentUser() user: ICurrentUser): Promise<{ accessToken: string }> {
 		return this.authService.generateJwt(user);
 	}
 
@@ -34,7 +39,7 @@ export class LoginController {
 		@CurrentUser() user: ICurrentUser,
 		@Query() queryParams: OauthAuthorizationQueryParams,
 		@Res() res: Response
-	) {
+	): Promise<void> {
 		// the userId can be undefined if the school is in migration from another login strategy to OAuth
 		if (user.userId) {
 			const jwt = await this.authService.generateJwt(user);
@@ -49,5 +54,17 @@ export class LoginController {
 		if (queryParams.redirect) {
 			res.redirect(queryParams.redirect);
 		}
+	}
+
+	@UseGuards(AuthGuard('oauth2'))
+	@HttpCode(HttpStatus.OK)
+	@Post('oauth2')
+	@ApiBody({ type: Oauth2AuthorizationParams })
+	async loginOauth2(@CurrentUser() user: ICurrentUser): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+
+		return mapped;
 	}
 }

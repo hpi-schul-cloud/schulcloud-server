@@ -13,6 +13,7 @@ export class OauthAuthorizationQueryParams implements OauthAuthorizationParams {
 	@ApiPropertyOptional()
 	error?: string;
 
+	// Post-login redirect
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
