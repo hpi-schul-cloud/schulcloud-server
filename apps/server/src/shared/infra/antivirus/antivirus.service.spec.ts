@@ -2,8 +2,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileRecordFactory } from '@shared/testing';
-import { FileRecord } from '@src/modules/files-storage/entity/filerecord.entity';
+import { v4 as uuid } from 'uuid';
 import { AntivirusService } from './antivirus.service';
 
 describe('AntivirusService', () => {
@@ -39,36 +38,50 @@ describe('AntivirusService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('send()', () => {
-		let fileRecord: FileRecord;
+	describe('send', () => {
+		describe('when service can handle passing parameters', () => {
+			const setup = () => {
+				const requestToken = uuid();
 
-		beforeEach(() => {
-			fileRecord = fileRecordFactory.build();
-			fileRecord.securityCheck.requestToken = 'test-token';
-		});
+				const expectedParams = [
+					antivirusServiceOptions.exchange,
+					antivirusServiceOptions.routingKey,
+					{
+						callback_uri: 'http://localhost/api/v3/file-security/update-status/test-token',
+						download_uri: 'http://localhost/api/v3/file-security/download/test-token',
+					},
 
-		it('should send given data to queue', () => {
-			service.send(fileRecord);
+					{ persistent: true },
+				];
 
-			const expectedParams = [
-				antivirusServiceOptions.exchange,
-				antivirusServiceOptions.routingKey,
-				{
-					callback_uri: 'http://localhost/api/v3/file-security/update-status/test-token',
-					download_uri: 'http://localhost/api/v3/file-security/download/test-token',
-				},
+				return { requestToken, expectedParams };
+			};
 
-				{ persistent: true },
-			];
-			expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
-		});
+			it('should send given data to queue', () => {
+				const { requestToken, expectedParams } = setup();
 
-		it('should throw with InternalServerErrorException by error', () => {
-			amqpConnection.publish.mockImplementationOnce(() => {
-				throw new Error('fail');
+				service.send(requestToken);
+
+				expect(amqpConnection.publish).toHaveBeenCalledWith(...expectedParams);
 			});
+		});
 
-			expect(() => service.send(fileRecord)).toThrow(InternalServerErrorException);
+		describe('when amqpConnection throw an error', () => {
+			const setup = () => {
+				const requestToken = uuid();
+
+				amqpConnection.publish.mockImplementationOnce(() => {
+					throw new Error('fail');
+				});
+
+				return { requestToken };
+			};
+
+			it('should throw with InternalServerErrorException by error', () => {
+				const { requestToken } = setup();
+
+				expect(() => service.send(requestToken)).toThrow(InternalServerErrorException);
+			});
 		});
 	});
 });
