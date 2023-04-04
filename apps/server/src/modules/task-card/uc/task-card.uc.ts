@@ -27,6 +27,8 @@ export class TaskCardUc {
 		const course = await this.courseRepo.findById(params.courseId);
 		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
+		this.validate({ params, course });
+
 		const taskWithStatusVo = await this.createTask(userId, params);
 
 		const cardElements: CardElement[] = [];
@@ -51,8 +53,6 @@ export class TaskCardUc {
 		if (params.visibleAtDate) {
 			cardParams.visibleAtDate = params.visibleAtDate;
 		}
-
-		this.validate({ params, course });
 
 		const card = new TaskCard(cardParams);
 
