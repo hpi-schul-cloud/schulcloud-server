@@ -1,13 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, SortOrder, Task } from '@shared/domain';
+import { SortOrder, Task } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cleanupCollections,
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
-	roleFactory,
 	submissionFactory,
 	taskFactory,
 	userFactory,
@@ -1121,38 +1120,72 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findAllFinishedByParentIds', () => {
-		describe('with assigned user set', () => {
-			const setup = async () => {
-				const teacher = userFactory.build();
-				const student1 = userFactory.build();
-				const student2 = userFactory.build();
+		describe('with filters', () => {
+			describe('with assigned users filter', () => {
+				const setup = async () => {
+					const teacher = userFactory.build();
+					const student1 = userFactory.build();
+					const student2 = userFactory.build();
+					const course = courseFactory.build();
 
-				const task = taskFactory.build({
-					creator: teacher,
-					finished: [teacher, student1, student2],
-					users: [student1, student2],
+					const task1 = taskFactory.build({
+						creator: teacher,
+						course,
+						finished: [teacher, student1, student2],
+						users: [student1, student2],
+					});
+					const task2 = taskFactory.build({
+						creator: teacher,
+						course,
+						finished: [teacher, student1, student2],
+						users: [student2],
+					});
+					const task3 = taskFactory.build({
+						creator: teacher,
+						course,
+						finished: [teacher, student1, student2],
+					});
+
+					await em.persistAndFlush([task1, task2, task3]);
+					em.clear();
+
+					return { teacher, student1, student2, course, task1, task2, task3 };
+				};
+
+				it('should return tasks for assigned users', async () => {
+					const { course, student1, student2 } = await setup();
+
+					const [, totalStudent1] = await repo.findAllFinishedByParentIds(
+						{
+							creatorId: student1.id,
+							openCourseIds: [course.id],
+							lessonIdsOfOpenCourses: [],
+							finishedCourseIds: [],
+							lessonIdsOfFinishedCourses: [],
+						},
+						{
+							userId: student1.id,
+						}
+					);
+					expect(totalStudent1).toEqual(2);
+					const [, totalStudent2] = await repo.findAllFinishedByParentIds(
+						{
+							creatorId: student1.id,
+							openCourseIds: [course.id],
+							lessonIdsOfOpenCourses: [],
+							finishedCourseIds: [],
+							lessonIdsOfFinishedCourses: [],
+						},
+						{
+							userId: student2.id,
+						}
+					);
+					expect(totalStudent2).toEqual(3);
 				});
 
-				await em.persistAndFlush([task]);
-				em.clear();
+				it('should should not return tasks to which student is assigned, but are not finished', async () => {});
 
-				return { teacher, student1, student2 };
-			};
-
-			it('populate with all assigned students with homeworks set to finished', async () => {
-				const { teacher } = await setup();
-
-				const [result, total] = await repo.findAllFinishedByParentIds({
-					creatorId: teacher.id,
-					openCourseIds: [],
-					lessonIdsOfOpenCourses: [],
-					finishedCourseIds: [],
-					lessonIdsOfFinishedCourses: [],
-				});
-				const task = result[0];
-
-				expect(total).toEqual(1);
-				expect(task.finished.length).toEqual(3);
+				it('should not return tasks finished, but for which student is not assigned (should not happen, but data could be inconsistent)', async () => {});
 			});
 		});
 
@@ -1175,13 +1208,16 @@ describe('TaskRepo', () => {
 				it('should populate all elements correctly', async () => {
 					const { user } = await setup();
 
-					const [result, total] = await repo.findAllFinishedByParentIds({
-						creatorId: user.id,
-						openCourseIds: [],
-						lessonIdsOfOpenCourses: [],
-						finishedCourseIds: [],
-						lessonIdsOfFinishedCourses: [],
-					});
+					const [result, total] = await repo.findAllFinishedByParentIds(
+						{
+							creatorId: user.id,
+							openCourseIds: [],
+							lessonIdsOfOpenCourses: [],
+							finishedCourseIds: [],
+							lessonIdsOfFinishedCourses: [],
+						},
+						{}
+					);
 					const task = result[0];
 
 					expect(total).toEqual(1);

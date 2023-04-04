@@ -91,16 +91,20 @@ export class TaskRepo extends BaseRepo<Task> {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		const forAssignedUser = new TaskScope();
+		let { query } = scope;
+
 		if (filters?.userId) {
+			const forAssignedUser = new TaskScope();
 			forAssignedUser.byAssignedUser(filters.userId);
+
+			const filtersScope = new TaskScope('$and');
+			filtersScope.addQuery(forAssignedUser.query);
+			filtersScope.addQuery(scope.query);
+
+			query = filtersScope.query;
 		}
 
-		const finishedScope = new TaskScope('$and');
-		finishedScope.addQuery(forAssignedUser.query);
-		finishedScope.addQuery(scope.query);
-
-		const countedTaskList = await this.findTasksAndCount(finishedScope.query, options);
+		const countedTaskList = await this.findTasksAndCount(query, options);
 
 		return countedTaskList;
 	}
