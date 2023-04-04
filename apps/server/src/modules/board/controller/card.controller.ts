@@ -2,17 +2,22 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/
 import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { CardUc } from '../uc/card.uc';
-import { CardIdsParams, CardListResponse, CardUrlParams, MoveCardBodyParams, TextElementResponse } from './dto';
-import { AnyContentElementResponse } from './dto/card/any-content-element.response';
-import { TextElementResponseMapper } from './mapper';
-import { CardResponseMapper } from './mapper/card-response.mapper';
+import { BoardUc, CardUc } from '../uc';
+import {
+	AnyContentElementResponse,
+	CardIdsParams,
+	CardListResponse,
+	CardUrlParams,
+	MoveCardBodyParams,
+	TextElementResponse,
+} from './dto';
+import { CardResponseMapper, TextElementResponseMapper } from './mapper';
 
 @ApiTags('Cards')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
-	constructor(private readonly cardUc: CardUc) {}
+	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
 
 	@Get()
 	async getCards(
@@ -35,14 +40,14 @@ export class CardController {
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<boolean> {
-		await this.cardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 
 		return true;
 	}
 
 	@Delete(':cardId')
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
 
 		return true;
 	}
