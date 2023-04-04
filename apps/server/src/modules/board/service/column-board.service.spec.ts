@@ -1,39 +1,33 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ColumnBoard } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { columnBoardFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
-import { ColumnBoardRepo, ColumnRepo } from '../repo';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { BoardDoRepo, BoardNodeRepo } from '../repo';
 import { ColumnBoardService } from './column-board.service';
 
 describe(ColumnBoardService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
-	let columnBoardRepo: DeepMocked<ColumnBoardRepo>;
-	let columnRepo: DeepMocked<ColumnRepo>;
+	let boardDoRepo: DeepMocked<BoardDoRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ColumnBoardService,
 				{
-					provide: ColumnBoardRepo,
-					useValue: createMock<ColumnBoardRepo>(),
+					provide: BoardDoRepo,
+					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: ColumnRepo,
-					useValue: createMock<ColumnRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: BoardNodeRepo,
+					useValue: createMock<BoardNodeRepo>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(ColumnBoardService);
-		columnBoardRepo = module.get(ColumnBoardRepo);
-		columnRepo = module.get(ColumnRepo);
+		boardDoRepo = module.get(BoardDoRepo);
 		await setupEntities();
 	});
 
@@ -41,40 +35,43 @@ describe(ColumnBoardService.name, () => {
 		await module.close();
 	});
 
+	const setup = () => {
+		const board = columnBoardFactory.build();
+		const boardId = board.id;
+		const column = columnFactory.build();
+
+		return { board, boardId, column };
+	};
+
 	describe('finding a board', () => {
-		const setup = () => {
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
-
-			return { board, boardId };
-		};
-
-		it('should call the card repository', async () => {
-			const { boardId } = setup();
+		it('should call the board do repository', async () => {
+			const { boardId, board } = setup();
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
 			await service.findById(boardId);
 
-			expect(columnBoardRepo.findById).toHaveBeenCalledWith(boardId);
+			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, boardId);
 		});
 
 		it('should return the columnBoard object of the given', async () => {
 			const { board } = setup();
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
+			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await service.findById(board.id);
+
 			expect(result).toEqual(board);
 		});
 	});
 
 	describe('creating a board', () => {
 		it('should save a board using the repo', async () => {
-			await service.createBoard();
+			await service.create();
 
-			expect(columnBoardRepo.save).toHaveBeenCalledWith(
+			expect(boardDoRepo.save).toHaveBeenCalledWith(
 				expect.objectContaining({
 					id: expect.any(String),
 					title: '',
-					columns: [],
+					children: [],
 					createdAt: expect.any(Date),
 					updatedAt: expect.any(Date),
 				})
@@ -82,33 +79,13 @@ describe(ColumnBoardService.name, () => {
 		});
 	});
 
-	describe('creating a column', () => {
-		const setup = () => {
-			const board = columnBoardFactory.build();
-			const boardId = board.id;
+	describe('deleting a board', () => {
+		it('should call the service to delete the board', async () => {
+			const { board } = setup();
 
-			return { board, boardId };
-		};
+			await service.delete(board.id);
 
-		it('should save a list of columns using the repo', async () => {
-			const { board, boardId } = setup();
-
-			columnBoardRepo.findById.mockResolvedValueOnce(board);
-
-			await service.createColumn(boardId);
-
-			expect(columnRepo.save).toHaveBeenCalledWith(
-				[
-					expect.objectContaining({
-						id: expect.any(String),
-						title: '',
-						cards: [],
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-					}),
-				],
-				boardId
-			);
+			expect(boardDoRepo.deleteById).toHaveBeenCalledWith(board.id);
 		});
 	});
 });

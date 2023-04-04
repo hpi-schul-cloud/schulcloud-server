@@ -1,11 +1,18 @@
-import { AnyBoardDo, BoardNodeBuilder, Card, Column, ColumnBoard, TextElement } from '../../domainobject';
-import { EntityId } from '../../types';
-import { BoardNode } from './boardnode.entity';
-import { CardNode } from './card-node.entity';
-import { ColumnBoardNode } from './column-board-node.entity';
-import { ColumnNode } from './column-node.entity';
-import { TextElementNode } from './text-element-node.entity';
-import { BoardNodeType } from './types';
+import {
+	EntityId,
+	AnyBoardDo,
+	BoardNodeBuilder,
+	Card,
+	Column,
+	ColumnBoard,
+	TextElement,
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	TextElementNode,
+	BoardNodeType,
+} from '@shared/domain';
 
 export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 	private parentsMap: Map<EntityId, BoardNode> = new Map();
@@ -30,7 +37,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(columnBoardNode);
 
-		this.buildChildren(columnBoard.columns, columnBoardNode.id);
+		this.buildChildren(columnBoard.children, columnBoardNode.id);
 	}
 
 	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void {
@@ -45,7 +52,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(columnNode);
 
-		this.buildChildren(column.cards, columnNode.id);
+		this.buildChildren(column.children, columnNode.id);
 	}
 
 	buildCardNode(card: Card, parentId?: EntityId, position?: number): void {
@@ -61,7 +68,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(cardNode);
 
-		this.buildChildren(card.elements, cardNode.id);
+		this.buildChildren(card.children, cardNode.id);
 	}
 
 	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void {

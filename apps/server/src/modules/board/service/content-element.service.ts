@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, TextElement } from '@shared/domain';
+import { Card, EntityId, TextElement } from '@shared/domain';
 import { ObjectId } from 'bson';
-import { CardRepo, ContentElementRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly elementRepo: ContentElementRepo, private readonly cardRepo: CardRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async createElement(cardId: EntityId): Promise<TextElement> {
-		const card = await this.cardRepo.findById(cardId);
-
+	async create(parent: Card): Promise<TextElement> {
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
 			text: ``,
@@ -17,10 +16,18 @@ export class ContentElementService {
 			updatedAt: new Date(),
 		});
 
-		card.addElement(element);
+		parent.addChild(element);
 
-		await this.elementRepo.save(card.elements, card.id);
+		await this.boardDoRepo.save(parent.children, parent.id);
 
 		return element;
+	}
+
+	async delete(parent: Card, elementId: EntityId): Promise<void> {
+		await this.boardDoService.deleteChildWithDescendants(parent, elementId);
+	}
+
+	async move(elementId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
+		await this.boardDoService.moveBoardDo(elementId, targetColumnId, toIndex);
 	}
 }

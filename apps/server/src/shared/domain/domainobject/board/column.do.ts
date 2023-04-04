@@ -1,43 +1,18 @@
 import { EntityId } from '@shared/domain/types';
+import { BoardComposite } from './board-composite.do';
 import { Card } from './card.do';
-import type { BoardNodeBuildable, BoardNodeBuilder } from './types';
+import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from './types';
 
-export class Column implements ColumnProps, BoardNodeBuildable {
-	id: EntityId;
-
-	title?: string;
-
-	cards: Card[];
-
-	createdAt: Date;
-
-	updatedAt: Date;
-
-	constructor(props: ColumnProps) {
-		this.id = props.id;
-		this.title = props.title;
-		this.cards = props.cards;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
-	}
-
-	addCard(card: Card, position?: number) {
-		this.cards.splice(position || this.cards.length, 0, card);
+export class Column extends BoardComposite implements BoardNodeBuildable {
+	addChild(child: AnyBoardDo, toIndex?: number) {
+		if (child instanceof Card) {
+			this._addChild(child, toIndex);
+		} else {
+			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+		}
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
 		builder.buildColumnNode(this, parentId, position);
 	}
-}
-
-export interface ColumnProps {
-	id: EntityId;
-
-	title?: string;
-
-	cards: Card[];
-
-	createdAt: Date;
-
-	updatedAt: Date;
 }

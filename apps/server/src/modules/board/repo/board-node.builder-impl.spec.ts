@@ -1,3 +1,4 @@
+import { BoardNodeType } from '@shared/domain';
 import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
@@ -6,8 +7,7 @@ import {
 	textElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
-import { BoardNodeBuilderImpl } from './board-node-builder-impl';
-import { BoardNodeType } from './types';
+import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 
 describe(BoardNodeBuilderImpl.name, () => {
 	beforeAll(async () => {
@@ -56,7 +56,7 @@ describe(BoardNodeBuilderImpl.name, () => {
 	describe('when building Cards', () => {
 		const setup = () => {
 			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.buildWithId({ elements });
+			const card = cardFactory.buildWithId({ children: elements });
 			const columnNode = columnNodeFactory.buildWithId();
 
 			const builder = new BoardNodeBuilderImpl(columnNode);

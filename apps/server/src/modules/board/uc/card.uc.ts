@@ -22,23 +22,32 @@ export class CardUc {
 		return cards;
 	}
 
-	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
-		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
-
-		// TODO: check Permissions
-		const card = this.cardService.createCard(boardId, columnId);
-
-		return card;
-	}
-
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId });
 
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
-		const element = await this.elementService.createElement(card.id);
+		const element = await this.elementService.create(card);
 
 		return element;
+	}
+
+	async deleteElement(userId: EntityId, cardId: EntityId, elementId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteElement', userId, cardId, elementId });
+
+		const card = await this.cardService.findById(cardId);
+
+		// TODO check permissions
+
+		await this.elementService.delete(card, elementId);
+	}
+
+	async moveElement(userId: EntityId, elementId: EntityId, targetCardId: EntityId, toIndex: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, toIndex });
+
+		// TODO check permissions
+
+		await this.elementService.move(elementId, targetCardId, toIndex);
 	}
 }
