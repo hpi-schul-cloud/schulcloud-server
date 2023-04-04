@@ -1,11 +1,11 @@
-import { Controller, Delete, Get, INestApplication, Post, Put } from '@nestjs/common';
+import { Controller, Delete, Get, INestApplication, Post, Put, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 import { accountFactory } from './factory';
 import { TestRequest } from './test-request';
 
 @Controller('')
-export class TestController {
+class TestController {
 	@Delete(':id')
 	async delete() {
 		return Promise.resolve({});
@@ -32,23 +32,63 @@ export class TestController {
 	}
 }
 
+@Controller('')
+class TestErrorController {
+	@Post('/authentication/local')
+	async jwt() {
+		return Promise.reject(new UnauthorizedException());
+	}
+}
+
 describe('test-request', () => {
-	let app: INestApplication;
+	describe('when /authentication/local throw an error', () => {
+		let app: INestApplication;
 
-	beforeAll(async () => {
-		const moduleFixture = await Test.createTestingModule({
-			controllers: [TestController],
-		}).compile();
+		beforeAll(async () => {
+			const moduleFixture = await Test.createTestingModule({
+				controllers: [TestErrorController],
+			}).compile();
 
-		app = moduleFixture.createNestApplication();
-		await app.init();
-	});
+			app = moduleFixture.createNestApplication();
 
-	afterAll(async () => {
-		await app.close();
+			await app.init();
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		const setup = () => {
+			const request = new TestRequest(app, '');
+			const account = accountFactory.build();
+
+			return { request, account };
+		};
+
+		it('should throw an error', async () => {
+			const { request, account } = setup();
+
+			await expect(() => request.getJwt(account)).rejects.toThrowError();
+		});
 	});
 
 	describe('when test request instance exists', () => {
+		let app: INestApplication;
+
+		beforeAll(async () => {
+			const moduleFixture = await Test.createTestingModule({
+				controllers: [TestController],
+			}).compile();
+
+			app = moduleFixture.createNestApplication();
+
+			await app.init();
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
 		const setup = () => {
 			const request = new TestRequest(app, '');
 			const account = accountFactory.build();
@@ -60,7 +100,7 @@ describe('test-request', () => {
 		};
 
 		describe('getJwt', () => {
-			it('should return "invalidJwt" by default', async () => {
+			it('should return "invalidJwt" if no account is passed', async () => {
 				const { request } = setup();
 
 				const result = await request.getJwt();
