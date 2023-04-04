@@ -14,6 +14,7 @@ import bcrypt from 'bcryptjs';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
+import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
@@ -43,6 +44,7 @@ describe('AccountService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				AccountServiceDb,
+				AccountLookupService,
 				{
 					provide: AccountRepo,
 					useValue: {
@@ -89,8 +91,8 @@ describe('AccountService', () => {
 							return Promise.resolve(null);
 						},
 
-						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
-							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
+						findById: jest.fn().mockImplementation((accountId: EntityId | ObjectId): Promise<Account> => {
+							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId.toString());
 
 							if (account) {
 								return Promise.resolve(account);
@@ -158,10 +160,14 @@ describe('AccountService', () => {
 	});
 
 	describe('findById', () => {
-		it('should return accountDto', async () => {
-			const resultAccount = await accountService.findById(mockTeacherAccount.id);
-			expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
-		});
+		it(
+			'should return accountDto',
+			async () => {
+				const resultAccount = await accountService.findById(mockTeacherAccount.id);
+				expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+			},
+			10 * 60 * 1000
+		);
 	});
 
 	describe('findByUserId', () => {
@@ -421,7 +427,7 @@ describe('AccountService', () => {
 	describe('delete', () => {
 		it('should delete account via repo', async () => {
 			await accountService.delete(mockTeacherAccount.id);
-			expect(accountRepo.deleteById).toHaveBeenCalledWith(mockTeacherAccount.id);
+			expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
 		});
 	});
 

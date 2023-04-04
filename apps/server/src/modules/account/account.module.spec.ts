@@ -49,13 +49,11 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						load: [
-							() => {
-								return {
-									FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: true,
-								};
-							},
-						],
+						validate: () => {
+							return {
+								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: true,
+							};
+						},
 					}),
 				],
 			}).compile();
@@ -83,13 +81,11 @@ describe('AccountModule', () => {
 						ignoreEnvFile: true,
 						ignoreEnvVars: true,
 						isGlobal: true,
-						load: [
-							() => {
-								return {
-									FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
-								};
-							},
-						],
+						validate: () => {
+							return {
+								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
+							};
+						},
 					}),
 				],
 			}).compile();

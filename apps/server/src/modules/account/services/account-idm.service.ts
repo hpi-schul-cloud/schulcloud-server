@@ -87,15 +87,10 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
-			let idmId: string | undefined;
 			try {
-				idmId = await this.getIdmAccountId(accountDto.id);
-			} catch {
-				idmId = undefined;
-			}
-			if (idmId) {
+				const idmId = await this.getIdmAccountId(accountDto.id);
 				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
-			} else {
+			} catch {
 				accountId = await this.createAccount(idmAccount, accountDto.password);
 			}
 		} else {

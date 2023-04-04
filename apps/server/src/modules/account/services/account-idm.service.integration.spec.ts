@@ -13,6 +13,7 @@ import { IdentityManagementService } from '../../../shared/infra/identity-manage
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountLookupService } from './account-lookup.service';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -49,18 +50,17 @@ describe('AccountIdmService Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
-							};
-						},
-					],
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
+						};
+					},
 				}),
 			],
 			providers: [
 				AccountServiceIdm,
+				AccountLookupService,
 				{
 					provide: AccountIdmToDtoMapper,
 					useClass: AccountIdmToDtoMapperLegacy,

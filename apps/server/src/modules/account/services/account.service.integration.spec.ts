@@ -18,6 +18,7 @@ import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
+import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
@@ -78,14 +79,12 @@ describe('AccountService Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
-							};
-						},
-					],
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
+						};
+					},
 				}),
 			],
 			providers: [
@@ -96,6 +95,7 @@ describe('AccountService Integration', () => {
 				UserRepo,
 				KeycloakAdministrationService,
 				AccountValidationService,
+				AccountLookupService,
 				{
 					provide: AccountIdmToDtoMapper,
 					useValue: new AccountIdmToDtoMapperLegacy(),

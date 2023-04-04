@@ -14,7 +14,7 @@ import { IServerConfig } from '../server/server.config';
 import { AccountLookupService } from './services/account-lookup.service';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<IServerConfig, true>): AccountIdmToDtoMapper {
-	if (configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
 		return new AccountIdmToDtoMapperNew();
 	}
 	return new AccountIdmToDtoMapperLegacy();

@@ -7,6 +7,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
+import { AccountLookupService } from './account-lookup.service';
 import { AccountDto, AccountSaveDto } from './dto';
 
 describe('AccountIdmService', () => {
@@ -15,6 +16,7 @@ describe('AccountIdmService', () => {
 	let mapper: AccountIdmToDtoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
 	let configServiceMock: DeepMocked<ConfigService>;
+	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 
 	const mockIdmAccountRefId = 'tecId';
 	const mockIdmAccount: IAccount = {
@@ -46,12 +48,17 @@ describe('AccountIdmService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: AccountLookupService,
+					useValue: createMock<AccountLookupService>(),
+				},
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
 		mapper = module.get(AccountIdmToDtoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
 		configServiceMock = module.get(ConfigService);
+		accountLookupServiceMock = module.get(AccountLookupService);
 	});
 
 	afterAll(async () => {
@@ -137,9 +144,8 @@ describe('AccountIdmService', () => {
 			});
 		});
 		it('should create a new account on update error', async () => {
-			const findSpy = jest.spyOn(idmServiceMock, 'findAccountByTecRefId');
-			const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
-
+			setup();
+			idmServiceMock.updateAccount.mockRejectedValueOnce(new Error('Update Failed'));
 			const mockAccountDto = {
 				id: mockIdmAccountRefId,
 				username: 'testUserName',
@@ -147,11 +153,9 @@ describe('AccountIdmService', () => {
 				systemId: 'systemId',
 			};
 
-			findSpy.mockRejectedValueOnce(new Error('Update Failed'));
 			const ret = await accountIdmService.save(mockAccountDto);
 
-			expect(createSpy).toHaveBeenCalled();
-
+			expect(idmServiceMock.createAccount).toHaveBeenCalled();
 			expect(ret).toBeDefined();
 			expect(ret).toMatchObject<Partial<AccountDto>>({
 				id: mockIdmAccount.attRefTechnicalId,
@@ -199,14 +203,13 @@ describe('AccountIdmService', () => {
 			idmServiceMock.findAccountByTecRefId.mockResolvedValue(mockIdmAccount);
 			idmServiceMock.findAccountByFctIntId.mockResolvedValue(mockIdmAccount);
 			idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
+			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
 		};
 
 		it('should delete account via idm', async () => {
 			setup();
-			const deleteSpy = jest.spyOn(idmServiceMock, 'deleteAccountById');
-
 			await expect(accountIdmService.delete(mockIdmAccountRefId)).resolves.not.toThrow();
-			expect(deleteSpy).toHaveBeenCalledWith(mockIdmAccount.id);
+			expect(idmServiceMock.deleteAccountById).toHaveBeenCalledWith(mockIdmAccount.id);
 		});
 	});
 
