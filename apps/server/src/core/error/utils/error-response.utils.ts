@@ -9,16 +9,12 @@ export class ErrorResponseUtils {
 	static createErrorResponse(error: unknown): ErrorResponse {
 		let response: ErrorResponse;
 
-		if (error instanceof Error) {
-			if (ErrorUtils.isFeathersError(error)) {
-				response = this.createErrorResponseForFeathersError(error);
-			} else if (ErrorUtils.isBusinessError(error)) {
-				response = this.createErrorResponseForBusinessError(error);
-			} else if (ErrorUtils.isNestHttpException(error)) {
-				response = this.createErrorResponseForNestHttpException(error);
-			} else {
-				response = this.createErrorResponseForUnknownError();
-			}
+		if (ErrorUtils.isFeathersError(error)) {
+			response = this.createErrorResponseForFeathersError(error);
+		} else if (ErrorUtils.isBusinessError(error)) {
+			response = this.createErrorResponseForBusinessError(error);
+		} else if (ErrorUtils.isNestHttpException(error)) {
+			response = this.createErrorResponseForNestHttpException(error);
 		} else {
 			response = this.createErrorResponseForUnknownError();
 		}
