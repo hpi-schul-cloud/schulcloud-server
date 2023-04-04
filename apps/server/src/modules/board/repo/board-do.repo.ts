@@ -63,8 +63,8 @@ export class BoardDoRepo {
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteById(id: EntityId): Promise<void> {
-		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
+	async delete(domainObject: AnyBoardDo): Promise<void> {
+		const boardNode = await this.boardNodeRepo.findById(BoardNode, domainObject.id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
 	}
 }
