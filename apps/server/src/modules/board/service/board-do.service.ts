@@ -11,7 +11,7 @@ export class BoardDoService {
 
 		if (parent) {
 			parent.removeChild(domainObject);
-			await this.boardDoRepo.save(parent.children, parent.id);
+			await this.boardDoRepo.save(parent.children, parent);
 		}
 
 		await this.boardDoRepo.delete(domainObject);
@@ -27,7 +27,7 @@ export class BoardDoService {
 		sourceParent.removeChild(child);
 		targetParent.addChild(child, targetPosition);
 
-		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
-		await this.boardDoRepo.save(targetParent.children, targetParent.id);
+		await this.boardDoRepo.save(sourceParent.children, sourceParent);
+		await this.boardDoRepo.save(targetParent.children, targetParent);
 	}
 }

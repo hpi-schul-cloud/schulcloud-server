@@ -79,8 +79,8 @@ describe(BoardDoService.name, () => {
 
 				await service.move(cards[0], targetColumn, 0);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(sourceColumn.children, sourceColumn.id);
-				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn.id);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(sourceColumn.children, sourceColumn);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn);
 			});
 		});
 
@@ -122,7 +122,7 @@ describe(BoardDoService.name, () => {
 
 				await service.deleteWithDescendants(elements[0]);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card.id);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card);
 				expect(boardDoRepo.delete).toHaveBeenCalledWith(elements[0]);
 			});
 
@@ -133,7 +133,7 @@ describe(BoardDoService.name, () => {
 
 				await service.deleteWithDescendants(elements[0]);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card.id);
+				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card);
 			});
 		});
 	});
