@@ -242,14 +242,14 @@ describe('TaskCardUc', () => {
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should throw if course end is before due date', async () => {
-			const TaskCardCreateParams = {
+			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			await expect(async () => {
-				await uc.create(user.id, TaskCardCreateParams);
+				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should throw if course has no end date', async () => {
@@ -305,23 +305,6 @@ describe('TaskCardUc', () => {
 				dueDate: tomorrow,
 			};
 			const result = await uc.create(user.id, taskCardCreateDefaultParams);
-			const expectedVisibleAtDate = new Date();
-			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
-		});
-		it('should return the task card with default visible at date if params are not given', async () => {
-			const school = schoolFactory.buildWithId();
-			const userWithSchool = userFactory.buildWithId({ school });
-			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
-			const taskCardCreateDefaultParams = {
-				title,
-				text: [
-					new RichText({ content: richText[0], type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: richText[1], type: InputFormat.RICH_TEXT_CK5 }),
-				],
-				courseId: course.id,
-				dueDate: tomorrow,
-			};
-			const result = await uc.create(userWithSchool.id, taskCardCreateDefaultParams);
 			const expectedVisibleAtDate = new Date();
 			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
 		});
@@ -439,17 +422,17 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should throw if course has no end date', async () => {
-			course = courseFactory.buildWithId({ untilDate: undefined });
+		it('should throw if course end date is before dueDate ', async () => {
+			course = courseFactory.buildWithId({ untilDate: tomorrow });
 			courseRepo.findById.mockResolvedValue(course);
-			const TaskCardCreateParams = {
+			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			await expect(async () => {
-				await uc.update(user.id, taskCard.id, TaskCardCreateParams);
+				await uc.update(user.id, taskCard.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
 	});

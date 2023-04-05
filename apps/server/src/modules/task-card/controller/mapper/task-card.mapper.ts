@@ -31,9 +31,6 @@ export class TaskCardMapper {
 			dto.cardElements = this.getCardElementResponse(card);
 		}
 
-		dto.courseId = card.course.id;
-		dto.courseName = card.course.name;
-
 		return dto;
 	}
 
@@ -70,16 +67,8 @@ export class TaskCardMapper {
 			dueDate: params.dueDate,
 		};
 
-		if (params.courseId) {
-			dto.courseId = params.courseId;
-		}
-
 		if (params.visibleAtDate) {
 			dto.visibleAtDate = params.visibleAtDate;
-		}
-
-		if (params.dueDate) {
-			dto.dueDate = params.dueDate;
 		}
 
 		if (params.cardElements) {

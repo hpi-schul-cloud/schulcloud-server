@@ -27,7 +27,7 @@ export class TaskCardUc {
 		const course = await this.courseRepo.findById(params.courseId);
 		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
-		this.validate({ params, course });
+		this.validate({ params, course, user });
 
 		const taskWithStatusVo = await this.createTask(userId, params);
 
@@ -122,14 +122,12 @@ export class TaskCardUc {
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 		}
 
-		this.validate({ params, course });
+		this.validate({ params, course, user });
 
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
-		if (params.title) {
-			card.title = params.title;
-		}
+		card.title = params.title;
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -140,9 +138,8 @@ export class TaskCardUc {
 			card.visibleAtDate = params.visibleAtDate;
 		}
 
-		if (params.dueDate) {
-			card.dueDate = params.dueDate;
-		}
+		card.dueDate = params.dueDate;
+
 		if (course) {
 			card.course = course;
 		}
@@ -177,14 +174,15 @@ export class TaskCardUc {
 		}
 		if (course && !course.untilDate) {
 			const currentSchoolYear = user.school.schoolYear;
-			if (currentSchoolYear) {
-				if (currentSchoolYear && currentSchoolYear.endDate < params.dueDate) {
-					throw new ValidationError('Due date must be before school year end date');
-				}
+			if (currentSchoolYear && currentSchoolYear.endDate < params.dueDate) {
+				throw new ValidationError('Due date must be before school year end date');
 			}
-			const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
+			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 			if (lastDayOfNextYear < params.dueDate) {
 				throw new ValidationError('Due date must be before end of next year');
+			}
+			if (!currentSchoolYear) {
+				throw new ValidationError('Due date must be before school year end date');
 			}
 		}
 		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
