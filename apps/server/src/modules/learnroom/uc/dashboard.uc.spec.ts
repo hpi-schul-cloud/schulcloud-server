@@ -11,7 +11,7 @@ import {
 	SortOrder,
 } from '@shared/domain';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -106,7 +106,6 @@ describe('dashboard uc', () => {
 
 	describe('moveElementOnDashboard', () => {
 		it('should update position of existing element', async () => {
-			const course = courseFactory.buildWithId();
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				const dashboard = new DashboardEntity(id, {
 					grid: [
@@ -125,7 +124,6 @@ describe('dashboard uc', () => {
 		});
 
 		it('should persist the change', async () => {
-			const course = courseFactory.buildWithId();
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				if (id === 'dashboardId')
 					return Promise.resolve(
