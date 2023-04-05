@@ -1,17 +1,19 @@
 import {
-	EntityId,
 	AnyBoardDo,
+	BoardNode,
 	BoardNodeBuilder,
+	BoardNodeType,
 	Card,
+	CardNode,
 	Column,
 	ColumnBoard,
-	TextElement,
-	BoardNode,
-	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	EntityId,
+	FileElement,
+	FileElementNode,
+	TextElement,
 	TextElementNode,
-	BoardNodeType,
 } from '@shared/domain';
 
 export class BoardNodeBuilderImpl implements BoardNodeBuilder {
@@ -82,6 +84,19 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 			position,
 		});
 		this.registerNode(textElementNode);
+	}
+
+	buildFileElementNode(fileElement: FileElement, parentId?: string | undefined, position?: number | undefined): void {
+		const parent = this.getParent(parentId);
+		this.ensureBoardNodeType(parent, BoardNodeType.CARD);
+
+		const fileElementNode = new FileElementNode({
+			id: fileElement.id,
+			description: fileElement.description,
+			parent,
+			position,
+		});
+		this.registerNode(fileElementNode);
 	}
 
 	registerNode(boardNode: BoardNode) {

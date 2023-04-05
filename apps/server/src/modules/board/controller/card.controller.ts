@@ -8,12 +8,13 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
+	ElementsTypeParams,
 	MoveCardBodyParams,
 	TextElementResponse,
 } from './dto';
-import { CardResponseMapper, TextElementResponseMapper } from './mapper';
+import { CardResponseMapper, ElementsResponseMapper } from './mapper';
 
-@ApiTags('Cards')
+@ApiTags('Board/Cards')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
@@ -62,12 +63,12 @@ export class CardController {
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Body() bodyParams: ElementsTypeParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
+		const { type } = bodyParams;
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
 
-		const response = TextElementResponseMapper.mapToResponse(element);
-
-		return response;
+		return ElementsResponseMapper.mapToResponse(element);
 	}
 }

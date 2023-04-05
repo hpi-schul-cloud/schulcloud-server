@@ -1,5 +1,6 @@
 import type { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
+import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
@@ -15,7 +16,7 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 	}
 
 	addChild(child: AnyBoardDo, position?: number) {
-		if (child instanceof TextElement) {
+		if (child instanceof TextElement || child instanceof FileElement) {
 			this._addChild(child, position);
 		} else {
 			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
