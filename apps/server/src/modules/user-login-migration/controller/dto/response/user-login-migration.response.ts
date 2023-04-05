@@ -1,18 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserLoginMigrationResponse {
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Id of the system which is the origin of the migration',
 	})
-	sourceSystemId: string;
+	sourceSystemId?: string;
 
 	@ApiProperty({
 		description: 'Id of the system which is the target of the migration',
 	})
 	targetSystemId: string;
 
-	@ApiPropertyOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Date when the migration was marked as required',
 	})
 	mandatorySince?: Date;
@@ -22,14 +21,12 @@ export class UserLoginMigrationResponse {
 	})
 	startedAt: Date;
 
-	@ApiPropertyOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Date when the migration was completed',
 	})
-	completedAt?: Date;
+	closedAt?: Date;
 
-	@ApiPropertyOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Date when the migration was completed including the grace period',
 	})
 	finishedAt?: Date;
@@ -39,7 +36,7 @@ export class UserLoginMigrationResponse {
 		this.targetSystemId = props.targetSystemId;
 		this.mandatorySince = props.mandatorySince;
 		this.startedAt = props.startedAt;
-		this.completedAt = props.completedAt;
+		this.closedAt = props.closedAt;
 		this.finishedAt = props.finishedAt;
 	}
 }

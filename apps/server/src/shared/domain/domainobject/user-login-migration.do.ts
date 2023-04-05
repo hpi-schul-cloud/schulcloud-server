@@ -1,16 +1,16 @@
+import { EntityId } from '../types';
 import { BaseDO } from './base.do';
 
 export class UserLoginMigrationDO extends BaseDO {
-	sourceSystemId: string;
+	sourceSystemId?: EntityId;
 
-	targetSystemId: string;
+	targetSystemId: EntityId;
 
 	mandatorySince?: Date;
 
-	// TODO: N21-822 make required when real entity is there
-	startedAt?: Date;
+	startedAt: Date;
 
-	completedAt?: Date;
+	closedAt?: Date;
 
 	finishedAt?: Date;
 
@@ -20,7 +20,7 @@ export class UserLoginMigrationDO extends BaseDO {
 		this.targetSystemId = props.targetSystemId;
 		this.mandatorySince = props.mandatorySince;
 		this.startedAt = props.startedAt;
-		this.completedAt = props.completedAt;
+		this.closedAt = props.closedAt;
 		this.finishedAt = props.finishedAt;
 	}
 }

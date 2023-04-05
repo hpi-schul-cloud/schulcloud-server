@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { UserMigrationService, UserLoginMigrationService } from '../service';
-import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageTypes } from '../interface/page-types.enum';
+import { UserLoginMigrationService, UserMigrationService } from '../service';
+import { PageContentDto } from '../service/dto/page-content.dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 
 @Injectable()
-export class MigrationUc {
+export class UserLoginMigrationUc {
 	constructor(
 		private readonly userMigrationService: UserMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService
@@ -28,7 +28,10 @@ export class MigrationUc {
 		query: UserLoginMigrationQuery,
 		options: IFindOptions<UserLoginMigrationDO>
 	): Promise<Page<UserLoginMigrationDO>> {
-		// TODO: check that the current user is the user from the query
+		if (userId !== query.userId) {
+			throw new ForbiddenException('Accessing migration status of another user is forbidden.');
+		}
+
 		const userLoginMigrations: Page<UserLoginMigrationDO> =
 			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
 		return userLoginMigrations;

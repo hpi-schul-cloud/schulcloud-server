@@ -1,25 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MigrationUc } from '../uc/migration.uc';
-import { UserMigrationController } from './user-migration.controller';
-import { PageContentResponse } from './dto/response/page-content.response';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PageTypes } from '../interface/page-types.enum';
-import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageContentMapper } from '../mapper/page-content.mapper';
-import { PageContentQueryParams } from './dto/request/page-type.query.param';
+import { PageContentDto } from '../service/dto/page-content.dto';
+import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
+import { PageContentQueryParams, PageContentResponse } from './dto';
+import { UserMigrationController } from './user-migration.controller';
 
 describe('MigrationController', () => {
 	let module: TestingModule;
 	let controller: UserMigrationController;
-	let uc: DeepMocked<MigrationUc>;
+	let uc: DeepMocked<UserLoginMigrationUc>;
 	let mapper: DeepMocked<PageContentMapper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: MigrationUc,
-					useValue: createMock<MigrationUc>(),
+					provide: UserLoginMigrationUc,
+					useValue: createMock<UserLoginMigrationUc>(),
 				},
 				{
 					provide: PageContentMapper,
@@ -30,7 +29,7 @@ describe('MigrationController', () => {
 		}).compile();
 
 		controller = module.get(UserMigrationController);
-		uc = module.get(MigrationUc);
+		uc = module.get(UserLoginMigrationUc);
 		mapper = module.get(PageContentMapper);
 	});
 	afterAll(async () => {
