@@ -253,17 +253,21 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course has no end date', async () => {
+		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
-			const TaskCardCreateParams = {
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			await expect(async () => {
-				await uc.create(user.id, TaskCardCreateParams);
+				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
 
@@ -427,14 +431,14 @@ describe('TaskCardUc', () => {
 			course = courseFactory.buildWithId({ untilDate: tomorrow });
 			user = userFactory.buildWithId();
 			courseRepo.findById.mockResolvedValue(course);
-			const failingTaskCardCreateParams = {
+			const failingTaskCardUpdateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: inThreeDays,
 				courseId: course.id,
 			};
 			await expect(async () => {
-				await uc.update(user.id, taskCard.id, failingTaskCardCreateParams);
+				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
 		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
@@ -444,7 +448,6 @@ describe('TaskCardUc', () => {
 			const userWithSchool = userFactory.buildWithId({ school });
 			userRepo.findById.mockResolvedValue(userWithSchool);
 			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
-
 			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),

@@ -6,6 +6,7 @@ import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
+import { check } from 'prettier';
 import { ITaskCardCRUD } from '../interface';
 
 @Injectable()
@@ -27,7 +28,7 @@ export class TaskCardUc {
 		const course = await this.courseRepo.findById(params.courseId);
 		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
-		this.validate({ params, course, user });
+		this.validateDueDate({ params, course, user });
 
 		const taskWithStatusVo = await this.createTask(userId, params);
 
@@ -117,17 +118,17 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
-		const course = params.courseId ? await this.courseRepo.findById(params.courseId) : null;
-		if (course) {
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
-		}
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
-		this.validate({ params, course, user });
+		this.validateDueDate({ params, course, user });
 
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
 		card.title = params.title;
+		card.course = course;
+		card.dueDate = params.dueDate;
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -136,12 +137,6 @@ export class TaskCardUc {
 
 		if (params.visibleAtDate) {
 			card.visibleAtDate = params.visibleAtDate;
-		}
-
-		card.dueDate = params.dueDate;
-
-		if (course) {
-			card.course = course;
 		}
 
 		await this.replaceCardElements(card, cardElements);
@@ -167,8 +162,20 @@ export class TaskCardUc {
 		return taskWithStatusVo;
 	}
 
-	private validate(validationObject: { params: ITaskCardCRUD; course?: Course | null; user: User }) {
+	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
 		const { params, course, user } = validationObject;
+		if (course.untilDate) {
+			this.checkCourseEndDate(course.untilDate, params.dueDate);
+		} else if (user.school.schoolYear?.endDate) {
+			this.checkSchoolYearEndDate(user.school.schoolYear.endDate, params.dueDate);
+		} else {
+			this.checkNextYearEndDate(params.dueDate);
+		}
+		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
+			throw new ValidationError('Visible at date must be before due date');
+		}
+		/* working code 
+		// const { params, course, user } = validationObject;
 		if (course && course.untilDate && course.untilDate < params.dueDate) {
 			throw new ValidationError('Due date must be before course end date');
 		}
@@ -187,6 +194,26 @@ export class TaskCardUc {
 		}
 		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
 			throw new ValidationError('Visible at date must be before due date');
+		}
+		*/
+	}
+
+	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
+		if (schoolYearEndDate < dueDate) {
+			throw new ValidationError('Due date must be before school year end date');
+		}
+	}
+
+	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
+		if (courseEndDate < dueDate) {
+			throw new ValidationError('Due date must be before course end date');
+		}
+	}
+
+	private checkNextYearEndDate(dueDate: Date) {
+		const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+		if (lastDayOfNextYear < dueDate) {
+			throw new ValidationError('Due date must be before end of next year');
 		}
 	}
 
