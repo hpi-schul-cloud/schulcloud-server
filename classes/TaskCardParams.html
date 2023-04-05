@@ -87,11 +87,9 @@
                                 <a href="#cardElements" >cardElements</a>
                             </li>
                             <li>
-                                    <span class="modifier">Optional</span>
                                 <a href="#courseId" >courseId</a>
                             </li>
                             <li>
-                                    <span class="modifier">Optional</span>
                                 <a href="#dueDate" >dueDate</a>
                             </li>
                             <li>
@@ -149,7 +147,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="101" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:101</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -162,7 +160,6 @@
                 <td class="col-md-4">
                     <a name="courseId"></a>
                     <span class="name">
-                            <span class="modifier">Optional</span>
                         <span ><b>courseId</b></span>
                         <a href="#courseId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -179,13 +176,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsMongoId()<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;The id of an course object.&#x27;, pattern: &#x27;[a-f0-9]{24}&#x27;})<br />
+                            @IsString()<br />@IsMongoId()<br />@ApiProperty({description: &#x27;The id of an course object.&#x27;, pattern: &#x27;[a-f0-9]{24}&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:71</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -198,7 +195,6 @@
                 <td class="col-md-4">
                     <a name="dueDate"></a>
                     <span class="name">
-                            <span class="modifier">Optional</span>
                         <span ><b>dueDate</b></span>
                         <a href="#dueDate"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -215,13 +211,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsOptional()<br />@IsDate()<br />@MinDate(new Date())<br />@ApiPropertyOptional({description: &#x27;Due date of the card&#x27;})<br />
+                            @IsDate()<br />@MinDate(new Date())<br />@ApiProperty({description: &#x27;Due date of the card&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:91</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -250,7 +246,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@MinLength(2)<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The title of the card&#x27;})<br />
+                            @IsString()<br />@MinLength(1)<br />@MaxLength(400)<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The title of the card&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -322,6 +318,7 @@ import {
 	IsMongoId,
 	IsOptional,
 	IsString,
+	MaxLength,
 	MinDate,
 	MinLength,
 	ValidateNested,
@@ -341,7 +338,6 @@ export class RichTextCardElementParam extends CardElementBase {
 		description: &#x27;Content of the rich text card element&#x27;,
 		required: true,
 	})
-	@MinLength(2)
 	@IsString()
 	value!: string;
 
@@ -376,15 +372,15 @@ export class CardElementParams {
 export class TaskCardParams {
 	@IsString()
 	@IsMongoId()
-	@IsOptional()
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: &#x27;The id of an course object.&#x27;,
 		pattern: &#x27;[a-f0-9]{24}&#x27;,
 	})
-	courseId?: string;
+	courseId!: string;
 
 	@IsString()
-	@MinLength(2)
+	@MinLength(1)
+	@MaxLength(400)
 	@SanitizeHtml()
 	@ApiProperty({
 		description: &#x27;The title of the card&#x27;,
@@ -397,11 +393,10 @@ export class TaskCardParams {
 	@ApiPropertyOptional({ description: &#x27;Visible at date of the card&#x27; })
 	visibleAtDate?: Date;
 
-	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
-	@ApiPropertyOptional({ description: &#x27;Due date of the card&#x27; })
-	dueDate?: Date;
+	@ApiProperty({ description: &#x27;Due date of the card&#x27; })
+	dueDate!: Date;
 
 	@IsOptional()
 	@IsArray()

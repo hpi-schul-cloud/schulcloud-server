@@ -84,14 +84,12 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#courseId" 
 >
                                             courseId
                                         </a>
                                 </li>
                                 <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#dueDate" 
 >
                                             dueDate
@@ -162,11 +160,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -200,11 +193,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
 
 
 
@@ -367,11 +355,11 @@
 
 export interface ITaskCardCRUD {
 	id?: string;
-	courseId?: string;
+	courseId: string;
 	title: string;
 	text?: RichText[];
 	visibleAtDate?: Date;
-	dueDate?: Date;
+	dueDate: Date;
 }
 </code></pre>
     </div>

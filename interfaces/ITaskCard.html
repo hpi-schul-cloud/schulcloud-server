@@ -236,7 +236,7 @@ import { Course } from &#x27;./course.entity&#x27;;
 import { Task } from &#x27;./task.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
 
-export type ITaskCardProps &#x3D; ICardCProps &amp; { task: Task; dueDate: Date; course?: Course };
+export type ITaskCardProps &#x3D; ICardCProps &amp; { task: Task; dueDate: Date; course: Course };
 
 export interface ITaskCard extends ICard {
 	task: Task;
@@ -274,8 +274,8 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	creator!: User;
 
 	@Index()
-	@ManyToOne(&#x27;Course&#x27;, { fieldName: &#x27;courseId&#x27;, nullable: true })
-	course?: Course;
+	@ManyToOne(&#x27;Course&#x27;, { fieldName: &#x27;courseId&#x27; })
+	course!: Course;
 
 	@Property()
 	draggable &#x3D; true;

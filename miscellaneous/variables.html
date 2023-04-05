@@ -5568,6 +5568,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	const creator &#x3D; userFactory.build({ school });
 	const tomorrow &#x3D; new Date(Date.now() + 86400000);
 	const inTwoDays &#x3D; new Date(Date.now() + 172800000);
+	const course &#x3D; courseFactory.buildWithId();
 	return {
 		cardType: CardType.Task,
 		draggable: true,
@@ -5577,6 +5578,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		visibleAtDate: tomorrow,
 		dueDate: inTwoDays,
 		title: &#x27;Task Card Title&#x27;,
+		course,
 	};
 })</code>
                     </td>

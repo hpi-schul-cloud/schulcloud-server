@@ -1253,6 +1253,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CardType, ITaskCardProps, TaskCard } from &#x27;@shared/domain&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
+import { courseFactory } from &#x27;./course.factory&#x27;;
 import { schoolFactory } from &#x27;./school.factory&#x27;;
 import { taskFactory } from &#x27;./task.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
@@ -1265,6 +1266,7 @@ export const taskCardFactory &#x3D; TaskCardFactory.define(TaskCard, () &#x3D;&g
 	const creator &#x3D; userFactory.build({ school });
 	const tomorrow &#x3D; new Date(Date.now() + 86400000);
 	const inTwoDays &#x3D; new Date(Date.now() + 172800000);
+	const course &#x3D; courseFactory.buildWithId();
 	return {
 		cardType: CardType.Task,
 		draggable: true,
@@ -1274,6 +1276,7 @@ export const taskCardFactory &#x3D; TaskCardFactory.define(TaskCard, () &#x3D;&g
 		visibleAtDate: tomorrow,
 		dueDate: inTwoDays,
 		title: &#x27;Task Card Title&#x27;,
+		course,
 	};
 });
 </code></pre>

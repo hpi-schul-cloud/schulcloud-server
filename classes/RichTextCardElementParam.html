@@ -178,7 +178,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/task-card/controller/dto/task-card.params.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -207,7 +207,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Content of the rich text card element&#x27;, required: true})<br />@MinLength(2)<br />@IsString()<br />
+                            @ApiProperty({description: &#x27;Content of the rich text card element&#x27;, required: true})<br />@IsString()<br />
                         </code>
                     </td>
                 </tr>
@@ -243,6 +243,7 @@ import {
 	IsMongoId,
 	IsOptional,
 	IsString,
+	MaxLength,
 	MinDate,
 	MinLength,
 	ValidateNested,
@@ -262,7 +263,6 @@ export class RichTextCardElementParam extends CardElementBase {
 		description: &#x27;Content of the rich text card element&#x27;,
 		required: true,
 	})
-	@MinLength(2)
 	@IsString()
 	value!: string;
 
@@ -297,15 +297,15 @@ export class CardElementParams {
 export class TaskCardParams {
 	@IsString()
 	@IsMongoId()
-	@IsOptional()
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: &#x27;The id of an course object.&#x27;,
 		pattern: &#x27;[a-f0-9]{24}&#x27;,
 	})
-	courseId?: string;
+	courseId!: string;
 
 	@IsString()
-	@MinLength(2)
+	@MinLength(1)
+	@MaxLength(400)
 	@SanitizeHtml()
 	@ApiProperty({
 		description: &#x27;The title of the card&#x27;,
@@ -318,11 +318,10 @@ export class TaskCardParams {
 	@ApiPropertyOptional({ description: &#x27;Visible at date of the card&#x27; })
 	visibleAtDate?: Date;
 
-	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
-	@ApiPropertyOptional({ description: &#x27;Due date of the card&#x27; })
-	dueDate?: Date;
+	@ApiProperty({ description: &#x27;Due date of the card&#x27; })
+	dueDate!: Date;
 
 	@IsOptional()
 	@IsArray()

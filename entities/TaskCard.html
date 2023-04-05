@@ -81,7 +81,6 @@
                                 <a href="#cardType" >cardType</a>
                             </li>
                             <li>
-                                    <span class="modifier">Optional</span>
                                 <a href="#course" >course</a>
                             </li>
                             <li>
@@ -195,7 +194,6 @@
                 <td class="col-md-4">
                     <a name="course"></a>
                     <span class="name">
-                            <span class="modifier">Optional</span>
                         <span ><b>course</b></span>
                         <a href="#course"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -212,7 +210,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@ManyToOne(&#x27;Course&#x27;, {fieldName: &#x27;courseId&#x27;, nullable: true})<br />
+                            @Index()<br />@ManyToOne(&#x27;Course&#x27;, {fieldName: &#x27;courseId&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -447,7 +445,7 @@ import { Course } from &#x27;./course.entity&#x27;;
 import { Task } from &#x27;./task.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
 
-export type ITaskCardProps &#x3D; ICardCProps &amp; { task: Task; dueDate: Date; course?: Course };
+export type ITaskCardProps &#x3D; ICardCProps &amp; { task: Task; dueDate: Date; course: Course };
 
 export interface ITaskCard extends ICard {
 	task: Task;
@@ -485,8 +483,8 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	creator!: User;
 
 	@Index()
-	@ManyToOne(&#x27;Course&#x27;, { fieldName: &#x27;courseId&#x27;, nullable: true })
-	course?: Course;
+	@ManyToOne(&#x27;Course&#x27;, { fieldName: &#x27;courseId&#x27; })
+	course!: Course;
 
 	@Property()
 	draggable &#x3D; true;

@@ -84,6 +84,18 @@
                                 <a href="#addTaskCardId" >addTaskCardId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkCourseEndDate" >checkCourseEndDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkNextYearEndDate" >checkNextYearEndDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkSchoolYearEndDate" >checkSchoolYearEndDate</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
@@ -102,10 +114,6 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#getDefaultDueDate" >getDefaultDueDate</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#replaceCardElements" >replaceCardElements</a>
                             </li>
@@ -117,6 +125,10 @@
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateTaskName" >updateTaskName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#validateDueDate" >validateDueDate</a>
                             </li>
                         </ul>
                     </td>
@@ -255,8 +267,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="179"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:179</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="154"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:154</a></div>
                 </td>
             </tr>
 
@@ -307,6 +319,243 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkCourseEndDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>checkCourseEndDate</b></span>
+                        <a href="#checkCourseEndDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkCourseEndDate(courseEndDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, dueDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="184"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:184</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>courseEndDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>dueDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkNextYearEndDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>checkNextYearEndDate</b></span>
+                        <a href="#checkNextYearEndDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkNextYearEndDate(dueDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="190"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:190</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dueDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkSchoolYearEndDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>checkSchoolYearEndDate</b></span>
+                        <a href="#checkSchoolYearEndDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkSchoolYearEndDate(schoolYearEndDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, dueDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="178"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:178</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolYearEndDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>dueDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                     </div>
                     <div class="io-description">
@@ -422,8 +671,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:79</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:66</a></div>
                 </td>
             </tr>
 
@@ -505,8 +754,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="117"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:117</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:95</a></div>
                 </td>
             </tr>
 
@@ -588,8 +837,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:80</a></div>
                 </td>
             </tr>
 
@@ -653,77 +902,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getDefaultDueDate"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>getDefaultDueDate</b></span>
-                        <a href="#getDefaultDueDate"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getDefaultDueDate(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:93</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>user</td>
-                                    <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="replaceCardElements"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -743,8 +921,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="172"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:172</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="147"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:147</a></div>
                 </td>
             </tr>
 
@@ -826,8 +1004,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:110</a></div>
                 </td>
             </tr>
 
@@ -922,8 +1100,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="189"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:189</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="197"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:197</a></div>
                 </td>
             </tr>
 
@@ -995,6 +1173,77 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validateDueDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>validateDueDate</b></span>
+                        <a href="#validateDueDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateDueDate(validationObject: literal type)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="164"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:164</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>validationObject</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -1023,19 +1272,14 @@ export class TaskCardUc {
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-		let course: Course | undefined;
-
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
 			throw new ForbiddenException();
 		}
 
-		if (params.courseId) {
-			const fetchedCourse &#x3D; await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
-			course &#x3D; fetchedCourse;
-		}
+		const course &#x3D; await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
-		const defaultDueDate &#x3D; this.getDefaultDueDate(user);
+		this.validateDueDate({ params, course, user });
 
 		const taskWithStatusVo &#x3D; await this.createTask(userId, params);
 
@@ -1054,7 +1298,7 @@ export class TaskCardUc {
 			draggable: true,
 			task: taskWithStatusVo.task,
 			visibleAtDate: new Date(),
-			dueDate: defaultDueDate,
+			dueDate: params.dueDate,
 			title: params.title,
 		};
 
@@ -1062,15 +1306,7 @@ export class TaskCardUc {
 			cardParams.visibleAtDate &#x3D; params.visibleAtDate;
 		}
 
-		if (params.dueDate) {
-			cardParams.dueDate &#x3D; params.dueDate;
-		}
-
 		const card &#x3D; new TaskCard(cardParams);
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError(&#x27;Invalid date combination&#x27;);
-		}
 
 		await this.taskCardRepo.save(card);
 
@@ -1091,15 +1327,6 @@ export class TaskCardUc {
 		const taskWithStatusVo &#x3D; await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
-	}
-
-	private getDefaultDueDate(user: User) {
-		const currentSchoolYear &#x3D; user.school.schoolYear;
-		if (currentSchoolYear) {
-			return currentSchoolYear.endDate;
-		}
-		const lastDayOfNextYear &#x3D; new Date(new Date().getFullYear() + 1, 11, 31);
-		return lastDayOfNextYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {
@@ -1142,12 +1369,17 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
+		const course &#x3D; await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+
+		this.validateDueDate({ params, course, user });
+
 		const taskWithStatusVo &#x3D; await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] &#x3D; [];
-		if (params.title) {
-			card.title &#x3D; params.title;
-		}
+		card.title &#x3D; params.title;
+		card.course &#x3D; course;
+		card.dueDate &#x3D; params.dueDate;
 
 		if (params.text) {
 			const texts &#x3D; params.text.map((text) &#x3D;&gt; new RichTextCardElement(text));
@@ -1156,14 +1388,6 @@ export class TaskCardUc {
 
 		if (params.visibleAtDate) {
 			card.visibleAtDate &#x3D; params.visibleAtDate;
-		}
-
-		if (params.dueDate) {
-			card.dueDate &#x3D; params.dueDate;
-		}
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError(&#x27;Invalid date combination&#x27;);
 		}
 
 		await this.replaceCardElements(card, cardElements);
@@ -1187,6 +1411,39 @@ export class TaskCardUc {
 		const taskWithStatusVo &#x3D; await this.taskService.update(userId, taskCard.task.id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
+		const { params, course, user } &#x3D; validationObject;
+		if (course.untilDate) {
+			this.checkCourseEndDate(course.untilDate, params.dueDate);
+		} else if (user.school.schoolYear?.endDate) {
+			this.checkSchoolYearEndDate(user.school.schoolYear.endDate, params.dueDate);
+		} else {
+			this.checkNextYearEndDate(params.dueDate);
+		}
+		if (params.visibleAtDate &amp;&amp; params.visibleAtDate &gt; params.dueDate) {
+			throw new ValidationError(&#x27;Visible at date must be before due date&#x27;);
+		}
+	}
+
+	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
+		if (schoolYearEndDate &lt; dueDate) {
+			throw new ValidationError(&#x27;Due date must be before school year end date&#x27;);
+		}
+	}
+
+	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
+		if (courseEndDate &lt; dueDate) {
+			throw new ValidationError(&#x27;Due date must be before course end date&#x27;);
+		}
+	}
+
+	private checkNextYearEndDate(dueDate: Date) {
+		const lastDayOfNextYear &#x3D; new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+		if (lastDayOfNextYear &lt; dueDate) {
+			throw new ValidationError(&#x27;Due date must be before end of next year&#x27;);
+		}
 	}
 
 	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
