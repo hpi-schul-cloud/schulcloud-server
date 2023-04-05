@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 // application imports
-import { MikroORM } from '@mikro-orm/core';
-import { Logger } from '@nestjs/common';
 /* eslint-disable no-console */
+import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -14,7 +14,6 @@ import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/co
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
 import express from 'express';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
 
 // register source-map-support for debugging
@@ -31,7 +30,8 @@ async function bootstrap() {
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
-	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
+	const logger = await nestApp.resolve(Logger);
+	nestApp.useLogger(logger);
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -83,7 +83,7 @@ async function bootstrap() {
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
 	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		Logger.error(req.path, 'DEPRECATED-PATH');
+		logger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};
 
