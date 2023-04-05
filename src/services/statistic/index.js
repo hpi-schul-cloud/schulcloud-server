@@ -60,12 +60,12 @@ const promises = [
 		model: userModel.userModel.find({ roles: '0000d186816abba584714c99' }),
 	},
 	{
-		name: 'files/directories',
+		name: 'files-directories',
 		promise: FileModel.countDocuments(),
 		model: FileModel.find(),
 	},
 	{
-		name: 'files/sizes',
+		name: 'files-sizes',
 		promise: FileModel.aggregate([
 			{
 				$bucketAuto: {
@@ -77,7 +77,7 @@ const promises = [
 		model: FileModel.find(),
 	},
 	{
-		name: 'files/types',
+		name: 'files-types',
 		promise: FileModel.aggregate([
 			{
 				$group: {
@@ -113,6 +113,7 @@ class StatisticsService {
 	}
 
 	get(id, params) {
+		console.log('MAIK', id);
 		return _.find(promises, { name: id })
 			.model.select({ createdAt: 1 })
 			.exec()
