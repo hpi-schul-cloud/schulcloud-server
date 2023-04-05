@@ -18,7 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/cards';
+const baseRouteName = '/elements';
 
 class API {
 	app: INestApplication;
@@ -27,11 +27,11 @@ class API {
 		this.app = app;
 	}
 
-	async move(cardId: string, contentElementId: string, toCardId: string, toIndex: number) {
+	async move(contentElementId: string, toCardId: string, toPosition: number) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${cardId}/elements/${contentElementId}/position`)
+			.put(`${baseRouteName}/${contentElementId}/position`)
 			.set('Accept', 'application/json')
-			.send({ toIndex, toCardId });
+			.send({ toCardId, toPosition });
 
 		return {
 			error: response.body as ApiValidationError,
@@ -89,19 +89,19 @@ describe(`content element move (api)`, () => {
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, element, parentCard, targetCard } = await setup();
+			const { user, element, targetCard } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.move(parentCard.id, element.id, targetCard.id, 5);
+			const response = await api.move(element.id, targetCard.id, 5);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should actually move the element', async () => {
-			const { user, element, parentCard, targetCard } = await setup();
+			const { user, element, targetCard } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.move(parentCard.id, element.id, targetCard.id, 2);
+			await api.move(element.id, targetCard.id, 2);
 			const result = await em.findOneOrFail(TextElementNode, element.id);
 
 			expect(result.parentId).toEqual(targetCard.id);

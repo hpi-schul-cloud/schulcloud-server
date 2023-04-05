@@ -29,11 +29,11 @@ export class ColumnService {
 		return column;
 	}
 
-	async delete(parent: ColumnBoard, columnId: EntityId): Promise<void> {
-		await this.boardDoService.deleteChildWithDescendants(parent, columnId);
+	async delete(column: Column): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(column);
 	}
 
-	async move(columnId: EntityId, boardId: EntityId, toIndex: number): Promise<void> {
-		await this.boardDoService.moveBoardDo(columnId, boardId, toIndex);
+	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise<void> {
+		await this.boardDoService.move(column, targetBoard, targetPosition);
 	}
 }
