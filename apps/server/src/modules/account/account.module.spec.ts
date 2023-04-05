@@ -37,7 +37,7 @@ describe('AccountModule', () => {
 		expect(accountValidationService).toBeDefined();
 	});
 
-	describe('when FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is enabled', () => {
+	describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is enabled', () => {
 		let moduleFeatureEnabled: TestingModule;
 
 		beforeAll(async () => {
@@ -51,7 +51,7 @@ describe('AccountModule', () => {
 						isGlobal: true,
 						validate: () => {
 							return {
-								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: true,
+								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: true,
 							};
 						},
 					}),
@@ -69,7 +69,7 @@ describe('AccountModule', () => {
 		});
 	});
 
-	describe('when FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is disabled', () => {
+	describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is disabled', () => {
 		let moduleFeatureDisabled: TestingModule;
 
 		beforeAll(async () => {
@@ -83,7 +83,7 @@ describe('AccountModule', () => {
 						isGlobal: true,
 						validate: () => {
 							return {
-								FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
+								FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
 							};
 						},
 					}),

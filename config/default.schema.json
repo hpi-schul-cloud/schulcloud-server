@@ -351,11 +351,6 @@
 			"default": false,
 			"description": "Enables the Identity Management (ErWIn IDM) as account storage."
 		},
-		"FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS": {
-			"type": "boolean",
-			"default": false,
-			"description": "Read operations on account will be resolved through the ErWIn IDM (Keycloak)."
-		},
 		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
 			"type": "boolean",
 			"default": false,

@@ -53,7 +53,7 @@ describe('AccountIdmService Integration', () => {
 					validate: () => {
 						return {
 							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS: false,
+							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
 						};
 					},
 				}),

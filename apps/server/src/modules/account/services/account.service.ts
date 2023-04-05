@@ -26,49 +26,49 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async findById(id: string): Promise<AccountDto> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.findById(id);
 		}
 		return this.accountDb.findById(id);
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.findMultipleByUserId(userIds);
 		}
 		return this.accountDb.findMultipleByUserId(userIds);
 	}
 
 	async findByUserId(userId: string): Promise<AccountDto | null> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.findByUserId(userId);
 		}
 		return this.accountDb.findByUserId(userId);
 	}
 
 	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.findByUserIdOrFail(userId);
 		}
 		return this.accountDb.findByUserIdOrFail(userId);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.findByUsernameAndSystemId(username, systemId);
 		}
 		return this.accountDb.findByUsernameAndSystemId(username, systemId);
 	}
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.searchByUsernamePartialMatch(userName, skip, limit);
 		}
 		return this.accountDb.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
 			return this.accountIdm.searchByUsernameExactMatch(userName);
 		}
 		return this.accountDb.searchByUsernameExactMatch(userName);

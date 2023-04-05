@@ -99,7 +99,7 @@ describe('AccountLookupService', () => {
 			});
 		});
 
-		describe('when id is an internal id and FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is enabled', () => {
+		describe('when id is an internal id and FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is enabled', () => {
 			const setup = () => {
 				configServiceMock.get.mockReturnValue(true);
 				idmServiceMock.findAccountByTecRefId.mockResolvedValue(accountMock);
@@ -112,7 +112,7 @@ describe('AccountLookupService', () => {
 			});
 		});
 
-		describe('when id is an internal id and FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is disabled', () => {
+		describe('when id is an internal id and FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is disabled', () => {
 			const setup = () => {
 				configServiceMock.get.mockReturnValue(false);
 			};
