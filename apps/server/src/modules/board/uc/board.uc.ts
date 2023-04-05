@@ -101,6 +101,16 @@ export class BoardUc {
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}
 
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
+
+		const column = await this.columnService.findById(columnId);
+
+		// TODO check permissions
+
+		await this.columnService.updateTitle(column, title);
+	}
+
 	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 

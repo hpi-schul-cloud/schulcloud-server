@@ -36,4 +36,12 @@ export class ColumnService {
 	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise<void> {
 		await this.boardDoService.move(column, targetBoard, targetPosition);
 	}
+
+	async updateTitle(column: Column, title: string): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(column.id);
+
+		column.title = title;
+
+		await this.boardDoRepo.save(column, parent?.id);
+	}
 }

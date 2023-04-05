@@ -36,7 +36,7 @@ describe(BoardDoService.name, () => {
 		await module.close();
 	});
 
-	describe('moveBoardDo', () => {
+	describe('move', () => {
 		describe('when moving a card', () => {
 			const setup = () => {
 				const cards = cardFactory.buildListWithId(3);
@@ -95,7 +95,7 @@ describe(BoardDoService.name, () => {
 				return { card, targetColumn };
 			};
 
-			it('should persist source- and targetColumn', async () => {
+			it('should throw an exception', async () => {
 				const { card, targetColumn } = setup();
 
 				const fut = () => service.move(card, targetColumn, 0);

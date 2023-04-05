@@ -53,11 +53,8 @@ export class BoardDoRepo {
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
-		const getParent = async (id?: EntityId): Promise<BoardNode | undefined> =>
-			id ? this.boardNodeRepo.findById(BoardNode, id) : undefined;
-
 		const domainObjects = Utils.asArray(domainObject);
-		const parentNode = await getParent(parentId);
+		const parentNode = parentId ? await this.boardNodeRepo.findById(BoardNode, parentId) : undefined;
 		const builder = new BoardNodeBuilderImpl(parentNode);
 		const boardNodes = builder.buildBoardNodes(domainObjects, parentNode?.id);
 		await this.boardNodeRepo.save(boardNodes);

@@ -119,4 +119,29 @@ describe(ColumnService.name, () => {
 			});
 		});
 	});
+
+	describe('updateTitle', () => {
+		describe('when updating the title', () => {
+			it('should call the service', async () => {
+				const column = columnFactory.build();
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
+
+				const newTitle = 'new title';
+
+				await service.updateTitle(column, newTitle);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: newTitle,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+					columnBoard.id
+				);
+			});
+		});
+	});
 });
