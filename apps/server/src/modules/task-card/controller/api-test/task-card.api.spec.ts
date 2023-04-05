@@ -462,10 +462,10 @@ describe('Task-Card Controller (api)', () => {
 		describe('test create endpoint', () => {
 			const createEntities = () => {
 				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-				const course = courseFactory.buildWithId({ teachers: [teacher] });
 				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student1, student2, student3] });
 
 				return { teacher, course, student1, student2, student3 };
 			};
@@ -491,7 +491,7 @@ describe('Task-Card Controller (api)', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
 				expect(status).toBe(201);
-				expect(body.task.users).toStrictEqual([]);
+				expect(body.assignedUsers).toStrictEqual([]);
 			});
 
 			it('student is not allowed to create a new task', async () => {
@@ -515,9 +515,33 @@ describe('Task-Card Controller (api)', () => {
 				expect(response.status).toBe(403);
 			});
 
-			it('create task with one assigned student', async () => {
-				const { teacher, course, student1 } = createEntities();
+			it('create task with one assigned student but student does not belongs to course', async () => {
+				const { teacher, student1 } = createEntities();
+				const course = courseFactory.buildWithId({ teachers: [teacher] });
 				await em.persistAndFlush([teacher, course, student1]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [student1.id],
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: { message: string; type: string } } =
+					await createTaskCardEndpoint(pObject);
+				expect(status).toBe(403);
+				expect(body.message).toBe('Users do not belong to course');
+				expect(body.type).toBe('FORBIDDEN');
+			});
+
+			it('create task with one assigned student', async () => {
+				const { teacher, course, student1, student2, student3 } = createEntities();
+				await em.persistAndFlush([teacher, course, student1, student2, student3]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(teacher);
@@ -533,21 +557,84 @@ describe('Task-Card Controller (api)', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
 				expect(status).toBe(201);
-				expect(body.task.users).toStrictEqual([
+				expect(body.assignedUsers).toStrictEqual([
 					{ id: student1.id, firstName: student1.firstName, lastName: student1.lastName },
 				]);
 			});
 
-			// it('create task with four assigned student', () => {
-			// 	// create user
-			// 	fail('not implemented');
-			// });
+			it('create task with two assigned student', async () => {
+				const { teacher, course, student1, student2, student3 } = createEntities();
+				await em.persistAndFlush([teacher, course, student1, student2, student3]);
+				em.clear();
 
-			// it('create task with undefined assigned students', () => {
-			// 	// create user
-			// 	// should 
-			// 	fail('not implemented');
-			// });
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [student1.id, student2.id],
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
+				expect(status).toBe(201);
+				const result = [student1, student2]
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((user) => {
+						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
+					});
+				expect(body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
+			});
+
+			it('create task with three assigned student', async () => {
+				const { teacher, course, student1, student2, student3 } = createEntities();
+				await em.persistAndFlush([teacher, course, student1, student2, student3]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [student1.id, student2.id, student3.id],
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
+				expect(status).toBe(201);
+				const result = [student1, student2, student3]
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((user) => {
+						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
+					});
+				expect(body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
+			});
+
+			it('create task with undefiend assigned users', async () => {
+				const { teacher, course, student1, student2, student3 } = createEntities();
+				await em.persistAndFlush([teacher, course, student1, student2, student3]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: undefined,
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
+				expect(status).toBe(201);
+
+				expect(body.task.users).toBeUndefined();
+			});
 		});
 	});
 });
