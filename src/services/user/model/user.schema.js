@@ -119,6 +119,8 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
+
+// this index is updated in nest part, we keep it here only for tests
 userSchema.index(
 	{
 		firstName: 'text',
@@ -127,6 +129,7 @@ userSchema.index(
 		firstNameSearchValues: 'text',
 		lastNameSearchValues: 'text',
 		emailSearchValues: 'text',
+		schoolId: 1,
 	},
 	{
 		weights: {
