@@ -6,7 +6,6 @@ import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
-import { check } from 'prettier';
 import { ITaskCardCRUD } from '../interface';
 
 @Injectable()
