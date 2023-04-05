@@ -28,7 +28,7 @@ export class AccountLookupService {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			const account = await this.idmService.findAccountById(id);
 			return new ObjectId(account.attRefTechnicalId);
 		}
@@ -45,7 +45,7 @@ export class AccountLookupService {
 		if (!(id instanceof ObjectId) && !ObjectId.isValid(id)) {
 			return id;
 		}
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS') === true) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			const account = await this.idmService.findAccountByTecRefId(id.toString());
 			return account.id;
 		}

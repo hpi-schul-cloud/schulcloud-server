@@ -24,7 +24,7 @@ describe('AccountIdmService Integration', () => {
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = `test-realm-${v1()}`;
-	const technicalRefId = 'aTechnicalReferenceId';
+	const technicalRefId = new ObjectId().toString();
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',

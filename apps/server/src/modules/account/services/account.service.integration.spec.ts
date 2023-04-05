@@ -13,6 +13,7 @@ import { KeycloakIdentityManagementService } from '@shared/infra/identity-manage
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { v1 } from 'uuid';
 import { Logger } from '../../../core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
@@ -34,7 +35,7 @@ describe('AccountService Integration', () => {
 	let em: EntityManager;
 	let isIdmReachable = true;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1()}`;
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
