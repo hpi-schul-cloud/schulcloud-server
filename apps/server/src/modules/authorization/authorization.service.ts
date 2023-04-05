@@ -19,6 +19,7 @@ export class AuthorizationService {
 		}
 	}
 
+	// TODO: in isAuthorized umbenennen
 	public hasPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
 		return this.ruleManager.hasPermission(user, entity, context);
 	}
@@ -40,6 +41,7 @@ export class AuthorizationService {
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {
+		// TODO: I think this try-catch is unnecessary and wrong because there can be different reasons why the entity cannot be loaded and they should bubble up.
 		try {
 			const [user, entity] = await Promise.all([
 				this.getUserWithPermissions(userId),

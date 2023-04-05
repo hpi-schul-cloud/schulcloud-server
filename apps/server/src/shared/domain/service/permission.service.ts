@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
 
