@@ -66,12 +66,16 @@ export class TaskCardUc {
 	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
-			courseId: '',
+			courseId: params.courseId,
+			dueDate: params.dueDate,
+			availableDate: new Date(),
 			private: false,
 		};
-		if (params.courseId) {
-			taskParams.courseId = params.courseId;
+
+		if (params.visibleAtDate) {
+			taskParams.availableDate = params.visibleAtDate;
 		}
+
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
@@ -122,7 +126,7 @@ export class TaskCardUc {
 
 		this.validateDueDate({ params, course, user });
 
-		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
+		const taskWithStatusVo = await this.updateTask(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
 		card.title = params.title;
@@ -194,9 +198,11 @@ export class TaskCardUc {
 		}
 	}
 
-	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
 		const taskParams = {
 			name: params.title,
+			courseId: params.courseId,
+			dueDate: params.dueDate,
 		};
 		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
