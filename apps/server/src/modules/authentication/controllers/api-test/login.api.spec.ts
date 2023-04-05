@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { RequestBody } from '@src/modules/authentication/strategy/ldap.strategy';
+import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import axios from 'axios';
@@ -12,7 +12,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { SSOErrorCode } from '../../../oauth/error/sso-error-code.enum';
+import { LdapAuthorizationParams, LocalAuthorizationParams } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -116,7 +116,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', async () => {
-				const params = {
+				const params: LocalAuthorizationParams = {
 					username: user.email,
 					password: defaultPassword,
 				};
@@ -176,7 +176,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', async () => {
-				const params: RequestBody = {
+				const params: LdapAuthorizationParams = {
 					username: ldapAccountUserName,
 					password: defaultPassword,
 					schoolId: school.id,
@@ -296,7 +296,7 @@ describe('Login Controller (api)', () => {
 				};
 			};
 
-			it('should return jwt', async () => {
+			it('should throw a InternalServerErrorException', async () => {
 				const { system } = await setup();
 
 				await request(app.getHttpServer())
