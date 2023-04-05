@@ -1,5 +1,4 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ValidationError } from '@shared/common';
 import {
 	CardElementResponse,
 	CardElementType,
