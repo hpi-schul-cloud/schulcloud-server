@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, INestApplication, Post, Put, UnauthorizedException } from '@nestjs/common';
+import {
+	Controller,
+	Delete,
+	Get,
+	HttpStatus,
+	INestApplication,
+	Patch,
+	Post,
+	Put,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 import { accountFactory } from './factory';
@@ -8,22 +18,27 @@ import { TestRequest } from './test-request';
 class TestController {
 	@Delete(':id')
 	async delete() {
-		return Promise.resolve({});
+		return Promise.resolve({ method: 'delete' });
 	}
 
 	@Post()
 	async post() {
-		return Promise.resolve({});
+		return Promise.resolve({ method: 'post' });
 	}
 
 	@Get(':id')
 	async get() {
-		return Promise.resolve({});
+		return Promise.resolve({ method: 'get' });
 	}
 
-	@Put(':id')
-	async update() {
-		return Promise.resolve({});
+	@Put()
+	async put() {
+		return Promise.resolve({ method: 'put' });
+	}
+
+	@Patch(':id')
+	async patch() {
+		return Promise.resolve({ method: 'patch' });
 	}
 
 	@Post('/authentication/local')
@@ -124,8 +139,8 @@ describe('test-request', () => {
 				const result = await request.get();
 
 				expect(spy).toBeCalled();
-				expect(result.statusCode).toBeDefined();
-				expect(result.body).toBeDefined();
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual({ method: 'get' });
 			});
 
 			it('should pass accout to getJwt request', async () => {
@@ -144,8 +159,8 @@ describe('test-request', () => {
 				const result = await request.post();
 
 				expect(spy).toBeCalled();
-				expect(result.statusCode).toBeDefined();
-				expect(result.body).toBeDefined();
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual({ method: 'post' });
 			});
 
 			it('should pass accout to getJwt request', async () => {
@@ -164,8 +179,8 @@ describe('test-request', () => {
 				const result = await request.delete();
 
 				expect(spy).toBeCalled();
-				expect(result.statusCode).toBeDefined();
-				expect(result.body).toBeDefined();
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual({ method: 'delete' });
 			});
 
 			it('should pass accout to getJwt request', async () => {
@@ -181,17 +196,37 @@ describe('test-request', () => {
 			it('should resolve requests', async () => {
 				const { request, spy } = setup();
 
-				const result = await request.update();
+				const result = await request.put();
 
 				expect(spy).toBeCalled();
-				expect(result.statusCode).toBeDefined();
-				expect(result.body).toBeDefined();
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual({ method: 'put' });
+			});
+
+			it('should pass accout to getJwt request', async () => {
+				const { request, spy, account } = setup();
+
+				await request.put('', {}, account);
+
+				expect(spy).toBeCalledWith(account);
+			});
+		});
+
+		describe('patch', () => {
+			it('should resolve requests', async () => {
+				const { request, spy } = setup();
+
+				const result = await request.patch();
+
+				expect(spy).toBeCalled();
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual({ method: 'patch' });
 			});
 
 			it('should pass accout to getJwt request', async () => {
 				const { request, spy, account, id } = setup();
 
-				await request.update(id, {}, account);
+				await request.patch(id, {}, account);
 
 				expect(spy).toBeCalledWith(account);
 			});

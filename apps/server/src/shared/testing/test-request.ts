@@ -25,6 +25,9 @@ const testReqestConst = {
 	errorMessage: 'TestRequest: Can not cast to local AutenticationResponse:',
 };
 
+/**
+ * Note res.cookie is not supported atm, feel free to add this
+ */
 export class TestRequest {
 	private readonly app: INestApplication;
 
@@ -46,8 +49,10 @@ export class TestRequest {
 	}
 
 	private getPath(routeNameInput = ''): string {
-		const routeName = this.checkAndAddPrefix(routeNameInput);
-		const path = this.baseRoute + routeName;
+		// const routeName = this.checkAndAddPrefix(routeNameInput);
+		// const path = this.baseRoute + routeName;
+		const url = new URL(routeNameInput, this.baseRoute);
+		const path = url.toString();
 
 		return path;
 	}
@@ -110,7 +115,7 @@ export class TestRequest {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = await supertest(this.app.getHttpServer()).get(path).set(header).query(query);
+		const response = supertest(this.app.getHttpServer()).get(path).set(header).query(query);
 
 		return response;
 	}
@@ -124,12 +129,12 @@ export class TestRequest {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = await supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
+		const response = supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
 
 		return response;
 	}
 
-	public async update(
+	public async put(
 		routeName?: string,
 		data = {},
 		account?: Account,
@@ -139,7 +144,22 @@ export class TestRequest {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = await supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
+		const response = supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
+
+		return response;
+	}
+
+	public async patch(
+		routeName?: string,
+		data = {},
+		account?: Account,
+		query: string | Record<string, string> = {},
+		additionalHeader: Record<string, string> = {}
+	): Promise<TestRequestResponse> {
+		const path = this.getPath(routeName);
+		const formatedJwt = await this.getJwt(account);
+		const header = this.getHeader(formatedJwt, additionalHeader);
+		const response = supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
 
 		return response;
 	}
@@ -154,7 +174,7 @@ export class TestRequest {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = await supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
+		const response = supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
 
 		return response;
 	}
