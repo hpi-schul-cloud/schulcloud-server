@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MigrationUc } from '../uc/migration.uc';
 import { UserMigrationController } from './user-migration.controller';
-import { PageContentResponse } from './dto/page-content.response';
+import { PageContentResponse } from './dto/response/page-content.response';
 import { PageTypes } from '../interface/page-types.enum';
 import { PageContentDto } from '../service/dto/page-content.dto';
 import { PageContentMapper } from '../mapper/page-content.mapper';
-import { PageContentQueryParams } from './dto/page-type.query.param';
+import { PageContentQueryParams } from './dto/request/page-type.query.param';
 
 describe('MigrationController', () => {
 	let module: TestingModule;
