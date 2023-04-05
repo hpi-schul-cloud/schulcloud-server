@@ -38,9 +38,15 @@ export class TestRequest {
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
 	}
 
+	private isSlash(inputPath: string, pos: number): boolean {
+		const isSlash = inputPath.charAt(pos) === '/';
+
+		return isSlash;
+	}
+
 	private checkAndAddPrefix(inputPath = '/'): string {
 		let path = '';
-		if (inputPath.charAt(0) !== '/') {
+		if (!this.isSlash(inputPath, 0)) {
 			path = '/';
 		}
 		path += inputPath;
@@ -48,11 +54,18 @@ export class TestRequest {
 		return path;
 	}
 
+	private cleanupPath(inputPath: string): string {
+		let path = inputPath;
+		if (this.isSlash(path, 0) && this.isSlash(path, 1)) {
+			path = path.slice(1);
+		}
+
+		return path;
+	}
+
 	private getPath(routeNameInput = ''): string {
-		// const routeName = this.checkAndAddPrefix(routeNameInput);
-		// const path = this.baseRoute + routeName;
-		const url = new URL(routeNameInput, this.baseRoute);
-		const path = url.toString();
+		const routeName = this.checkAndAddPrefix(routeNameInput);
+		const path = this.cleanupPath(this.baseRoute + routeName);
 
 		return path;
 	}

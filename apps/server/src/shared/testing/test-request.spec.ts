@@ -134,9 +134,9 @@ describe('test-request', () => {
 
 		describe('get', () => {
 			it('should resolve requests', async () => {
-				const { request, spy } = setup();
+				const { request, spy, id } = setup();
 
-				const result = await request.get();
+				const result = await request.get(id);
 
 				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
@@ -159,7 +159,7 @@ describe('test-request', () => {
 				const result = await request.post();
 
 				expect(spy).toBeCalled();
-				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.statusCode).toEqual(HttpStatus.CREATED);
 				expect(result.body).toEqual({ method: 'post' });
 			});
 
@@ -174,9 +174,9 @@ describe('test-request', () => {
 
 		describe('delete', () => {
 			it('should resolve requests', async () => {
-				const { request, spy } = setup();
+				const { request, spy, id } = setup();
 
-				const result = await request.delete();
+				const result = await request.delete(id);
 
 				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
@@ -214,9 +214,9 @@ describe('test-request', () => {
 
 		describe('patch', () => {
 			it('should resolve requests', async () => {
-				const { request, spy } = setup();
+				const { request, spy, id } = setup();
 
-				const result = await request.patch();
+				const result = await request.patch(id);
 
 				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
