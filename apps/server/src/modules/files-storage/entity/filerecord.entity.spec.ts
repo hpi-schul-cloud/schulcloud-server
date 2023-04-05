@@ -226,6 +226,24 @@ describe('FileRecord Entity', () => {
 		});
 	});
 
+	describe('getSecurityToken is called', () => {
+		describe('WHEN security token exists', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				return { fileRecord };
+			};
+
+			it('should return the correct token', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getSecurityToken();
+
+				expect(result).toEqual(fileRecord.securityCheck.requestToken);
+			});
+		});
+	});
+
 	describe('getParentInfo is called', () => {
 		describe('WHEN parentId and parentType and mimeType exists', () => {
 			const setup = () => {
