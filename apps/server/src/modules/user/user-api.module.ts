@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain';
+import { AuthorizationModule } from '../authorization';
 import { UserController } from './controller';
 import { UserUc } from './uc';
 import { UserModule } from './user.module';
 
 @Module({
-	imports: [UserModule],
+	imports: [UserModule, AuthorizationModule],
 	controllers: [UserController],
-	providers: [PermissionService, UserUc],
+	providers: [UserUc],
 })
 export class UserApiModule {}

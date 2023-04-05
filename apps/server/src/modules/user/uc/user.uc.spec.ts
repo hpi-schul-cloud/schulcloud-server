@@ -2,9 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, PermissionService, User } from '@shared/domain';
+import { LanguageType, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserUc } from './user.uc';
 
@@ -12,7 +13,7 @@ describe('UserUc', () => {
 	let module: TestingModule;
 	let userUc: UserUc;
 	let userRepo: DeepMocked<UserRepo>;
-	let permissionService: DeepMocked<PermissionService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let config: DeepMocked<ConfigService>;
 
 	afterAll(async () => {
@@ -32,8 +33,8 @@ describe('UserUc', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 				{
 					provide: ConfigService,
@@ -44,7 +45,7 @@ describe('UserUc', () => {
 
 		userUc = module.get(UserUc);
 		userRepo = module.get(UserRepo);
-		permissionService = module.get(PermissionService);
+		authorizationService = module.get(AuthorizationService);
 		config = module.get(ConfigService);
 		await setupEntities();
 	});
@@ -63,14 +64,14 @@ describe('UserUc', () => {
 
 		afterEach(() => {
 			userRepo.findById.mockRestore();
-			permissionService.resolvePermissions.mockRestore();
+			authorizationService.resolvePermissions.mockRestore();
 		});
 
 		it('should provide information about the passed userId', async () => {
 			await userUc.me(user.id);
 
 			expect(userRepo.findById).toHaveBeenCalled();
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
+			expect(authorizationService.resolvePermissions).toHaveBeenCalledWith(user);
 		});
 	});
 

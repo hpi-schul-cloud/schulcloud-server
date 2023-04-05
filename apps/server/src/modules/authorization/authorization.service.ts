@@ -74,4 +74,8 @@ export class AuthorizationService {
 	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
 		return this.authorizationHelper.checkOneOfPermissions(user, requiredPermissions);
 	}
+
+	public resolvePermissions(user: User): string[] {
+		return this.authorizationHelper.resolvePermissions(user);
+	}
 }

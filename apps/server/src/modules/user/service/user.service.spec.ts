@@ -2,16 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	IFindOptions,
-	LanguageType,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SortOrder,
-	User,
-} from '@shared/domain';
+import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleRepo, UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -19,6 +10,7 @@ import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
+import { AuthorizationService } from '@src/modules/authorization';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user/service/user.service';
@@ -31,7 +23,7 @@ describe('UserService', () => {
 
 	let userRepo: DeepMocked<UserRepo>;
 	let userDORepo: DeepMocked<UserDORepo>;
-	let permissionService: DeepMocked<PermissionService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
@@ -61,8 +53,8 @@ describe('UserService', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 				{
 					provide: ConfigService,
@@ -82,7 +74,7 @@ describe('UserService', () => {
 
 		userRepo = module.get(UserRepo);
 		userDORepo = module.get(UserDORepo);
-		permissionService = module.get(PermissionService);
+		authorizationService = module.get(AuthorizationService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
@@ -114,7 +106,7 @@ describe('UserService', () => {
 			await service.me(user.id);
 
 			expect(userRepo.findById).toHaveBeenCalled();
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
+			expect(authorizationService.resolvePermissions).toHaveBeenCalledWith(user);
 		});
 	});
 

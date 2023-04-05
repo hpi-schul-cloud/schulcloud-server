@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, LanguageType, PermissionService, User } from '@shared/domain';
+import { EntityId, LanguageType, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
+import { AuthorizationService } from '@src/modules/authorization';
 import { UserService } from '@src/modules/user/service/user.service';
 import { ChangeLanguageParams } from '../controller/dto';
 import { IUserConfig } from '../interfaces';
@@ -10,14 +11,14 @@ import { IUserConfig } from '../interfaces';
 export class UserUc {
 	constructor(
 		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly userService: UserService
 	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
-		const permissions = this.permissionService.resolvePermissions(user);
+		const permissions = this.authorizationService.resolvePermissions(user);
 
 		return [user, permissions];
 	}
