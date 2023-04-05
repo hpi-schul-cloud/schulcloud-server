@@ -88,8 +88,6 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
-		console.log('\n\nupdateLastTriedFailedLogin\n\n');
-
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;

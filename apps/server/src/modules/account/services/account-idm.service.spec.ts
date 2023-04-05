@@ -15,7 +15,6 @@ describe('AccountIdmService', () => {
 	let accountIdmService: AccountServiceIdm;
 	let mapper: AccountIdmToDtoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
-	let configServiceMock: DeepMocked<ConfigService>;
 	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 
 	const mockIdmAccountRefId = 'tecId';
@@ -45,10 +44,6 @@ describe('AccountIdmService', () => {
 					useValue: createMock<IdentityManagementService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
-				{
 					provide: AccountLookupService,
 					useValue: createMock<AccountLookupService>(),
 				},
@@ -57,7 +52,6 @@ describe('AccountIdmService', () => {
 		accountIdmService = module.get(AccountServiceIdm);
 		mapper = module.get(AccountIdmToDtoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
-		configServiceMock = module.get(ConfigService);
 		accountLookupServiceMock = module.get(AccountLookupService);
 	});
 
@@ -71,7 +65,6 @@ describe('AccountIdmService', () => {
 
 	describe('save', () => {
 		const setup = () => {
-			configServiceMock.get.mockReturnValue(false);
 			idmServiceMock.createAccount.mockResolvedValue(mockIdmAccount.id);
 			idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
 			idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
@@ -198,18 +191,29 @@ describe('AccountIdmService', () => {
 	});
 
 	describe('delete', () => {
-		const setup = () => {
-			configServiceMock.get.mockReturnValue(false);
-			idmServiceMock.findAccountByTecRefId.mockResolvedValue(mockIdmAccount);
-			idmServiceMock.findAccountByFctIntId.mockResolvedValue(mockIdmAccount);
-			idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
-			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
-		};
+		describe('when deleting existing account', () => {
+			const setup = () => {
+				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
+				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+			};
 
-		it('should delete account via idm', async () => {
-			setup();
-			await expect(accountIdmService.delete(mockIdmAccountRefId)).resolves.not.toThrow();
-			expect(idmServiceMock.deleteAccountById).toHaveBeenCalledWith(mockIdmAccount.id);
+			it('should delete account via idm', async () => {
+				setup();
+				await expect(accountIdmService.delete(mockIdmAccountRefId)).resolves.not.toThrow();
+				expect(idmServiceMock.deleteAccountById).toHaveBeenCalledWith(mockIdmAccount.id);
+			});
+		});
+
+		describe('when deleting non existing account', () => {
+			const setup = () => {
+				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
+				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
+			};
+
+			it('should throw error', async () => {
+				setup();
+				await expect(accountIdmService.delete(mockIdmAccountRefId)).rejects.toThrow();
+			});
 		});
 	});
 
@@ -401,6 +405,7 @@ describe('AccountIdmService', () => {
 			const setup = () => {
 				idmServiceMock.findAccountByTecRefId.mockResolvedValue(mockIdmAccount);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
 			};
 
 			it('should return the account', async () => {
@@ -414,19 +419,6 @@ describe('AccountIdmService', () => {
 				await accountIdmService.updateLastTriedFailedLogin('id', new Date());
 				expect(idmServiceMock.setUserAttribute).toHaveBeenCalledTimes(1);
 			});
-		});
-	});
-
-	describe('when FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is enabled', () => {
-		const setup = () => {
-			configServiceMock.get.mockReturnValue(true);
-			idmServiceMock.findAccountByFctIntId.mockResolvedValue(mockIdmAccount);
-		};
-
-		// test only the branch where FEATURE_IDENTITY_MANAGEMENT_USE_ACCOUNTS is enabled and to satisfy the coverage
-		it('should cover branch', async () => {
-			setup();
-			await expect(accountIdmService.delete(mockIdmAccount.id)).resolves.not.toThrow();
 		});
 	});
 });

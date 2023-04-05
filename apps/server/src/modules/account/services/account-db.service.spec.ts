@@ -1,7 +1,5 @@
-import { createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
@@ -9,7 +7,6 @@ import { IdentityManagementService } from '@shared/infra/identity-management/ide
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
-import { IServerConfig } from '@src/modules/server';
 import bcrypt from 'bcryptjs';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
@@ -17,11 +14,12 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 
-describe('AccountService', () => {
+describe('AccountDbService', () => {
 	let module: TestingModule;
 	let accountService: AbstractAccountService;
 	let mockAccounts: Account[];
 	let accountRepo: AccountRepo;
+	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 
 	const defaultPassword = 'DummyPasswd!1';
 
@@ -115,17 +113,25 @@ describe('AccountService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<IServerConfig, true>>(),
-				},
-				{
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
+				},
+				{
+					provide: AccountLookupService,
+					useValue: createMock<AccountLookupService>({
+						getInternalId: (id: EntityId | ObjectId): Promise<ObjectId | null> => {
+							if (ObjectId.isValid(id)) {
+								return Promise.resolve(new ObjectId(id));
+							}
+							return Promise.resolve(null);
+						},
+					}),
 				},
 			],
 		}).compile();
 		accountRepo = module.get(AccountRepo);
 		accountService = module.get(AccountServiceDb);
+		accountLookupServiceMock = module.get(AccountLookupService);
 		await setupEntities();
 	});
 
@@ -425,9 +431,22 @@ describe('AccountService', () => {
 	});
 
 	describe('delete', () => {
-		it('should delete account via repo', async () => {
-			await accountService.delete(mockTeacherAccount.id);
-			expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
+		describe('when deleting existing account', () => {
+			it('should delete account via repo', async () => {
+				await accountService.delete(mockTeacherAccount.id);
+				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
+			});
+		});
+
+		describe('when deleting non existing account', () => {
+			const setup = () => {
+				accountLookupServiceMock.getInternalId.mockResolvedValueOnce(null);
+			};
+
+			it('should throw', async () => {
+				setup();
+				await expect(accountService.delete(mockTeacherAccount.id)).rejects.toThrow();
+			});
 		});
 	});
 
