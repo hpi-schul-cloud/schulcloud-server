@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
-import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
+import { CardElement, CardElementType, CardType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -635,6 +635,54 @@ describe('Task-Card Controller (api)', () => {
 
 				expect(body.task.users).toBeUndefined();
 			});
+		});
+
+		describe('update task card', () => {
+			const updateTaskCardEndpoint = async (taskCardId: string, payload: TaskCardParams) =>
+				request(app.getHttpServer()).patch(`/cards/task/${taskCardId}`).set('Accept', 'application/json').send(payload);
+
+			const createEntities = () => {
+				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student1, student2, student3] });
+				const title = 'title test';
+				const task = taskFactory.build({ name: title, creator: teacher, course, users: [student1] });
+				const taskCard = taskCardFactory.buildWithId({ creator: teacher, task, cardType: CardType.Task, title });
+				return { teacher, course, student1, student2, student3, task, taskCard };
+			};
+
+			it('update task card as student is invalid', async () => {
+				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const taskCardUpdateParams: TaskCardParams = {
+					assignedUsers: [student1.id, student2.id, student3.id],
+					title: 'test title', // title should not be required
+				};
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+					taskCard.id,
+					taskCardUpdateParams
+				);
+				expect(status).toBe(200);
+				const result = [student1, student2, student3]
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((user) => {
+						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
+					});
+				expect(body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
+				expect(body.task.users?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
+			});
+
+			
+
+
 		});
 	});
 });

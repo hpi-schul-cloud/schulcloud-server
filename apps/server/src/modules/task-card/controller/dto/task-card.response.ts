@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { CardElementResponse } from '@shared/domain';
+import { CardElementResponse, UsersList } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
@@ -12,6 +12,7 @@ export class TaskCardResponse {
 		this.dueDate = dueDate;
 		this.title = title;
 		this.cardElements = cardElements;
+		this.assignedUsers = task.users;
 	}
 
 	@ApiProperty({
@@ -57,4 +58,9 @@ export class TaskCardResponse {
 		description: 'Due date of the task card',
 	})
 	dueDate: Date;
+
+	@ApiPropertyOptional({
+		description: 'Assigned students',
+	})
+	assignedUsers?: UsersList[];
 }
