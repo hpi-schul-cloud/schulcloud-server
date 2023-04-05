@@ -305,7 +305,7 @@ export class FilesStorageService {
 		return [response, count];
 	}
 
-	public async copyFileRecord(
+	private async copyFileRecord(
 		sourceFile: FileRecord,
 		targetParams: FileRecordParams,
 		userId: EntityId
@@ -322,8 +322,10 @@ export class FilesStorageService {
 		}
 	}
 
-	// TODO: should be private
-	public async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
+	private async copyFilesWithRollbackOnError(
+		sourceFile: FileRecord,
+		targetFile: FileRecord
+	): Promise<CopyFileResponse> {
 		try {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
@@ -355,6 +357,7 @@ export class FilesStorageService {
 				return fileResponse;
 			} catch (error) {
 				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
+
 				return {
 					sourceId: sourceFile.id,
 					name: sourceFile.getName(),

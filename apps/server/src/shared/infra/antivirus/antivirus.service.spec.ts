@@ -66,7 +66,7 @@ describe('AntivirusService', () => {
 			});
 		});
 
-		describe('when amqpConnection throw an error', () => {
+		describe('when amqpConnection throws an error', () => {
 			const setup = () => {
 				const requestToken = uuid();
 
