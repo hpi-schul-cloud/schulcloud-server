@@ -8,7 +8,6 @@ import {
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeParams,
@@ -28,6 +27,7 @@ import {
 	ToolConfigurationListResponse,
 } from '../dto';
 import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
+import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 describe('ExternalToolResponseMapper', () => {
 	let module: TestingModule;
@@ -48,6 +48,8 @@ describe('ExternalToolResponseMapper', () => {
 	const setup = () => {
 		const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({
 			name: 'mockName',
+			displayName: 'displayName',
+			description: 'description',
 			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
 			scope: CustomParameterScopeParams.SCHOOL,
@@ -80,6 +82,8 @@ describe('ExternalToolResponseMapper', () => {
 
 		const customParameterDO: CustomParameterDO = new CustomParameterDO({
 			name: 'mockName',
+			displayName: 'displayName',
+			description: 'description',
 			default: 'mockDefault',
 			location: CustomParameterLocation.PATH,
 			scope: CustomParameterScope.SCHOOL,
@@ -225,6 +229,8 @@ describe('ExternalToolResponseMapper', () => {
 			it('should map ExternalToolDO to ExternalToolConfigurationTemplateResponse', () => {
 				const externalToolDO: ExternalToolDO = externalToolDOFactory
 					.withCustomParameters(1, {
+						displayName: 'displayName',
+						description: 'description',
 						scope: CustomParameterScope.SCHOOL,
 						type: CustomParameterType.STRING,
 						location: CustomParameterLocation.PATH,
@@ -250,6 +256,8 @@ describe('ExternalToolResponseMapper', () => {
 							type: CustomParameterTypeParams.STRING,
 							location: CustomParameterLocationParams.PATH,
 							name: 'customParameter',
+							displayName: 'displayName',
+							description: 'description',
 							isOptional: false,
 							defaultValue: 'defaultValue',
 						}),

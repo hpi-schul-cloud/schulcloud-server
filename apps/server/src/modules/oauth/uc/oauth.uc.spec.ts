@@ -300,85 +300,76 @@ describe('OAuthUc', () => {
 	});
 
 	describe('migration', () => {
-		const setupMigration = () => {
-			const code = '43534543jnj543342jn2';
-
-			const query: AuthorizationParams = { code, state: 'state' };
-
-			const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
-				state: 'state',
-				systemId: 'systemId',
-				provider: 'mock_provider',
-				userLoginMigration: true,
-			});
-
-			const oauthConfig: OauthConfigDto = new OauthConfigDto({
-				clientId: '12345',
-				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-				grantType: 'authorization_code',
-				scope: 'openid uuid',
-				responseType: 'code',
-				authEndpoint: 'mock_authEndpoint',
-				provider: 'mock_provider',
-				logoutEndpoint: 'mock_logoutEndpoint',
-				issuer: 'mock_issuer',
-				jwksEndpoint: 'mock_jwksEndpoint',
-				redirectUri: 'mock_codeRedirectUri',
-			});
-			const system: SystemDto = new SystemDto({
-				id: 'systemId',
-				type: 'oauth',
-				oauthConfig,
-			});
-
-			const externalUserId = 'externalUserId';
-
-			const oauthData: OauthDataDto = new OauthDataDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'systemId',
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
-				}),
-				externalUser: new ExternalUserDto({
-					externalId: externalUserId,
-				}),
-			});
-
-			const userMigrationDto: MigrationDto = new MigrationDto({
-				redirect: 'https://mock.de/migration/succeed',
-			});
-
-			const userMigrationFailedDto: MigrationDto = new MigrationDto({
-				redirect: 'https://mock.de/dashboard',
-			});
-			const tokenDto: OAuthTokenDto = new OAuthTokenDto({
-				idToken: 'idToken',
-				refreshToken: 'refreshToken',
-				accessToken: 'accessToken',
-			});
-
-			oauthService.requestToken.mockResolvedValue(tokenDto);
-			provisioningService.getData.mockResolvedValue(oauthData);
-
-			return {
-				query,
-				cachedState,
-				system,
-				userMigrationDto,
-				userMigrationFailedDto,
-				tokenDto,
-				oauthData,
-				oauthConfig,
-			};
-		};
-
 		describe('migrate is called', () => {
 			describe('when authorize user and migration was successful', () => {
-				it('should return redirect to migration succeed page', async () => {
-					const { query, cachedState, system, userMigrationDto, tokenDto } = setupMigration();
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const oauthConfig: OauthConfigDto = new OauthConfigDto({
+						clientId: '12345',
+						clientSecret: 'mocksecret',
+						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						grantType: 'authorization_code',
+						scope: 'openid uuid',
+						responseType: 'code',
+						authEndpoint: 'mock_authEndpoint',
+						provider: 'mock_provider',
+						logoutEndpoint: 'mock_logoutEndpoint',
+						issuer: 'mock_issuer',
+						jwksEndpoint: 'mock_jwksEndpoint',
+						redirectUri: 'mock_codeRedirectUri',
+					});
+					const system: SystemDto = new SystemDto({
+						id: 'systemId',
+						type: 'oauth',
+						oauthConfig,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+
+					return {
+						query,
+						cachedState,
+					};
+				};
+
+				it('should return redirect to migration succeed page', async () => {
+					const { query, cachedState } = setupMigration();
 
 					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -386,10 +377,7 @@ describe('OAuthUc', () => {
 				});
 
 				it('should remove the jwt from the whitelist', async () => {
-					const { query, system, userMigrationDto, cachedState, tokenDto } = setupMigration();
-					systemService.findById.mockResolvedValue(system);
-					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+					const { query, cachedState } = setupMigration();
 
 					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -398,13 +386,78 @@ describe('OAuthUc', () => {
 			});
 
 			describe('when the jwt cannot be removed', () => {
-				it('should throw', async () => {
-					const { query, system, userMigrationDto, cachedState, tokenDto } = setupMigration();
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const oauthConfig: OauthConfigDto = new OauthConfigDto({
+						clientId: '12345',
+						clientSecret: 'mocksecret',
+						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						grantType: 'authorization_code',
+						scope: 'openid uuid',
+						responseType: 'code',
+						authEndpoint: 'mock_authEndpoint',
+						provider: 'mock_provider',
+						logoutEndpoint: 'mock_logoutEndpoint',
+						issuer: 'mock_issuer',
+						jwksEndpoint: 'mock_jwksEndpoint',
+						redirectUri: 'mock_codeRedirectUri',
+					});
+					const system: SystemDto = new SystemDto({
+						id: 'systemId',
+						type: 'oauth',
+						oauthConfig,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
+
 					const error: Error = new Error('testError');
 					systemService.findById.mockResolvedValue(system);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					authenticationService.removeJwtFromWhitelist.mockRejectedValue(error);
+
+					return {
+						query,
+						cachedState,
+						error,
+					};
+				};
+
+				it('should throw', async () => {
+					const { query, error, cachedState } = setupMigration();
 
 					const func = () => uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -413,10 +466,53 @@ describe('OAuthUc', () => {
 			});
 
 			describe('when migration failed', () => {
-				it('should return redirect to dashboard ', async () => {
-					const { query, cachedState, userMigrationFailedDto, tokenDto } = setupMigration();
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+					});
+
+					const userMigrationFailedDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/dashboard',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationFailedDto);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+
+					return {
+						query,
+						cachedState,
+					};
+				};
+
+				it('should return redirect to dashboard ', async () => {
+					const { query, cachedState } = setupMigration();
 
 					const result: MigrationDto = await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -424,23 +520,127 @@ describe('OAuthUc', () => {
 				});
 			});
 
-			describe('when external school and official school number is defined and school has to be migrated', () => {
-				it('should call migrateSchool', async () => {
-					const { oauthData, query, cachedState, userMigrationDto, tokenDto } = setupMigration();
-					oauthData.externalSchool = {
-						externalId: 'mockId',
-						officialSchoolNumber: 'mockNumber',
-						name: 'mockName',
+			describe('when external school and official school number is defined ', () => {
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+						externalSchool: {
+							externalId: 'mockId',
+							officialSchoolNumber: 'mockNumber',
+							name: 'mockName',
+						},
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
+					oauthService.authenticateUser.mockResolvedValue(tokenDto);
+					return {
+						query,
+						cachedState,
+						oauthData,
 					};
+				};
+
+				it('should call schoolToMigrate', async () => {
+					const { oauthData, query, cachedState } = setupMigration();
+
+					await uc.migrate('jwt', 'currentUserId', query, cachedState);
+
+					expect(schoolMigrationService.schoolToMigrate).toHaveBeenCalledWith(
+						'currentUserId',
+						oauthData.externalSchool?.externalId,
+						oauthData.externalSchool?.officialSchoolNumber
+					);
+				});
+			});
+
+			describe('when external school and official school number is defined and school has to be migrated', () => {
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+						externalSchool: {
+							externalId: 'mockId',
+							officialSchoolNumber: 'mockNumber',
+							name: 'mockName',
+						},
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
 					const schoolToMigrate: SchoolDO | void = new SchoolDO({ name: 'mockName' });
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolToMigrate);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
+					return {
+						query,
+						cachedState,
+						oauthData,
+						schoolToMigrate,
+					};
+				};
+
+				it('should call migrateSchool', async () => {
+					const { oauthData, query, cachedState, schoolToMigrate } = setupMigration();
+
 					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
 					expect(schoolMigrationService.migrateSchool).toHaveBeenCalledWith(
-						oauthData.externalSchool.externalId,
+						oauthData.externalSchool?.externalId,
 						schoolToMigrate,
 						'systemId'
 					);
@@ -448,16 +648,59 @@ describe('OAuthUc', () => {
 			});
 
 			describe('when external school and official school number is defined and school is already migrated', () => {
-				it('should not call migrateSchool', async () => {
-					const { oauthData, query, cachedState, userMigrationDto, tokenDto } = setupMigration();
-					oauthData.externalSchool = {
-						externalId: 'mockId',
-						officialSchoolNumber: 'mockNumber',
-						name: 'mockName',
-					};
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+						externalSchool: {
+							externalId: 'mockId',
+							officialSchoolNumber: 'mockNumber',
+							name: 'mockName',
+						},
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+					return {
+						query,
+						cachedState,
+					};
+				};
+
+				it('should not call migrateSchool', async () => {
+					const { query, cachedState } = setupMigration();
 
 					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -466,10 +709,53 @@ describe('OAuthUc', () => {
 			});
 
 			describe('when external school is not defined', () => {
-				it('should not call schoolToMigrate', async () => {
-					const { query, cachedState, userMigrationDto, tokenDto } = setupMigration();
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
+
+					return {
+						query,
+						cachedState,
+					};
+				};
+
+				it('should not call schoolToMigrate', async () => {
+					const { query, cachedState } = setupMigration();
 
 					await uc.migrate('jwt', 'currentUserId', query, cachedState);
 
@@ -478,32 +764,118 @@ describe('OAuthUc', () => {
 			});
 
 			describe('when official school number is not defined', () => {
-				it('should throw OAuthMigrationError', async () => {
-					const { oauthData, query, cachedState, userMigrationDto, tokenDto } = setupMigration();
-					oauthData.externalSchool = {
-						externalId: 'mockId',
-						name: 'mockName',
-					};
+				const setupMigration = () => {
+					const code = '43534543jnj543342jn2';
+
+					const query: AuthorizationParams = { code, state: 'state' };
+
+					const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+						state: 'state',
+						systemId: 'systemId',
+						provider: 'mock_provider',
+						userLoginMigration: true,
+					});
+
+					const externalUserId = 'externalUserId';
+
+					const oauthData: OauthDataDto = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: 'systemId',
+							provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						}),
+						externalUser: new ExternalUserDto({
+							externalId: externalUserId,
+						}),
+						externalSchool: {
+							externalId: 'mockId',
+							name: 'mockName',
+						},
+					});
+
+					const userMigrationDto: MigrationDto = new MigrationDto({
+						redirect: 'https://mock.de/migration/succeed',
+					});
+
+					const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+						idToken: 'idToken',
+						refreshToken: 'refreshToken',
+						accessToken: 'accessToken',
+					});
+
 					const error = new OAuthMigrationError(
 						'Official school number from target migration system is missing',
 						'ext_official_school_number_missing'
 					);
+
+					oauthService.requestToken.mockResolvedValue(tokenDto);
+					provisioningService.getData.mockResolvedValue(oauthData);
 					oauthService.authenticateUser.mockResolvedValue(tokenDto);
 					schoolMigrationService.schoolToMigrate.mockImplementation(() => {
 						throw error;
 					});
 					userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
+					return {
+						query,
+						cachedState,
+						error,
+					};
+				};
+
+				it('should throw OAuthMigrationError', async () => {
+					const { query, cachedState, error } = setupMigration();
+
 					await expect(uc.migrate('jwt', 'currentUserId', query, cachedState)).rejects.toThrow(error);
 				});
 			});
 		});
+
 		describe('when state is mismatched', () => {
-			it('should throw an UnauthorizedException', async () => {
+			const setupMigration = () => {
+				const cachedState: OauthLoginStateDto = new OauthLoginStateDto({
+					state: 'state',
+					systemId: 'systemId',
+					provider: 'mock_provider',
+					userLoginMigration: true,
+				});
+
 				const query: AuthorizationParams = { state: 'failedState' };
-				const { cachedState, userMigrationDto, tokenDto } = setupMigration();
+
+				const externalUserId = 'externalUserId';
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+				});
+
+				const userMigrationDto: MigrationDto = new MigrationDto({
+					redirect: 'https://mock.de/migration/succeed',
+				});
+
+				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				});
+
 				oauthService.authenticateUser.mockResolvedValue(tokenDto);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+				oauthService.requestToken.mockResolvedValue(tokenDto);
+				provisioningService.getData.mockResolvedValue(oauthData);
+
+				return {
+					cachedState,
+					query,
+				};
+			};
+
+			it('should throw an UnauthorizedException', async () => {
+				const { cachedState, query } = setupMigration();
 
 				const response = uc.migrate('jwt', 'currentUserId', query, cachedState);
 

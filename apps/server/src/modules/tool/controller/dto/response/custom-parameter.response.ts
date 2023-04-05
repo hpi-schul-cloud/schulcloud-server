@@ -9,6 +9,12 @@ export class CustomParameterResponse {
 	@ApiProperty()
 	name: string;
 
+	@ApiProperty()
+	displayName: string;
+
+	@ApiPropertyOptional()
+	description?: string;
+
 	@ApiPropertyOptional()
 	defaultValue?: string;
 
@@ -32,6 +38,8 @@ export class CustomParameterResponse {
 
 	constructor(props: CustomParameterResponse) {
 		this.name = props.name;
+		this.displayName = props.displayName;
+		this.description = props.description;
 		this.defaultValue = props.defaultValue;
 		this.location = props.location;
 		this.scope = props.scope;

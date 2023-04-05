@@ -1,0 +1,39 @@
+import { Injectable } from '@nestjs/common';
+import { Column, ColumnBoard, EntityId } from '@shared/domain';
+import { ObjectId } from 'bson';
+import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
+
+@Injectable()
+export class ColumnService {
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+
+	async findById(columnId: EntityId): Promise<Column> {
+		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
+		return column;
+	}
+
+	async create(parent: ColumnBoard): Promise<Column> {
+		const column = new Column({
+			id: new ObjectId().toHexString(),
+			title: '',
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
+		parent.addChild(column);
+
+		await this.boardDoRepo.save(parent.children, parent.id);
+
+		return column;
+	}
+
+	async delete(column: Column): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(column);
+	}
+
+	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise<void> {
+		await this.boardDoService.move(column, targetBoard, targetPosition);
+	}
+}

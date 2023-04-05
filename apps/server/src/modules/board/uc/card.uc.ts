@@ -1,15 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
-import { BoardDoService, ColumnBoardService, ContentElementService } from '../service';
-import { CardService } from '../service/card.service';
+import { CardService, ContentElementService } from '../service';
 
 @Injectable()
 export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
-		private readonly columnBoardService: ColumnBoardService,
-		private readonly boardDoService: BoardDoService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: Logger
 	) {
@@ -24,26 +21,7 @@ export class CardUc {
 		return cards;
 	}
 
-	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
-		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
-
-		// TODO: check Permissions
-		const card = await this.columnBoardService.createCard(boardId, columnId);
-
-		return card;
-	}
-
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteCard', userId, cardId });
-
-		const parent = await this.boardDoService.findParentOfId(cardId);
-		if (parent === undefined) {
-			throw new NotFoundException('card has no parent');
-		}
-		// TODO check permissions
-
-		await this.boardDoService.deleteChild(parent, cardId);
-	}
+	// --- elements ---
 
 	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId });
@@ -51,18 +29,34 @@ export class CardUc {
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
-		const element = await this.elementService.createElement(card.id);
+		const element = await this.elementService.create(card);
 
 		return element;
 	}
 
-	async deleteElement(userId: EntityId, cardId: EntityId, contentElementId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteElement', userId, cardId, contentElementId });
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteElement', userId, elementId });
 
-		const card = await this.cardService.findById(cardId);
+		const element = await this.elementService.findById(elementId);
 
 		// TODO check permissions
 
-		await this.boardDoService.deleteChild(card, contentElementId);
+		await this.elementService.delete(element);
+	}
+
+	async moveElement(
+		userId: EntityId,
+		elementId: EntityId,
+		targetCardId: EntityId,
+		targetPosition: number
+	): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, targetPosition });
+
+		const element = await this.elementService.findById(elementId);
+		const targetCard = await this.cardService.findById(targetCardId);
+
+		// TODO check permissions
+
+		await this.elementService.move(element, targetCard, targetPosition);
 	}
 }

@@ -1,30 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId } from '@shared/domain';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { AnyBoardDo } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class BoardDoService {
 	constructor(private readonly boardDoRepo: BoardDoRepo) {}
 
-	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
-		const domainObject = await this.boardDoRepo.findById(id, depth);
-		return domainObject;
+	async deleteWithDescendants(domainObject: AnyBoardDo): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(domainObject.id);
+
+		if (parent) {
+			parent.removeChild(domainObject);
+			await this.boardDoRepo.save(parent.children, parent.id);
+		}
+
+		await this.boardDoRepo.delete(domainObject);
 	}
 
-	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {
-		const parent = await this.boardDoRepo.findParentOfId(childId);
-		return parent;
-	}
+	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
+		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
 
-	async deleteChild<T extends AnyBoardDo>(parent: T, childId: EntityId): Promise<T> {
-		const removedChild = parent.removeChild(childId);
-		await this.boardDoRepo.save(parent.children, parent.id);
-		await this.boardDoRepo.deleteWithDescendants(removedChild.id);
+		if (sourceParent == null) {
+			throw new BadRequestException('Cannot move nodes without a parent');
+		}
 
-		return parent;
-	}
+		sourceParent.removeChild(child);
+		targetParent.addChild(child, targetPosition);
 
-	async deleteWithDescendants(id: EntityId): Promise<void> {
-		await this.boardDoRepo.deleteWithDescendants(id);
+		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
+		await this.boardDoRepo.save(targetParent.children, targetParent.id);
 	}
 }

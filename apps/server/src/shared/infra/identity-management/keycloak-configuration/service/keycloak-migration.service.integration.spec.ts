@@ -13,8 +13,6 @@ import { KeycloakMigrationService } from './keycloak-migration.service';
 import { IdentityManagementService } from '../../identity-management.service';
 
 describe('KeycloakConfigurationService Integration', () => {
-	jest.setTimeout(60000);
-
 	let module: TestingModule;
 	let em: EntityManager;
 	let keycloak: KeycloakAdminClient;
@@ -98,7 +96,7 @@ describe('KeycloakConfigurationService Integration', () => {
 				await createAccountInIdm(account);
 			}
 		}
-	});
+	}, 60000);
 
 	afterEach(async () => {
 		if (isKeycloakAvailable) {
@@ -118,7 +116,7 @@ describe('KeycloakConfigurationService Integration', () => {
 				expect(migratedAccountCounts).toBe(allAccounts.length);
 				expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
 				expect(updateSpy).toHaveBeenCalledTimes(dbAndIdmAccounts.length);
-			});
+			}, 60000);
 		});
 		describe('Given there is an account that can not be migrated', () => {
 			it('should report failures', async () => {
@@ -132,7 +130,7 @@ describe('KeycloakConfigurationService Integration', () => {
 
 				const migratedAccountCounts = await keycloakMigrationService.migrate();
 				expect(migratedAccountCounts).toBe(allAccounts.length - 1);
-			});
+			}, 60000);
 		});
 	});
 });
