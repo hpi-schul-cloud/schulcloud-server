@@ -161,4 +161,22 @@ describe(BoardNodeBuilderImpl.name, () => {
 			expect(builder.getParent()).toBeUndefined();
 		});
 	});
+
+	describe('when building a subset of children', () => {
+		const setup = () => {
+			const columns = columnFactory.buildList(8);
+			const board = columnBoardFactory.build({ children: columns });
+			const builder = new BoardNodeBuilderImpl();
+
+			return { board, columns, builder };
+		};
+
+		it('should map the positions', () => {
+			const { board, columns, builder } = setup();
+
+			const nodes = builder.buildBoardNodes([columns[6], columns[1], columns[4]], board);
+
+			expect(nodes.map((n) => n.position)).toEqual([6, 1, 4]);
+		});
+	});
 });
