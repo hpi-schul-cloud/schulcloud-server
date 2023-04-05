@@ -18,7 +18,7 @@ import {
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
+import { TaskCardResponse, TaskCardParams } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -449,6 +449,105 @@ describe('Task-Card Controller (api)', () => {
 				.set('Accept', 'application/json')
 				.send(taskCardParams)
 				.expect(400);
+		});
+	});
+	describe('When assignment is provided', () => {
+		/**
+		 * Things to test:
+		 * [ ] /cards/task/create endpoint
+		 * [ ] /cards/task/:id/update endpoint
+		 * [ ] /cards/task/:id/findone endpoint
+		 * [ ] /cards/task/:id/delete endpoint
+		 */
+		describe('test create endpoint', () => {
+			const createEntities = () => {
+				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [teacher] });
+				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+
+				return { teacher, course, student1, student2, student3 };
+			};
+
+			const createTaskCardEndpoint = async (payload: TaskCardParams) =>
+				request(app.getHttpServer()).post(`/cards/task/`).set('Accept', 'application/json').send(payload);
+
+			it('create task with zero assigned students', async () => {
+				const { teacher, course } = createEntities();
+				await em.persistAndFlush([teacher, course]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [],
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
+				expect(status).toBe(201);
+				expect(body.task.users).toStrictEqual([]);
+			});
+
+			it('student is not allowed to create a new task', async () => {
+				// create user
+				const { course, student1, student2, student3 } = createEntities();
+				await em.persistAndFlush([course, student1, student2, student3]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(student1);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [student1.id, student2.id, student3.id],
+				};
+
+				const response = await createTaskCardEndpoint(pObject);
+
+				expect(response.status).toBe(403);
+			});
+
+			it('create task with one assigned student', async () => {
+				const { teacher, course, student1 } = createEntities();
+				await em.persistAndFlush([teacher, course, student1]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const pObject: TaskCardParams = {
+					cardElements: [],
+					title: 'test title',
+					courseId: course.id,
+					visibleAtDate: new Date(),
+					assignedUsers: [student1.id],
+				};
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await createTaskCardEndpoint(pObject);
+				expect(status).toBe(201);
+				expect(body.task.users).toStrictEqual([
+					{ id: student1.id, firstName: student1.firstName, lastName: student1.lastName },
+				]);
+			});
+
+			// it('create task with four assigned student', () => {
+			// 	// create user
+			// 	fail('not implemented');
+			// });
+
+			// it('create task with undefined assigned students', () => {
+			// 	// create user
+			// 	// should 
+			// 	fail('not implemented');
+			// });
 		});
 	});
 });

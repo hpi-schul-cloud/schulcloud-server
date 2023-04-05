@@ -13,6 +13,7 @@ import {
 	MinLength,
 	ValidateNested,
 } from 'class-validator';
+import { isObject } from 'lodash';
 
 export abstract class CardElementBase {}
 
@@ -89,6 +90,12 @@ export class TaskCardParams {
 	@MinDate(new Date())
 	@ApiPropertyOptional({ description: 'Due date of the card' })
 	dueDate?: Date;
+
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	@ApiPropertyOptional({ description: 'Array of student ids that this task is assigned to' })
+	assignedUsers?: string[];
 
 	@IsOptional()
 	@IsArray()
