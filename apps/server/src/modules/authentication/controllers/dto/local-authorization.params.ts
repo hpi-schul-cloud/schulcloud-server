@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class LocalAuthorizationParams {
 	@IsString()
+	@IsNotEmpty()
 	@ApiProperty()
 	username!: string;
 
 	@IsString()
+	@IsNotEmpty()
 	@ApiProperty()
 	password!: string;
 }
