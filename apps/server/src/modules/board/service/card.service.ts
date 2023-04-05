@@ -45,4 +45,10 @@ export class CardService {
 	async move(card: Card, targetColumn: Column, targetPosition?: number): Promise<void> {
 		await this.boardDoService.move(card, targetColumn, targetPosition);
 	}
+
+	async updateTitle(card: Card, title: string): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(card.id);
+		card.title = title;
+		await this.boardDoRepo.save(card, parent?.id);
+	}
 }

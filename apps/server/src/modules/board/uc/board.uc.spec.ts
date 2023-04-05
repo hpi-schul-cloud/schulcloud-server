@@ -203,6 +203,28 @@ describe(BoardUc.name, () => {
 		});
 	});
 
+	describe('updateColumnTitle', () => {
+		describe('when updating a column title', () => {
+			it('should call the service to find the column', async () => {
+				const { user, column } = setup();
+
+				await uc.updateColumnTitle(user.id, column.id, 'new title');
+
+				expect(columnService.findById).toHaveBeenCalledWith(column.id);
+			});
+
+			it('should call the service to update the column title', async () => {
+				const { user, column } = setup();
+				columnService.findById.mockResolvedValueOnce(column);
+				const newTitle = 'new title';
+
+				await uc.updateColumnTitle(user.id, column.id, newTitle);
+
+				expect(columnService.updateTitle).toHaveBeenCalledWith(column, newTitle);
+			});
+		});
+	});
+
 	describe('createCard', () => {
 		describe('when creating a card', () => {
 			it('should call the service to create the card', async () => {
@@ -271,6 +293,28 @@ describe(BoardUc.name, () => {
 				await uc.moveCard(user.id, card.id, column.id, 5);
 
 				expect(cardService.move).toHaveBeenCalledWith(card, column, 5);
+			});
+		});
+	});
+
+	describe('updateCardTitle', () => {
+		describe('when updating a card title', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+
+				await uc.updateCardTitle(user.id, card.id, 'new title');
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to update the column title', async () => {
+				const { user, card } = setup();
+				columnService.findById.mockResolvedValueOnce(card);
+				const newTitle = 'new title';
+
+				await uc.updateCardTitle(user.id, card.id, newTitle);
+
+				expect(cardService.updateTitle).toHaveBeenCalledWith(card, newTitle);
 			});
 		});
 	});

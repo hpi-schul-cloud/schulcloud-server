@@ -24,7 +24,7 @@ export class ColumnController {
 	}
 
 	@Put(':columnId/title')
-	async renameColumn(
+	async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -39,9 +39,7 @@ export class ColumnService {
 
 	async updateTitle(column: Column, title: string): Promise<void> {
 		const parent = await this.boardDoRepo.findParentOfId(column.id);
-
 		column.title = title;
-
 		await this.boardDoRepo.save(column, parent?.id);
 	}
 }

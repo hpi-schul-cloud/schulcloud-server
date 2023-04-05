@@ -79,6 +79,16 @@ export class BoardUc {
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
 
+	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
+
+		const column = await this.columnService.findById(columnId);
+
+		// TODO check permissions
+
+		await this.columnService.updateTitle(column, title);
+	}
+
 	async createCard(userId: EntityId, columnId: EntityId): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
@@ -101,14 +111,14 @@ export class BoardUc {
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}
 
-	async updateColumnTitle(userId: EntityId, columnId: EntityId, title: string): Promise<void> {
-		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
-		const column = await this.columnService.findById(columnId);
+		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
 
-		await this.columnService.updateTitle(column, title);
+		await this.cardService.updateTitle(card, title);
 	}
 
 	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
