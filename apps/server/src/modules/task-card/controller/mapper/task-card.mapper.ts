@@ -73,7 +73,7 @@ export class TaskCardMapper {
 
 		if (params.cardElements) {
 			const text = this.mapElementsToDto(params.cardElements);
-			if (text?.length) {
+			if (text) {
 				dto.text = text;
 			}
 		}
@@ -90,6 +90,6 @@ export class TaskCardMapper {
 			}
 		});
 
-		return text.length ? text : [];
+		return text;
 	}
 }
