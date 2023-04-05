@@ -123,6 +123,28 @@ describe(BoardUc.name, () => {
 		});
 	});
 
+	describe('updateBoardTitle', () => {
+		describe('when updating a board title', () => {
+			it('should call the service to find the board', async () => {
+				const { user, board } = setup();
+
+				await uc.updateBoardTitle(user.id, board.id, 'new title');
+
+				expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+			});
+
+			it('should call the service to update the board title', async () => {
+				const { user, board } = setup();
+				columnBoardService.findById.mockResolvedValueOnce(board);
+				const newTitle = 'new title';
+
+				await uc.updateBoardTitle(user.id, board.id, newTitle);
+
+				expect(columnBoardService.updateTitle).toHaveBeenCalledWith(board, newTitle);
+			});
+		});
+	});
+
 	describe('createColumn', () => {
 		describe('when creating a column', () => {
 			it('should call the service to find the board', async () => {

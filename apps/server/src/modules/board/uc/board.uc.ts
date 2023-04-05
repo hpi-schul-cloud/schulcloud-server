@@ -42,6 +42,16 @@ export class BoardUc {
 		await this.columnBoardService.delete(board);
 	}
 
+	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
+
+		const board = await this.columnBoardService.findById(boardId);
+
+		// TODO check permissions
+
+		await this.columnBoardService.updateTitle(board, title);
+	}
+
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
