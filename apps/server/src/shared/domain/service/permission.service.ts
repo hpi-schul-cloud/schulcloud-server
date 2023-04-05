@@ -52,11 +52,4 @@ export class PermissionService {
 		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 		return hasPermissions;
 	}
-
-	checkUserHasAllSchoolPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasUserAllSchoolPermissions(user, requiredPermissions);
-		if (hasPermission !== true) {
-			throw new UnauthorizedException();
-		}
-	}
 }
