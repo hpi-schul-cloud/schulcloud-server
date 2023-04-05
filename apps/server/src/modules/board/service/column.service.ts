@@ -8,9 +8,9 @@ import { BoardDoService } from './board-do.service';
 export class ColumnService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
-	async findById(cardId: EntityId): Promise<Column> {
-		const card = await this.boardDoRepo.findByClassAndId(Column, cardId);
-		return card;
+	async findById(columnId: EntityId): Promise<Column> {
+		const column = await this.boardDoRepo.findByClassAndId(Column, columnId);
+		return column;
 	}
 
 	async create(parent: ColumnBoard): Promise<Column> {
@@ -29,7 +29,11 @@ export class ColumnService {
 		return column;
 	}
 
-	async delete(parent: ColumnBoard, columnId: EntityId): Promise<void> {
-		await this.boardDoService.deleteChildWithDescendants(parent, columnId);
+	async delete(column: Column): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(column);
+	}
+
+	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise<void> {
+		await this.boardDoService.move(column, targetBoard, targetPosition);
 	}
 }

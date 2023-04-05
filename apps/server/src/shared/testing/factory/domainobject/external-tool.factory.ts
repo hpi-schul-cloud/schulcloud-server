@@ -1,12 +1,4 @@
 import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import { DeepPartial } from 'fishery';
-import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
@@ -14,7 +6,15 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from '@shared/domain';
+import {
+	BasicToolConfigDO,
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
 import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
+import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from './do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(
@@ -70,9 +70,10 @@ export const customParameterDOFactory = DoBaseFactory.define<CustomParameterDO, 
 	({ sequence }) => {
 		return {
 			name: `custom-parameter-${sequence}`,
+			displayName: 'User Friendly Name',
 			type: CustomParameterType.STRING,
 			scope: CustomParameterScope.GLOBAL,
-			location: CustomParameterLocation.TOKEN,
+			location: CustomParameterLocation.BODY,
 			isOptional: false,
 		};
 	}

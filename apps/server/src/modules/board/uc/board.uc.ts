@@ -35,9 +35,11 @@ export class BoardUc {
 	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
+		const board = await this.columnBoardService.findById(boardId);
+
 		// TODO check permissions
 
-		await this.columnBoardService.delete(boardId);
+		await this.columnBoardService.delete(board);
 	}
 
 	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
@@ -51,18 +53,34 @@ export class BoardUc {
 		return column;
 	}
 
-	async deleteColumn(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteColumn', userId, boardId, columnId });
+	async deleteColumn(userId: EntityId, columnId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
-		const board = await this.columnBoardService.findById(boardId);
+		const column = await this.columnService.findById(columnId);
 
 		// TODO check permissions
 
-		await this.columnService.delete(board, columnId);
+		await this.columnService.delete(column);
 	}
 
-	async createCard(userId: EntityId, boardId: EntityId, columnId: EntityId): Promise<Card> {
-		this.logger.debug({ action: 'createCard', userId, boardId, columnId });
+	async moveColumn(
+		userId: EntityId,
+		columnId: EntityId,
+		targetBoardId: EntityId,
+		targetPosition: number
+	): Promise<void> {
+		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
+
+		const column = await this.columnService.findById(columnId);
+		const targetBoard = await this.columnBoardService.findById(targetBoardId);
+
+		// TODO check permissions
+
+		await this.columnService.move(column, targetBoard, targetPosition);
+	}
+
+	async createCard(userId: EntityId, columnId: EntityId): Promise<Card> {
+		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
 
@@ -72,13 +90,24 @@ export class BoardUc {
 		return card;
 	}
 
-	async deleteCard(userId: EntityId, boardId: EntityId, columnId: EntityId, cardId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteCard', userId, boardId, columnId, cardId });
+	async moveCard(userId: EntityId, cardId: EntityId, targetColumnId: EntityId, targetPosition: number): Promise<void> {
+		this.logger.debug({ action: 'moveCard', userId, cardId, targetColumnId, toPosition: targetPosition });
 
-		const column = await this.columnService.findById(columnId);
+		const card = await this.cardService.findById(cardId);
+		const targetColumn = await this.columnService.findById(targetColumnId);
 
 		// TODO check permissions
 
-		await this.cardService.delete(column, cardId);
+		await this.cardService.move(card, targetColumn, targetPosition);
+	}
+
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const card = await this.cardService.findById(cardId);
+
+		// TODO check permissions
+
+		await this.cardService.delete(card);
 	}
 }

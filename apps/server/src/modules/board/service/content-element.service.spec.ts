@@ -54,8 +54,6 @@ describe(ContentElementService.name, () => {
 			it('should save a list of content elements using the boardDo repo', async () => {
 				const { card, cardId } = setup();
 
-				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
-
 				await service.create(card);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(
@@ -74,21 +72,26 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('delete', () => {
-		describe('when deleting a content element', () => {
-			const setup = () => {
-				const card = cardFactory.build();
-				const textElement = textElementFactory.build();
-				const textElementId = textElement.id;
+		describe('when deleting an element', () => {
+			it('should call the service', async () => {
+				const element = textElementFactory.build();
 
-				return { card, textElement, textElementId };
-			};
+				await service.delete(element);
 
-			it('should call deleteChildWithDescendants using the boardDo service', async () => {
-				const { card, textElementId } = setup();
+				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(element);
+			});
+		});
+	});
 
-				await service.delete(card, textElementId);
+	describe('move', () => {
+		describe('when moving an element', () => {
+			it('should call the service', async () => {
+				const targetParent = cardFactory.build();
+				const element = textElementFactory.build();
 
-				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(card, textElementId);
+				await service.move(element, targetParent, 3);
+
+				expect(boardDoService.move).toHaveBeenCalledWith(element, targetParent, 3);
 			});
 		});
 	});

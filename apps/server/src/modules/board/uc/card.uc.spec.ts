@@ -102,18 +102,65 @@ describe(CardUc.name, () => {
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const contentElement = textElementFactory.buildWithId();
+				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
-				return { user, card, contentElement };
+				return { user, card, element };
 			};
 
-			it('should call deleteById of the element service', async () => {
-				const { user, card, contentElement } = setup();
+			it('should call the service to find the element', async () => {
+				const { user, element } = setup();
 
-				await uc.deleteElement(user.id, card.id, contentElement.id);
+				await uc.deleteElement(user.id, element.id);
 
-				expect(elementService.delete).toHaveBeenCalledWith(card, contentElement.id);
+				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should call the service to delete the element', async () => {
+				const { user, element } = setup();
+				elementService.findById.mockResolvedValueOnce(element);
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.delete).toHaveBeenCalledWith(element);
+			});
+		});
+	});
+
+	describe('moveElement', () => {
+		describe('when moving an element', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const element = textElementFactory.buildWithId();
+				const card = cardFactory.build();
+
+				return { user, card, element };
+			};
+
+			it('should call the service to find the element', async () => {
+				const { user, element, card } = setup();
+
+				await uc.moveElement(user.id, element.id, card.id, 3);
+
+				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should call the service to find the target card', async () => {
+				const { user, element, card } = setup();
+
+				await uc.moveElement(user.id, element.id, card.id, 3);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to move the element', async () => {
+				const { user, element, card } = setup();
+				elementService.findById.mockResolvedValueOnce(element);
+				cardService.findById.mockResolvedValueOnce(card);
+
+				await uc.moveElement(user.id, element.id, card.id, 3);
+
+				expect(elementService.move).toHaveBeenCalledWith(element, card, 3);
 			});
 		});
 	});

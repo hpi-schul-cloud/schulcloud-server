@@ -39,74 +39,119 @@ describe(CardService.name, () => {
 		await module.close();
 	});
 
-	describe('finding one specific card', () => {
-		const setup = () => {
-			const card = cardFactory.buildWithId();
-			return { card, cardId: card.id };
-		};
+	describe('findById', () => {
+		describe('when finding one specific card', () => {
+			const setup = () => {
+				const card = cardFactory.buildWithId();
+				return { card, cardId: card.id };
+			};
 
-		it('should call the card repository', async () => {
-			const { card, cardId } = setup();
-			boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
+			it('should call the board do repository', async () => {
+				const { card, cardId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			await service.findById(cardId);
+				await service.findById(cardId);
 
-			expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, cardId);
-		});
+				expect(boardDoRepo.findByClassAndId).toHaveBeenCalledWith(Card, cardId);
+			});
 
-		it('should return the domain objects from the card repository', async () => {
-			const { card, cardId } = setup();
-			boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
+			it('should return the domain objects from the board do repository', async () => {
+				const { card, cardId } = setup();
+				boardDoRepo.findByClassAndId.mockResolvedValueOnce(card);
 
-			const result = await service.findById(cardId);
+				const result = await service.findById(cardId);
 
-			expect(result).toEqual(card);
+				expect(result).toEqual(card);
+			});
 		});
 	});
 
-	describe('finding many cards', () => {
-		const setup = () => {
-			const cards = cardFactory.buildList(3);
-			const cardIds = cards.map((c) => c.id);
+	describe('findByIds', () => {
+		describe('when finding many cards', () => {
+			const setup = () => {
+				const cards = cardFactory.buildList(3);
+				const cardIds = cards.map((c) => c.id);
 
-			return { cards, cardIds };
-		};
+				return { cards, cardIds };
+			};
 
-		it('should call the card repository', async () => {
-			const { cardIds } = setup();
+			it('should call the card repository', async () => {
+				const { cardIds } = setup();
 
-			await service.findByIds(cardIds);
+				await service.findByIds(cardIds);
 
-			expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
+				expect(boardDoRepo.findByIds).toHaveBeenCalledWith(cardIds);
+			});
+
+			it('should return the domain objects from the card repository', async () => {
+				const { cards, cardIds } = setup();
+				boardDoRepo.findByIds.mockResolvedValueOnce(cards);
+
+				const result = await service.findByIds(cardIds);
+
+				expect(result).toEqual(cards);
+			});
+
+			it('should throw an error if some DOs are not cards', async () => {
+				const textElements = textElementFactory.buildList(2);
+				const textElementIds = textElements.map((t) => t.id);
+				boardDoRepo.findByIds.mockResolvedValue(textElements);
+
+				await expect(service.findByIds(textElementIds)).rejects.toThrow();
+			});
 		});
+	});
 
-		it('should return the domain objects from the card repository', async () => {
-			const { cards, cardIds } = setup();
-			boardDoRepo.findByIds.mockResolvedValueOnce(cards);
+	describe('create', () => {
+		describe('when creating a card', () => {
+			const setup = () => {
+				const column = columnFactory.build();
+				const columnId = column.id;
 
-			const result = await service.findByIds(cardIds);
+				return { column, columnId };
+			};
 
-			expect(result).toEqual(cards);
-		});
+			it('should save a list of cards using the boardDo repo', async () => {
+				const { column, columnId } = setup();
 
-		it('should throw an error if some DOs are not cards', async () => {
-			const textElements = textElementFactory.buildList(2);
-			const textElementIds = textElements.map((t) => t.id);
-			boardDoRepo.findByIds.mockResolvedValue(textElements);
+				await service.create(column);
 
-			await expect(service.findByIds(textElementIds)).rejects.toThrow();
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							title: '',
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					columnId
+				);
+			});
 		});
 	});
 
 	describe('delete', () => {
-		describe('when deleting a column by id', () => {
-			it('should call the deleteChildWithDescendants of the board-do-service', async () => {
-				const column = columnFactory.build();
+		describe('when deleting a card', () => {
+			it('should call the service', async () => {
 				const card = cardFactory.build();
 
-				await service.delete(column, card.id);
+				await service.delete(card);
 
-				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(column, card.id);
+				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(card);
+			});
+		});
+	});
+
+	describe('move', () => {
+		describe('when moving a card', () => {
+			it('should call the service', async () => {
+				const targetParent = columnFactory.build();
+				const card = cardFactory.build();
+
+				await service.move(card, targetParent, 3);
+
+				expect(boardDoService.move).toHaveBeenCalledWith(card, targetParent, 3);
 			});
 		});
 	});
