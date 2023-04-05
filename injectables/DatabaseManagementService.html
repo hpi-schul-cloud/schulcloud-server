@@ -103,7 +103,6 @@
                                 <a href="#getCollectionNames" >getCollectionNames</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#getDatabaseCollection" >getDatabaseCollection</a>
                             </li>
                             <li>
@@ -606,7 +605,6 @@
                 <td class="col-md-4">
                     <a name="getDatabaseCollection"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
                         <span ><b>getDatabaseCollection</b></span>
                         <a href="#getDatabaseCollection"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -614,8 +612,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getDatabaseCollection(collectionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>getDatabaseCollection(collectionName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -840,7 +837,7 @@ export class DatabaseManagementService {
 		return this.em.getConnection(&#x27;write&#x27;).getDb();
 	}
 
-	private getDatabaseCollection(collectionName: string): Collection {
+	getDatabaseCollection(collectionName: string): Collection {
 		const collection &#x3D; this.db.collection(collectionName);
 		return collection;
 	}

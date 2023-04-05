@@ -95,6 +95,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createUserSearchIndex" >createUserSearchIndex</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#encryptSecrets" >encryptSecrets</a>
                             </li>
                             <li>
@@ -312,6 +317,46 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createUserSearchIndex"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createUserSearchIndex</b></span>
+                        <a href="#createUserSearchIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createUserSearchIndex()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="250"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:250</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="encryptSecrets"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -330,8 +375,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="271"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:271</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="313"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:313</a></div>
                 </td>
             </tr>
 
@@ -413,8 +458,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="277"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:277</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="319"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:319</a></div>
                 </td>
             </tr>
 
@@ -694,8 +739,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="249"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:249</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="291"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:291</a></div>
                 </td>
             </tr>
 
@@ -1012,8 +1057,8 @@ The behaviour should match $ mongoexport</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="299"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:299</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="341"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:341</a></div>
                 </td>
             </tr>
 
@@ -1099,8 +1144,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="308"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:308</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="350"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:350</a></div>
                 </td>
             </tr>
 
@@ -1170,8 +1215,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="315"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:315</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="357"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:357</a></div>
                 </td>
             </tr>
 
@@ -1241,8 +1286,8 @@ Currently this affects system and storageproviders collections.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="259"
-                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:259</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="301"
+                            class="link-to-prism">apps/server/src/modules/management/uc/database-management.uc.ts:301</a></div>
                 </td>
             </tr>
 
@@ -1742,7 +1787,49 @@ export class DatabaseManagementUc {
 	 * Updates the indexes in the database based on definitions in entities
 	 */
 	async syncIndexes(): Promise&lt;void&gt; {
+		await this.createUserSearchIndex();
 		return this.databaseManagementService.syncIndexes();
+	}
+
+	private async createUserSearchIndex(): Promise&lt;void&gt; {
+		const usersCollection &#x3D; this.databaseManagementService.getDatabaseCollection(&#x27;users&#x27;);
+		const userSearchIndexExists &#x3D; await usersCollection.indexExists(&#x27;userSearchIndex&#x27;);
+		const indexes &#x3D; await usersCollection.indexes();
+
+		if (userSearchIndexExists) {
+			const userSearchIndex &#x3D; indexes.filter((i) &#x3D;&gt; i.name &#x3D;&#x3D;&#x3D; &#x27;userSearchIndex&#x27;);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (userSearchIndex[0].key?.schoolId &#x3D;&#x3D;&#x3D; 1) {
+				this.logger.debug(&#x27;userSearcIndex does not require update&#x27;);
+				return;
+			}
+			await usersCollection.dropIndex(&#x27;userSearchIndex&#x27;);
+		}
+
+		await usersCollection.createIndex(
+			{
+				firstName: &#x27;text&#x27;,
+				lastName: &#x27;text&#x27;,
+				email: &#x27;text&#x27;,
+				firstNameSearchValues: &#x27;text&#x27;,
+				lastNameSearchValues: &#x27;text&#x27;,
+				emailSearchValues: &#x27;text&#x27;,
+				schoolId: 1,
+			},
+			{
+				name: &#x27;userSearchIndex&#x27;,
+				weights: {
+					firstName: 15,
+					lastName: 15,
+					email: 15,
+					firstNameSearchValues: 3,
+					lastNameSearchValues: 3,
+					emailSearchValues: 2,
+				},
+				default_language: &#x27;none&#x27;, // no stop words and no stemming,
+				language_override: &#x27;de&#x27;,
+			}
+		);
 	}
 
 	private injectEnvVars(json: string): string {

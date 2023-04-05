@@ -735,23 +735,6 @@ export interface IUserProperties {
 @Index({ properties: [&#x27;externalId&#x27;, &#x27;school&#x27;] })
 @Index({ properties: [&#x27;school&#x27;, &#x27;ldapDn&#x27;] })
 @Index({ properties: [&#x27;school&#x27;, &#x27;roles&#x27;] })
-@Index({
-	name: &#x27;userSearchIndex&#x27;,
-	properties: [&#x27;firstName&#x27;, &#x27;lastName&#x27;, &#x27;email&#x27;, &#x27;firstNameSearchValues&#x27;, &#x27;lastNameSearchValues&#x27;, &#x27;emailSearchValues&#x27;],
-	type: &#x27;text&#x27;,
-	options: {
-		weights: {
-			firstName: 15,
-			lastName: 15,
-			email: 15,
-			firstNameSearchValues: 3,
-			lastNameSearchValues: 3,
-			emailSearchValues: 2,
-		},
-		default_language: &#x27;none&#x27;, // no stop words and no stemming,
-		language_override: &#x27;de&#x27;,
-	},
-})
 export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@Property()
 	@Index()
