@@ -12,7 +12,6 @@ import { SystemModule } from '@src/modules/system';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
 import { AuthenticationService } from './services/authentication.service';
-import { LdapService } from './services/ldap.service';
 import { JwtValidationAdapter } from './strategy/jwt-validation.adapter';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
@@ -73,7 +72,6 @@ const jwtModuleOptions: JwtModuleOptions = {
 		SchoolRepo,
 		LocalStrategy,
 		AuthenticationService,
-		LdapService,
 		LdapStrategy,
 		OauthStrategy,
 	],
