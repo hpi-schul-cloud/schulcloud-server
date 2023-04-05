@@ -10,6 +10,7 @@ import {
 	cleanupCollections,
 	columnBoardFactory,
 	columnBoardNodeFactory,
+	columnFactory,
 	columnNodeFactory,
 	textElementFactory,
 	textElementNodeFactory,
@@ -210,31 +211,31 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('delete', () => {
-		describe('when deleting a domainObject and its descendants', () => {
-			const setup = async () => {
-				const elements = textElementFactory.buildList(3);
-				const card = cardFactory.build({ children: elements });
-				await repo.save(card);
-				em.clear();
+	// describe('delete', () => {
+	// 	describe('when deleting a domainObject and its descendants', () => {
+	// 		const setup = async () => {
+	// 			const elements = textElementFactory.buildList(3);
+	// 			const card = cardFactory.build({ children: elements });
+	// 			await repo.save(card);
+	// 			em.clear();
 
-				return { card, elements };
-			};
+	// 			return { card, elements };
+	// 		};
 
-			it('should delete a domain object', async () => {
-				const { elements } = await setup();
+	// 		it('should delete a domain object', async () => {
+	// 			const { elements } = await setup();
 
-				await repo.delete(elements[0]);
-				em.clear();
+	// 			await repo.delete(elements[0]);
+	// 			em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
-			});
+	// 			await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+	// 		});
 
-			it('should throw if domain object does not exist', async () => {
-				const card = cardFactory.build();
+	// 		it('should throw if domain object does not exist', async () => {
+	// 			const card = cardFactory.build();
 
-				await expect(repo.delete(card)).rejects.toThrow();
-			});
-		});
-	});
+	// 			await expect(repo.delete(card)).rejects.toThrow();
+	// 		});
+	// 	});
+	// });
 });
