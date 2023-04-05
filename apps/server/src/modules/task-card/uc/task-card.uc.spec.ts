@@ -15,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { SchoolService } from '@src/modules/school';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
 import { TaskCardUc } from './task-card.uc';
@@ -424,7 +425,26 @@ describe('TaskCardUc', () => {
 		});
 		it('should throw if course end date is before dueDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: tomorrow });
+			user = userFactory.buildWithId();
 			courseRepo.findById.mockResolvedValue(course);
+			const failingTaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.update(user.id, taskCard.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
+		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			courseRepo.findById.mockResolvedValue(course);
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+
 			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
