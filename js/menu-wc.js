@@ -901,13 +901,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/KeycloakAdministrationModule.html" data-type="entity-link" >KeycloakAdministrationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-KeycloakAdministrationModule-71d520482f52300be44e0b08779b727e22df77269256943ba198f674390c8fa0ae43c34e98858dd601fdbfcc123482cc0b4b5eacc3e13fbf3ed28f78ac9df346"' : 'data-target="#xs-injectables-links-module-KeycloakAdministrationModule-71d520482f52300be44e0b08779b727e22df77269256943ba198f674390c8fa0ae43c34e98858dd601fdbfcc123482cc0b4b5eacc3e13fbf3ed28f78ac9df346"' }>
+                                        'data-target="#injectables-links-module-KeycloakAdministrationModule-6d88a3849bf1f18706d4bb4c8a9de3114b25a9a2a3a8416f83364653a8b88c19c2a13be4fbbb2d9111f0395a9aa2ef4a95d433a756c91f58386a59f0c13a1211"' : 'data-target="#xs-injectables-links-module-KeycloakAdministrationModule-6d88a3849bf1f18706d4bb4c8a9de3114b25a9a2a3a8416f83364653a8b88c19c2a13be4fbbb2d9111f0395a9aa2ef4a95d433a756c91f58386a59f0c13a1211"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-KeycloakAdministrationModule-71d520482f52300be44e0b08779b727e22df77269256943ba198f674390c8fa0ae43c34e98858dd601fdbfcc123482cc0b4b5eacc3e13fbf3ed28f78ac9df346"' :
-                                        'id="xs-injectables-links-module-KeycloakAdministrationModule-71d520482f52300be44e0b08779b727e22df77269256943ba198f674390c8fa0ae43c34e98858dd601fdbfcc123482cc0b4b5eacc3e13fbf3ed28f78ac9df346"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-KeycloakAdministrationModule-6d88a3849bf1f18706d4bb4c8a9de3114b25a9a2a3a8416f83364653a8b88c19c2a13be4fbbb2d9111f0395a9aa2ef4a95d433a756c91f58386a59f0c13a1211"' :
+                                        'id="xs-injectables-links-module-KeycloakAdministrationModule-6d88a3849bf1f18706d4bb4c8a9de3114b25a9a2a3a8416f83364653a8b88c19c2a13be4fbbb2d9111f0395a9aa2ef4a95d433a756c91f58386a59f0c13a1211"' }>
                                         <li class="link">
                                             <a href="injectables/KeycloakAdministrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >KeycloakAdministrationService</a>
                                         </li>
