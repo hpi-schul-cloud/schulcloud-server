@@ -4,6 +4,7 @@ import {
 	CardType,
 	Course,
 	EntityId,
+	ITaskCreate,
 	ITaskUpdate,
 	Permission,
 	PermissionContextBuilder,
@@ -86,14 +87,20 @@ export class TaskCardUc {
 	}
 
 	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
+		const taskParams: ITaskCreate = {
 			name: params.title,
 			courseId: '',
+			usersIds: params.assignedUsers,
+			// NOTE: current workaround to not create the task in draft mode,
+			//       will be removed in the future
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
 			private: false,
 		};
 		if (params.courseId) {
 			taskParams.courseId = params.courseId;
 		}
+
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;

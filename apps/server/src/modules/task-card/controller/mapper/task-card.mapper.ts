@@ -83,6 +83,10 @@ export class TaskCardMapper {
 			}
 		}
 
+		if (params.assignedUsers) {
+			dto.assignedUsers = params.assignedUsers;
+		}
+
 		return dto;
 	}
 

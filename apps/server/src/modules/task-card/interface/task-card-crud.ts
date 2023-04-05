@@ -7,4 +7,5 @@ export interface ITaskCardCRUD {
 	text?: RichText[];
 	visibleAtDate?: Date;
 	dueDate?: Date;
+	assignedUsers?: string[];
 }
