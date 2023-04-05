@@ -25,8 +25,8 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildBoardNodes(domainObjects: AnyBoardDo[], parentId?: EntityId): BoardNode[] {
-		this.buildChildren(domainObjects, parentId);
+	buildBoardNodes(domainObjects: AnyBoardDo[], parent?: AnyBoardDo): BoardNode[] {
+		this.buildChildren(domainObjects, parent);
 		return this.resultNodes;
 	}
 
@@ -37,7 +37,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(columnBoardNode);
 
-		this.buildChildren(columnBoard.children, columnBoardNode.id);
+		this.buildChildren(columnBoard.children, columnBoard);
 	}
 
 	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void {
@@ -52,7 +52,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(columnNode);
 
-		this.buildChildren(column.children, columnNode.id);
+		this.buildChildren(column.children, column);
 	}
 
 	buildCardNode(card: Card, parentId?: EntityId, position?: number): void {
@@ -68,7 +68,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		});
 		this.registerNode(cardNode);
 
-		this.buildChildren(card.children, cardNode.id);
+		this.buildChildren(card.children, card);
 	}
 
 	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void {
@@ -100,7 +100,15 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildChildren(children: AnyBoardDo[], parentId?: EntityId): void {
-		children.forEach((domainObject, position) => domainObject.useBoardNodeBuilder(this, parentId, position));
+	buildChildren(children: AnyBoardDo[], parent?: AnyBoardDo): void {
+		const positionMap: Record<EntityId, number> = {};
+		parent?.children.forEach((child, position) => {
+			positionMap[child.id] = position;
+		});
+
+		children.forEach((domainObject) => {
+			const position = positionMap[domainObject.id];
+			domainObject.useBoardNodeBuilder(this, parent?.id, position);
+		});
 	}
 }

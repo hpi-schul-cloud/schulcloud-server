@@ -1,5 +1,5 @@
 import { BoardNodeType } from '@shared/domain';
-import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, setupEntities } from '@shared/testing';
+import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	columnBoardFactory,
@@ -16,7 +16,7 @@ describe(BoardNodeBuilderImpl.name, () => {
 
 	describe('when building Columns', () => {
 		const setup = () => {
-			const columnBoard = columnBoardFactory.buildWithId();
+			const columnBoard = columnBoardFactory.build();
 
 			const builder = new BoardNodeBuilderImpl();
 
@@ -35,18 +35,18 @@ describe(BoardNodeBuilderImpl.name, () => {
 
 	describe('when building Columns', () => {
 		const setup = () => {
-			const column = columnFactory.buildWithId();
-			const columnBoardNode = columnBoardNodeFactory.buildWithId();
+			const column = columnFactory.build();
+			const columnBoard = columnBoardFactory.build({ children: [column] });
 
-			const builder = new BoardNodeBuilderImpl(columnBoardNode);
+			const builder = new BoardNodeBuilderImpl();
 
-			return { builder, column, parentId: columnBoardNode.id };
+			return { builder, column, columnBoard };
 		};
 
 		it('should build a column boardNode', () => {
-			const { builder, column, parentId } = setup();
+			const { builder, column, columnBoard } = setup();
 
-			const boardNodes = builder.buildBoardNodes([column], parentId);
+			const boardNodes = builder.buildBoardNodes([column], columnBoard);
 			expect(boardNodes).toHaveLength(1);
 			expect(boardNodes[0].id).toBe(column.id);
 			expect(boardNodes[0].type).toBe(BoardNodeType.COLUMN);
@@ -55,27 +55,27 @@ describe(BoardNodeBuilderImpl.name, () => {
 
 	describe('when building Cards', () => {
 		const setup = () => {
-			const elements = textElementFactory.buildListWithId(3);
-			const card = cardFactory.buildWithId({ children: elements });
-			const columnNode = columnNodeFactory.buildWithId();
+			const elements = textElementFactory.buildList(3);
+			const card = cardFactory.build({ children: elements });
+			const column = columnFactory.build();
 
-			const builder = new BoardNodeBuilderImpl(columnNode);
+			const builder = new BoardNodeBuilderImpl();
 
-			return { builder, card, parentId: columnNode.id, elements };
+			return { builder, card, column, elements };
 		};
 
 		it('should build a card boardnode', () => {
-			const { builder, card, parentId } = setup();
+			const { builder, card, column } = setup();
 
-			const boardNodes = builder.buildBoardNodes([card], parentId);
+			const boardNodes = builder.buildBoardNodes([card], column);
 			expect(boardNodes[0].id).toBe(card.id);
 			expect(boardNodes[0].type).toBe(BoardNodeType.CARD);
 		});
 
 		it('should build nodes for each element of the card', () => {
-			const { builder, card, parentId, elements } = setup();
+			const { builder, card, column, elements } = setup();
 
-			const boardNodes = builder.buildBoardNodes([card], parentId);
+			const boardNodes = builder.buildBoardNodes([card], column);
 
 			expect(boardNodes.length).toEqual(elements.length + 1);
 			elements.forEach((currentElement) => {
@@ -87,18 +87,18 @@ describe(BoardNodeBuilderImpl.name, () => {
 
 	describe('when building TextElements', () => {
 		const setup = () => {
-			const textElement = textElementFactory.buildWithId();
-			const cardNode = cardNodeFactory.buildWithId();
+			const textElement = textElementFactory.build();
+			const card = cardFactory.build();
 
-			const builder = new BoardNodeBuilderImpl(cardNode);
+			const builder = new BoardNodeBuilderImpl();
 
-			return { builder, textElement, cardId: cardNode.id };
+			return { builder, textElement, card };
 		};
 
 		it('should build a text element boardnode', () => {
-			const { builder, textElement, cardId } = setup();
+			const { builder, textElement, card } = setup();
 
-			const boardNodes = builder.buildBoardNodes([textElement], cardId);
+			const boardNodes = builder.buildBoardNodes([textElement], card);
 			expect(boardNodes).toHaveLength(1);
 			expect(boardNodes[0].id).toBe(textElement.id);
 			expect(boardNodes[0].type).toBe(BoardNodeType.TEXT_ELEMENT);

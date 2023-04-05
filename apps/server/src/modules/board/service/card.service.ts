@@ -33,7 +33,7 @@ export class CardService {
 
 		parent.addChild(card);
 
-		await this.boardDoRepo.save(parent.children, parent.id);
+		await this.boardDoRepo.save(parent.children, parent);
 
 		return card;
 	}
@@ -49,6 +49,6 @@ export class CardService {
 	async updateTitle(card: Card, title: string): Promise<void> {
 		const parent = await this.boardDoRepo.findParentOfId(card.id);
 		card.title = title;
-		await this.boardDoRepo.save(card, parent?.id);
+		await this.boardDoRepo.save(card, parent);
 	}
 }

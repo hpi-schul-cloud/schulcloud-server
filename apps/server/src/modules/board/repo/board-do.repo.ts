@@ -52,11 +52,11 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo) {
 		const domainObjects = Utils.asArray(domainObject);
-		const parentNode = parentId ? await this.boardNodeRepo.findById(BoardNode, parentId) : undefined;
+		const parentNode = parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
 		const builder = new BoardNodeBuilderImpl(parentNode);
-		const boardNodes = builder.buildBoardNodes(domainObjects, parentNode?.id);
+		const boardNodes = builder.buildBoardNodes(domainObjects, parent);
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
