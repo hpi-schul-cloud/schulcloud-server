@@ -174,28 +174,6 @@ export class TaskCardUc {
 		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
 			throw new ValidationError('Visible at date must be before due date');
 		}
-		/* working code 
-		// const { params, course, user } = validationObject;
-		if (course && course.untilDate && course.untilDate < params.dueDate) {
-			throw new ValidationError('Due date must be before course end date');
-		}
-		if (course && !course.untilDate) {
-			const currentSchoolYear = user.school.schoolYear;
-			if (currentSchoolYear && currentSchoolYear.endDate < params.dueDate) {
-				throw new ValidationError('Due date must be before school year end date');
-			}
-			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
-			if (lastDayOfNextYear < params.dueDate) {
-				throw new ValidationError('Due date must be before end of next year');
-			}
-			if (!currentSchoolYear) {
-				throw new ValidationError('Due date must be before school year end date');
-			}
-		}
-		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
-			throw new ValidationError('Visible at date must be before due date');
-		}
-		*/
 	}
 
 	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {

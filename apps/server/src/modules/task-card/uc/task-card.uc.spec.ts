@@ -270,6 +270,23 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
+		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			courseRepo.findById.mockResolvedValue(course);
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			const failingTaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: new Date(Date.now() + 366 * 24 * 60 * 60 * 1000),
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.create(user.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
 
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
@@ -452,6 +469,23 @@ describe('TaskCardUc', () => {
 				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await expect(async () => {
+				await uc.update(user.id, taskCard.id, failingTaskCardCreateParams);
+			}).rejects.toThrow(ValidationError);
+		});
+		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			courseRepo.findById.mockResolvedValue(course);
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			const failingTaskCardCreateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: new Date(Date.now() + 366 * 24 * 60 * 60 * 1000),
 				courseId: course.id,
 			};
 			await expect(async () => {
