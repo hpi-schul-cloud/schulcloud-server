@@ -8,9 +8,9 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { Logger } from '@src/core/logger';
 import { FwuLearningContentsModule } from '@src/modules/fwu-learning-contents';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -21,7 +21,7 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(FwuLearningContentsModule, nestExpressAdapter);
 	// WinstonLogger
-	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
+	nestApp.useLogger(await nestApp.resolve(Logger));
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
