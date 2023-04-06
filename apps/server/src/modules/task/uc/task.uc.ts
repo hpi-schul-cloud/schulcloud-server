@@ -46,7 +46,7 @@ export class TaskUC {
 		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
 
 		let filters = {};
-		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
 			filters = { userId: user.id };
 		}
 

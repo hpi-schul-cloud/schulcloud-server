@@ -141,7 +141,7 @@ describe('TaskUC', () => {
 							lessonIdsOfOpenCourses: [],
 							lessonIdsOfFinishedCourses: [],
 						},
-						{},
+						{ userId: user.id },
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
 					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -181,7 +181,7 @@ describe('TaskUC', () => {
 							lessonIdsOfOpenCourses: [],
 							lessonIdsOfFinishedCourses: [],
 						},
-						{},
+						{ userId: user.id },
 						{ pagination: { skip }, order: { dueDate: SortOrder.desc } },
 					];
 					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -200,7 +200,7 @@ describe('TaskUC', () => {
 							lessonIdsOfOpenCourses: [],
 							lessonIdsOfFinishedCourses: [],
 						},
-						{},
+						{ userId: user.id },
 						{ pagination: { limit }, order: { dueDate: SortOrder.desc } },
 					];
 					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -237,7 +237,7 @@ describe('TaskUC', () => {
 							lessonIdsOfOpenCourses: [lesson.id],
 							lessonIdsOfFinishedCourses: [],
 						},
-						{},
+						{ userId: user.id },
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
 					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
@@ -274,7 +274,7 @@ describe('TaskUC', () => {
 							lessonIdsOfOpenCourses: [],
 							lessonIdsOfFinishedCourses: [],
 						},
-						{},
+						{ userId: user.id },
 						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
 					];
 					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);

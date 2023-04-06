@@ -37,11 +37,11 @@ export class TaskService {
 	): Promise<Counted<Task[]>> {
 		const repoFilters: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId } = { ...filters };
 		const user = await this.authorizationService.getUserWithPermissions(creatorId);
-		if (this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_VIEW_V3])) {
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
 			repoFilters.userId = user.id;
 		}
 
-		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
+		return this.taskRepo.findBySingleParent(creatorId, courseId, repoFilters, options);
 	}
 
 	async delete(task: Task): Promise<void> {
