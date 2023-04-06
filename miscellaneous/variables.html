@@ -4081,9 +4081,9 @@ it should ensure an empty result</p>
 		mimeType: &#x27;application/octet-stream&#x27;,
 		securityCheck: new FileSecurityCheck({}),
 		parentType: FileRecordParentType.Course,
-		parentId: new ObjectId(),
-		creatorId: new ObjectId(),
-		schoolId: new ObjectId(),
+		parentId: new ObjectId().toHexString(),
+		creatorId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 	};
 })</code>
                     </td>

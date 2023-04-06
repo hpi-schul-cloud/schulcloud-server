@@ -96,7 +96,7 @@
                                 <a href="#copy" >copy</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#copyFileRecord" >copyFileRecord</a>
                             </li>
@@ -106,7 +106,7 @@
                                 <a href="#copyFilesOfParent" >copyFilesOfParent</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#copyFilesWithRollbackOnError" >copyFilesWithRollbackOnError</a>
                             </li>
@@ -596,8 +596,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="340"
-                            class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:340</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="343"
+                            class="link-to-prism">apps/server/src/modules/files-storage/service/files-storage.service.ts:343</a></div>
                 </td>
             </tr>
 
@@ -675,7 +675,7 @@
                 <td class="col-md-4">
                     <a name="copyFileRecord"></a>
                     <span class="name">
-                        <span class="modifier">Public</span>
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
                         <span ><b>copyFileRecord</b></span>
                         <a href="#copyFileRecord"><span class="icon ion-ios-link"></span></a>
@@ -867,7 +867,7 @@
                 <td class="col-md-4">
                     <a name="copyFilesWithRollbackOnError"></a>
                     <span class="name">
-                        <span class="modifier">Public</span>
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
                         <span ><b>copyFilesWithRollbackOnError</b></span>
                         <a href="#copyFilesWithRollbackOnError"><span class="icon ion-ios-link"></span></a>
@@ -2447,7 +2447,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>sendToAntiVirusService(sourceFile: <a href="../classes/FileRecord.html" target="_self">FileRecord</a>)</code>
+                    <code>sendToAntiVirusService(fileRecord: <a href="../classes/FileRecord.html" target="_self">FileRecord</a>)</code>
                 </td>
             </tr>
 
@@ -2476,7 +2476,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>sourceFile</td>
+                                    <td>fileRecord</td>
                                     <td>
                                                 <code><a href="../classes/FileRecord.html" target="_self" >FileRecord</a></code>
                                     </td>
@@ -2883,7 +2883,7 @@ export class FilesStorageService {
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			this.antivirusService.send(fileRecord);
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
@@ -3067,7 +3067,7 @@ export class FilesStorageService {
 		return [response, count];
 	}
 
-	public async copyFileRecord(
+	private async copyFileRecord(
 		sourceFile: FileRecord,
 		targetParams: FileRecordParams,
 		userId: EntityId
@@ -3078,18 +3078,21 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private sendToAntiVirusService(sourceFile: FileRecord) {
-		if (sourceFile.isPending()) {
-			this.antivirusService.send(sourceFile);
+	private sendToAntiVirusService(fileRecord: FileRecord) {
+		if (fileRecord.isPending()) {
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
-	public async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise&lt;CopyFileResponse&gt; {
+	private async copyFilesWithRollbackOnError(
+		sourceFile: FileRecord,
+		targetFile: FileRecord
+	): Promise&lt;CopyFileResponse&gt; {
 		try {
 			const paths &#x3D; createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			this.sendToAntiVirusService(sourceFile);
+			this.sendToAntiVirusService(targetFile);
 			const copyFileResponse &#x3D; CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
@@ -3116,6 +3119,7 @@ export class FilesStorageService {
 				return fileResponse;
 			} catch (error) {
 				this.logger.error(&#x60;copy file failed for source fileRecordId ${sourceFile.id}&#x60;, error);
+
 				return {
 					sourceId: sourceFile.id,
 					name: sourceFile.getName(),
