@@ -5,7 +5,6 @@ import {
 	Course,
 	EntityId,
 	ITaskCreate,
-	ITaskUpdate,
 	Permission,
 	PermissionContextBuilder,
 	TaskCard,
@@ -30,19 +29,14 @@ export class TaskCardUc {
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		let course: Course | undefined;
-
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_CARD_EDIT])) {
 			throw new ForbiddenException();
 		}
 
-		if (params.courseId) {
-			const fetchedCourse = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, fetchedCourse, PermissionContextBuilder.write([]));
-			course = fetchedCourse;
-		}
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 
-		const defaultDueDate = this.getDefaultDueDate(user);
+		this.validateDueDate({ params, course, user });
 
 		const taskWithStatusVo = await this.createTask(userId, params);
 
@@ -61,7 +55,7 @@ export class TaskCardUc {
 			draggable: true,
 			task: taskWithStatusVo.task,
 			visibleAtDate: new Date(),
-			dueDate: defaultDueDate,
+			dueDate: params.dueDate,
 			title: params.title,
 		};
 
@@ -69,15 +63,7 @@ export class TaskCardUc {
 			cardParams.visibleAtDate = params.visibleAtDate;
 		}
 
-		if (params.dueDate) {
-			cardParams.dueDate = params.dueDate;
-		}
-
 		const card = new TaskCard(cardParams);
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError('Invalid date combination');
-		}
 
 		await this.taskCardRepo.save(card);
 
@@ -104,15 +90,6 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
 		return taskWithStatusVo;
-	}
-
-	private getDefaultDueDate(user: User) {
-		const currentSchoolYear = user.school.schoolYear;
-		if (currentSchoolYear) {
-			return currentSchoolYear.endDate;
-		}
-		const lastDayOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31);
-		return lastDayOfNextYear;
 	}
 
 	async findOne(userId: EntityId, id: EntityId) {
@@ -155,12 +132,17 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
+		const course = await this.courseRepo.findById(params.courseId);
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+
+		this.validateDueDate({ params, course, user });
+
 		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
-		if (params.title) {
-			card.title = params.title;
-		}
+		card.title = params.title;
+		card.course = course;
+		card.dueDate = params.dueDate;
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -169,14 +151,6 @@ export class TaskCardUc {
 
 		if (params.visibleAtDate) {
 			card.visibleAtDate = params.visibleAtDate;
-		}
-
-		if (params.dueDate) {
-			card.dueDate = params.dueDate;
-		}
-
-		if (!card.isVisibleBeforeDueDate()) {
-			throw new ValidationError('Invalid date combination');
 		}
 
 		await this.replaceCardElements(card, cardElements);
@@ -200,6 +174,39 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
+		const { params, course, user } = validationObject;
+		if (course.untilDate) {
+			this.checkCourseEndDate(course.untilDate, params.dueDate);
+		} else if (user.school.schoolYear?.endDate) {
+			this.checkSchoolYearEndDate(user.school.schoolYear.endDate, params.dueDate);
+		} else {
+			this.checkNextYearEndDate(params.dueDate);
+		}
+		if (params.visibleAtDate && params.visibleAtDate > params.dueDate) {
+			throw new ValidationError('Visible at date must be before due date');
+		}
+	}
+
+	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
+		if (schoolYearEndDate < dueDate) {
+			throw new ValidationError('Due date must be before school year end date');
+		}
+	}
+
+	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
+		if (courseEndDate < dueDate) {
+			throw new ValidationError('Due date must be before course end date');
+		}
+	}
+
+	private checkNextYearEndDate(dueDate: Date) {
+		const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+		if (lastDayOfNextYear < dueDate) {
+			throw new ValidationError('Due date must be before end of next year');
+		}
 	}
 
 	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {

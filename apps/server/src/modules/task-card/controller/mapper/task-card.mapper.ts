@@ -24,13 +24,11 @@ export class TaskCardMapper {
 			visibleAtDate: card.visibleAtDate,
 			dueDate: card.dueDate,
 			title: card.title,
+			courseId: card.course.id,
+			courseName: card.course.name,
 		});
 		if (card.cardElements.length) {
 			dto.cardElements = this.getCardElementResponse(card);
-		}
-		if (card.course) {
-			dto.courseId = card.course.id;
-			dto.courseName = card.course.name;
 		}
 
 		return dto;
@@ -59,26 +57,23 @@ export class TaskCardMapper {
 		if (!params.title || params.title.length === 0) {
 			throw new ValidationError('The Task Card must have one title');
 		}
+		if (!params.courseId || params.courseId.length === 0) {
+			throw new ValidationError('The Task Card must have one course');
+		}
 
 		const dto: ITaskCardCRUD = {
 			title: params.title,
+			courseId: params.courseId,
+			dueDate: params.dueDate,
 		};
-
-		if (params.courseId) {
-			dto.courseId = params.courseId;
-		}
 
 		if (params.visibleAtDate) {
 			dto.visibleAtDate = params.visibleAtDate;
 		}
 
-		if (params.dueDate) {
-			dto.dueDate = params.dueDate;
-		}
-
 		if (params.cardElements) {
 			const text = this.mapElementsToDto(params.cardElements);
-			if (text?.length) {
+			if (text) {
 				dto.text = text;
 			}
 		}
@@ -99,6 +94,6 @@ export class TaskCardMapper {
 			}
 		});
 
-		return text.length ? text : [];
+		return text;
 	}
 }

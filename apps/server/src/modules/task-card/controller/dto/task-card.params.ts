@@ -9,6 +9,7 @@ import {
 	IsMongoId,
 	IsOptional,
 	IsString,
+	MaxLength,
 	MinDate,
 	MinLength,
 	ValidateNested,
@@ -29,7 +30,6 @@ export class RichTextCardElementParam extends CardElementBase {
 		description: 'Content of the rich text card element',
 		required: true,
 	})
-	@MinLength(2)
 	@IsString()
 	value!: string;
 
@@ -64,15 +64,15 @@ export class CardElementParams {
 export class TaskCardParams {
 	@IsString()
 	@IsMongoId()
-	@IsOptional()
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'The id of an course object.',
 		pattern: '[a-f0-9]{24}',
 	})
-	courseId?: string;
+	courseId!: string;
 
 	@IsString()
-	@MinLength(2)
+	@MinLength(1)
+	@MaxLength(400)
 	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The title of the card',
@@ -85,11 +85,10 @@ export class TaskCardParams {
 	@ApiPropertyOptional({ description: 'Visible at date of the card' })
 	visibleAtDate?: Date;
 
-	@IsOptional()
 	@IsDate()
 	@MinDate(new Date())
-	@ApiPropertyOptional({ description: 'Due date of the card' })
-	dueDate?: Date;
+	@ApiProperty({ description: 'Due date of the card' })
+	dueDate!: Date;
 
 	@IsOptional()
 	@IsArray()
