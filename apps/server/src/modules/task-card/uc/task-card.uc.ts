@@ -63,24 +63,6 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
-			name: params.title,
-			courseId: params.courseId,
-			dueDate: params.dueDate,
-			availableDate: new Date(),
-			private: false,
-		};
-
-		if (params.visibleAtDate) {
-			taskParams.availableDate = params.visibleAtDate;
-		}
-
-		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
-
-		return taskWithStatusVo;
-	}
-
 	async findOne(userId: EntityId, id: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(id);
@@ -148,11 +130,22 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
-		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
-		taskCard.cardElements.set(newCardElements);
+	private async createTask(userId: EntityId, params: ITaskCardCRUD) {
+		const taskParams = {
+			name: params.title,
+			courseId: params.courseId,
+			dueDate: params.dueDate,
+			availableDate: new Date(),
+			private: false,
+		};
 
-		return taskCard;
+		if (params.visibleAtDate) {
+			taskParams.availableDate = params.visibleAtDate;
+		}
+
+		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
+
+		return taskWithStatusVo;
 	}
 
 	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
@@ -163,6 +156,24 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+		const taskParams = {
+			name: params.title,
+			courseId: params.courseId,
+			dueDate: params.dueDate,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
+	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
+		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
+		taskCard.cardElements.set(newCardElements);
+
+		return taskCard;
 	}
 
 	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
@@ -196,16 +207,5 @@ export class TaskCardUc {
 		if (lastDayOfNextYear < dueDate) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
-	}
-
-	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
-			name: params.title,
-			courseId: params.courseId,
-			dueDate: params.dueDate,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
 	}
 }
