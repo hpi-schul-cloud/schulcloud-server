@@ -1,4 +1,4 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Module } from '@nestjs/common';
 import { KeycloakSettings } from './interface/keycloak-settings.interface';
 import KeycloakConfiguration from './keycloak-config';
