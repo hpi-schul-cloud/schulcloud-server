@@ -101,6 +101,9 @@ export class OauthSSOController {
 	}
 
 	@Get('login/:systemId')
+	/**
+	 * @deprecated
+	 */
 	async getAuthenticationUrl(
 		@Session() session: ISession,
 		@Res() res: Response,
@@ -122,6 +125,9 @@ export class OauthSSOController {
 	}
 
 	@Get('oauth')
+	/**
+	 * @deprecated
+	 */
 	async startOauthAuthorizationCodeFlow(
 		@Session() session: ISession,
 		@Res() res: Response,
@@ -186,6 +192,9 @@ export class OauthSSOController {
 	@Authenticate('jwt')
 	@ApiOkResponse({ description: 'The User has been succesfully migrated.' })
 	@ApiResponse({ type: InternalServerErrorException, description: 'The migration of the User was not possible. ' })
+	/**
+	 * @deprecated
+	 */
 	async migrateUser(
 		@JWT() jwt: string,
 		@Session() session: ISession,

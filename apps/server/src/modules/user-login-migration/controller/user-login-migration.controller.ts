@@ -1,9 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserLoginMigrationMapper } from '../mapper/user-login-migration.mapper';
 import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
@@ -12,6 +12,7 @@ import {
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
+import { Oauth2AuthorizationParams } from './dto/request/oauth2-authorization.params';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -48,5 +49,16 @@ export class UserLoginMigrationController {
 		);
 
 		return response;
+	}
+
+	@Post('migrate-to-oauth2')
+	@ApiOkResponse({ description: 'The User has been successfully migrated.' })
+	@ApiInternalServerErrorResponse({ description: 'The migration of the User was not possible.' })
+	async migrateUser(
+		@JWT() jwt: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: Oauth2AuthorizationParams
+	): Promise<void> {
+		await this.migrationUc.migrateUser(jwt, currentUser.userId, body.systemId, body.redirectUri, body.code, body.error);
 	}
 }
