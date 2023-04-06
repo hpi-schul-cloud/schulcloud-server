@@ -1,4 +1,3 @@
-import { EntityId } from '@shared/domain/types';
 import { BoardComposite } from './board-composite.do';
 import { Card } from './card.do';
 import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from './types';
@@ -12,7 +11,7 @@ export class Column extends BoardComposite implements BoardNodeBuildable {
 		}
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildColumnNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildColumnNode(this, parent);
 	}
 }

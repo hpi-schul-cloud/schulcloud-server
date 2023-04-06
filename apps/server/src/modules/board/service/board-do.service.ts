@@ -24,10 +24,15 @@ export class BoardDoService {
 			throw new BadRequestException('Cannot move nodes without a parent');
 		}
 
-		sourceParent.removeChild(child);
-		targetParent.addChild(child, targetPosition);
-
-		await this.boardDoRepo.save(sourceParent.children, sourceParent);
-		await this.boardDoRepo.save(targetParent.children, targetParent);
+		if (sourceParent.id === targetParent.id) {
+			sourceParent.removeChild(child);
+			sourceParent.addChild(child, targetPosition);
+			await this.boardDoRepo.save(sourceParent.children, sourceParent);
+		} else {
+			sourceParent.removeChild(child);
+			targetParent.addChild(child, targetPosition);
+			await this.boardDoRepo.save(sourceParent.children, sourceParent);
+			await this.boardDoRepo.save(targetParent.children, targetParent);
+		}
 	}
 }

@@ -82,6 +82,26 @@ describe(BoardDoService.name, () => {
 				expect(boardDoRepo.save).toHaveBeenCalledWith(sourceColumn.children, sourceColumn);
 				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn);
 			});
+
+			// describe('when moving within the same parent', () => {
+			// 	it('should just change the position', async () => {
+			// 		const { cards, sourceColumn } = setup();
+
+			// 		await service.move(cards[0], sourceColumn, 1);
+
+			// 		const children = boardDoRepo.save.mock.calls[0][0];
+
+			// 		// const childNames = children.map((c) => c.title);
+
+			// 		const expectedChildren = [
+			// 			...[sourceColumn.children[1]],
+			// 			...[sourceColumn.children[0]],
+			// 			...[sourceColumn.children[2]],
+			// 		];
+
+			// 		expect(boardDoRepo.save).toHaveBeenCalledWith(expectedChildren, sourceColumn);
+			// 	});
+			// });
 		});
 
 		describe('when card has no parent', () => {

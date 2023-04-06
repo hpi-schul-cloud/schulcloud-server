@@ -74,7 +74,9 @@ describe(`column move (api)`, () => {
 		const user = userFactory.build();
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNodes = columnNodeFactory.buildListWithId(7, { parent: columnBoardNode });
+		const columnNodes = new Array(10)
+			.fill(1)
+			.map((o, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
 		const columnToMove = columnNodes[2];
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
 

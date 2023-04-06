@@ -22,8 +22,8 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		}
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildCardNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildCardNode(this, parent);
 	}
 }
 

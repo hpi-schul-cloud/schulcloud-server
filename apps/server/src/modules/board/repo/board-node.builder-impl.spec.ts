@@ -148,18 +148,18 @@ describe(BoardNodeBuilderImpl.name, () => {
 		it('should return the correct parent', () => {
 			const { builder, columnBoardNode } = setup();
 
-			expect(builder.getParent(columnBoardNode.id)).toBe(columnBoardNode);
+			expect(builder.getParentNode(columnBoardNode.id)).toBe(columnBoardNode);
 		});
 
 		it('should return undefined if the parent is unknown', () => {
 			const { builder } = setup();
 			const fakeId = new ObjectId().toHexString();
-			expect(builder.getParent(fakeId)).toBeUndefined();
+			expect(builder.getParentNode(fakeId)).toBeUndefined();
 		});
 
 		it('should return undefined if no parentid was given', () => {
 			const { builder } = setup();
-			expect(builder.getParent()).toBeUndefined();
+			expect(builder.getParentNode()).toBeUndefined();
 		});
 	});
 
@@ -209,20 +209,6 @@ describe(BoardNodeBuilderImpl.name, () => {
 				const alienColumn = columnFactory.build();
 
 				expect(() => builder.buildBoardNodes([...columns, alienColumn], board)).toThrow(NotFoundException);
-			});
-		});
-
-		describe('when no parent is defined', () => {
-			it('should set board node positions', () => {
-				const { columns, builder } = setup();
-
-				const nodes = builder.buildBoardNodes(columns);
-
-				expect(nodes.map((n) => `${n.id}:${n.position}`)).toEqual([
-					`${columns[0].id}:0`,
-					`${columns[1].id}:1`,
-					`${columns[2].id}:2`,
-				]);
 			});
 		});
 	});

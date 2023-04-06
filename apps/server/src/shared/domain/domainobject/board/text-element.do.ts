@@ -16,8 +16,8 @@ export class TextElement extends BoardComposite implements TextElementProps, Boa
 		throw new Error(`Cannot add children to TextElement. Object of type '${child.constructor.name}' given`);
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildTextElementNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildTextElementNode(this, parent);
 	}
 }
 

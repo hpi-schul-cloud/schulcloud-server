@@ -13,7 +13,7 @@ export class ColumnBoard extends BoardComposite implements BoardNodeBuildable {
 		}
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder): void {
-		builder.buildColumnBoardNode(this);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildColumnBoardNode(this, parent);
 	}
 }
