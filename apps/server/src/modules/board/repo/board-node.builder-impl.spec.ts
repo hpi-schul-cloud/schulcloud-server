@@ -7,6 +7,7 @@ import {
 	textElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
+import { NotFoundException } from '@nestjs/common';
 import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 
 describe(BoardNodeBuilderImpl.name, () => {
@@ -177,6 +178,52 @@ describe(BoardNodeBuilderImpl.name, () => {
 			const nodes = builder.buildBoardNodes([columns[6], columns[1], columns[4]], board);
 
 			expect(nodes.map((n) => n.position)).toEqual([6, 1, 4]);
+		});
+	});
+
+	describe('when building a list of children', () => {
+		const setup = () => {
+			const columns = columnFactory.buildList(3);
+			const board = columnBoardFactory.build({ children: columns });
+			const builder = new BoardNodeBuilderImpl();
+
+			return { board, columns, builder };
+		};
+
+		describe('when parent is defined', () => {
+			it('should set board node positions', () => {
+				const { board, columns, builder } = setup();
+
+				const nodes = builder.buildBoardNodes(columns, board);
+
+				expect(nodes.map((n) => `${n.id}:${n.position}`)).toEqual([
+					`${columns[0].id}:0`,
+					`${columns[1].id}:1`,
+					`${columns[2].id}:2`,
+				]);
+			});
+
+			it('should throw an error on children that do not belong to the parent', () => {
+				const { board, columns, builder } = setup();
+
+				const alienColumn = columnFactory.build();
+
+				expect(() => builder.buildBoardNodes([...columns, alienColumn], board)).toThrow(NotFoundException);
+			});
+		});
+
+		describe('when no parent is defined', () => {
+			it('should set board node positions', () => {
+				const { columns, builder } = setup();
+
+				const nodes = builder.buildBoardNodes(columns);
+
+				expect(nodes.map((n) => `${n.id}:${n.position}`)).toEqual([
+					`${columns[0].id}:0`,
+					`${columns[1].id}:1`,
+					`${columns[2].id}:2`,
+				]);
+			});
 		});
 	});
 });
