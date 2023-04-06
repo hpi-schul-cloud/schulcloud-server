@@ -9,7 +9,7 @@ exports.before = {
 	get: [
 		iffElse(
 			isProvider('external'),
-			[authenticate('jwt'), hasPermission('SYSTEM_EDIT'), populateCurrentSchool, restrictToSchoolSystems],
+			[authenticate('jwt'), hasPermission('SYSTEM_VIEW'), populateCurrentSchool, restrictToSchoolSystems],
 			[disallow()]
 		),
 	],
