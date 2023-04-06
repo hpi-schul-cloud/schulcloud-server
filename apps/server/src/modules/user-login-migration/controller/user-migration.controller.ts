@@ -1,15 +1,17 @@
-import { ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Query } from '@nestjs/common';
-import { PageContentQueryParams } from './dto/page-type.query.param';
-import { PageContentResponse } from './dto/page-content.response';
-import { MigrationUc } from '../uc/migration.uc';
-import { PageContentDto } from '../service/dto/page-content.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { PageContentMapper } from '../mapper/page-content.mapper';
+import { PageContentDto } from '../service/dto/page-content.dto';
+import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
+import { PageContentQueryParams, PageContentResponse } from './dto';
 
 @ApiTags('UserMigration')
 @Controller('user-migration')
+/**
+ * @Deprecated
+ */
 export class UserMigrationController {
-	constructor(private readonly uc: MigrationUc, private readonly pageContentMapper: PageContentMapper) {}
+	constructor(private readonly uc: UserLoginMigrationUc, private readonly pageContentMapper: PageContentMapper) {}
 
 	@Get('page-content')
 	async getMigrationPageDetails(@Query() pageTypeQuery: PageContentQueryParams): Promise<PageContentResponse> {
