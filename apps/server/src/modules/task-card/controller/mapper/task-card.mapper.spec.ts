@@ -49,7 +49,7 @@ describe('task-card mapper', () => {
 				title: taskCard.title,
 				id: taskCard.id,
 				draggable: true,
-				courseId: taskCard.course?.id,
+				courseId: course.id,
 				courseName: course.name,
 				task: taskResponse,
 				visibleAtDate: tomorrow,
@@ -118,6 +118,7 @@ describe('task-card mapper', () => {
 		it('should map update params to domain', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
+			const courseId = new ObjectId().toHexString();
 
 			const cardElementRichText1 = new RichTextCardElementParam();
 			cardElementRichText1.type = CardElementType.RichText;
@@ -141,6 +142,7 @@ describe('task-card mapper', () => {
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
 				title: 'update title',
+				courseId,
 			};
 			const result = TaskCardMapper.mapToDomain(params);
 
@@ -152,10 +154,11 @@ describe('task-card mapper', () => {
 				],
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				courseId,
 			};
 			expect(result).toEqual(expectedDto);
 		});
-		it('should should throw an error if title is missing', () => {
+		it('should should throw an error if title is empty', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 
@@ -177,7 +180,29 @@ describe('task-card mapper', () => {
 			};
 			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
 		});
-		it('should not have a text property if cardElements is missing', () => {
+		it('should throw an error if courseId is empty', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const cardElementRichText = new RichTextCardElementParam();
+			cardElementRichText.type = CardElementType.RichText;
+			cardElementRichText.value = 'richtext';
+			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
+
+			const params = {
+				cardElements: [
+					{
+						content: cardElementRichText,
+					},
+				],
+				courseId: '',
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+			};
+			expect(() => TaskCardMapper.mapToDomain(params)).toThrowError();
+		});
+		it('should not have a text property if cardElements are missing', () => {
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
 
