@@ -659,25 +659,18 @@ describe('Task-Card Controller (api)', () => {
 				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(teacher);
+				currentUser = mapUserToCurrentUser(student1);
 
 				const taskCardUpdateParams: TaskCardParams = {
 					assignedUsers: [student1.id, student2.id, student3.id],
 					title: 'test title', // title should not be required
 				};
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+				const { status }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
 					taskCard.id,
 					taskCardUpdateParams
 				);
-				expect(status).toBe(200);
-				const result = [student1, student2, student3]
-					.sort((a, b) => a.id.localeCompare(b.id))
-					.map((user) => {
-						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
-					});
-				expect(body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
-				expect(body.task.users?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(result);
+				expect(status).toBe(403);
 			});
 
 			
