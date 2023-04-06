@@ -75,7 +75,7 @@ describe(ColumnService.name, () => {
 			};
 
 			it('should save a list of columns using the repo', async () => {
-				const { board, boardId } = setup();
+				const { board } = setup();
 
 				await service.create(board);
 
@@ -89,7 +89,7 @@ describe(ColumnService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					boardId
+					board
 				);
 			});
 		});
@@ -139,7 +139,7 @@ describe(ColumnService.name, () => {
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 					}),
-					columnBoard.id
+					columnBoard
 				);
 			});
 		});

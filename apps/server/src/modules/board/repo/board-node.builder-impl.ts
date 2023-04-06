@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import {
 	EntityId,
 	AnyBoardDo,
@@ -101,14 +102,24 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 	}
 
 	buildChildren(children: AnyBoardDo[], parent?: AnyBoardDo): void {
-		const positionMap: Record<EntityId, number> = {};
-		parent?.children.forEach((child, position) => {
-			positionMap[child.id] = position;
-		});
+		if (parent) {
+			const positionMap: Record<EntityId, number> = {};
 
-		children.forEach((domainObject) => {
-			const position = positionMap[domainObject.id];
-			domainObject.useBoardNodeBuilder(this, parent?.id, position);
-		});
+			parent.children.forEach((child, position) => {
+				positionMap[child.id] = position;
+			});
+
+			children.forEach((domainObject) => {
+				const position = positionMap[domainObject.id];
+				if (position === undefined) {
+					throw new NotFoundException('child is not child of this parent');
+				}
+				domainObject.useBoardNodeBuilder(this, parent?.id, position);
+			});
+		} else {
+			children.forEach((domainObject, position) => {
+				domainObject.useBoardNodeBuilder(this, undefined, position);
+			});
+		}
 	}
 }

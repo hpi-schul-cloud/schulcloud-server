@@ -117,7 +117,7 @@ describe(CardService.name, () => {
 			};
 
 			it('should save a list of cards using the boardDo repo', async () => {
-				const { column, columnId } = setup();
+				const { column } = setup();
 
 				await service.create(column);
 
@@ -130,7 +130,7 @@ describe(CardService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					columnId
+					column
 				);
 			});
 		});
@@ -181,7 +181,7 @@ describe(CardService.name, () => {
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
 					}),
-					columnBoard.id
+					columnBoard
 				);
 			});
 		});

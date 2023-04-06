@@ -52,7 +52,7 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo) {
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const domainObjects = Utils.asArray(domainObject);
 		const parentNode = parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
 		const builder = new BoardNodeBuilderImpl(parentNode);
