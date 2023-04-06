@@ -6,7 +6,7 @@ import { BoardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
-@ApiTags('Boards')
+@ApiTags('Board')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
