@@ -3401,6 +3401,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TestBootstrapConsole.html" data-type="entity-link" >TestBootstrapConsole</a>
                             </li>
                             <li class="link">
+                                <a href="classes/TestRequest.html" data-type="entity-link" >TestRequest</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/TextElement.html" data-type="entity-link" >TextElement</a>
                             </li>
                             <li class="link">
@@ -3441,6 +3444,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserAlreadyAssignedToImportUserError.html" data-type="entity-link" >UserAlreadyAssignedToImportUserError</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserAndAccountTestFactory.html" data-type="entity-link" >UserAndAccountTestFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserDO.html" data-type="entity-link" >UserDO</a>
@@ -3931,6 +3937,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AcceptLoginRequestBody.html" data-type="entity-link" >AcceptLoginRequestBody</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/AccountInternalParams.html" data-type="entity-link" >AccountInternalParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AccountParams.html" data-type="entity-link" >AccountParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/AdminIdAndToken.html" data-type="entity-link" >AdminIdAndToken</a>
                             </li>
                             <li class="link">
@@ -3941,6 +3953,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/AppendedAttachment.html" data-type="entity-link" >AppendedAttachment</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AuthenticationResponse.html" data-type="entity-link" >AuthenticationResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/AuthorizationParams.html" data-type="entity-link" >AuthorizationParams</a>
@@ -4411,6 +4426,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/TestRequestResponse.html" data-type="entity-link" >TestRequestResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/TextElementNodeProps.html" data-type="entity-link" >TextElementNodeProps</a>
                             </li>
                             <li class="link">
@@ -4418,6 +4436,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/User.html" data-type="entity-link" >User</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserAndAccountParams.html" data-type="entity-link" >UserAndAccountParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserParams.html" data-type="entity-link" >UserParams</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/VideoConferenceOptions.html" data-type="entity-link" >VideoConferenceOptions</a>

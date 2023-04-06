@@ -1325,13 +1325,18 @@ import { BaseFactory } from &#x27;./base.factory&#x27;;
 class AccountFactory extends BaseFactory&lt;Account, IAccountProperties&gt; {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial&lt;IAccountProperties&gt; &#x3D; { systemId: id };
+
 		return this.params(params);
 	}
 }
 
+export const defaultTestPassword &#x3D; &#x27;DummyPasswd!1&#x27;;
+export const defaultTestPasswordHash &#x3D; &#x27;$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu&#x27;;
+// !!! important username should not be contain a space !!!
 export const accountFactory &#x3D; AccountFactory.define(Account, ({ sequence }) &#x3D;&gt; {
 	return {
-		username: &#x60;account #${sequence}&#x60;,
+		username: &#x60;account${sequence}&#x60;,
+		password: defaultTestPasswordHash,
 		userId: new ObjectId(),
 	};
 });

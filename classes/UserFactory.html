@@ -109,6 +109,9 @@
                                 <a href="#withRole" >withRole</a>
                             </li>
                             <li>
+                                <a href="#withRoleByName" >withRoleByName</a>
+                            </li>
+                            <li>
                                 <a href="#afterBuild" >afterBuild</a>
                             </li>
                             <li>
@@ -220,7 +223,69 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withRole(name: <a href="../entitys/Role.html" target="_self">RoleName</a>)</code>
+<code>withRole(role: <a href="../entitys/Role.html" target="_self">Role</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:14</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>role</td>
+                                    <td>
+                                                <code><a href="../entitys/Role.html" target="_self" >Role</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withRoleByName"></a>
+                    <span class="name">
+                        <span ><b>withRoleByName</b></span>
+                        <a href="#withRoleByName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withRoleByName(name: <a href="../entitys/Role.html" target="_self">RoleName</a>)</code>
                 </td>
             </tr>
 
@@ -1316,15 +1381,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IUserProperties, RoleName, User } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IUserProperties, Role, RoleName, User } from &#x27;@shared/domain&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { roleFactory } from &#x27;./role.factory&#x27;;
 import { schoolFactory } from &#x27;./school.factory&#x27;;
 
 class UserFactory extends BaseFactory&lt;User, IUserProperties&gt; {
-	withRole(name: RoleName): this {
+	withRoleByName(name: RoleName): this {
 		const params: DeepPartial&lt;IUserProperties&gt; &#x3D; { roles: [roleFactory.buildWithId({ name })] };
+
+		return this.params(params);
+	}
+
+	withRole(role: Role): this {
+		const params: DeepPartial&lt;IUserProperties&gt; &#x3D; { roles: [role] };
+
 		return this.params(params);
 	}
 }
