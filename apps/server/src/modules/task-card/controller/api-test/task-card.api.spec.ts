@@ -589,6 +589,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -611,6 +612,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [student1.id, student2.id, student3.id],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				const response = await createTaskCardEndpoint(pObject);
@@ -632,6 +634,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [student1.id],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -655,6 +658,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [student1.id],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -678,6 +682,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [student1.id, student2.id],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -704,6 +709,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: [student1.id, student2.id, student3.id],
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -730,6 +736,7 @@ describe('Task-Card Controller (api)', () => {
 					courseId: course.id,
 					visibleAtDate: new Date(),
 					assignedUsers: undefined,
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				};
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -767,6 +774,9 @@ describe('Task-Card Controller (api)', () => {
 				const taskCardUpdateParams: TaskCardParams = {
 					assignedUsers: [student1.id, student2.id, student3.id],
 					title: 'test title', // title should not be required
+					visibleAtDate: new Date(),
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+					courseId: course.id,
 				};
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const { status }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
