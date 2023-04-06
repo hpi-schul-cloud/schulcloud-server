@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, Counted, EntityId } from '@shared/domain';
+import bcrypt from 'bcryptjs';
 import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AbstractAccountService } from './account.service.abstract';
@@ -123,11 +124,22 @@ export class AccountServiceDb extends AbstractAccountService {
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
+	validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+		if (!account.password) {
+			return Promise.resolve(false);
+		}
+		return Promise.resolve(bcrypt.compare(comparePassword, account.password));
+	}
+
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
 		const internalId = await this.accountLookupService.getInternalId(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
 		return internalId;
+	}
+
+	private encryptPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
 	}
 }

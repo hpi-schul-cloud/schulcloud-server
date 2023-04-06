@@ -140,6 +140,13 @@ export class AccountService extends AbstractAccountService {
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
+	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+			return this.accountIdm.validatePassword(account, comparePassword);
+		}
+		return this.accountDb.validatePassword(account, comparePassword);
+	}
+
 	async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () => this.accountIdm.delete(accountId));

@@ -197,7 +197,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
+		if (!params.passwordOld || !(await this.accountService.validatePassword(account, params.passwordOld))) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
@@ -283,9 +283,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!account.password) {
-			throw new Error('The account does not have a password to compare against.');
-		} else if (await this.checkPassword(password, account.password)) {
+		if (await this.accountService.validatePassword(account, password)) {
 			throw new ForbiddenOperationError('New password can not be same as old password.');
 		}
 
@@ -435,9 +433,5 @@ export class AccountUc {
 		}
 
 		return roles;
-	}
-
-	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
-		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 }

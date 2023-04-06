@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain';
-import bcrypt from 'bcryptjs';
 import { AccountDto, AccountSaveDto } from './dto';
 
 export abstract class AbstractAccountService {
@@ -33,7 +32,6 @@ export abstract class AbstractAccountService {
 
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>>;
 
-	protected encryptPassword(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
-	}
+	abstract validatePassword(account: AccountDto, comparePassword: string): Promise<boolean>;
+
 }

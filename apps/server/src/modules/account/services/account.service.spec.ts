@@ -230,6 +230,22 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('validatePassword', () => {
+		it('should call validatePassword in accountServiceDb', async () => {
+			await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
+		});
+		it('should call validatePassword in accountServiceIdm if feature is enabled', async () => {
+			const spy = jest.spyOn(configService, 'get');
+			spy.mockReturnValueOnce(true);
+
+			await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(1);
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(0);
+		});
+	});
+
 	describe('delete', () => {
 		it('should call delete in accountServiceDb', async () => {
 			await expect(accountService.delete('accountId')).resolves.not.toThrow();

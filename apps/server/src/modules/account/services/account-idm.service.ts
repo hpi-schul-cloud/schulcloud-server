@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
@@ -13,7 +13,8 @@ export class AccountServiceIdm extends AbstractAccountService {
 	constructor(
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
-		private readonly accountLookupService: AccountLookupService
+		private readonly accountLookupService: AccountLookupService,
+		private readonly idmOauthService: IdentityManagementOauthService
 	) {
 		super();
 	}
@@ -126,6 +127,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+	}
+
+	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
+		return jwt !== undefined;
 	}
 
 	async delete(accountRefId: EntityId): Promise<void> {

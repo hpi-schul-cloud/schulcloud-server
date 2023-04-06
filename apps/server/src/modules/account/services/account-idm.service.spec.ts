@@ -1,10 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { IdentityManagementService } from '@shared/infra/identity-management';
+import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -16,6 +15,7 @@ describe('AccountIdmService', () => {
 	let mapper: AccountIdmToDtoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
 	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
+	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 
 	const mockIdmAccountRefId = 'tecId';
 	const mockIdmAccount: IAccount = {
@@ -47,12 +47,17 @@ describe('AccountIdmService', () => {
 					provide: AccountLookupService,
 					useValue: createMock<AccountLookupService>(),
 				},
+				{
+					provide: IdentityManagementOauthService,
+					useValue: createMock<IdentityManagementOauthService>(),
+				},
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
 		mapper = module.get(AccountIdmToDtoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
 		accountLookupServiceMock = module.get(AccountLookupService);
+		idmOauthServiceMock = module.get(IdentityManagementOauthService);
 	});
 
 	afterAll(async () => {
@@ -187,6 +192,30 @@ describe('AccountIdmService', () => {
 				updatedAt: mockIdmAccount.createdDate,
 				username: mockIdmAccount.username,
 			});
+		});
+	});
+
+	describe('validatePassword', () => {
+		const setup = (acceptPassword: boolean) => {
+			idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValue(
+				acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined
+			);
+		};
+		it('should validate password by checking JWT', async () => {
+			setup(true);
+			const ret = await accountIdmService.validatePassword(
+				{ username: 'username' } as unknown as AccountDto,
+				'password'
+			);
+			expect(ret).toBe(true);
+		});
+		it('should report wrong password, i. e. non successful JWT creation', async () => {
+			setup(false);
+			const ret = await accountIdmService.validatePassword(
+				{ username: 'username' } as unknown as AccountDto,
+				'password'
+			);
+			expect(ret).toBe(false);
 		});
 	});
 

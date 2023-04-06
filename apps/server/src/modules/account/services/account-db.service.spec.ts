@@ -13,6 +13,7 @@ import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { GetBucketPolicyRequest } from '@aws-sdk/client-s3';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -413,6 +414,27 @@ describe('AccountDbService', () => {
 				...mockTeacherAccountDto,
 				lasttriedFailedLogin: theNewDate,
 			});
+		});
+	});
+
+	describe('validatePassword', () => {
+		it('should validate password', async () => {
+			const ret = await accountService.validatePassword(
+				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+				defaultPassword
+			);
+			expect(ret).toBe(true);
+		});
+		it('should report wrong password', async () => {
+			const ret = await accountService.validatePassword(
+				{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+				'incorrectPwd'
+			);
+			expect(ret).toBe(false);
+		});
+		it('should report missing account password', async () => {
+			const ret = await accountService.validatePassword({ password: undefined } as AccountDto, 'incorrectPwd');
+			expect(ret).toBe(false);
 		});
 	});
 
