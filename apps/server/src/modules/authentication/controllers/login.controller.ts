@@ -1,53 +1,51 @@
-import { CookieOptions, Response } from 'express';
-import { Controller, Post, UseGuards, HttpCode, HttpStatus, Query, Res, Get } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ApiTags } from '@nestjs/swagger';
-import type { ICurrentUser } from '../interface';
 import { CurrentUser } from '../decorator/auth.decorator';
-import { AuthenticationService } from '../services/authentication.service';
-import { OauthAuthorizationQueryParams } from './oauth-authorization.params';
+import type { ICurrentUser } from '../interface';
+import { LoginDto } from '../uc/dto/login.dto';
+import { LoginUc } from '../uc/login.uc';
+import { LdapAuthorizationParams, LocalAuthorizationParams, LoginResponse, Oauth2AuthorizationParams } from './dto';
+import { LoginResponseMapper } from './mapper/login-response.mapper';
 
 @ApiTags('Authentication')
 @Controller('authentication')
 export class LoginController {
-	constructor(private authService: AuthenticationService) {}
+	constructor(private readonly loginUc: LoginUc) {}
 
 	@UseGuards(AuthGuard('ldap'))
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
-	loginLdap(@CurrentUser() user: ICurrentUser) {
-		return this.authService.generateJwt(user);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationParams): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+
+		return mapped;
 	}
 
 	@UseGuards(AuthGuard('local'))
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
-	loginLocal(@CurrentUser() user: ICurrentUser) {
-		return this.authService.generateJwt(user);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationParams): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+
+		return mapped;
 	}
 
-	@UseGuards(AuthGuard('oauth'))
+	@UseGuards(AuthGuard('oauth2'))
 	@HttpCode(HttpStatus.OK)
-	@Get('oauth/:systemId')
-	async loginOauth(
-		@CurrentUser() user: ICurrentUser,
-		@Query() queryParams: OauthAuthorizationQueryParams,
-		@Res() res: Response
-	) {
-		// the userId can be undefined if the school is in migration from another login strategy to OAuth
-		if (user.userId) {
-			const jwt = await this.authService.generateJwt(user);
-			const cookieDefaultOptions: CookieOptions = {
-				httpOnly: Configuration.get('COOKIE__HTTP_ONLY') as boolean,
-				sameSite: Configuration.get('COOKIE__SAME_SITE') as 'lax' | 'strict' | 'none',
-				secure: Configuration.get('COOKIE__SECURE') as boolean,
-				expires: new Date(Date.now() + (Configuration.get('COOKIE__EXPIRES_SECONDS') as number)),
-			};
-			res.cookie('jwt', jwt.accessToken, cookieDefaultOptions);
-		}
-		if (queryParams.redirect) {
-			res.redirect(queryParams.redirect);
-		}
+	@Post('oauth2')
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	async loginOauth2(@CurrentUser() user: ICurrentUser, @Body() _: Oauth2AuthorizationParams): Promise<LoginResponse> {
+		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+
+		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
+
+		return mapped;
 	}
 }
