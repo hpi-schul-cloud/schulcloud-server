@@ -1,9 +1,9 @@
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
 import { ExternalToolVersionService } from './external-tool-version.service';
 
 describe('ExternalToolVersionService', () => {
@@ -16,6 +16,7 @@ describe('ExternalToolVersionService', () => {
 	const setup = () => {
 		const param1: CustomParameterDO = new CustomParameterDO({
 			name: 'param1',
+			displayName: 'displayName',
 			default: 'defaulValueParam1',
 			isOptional: false,
 			location: CustomParameterLocation.PATH,

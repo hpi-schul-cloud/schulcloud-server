@@ -25,15 +25,15 @@ describe(Column.name, () => {
 	});
 
 	describe('addChild', () => {
+		const setup = () => {
+			const children = cardFactory.buildListWithId(3);
+			const column = columnFactory.build({ children });
+			const card = cardFactory.build();
+
+			return { column, card };
+		};
+
 		describe('when adding a child', () => {
-			const setup = () => {
-				const children = cardFactory.buildListWithId(3);
-				const column = columnFactory.build({ children });
-				const card = cardFactory.build();
-
-				return { column, card };
-			};
-
 			it('should throw error on unsupported child type', () => {
 				const { column } = setup();
 				const board = columnBoardFactory.build();
@@ -55,6 +55,22 @@ describe(Column.name, () => {
 
 				expect(column.children[1]).toEqual(card);
 			});
+		});
+
+		it('should be able to add children', () => {
+			const { column, card } = setup();
+
+			column.addChild(card);
+
+			expect(column.children[column.children.length - 1]).toEqual(card);
+		});
+
+		it('should add child to correct position', () => {
+			const { column, card } = setup();
+
+			column.addChild(card, 1);
+
+			expect(column.children[1]).toEqual(card);
 		});
 	});
 });

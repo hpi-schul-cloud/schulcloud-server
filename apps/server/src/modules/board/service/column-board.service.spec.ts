@@ -3,13 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoard } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
-import { BoardDoRepo, BoardNodeRepo } from '../repo';
+import { BoardDoRepo } from '../repo';
+import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
 
 describe(ColumnBoardService.name, () => {
 	let module: TestingModule;
 	let service: ColumnBoardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
+	let boardDoService: DeepMocked<BoardDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,14 +22,15 @@ describe(ColumnBoardService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: BoardNodeRepo,
-					useValue: createMock<BoardNodeRepo>(),
+					provide: BoardDoService,
+					useValue: createMock<BoardDoService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(ColumnBoardService);
 		boardDoRepo = module.get(BoardDoRepo);
+		boardDoService = module.get(BoardDoService);
 		await setupEntities();
 	});
 
@@ -83,9 +86,9 @@ describe(ColumnBoardService.name, () => {
 		it('should call the service to delete the board', async () => {
 			const { board } = setup();
 
-			await service.delete(board.id);
+			await service.delete(board);
 
-			expect(boardDoRepo.deleteById).toHaveBeenCalledWith(board.id);
+			expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
 		});
 	});
 });

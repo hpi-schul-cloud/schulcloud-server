@@ -1,4 +1,4 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Inject, Injectable } from '@nestjs/common';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 
