@@ -203,7 +203,7 @@ describe('TaskRepo', () => {
 
 			it('Assigned users should not affect all courses', async () => {
 				const { englishCourse, mathsCourse, historyCourse } = await setup();
-				const [result, total] = await repo.findAllByParentIds({
+				const [, total] = await repo.findAllByParentIds({
 					courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
 				});
 				expect(total).toBe(6);
@@ -211,7 +211,7 @@ describe('TaskRepo', () => {
 
 			it('Filter by assigned users and courses', async () => {
 				const { englishCourse, mathsCourse, historyCourse, student1 } = await setup();
-				const [result, total] = await repo.findAllByParentIds(
+				const [, total] = await repo.findAllByParentIds(
 					{
 						courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
 					},

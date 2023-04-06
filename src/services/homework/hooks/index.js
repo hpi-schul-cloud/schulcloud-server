@@ -118,7 +118,7 @@ const hasViewPermissionAfter = (hook) => {
 		const published = new Date(e.availableDate) < new Date() && !e.private;
 
 		let checkAssigned = false;
-		if (!e.userIds) {
+		if (!e.userIds || e.userIds.length === 0) {
 			checkAssigned = true;
 		} else {
 			checkAssigned = (e.userIds || []).includes(((hook.params.account || {}).userId || '').toString());
