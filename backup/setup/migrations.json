@@ -174,5 +174,38 @@
 			"$date": "2023-03-31T13:24:33.452Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "642acfb9f493260e5422c6f6"
+		},
+		"state": "up",
+		"name": "remove-systems-permission-of-admins",
+		"createdAt": {
+			"$date": "2023-04-03T13:08:09.416Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "642ad0122937ff80780808c6"
+		},
+		"state": "up",
+		"name": "add-system-view-permission-for-admins",
+		"createdAt": {
+			"$date": "2023-04-03T13:09:38.055Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "642c1905ec49d9a2cce1939d"
+		},
+		"state": "up",
+		"name": "remove-system-view-permission-from-user",
+		"createdAt": {
+			"$date": "2023-04-04T12:25:50.707Z"
+		},
+		"__v": 0
 	}
 ]

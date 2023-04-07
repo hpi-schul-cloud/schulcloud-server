@@ -24,8 +24,8 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequenc
 		mimeType: 'application/octet-stream',
 		securityCheck: new FileSecurityCheck({}),
 		parentType: FileRecordParentType.Course,
-		parentId: new ObjectId(),
-		creatorId: new ObjectId(),
-		schoolId: new ObjectId(),
+		parentId: new ObjectId().toHexString(),
+		creatorId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 	};
 });
