@@ -40,10 +40,10 @@ export abstract class BoardComposite {
 		return foundChild;
 	}
 
-	removeChild(child: AnyBoardDo): AnyBoardDo {
-		const removedChild = this.getChild(child.id);
+	removeChild(childId: EntityId): AnyBoardDo {
+		const removedChild = this.getChild(childId);
 
-		this.children = this.children.filter((ch) => ch.id !== child.id);
+		this.children = this.children.filter((ch) => ch.id !== childId);
 		return removedChild;
 	}
 }

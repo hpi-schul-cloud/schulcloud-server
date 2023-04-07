@@ -40,9 +40,9 @@ describe(BoardDoService.name, () => {
 		describe('when moving a card', () => {
 			const setup = () => {
 				const cards = cardFactory.buildListWithId(3);
-				const sourceColumn = columnFactory.buildWithId({ children: [...cards] });
+				const sourceColumn = columnFactory.buildWithId({ children: cards });
 				const targetCards = cardFactory.buildListWithId(2);
-				const targetColumn = columnFactory.buildWithId({ children: [...targetCards] });
+				const targetColumn = columnFactory.buildWithId({ children: targetCards });
 
 				boardDoRepo.findParentOfId.mockResolvedValue(sourceColumn);
 				boardDoRepo.findById.mockResolvedValue(targetColumn);
@@ -60,10 +60,11 @@ describe(BoardDoService.name, () => {
 
 			it('should place it at the right position in the target column', async () => {
 				const { cards, targetCards, targetColumn } = setup();
+				const expectedChildren = [targetCards[0], cards[0], targetCards[1]];
 
 				await service.move(cards[0], targetColumn, 1);
-				const targetColumnCardIds = targetColumn.children.map((card) => card.id);
-				expect(targetColumnCardIds).toEqual([targetCards[0].id, cards[0].id, targetCards[1].id]);
+
+				expect(targetColumn.children).toEqual(expectedChildren);
 			});
 
 			it('should remove it from the source column', async () => {
@@ -83,25 +84,15 @@ describe(BoardDoService.name, () => {
 				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn);
 			});
 
-			// describe('when moving within the same parent', () => {
-			// 	it('should just change the position', async () => {
-			// 		const { cards, sourceColumn } = setup();
+			describe('when moving within the same parent', () => {
+				it('should just change the position', async () => {
+					const { cards, sourceColumn } = setup();
 
-			// 		await service.move(cards[0], sourceColumn, 1);
+					await service.move(cards[0], sourceColumn, 1);
 
-			// 		const children = boardDoRepo.save.mock.calls[0][0];
-
-			// 		// const childNames = children.map((c) => c.title);
-
-			// 		const expectedChildren = [
-			// 			...[sourceColumn.children[1]],
-			// 			...[sourceColumn.children[0]],
-			// 			...[sourceColumn.children[2]],
-			// 		];
-
-			// 		expect(boardDoRepo.save).toHaveBeenCalledWith(expectedChildren, sourceColumn);
-			// 	});
-			// });
+					expect(boardDoRepo.save).toHaveBeenCalledWith([cards[1], cards[0], cards[2]], sourceColumn);
+				});
+			});
 		});
 
 		describe('when card has no parent', () => {
