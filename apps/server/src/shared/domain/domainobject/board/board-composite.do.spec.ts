@@ -1,3 +1,4 @@
+import { ObjectId } from 'bson';
 import { BoardComposite } from './board-composite.do';
 import { AnyBoardDo } from './types';
 
@@ -7,16 +8,51 @@ class BoardObject extends BoardComposite {
 	}
 }
 
+const buildBoardObject = () =>
+	new BoardObject({
+		id: new ObjectId().toHexString(),
+		children: [],
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	});
+
 describe(`${BoardComposite.name}`, () => {
+	const setup = () => {
+		const parent = buildBoardObject();
+		parent.addChild(buildBoardObject() as AnyBoardDo);
+		parent.addChild(buildBoardObject() as AnyBoardDo);
+		parent.addChild(buildBoardObject() as AnyBoardDo);
+
+		return { parent, children: parent.children };
+	};
+
 	describe('getChild', () => {
 		it('should throw an error if child is not found', () => {
-			const boardObject = new BoardObject({
-				id: '59a3c657a2049554a93fec3a',
-				children: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
-			expect(() => boardObject.getChild('59a3c657a2049554a93fec3a')).toThrow();
+			const { parent } = setup();
+			expect(() => parent.getChild('59a3c657a2049554a93fec3a')).toThrow();
+		});
+	});
+
+	describe('removeChild', () => {
+		it('should remove the child', () => {
+			const { parent, children } = setup();
+			const expectedChildren = [children[0], children[2]];
+
+			parent.removeChild(children[1].id);
+
+			expect(parent.children).toEqual(expectedChildren);
+		});
+	});
+
+	describe('addChild', () => {
+		it('should add the child at the requested position', () => {
+			const { parent, children } = setup();
+			const extraChild = buildBoardObject();
+			const expectedChildren = [extraChild, ...children];
+
+			parent.addChild(extraChild as AnyBoardDo, 0);
+
+			expect(children).toEqual(expectedChildren);
 		});
 	});
 });
