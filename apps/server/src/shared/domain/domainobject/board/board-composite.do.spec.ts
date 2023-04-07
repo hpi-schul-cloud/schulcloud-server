@@ -48,11 +48,47 @@ describe(`${BoardComposite.name}`, () => {
 		it('should add the child at the requested position', () => {
 			const { parent, children } = setup();
 			const extraChild = buildBoardObject();
-			const expectedChildren = [extraChild, ...children];
+			const expectedChildren = [children[0], extraChild, children[1], children[2]];
 
-			parent.addChild(extraChild as AnyBoardDo, 0);
+			parent.addChild(extraChild as AnyBoardDo, 1);
 
 			expect(children).toEqual(expectedChildren);
+		});
+
+		describe('when position is not given', () => {
+			it('should append the child', () => {
+				const { parent, children } = setup();
+				const extraChild = buildBoardObject();
+				const expectedChildren = [...children, extraChild];
+
+				parent.addChild(extraChild as AnyBoardDo);
+
+				expect(children).toEqual(expectedChildren);
+			});
+		});
+
+		describe('when position = 0', () => {
+			it('should prepend the child', () => {
+				const { parent, children } = setup();
+				const extraChild = buildBoardObject();
+				const expectedChildren = [extraChild, ...children];
+
+				parent.addChild(extraChild as AnyBoardDo, 0);
+
+				expect(children).toEqual(expectedChildren);
+			});
+		});
+
+		describe('when position is too large', () => {
+			it('should append the child', () => {
+				const { parent, children } = setup();
+				const extraChild = buildBoardObject();
+				const expectedChildren = [...children, extraChild];
+
+				parent.addChild(extraChild as AnyBoardDo, 42);
+
+				expect(children).toEqual(expectedChildren);
+			});
 		});
 	});
 });

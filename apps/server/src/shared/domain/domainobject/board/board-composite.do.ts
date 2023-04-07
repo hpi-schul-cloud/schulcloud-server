@@ -22,10 +22,10 @@ export abstract class BoardComposite {
 	}
 
 	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
-		if (position !== undefined) {
-			this.children.splice(position, 0, domainObject);
-		} else {
+		if (position === undefined || position >= this.children.length) {
 			this.children.push(domainObject);
+		} else {
+			this.children.splice(position, 0, domainObject);
 		}
 	}
 
