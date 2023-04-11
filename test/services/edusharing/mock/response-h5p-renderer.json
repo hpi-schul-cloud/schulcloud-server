@@ -1,0 +1,327 @@
+{
+	"detailsSnippet": "<iframe src=\"iframeDummySrc\"></iframe><script src=\"https://test.test/dummy.js\"></script>",
+	"mimeType": "application/zip",
+	"node": {
+		"remote": null,
+		"content": {
+			"url": "https://edu-sharing/components/render/7215ec8b-0e20-4ec7-bba8-9457e781a17a",
+			"hash": "1449542355",
+			"version": "1.7"
+		},
+		"license": {
+			"icon": "https://edu-sharing/ccimages/licenses/cc by 4.0 .svg",
+			"url": null
+		},
+		"isDirectory": false,
+		"commentCount": 0,
+		"rating": {
+			"overall": [
+				"Object"
+			],
+			"affiliation": {},
+			"user": 0
+		},
+		"usedInCollections": [],
+		"ref": {
+			"repo": "dummyRepo",
+			"id": "7215ec8b-0e20-4ec7-bba8-9457e781a17a",
+			"archived": false,
+			"isHomeRepo": true
+		},
+		"parent": {
+			"repo": "dummyRepo",
+			"id": "7315ec8b-0e20-4ec7-bba8-9457e781a17a",
+			"archived": false,
+			"isHomeRepo": true
+		},
+		"type": "ccm:io",
+		"aspects": [
+			"cclom:lifecycle",
+			"cclom:technical",
+			"ccm:eduscope",
+			"ccm:permission_history",
+			"cm:versionable",
+			"cm:iometadata",
+			"ccm:usageaspect",
+			"sys:referenceable",
+			"sys:localized",
+			"cm:thumbnailModification",
+			"ccm:ressourceinfo",
+			"cclom:schema",
+			"cm:metadataset",
+			"ccm:licenses",
+			"ccm:commonlicenses",
+			"cclom:rights",
+			"cm:thumbnailed",
+			"cclom:meta-metadata",
+			"cm:auditable",
+			"ccm:lomreplication",
+			"cclom:general",
+			"ccm:hpi",
+			"ccm:educontext"
+		],
+		"name": "interaktiveuebung-getreide.h5p",
+		"title": "Interaktive Übungen zum Getreide - Aufgabenfolge",
+		"metadataset": "mds_oeh",
+		"repositoryType": "ALFRESCO",
+		"createdAt": "2023-03-28T15:26:11Z",
+		"createdBy": {
+			"profile": null,
+			"firstName": "Administrator",
+			"lastName": "",
+			"mailbox": "admin@alfresco.com"
+		},
+		"modifiedAt": "2023-03-29T10:11:40Z",
+		"modifiedBy": {
+			"profile": null,
+			"firstName": "Administrator",
+			"lastName": "",
+			"mailbox": "admin@alfresco.com"
+		},
+		"access": [
+			"Read",
+			"ReadAll",
+			"Comment",
+			"Feedback",
+			"AddChildren",
+			"ChangePermissions",
+			"Write",
+			"Delete",
+			"CCPublish"
+		],
+		"downloadUrl": "https://edu-sharing/eduservlet/download?nodeId=7215ec8b-0e20-4ec7-bba8-9457e781a17a",
+		"properties": {
+			"ccm:replicationsourcehash": [
+				"Array"
+			],
+			"ccm:original": [
+				"fa971666-ecf8-4e39-a57c-4fe6e7291847"
+			],
+			"ccm:ph_modified": [
+				"Array"
+			],
+			"cm:created": [
+				"Array"
+			],
+			"virtual:commentcount": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_ORG": [
+				"Array"
+			],
+			"cclom:size": [
+				"Array"
+			],
+			"cclom:version": [
+				"Array"
+			],
+			"cclom:general_language": [
+				"Array"
+			],
+			"virtual:licenseicon": [
+				"Array"
+			],
+			"virtual:usagecount": [
+				"Array"
+			],
+			"ccm:objecttype": [
+				"Array"
+			],
+			"sys:node-uuid": [
+				"7215ec8b-0e20-4ec7-bba8-9457e781a17a"
+			],
+			"ccm:replicationsource": [
+				"Array"
+			],
+			"virtual:childobjectcount": [
+				"Array"
+			],
+			"ccm:replicationsourceuuid": [
+				"7215ec8b-0e20-4ec7-bba8-9457e781a17a"
+			],
+			"cclom:title": [
+				"Array"
+			],
+			"ccm:ph_modifiedISO8601": [
+				"Array"
+			],
+			"sys:store-protocol": [
+				"Array"
+			],
+			"sys:store-identifier": [
+				"Array"
+			],
+			"ccm:version_comment": [
+				"Array"
+			],
+			"cclom:format": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_URL": [
+				"Array"
+			],
+			"ccm:create_version": [
+				"Array"
+			],
+			"cm:modifiedISO8601": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_REGION": [
+				"Array"
+			],
+			"sys:node-dbid": [
+				"Array"
+			],
+			"cm:edu_metadataset": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_PLZ": [
+				"Array"
+			],
+			"ccm:objecttype_DISPLAYNAME": [
+				"Array"
+			],
+			"cm:creator": [
+				"Array"
+			],
+			"cm:autoVersion": [
+				"Array"
+			],
+			"virtual:permalink": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_GIVENNAME": [
+				"Array"
+			],
+			"cm:versionLabel": [
+				"Array"
+			],
+			"cclom:aggregationlevel": [
+				"Array"
+			],
+			"cm:versionable": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_COUNTRY": [
+				"Array"
+			],
+			"cm:created_LONG": [
+				"Array"
+			],
+			"virtual:primaryparent_nodeid": [
+				"Array"
+			],
+			"cm:lastThumbnailModification": [
+				"Array"
+			],
+			"ccm:replicationsourceid": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creator": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_TEL": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_STREET": [
+				"Array"
+			],
+			"cm:createdISO8601": [
+				"Array"
+			],
+			"ccm:ph_action": [
+				"Array"
+			],
+			"cm:modified": [
+				"Array"
+			],
+			"cm:edu_forcemetadataset": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_CITY": [
+				"Array"
+			],
+			"cm:modifier": [
+				"Array"
+			],
+			"cm:autoVersionOnUpdateProps": [
+				"Array"
+			],
+			"cclom:location": [
+				"Array"
+			],
+			"ccm:educontextname": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_EMAIL": [
+				"Array"
+			],
+			"ccm:ph_modified_LONG": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorFN": [
+				"Array"
+			],
+			"ccm:hpi_searchable": [
+				"Array"
+			],
+			"ccm:ccressourcetype": [
+				"Array"
+			],
+			"cm:modified_LONG": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_TITLE": [
+				"Array"
+			],
+			"cm:automaticUpdate": [
+				"Array"
+			],
+			"cm:name": [
+				"Array"
+			],
+			"ccm:ph_invited": [
+				"Array"
+			],
+			"ccm:ph_users": [
+				"Array"
+			],
+			"ccm:ph_history": [
+				"Array"
+			],
+			"cm:initialVersion": [
+				"Array"
+			],
+			"ccm:metadatacontributer_creatorVCARD_SURNAME": [
+				"Array"
+			],
+			"cclom:general_keyword": [
+				"Array"
+			],
+			"ccm:commonlicense_key": [
+				"Array"
+			]
+		},
+		"mimetype": "application/zip",
+		"mediatype": "file-h5p",
+		"size": "3575554",
+		"preview": {
+			"isIcon": false,
+			"isGenerated": false,
+			"type": "TYPE_USERDEFINED",
+			"mimetype": null,
+			"data": null,
+			"url": "https://edu-sharing/preview?nodeId=7215ec8b-0e20-4ec7-bba8-9457e781a17a&storeProtocol=workspace&storeId=SpacesStore&dontcache=1680169175253",
+			"width": null,
+			"height": null
+		},
+		"iconURL": "https://edu-sharing/themes/default/images/common/mime-types/svg/file-h5p.svg",
+		"collection": null,
+		"owner": {
+			"profile": null,
+			"firstName": "Administrator",
+			"lastName": "",
+			"mailbox": "admin@alfresco.com"
+		}
+	}
+}
