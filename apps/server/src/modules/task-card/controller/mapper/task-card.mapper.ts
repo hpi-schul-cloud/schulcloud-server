@@ -80,6 +80,8 @@ export class TaskCardMapper {
 
 		if (params.assignedUsers) {
 			dto.assignedUsers = params.assignedUsers;
+		} else if (params.assignedUsers === null) {
+			dto.assignedUsers = undefined;
 		}
 
 		return dto;

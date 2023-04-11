@@ -58,15 +58,14 @@ export class TaskCardController {
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
+		console.log('task-card.controller', params);
 		const { card, taskWithStatusVo } = await this.taskCardUc.update(
 			currentUser.userId,
 			urlParams.id,
 			TaskCardMapper.mapToDomain(params)
 		);
-		console.log('taskWithStatusVo', taskWithStatusVo.task.users, taskWithStatusVo.task);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
-		console.log('taskCardResponse', taskCardResponse.assignedUsers, taskCardResponse.task.users);
 		return taskCardResponse;
 	}
 

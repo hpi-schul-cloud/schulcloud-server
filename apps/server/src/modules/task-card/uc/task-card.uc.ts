@@ -153,9 +153,13 @@ export class TaskCardUc {
 		if (params.visibleAtDate) {
 			card.visibleAtDate = params.visibleAtDate;
 		}
-
+		console.log(params);
 		if (params.assignedUsers) {
 			taskWithStatusVo = await this.updateTaskAssignedUsers(userId, card.task.id, params.title, params.assignedUsers);
+		} else if (Object.keys(params).includes('assignedUsers') && params.assignedUsers === undefined) {
+			// incase we explicitly set assignedUsers to undefined, remove all assignments
+			taskWithStatusVo = await this.removeTaskAssignedUsers(userId, card.task.id, params.title);
+			console.log('remove assignedUsers', taskWithStatusVo.task);
 		}
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
@@ -211,6 +215,16 @@ export class TaskCardUc {
 		if (lastDayOfNextYear < dueDate) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
+	}
+
+	private async removeTaskAssignedUsers(userId: EntityId, id: EntityId, title: string) {
+		const taskParams: ITaskUpdate = {
+			name: title,
+			usersIds: undefined,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
 	}
 
 	private async updateTaskAssignedUsers(userId: EntityId, id: EntityId, title: string, assignedUsers: string[]) {

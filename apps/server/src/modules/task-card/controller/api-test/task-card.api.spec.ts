@@ -816,6 +816,60 @@ describe('Task-Card Controller (api)', () => {
 				expect(status).toBe(200);
 				expect(result).toStrictEqual(expected);
 			});
+
+			it('updating diffent fields should not affect assigned students', async () => {
+				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const taskCardUpdateParams: TaskCardParams = {
+					title: 'test title', // title should not be required
+					visibleAtDate: new Date(),
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+					courseId: course.id, // course id should not be required
+				};
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+					taskCard.id,
+					taskCardUpdateParams
+				);
+				const expected = [student1]
+					.sort((a, b) => a.id.localeCompare(b.id))
+					.map((user) => {
+						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
+					});
+				const result = body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id));
+				expect(status).toBe(200);
+				expect(result).toStrictEqual(expected);
+			});
+
+			it.only('updating assignedUsers to null allows all students from course to access the task', async () => {
+				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(teacher);
+
+				const taskCardUpdateParams: TaskCardParams = {
+					assignedUsers: null,
+					title: 'test title2', // title should not be required
+					visibleAtDate: new Date(),
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+					courseId: course.id, // course id should not be required
+				};
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+					taskCard.id,
+					taskCardUpdateParams
+				);
+				console.log(await em.find(Task, {}));
+				expect(status).toBe(200);
+				expect(body.assignedUsers).toBeUndefined();
+			});
 		});
 	});
 });

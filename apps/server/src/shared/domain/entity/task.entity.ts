@@ -98,6 +98,8 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	// TODO: this value should be optional has be null in case,
+	// because we want to option to bypass the users if missing and filter by course
 	users = new Collection<User>(this);
 
 	@Index()

@@ -438,6 +438,11 @@ describe('TaskService', () => {
 				expect(result.task).toEqual({ ...task, name: params.name });
 				expect(result.status).toBeDefined();
 			});
+			it('add test to check in case we want to remove the assigned list', async () => {
+				// TODO: test assignedUser = null
+				// TODO: test assignedUser = []
+				fail('TODO');
+			});
 			it('should return the task with new assigned users', async () => {
 				user = userFactory.buildWithId();
 				const student1 = userFactory.buildWithId({ firstName: 'Student 1' });
