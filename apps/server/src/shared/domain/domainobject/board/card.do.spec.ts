@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, columnBoardFactory, columnNodeFactory, textElementFactory } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory, textElementFactory } from '@shared/testing';
 import { Card } from './card.do';
 import { BoardNodeBuilder } from './types';
 
@@ -8,19 +8,19 @@ describe(Card.name, () => {
 		const setup = () => {
 			const card = cardFactory.build();
 			const element = textElementFactory.build();
-			const columnNode = columnNodeFactory.buildWithId();
+			const column = columnFactory.build();
 			const builder = createMock<BoardNodeBuilder>();
 
-			return { card, element, builder, parentId: columnNode.id };
+			return { card, element, builder, column };
 		};
 
 		it('should call the specific builder method', () => {
-			const { card, builder, parentId } = setup();
+			const { card, builder, column } = setup();
 			jest.spyOn(builder, 'buildCardNode');
 
-			card.useBoardNodeBuilder(builder, parentId);
+			card.useBoardNodeBuilder(builder, column);
 
-			expect(builder.buildCardNode).toHaveBeenCalledWith(card, parentId, undefined);
+			expect(builder.buildCardNode).toHaveBeenCalledWith(card, column);
 		});
 	});
 

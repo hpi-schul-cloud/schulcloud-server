@@ -2,22 +2,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnNode } from '@shared/domain';
-import {
-	cardNodeFactory,
-	cleanupCollections,
-	columnBoardNodeFactory,
-	columnNodeFactory,
-	mapUserToCurrentUser,
-	userFactory,
-} from '@shared/testing';
+import { ColumnBoardNode } from '@shared/domain';
+import { cleanupCollections, columnBoardNodeFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/columns';
+const baseRouteName = '/boards';
 
 class API {
 	app: INestApplication;
@@ -26,11 +19,11 @@ class API {
 		this.app = app;
 	}
 
-	async move(columnId: string, toBoardId: string, toPosition: number) {
+	async updateBoardTitle(boardId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${columnId}/position`)
+			.put(`${baseRouteName}/${boardId}/title`)
 			.set('Accept', 'application/json')
-			.send({ toBoardId, toPosition });
+			.send({ title });
 
 		return {
 			error: response.body as ApiValidationError,
@@ -39,7 +32,7 @@ class API {
 	}
 }
 
-describe(`column move (api)`, () => {
+describe(`board update title (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -74,36 +67,34 @@ describe(`column move (api)`, () => {
 		const user = userFactory.build();
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNodes = new Array(10)
-			.fill(1)
-			.map((o, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
-		const columnToMove = columnNodes[2];
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
 
-		await em.persistAndFlush([user, cardNode, ...columnNodes, columnBoardNode]);
+		await em.persistAndFlush([user, columnBoardNode]);
 		em.clear();
 
-		return { user, cardNode, columnToMove, columnBoardNode };
+		return { user, columnBoardNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
+			const { user, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+			const newTitle = 'new title';
 
-			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
+			const response = await api.updateBoardTitle(columnBoardNode.id, newTitle);
 
 			expect(response.status).toEqual(200);
 		});
 
-		it('should actually move the column', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
+		it('should actually change the board title', async () => {
+			const { user, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+			const newTitle = 'new title';
 
-			await api.move(columnToMove.id, columnBoardNode.id, 5);
-			const result = await em.findOneOrFail(ColumnNode, columnToMove.id);
+			await api.updateBoardTitle(columnBoardNode.id, newTitle);
 
-			expect(result.position).toEqual(5);
+			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+
+			expect(result.title).toEqual(newTitle);
 		});
 	});
 

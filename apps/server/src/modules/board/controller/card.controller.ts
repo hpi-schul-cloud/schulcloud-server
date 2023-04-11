@@ -9,11 +9,12 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	MoveCardBodyParams,
+	RenameBodyParams,
 	TextElementResponse,
 } from './dto';
 import { CardResponseMapper, TextElementResponseMapper } from './mapper';
 
-@ApiTags('Cards')
+@ApiTags('Board Card')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
@@ -43,6 +44,15 @@ export class CardController {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 
 		return true;
+	}
+
+	@Put(':cardId/title')
+	async updateCardTitle(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
 
 	@Delete(':cardId')
