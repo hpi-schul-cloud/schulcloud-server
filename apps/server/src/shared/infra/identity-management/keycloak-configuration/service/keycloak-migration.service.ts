@@ -9,7 +9,7 @@ export class KeycloakMigrationService {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}
 
-	async migrate(start = 0, userNamePattern = '', verbose = false): Promise<number> {
+	async migrate(start = 0, verbose = false): Promise<number> {
 		const amount = 100;
 		let skip = start;
 		let foundAccounts = 1;
@@ -17,11 +17,7 @@ export class KeycloakMigrationService {
 		let accounts: AccountDto[] = [];
 		while (foundAccounts > 0) {
 			// eslint-disable-next-line no-await-in-loop
-			({ accounts, total: foundAccounts } = await this.accountService.searchByUsernamePartialMatch(
-				userNamePattern,
-				skip,
-				amount
-			));
+			accounts = await this.accountService.findMany(skip, amount);
 			foundAccounts = accounts.length;
 			for (const account of accounts) {
 				// eslint-disable-next-line no-await-in-loop

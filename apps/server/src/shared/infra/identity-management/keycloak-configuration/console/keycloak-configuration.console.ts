@@ -128,12 +128,6 @@ export class KeycloakConsole {
 		options: [
 			...KeycloakConsole.retryFlags,
 			{
-				flags: '-q, --query',
-				description: 'Limit migration to accounts with username partially matching the query string.',
-				required: false,
-				defaultValue: undefined,
-			},
-			{
 				flags: '-s, --skip',
 				description: 'Skip the first "s" accounts during migration. Default 0.',
 				required: false,
@@ -151,7 +145,10 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'migrate',
 			async () => {
-				const count = await this.keycloakConfigurationUc.migrate(options.skip, options.query, options.verbose);
+				const count = await this.keycloakConfigurationUc.migrate(
+					Number(options.skip),
+					Boolean(options.verbose)
+				);
 				this.console.info(`Migrated ${count} users into IDM`);
 				return count;
 			},

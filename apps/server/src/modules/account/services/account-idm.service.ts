@@ -125,6 +125,10 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
+	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
+		throw new NotImplementedException();
+	}
+
 	private async getIdmAccountId(schoolCloudId: string) {
 		const idmAccount = await this.identityManager.findAccountByTecRefId(schoolCloudId);
 		return idmAccount.id;
