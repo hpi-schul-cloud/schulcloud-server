@@ -6,7 +6,7 @@ import { CardUc } from '../uc/card.uc';
 import { ContentElementUrlParams } from './dto';
 import { MoveContentElementBody } from './dto/card/move-content-element.body.params';
 
-@ApiTags('Boards Elements')
+@ApiTags('Board Elements')
 @Authenticate('jwt')
 @Controller('elements')
 export class ElementController {
