@@ -75,7 +75,7 @@ describe(ColumnService.name, () => {
 			};
 
 			it('should save a list of columns using the repo', async () => {
-				const { board, boardId } = setup();
+				const { board } = setup();
 
 				await service.create(board);
 
@@ -89,7 +89,7 @@ describe(ColumnService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					boardId
+					board
 				);
 			});
 		});
@@ -116,6 +116,31 @@ describe(ColumnService.name, () => {
 				await service.move(column, board, 3);
 
 				expect(boardDoService.move).toHaveBeenCalledWith(column, board, 3);
+			});
+		});
+	});
+
+	describe('updateTitle', () => {
+		describe('when updating the title', () => {
+			it('should call the service', async () => {
+				const column = columnFactory.build();
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
+
+				const newTitle = 'new title';
+
+				await service.updateTitle(column, newTitle);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: newTitle,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+					columnBoard
+				);
 			});
 		});
 	});

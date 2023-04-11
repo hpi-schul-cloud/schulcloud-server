@@ -10,6 +10,7 @@ import {
 	cleanupCollections,
 	columnBoardFactory,
 	columnBoardNodeFactory,
+	columnFactory,
 	columnNodeFactory,
 	textElementFactory,
 	textElementNodeFactory,
@@ -180,11 +181,12 @@ describe(BoardDoRepo.name, () => {
 		const setup = async () => {
 			const board = columnBoardFactory.build();
 			const cards = cardFactory.buildList(3);
+			const column = columnFactory.build({ children: cards });
 
-			const columnNode = columnNodeFactory.build();
+			const columnNode = columnNodeFactory.build({ id: column.id });
 			await em.persistAndFlush(columnNode);
 
-			return { board, columnId: columnNode.id, card1: cards[0], card2: cards[1], card3: cards[2] };
+			return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
 		};
 
 		it('should save the object', async () => {
@@ -199,9 +201,9 @@ describe(BoardDoRepo.name, () => {
 		});
 
 		it('should persist order to positions', async () => {
-			const { columnId, card1, card2, card3 } = await setup();
+			const { column, card1, card2, card3 } = await setup();
 
-			await repo.save([card1, card2, card3], columnId);
+			await repo.save([card1, card2, card3], column);
 			em.clear();
 
 			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
@@ -216,6 +218,7 @@ describe(BoardDoRepo.name, () => {
 				const elements = textElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
 				await repo.save(card);
+				await repo.save(elements, card);
 				em.clear();
 
 				return { card, elements };
@@ -230,10 +233,15 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
 			});
 
-			it('should throw if domain object does not exist', async () => {
-				const card = cardFactory.build();
+			it('should delete all descendants', async () => {
+				const { card, elements } = await setup();
 
-				await expect(repo.delete(card)).rejects.toThrow();
+				await repo.delete(card);
+				em.clear();
+
+				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
 			});
 		});
 	});

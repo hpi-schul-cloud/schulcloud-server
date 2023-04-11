@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import {
 	EntityId,
 	AnyBoardDo,
@@ -25,61 +26,65 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildBoardNodes(domainObjects: AnyBoardDo[], parentId?: EntityId): BoardNode[] {
-		this.buildChildren(domainObjects, parentId);
+	buildBoardNodes(domainObjects: AnyBoardDo[], parent?: AnyBoardDo): BoardNode[] {
+		this.buildChildren(domainObjects, parent);
 		return this.resultNodes;
 	}
 
-	buildColumnBoardNode(columnBoard: ColumnBoard): void {
+	buildColumnBoardNode(columnBoard: ColumnBoard, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+
 		const columnBoardNode = new ColumnBoardNode({
 			id: columnBoard.id,
 			title: columnBoard.title,
+			parent: parentNode,
+			position: this.getChildPosition(columnBoard, parent),
 		});
 		this.registerNode(columnBoardNode);
 
-		this.buildChildren(columnBoard.children, columnBoardNode.id);
+		this.buildChildren(columnBoard.children, columnBoard);
 	}
 
-	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void {
-		const parent = this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN_BOARD);
+	buildColumnNode(column: Column, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.COLUMN_BOARD);
 
 		const columnNode = new ColumnNode({
 			id: column.id,
 			title: column.title,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(column, parent),
 		});
 		this.registerNode(columnNode);
 
-		this.buildChildren(column.children, columnNode.id);
+		this.buildChildren(column.children, column);
 	}
 
-	buildCardNode(card: Card, parentId?: EntityId, position?: number): void {
-		const parent = this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN);
+	buildCardNode(card: Card, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.COLUMN);
 
 		const cardNode = new CardNode({
 			id: card.id,
 			height: card.height,
 			title: card.title,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(card, parent),
 		});
 		this.registerNode(cardNode);
 
-		this.buildChildren(card.children, cardNode.id);
+		this.buildChildren(card.children, card);
 	}
 
-	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void {
-		const parent = this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.CARD);
+	buildTextElementNode(textElement: TextElement, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.CARD);
 
 		const textElementNode = new TextElementNode({
 			id: textElement.id,
 			text: textElement.text,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(textElement, parent),
 		});
 		this.registerNode(textElementNode);
 	}
@@ -89,9 +94,22 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		this.resultNodes.push(boardNode);
 	}
 
-	getParent(parentId?: EntityId): BoardNode | undefined {
+	getParentNode(parentId?: EntityId): BoardNode | undefined {
 		const parent = parentId ? this.parentsMap.get(parentId) : undefined;
 		return parent;
+	}
+
+	getChildPosition(child: AnyBoardDo, parent?: AnyBoardDo): number | undefined {
+		if (parent) {
+			const position = parent.children.findIndex((o) => o.id === child.id);
+			return position === -1 ? undefined : position;
+		}
+		return undefined;
+	}
+
+	isChildOfParent(child: AnyBoardDo, parent: AnyBoardDo): boolean {
+		const exists = parent.children.some((o) => o.id === child.id);
+		return exists;
 	}
 
 	ensureBoardNodeType(boardNode: BoardNode | undefined, ...allowedBoardNodeTypes: BoardNodeType[]) {
@@ -100,7 +118,16 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildChildren(children: AnyBoardDo[], parentId?: EntityId): void {
-		children.forEach((domainObject, position) => domainObject.useBoardNodeBuilder(this, parentId, position));
+	ensureHasChild(child: AnyBoardDo, parent?: AnyBoardDo) {
+		if (parent && !this.isChildOfParent(child, parent)) {
+			throw new NotFoundException('child is not child of this parent');
+		}
+	}
+
+	buildChildren(children: AnyBoardDo[], parent?: AnyBoardDo): void {
+		children.forEach((domainObject) => {
+			this.ensureHasChild(domainObject, parent);
+			domainObject.useBoardNodeBuilder(this, parent);
+		});
 	}
 }
