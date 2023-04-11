@@ -438,6 +438,36 @@ describe('TaskService', () => {
 				expect(result.task).toEqual({ ...task, name: params.name });
 				expect(result.status).toBeDefined();
 			});
+			it('should return the task with new assigned users', async () => {
+				user = userFactory.buildWithId();
+				const student1 = userFactory.buildWithId({ firstName: 'Student 1' });
+				const student2 = userFactory.buildWithId({ firstName: 'Student 2' });
+				course = courseFactory.buildWithId({ teachers: [user], students: [student1, student2] });
+
+				task = taskFactory.build({ course, users: [student1] });
+				courseRepo.findById.mockResolvedValue(course);
+
+				taskRepo.findById.mockResolvedValue(task);
+				taskRepo.save.mockResolvedValue();
+
+				userRepo.findById.mockImplementation((id) => {
+					if (id === student1.id) {
+						return Promise.resolve(student1);
+					}
+					if (id === student2.id) {
+						return Promise.resolve(student2);
+					}
+					return Promise.resolve(user);
+				});
+
+				const taskParams: ITaskUpdate = {
+					name: 'test',
+					usersIds: [student2.id],
+				};
+				const taskWithStatusVo: TaskWithStatusVo = await taskService.update(user.id, task.id, taskParams);
+				expect(taskRepo.save).toBeCalled();
+				expect(taskWithStatusVo.task.users.getItems()).toEqual([student2]);
+			});
 			it('should return the task with course and assigned users', async () => {
 				const student1 = userFactory.buildWithId();
 				const student2 = userFactory.buildWithId();

@@ -31,10 +31,11 @@ describe('Task-Card Controller (api)', () => {
 
 	let currentUser: ICurrentUser;
 
-	const setupUser = (permissions: Permission[]) => {
+	const setupUser = (permissions: Permission[], firstName?: string) => {
 		const roles = roleFactory.buildList(1, {
 			permissions,
 		});
+		if (firstName) return userFactory.build({ roles, firstName });
 		const user = userFactory.build({ roles });
 
 		return user;
@@ -753,9 +754,9 @@ describe('Task-Card Controller (api)', () => {
 
 			const createEntities = () => {
 				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
-				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
-				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 1');
+				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 2');
+				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 3');
 				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student1, student2, student3] });
 				const title = 'title test';
 				const task = taskFactory.build({ name: title, creator: teacher, course, users: [student1] });
@@ -795,7 +796,7 @@ describe('Task-Card Controller (api)', () => {
 				currentUser = mapUserToCurrentUser(teacher);
 
 				const taskCardUpdateParams: TaskCardParams = {
-					assignedUsers: [student1.id, student2.id],
+					assignedUsers: [student2.id, student1.id],
 					title: 'test title', // title should not be required
 					visibleAtDate: new Date(),
 					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -811,8 +812,9 @@ describe('Task-Card Controller (api)', () => {
 					.map((user) => {
 						return { id: user.id, firstName: user.firstName, lastName: user.lastName };
 					});
+				const result = body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id));
 				expect(status).toBe(200);
-				expect(body.assignedUsers?.sort((a, b) => a.id.localeCompare(b.id))).toStrictEqual(expected);
+				expect(result).toStrictEqual(expected);
 			});
 		});
 	});

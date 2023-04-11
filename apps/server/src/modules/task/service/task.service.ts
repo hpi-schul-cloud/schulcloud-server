@@ -135,14 +135,15 @@ export class TaskService {
 				task[key] = value;
 			}
 		}
-
 		if (params.courseId) {
 			const course = await this.courseRepo.findById(params.courseId);
 			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
 			task.course = course;
+		}
 
+		if (task.course) {
 			if (params.usersIds) {
-				const courseUsers = course.getStudentIds();
+				const courseUsers = task.course.getStudentIds();
 				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
 				if (!isAllUsersInCourse) {
 					throw new ForbiddenException('Users do not belong to course');

@@ -5,6 +5,7 @@ import {
 	Course,
 	EntityId,
 	ITaskCreate,
+	ITaskUpdate,
 	Permission,
 	PermissionContextBuilder,
 	TaskCard,
@@ -137,7 +138,7 @@ export class TaskCardUc {
 
 		this.validateDueDate({ params, course, user });
 
-		const taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
+		let taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
 		card.title = params.title;
@@ -153,6 +154,9 @@ export class TaskCardUc {
 			card.visibleAtDate = params.visibleAtDate;
 		}
 
+		if (params.assignedUsers) {
+			taskWithStatusVo = await this.updateTaskAssignedUsers(userId, card.task.id, params.title, params.assignedUsers);
+		}
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
@@ -207,6 +211,16 @@ export class TaskCardUc {
 		if (lastDayOfNextYear < dueDate) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
+	}
+
+	private async updateTaskAssignedUsers(userId: EntityId, id: EntityId, title: string, assignedUsers: string[]) {
+		const taskParams: ITaskUpdate = {
+			name: title,
+			usersIds: assignedUsers,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
 	}
 
 	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {

@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { TaskCardUc } from '../uc';
-import { TaskCardResponse, TaskCardUrlParams, TaskCardParams } from './dto';
+import { TaskCardParams, TaskCardResponse, TaskCardUrlParams } from './dto';
 import { TaskCardMapper } from './mapper/task-card.mapper';
 
 @ApiTags('Cards')
@@ -63,8 +63,10 @@ export class TaskCardController {
 			urlParams.id,
 			TaskCardMapper.mapToDomain(params)
 		);
+		console.log('taskWithStatusVo', taskWithStatusVo.task.users, taskWithStatusVo.task);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
+		console.log('taskCardResponse', taskCardResponse.assignedUsers, taskCardResponse.task.users);
 		return taskCardResponse;
 	}
 
