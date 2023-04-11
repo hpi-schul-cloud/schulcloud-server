@@ -78,7 +78,7 @@ describe('LdapStrategy', () => {
 		userRepoMock = module.get(UserRepo);
 		ldapServiceMock = module.get(LdapService);
 
-		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
+		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
