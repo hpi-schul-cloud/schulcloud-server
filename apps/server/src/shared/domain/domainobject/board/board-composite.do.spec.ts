@@ -3,8 +3,8 @@ import { BoardComposite } from './board-composite.do';
 import { AnyBoardDo } from './types';
 
 class BoardObject extends BoardComposite {
-	addChild(domainObject: AnyBoardDo, position?: number) {
-		this._addChild(domainObject, position);
+	isAllowedAsChild(): boolean {
+		return true;
 	}
 }
 
@@ -89,6 +89,15 @@ describe(`${BoardComposite.name}`, () => {
 
 				expect(children).toEqual(expectedChildren);
 			});
+		});
+
+		it('should throw if the object is not allowed as a child', () => {
+			const { parent } = setup();
+			const extraChild = buildBoardObject();
+
+			jest.spyOn(parent, 'isAllowedAsChild').mockReturnValue(false);
+
+			expect(() => parent.addChild(extraChild as AnyBoardDo, 1)).toThrow();
 		});
 	});
 });

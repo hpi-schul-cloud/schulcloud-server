@@ -1,4 +1,3 @@
-import { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
@@ -12,8 +11,8 @@ export class TextElement extends BoardComposite implements TextElementProps, Boa
 		this.text = props.text;
 	}
 
-	addChild(child: AnyBoardDo) {
-		throw new Error(`Cannot add children to TextElement. Object of type '${child.constructor.name}' given`);
+	isAllowedAsChild(): boolean {
+		return false;
 	}
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {

@@ -21,15 +21,18 @@ export abstract class BoardComposite {
 		this.updatedAt = props.updatedAt;
 	}
 
-	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
+	addChild(child: AnyBoardDo, position?: number): void {
+		if (!this.isAllowedAsChild(child)) {
+			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+		}
 		if (position === undefined || position >= this.children.length) {
-			this.children.push(domainObject);
+			this.children.push(child);
 		} else {
-			this.children.splice(position, 0, domainObject);
+			this.children.splice(position, 0, child);
 		}
 	}
 
-	abstract addChild(domainObject: AnyBoardDo, position?: number): void;
+	abstract isAllowedAsChild(domainObject: AnyBoardDo): boolean;
 
 	getChild(childId: EntityId): AnyBoardDo {
 		const foundChild = this.children.find((child) => child.id === childId);
