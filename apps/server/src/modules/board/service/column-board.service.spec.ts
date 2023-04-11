@@ -91,4 +91,25 @@ describe(ColumnBoardService.name, () => {
 			expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
 		});
 	});
+
+	describe('updateTitle', () => {
+		describe('when updating the title', () => {
+			it('should call the service', async () => {
+				const board = columnBoardFactory.build();
+				const newTitle = 'new title';
+
+				await service.updateTitle(board, newTitle);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: newTitle,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					})
+				);
+			});
+		});
+	});
 });

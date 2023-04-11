@@ -10,24 +10,41 @@ export class BoardDoService {
 		const parent = await this.boardDoRepo.findParentOfId(domainObject.id);
 
 		if (parent) {
-			parent.removeChild(domainObject);
-			await this.boardDoRepo.save(parent.children, parent.id);
+			parent.removeChild(domainObject.id);
+			await this.boardDoRepo.save(parent.children, parent);
 		}
 
 		await this.boardDoRepo.delete(domainObject);
 	}
 
 	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
+		if (targetParent.children.some((c) => c.id === child.id)) {
+			await this.movePosition(child, targetParent, targetPosition);
+		} else {
+			await this.moveBetweenParents(child, targetParent, targetPosition);
+		}
+	}
+
+	private async movePosition(child: AnyBoardDo, parent: AnyBoardDo, targetPosition?: number): Promise<void> {
+		const existingChild = parent.removeChild(child.id);
+		parent.addChild(existingChild, targetPosition);
+		await this.boardDoRepo.save(parent.children, parent);
+	}
+
+	private async moveBetweenParents(
+		child: AnyBoardDo,
+		targetParent: AnyBoardDo,
+		targetPosition?: number
+	): Promise<void> {
 		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
 
 		if (sourceParent == null) {
 			throw new BadRequestException('Cannot move nodes without a parent');
 		}
 
-		sourceParent.removeChild(child);
-		targetParent.addChild(child, targetPosition);
-
-		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
-		await this.boardDoRepo.save(targetParent.children, targetParent.id);
+		const existingChild = sourceParent.removeChild(child.id);
+		targetParent.addChild(existingChild, targetPosition);
+		await this.boardDoRepo.save(sourceParent.children, sourceParent);
+		await this.boardDoRepo.save(targetParent.children, targetParent);
 	}
 }

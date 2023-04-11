@@ -52,7 +52,7 @@ describe(ContentElementService.name, () => {
 			};
 
 			it('should save a list of content elements using the boardDo repo', async () => {
-				const { card, cardId } = setup();
+				const { card } = setup();
 
 				await service.create(card);
 
@@ -65,7 +65,7 @@ describe(ContentElementService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					cardId
+					card
 				);
 			});
 		});
