@@ -6,7 +6,7 @@ import { BoardUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';
 
-@ApiTags('Board Column')
+@ApiTags('Boards Columns')
 @Authenticate('jwt')
 @Controller('columns')
 export class ColumnController {

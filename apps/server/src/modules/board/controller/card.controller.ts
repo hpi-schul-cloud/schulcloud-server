@@ -14,7 +14,7 @@ import {
 } from './dto';
 import { CardResponseMapper, TextElementResponseMapper } from './mapper';
 
-@ApiTags('Board Card')
+@ApiTags('Boards Cards')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
