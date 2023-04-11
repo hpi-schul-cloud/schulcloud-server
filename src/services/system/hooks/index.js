@@ -49,8 +49,8 @@ const removeSystemFromSchool = async (context) => {
 
 exports.before = {
 	all: [iff(isProvider('external'), [authenticate('jwt'), globalHooks.populateCurrentSchool, restrictToCurrentSchool])],
-	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
-	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
+	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_VIEW'))],
+	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_VIEW'))],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')), encryptSecret],
 	update: [
 		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
