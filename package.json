@@ -205,8 +205,7 @@
 		"universal-analytics": "^0.5.1",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^8.3.0",
-		"winston": "^3.8.2",
-		"xml2js-es6-promise": "^1.1.1"
+		"winston": "^3.8.2"
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.44.0",
