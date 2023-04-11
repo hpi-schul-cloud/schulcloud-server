@@ -25,13 +25,17 @@ export class BoardDoService {
 		}
 	}
 
-	async movePosition(child: AnyBoardDo, parent: AnyBoardDo, targetPosition?: number): Promise<void> {
+	private async movePosition(child: AnyBoardDo, parent: AnyBoardDo, targetPosition?: number): Promise<void> {
 		const existingChild = parent.removeChild(child.id);
 		parent.addChild(existingChild, targetPosition);
 		await this.boardDoRepo.save(parent.children, parent);
 	}
 
-	async moveBetweenParents(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
+	private async moveBetweenParents(
+		child: AnyBoardDo,
+		targetParent: AnyBoardDo,
+		targetPosition?: number
+	): Promise<void> {
 		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
 
 		if (sourceParent == null) {
