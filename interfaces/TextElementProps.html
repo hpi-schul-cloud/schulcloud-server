@@ -144,8 +144,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;../../types&#x27;;
-import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import type { AnyBoardDo } from &#x27;./types&#x27;;
 import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
 import type { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
@@ -158,12 +157,12 @@ export class TextElement extends BoardComposite implements TextElementProps, Boa
 		this.text &#x3D; props.text;
 	}
 
-	addChild(child: AnyBoardDo) {
-		throw new Error(&#x60;Cannot add children to TextElement. Object of type &#x27;${child.constructor.name}&#x27; given&#x60;);
+	isAllowedAsChild(): boolean {
+		return false;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildTextElementNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildTextElementNode(this, parent);
 	}
 }
 

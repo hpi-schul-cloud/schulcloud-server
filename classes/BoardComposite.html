@@ -111,15 +111,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#_addChild" >_addChild</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Abstract</span>
                                 <a href="#addChild" >addChild</a>
                             </li>
                             <li>
                                 <a href="#getChild" >getChild</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#isAllowedAsChild" >isAllowedAsChild</a>
                             </li>
                             <li>
                                 <a href="#removeChild" >removeChild</a>
@@ -332,18 +331,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="_addChild"></a>
+                    <a name="addChild"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span ><b>_addChild</b></span>
-                        <a href="#_addChild"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>addChild</b></span>
+                        <a href="#addChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -372,90 +369,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>domainObject</td>
-                                    <td>
-                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="addChild"></a>
-                    <span class="name">
-                        <span class="modifier">Abstract</span>
-                        <span ><b>addChild</b></span>
-                        <a href="#addChild"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:32</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>domainObject</td>
+                                    <td>child</td>
                                     <td>
                                                 <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
@@ -514,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:37</a></div>
                 </td>
             </tr>
 
@@ -567,24 +481,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="removeChild"></a>
+                    <a name="isAllowedAsChild"></a>
                     <span class="name">
-                        <span ><b>removeChild</b></span>
-                        <a href="#removeChild"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Abstract</span>
+                        <span ><b>isAllowedAsChild</b></span>
+                        <a href="#isAllowedAsChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isAllowedAsChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:35</a></div>
                 </td>
             </tr>
 
@@ -605,9 +521,78 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>child</td>
+                                    <td>domainObject</td>
                                     <td>
                                                 <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeChild"></a>
+                    <span class="name">
+                        <span ><b>removeChild</b></span>
+                        <a href="#removeChild"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>removeChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:46</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>childId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -665,15 +650,18 @@ export abstract class BoardComposite {
 		this.updatedAt &#x3D; props.updatedAt;
 	}
 
-	protected _addChild(domainObject: AnyBoardDo, position?: number): void {
-		if (position) {
-			this.children.splice(position, 0, domainObject);
+	addChild(child: AnyBoardDo, position?: number): void {
+		if (!this.isAllowedAsChild(child)) {
+			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
+		}
+		if (position &#x3D;&#x3D;&#x3D; undefined || position &gt;&#x3D; this.children.length) {
+			this.children.push(child);
 		} else {
-			this.children.push(domainObject);
+			this.children.splice(position, 0, child);
 		}
 	}
 
-	abstract addChild(domainObject: AnyBoardDo, position?: number): void;
+	abstract isAllowedAsChild(domainObject: AnyBoardDo): boolean;
 
 	getChild(childId: EntityId): AnyBoardDo {
 		const foundChild &#x3D; this.children.find((child) &#x3D;&gt; child.id &#x3D;&#x3D;&#x3D; childId);
@@ -684,10 +672,10 @@ export abstract class BoardComposite {
 		return foundChild;
 	}
 
-	removeChild(child: AnyBoardDo): AnyBoardDo {
-		const removedChild &#x3D; this.getChild(child.id);
+	removeChild(childId: EntityId): AnyBoardDo {
+		const removedChild &#x3D; this.getChild(childId);
 
-		this.children &#x3D; this.children.filter((ch) &#x3D;&gt; ch.id !&#x3D;&#x3D; child.id);
+		this.children &#x3D; this.children.filter((ch) &#x3D;&gt; ch.id !&#x3D;&#x3D; childId);
 		return removedChild;
 	}
 }

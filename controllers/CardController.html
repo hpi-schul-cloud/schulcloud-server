@@ -99,6 +99,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#moveCard" >moveCard</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateCardTitle" >updateCardTitle</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -145,8 +149,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:73</a></div>
                 </td>
             </tr>
 
@@ -235,8 +239,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:59</a></div>
                 </td>
             </tr>
 
@@ -325,8 +329,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:24</a></div>
                 </td>
             </tr>
 
@@ -415,8 +419,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:39</a></div>
                 </td>
             </tr>
 
@@ -488,6 +492,108 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateCardTitle"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>updateCardTitle</b></span>
+                        <a href="#updateCardTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateCardTitle(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/RenameBodyParams.html" target="_self">RenameBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:cardId/title&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:50</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/RenameBodyParams.html" target="_self" >RenameBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -503,11 +609,12 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	MoveCardBodyParams,
+	RenameBodyParams,
 	TextElementResponse,
 } from &#x27;./dto&#x27;;
 import { CardResponseMapper, TextElementResponseMapper } from &#x27;./mapper&#x27;;
 
-@ApiTags(&#x27;Cards&#x27;)
+@ApiTags(&#x27;Board Card&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;cards&#x27;)
 export class CardController {
@@ -537,6 +644,15 @@ export class CardController {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 
 		return true;
+	}
+
+	@Put(&#x27;:cardId/title&#x27;)
+	async updateCardTitle(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
 
 	@Delete(&#x27;:cardId&#x27;)

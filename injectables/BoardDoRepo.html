@@ -202,8 +202,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:63</a></div>
                 </td>
             </tr>
 
@@ -595,7 +595,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo | AnyBoardDo[]</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>save(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo | AnyBoardDo[]</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -636,9 +636,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -653,7 +653,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -723,14 +723,11 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
-		const getParent &#x3D; async (id?: EntityId): Promise&lt;BoardNode | undefined&gt; &#x3D;&gt;
-			id ? this.boardNodeRepo.findById(BoardNode, id) : undefined;
-
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise&lt;void&gt; {
 		const domainObjects &#x3D; Utils.asArray(domainObject);
-		const parentNode &#x3D; await getParent(parentId);
+		const parentNode &#x3D; parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
 		const builder &#x3D; new BoardNodeBuilderImpl(parentNode);
-		const boardNodes &#x3D; builder.buildBoardNodes(domainObjects, parentNode?.id);
+		const boardNodes &#x3D; builder.buildBoardNodes(domainObjects, parent);
 		await this.boardNodeRepo.save(boardNodes);
 	}
 

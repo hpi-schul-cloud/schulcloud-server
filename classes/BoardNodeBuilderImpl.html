@@ -130,7 +130,16 @@
                                 <a href="#ensureBoardNodeType" >ensureBoardNodeType</a>
                             </li>
                             <li>
-                                <a href="#getParent" >getParent</a>
+                                <a href="#ensureHasChild" >ensureHasChild</a>
+                            </li>
+                            <li>
+                                <a href="#getChildPosition" >getChildPosition</a>
+                            </li>
+                            <li>
+                                <a href="#getParentNode" >getParentNode</a>
+                            </li>
+                            <li>
+                                <a href="#isChildOfParent" >isChildOfParent</a>
                             </li>
                             <li>
                                 <a href="#registerNode" >registerNode</a>
@@ -158,7 +167,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:21</a></div>
                             </td>
                         </tr>
 
@@ -226,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -258,7 +267,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -285,15 +294,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildBoardNodes(domainObjects: <a href="../entitys/Board.html" target="_self">AnyBoardDo[]</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>buildBoardNodes(domainObjects: <a href="../entitys/Board.html" target="_self">AnyBoardDo[]</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:29</a></div>
                 </td>
             </tr>
 
@@ -326,9 +335,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -366,15 +375,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildCardNode(card: <a href="../classes/Card.html" target="_self">Card</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildCardNode(card: <a href="../classes/Card.html" target="_self">Card</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:63</a></div>
                 </td>
             </tr>
 
@@ -407,21 +416,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -459,15 +456,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildChildren(children: <a href="../entitys/Board.html" target="_self">AnyBoardDo[]</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>buildChildren(children: <a href="../entitys/Board.html" target="_self">AnyBoardDo[]</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:127</a></div>
                 </td>
             </tr>
 
@@ -500,9 +497,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -540,15 +537,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildColumnBoardNode(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+<code>buildColumnBoardNode(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:34</a></div>
                 </td>
             </tr>
 
@@ -576,6 +573,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -609,15 +618,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildColumnNode(column: <a href="../classes/Column.html" target="_self">Column</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildColumnNode(column: <a href="../classes/Column.html" target="_self">Column</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:48</a></div>
                 </td>
             </tr>
 
@@ -650,21 +659,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -702,15 +699,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildTextElementNode(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildTextElementNode(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:79</a></div>
                 </td>
             </tr>
 
@@ -743,21 +740,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -802,8 +787,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:115</a></div>
                 </td>
             </tr>
 
@@ -867,24 +852,186 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getParent"></a>
+                    <a name="ensureHasChild"></a>
                     <span class="name">
-                        <span ><b>getParent</b></span>
-                        <a href="#getParent"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>ensureHasChild</b></span>
+                        <a href="#ensureHasChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getParent(parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>ensureHasChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="121"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:121</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>child</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChildPosition"></a>
+                    <span class="name">
+                        <span ><b>getChildPosition</b></span>
+                        <a href="#getChildPosition"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getChildPosition(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:102</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>child</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>number | undefined</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getParentNode"></a>
+                    <span class="name">
+                        <span ><b>getParentNode</b></span>
+                        <a href="#getParentNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getParentNode(parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:97</a></div>
                 </td>
             </tr>
 
@@ -936,6 +1083,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isChildOfParent"></a>
+                    <span class="name">
+                        <span ><b>isChildOfParent</b></span>
+                        <a href="#isChildOfParent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>isChildOfParent(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, parent: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:110</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>child</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="registerNode"></a>
                     <span class="name">
                         <span ><b>registerNode</b></span>
@@ -952,8 +1180,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-node.builder-impl.ts:92</a></div>
                 </td>
             </tr>
 
@@ -1011,7 +1239,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotFoundException } from &#x27;@nestjs/common&#x27;;
+import {
 	EntityId,
 	AnyBoardDo,
 	BoardNodeBuilder,
@@ -1038,61 +1267,65 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildBoardNodes(domainObjects: AnyBoardDo[], parentId?: EntityId): BoardNode[] {
-		this.buildChildren(domainObjects, parentId);
+	buildBoardNodes(domainObjects: AnyBoardDo[], parent?: AnyBoardDo): BoardNode[] {
+		this.buildChildren(domainObjects, parent);
 		return this.resultNodes;
 	}
 
-	buildColumnBoardNode(columnBoard: ColumnBoard): void {
+	buildColumnBoardNode(columnBoard: ColumnBoard, parent?: AnyBoardDo): void {
+		const parentNode &#x3D; this.getParentNode(parent?.id);
+
 		const columnBoardNode &#x3D; new ColumnBoardNode({
 			id: columnBoard.id,
 			title: columnBoard.title,
+			parent: parentNode,
+			position: this.getChildPosition(columnBoard, parent),
 		});
 		this.registerNode(columnBoardNode);
 
-		this.buildChildren(columnBoard.children, columnBoardNode.id);
+		this.buildChildren(columnBoard.children, columnBoard);
 	}
 
-	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void {
-		const parent &#x3D; this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN_BOARD);
+	buildColumnNode(column: Column, parent?: AnyBoardDo): void {
+		const parentNode &#x3D; this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.COLUMN_BOARD);
 
 		const columnNode &#x3D; new ColumnNode({
 			id: column.id,
 			title: column.title,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(column, parent),
 		});
 		this.registerNode(columnNode);
 
-		this.buildChildren(column.children, columnNode.id);
+		this.buildChildren(column.children, column);
 	}
 
-	buildCardNode(card: Card, parentId?: EntityId, position?: number): void {
-		const parent &#x3D; this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.COLUMN);
+	buildCardNode(card: Card, parent?: AnyBoardDo): void {
+		const parentNode &#x3D; this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.COLUMN);
 
 		const cardNode &#x3D; new CardNode({
 			id: card.id,
 			height: card.height,
 			title: card.title,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(card, parent),
 		});
 		this.registerNode(cardNode);
 
-		this.buildChildren(card.children, cardNode.id);
+		this.buildChildren(card.children, card);
 	}
 
-	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void {
-		const parent &#x3D; this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.CARD);
+	buildTextElementNode(textElement: TextElement, parent?: AnyBoardDo): void {
+		const parentNode &#x3D; this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.CARD);
 
 		const textElementNode &#x3D; new TextElementNode({
 			id: textElement.id,
 			text: textElement.text,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(textElement, parent),
 		});
 		this.registerNode(textElementNode);
 	}
@@ -1102,9 +1335,22 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		this.resultNodes.push(boardNode);
 	}
 
-	getParent(parentId?: EntityId): BoardNode | undefined {
+	getParentNode(parentId?: EntityId): BoardNode | undefined {
 		const parent &#x3D; parentId ? this.parentsMap.get(parentId) : undefined;
 		return parent;
+	}
+
+	getChildPosition(child: AnyBoardDo, parent?: AnyBoardDo): number | undefined {
+		if (parent) {
+			const position &#x3D; parent.children.findIndex((o) &#x3D;&gt; o.id &#x3D;&#x3D;&#x3D; child.id);
+			return position &#x3D;&#x3D;&#x3D; -1 ? undefined : position;
+		}
+		return undefined;
+	}
+
+	isChildOfParent(child: AnyBoardDo, parent: AnyBoardDo): boolean {
+		const exists &#x3D; parent.children.some((o) &#x3D;&gt; o.id &#x3D;&#x3D;&#x3D; child.id);
+		return exists;
 	}
 
 	ensureBoardNodeType(boardNode: BoardNode | undefined, ...allowedBoardNodeTypes: BoardNodeType[]) {
@@ -1113,8 +1359,17 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		}
 	}
 
-	buildChildren(children: AnyBoardDo[], parentId?: EntityId): void {
-		children.forEach((domainObject, position) &#x3D;&gt; domainObject.useBoardNodeBuilder(this, parentId, position));
+	ensureHasChild(child: AnyBoardDo, parent?: AnyBoardDo) {
+		if (parent &amp;&amp; !this.isChildOfParent(child, parent)) {
+			throw new NotFoundException(&#x27;child is not child of this parent&#x27;);
+		}
+	}
+
+	buildChildren(children: AnyBoardDo[], parent?: AnyBoardDo): void {
+		children.forEach((domainObject) &#x3D;&gt; {
+			this.ensureHasChild(domainObject, parent);
+			domainObject.useBoardNodeBuilder(this, parent);
+		});
 	}
 }
 </code></pre>

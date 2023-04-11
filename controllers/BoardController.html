@@ -99,6 +99,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getBoardSkeleton" >getBoardSkeleton</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateBoardTitle" >updateBoardTitle</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -464,19 +468,121 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateBoardTitle"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>updateBoardTitle</b></span>
+                        <a href="#updateBoardTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateBoardTitle(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/RenameBodyParams.html" target="_self">RenameBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Put(&#x27;:boardId/title&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:37</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>urlParams</td>
+                                    <td>
+                                                <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/RenameBodyParams.html" target="_self" >RenameBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Delete, Get, Param, Post } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Put } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
-import { BoardResponse, BoardUrlParams, ColumnResponse } from &#x27;./dto&#x27;;
+import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from &#x27;./dto&#x27;;
 import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 
-@ApiTags(&#x27;Boards&#x27;)
+@ApiTags(&#x27;Board&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;boards&#x27;)
 export class BoardController {
@@ -503,14 +609,14 @@ export class BoardController {
 		return response;
 	}
 
-	// @Put(&#x27;/:boardId/title&#x27;)
-	// renameBoard(
-	// 	@Param() urlParams: BoardUrlParams,
-	// 	@Body() bodyParams: RenameBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise&lt;void&gt; {
-	// 	throw new NotImplementedException();
-	// }
+	@Put(&#x27;:boardId/title&#x27;)
+	async updateBoardTitle(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
+	}
 
 	@Delete(&#x27;:boardId&#x27;)
 	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;boolean&gt; {

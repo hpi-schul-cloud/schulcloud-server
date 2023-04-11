@@ -132,7 +132,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildCardNode(card: <a href="../classes/Card.html" target="_self">Card</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildCardNode(card: <a href="../classes/Card.html" target="_self">Card</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -173,21 +173,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -225,7 +213,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildColumnBoardNode(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+<code>buildColumnBoardNode(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -265,6 +253,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -294,7 +294,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildColumnNode(column: <a href="../classes/Column.html" target="_self">Column</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildColumnNode(column: <a href="../classes/Column.html" target="_self">Column</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -335,21 +335,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -387,7 +375,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildTextElementNode(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>buildTextElementNode(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -428,21 +416,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -473,17 +449,17 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { EntityId } from &#x27;../../../types&#x27;;
-import type { Card } from &#x27;../card.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card } from &#x27;../card.do&#x27;;
 import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
 import type { TextElement } from &#x27;../text-element.do&#x27;;
+import type { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 
 export interface BoardNodeBuilder {
-	buildColumnBoardNode(columnBoard: ColumnBoard): void;
-	buildColumnNode(column: Column, parentId?: EntityId, position?: number): void;
-	buildCardNode(card: Card, parentId?: EntityId, position?: number): void;
-	buildTextElementNode(textElement: TextElement, parentId?: EntityId, position?: number): void;
+	buildColumnBoardNode(columnBoard: ColumnBoard, parent?: AnyBoardDo): void;
+	buildColumnNode(column: Column, parent?: AnyBoardDo): void;
+	buildCardNode(card: Card, parent?: AnyBoardDo): void;
+	buildTextElementNode(textElement: TextElement, parent?: AnyBoardDo): void;
 }
 </code></pre>
     </div>

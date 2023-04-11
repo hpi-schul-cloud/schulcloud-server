@@ -144,8 +144,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { EntityId } from &#x27;../../types&#x27;;
-import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { TextElement } from &#x27;./text-element.do&#x27;;
 import type { AnyBoardDo } from &#x27;./types&#x27;;
 import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
@@ -160,16 +159,13 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		this.height &#x3D; props.height;
 	}
 
-	addChild(child: AnyBoardDo, position?: number) {
-		if (child instanceof TextElement) {
-			this._addChild(child, position);
-		} else {
-			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
-		}
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed &#x3D; domainObject instanceof TextElement;
+		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildCardNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildCardNode(this, parent);
 	}
 }
 

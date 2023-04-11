@@ -123,14 +123,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#addChild" >addChild</a>
+                                <a href="#isAllowedAsChild" >isAllowedAsChild</a>
                             </li>
                             <li>
                                 <a href="#useBoardNodeBuilder" >useBoardNodeBuilder</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#_addChild" >_addChild</a>
+                                <a href="#addChild" >addChild</a>
                             </li>
                             <li>
                                 <a href="#getChild" >getChild</a>
@@ -333,16 +332,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addChild"></a>
+                    <a name="isAllowedAsChild"></a>
                     <span class="name">
-                        <span ><b>addChild</b></span>
-                        <a href="#addChild"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isAllowedAsChild</b></span>
+                        <a href="#isAllowedAsChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>isAllowedAsChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
@@ -355,7 +354,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:7</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:6</a></code>
 </div>
                 </td>
             </tr>
@@ -377,7 +376,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>child</td>
+                                    <td>domainObject</td>
                                     <td>
                                                 <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
@@ -388,25 +387,13 @@
 
 
                                 </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                     </div>
                     <div class="io-description">
@@ -429,15 +416,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>useBoardNodeBuilder(builder: <a href="../interfaces/BoardNodeBuilder.html" target="_self">BoardNodeBuilder</a>, parentId?: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>useBoardNodeBuilder(builder: <a href="../interfaces/BoardNodeBuilder.html" target="_self">BoardNodeBuilder</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column.do.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column.do.ts:11</a></div>
                 </td>
             </tr>
 
@@ -470,21 +457,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>parentId</td>
+                                    <td>parent</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>position</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
 
                                     <td>
@@ -513,18 +488,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="_addChild"></a>
+                    <a name="addChild"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span ><b>_addChild</b></span>
-                        <a href="#_addChild"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>addChild</b></span>
+                        <a href="#addChild"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>_addChild(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>addChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>, position?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -559,7 +532,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>domainObject</td>
+                                    <td>child</td>
                                     <td>
                                                 <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
                                     </td>
@@ -624,7 +597,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:34</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:37</a></code>
 </div>
                 </td>
             </tr>
@@ -686,7 +659,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeChild(child: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
+<code>removeChild(childId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -699,7 +672,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:43</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:46</a></code>
 </div>
                 </td>
             </tr>
@@ -721,9 +694,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>child</td>
+                                    <td>childId</td>
                                     <td>
-                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -758,22 +731,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BoardComposite } from &#x27;./board-composite.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite } from &#x27;./board-composite.do&#x27;;
 import { Card } from &#x27;./card.do&#x27;;
 import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from &#x27;./types&#x27;;
 
 export class Column extends BoardComposite implements BoardNodeBuildable {
-	addChild(child: AnyBoardDo, position?: number) {
-		if (child instanceof Card) {
-			this._addChild(child, position);
-		} else {
-			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
-		}
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed &#x3D; domainObject instanceof Card;
+		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildColumnNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildColumnNode(this, parent);
 	}
 }
 </code></pre>
