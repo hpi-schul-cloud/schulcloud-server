@@ -165,7 +165,6 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-
 						findByUsernameAndSystemId: (username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
 							const account = mockAccounts.find(
 								(tempAccount) => tempAccount.username === username && tempAccount.systemId === systemId
@@ -175,7 +174,6 @@ describe('AccountUc', () => {
 							}
 							throw new EntityNotFoundError(Account.name);
 						},
-
 						searchByUsernameExactMatch: (username: string): Promise<Counted<AccountDto[]>> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.username === username);
 
@@ -199,6 +197,7 @@ describe('AccountUc', () => {
 								mockAccounts.length,
 							]),
 						updateLastTriedFailedLogin: jest.fn(),
+						validatePassword: jest.fn().mockResolvedValue(true),
 					},
 				},
 				{
@@ -530,6 +529,7 @@ describe('AccountUc', () => {
 			).rejects.toThrow(ForbiddenOperationError);
 		});
 		it('should throw if password does not match', async () => {
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.updateMyAccount(mockStudentUser.id, {
 					passwordOld: 'DoesNotMatch',
@@ -751,6 +751,7 @@ describe('AccountUc', () => {
 		it('should allow to set strong password, if the admin manipulated the users password', async () => {
 			mockStudentUser.forcePasswordChange = true;
 			mockStudentUser.preferences = { firstLogin: true };
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
@@ -758,6 +759,7 @@ describe('AccountUc', () => {
 		it('should allow to set strong password, if this is the users first login', async () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
@@ -765,6 +767,7 @@ describe('AccountUc', () => {
 		it('should allow to set strong password, if this is the users first login (if undefined)', async () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = undefined;
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).resolves.not.toThrow();
@@ -773,6 +776,7 @@ describe('AccountUc', () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentUser.firstName = 'failToUpdate';
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).rejects.toThrow(EntityNotFoundError);
@@ -781,6 +785,7 @@ describe('AccountUc', () => {
 			mockStudentUser.forcePasswordChange = false;
 			mockStudentUser.preferences = { firstLogin: false };
 			mockStudentAccount.username = 'fail@to.update';
+			jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 			await expect(
 				accountUc.replaceMyTemporaryPassword(mockStudentAccount.userId?.toString() ?? '', otherPassword, otherPassword)
 			).rejects.toThrow(EntityNotFoundError);

@@ -10,7 +10,6 @@ import { Account, EntityId, Permission, PermissionService, Role, RoleName, Schoo
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import bcrypt from 'bcryptjs';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ICurrentUser } from '@src/modules/authentication';

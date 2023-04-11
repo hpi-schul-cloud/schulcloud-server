@@ -8,12 +8,12 @@ import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shar
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
+import { GetBucketPolicyRequest } from '@aws-sdk/client-s3';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { GetBucketPolicyRequest } from '@aws-sdk/client-s3';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;

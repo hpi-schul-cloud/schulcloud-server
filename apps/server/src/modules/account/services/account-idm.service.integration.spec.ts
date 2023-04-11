@@ -1,14 +1,12 @@
 import { v1 } from 'uuid';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
-import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
@@ -57,6 +55,7 @@ describe('AccountIdmService Integration', () => {
 						};
 					},
 				}),
+				IdentityManagementModule,
 			],
 			providers: [
 				AccountServiceIdm,
@@ -64,16 +63,6 @@ describe('AccountIdmService Integration', () => {
 				{
 					provide: AccountIdmToDtoMapper,
 					useClass: AccountIdmToDtoMapperLegacy,
-				},
-				KeycloakAdministrationService,
-				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
-				{
-					provide: KeycloakAdminClient,
-					useValue: new KeycloakAdminClient(),
-				},
-				{
-					provide: KeycloakSettings,
-					useValue: KeycloakAdministration.keycloakSettings,
 				},
 			],
 		}).compile();

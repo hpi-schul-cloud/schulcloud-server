@@ -6,14 +6,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
-import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { Logger } from '../../../core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
@@ -75,6 +73,7 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
+				IdentityManagementModule,
 				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({
 					isGlobal: true,
@@ -94,21 +93,11 @@ describe('AccountService Integration', () => {
 				AccountServiceDb,
 				AccountRepo,
 				UserRepo,
-				KeycloakAdministrationService,
 				AccountValidationService,
 				AccountLookupService,
 				{
 					provide: AccountIdmToDtoMapper,
 					useValue: new AccountIdmToDtoMapperLegacy(),
-				},
-				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
-				{
-					provide: KeycloakAdminClient,
-					useValue: new KeycloakAdminClient(),
-				},
-				{
-					provide: KeycloakSettings,
-					useValue: KeycloakAdministration.keycloakSettings,
 				},
 				{
 					provide: Logger,
