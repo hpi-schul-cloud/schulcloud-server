@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
@@ -18,13 +18,17 @@ import {
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
+import { TaskCardParams, TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
 describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	const inTwoDays = new Date(Date.now() + 172800000);
+	const inThreeDays = new Date(Date.now() + 259200000);
+	const inFourDays = new Date(Date.now() + 345600000);
+
 	let currentUser: ICurrentUser;
 
 	const setupUser = (permissions: Permission[]) => {
@@ -72,14 +76,17 @@ describe('Task-Card Controller (api)', () => {
 
 		it('Create task-card should throw', async () => {
 			const user = setupUser([]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
 			const params = {
 				title: 'title',
+				courseId: course.id,
+				dueDate: inThreeDays,
 			};
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
 		});
@@ -117,15 +124,17 @@ describe('Task-Card Controller (api)', () => {
 
 		it('Update task-card should throw', async () => {
 			const user = setupUser([]);
-
 			const taskCard = taskCardFactory.build({ creator: user });
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-			await em.persistAndFlush([user, taskCard]);
+			await em.persistAndFlush([user, taskCard, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 			const params = {
 				title: 'title',
+				courseId: course.id,
+				dueDate: inThreeDays,
 			};
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -159,7 +168,7 @@ describe('Task-Card Controller (api)', () => {
 		});
 		it('POST should return new task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
 			await em.persistAndFlush([user, course]);
 			em.clear();
@@ -185,6 +194,7 @@ describe('Task-Card Controller (api)', () => {
 					},
 				],
 				courseId: course.id,
+				dueDate: inTwoDays,
 			};
 			const response = await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -193,13 +203,12 @@ describe('Task-Card Controller (api)', () => {
 				.expect(201);
 
 			const responseTaskCard = response.body as TaskCardResponse;
-			const expectedDueDate = user.school.schoolYear?.endDate;
 
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(responseTaskCard.task.name).toEqual('test title');
 			expect(responseTaskCard.title).toEqual('test title');
 			expect(responseTaskCard.visibleAtDate).toBeDefined();
-			expect(new Date(responseTaskCard.dueDate)).toEqual(expectedDueDate);
+			expect(responseTaskCard.dueDate).toBe(inTwoDays.toISOString());
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
@@ -240,19 +249,19 @@ describe('Task-Card Controller (api)', () => {
 		});
 		it('PATCH should update the task card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+
 			const title = 'title test';
 			const richTextCardElement = richTextCardElementFactory.buildWithId();
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ name: title, creator: user });
 			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
 
-			await em.persistAndFlush([user, task, taskCard]);
+			await em.persistAndFlush([user, task, taskCard, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const inThreeDays = new Date(Date.now() + 259200000);
-			const inFourDays = new Date(Date.now() + 345600000);
 			const taskCardUpdateParams = {
 				title: 'updated title',
 				cardElements: [
@@ -272,8 +281,9 @@ describe('Task-Card Controller (api)', () => {
 						},
 					},
 				],
-				visibleAtDate: inThreeDays,
-				dueDate: inFourDays,
+				visibleAtDate: inTwoDays,
+				dueDate: inThreeDays,
+				courseId: course.id,
 			};
 			const response = await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}`)
@@ -286,15 +296,16 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
-			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inThreeDays);
-			expect(new Date(responseTaskCard.dueDate)).toEqual(inFourDays);
+			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
+			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
 		});
 
 		describe('Sanitize richtext', () => {
 			it('should sanitize richtext on create with inputformat ck5', async () => {
 				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
-				await em.persistAndFlush([user]);
+				await em.persistAndFlush([user, course]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -303,6 +314,7 @@ describe('Task-Card Controller (api)', () => {
 
 				const taskCardParams = {
 					title: 'test title',
+					courseId: course.id,
 					cardElements: [
 						{
 							content: {
@@ -312,6 +324,7 @@ describe('Task-Card Controller (api)', () => {
 							},
 						},
 					],
+					dueDate: inTwoDays,
 				};
 
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
@@ -326,7 +339,7 @@ describe('Task-Card Controller (api)', () => {
 				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
 				);
-				if (richTextElement && richTextElement[0] && richTextElement[0].content) {
+				if (richTextElement?.[0]?.content) {
 					expect(richTextElement[0].content.value).toEqual(sanitizedText);
 				}
 			});
@@ -336,8 +349,9 @@ describe('Task-Card Controller (api)', () => {
 				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 				const task = taskFactory.build({ creator: user });
 				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+				const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
-				await em.persistAndFlush([user, task, taskCard]);
+				await em.persistAndFlush([user, task, taskCard, course]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -347,6 +361,7 @@ describe('Task-Card Controller (api)', () => {
 
 				const taskCardUpdateParams = {
 					title: 'test title updated',
+					courseId: course.id,
 					cardElements: [
 						{
 							content: {
@@ -356,6 +371,7 @@ describe('Task-Card Controller (api)', () => {
 							},
 						},
 					],
+					dueDate: inTwoDays,
 				};
 
 				const response = await request(app.getHttpServer())
@@ -372,18 +388,105 @@ describe('Task-Card Controller (api)', () => {
 				expect(expectedRichTextElement).toEqual(sanitizedText);
 			});
 		});
+
+		describe('Validate courseId', () => {
+			it('should throw if courseId is empty', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: '',
+				};
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
+			it('should should throw if no course is matching', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: new ObjectId().toHexString(),
+				};
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
+		});
+		describe('Validate dueDate', () => {
+			it('should should throw if dueDate is empty', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user] });
+
+				await em.persistAndFlush([user, course]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: course.id,
+				};
+
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
+			it('should should throw if dueDate is earlier than today', async () => {
+				const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const course = courseFactory.buildWithId({ teachers: [user] });
+
+				await em.persistAndFlush([user, course]);
+				em.clear();
+
+				currentUser = mapUserToCurrentUser(user);
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: course.id,
+					dueDate: new Date(Date.now() - 259200000),
+				};
+
+				await request(app.getHttpServer())
+					.post(`/cards/task/`)
+					.set('Accept', 'application/json')
+					.send(taskCardParams)
+					.expect(400);
+			});
+		});
 	});
 	describe('When title is provided', () => {
 		it('should create a task card with title', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([user, course]);
 			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
-			const taskCardParams = {
+			const taskCardParams: TaskCardParams = {
 				title: 'test title',
+				courseId: course.id,
+				dueDate: inTwoDays,
 			};
 
 			const response = await request(app.getHttpServer())
@@ -396,7 +499,7 @@ describe('Task-Card Controller (api)', () => {
 
 			expect(responseTaskCard.title).toEqual(taskCardParams.title);
 		});
-		it('should throw an error if title is to short', async () => {
+		it('should throw an error if title is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
 			await em.persistAndFlush([user]);
@@ -405,7 +508,7 @@ describe('Task-Card Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const taskCardParams = {
-				title: 't',
+				title: '',
 			};
 
 			await request(app.getHttpServer())
