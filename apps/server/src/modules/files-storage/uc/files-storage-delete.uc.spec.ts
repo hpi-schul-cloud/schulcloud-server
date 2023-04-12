@@ -121,7 +121,7 @@ describe('FilesStorageUC delete methods', () => {
 				return { params, userId, mockedResult, requestParams };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences', async () => {
 				const { userId, requestParams } = setup();
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
@@ -205,7 +205,7 @@ describe('FilesStorageUC delete methods', () => {
 				return { requestParams, userId, fileRecord };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences', async () => {
 				const { requestParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.deleteOneFile(userId, requestParams);

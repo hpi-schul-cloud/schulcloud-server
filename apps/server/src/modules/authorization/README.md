@@ -126,7 +126,7 @@ When calling other internal micro service for already authorized operations plea
 ### Example 1 - Execute a Single Operation
 
 ```javascript
-   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
+   this.authorizationService.checkIfAuthorized(user, course, AuthorizationContextBuilder.write([])
    // or
    this.authorizationService.isAuthorized(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps
@@ -136,9 +136,9 @@ When calling other internal micro service for already authorized operations plea
 
 ```javascript
 // If you don't have an entity but an entity type and id, you can check permission by reference
-await this.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
+await this.checkIfAuthorizedByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // or
-await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
+await this.isAuthorizedByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // next orchestration steps
 ```
 
@@ -193,7 +193,7 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
 
     const user = this.authorizationService.getUserWithPermissions(userId);
 
-   await this.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+   await this.checkIfAuthorizedByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
 
     const newUser = new User(params)
 
@@ -234,7 +234,7 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
    const user = this.authorizationService.getUserWithPermissions(userId);
    const school = this.schoolService.getSchool(params.schoolId);
 
-        this.authorizationService.checkPermission(user, school
+        this.authorizationService.checkIfAuthorized(user, school
             {
                 action: Actions.write,
                 requiredPermissions: [Permission.COURSE_CREATE],
@@ -258,7 +258,7 @@ async createLesson(userId: EntityId, params: { courseId: EntityId }) {
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
          // check permission for user and course
-        this.authorizationService.checkPermission(user, course
+        this.authorizationService.checkIfAuthorized(user, course
             {
                 action: Actions.write,
                 requiredPermissions: [Permission.COURSE_EDIT],

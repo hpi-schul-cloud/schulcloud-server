@@ -135,7 +135,7 @@ describe('FilesStorageUC', () => {
 				return { sourceParams, targetParams, userId, fileResponse };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences by source params', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences by source params', async () => {
 				const { sourceParams, targetParams, userId } = setup();
 
 				await filesStorageUC.copyFilesOfParent(userId, sourceParams, targetParams);
@@ -149,7 +149,7 @@ describe('FilesStorageUC', () => {
 				);
 			});
 
-			it('should call authorizationService.checkPermissionByReferences by copyFilesParams', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences by copyFilesParams', async () => {
 				const { sourceParams, targetParams, userId } = setup();
 
 				await filesStorageUC.copyFilesOfParent(userId, sourceParams, targetParams);
@@ -298,7 +298,7 @@ describe('FilesStorageUC', () => {
 				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
 			});
 
-			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences with file record params', async () => {
 				const { copyFileParams, singleFileParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
@@ -312,7 +312,7 @@ describe('FilesStorageUC', () => {
 				);
 			});
 
-			it('should call authorizationService.checkPermissionByReferences with copyFilesParams', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences with copyFilesParams', async () => {
 				const { copyFileParams, singleFileParams, userId } = setup();
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
@@ -413,7 +413,7 @@ describe('FilesStorageUC', () => {
 				return { singleFileParams, copyFileParams, userId, fileRecord, error };
 			};
 
-			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
+			it('should call authorizationService.checkIfAuthorizedByReferences with file record params', async () => {
 				const { copyFileParams, singleFileParams, userId, error } = setup();
 
 				await expect(filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams)).rejects.toThrow(error);

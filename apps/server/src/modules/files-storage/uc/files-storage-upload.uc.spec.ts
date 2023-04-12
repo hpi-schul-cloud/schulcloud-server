@@ -302,7 +302,7 @@ describe('FilesStorageUC upload methods', () => {
 				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
 
-			it('should call checkPermissionByReferences', async () => {
+			it('should call checkIfAuthorizedByReferences', async () => {
 				const { params, userId, request } = setup();
 
 				await filesStorageUC.upload(userId, params, request);

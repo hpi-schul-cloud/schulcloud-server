@@ -110,7 +110,7 @@ describe('FilesStorageUC', () => {
 				});
 			});
 
-			it('should call checkPermissionByReferences with correct params', async () => {
+			it('should call checkIfAuthorizedByReferences with correct params', async () => {
 				const { fileDownloadParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.download(userId, fileDownloadParams);
