@@ -1,7 +1,6 @@
 import { Collection } from '@mikro-orm/core';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Role, User } from '@shared/domain/entity';
-import { IEntityWithSchool, IUserRoleName } from '../../shared/domain/interface';
 
 @Injectable()
 export class AuthorizationHelper {
@@ -93,33 +92,4 @@ export class AuthorizationHelper {
 	}
 
 	// todo: hasAccessToDomainObject
-
-	// TODO: Method is unused. Can it be removed?
-	public isSameSchool(user: User, entity: IEntityWithSchool) {
-		return user.school === entity.school;
-	}
-
-	// TODO: Method is unused. Can it be removed?
-	/**
-	 * @throws UnauthorizedException
-	 */
-	public checkSameSchool(user: User, entity: IEntityWithSchool) {
-		const isSameSchool = this.isSameSchool(user, entity);
-		if (isSameSchool !== true) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
-	}
-
-	/**
-	 * Please not use role instead of permission. It is only for do something for target if it has the role xy.
-	 * For each other operations please define, use the string based permissions inside the roles.
-	 */
-	// TODO: Method is unused. Can it be removed?
-	public hasRole(user: User, roleName: IUserRoleName) {
-		if (!user.roles.isInitialized(true)) {
-			throw new Error('Roles items are not loaded.');
-		}
-		return user.roles.getItems().some((role) => role.name === roleName);
-	}
 }
