@@ -42,21 +42,17 @@ export class AuthorizationHelper {
 	}
 
 	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
-		if (requiredPermissions.length === 0) {
-			return true;
-		}
 		const usersPermissions = this.resolvePermissions(user);
-		return this.hasEveryPermission(requiredPermissions, usersPermissions);
+		const hasAllPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
+
+		return hasAllPermissions;
 	}
 
 	public hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
 		const usersPermissions = this.resolvePermissionsByRoles([role]);
-		return this.hasEveryPermission(requiredPermissions, usersPermissions);
-	}
+		const hasAllPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 
-	private hasEveryPermission(requiredPermissions: string[], usersPermissions: string[]) {
-		const hasPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
-		return hasPermissions;
+		return hasAllPermissions;
 	}
 
 	/**
