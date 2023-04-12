@@ -15,8 +15,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
+import { AllowedAuthorizationEntityType } from './types';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
