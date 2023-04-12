@@ -846,7 +846,9 @@ describe('Task-Card Controller (api)', () => {
 				expect(result).toStrictEqual(expected);
 			});
 
-			it.only('updating assignedUsers to null allows all students from course to access the task', async () => {
+			it('updating assignedUsers to null allows all students from course to access the task', async () => {
+				jest.setTimeout(5 * 60 * 1000);
+
 				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
 
 				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);

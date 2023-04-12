@@ -58,7 +58,6 @@ export class TaskCardController {
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
-		console.log('task-card.controller', params);
 		const { card, taskWithStatusVo } = await this.taskCardUc.update(
 			currentUser.userId,
 			urlParams.id,
