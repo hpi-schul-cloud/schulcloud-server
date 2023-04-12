@@ -14,7 +14,7 @@ export class CourseRule implements Rule {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Course, context: AuthorizationContext): boolean {
+	public isAuthorized(user: User, entity: Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
 			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&

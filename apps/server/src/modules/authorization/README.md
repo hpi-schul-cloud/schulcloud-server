@@ -128,7 +128,7 @@ When calling other internal micro service for already authorized operations plea
 ```javascript
    this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
    // or
-   this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
+   this.authorizationService.isAuthorized(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps
 ```
 
@@ -146,7 +146,7 @@ await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, Aut
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
-await this.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
+await this.isAuthorized(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps
 ```
 
@@ -162,7 +162,7 @@ export const PermissionContexts = {
 };
 
 /** UC **/
-this.hasPermission(userId, course, PermissionContexts.create);
+this.isAuthorized(userId, course, PermissionContexts.create);
 // do other orchestration steps
 ```
 
@@ -320,9 +320,9 @@ export class NewsRule extends BasePermission<News> {
       // e.g. school is offline
       // or courseRule has complex permissions-resolves
       if (entity.targetModel === NewsTargetModel.School) {
-         hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+         hasParentPermission = this.schoolRule.isAuthorized(user, entity.target, { action, requiredPermissions: [] });
       } else if (entity.targetModel === NewsTargetModel.Course) {
-         hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+         hasParentPermission = this.courseRule.isAuthorized(user, entity.target, { action, requiredPermissions: [] });
       }
 
       return hasParentPermission;

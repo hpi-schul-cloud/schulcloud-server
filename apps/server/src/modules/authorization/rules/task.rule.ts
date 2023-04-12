@@ -19,7 +19,7 @@ export class TaskRule implements Rule {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Task, context: AuthorizationContext): boolean {
+	public isAuthorized(user: User, entity: Task, context: AuthorizationContext): boolean {
 		let { action } = context;
 		const { requiredPermissions } = context;
 		const hasRequiredPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -44,14 +44,14 @@ export class TaskRule implements Rule {
 
 	private hasParentPermission(user: User, entity: Task, action: Action): boolean {
 		if (entity.lesson) {
-			const hasLessonPermission = this.lessonRule.hasPermission(user, entity.lesson, {
+			const hasLessonPermission = this.lessonRule.isAuthorized(user, entity.lesson, {
 				action,
 				requiredPermissions: [],
 			});
 			return hasLessonPermission;
 		}
 		if (entity.course) {
-			const hasCoursePermission = this.courseRule.hasPermission(user, entity.course, {
+			const hasCoursePermission = this.courseRule.isAuthorized(user, entity.course, {
 				action,
 				requiredPermissions: [],
 			});

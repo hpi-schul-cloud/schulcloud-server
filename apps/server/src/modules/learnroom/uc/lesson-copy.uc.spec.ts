@@ -93,7 +93,7 @@ describe('lesson copy uc', () => {
 			lessonRepo.save.mockResolvedValue(undefined);
 
 			courseRepo.findById.mockResolvedValue(course);
-			authorisation.hasPermission.mockReturnValue(true);
+			authorisation.isAuthorized.mockReturnValue(true);
 			const copy = lessonFactory.buildWithId({ course });
 			const status = {
 				title: 'lessonCopy',
@@ -153,7 +153,7 @@ describe('lesson copy uc', () => {
 		it('should check authorisation for lesson', async () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
+			expect(authorisation.isAuthorized).toBeCalledWith(user, lesson, {
 				action: Action.read,
 				requiredPermissions: [Permission.TOPIC_CREATE],
 			});
@@ -162,7 +162,7 @@ describe('lesson copy uc', () => {
 		it('should check authorisation for destination course', async () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(authorisation.checkPermissionByReferences).toBeCalledWith(
+			expect(authorisation.checkIfAuthorizedByReferences).toBeCalledWith(
 				user.id,
 				AllowedAuthorizationEntityType.Course,
 				course.id,
@@ -176,7 +176,7 @@ describe('lesson copy uc', () => {
 		it('should pass authorisation check without destination course', async () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { userId });
-			expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
+			expect(authorisation.isAuthorized).not.toBeCalledWith(user, course, {
 				action: Action.write,
 				requiredPermissions: [],
 			});
@@ -219,7 +219,7 @@ describe('lesson copy uc', () => {
 				const lesson = lessonFactory.buildWithId();
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== lesson);
+				authorisation.isAuthorized.mockImplementation((u: User, e: AuthorizableObject) => e !== lesson);
 
 				return { user, course, lesson };
 			};
@@ -244,8 +244,8 @@ describe('lesson copy uc', () => {
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
 				courseRepo.findById.mockResolvedValue(course);
-				authorisation.hasPermission.mockReturnValue(true);
-				authorisation.checkPermissionByReferences.mockImplementation(() => {
+				authorisation.isAuthorized.mockReturnValue(true);
+				authorisation.checkIfAuthorizedByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 

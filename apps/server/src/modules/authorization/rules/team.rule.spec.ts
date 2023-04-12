@@ -78,7 +78,7 @@ describe('TeamRule', () => {
 			it('should return "false"', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([permissionA]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([permissionA]));
 
 				expect(res).toBe(false);
 			});
@@ -99,7 +99,7 @@ describe('TeamRule', () => {
 			it('should return "false" teamRole has not permission', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([teamPermissionD]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([teamPermissionD]));
 
 				expect(res).toBe(false);
 			});
@@ -107,7 +107,7 @@ describe('TeamRule', () => {
 			it('should return "false" if user has global permission', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([permissionA]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([permissionA]));
 
 				expect(res).toBe(false);
 			});
@@ -115,7 +115,7 @@ describe('TeamRule', () => {
 			it('should return "false" if user has not global permission', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([permissionC]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([permissionC]));
 
 				expect(res).toBe(false);
 			});
@@ -138,7 +138,7 @@ describe('TeamRule', () => {
 			it('should return "true" by teamRoleA ', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([teamPermissionA]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([teamPermissionA]));
 
 				expect(res).toBe(true);
 			});
@@ -146,7 +146,7 @@ describe('TeamRule', () => {
 			it('should return "true" by teamRoleB', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([teamPermissionB]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([teamPermissionB]));
 
 				expect(res).toBe(true);
 			});
@@ -154,7 +154,7 @@ describe('TeamRule', () => {
 			it('should return "true" by teamRole', () => {
 				const { user, team } = setup();
 
-				const res = service.hasPermission(user, team, AuthorizationContextBuilder.read([teamPermissionC]));
+				const res = service.isAuthorized(user, team, AuthorizationContextBuilder.read([teamPermissionC]));
 
 				expect(res).toBe(true);
 			});

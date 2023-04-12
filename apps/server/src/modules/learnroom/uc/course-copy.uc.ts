@@ -15,7 +15,7 @@ export class CourseCopyUC {
 	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
-		await this.authorization.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.Course, courseId, {
+		await this.authorization.checkIfAuthorizedByReferences(userId, AllowedAuthorizationEntityType.Course, courseId, {
 			action: Action.write,
 			requiredPermissions: [Permission.COURSE_CREATE],
 		});

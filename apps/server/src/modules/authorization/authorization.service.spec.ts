@@ -62,12 +62,12 @@ describe('AuthorizationService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('checkPermission', () => {
-		describe('when ruleManager.hasPermission returns false', () => {
+	describe('checkIfAuthorized', () => {
+		describe('when ruleManager.isAuthorized returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.hasPermission.mockReturnValueOnce(false);
+				ruleManager.isAuthorized.mockReturnValueOnce(false);
 
 				return { context, user };
 			};
@@ -75,15 +75,15 @@ describe('AuthorizationService', () => {
 			it('should throw ForbiddenException', () => {
 				const { context, user } = setup();
 
-				expect(() => service.checkPermission(user, user, context)).toThrow(ForbiddenException);
+				expect(() => service.checkIfAuthorized(user, user, context)).toThrow(ForbiddenException);
 			});
 		});
 
-		describe('when ruleManager.hasPermission returns true', () => {
+		describe('when ruleManager.isAuthorized returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.hasPermission.mockReturnValueOnce(true);
+				ruleManager.isAuthorized.mockReturnValueOnce(true);
 
 				return { context, user };
 			};
@@ -91,17 +91,17 @@ describe('AuthorizationService', () => {
 			it('should not throw', () => {
 				const { context, user } = setup();
 
-				expect(() => service.checkPermission(user, user, context)).not.toThrow();
+				expect(() => service.checkIfAuthorized(user, user, context)).not.toThrow();
 			});
 		});
 	});
 
-	describe('hasPermission', () => {
-		describe('when ruleManager.hasPermission returns false', () => {
+	describe('isAuthorized', () => {
+		describe('when ruleManager.isAuthorized returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.hasPermission.mockReturnValueOnce(false);
+				ruleManager.isAuthorized.mockReturnValueOnce(false);
 
 				return { context, user };
 			};
@@ -109,17 +109,17 @@ describe('AuthorizationService', () => {
 			it('should return false', () => {
 				const { context, user } = setup();
 
-				const result = service.hasPermission(user, user, context);
+				const result = service.isAuthorized(user, user, context);
 
 				expect(result).toBe(false);
 			});
 		});
 
-		describe('when ruleManager.hasPermission returns true', () => {
+		describe('when ruleManager.isAuthorized returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.hasPermission.mockReturnValueOnce(true);
+				ruleManager.isAuthorized.mockReturnValueOnce(true);
 
 				return { context, user };
 			};
@@ -127,7 +127,7 @@ describe('AuthorizationService', () => {
 			it('should return true', () => {
 				const { context, user } = setup();
 
-				const result = service.hasPermission(user, user, context);
+				const result = service.isAuthorized(user, user, context);
 
 				expect(result).toBe(true);
 			});

@@ -94,7 +94,7 @@ describe('FilesStorageUC', () => {
 				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValue();
 				filesStorageService.download.mockResolvedValueOnce(fileResponse);
 
 				return { fileDownloadParams, userId, fileRecord, fileResponse };
@@ -116,7 +116,7 @@ describe('FilesStorageUC', () => {
 				await filesStorageUC.download(userId, fileDownloadParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					fileRecord.parentId,
@@ -166,7 +166,7 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, fileRecord };
 			};
@@ -185,7 +185,7 @@ describe('FilesStorageUC', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValue();
 				filesStorageService.download.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, error };

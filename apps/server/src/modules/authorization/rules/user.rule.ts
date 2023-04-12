@@ -13,7 +13,7 @@ export class UserRule implements Rule {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
+	public isAuthorized(user: User, entity: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isOwner = user === entity;
 

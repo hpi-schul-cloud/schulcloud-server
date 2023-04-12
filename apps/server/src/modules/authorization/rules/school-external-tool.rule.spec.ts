@@ -53,7 +53,7 @@ describe('SchoolExternalToolRule', () => {
 				const { user, entity } = setup();
 				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
-				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+				service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(spy).toBeCalledWith(user, []);
 			});
@@ -61,7 +61,7 @@ describe('SchoolExternalToolRule', () => {
 			it('should return "true" if user in scope', () => {
 				const { user, entity } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+				const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(res).toBe(true);
 			});
@@ -71,7 +71,7 @@ describe('SchoolExternalToolRule', () => {
 			it('should return "false" if user has not permission', () => {
 				const { user, entity, permissionC } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+				const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 
 				expect(res).toBe(false);
 			});
@@ -81,7 +81,7 @@ describe('SchoolExternalToolRule', () => {
 				const entity: SchoolExternalTool | SchoolExternalToolDO = schoolExternalToolDOFactory.build();
 				const user: User = userFactory.build({ roles: [role] });
 
-				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
+				const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 
 				expect(res).toBe(false);
 			});

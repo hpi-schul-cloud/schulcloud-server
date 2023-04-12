@@ -36,35 +36,35 @@ describe('UserRule', () => {
 		entity = userFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should return "true" if user in scope', () => {
 		user = userFactory.build({ roles: [role], school: entity });
 		entity = user;
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "true" if user in scope but has not permission', () => {
 		user = userFactory.build({ roles: [role], school: entity });
 		entity = user;
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "true" if user has permission but not owner', () => {
 		user = userFactory.build({ roles: [role], school: entity });
 		entity = userFactory.build();
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
+		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
 		entity = userFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 });

@@ -179,7 +179,7 @@ describe('FilesStorageUC upload methods', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toBeCalledWith(
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
@@ -226,7 +226,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
 				const error = new Error('test');
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(error);
 
 				return { uploadFromUrlParams, userId, error };
 			};
@@ -308,7 +308,7 @@ describe('FilesStorageUC upload methods', () => {
 				await filesStorageUC.upload(userId, params, request);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType);
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					params.parentId,
@@ -373,7 +373,7 @@ describe('FilesStorageUC upload methods', () => {
 				const request = createRequest();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};

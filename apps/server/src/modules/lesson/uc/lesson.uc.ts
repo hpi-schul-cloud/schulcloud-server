@@ -18,7 +18,11 @@ export class LessonUC {
 
 		// Check by Permission.TOPIC_VIEW because the student doesn't have Permission.TOPIC_EDIT
 		// is required for CourseGroup lessons
-		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([Permission.TOPIC_VIEW]));
+		this.authorizationService.checkIfAuthorized(
+			user,
+			lesson,
+			AuthorizationContextBuilder.write([Permission.TOPIC_VIEW])
+		);
 
 		await this.lessonService.deleteLesson(lesson);
 

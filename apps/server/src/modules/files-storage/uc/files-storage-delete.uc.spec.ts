@@ -115,7 +115,7 @@ describe('FilesStorageUC delete methods', () => {
 				const fileRecord = fileRecords[0];
 				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
 
 				return { params, userId, mockedResult, requestParams };
@@ -127,7 +127,7 @@ describe('FilesStorageUC delete methods', () => {
 
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toBeCalledWith(
 					userId,
 					allowedType,
 					requestParams.parentId,
@@ -156,7 +156,7 @@ describe('FilesStorageUC delete methods', () => {
 			const setup = () => {
 				const { requestParams, userId } = createParams();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams, userId };
 			};
@@ -177,7 +177,7 @@ describe('FilesStorageUC delete methods', () => {
 				const { requestParams, userId } = createParams();
 				const error = new Error('test');
 
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };
@@ -199,7 +199,7 @@ describe('FilesStorageUC delete methods', () => {
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 				filesStorageService.delete.mockResolvedValueOnce();
 
 				return { requestParams, userId, fileRecord };
@@ -212,7 +212,7 @@ describe('FilesStorageUC delete methods', () => {
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toBeCalledWith(
 					userId,
 					allowedType,
 					fileRecord.parentId,
@@ -278,7 +278,7 @@ describe('FilesStorageUC delete methods', () => {
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams, userId };
 			};
@@ -299,7 +299,7 @@ describe('FilesStorageUC delete methods', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 				filesStorageService.delete.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };

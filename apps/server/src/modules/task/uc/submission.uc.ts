@@ -25,7 +25,7 @@ export class SubmissionUc {
 			this.submissionService.findById(submissionId),
 		]);
 
-		this.authorizationService.checkPermission(
+		this.authorizationService.checkIfAuthorized(
 			user,
 			submission,
 			AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])
@@ -40,7 +40,7 @@ export class SubmissionUc {
 		const permissionContext = AuthorizationContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
 		const permittedSubmissions = submissions.filter((submission) => {
-			const hasPermission = this.authorizationService.hasPermission(user, submission, permissionContext);
+			const hasPermission = this.authorizationService.isAuthorized(user, submission, permissionContext);
 
 			return hasPermission;
 		});

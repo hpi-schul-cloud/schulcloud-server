@@ -42,7 +42,7 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
-		return this.authorizationService.checkPermissionByReferences(
+		return this.authorizationService.checkIfAuthorizedByReferences(
 			userId,
 			AllowedAuthorizationEntityType.School,
 			schoolId,
@@ -89,7 +89,7 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
-		return this.authorizationService.checkPermissionByReferences(
+		return this.authorizationService.checkIfAuthorizedByReferences(
 			userId,
 			AllowedAuthorizationEntityType.SchoolExternalTool,
 			schoolExternalToolId,

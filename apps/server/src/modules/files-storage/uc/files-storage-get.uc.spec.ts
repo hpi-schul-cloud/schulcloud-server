@@ -95,7 +95,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
 			};
@@ -105,7 +105,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.getFileRecordsOfParent(userId, params);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
 					userId,
 					params.parentType,
 					params.parentId,
@@ -136,7 +136,7 @@ describe('FilesStorageUC', () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(new Error('Bla'));
+				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(new Error('Bla'));
 
 				return { userId, params, fileRecords };
 			};
@@ -155,7 +155,7 @@ describe('FilesStorageUC', () => {
 				const fileRecords = [];
 
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce([fileRecords, fileRecords.length]);
-				authorizationService.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
 
 				return { userId, params, fileRecords };
 			};

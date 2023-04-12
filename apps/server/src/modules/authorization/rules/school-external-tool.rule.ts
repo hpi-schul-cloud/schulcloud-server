@@ -14,7 +14,7 @@ export class SchoolExternalToolRule implements Rule {
 		return isMatched;
 	}
 
-	public hasPermission(
+	public isAuthorized(
 		user: User,
 		entity: SchoolExternalTool | SchoolExternalToolDO,
 		context: AuthorizationContext

@@ -222,8 +222,8 @@ describe('VideoConferenceUc', () => {
 	describe('checkPermission', () => {
 		it('should return bbb moderator role', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
 
@@ -233,8 +233,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should return bbb viewer role', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 
 			// Act
 			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId');
@@ -245,8 +245,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on missing permission', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', VideoConferenceScope.COURSE, 'entityId')).rejects.toThrow(
@@ -309,8 +309,8 @@ describe('VideoConferenceUc', () => {
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
 			//	userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 
 			// Act & Assert
 			await expect(
@@ -434,8 +434,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully return a join link for a viewer in courses', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			videoConferenceRepo.findByScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 
@@ -458,8 +458,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully return a join link for a viewer in teams', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			videoConferenceRepo.findByScopeId.mockResolvedValue(eventVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
 
@@ -483,8 +483,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully join as guest in courses, without moderator rights', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleCourse);
@@ -511,8 +511,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully join as guest in teams, without moderator rights', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			courseVcDO.options.moderatorMustApproveJoinRequests = true;
 			setTeamRole(expertRoleTeam);
@@ -570,8 +570,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should always successfully join as moderator', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			courseVcDO.options.everybodyJoinsAsModerator = true;
 			videoConferenceRepo.findByScopeId.mockResolvedValue(courseVcDO);
 			bbbService.join.mockResolvedValue(joinUrl);
@@ -610,8 +610,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should throw on insufficient permissions', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 
 			// Act & Assert
 			await expect(useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id)).rejects.toThrow(
@@ -679,8 +679,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			bbbService.getMeetingInfo.mockResolvedValue(bbbResponse);
 
 			// Act
@@ -708,8 +708,8 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to viewer without options and "not started"', async () => {
 			// Arrange
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-			authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(false);
+			authorizationService.isAuthorizedByReferences.mockResolvedValueOnce(true);
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act

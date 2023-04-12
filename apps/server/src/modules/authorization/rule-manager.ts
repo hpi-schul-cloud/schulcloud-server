@@ -43,11 +43,11 @@ export class RuleManager {
 		]);
 	}
 
-	public hasPermission(user: User, object: AuthorizableObject, context: AuthorizationContext) {
+	public isAuthorized(user: User, object: AuthorizableObject, context: AuthorizationContext) {
 		const rules = this.selectRules(user, object, context);
 		const rule = this.matchSingleRule(rules);
 
-		return rule.hasPermission(user, object, context);
+		return rule.isAuthorized(user, object, context);
 	}
 
 	// TODO: This method is unnecessary.

@@ -27,13 +27,13 @@ export class TaskCopyUC {
 		this.featureEnabled();
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalTask = await this.taskRepo.findById(taskId);
-		if (!this.authorisation.hasPermission(user, originalTask, AuthorizationContextBuilder.read([]))) {
+		if (!this.authorisation.isAuthorized(user, originalTask, AuthorizationContextBuilder.read([]))) {
 			throw new NotFoundException('could not find task to copy');
 		}
 
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId);
 		if (parentParams.courseId) {
-			await this.authorisation.checkPermissionByReferences(
+			await this.authorisation.checkIfAuthorizedByReferences(
 				userId,
 				AllowedAuthorizationEntityType.Course,
 				parentParams.courseId,
@@ -83,7 +83,7 @@ export class TaskCopyUC {
 		}
 
 		const destinationLesson = await this.lessonRepo.findById(lessonId);
-		if (!this.authorisation.hasPermission(user, destinationLesson, AuthorizationContextBuilder.write([]))) {
+		if (!this.authorisation.isAuthorized(user, destinationLesson, AuthorizationContextBuilder.write([]))) {
 			throw new ForbiddenException('you dont have permission to add to this lesson');
 		}
 		return destinationLesson;

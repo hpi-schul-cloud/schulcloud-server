@@ -11,7 +11,7 @@ export class TeamRule implements Rule {
 		return entity instanceof Team;
 	}
 
-	public hasPermission(user: User, entity: Team, context: AuthorizationContext): boolean {
+	public isAuthorized(user: User, entity: Team, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 		const isTeamUser = entity.teamUsers.find((teamUser: TeamUser) => teamUser.user.id === user.id);
 		if (isTeamUser) {

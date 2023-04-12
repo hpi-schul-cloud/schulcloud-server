@@ -85,7 +85,7 @@ describe('course copy uc', () => {
 		it('should check permission to create a course', async () => {
 			const { course, user } = setup();
 			await uc.copyCourse(user.id, course.id);
-			expect(authorization.checkPermissionByReferences).toBeCalledWith(
+			expect(authorization.checkIfAuthorizedByReferences).toBeCalledWith(
 				user.id,
 				AllowedAuthorizationEntityType.Course,
 				course.id,
@@ -112,7 +112,7 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				const user = userFactory.buildWithId();
 				const course = courseFactory.buildWithId();
-				authorization.checkPermissionByReferences.mockImplementation(() => {
+				authorization.checkIfAuthorizedByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 				return { user, course };

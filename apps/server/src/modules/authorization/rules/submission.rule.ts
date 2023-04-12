@@ -14,7 +14,7 @@ export class SubmissionRule implements Rule {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, submission: Submission, context: AuthorizationContext): boolean {
+	public isAuthorized(user: User, submission: Submission, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 
 		const result =
@@ -57,7 +57,7 @@ export class SubmissionRule implements Rule {
 	}
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission) {
-		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task, {
+		const hasParentTaskWriteAccess = this.taskRule.isAuthorized(user, submission.task, {
 			action: Action.write,
 			requiredPermissions: [],
 		});
@@ -66,7 +66,7 @@ export class SubmissionRule implements Rule {
 	}
 
 	private hasParentTaskReadAccess(user: User, submission: Submission) {
-		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task, {
+		const hasParentTaskReadAccess = this.taskRule.isAuthorized(user, submission.task, {
 			action: Action.read,
 			requiredPermissions: [],
 		});

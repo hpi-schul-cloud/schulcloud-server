@@ -27,14 +27,14 @@ export class LessonCopyUC {
 		const user = await this.authorisation.getUserWithPermissions(userId);
 		const originalLesson = await this.lessonRepo.findById(lessonId);
 		const context = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
-		if (!this.authorisation.hasPermission(user, originalLesson, context)) {
+		if (!this.authorisation.isAuthorized(user, originalLesson, context)) {
 			throw new ForbiddenException('could not find lesson to copy');
 		}
 
 		const destinationCourse = parentParams.courseId
 			? await this.courseRepo.findById(parentParams.courseId)
 			: originalLesson.course;
-		await this.authorisation.checkPermissionByReferences(
+		await this.authorisation.checkIfAuthorizedByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
 			destinationCourse.id,
