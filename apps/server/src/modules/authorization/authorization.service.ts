@@ -13,13 +13,13 @@ export class AuthorizationService {
 		private readonly authorizationHelper: AuthorizationHelper
 	) {}
 
-	public checkIfAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
+	public checkIfAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
 		if (!this.ruleManager.isAuthorized(user, entity, context)) {
 			throw new ForbiddenException();
 		}
 	}
 
-	public isAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext) {
+	public isAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext): boolean {
 		return this.ruleManager.isAuthorized(user, entity, context);
 	}
 
@@ -28,7 +28,7 @@ export class AuthorizationService {
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		context: AuthorizationContext
-	) {
+	): Promise<void> {
 		if (!(await this.isAuthorizedByReferences(userId, entityName, entityId, context))) {
 			throw new ForbiddenException();
 		}
@@ -46,9 +46,9 @@ export class AuthorizationService {
 				this.getUserWithPermissions(userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const permission = this.ruleManager.isAuthorized(user, entity, context);
+			const isAuthorized = this.ruleManager.isAuthorized(user, entity, context);
 
-			return permission;
+			return isAuthorized;
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}
