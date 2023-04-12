@@ -116,7 +116,15 @@ const hasViewPermissionAfter = (hook) => {
 			e.courseId != null &&
 			((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString());
 		const published = new Date(e.availableDate) < new Date() && !e.private;
-		return isOwnerCheck || isTeacherCheck || (isStudent && published);
+
+		let checkAssigned = false;
+		if (!e.userIds || e.userIds.length === 0) {
+			checkAssigned = true;
+		} else {
+			checkAssigned = (e.userIds || []).includes(((hook.params.account || {}).userId || '').toString());
+		}
+
+		return isOwnerCheck || isTeacherCheck || (isStudent && checkAssigned && published);
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
@@ -356,36 +364,38 @@ const addLessonInfo = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.before = () => ({
-	all: [authenticate('jwt')],
-	find: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_VIEW'),
-			globalHooks.mapPaginationQuery.bind(this),
-			hasViewPermissionBefore,
-		]),
-		globalHooks.addCollation,
-	],
-	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
-	update: [iff(isProvider('external'), disallow())],
-	patch: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_EDIT'),
-			globalHooks.permitGroupOperation,
-			hasPatchPermission,
-		]),
-	],
-	remove: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_CREATE'),
-			globalHooks.permitGroupOperation,
-			logDeletionAttempt,
-			restrictHomeworkDeletion,
-			logDeletionPermit,
-		]),
-	],
-});
+exports.before = () => {
+	return {
+		all: [authenticate('jwt')],
+		find: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_VIEW'),
+				globalHooks.mapPaginationQuery.bind(this),
+				hasViewPermissionBefore,
+			]),
+			globalHooks.addCollation,
+		],
+		get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
+		create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
+		update: [iff(isProvider('external'), disallow())],
+		patch: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_EDIT'),
+				globalHooks.permitGroupOperation,
+				hasPatchPermission,
+			]),
+		],
+		remove: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_CREATE'),
+				globalHooks.permitGroupOperation,
+				logDeletionAttempt,
+				restrictHomeworkDeletion,
+				logDeletionPermit,
+			]),
+		],
+	};
+};
 
 exports.after = {
 	all: [],

@@ -221,8 +221,14 @@ describe('TaskCardUc', () => {
 				requiredPermissions: [],
 			});
 		});
-		it('should call task create with task name same like task-card title, courseId and private as false', async () => {
-			const taskParams = { name: taskCardCreateParams.title, courseId: taskCardCreateParams.courseId, private: false };
+		it('should call task create with task name same like task-card title, courseId, dueDate, availableDate and private as false', async () => {
+			const taskParams = {
+				name: taskCardCreateParams.title,
+				courseId: taskCardCreateParams.courseId,
+				dueDate: taskCardCreateParams.dueDate,
+				availableDate: taskCardCreateParams.visibleAtDate,
+				private: false,
+			};
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
@@ -395,8 +401,12 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			}).rejects.toThrow(ForbiddenException);
 		});
-		it('should call task update and with task name same like task-card title', async () => {
-			const taskParams = { name: taskCardUpdateParams.title };
+		it('should call task update and with task name same like task-card title, updated courseId and dueDate', async () => {
+			const taskParams = {
+				name: taskCardUpdateParams.title,
+				courseId: taskCardUpdateParams.courseId,
+				dueDate: taskCardUpdateParams.dueDate,
+			};
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});

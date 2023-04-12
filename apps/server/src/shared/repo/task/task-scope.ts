@@ -14,9 +14,17 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byOnlyCreatorId(teacherId: EntityId): TaskScope {
+	byAssignedUser(assignedUserId: EntityId): TaskScope {
 		this.addQuery({
-			$and: [{ creator: teacherId }, { course: null }, { lesson: null }],
+			$or: [{ users: { $exists: false } }, { users: { $in: [assignedUserId] } }],
+		});
+
+		return this;
+	}
+
+	byOnlyCreatorId(creatorId: EntityId): TaskScope {
+		this.addQuery({
+			$and: [{ creator: creatorId }, { course: null }, { lesson: null }],
 		});
 
 		return this;

@@ -83,9 +83,14 @@ export class TaskCardUc {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			private: false,
+			dueDate: params.dueDate,
+			availableDate: new Date(),
 		};
 		if (params.courseId) {
 			taskParams.courseId = params.courseId;
+		}
+		if (params.visibleAtDate) {
+			taskParams.availableDate = params.visibleAtDate;
 		}
 
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
@@ -153,25 +158,16 @@ export class TaskCardUc {
 		if (params.visibleAtDate) {
 			card.visibleAtDate = params.visibleAtDate;
 		}
-		console.log(params);
 		if (params.assignedUsers) {
 			taskWithStatusVo = await this.updateTaskAssignedUsers(userId, card.task.id, params.title, params.assignedUsers);
 		} else if (Object.keys(params).includes('assignedUsers') && params.assignedUsers === undefined) {
 			// incase we explicitly set assignedUsers to undefined, remove all assignments
 			taskWithStatusVo = await this.removeTaskAssignedUsers(userId, card.task.id, params.title);
-			console.log('remove assignedUsers', taskWithStatusVo.task);
 		}
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
 		return { card, taskWithStatusVo };
-	}
-
-	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
-		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
-		taskCard.cardElements.set(newCardElements);
-
-		return taskCard;
 	}
 
 	private async addTaskCardId(userId: EntityId, taskCard: TaskCard) {
@@ -182,6 +178,13 @@ export class TaskCardUc {
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
 
 		return taskWithStatusVo;
+	}
+
+	private async replaceCardElements(taskCard: TaskCard, newCardElements: CardElement[]) {
+		await this.cardElementRepo.delete(taskCard.cardElements.getItems());
+		taskCard.cardElements.set(newCardElements);
+
+		return taskCard;
 	}
 
 	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
