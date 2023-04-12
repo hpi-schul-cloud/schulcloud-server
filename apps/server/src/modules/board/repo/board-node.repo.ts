@@ -22,7 +22,8 @@ export class BoardNodeRepo {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
 		const descendants = await this.em.find(BoardNode, {
-			path: { $re: `^${node.path}` },
+			// path: { $re: `^${node.path}` },
+			path: { $re: `^${node.pathOfChildren}` },
 			level: levelQuery,
 		});
 
@@ -83,6 +84,7 @@ export class BoardNodeRepo {
 
 	async deleteWithDescendants(boardNode: BoardNode) {
 		const descendants = await this.findDescendants(boardNode);
+		console.log('descendants', descendants);
 		await this.em.removeAndFlush([boardNode, ...descendants]);
 	}
 }
