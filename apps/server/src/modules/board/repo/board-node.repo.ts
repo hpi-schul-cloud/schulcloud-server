@@ -83,7 +83,6 @@ export class BoardNodeRepo {
 
 	async deleteWithDescendants(boardNode: BoardNode) {
 		const descendants = await this.findDescendants(boardNode);
-		console.log('descendants', descendants);
 		await this.em.removeAndFlush([boardNode, ...descendants]);
 	}
 }
