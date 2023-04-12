@@ -22,7 +22,6 @@ export class BoardNodeRepo {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
 		const descendants = await this.em.find(BoardNode, {
-			// path: { $re: `^${node.path}` },
 			path: { $re: `^${node.pathOfChildren}` },
 			level: levelQuery,
 		});
