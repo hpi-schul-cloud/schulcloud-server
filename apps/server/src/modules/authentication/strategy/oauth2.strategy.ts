@@ -18,9 +18,9 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 	}
 
 	async validate(request: { body: Oauth2AuthorizationParams }): Promise<ICurrentUser> {
-		const { systemId, redirectUri, code, error } = request.body;
+		const { systemId, redirectUri, code } = request.body;
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code, error);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
 		const { user }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
