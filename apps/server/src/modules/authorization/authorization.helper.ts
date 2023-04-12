@@ -67,6 +67,7 @@ export class AuthorizationHelper {
 	}
 
 	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+		// TODO: Wouldn't it make more sense to return true for an empty permissions-array?
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
