@@ -15,7 +15,7 @@ import { Rule } from './types/rule.interface';
 
 @Injectable()
 export class RuleManager {
-	private rules: Rule[] = [];
+	private readonly rules: Rule[];
 
 	constructor(
 		private readonly courseRule: CourseRule,
@@ -29,7 +29,7 @@ export class RuleManager {
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule
 	) {
-		this.registerRules([
+		this.rules = [
 			this.courseRule,
 			this.courseGroupRule,
 			this.lessonRule,
@@ -40,23 +40,14 @@ export class RuleManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-		]);
+		];
 	}
 
 	public isAuthorized(user: User, object: AuthorizableObject, context: AuthorizationContext) {
-		const rules = this.selectRules(user, object, context);
-		const rule = this.matchSingleRule(rules);
+		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
+		const rule = this.matchSingleRule(selectedRules);
 
 		return rule.isAuthorized(user, object, context);
-	}
-
-	// TODO: This method is unnecessary.
-	private registerRules(rules: Rule[]): void {
-		this.rules = [...this.rules, ...rules];
-	}
-
-	private selectRules(user: User, object: AuthorizableObject, context?: AuthorizationContext): Rule[] {
-		return this.rules.filter((rule) => rule.isApplicable(user, object, context));
 	}
 
 	private matchSingleRule(rules: Rule[]) {
