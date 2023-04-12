@@ -125,6 +125,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
 		throw new NotImplementedException();
 	}

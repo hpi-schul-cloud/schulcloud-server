@@ -29,26 +29,15 @@ describe('KeycloakMigrationService', () => {
 							}
 							return Promise.resolve({ idmReferenceId: `New${account.id}` });
 						}),
-						searchByUsernamePartialMatch: jest
-							.fn()
-							.mockImplementation(
-								(
-									query: string,
-									skip: number,
-									amount: number
-								): Promise<{ accounts: Partial<AccountDto>[]; total: number }> => {
-									if (skip >= maxAccounts) {
-										return Promise.resolve({ accounts: [], total: 0 });
-									}
-									const accountArr = Array.from({ length: Math.min(amount, maxAccounts - skip) }, (value, index) => {
-										return { id: (index + skip).toString() + query };
-									});
-									return Promise.resolve({
-										accounts: accountArr,
-										total: amount,
-									});
-								}
-							),
+						findMany: jest.fn().mockImplementation((skip: number, amount: number): Promise<Partial<AccountDto>[]> => {
+							if (skip >= maxAccounts) {
+								return Promise.resolve([]);
+							}
+							const accountArr = Array.from({ length: Math.min(amount, maxAccounts - skip) }, (value, index) => {
+								return { id: (index + skip).toString() };
+							});
+							return Promise.resolve(accountArr);
+						}),
 					},
 				},
 				{
@@ -84,7 +73,7 @@ describe('KeycloakMigrationService', () => {
 		describe('When verbose is set', () => {
 			it('migration should log all account ids (old and new)', async () => {
 				maxAccounts = 1000;
-				const migratedAccountCounts = await service.migrate(0, '', true);
+				const migratedAccountCounts = await service.migrate(0, true);
 				expect(migratedAccountCounts).toBe(maxAccounts);
 				expect(infoLogSpy).toHaveBeenCalledTimes(maxAccounts);
 			});
@@ -100,15 +89,6 @@ describe('KeycloakMigrationService', () => {
 				maxAccounts = 1000;
 				const migratedAccountCounts = await service.migrate(maxAccounts);
 				expect(migratedAccountCounts).toBe(0);
-			});
-		});
-		describe('When query was set', () => {
-			it('migration should forward the query', async () => {
-				maxAccounts = 1;
-				const queryString = 'test';
-				const migratedAccountCounts = await service.migrate(0, queryString, true);
-				expect(infoLogSpy).toHaveBeenCalledTimes(migratedAccountCounts);
-				expect(infoLogSpy).toHaveBeenCalledWith(expect.stringContaining(queryString));
 			});
 		});
 		describe('When error cases exists', () => {
