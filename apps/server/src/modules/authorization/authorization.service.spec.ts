@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
@@ -33,7 +34,7 @@ describe('AuthorizationService', () => {
 				},
 				{
 					provide: AuthorizationHelper,
-					useValue: createMock<AuthorizationHelper>,
+					useValue: createMock<AuthorizationHelper>(),
 				},
 			],
 		}).compile();
@@ -231,8 +232,160 @@ describe('AuthorizationService', () => {
 		});
 	});
 
+	describe('checkAllPermissions', () => {
+		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should throw UnauthorizedException', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkAllPermissions(user, requiredPermissions)).toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should not throw', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkAllPermissions(user, requiredPermissions)).not.toThrow();
+			});
+		});
+	});
+
+	describe('hasAllPermissions', () => {
+		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return false', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasAllPermissions(user, requiredPermissions);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return true', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasAllPermissions(user, requiredPermissions);
+
+				expect(result).toBe(true);
+			});
+		});
+	});
+
+	describe('checkOneOfPermissions', () => {
+		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should throw UnauthorizedException', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkOneOfPermissions(user, requiredPermissions)).toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should not throw', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkOneOfPermissions(user, requiredPermissions)).not.toThrow();
+			});
+		});
+	});
+
+	describe('hasOneOfPermissions', () => {
+		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return false', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasOneOfPermissions(user, requiredPermissions);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return true', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasOneOfPermissions(user, requiredPermissions);
+
+				expect(result).toBe(true);
+			});
+		});
+	});
+
 	describe('getUserWithPermissions', () => {
-		it('should return user with permissions', async () => {
+		it('should return user received from AuthorizationHelper', async () => {
 			const userId = 'test';
 			const user = userFactory.build();
 			loader.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -240,6 +393,18 @@ describe('AuthorizationService', () => {
 			const result = await service.getUserWithPermissions(userId);
 
 			expect(result).toEqual(user);
+		});
+	});
+
+	describe('resolvePermissions', () => {
+		it('should return permissions received from AuthorizationHelper', () => {
+			const user = userFactory.build();
+			const permissions = [Permission.ACCOUNT_CREATE];
+			authorizationHelper.resolvePermissions.mockReturnValueOnce(permissions);
+
+			const result = service.resolvePermissions(user);
+
+			expect(result).toEqual(permissions);
 		});
 	});
 });
