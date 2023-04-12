@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, User } from '@shared/domain';
 import { AuthorizationHelper } from './authorization.helper';
 import { ReferenceLoader } from './reference.loader';
@@ -54,26 +54,32 @@ export class AuthorizationService {
 		}
 	}
 
-	public async getUserWithPermissions(userId: EntityId): Promise<User> {
-		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
-
-		return userWithPermissions;
+	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
+		if (!this.authorizationHelper.hasAllPermissions(user, requiredPermissions)) {
+			// TODO: Should be ForbiddenException
+			throw new UnauthorizedException();
+		}
 	}
 
 	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
 		return this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 	}
 
-	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
-		return this.authorizationHelper.checkAllPermissions(user, requiredPermissions);
+	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
+		if (!this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions)) {
+			// TODO: Should be ForbiddenException
+			throw new UnauthorizedException();
+		}
 	}
 
 	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		return this.authorizationHelper.hasOneOfPermissions(user, requiredPermissions);
 	}
 
-	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
-		return this.authorizationHelper.checkOneOfPermissions(user, requiredPermissions);
+	public async getUserWithPermissions(userId: EntityId): Promise<User> {
+		const userWithPermissions = await this.loader.getUserWithPermissions(userId);
+
+		return userWithPermissions;
 	}
 
 	public resolvePermissions(user: User): string[] {

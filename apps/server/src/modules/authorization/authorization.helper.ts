@@ -55,17 +55,6 @@ export class AuthorizationHelper {
 		return hasAllPermissions;
 	}
 
-	/**
-	 * @throws UnauthorizedException
-	 */
-	public checkAllPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasAllPermissions(user, requiredPermissions);
-		if (hasPermission !== true) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
-	}
-
 	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
 		// TODO: Wouldn't it make more sense to return true for an empty permissions-array?
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
@@ -74,17 +63,6 @@ export class AuthorizationHelper {
 		const permissions = this.resolvePermissions(user);
 		const hasPermission = requiredPermissions.some((p) => permissions.includes(p));
 		return hasPermission;
-	}
-
-	/**
-	 * @throws UnauthorizedException
-	 */
-	public checkOneOfPermissions(user: User, requiredPermissions: string[]): void {
-		const hasPermission = this.hasOneOfPermissions(user, requiredPermissions);
-		if (hasPermission !== true) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
 	}
 
 	/**
