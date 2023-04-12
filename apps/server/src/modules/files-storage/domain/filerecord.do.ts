@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { BaseDO2, EntityId } from '@shared/domain';
+import { BaseDO2, BaseDOProps, EntityId } from '@shared/domain';
 import { ErrorType } from '../error';
 
 export enum ScanStatus {
@@ -28,8 +28,8 @@ export interface IFileSecurityCheckParams {
 }
 
 // We need to check how we work with keys from other collections, lile task.submission.coursegroup.
-export interface IFileRecordParams {
-	id?: EntityId;
+export interface IFileRecordParams extends BaseDOProps {
+	id: EntityId;
 	size: number;
 	name: string;
 	mimeType: string;

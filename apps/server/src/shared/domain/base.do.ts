@@ -5,12 +5,10 @@ export type BaseDOProps = {
 };
 
 // TODO: Rename
-export abstract class BaseDO2<T> {
-	protected props: T & BaseDOProps; // possible to make it protected
-	// it is possible to hold the entity as reference on this place, but then we have implicit
-	// the orm in our domain
+export abstract class BaseDO2<T extends BaseDOProps> {
+	protected props: T;
 
-	constructor(props: T & BaseDOProps) {
+	constructor(props: T) {
 		this.props = props;
 	}
 
@@ -18,7 +16,7 @@ export abstract class BaseDO2<T> {
 		return this.props.id.toString();
 	}
 
-	public getProps(): T & BaseDOProps {
+	public getProps(): T {
 		const copyProps = { ...this.props };
 
 		return copyProps;
