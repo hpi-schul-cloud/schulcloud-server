@@ -26,11 +26,11 @@ class API {
 		this.app = app;
 	}
 
-	async move(columnId: string, toBoardId: string, toPosition: number) {
+	async updateColumnTitle(columnId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${columnId}/position`)
+			.put(`${baseRouteName}/${columnId}/title`)
 			.set('Accept', 'application/json')
-			.send({ toBoardId, toPosition });
+			.send({ title });
 
 		return {
 			error: response.body as ApiValidationError,
@@ -39,7 +39,7 @@ class API {
 	}
 }
 
-describe(`column move (api)`, () => {
+describe(`column update title (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
@@ -74,36 +74,36 @@ describe(`column move (api)`, () => {
 		const user = userFactory.build();
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNodes = new Array(10)
-			.fill(1)
-			.map((o, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
-		const columnToMove = columnNodes[2];
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
+		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		await em.persistAndFlush([user, cardNode, ...columnNodes, columnBoardNode]);
+		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode]);
 		em.clear();
 
-		return { user, cardNode, columnToMove, columnBoardNode };
+		return { user, columnNode, columnBoardNode };
 	};
 
 	describe('with valid user', () => {
 		it('should return status 200', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
+			const { user, columnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+			const newTitle = 'new title';
 
-			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
+			const response = await api.updateColumnTitle(columnNode.id, newTitle);
 
 			expect(response.status).toEqual(200);
 		});
 
-		it('should actually move the column', async () => {
-			const { user, columnToMove, columnBoardNode } = await setup();
+		it('should actually change the column title', async () => {
+			const { user, columnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+			const newTitle = 'new title';
 
-			await api.move(columnToMove.id, columnBoardNode.id, 5);
-			const result = await em.findOneOrFail(ColumnNode, columnToMove.id);
+			await api.updateColumnTitle(columnNode.id, newTitle);
 
-			expect(result.position).toEqual(5);
+			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
+
+			expect(result.title).toEqual(newTitle);
 		});
 	});
 
