@@ -309,9 +309,10 @@ describe('TaskService', () => {
 			let task: Task;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
-				course = courseFactory.buildWithId({ teachers: [user] });
+				const student = userFactory.buildWithId();
+				course = courseFactory.buildWithId({ teachers: [user], students: [student] });
 
-				task = taskFactory.build({ course });
+				task = taskFactory.build({ course, users: [student] });
 				// userRepo.findById.mockResolvedValue(user);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
@@ -326,6 +327,23 @@ describe('TaskService', () => {
 				taskRepo.save.mockRestore();
 				taskRepo.findById.mockRestore();
 				authorizationService.getUserWithPermissions.mockRestore();
+			});
+			it('resetting the assigned students back to undefined return undefined on userList', async () => {
+				const params = {
+					usersIds: undefined,
+					name: 'test',
+				};
+				const taskWithStatusVo = await taskService.update(user.id, task.id, params);
+				expect(taskWithStatusVo.task.users.length).toBe(0);
+				expect(taskWithStatusVo.task.getUsersList()).toBeUndefined();
+			});
+			it('ommiting userIds should not change assigned users', async () => {
+				const params = {
+					name: 'test',
+				};
+				const taskWithStatusVo = await taskService.update(user.id, task.id, params);
+				expect(taskWithStatusVo.task.users.length).toBe(1);
+				expect(taskWithStatusVo.task.getUsersList()?.length).toBe(1);
 			});
 			it('should throw if availableDate is not before dueDate', async () => {
 				const availableDate = new Date('2023-01-12T00:00:00');
@@ -467,11 +485,6 @@ describe('TaskService', () => {
 				const result = await taskService.update(user.id, task.id, params);
 				expect(result.task).toEqual({ ...task, name: params.name });
 				expect(result.status).toBeDefined();
-			});
-			it('add test to check in case we want to remove the assigned list', async () => {
-				// TODO: test assignedUser = null
-				// TODO: test assignedUser = []
-				fail('TODO');
 			});
 			it('should return the task with new assigned users', async () => {
 				user = userFactory.buildWithId();
