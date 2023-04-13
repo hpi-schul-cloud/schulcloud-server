@@ -8,7 +8,7 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
+import { FilesStorageTestModule } from '@src/modules/files-storage';
 import { FileRecordResponse } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
 import { Readable } from 'node:stream';
@@ -106,19 +106,11 @@ describe('files-storage controller (API)', () => {
 	let appPort: number;
 
 	beforeAll(async () => {
-		const port = 10000 + createRndInt(10000);
 		appPort = 10000 + createRndInt(10000);
-		const overridetS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
 
 		module = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
-			providers: [
-				FilesStorageTestModule,
-				{
-					provide: 'S3_Config',
-					useValue: overridetS3Config,
-				},
-			],
+			providers: [FilesStorageTestModule],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
