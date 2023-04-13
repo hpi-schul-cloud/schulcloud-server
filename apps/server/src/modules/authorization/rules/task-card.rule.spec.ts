@@ -48,8 +48,7 @@ describe('TaskCardRule', () => {
 		expect(spy).toBeCalledWith(user, entity, ['creator']);
 	});
 
-	// TODO: This test seems weird.
-	it('should call taskRule.isAuthorized', () => {
+	it('should call isAuthorized on TaskRule', () => {
 		const task = taskFactory.build({ creator: user });
 		entity = taskCardFactory.build({ task });
 		const spy = jest.spyOn(taskRule, 'isAuthorized');
