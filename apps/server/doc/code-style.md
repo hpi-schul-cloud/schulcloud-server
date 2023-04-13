@@ -18,7 +18,7 @@ The function should return a boolean, and have no sideeffects.
 
 #### check...
 
-`checkIsAuthorized()`, `checkInputIsValid()`
+`checkPermission()`, `checkInputIsValid()`
 
 A function with the prefix "check..." is checking the condition described in its name, throwing an error if it does not apply.
 
