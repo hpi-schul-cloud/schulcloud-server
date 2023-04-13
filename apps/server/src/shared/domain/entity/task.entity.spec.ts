@@ -868,12 +868,37 @@ describe('Task Entity', () => {
 		});
 	});
 
+	describe('setAssignedUsers', () => {
+		it('should set the assigned users', () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const task = taskFactory.buildWithId();
+
+			task.setAssignedUsers([user1, user2]);
+
+			expect(task.users.contains(user1)).toBe(true);
+			expect(task.users.contains(user2)).toBe(true);
+			expect(task.getUsersList()?.map((u) => u.id)).toEqual([user1.id, user2.id]);
+		});
+
+		it('should set the assigned users back to undefined', () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const task = taskFactory.buildWithId({ users: [user1, user2] });
+
+			task.setAssignedUsers(undefined);
+
+			expect(task.users.length).toBe(0);
+			expect(task.getUsersList()).toBeUndefined();
+		});
+	});
+
 	describe('getUsersList', () => {
 		describe('when has no users assigned', () => {
-			it('should return an empty array', () => {
+			it('should return undefined', () => {
 				const task = taskFactory.build();
 				const result = task.getUsersList();
-				expect(result).toEqual([]);
+				expect(result).toBeUndefined();
 			});
 		});
 
