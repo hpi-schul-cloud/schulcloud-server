@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { CardElementResponse, CompletedUserIdsList } from '@shared/domain';
+import { CardElementResponse } from '@shared/domain';
 import { TaskResponse } from '@src/modules/task/controller/dto';
 
 export class TaskCardResponse {
@@ -74,7 +74,6 @@ export class TaskCardResponse {
 
 	@ApiProperty({
 		description: 'List of users who marked task card as completed',
-		type: [CompletedUserIdsList],
 	})
-	completed: CompletedUserIdsList[];
+	completed: string[];
 }

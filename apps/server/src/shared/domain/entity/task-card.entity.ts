@@ -14,9 +14,6 @@ export interface ITaskCard extends ICard {
 	course?: Course;
 }
 
-export class CompletedUserIdsList {
-	id!: string;
-}
 @Entity({
 	tableName: 'card',
 })
@@ -92,14 +89,10 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		return isCompleted;
 	} */
 
-	public getCompletedUserIds(): CompletedUserIdsList[] {
+	public getCompletedUserIds(): string[] {
 		const users = this.completed.getItems();
 		if (users.length) {
-			const usersList: CompletedUserIdsList[] = users.map((user) => {
-				return {
-					id: user.id,
-				};
-			});
+			const usersList = users.map((user) => user.id);
 			return usersList;
 		}
 

@@ -36,7 +36,7 @@ export class TaskCardService {
 		);
 
 		const completedForUsers = taskCard.getCompletedUserIds();
-		completedForUsers.filter((completedUserId) => completedUserId.id === userId);
+		completedForUsers.filter((completedUserId) => completedUserId === userId);
 
 		return completedForUsers.length > 0;
 	}
