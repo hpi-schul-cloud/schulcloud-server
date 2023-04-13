@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
 
-// TODO move to authorization module
-
+// TODO: Remove the PermissionService because it duplicates methods from the AuthorizationService.
+// Do not use this service, use the AuthorizationService!
 @Injectable()
 export class PermissionService {
 	/**
