@@ -145,7 +145,10 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'migrate',
 			async () => {
-				const count = await this.keycloakConfigurationUc.migrate(Number(options.skip), Boolean(options.verbose));
+				const count = await this.keycloakConfigurationUc.migrate(
+					options.skip ? Number(options.skip) : undefined,
+					options.verbose ? Boolean(options.verbose) : false
+				);
 				this.console.info(`Migrated ${count} users into IDM`);
 				return count;
 			},
