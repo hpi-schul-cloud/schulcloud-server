@@ -156,7 +156,7 @@ export class TaskService {
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.setAssignedUsers(users);
-			} else if (task.users && params.usersIds === undefined) {
+			} else if (task.users && Object.keys(params).includes('usersIds') && params.usersIds === undefined) {
 				task.setAssignedUsers(undefined);
 			} else if (remove) {
 				task.setAssignedUsers(undefined);

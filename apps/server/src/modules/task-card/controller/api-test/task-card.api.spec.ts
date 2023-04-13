@@ -752,8 +752,14 @@ describe('Task-Card Controller (api)', () => {
 			const updateTaskCardEndpoint = async (taskCardId: string, payload: TaskCardParams) =>
 				request(app.getHttpServer()).patch(`/cards/task/${taskCardId}`).set('Accept', 'application/json').send(payload);
 
+			const getTaskCardEndpoint = async (taskCardId: string): Promise<{ status: number; body: TaskCardResponse }> =>
+				request(app.getHttpServer()).get(`/cards/task/${taskCardId}`).set('Accept', 'application/json').send();
+
 			const createEntities = () => {
-				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const teacher = setupUser(
+					[Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT],
+					'Teacher 1'
+				);
 				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 1');
 				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 2');
 				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 3');
@@ -846,40 +852,124 @@ describe('Task-Card Controller (api)', () => {
 				expect(result).toStrictEqual(expected);
 			});
 
-			it.only('updating assignedUsers to null allows all students from course to access the task', async () => {
+			it('updating assignedUsers to null removes the assigned users', async () => {
+				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
+
+				const taskCardUpdateParams: TaskCardParams = {
+					title: 'test',
+					assignedUsers: null,
+					courseId: course.id,
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+				};
+
+				currentUser = mapUserToCurrentUser(teacher);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+					taskCard.id,
+					taskCardUpdateParams
+				);
+				expect(status).toBe(200);
+				expect(body.assignedUsers).toBeUndefined();
+			});
+
+			it('omiting assignedUsers leaves the task-card unchanged', async () => {
+				const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
+
+				const taskCardUpdateParams: TaskCardParams = {
+					title: 'test',
+					courseId: course.id,
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+				};
+
+				currentUser = mapUserToCurrentUser(teacher);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
+					taskCard.id,
+					taskCardUpdateParams
+				);
+				expect(status).toBe(200);
+				expect(body.assignedUsers).toBeDefined();
+			});
+
+			it('updating assignedUsers to null allows all students from course to access the task', async () => {
 				// jest.setTimeout(5 * 60 * 1000);
-				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-				const student = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 3');
-				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student] });
+				const { teacher, student1, student2, student3 } = createEntities();
+				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student1, student2] });
 				const title = 'title test';
-				const task = taskFactory.build({ name: title, creator: teacher, course });
+				const task = taskFactory.build({ name: title, creator: teacher, course, users: [student1] });
+				const taskCard = taskCardFactory.buildWithId({ creator: teacher, task, cardType: CardType.Task, title });
 
-				console.log(task.users);
+				await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
+				em.clear();
 
-				// const { teacher, course, student1, student2, student3, task, taskCard } = createEntities();
+				// student 1 should be able to access the task
+				currentUser = mapUserToCurrentUser(student1);
+				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
+					expect(status).toBe(200);
+					expect(body).toBeDefined();
+					expect(body.id).toBe(taskCard.id);
+					return true;
+				});
 
-				// await em.persistAndFlush([teacher, course, student1, student2, student3, task, taskCard]);
-				// em.clear();
+				// student 2 should not be able to access the task
+				currentUser = mapUserToCurrentUser(student2);
+				await getTaskCardEndpoint(taskCard.id).then(({ status }) => {
+					expect(status).toBe(403);
+					return true;
+				});
 
-				expect(1).toBe(1);
+				// without assigned users, all students should be able to access the task
+				currentUser = mapUserToCurrentUser(teacher);
+				await updateTaskCardEndpoint(taskCard.id, {
+					courseId: course.id,
+					title: 'test',
+					assignedUsers: null,
+					dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+				}).then(({ status }) => {
+					expect(status).toBe(200);
+					return true;
+				});
+				console.log('teacher', teacher);
 
-				// currentUser = mapUserToCurrentUser(teacher);
+				currentUser = mapUserToCurrentUser(teacher);
+				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
+					expect(status).toBe(200);
+					expect(body).toBeDefined();
+					expect(body.id).toBe(taskCard.id);
+					expect(body.assignedUsers).toBeUndefined();
+					expect(body.task.users).toBeUndefined();
+					return true;
+				});
 
-				// const taskCardUpdateParams: TaskCardParams = {
-				// 	assignedUsers: null,
-				// 	title: 'test title2', // title should not be required
-				// 	visibleAtDate: new Date(),
-				// 	dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-				// 	courseId: course.id, // course id should not be required
-				// };
-				// // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				// const { status, body }: { status: number; body: TaskCardResponse } = await updateTaskCardEndpoint(
-				// 	taskCard.id,
-				// 	taskCardUpdateParams
-				// );
-				// console.log(await em.find(Task, {}));
-				// expect(status).toBe(200);
-				// expect(body.assignedUsers).toBeUndefined();
+				currentUser = mapUserToCurrentUser(student1);
+				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
+					expect(status).toBe(200);
+					expect(body).toBeDefined();
+					expect(body.id).toBe(taskCard.id);
+					expect(body.assignedUsers).toBeUndefined();
+					return true;
+				});
+
+				currentUser = mapUserToCurrentUser(student2);
+				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
+					expect(status).toBe(200);
+					expect(body).toBeDefined();
+					expect(body.id).toBe(taskCard.id);
+					expect(body.assignedUsers).toBeUndefined();
+					return true;
+				});
+
+				currentUser = mapUserToCurrentUser(student3);
+				await getTaskCardEndpoint(taskCard.id).then(({ status }) => {
+					expect(status).toBe(403);
+					return true;
+				});
 			});
 		});
 	});
