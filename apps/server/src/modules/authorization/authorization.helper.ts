@@ -66,29 +66,31 @@ export class AuthorizationHelper {
 
 	/**
 	 * Determines whether a user has access to the specified entity by reference props.
-	 * @example ```
-	 * const user = new User({id: 1})
-	 * const entity = new News({id:2, creator: user})
-	 * const userRefProps = ['creator']
-	 * ```
 	 * @param user a user
 	 * @param entity An entity to access
 	 * @param userRefProps Array of properties in the entity the user is associated with
 	 * @returns
 	 */
 	public hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]): boolean {
-		const res = userRefProps.some((prop) => {
-			const reference = entity[prop];
-			if (reference instanceof Collection) {
-				return reference.contains(user);
-			}
-			if (reference instanceof User) {
-				return reference === user;
-			}
-			return (reference as unknown as string) === user.id;
-		});
+		const result = userRefProps.some((prop) => this.isUserReferenced(user, entity, prop));
 
-		return res;
+		return result;
+	}
+
+	private isUserReferenced<T, K extends keyof T>(user: User, entity: T, prop: K) {
+		let result = false;
+
+		const reference = entity[prop];
+
+		if (reference instanceof Collection) {
+			result = reference.contains(user);
+		} else if (reference instanceof User) {
+			result = reference === user;
+		} else {
+			result = (reference as unknown as string) === user.id;
+		}
+
+		return result;
 	}
 
 	// todo: hasAccessToDomainObject
