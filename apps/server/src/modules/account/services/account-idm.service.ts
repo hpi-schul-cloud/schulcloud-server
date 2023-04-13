@@ -28,10 +28,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
 		const results = new Array<IAccount>();
 		for (const userId of userIds) {
-			// eslint-disable-next-line no-await-in-loop
-			const result = await this.identityManager.findAccountByFctIntId(userId);
-			if (result) {
-				results.push(result);
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				results.push(await this.identityManager.findAccountByFctIntId(userId));
+			} catch {
+				// ignore entry
 			}
 		}
 		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
@@ -39,18 +40,21 @@ export class AccountServiceIdm extends AbstractAccountService {
 	}
 
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
-		const result = await this.identityManager.findAccountByFctIntId(userId);
-		const account = result ? this.accountIdmToDtoMapper.mapToDto(result) : null;
-		return account;
+		try {
+			const result = await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
+			return null;
+		}
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		const result = await this.identityManager.findAccountByFctIntId(userId);
-		if (!result) {
+		try {
+			const result = await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
 		}
-		const account = this.accountIdmToDtoMapper.mapToDto(result);
-		return account;
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {

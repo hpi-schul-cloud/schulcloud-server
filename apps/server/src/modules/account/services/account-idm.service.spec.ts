@@ -289,7 +289,13 @@ describe('AccountIdmService', () => {
 		describe('when finding accounts', () => {
 			const setup = () => {
 				const accounts = [mockIdmAccount];
-				idmServiceMock.findAccountByFctIntId.mockImplementation(() => Promise.resolve(accounts.pop() as IAccount));
+				idmServiceMock.findAccountByFctIntId.mockImplementation(() => {
+					const element = accounts.pop() as IAccount;
+					if (element) {
+						return Promise.resolve(element);
+					}
+					throw new Error();
+				});
 			};
 
 			it('should return the accounts', async () => {
