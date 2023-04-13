@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { TaskCardUc } from '../uc';
-import { TaskCardResponse, TaskCardUrlParams, TaskCardParams } from './dto';
+import { TaskCardParams, TaskCardResponse, TaskCardUrlParams } from './dto';
 import { TaskCardMapper } from './mapper/task-card.mapper';
 
 @ApiTags('Cards')
@@ -62,6 +62,40 @@ export class TaskCardController {
 			currentUser.userId,
 			urlParams.id,
 			TaskCardMapper.mapToDomain(params)
+		);
+		const mapper = new TaskCardMapper();
+		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
+		return taskCardResponse;
+	}
+
+	@Patch(':id/complete')
+	async completeForUser(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: TaskCardUrlParams
+	): Promise<TaskCardResponse> {
+		this.featureEnabled();
+
+		const { card, taskWithStatusVo } = await this.taskCardUc.changeCompleteForUser(
+			currentUser.userId,
+			urlParams.id,
+			false
+		);
+		const mapper = new TaskCardMapper();
+		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
+		return taskCardResponse;
+	}
+
+	@Patch(':id/undo')
+	async undoForUser(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: TaskCardUrlParams
+	): Promise<TaskCardResponse> {
+		this.featureEnabled();
+
+		const { card, taskWithStatusVo } = await this.taskCardUc.changeCompleteForUser(
+			currentUser.userId,
+			urlParams.id,
+			true
 		);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);

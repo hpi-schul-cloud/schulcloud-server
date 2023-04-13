@@ -6,6 +6,7 @@ import {
 	IFindOptions,
 	ITaskCreate,
 	ITaskProperties,
+	ITaskStatus,
 	ITaskUpdate,
 	Permission,
 	PermissionContextBuilder,
@@ -15,6 +16,7 @@ import {
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
@@ -26,7 +28,8 @@ export class TaskService {
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly submissionService: SubmissionService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly taskCardService: TaskCardService
 	) {}
 
 	async findBySingleParent(
@@ -98,6 +101,9 @@ export class TaskService {
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
+		if (task.taskCard) {
+			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+		}
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
 		return taskWithStatusVo;
@@ -109,9 +115,18 @@ export class TaskService {
 
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
-		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
+		let status: ITaskStatus;
+		if (this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])) {
+			status = task.createTeacherStatusForUser(user);
+			if (task.taskCard) {
+				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			}
+		} else {
+			status = task.createStudentStatusForUser(user);
+			if (task.taskCard) {
+				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+			}
+		}
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -174,6 +189,9 @@ export class TaskService {
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
+		if (task.taskCard) {
+			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+		}
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
 		return taskWithStatusVo;

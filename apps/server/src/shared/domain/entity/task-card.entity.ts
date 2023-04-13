@@ -6,12 +6,16 @@ import { Course } from './course.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course };
+export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; completed: User[] };
 
 export interface ITaskCard extends ICard {
 	task: Task;
 	dueDate: Date;
 	course?: Course;
+}
+
+export class CompletedUserIdsList {
+	id!: string;
 }
 @Entity({
 	tableName: 'card',
@@ -29,8 +33,9 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.task = props.task;
 		this.cardType = CardType.Task;
 		this.title = props.title;
-		if (props.course) this.course = props.course;
+		this.course = props.course;
 		Object.assign(this, { creator: props.creator });
+		this.completed.set(props.completed || []);
 	}
 
 	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds', cascade: [Cascade.ALL] })
@@ -59,6 +64,12 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@Property()
 	dueDate: Date;
 
+	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
+	task!: Task;
+
+	@ManyToMany('User', undefined, { fieldName: 'completed' })
+	completed = new Collection<User>(this);
+
 	public getCardElements() {
 		return this.cardElements.getItems();
 	}
@@ -67,6 +78,40 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		return this.visibleAtDate < this.dueDate;
 	}
 
-	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
-	task!: Task;
+	public completeForUser(user: User): void {
+		this.completed.add(user);
+	}
+
+	public undoForUser(user: User): void {
+		this.completed.remove(user);
+	}
+
+	/* public isCompletedForUser(user: User): boolean {
+		const completedUserIds = this.getCompletedUserIds();
+		const isCompleted = completedUserIds.some((id) => id === user.id);
+		return isCompleted;
+	} */
+
+	public getCompletedUserIds(): CompletedUserIdsList[] {
+		const users = this.completed.getItems();
+		if (users.length) {
+			const usersList: CompletedUserIdsList[] = users.map((user) => {
+				return {
+					id: user.id,
+				};
+			});
+			return usersList;
+		}
+
+		return [];
+
+		// return this.completed.getItems();
+	}
+
+	/* private getCompletedUserIds(): EntityId[] {
+		const completedObjectIds = this.completed.getIdentifiers('_id');
+		const completedIds = completedObjectIds.map((id): string => id.toString());
+
+		return completedIds;
+	} */
 }

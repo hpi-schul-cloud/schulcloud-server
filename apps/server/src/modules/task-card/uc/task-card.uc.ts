@@ -48,6 +48,7 @@ export class TaskCardUc {
 			visibleAtDate: new Date(),
 			dueDate: params.dueDate,
 			title: params.title,
+			completed: [],
 		};
 
 		if (params.visibleAtDate) {
@@ -126,6 +127,29 @@ export class TaskCardUc {
 
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
+
+		return { card, taskWithStatusVo };
+	}
+
+	async changeCompleteForUser(userId: EntityId, id: EntityId, isComplete: boolean) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const card = await this.taskCardRepo.findById(id);
+
+		if (
+			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
+		) {
+			throw new ForbiddenException();
+		}
+
+		if (!isComplete) {
+			card.completeForUser(user);
+		} else {
+			card.undoForUser(user);
+		}
+
+		await this.taskCardRepo.save(card);
+
+		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
 
 		return { card, taskWithStatusVo };
 	}

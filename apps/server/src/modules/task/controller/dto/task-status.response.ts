@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class TaskStatusResponse {
 	constructor({ submitted, maxSubmissions, graded, isDraft, isSubstitutionTeacher, isFinished }: TaskStatusResponse) {
@@ -27,4 +27,10 @@ export class TaskStatusResponse {
 
 	@ApiProperty()
 	isFinished: boolean;
+
+	@ApiPropertyOptional()
+	taskCardCompleted?: number;
+
+	@ApiPropertyOptional()
+	isTaskCardCompleted?: boolean;
 }

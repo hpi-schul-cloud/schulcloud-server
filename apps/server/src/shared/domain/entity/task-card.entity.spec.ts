@@ -53,4 +53,104 @@ describe('Task Card Entity', () => {
 			});
 		});
 	});
+	/* 
+	describe('completeForUser is called', () => {
+		it('should add the user to the completed collection', () => {
+			const user = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId();
+
+			taskCard.completeForUser(user);
+
+			expect(taskCard.completed.contains(user)).toBe(true);
+		});
+
+		it('should make sure the user is added only once', () => {
+			const user = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId();
+
+			taskCard.completeForUser(user);
+			taskCard.completeForUser(user);
+
+			expect(taskCard.completed.count()).toBe(1);
+		});
+
+		it('should not overwrite other users in the completed collection', () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId({ completed: [user1] });
+
+			taskCard.completeForUser(user2);
+
+			expect(taskCard.completed.contains(user1)).toBe(true);
+			expect(taskCard.completed.contains(user2)).toBe(true);
+		});
+	});
+
+	describe('undoForUser is called', () => {
+		it('should remove the user from the completed collection', () => {
+			const user = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId({ completed: [user] });
+
+			taskCard.undoForUser(user);
+
+			expect(taskCard.completed.contains(user)).toBe(false);
+		});
+
+		it('should make sure the beta task can be undone even if already done', () => {
+			const user = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId();
+
+			taskCard.undoForUser(user);
+			taskCard.undoForUser(user);
+
+			expect(taskCard.completed.count()).toBe(0);
+		});
+
+		it('should not remove other users from the completed collection', () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId({ completed: [user1, user2] });
+
+			taskCard.undoForUser(user2);
+
+			expect(taskCard.completed.contains(user1)).toBe(true);
+			expect(taskCard.completed.contains(user2)).toBe(false);
+		});
+	});
+
+	describe('isCompletedForUser is called', () => {
+		describe('when user completed the beta task', () => {
+			it('should return true', () => {
+				const user = userFactory.buildWithId();
+				const taskCard = taskCardFactory.buildWithId({ completed: [user] });
+
+				const result = taskCard.isCompletedForUser(user);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when user not yet completed the beta task', () => {
+			it('should return false', () => {
+				const user = userFactory.buildWithId();
+				const taskCard = taskCardFactory.buildWithId({ completed: [] });
+
+				const result = taskCard.isCompletedForUser(user);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when other users have completed the beta task but the user did not', () => {
+			it('should return false', () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const taskCard = taskCardFactory.buildWithId({ completed: [user1] });
+
+				const result = taskCard.isCompletedForUser(user2);
+
+				expect(result).toEqual(false);
+			});
+		});
+	}); */
 });

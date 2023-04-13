@@ -6,8 +6,8 @@ import {
 	EntityId,
 	IPagination,
 	ITaskCreate,
-	ITaskUpdate,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
@@ -17,6 +17,7 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
+import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -26,7 +27,8 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly taskCardService: TaskCardService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -56,18 +58,26 @@ export class TaskUC {
 			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
-		const taskWithStatusVos = tasks.map((task) => {
+		const taskWithStatusVos = tasks.map(async (task) => {
 			let status: ITaskStatus;
 			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
+				if (task.taskCard) {
+					status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+				}
 			} else {
 				status = task.createStudentStatusForUser(user);
+				if (task.taskCard) {
+					status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+				}
 			}
 
 			return new TaskWithStatusVo(task, status);
 		});
 
-		return [taskWithStatusVos, total];
+		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
+
+		return [resultTaskWithStatusVos, total];
 	}
 
 	async findAll(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -102,9 +112,18 @@ export class TaskUC {
 		// TODO fix student case - why have student as fallback?
 		//  should be based on permission too and use this.createStatus() instead
 		// add status
-		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
+		let status: ITaskStatus;
+		if (this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
+			status = task.createTeacherStatusForUser(user);
+			if (task.taskCard) {
+				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			}
+		} else {
+			status = task.createStudentStatusForUser(user);
+			if (task.taskCard) {
+				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+			}
+		}
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -121,6 +140,9 @@ export class TaskUC {
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
+		if (task.taskCard) {
+			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+		}
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -148,12 +170,17 @@ export class TaskUC {
 			}
 		);
 
-		const taskWithStatusVos = tasks.map((task) => {
+		const taskWithStatusVos = tasks.map(async (task) => {
 			const status = task.createStudentStatusForUser(user);
+			if (task.taskCard) {
+				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+			}
 			return new TaskWithStatusVo(task, status);
 		});
 
-		return [taskWithStatusVos, total];
+		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
+
+		return [resultTaskWithStatusVos, total];
 	}
 
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -176,12 +203,17 @@ export class TaskUC {
 			}
 		);
 
-		const taskWithStatusVos = tasks.map((task) => {
+		const taskWithStatusVos = tasks.map(async (task) => {
 			const status = task.createTeacherStatusForUser(user);
+			if (task.taskCard) {
+				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			}
 			return new TaskWithStatusVo(task, status);
 		});
 
-		return [taskWithStatusVos, total];
+		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
+
+		return [resultTaskWithStatusVos, total];
 	}
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
