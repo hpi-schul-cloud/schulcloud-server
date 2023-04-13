@@ -5,8 +5,17 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 
-import { CardElementType, InputFormat, Permission } from '@shared/domain';
-import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
+import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
+import {
+	cleanupCollections,
+	courseFactory,
+	mapUserToCurrentUser,
+	richTextCardElementFactory,
+	roleFactory,
+	taskCardFactory,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
@@ -266,291 +275,249 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
+		it('should throw an error if title is not a string', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 1234,
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(501);
+		});
+		it('should throw an Error if title is not provided', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
 	});
+	describe('[GET] /cards/task/:id', () => {
+		it('should return existing task-card', async () => {
+			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+			const title = 'title test';
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ name: title, creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 
-	// describe('When feature is not enabled', () => {
-	// 	beforeEach(async () => {
-	// 		await cleanupCollections(em);
-	// 		Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-	// 	});
+			await em.persistAndFlush([user, task, taskCard]);
+			em.clear();
 
-	// 	it('Find task-card should throw', async () => {
-	// 		const user = setupUser([]);
-	// 		const taskCard = taskCardFactory.buildWithId({ creator: user });
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		await em.persistAndFlush([user, taskCard]);
-	// 		em.clear();
+			const response = await request(app.getHttpServer())
+				.get(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(200);
 
-	// 		currentUser = mapUserToCurrentUser(user);
+			const responseTaskCard = response.body as TaskCardResponse;
 
-	// 		await request(app.getHttpServer())
-	// 			.get(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.expect(500);
-	// 	});
+			expect(responseTaskCard.id).toEqual(taskCard.id);
+		});
+		it('should throw if feature not enabled', async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+			const user = setupUser([]);
+			const taskCard = taskCardFactory.buildWithId({ creator: user });
 
-	// 	it('Delete task-card should throw', async () => {
-	// 		const user = setupUser([]);
+			await em.persistAndFlush([user, taskCard]);
+			em.clear();
 
-	// 		const taskCard = taskCardFactory.build({ creator: user });
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		await em.persistAndFlush([user, taskCard]);
-	// 		em.clear();
+			await request(app.getHttpServer())
+				.get(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(500);
+		});
+	});
+	describe('[PATCH] /cards/task/:id', () => {
+		it('should update the task card', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 
-	// 		currentUser = mapUserToCurrentUser(user);
+			const title = 'title test';
+			const richTextCardElement = richTextCardElementFactory.buildWithId();
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ name: title, creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
 
-	// 		await request(app.getHttpServer())
-	// 			.delete(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.expect(500);
-	// 	});
+			await em.persistAndFlush([user, task, taskCard, course]);
+			em.clear();
 
-	// 	it('Update task-card should throw', async () => {
-	// 		const user = setupUser([]);
-	// 		const taskCard = taskCardFactory.build({ creator: user });
-	// 		const course = courseFactory.buildWithId({ teachers: [user] });
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		await em.persistAndFlush([user, taskCard, course]);
-	// 		em.clear();
+			const taskCardUpdateParams = {
+				title: 'updated title',
+				cardElements: [
+					{
+						id: richTextCardElement.id,
+						content: {
+							type: 'richText',
+							value: 'rich updated',
+							inputFormat: 'richtext_ck5',
+						},
+					},
+					{
+						content: {
+							type: 'richText',
+							value: 'rich added',
+							inputFormat: 'richtext_ck5',
+						},
+					},
+				],
+				visibleAtDate: inTwoDays,
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			const response = await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(taskCardUpdateParams)
+				.expect(200);
 
-	// 		currentUser = mapUserToCurrentUser(user);
-	// 		const params = {
-	// 			title: 'title',
-	// 			courseId: course.id,
-	// 			dueDate: inThreeDays,
-	// 		};
-	// 		await request(app.getHttpServer())
-	// 			.patch(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(params)
-	// 			.expect(500);
-	// 	});
-	// });
+			const responseTaskCard = response.body as TaskCardResponse;
 
-	// describe('when feature is enabled', () => {
-	// 	it('GET :id should return existing task-card', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
-	// 		const title = 'title test';
-	// 		// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-	// 		const task = taskFactory.build({ name: title, creator: user });
-	// 		const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			expect(responseTaskCard.id).toEqual(taskCard.id);
+			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
+			expect(responseTaskCard.cardElements?.length).toEqual(2);
+			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
+			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
+		});
+		it('should sanitize richtext on update, with given format', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
-	// 		await em.persistAndFlush([user, task, taskCard]);
-	// 		em.clear();
+			await em.persistAndFlush([user, task, taskCard, course]);
+			em.clear();
 
-	// 		currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		const response = await request(app.getHttpServer())
-	// 			.get(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.expect(200);
+			const text = '<iframe>rich text 1</iframe> some more text';
+			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-	// 		const responseTaskCard = response.body as TaskCardResponse;
+			const taskCardUpdateParams = {
+				title: 'test title updated',
+				courseId: course.id,
+				cardElements: [
+					{
+						content: {
+							type: 'richText',
+							value: text,
+							inputFormat: InputFormat.RICH_TEXT_CK5,
+						},
+					},
+				],
+				dueDate: inTwoDays,
+			};
 
-	// 		expect(responseTaskCard.id).toEqual(taskCard.id);
-	// 	});
+			const response = await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(taskCardUpdateParams)
+				.expect(200);
 
-	// 	it('DELETE should remove task-card, its card-elements and associated task', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
-	// 		// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-	// 		const task = taskFactory.build({ creator: user });
-	// 		const taskCard = taskCardFactory.build({
-	// 			creator: user,
-	// 			cardElements: [richTextCardElementFactory.buildWithId()],
-	// 			task,
-	// 		});
+			const responseTaskCard = response.body as TaskCardResponse;
+			const richTextElement = responseTaskCard.cardElements?.filter(
+				(element) => element.cardElementType === CardElementType.RichText
+			);
+			const expectedRichTextElement = richTextElement ? richTextElement[0].content.value : '';
+			expect(expectedRichTextElement).toEqual(sanitizedText);
+		});
+		it('should throw if feature is not enabled', async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+			const user = setupUser([]);
+			const taskCard = taskCardFactory.build({ creator: user });
+			const course = courseFactory.buildWithId({ teachers: [user] });
 
-	// 		await em.persistAndFlush([user, task, taskCard]);
-	// 		em.clear();
+			await em.persistAndFlush([user, taskCard, course]);
+			em.clear();
 
-	// 		const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
-	// 		const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
-	// 		expect(foundCardElementsInitial[1]).toEqual(1);
+			currentUser = mapUserToCurrentUser(user);
+			const params = {
+				title: 'title',
+				courseId: course.id,
+				dueDate: inThreeDays,
+			};
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(params)
+				.expect(500);
+		});
+	});
+	describe('[DELETE] /cards/task/:id', () => {
+		it('should remove task-card, its card-elements and associated task', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ creator: user });
+			const taskCard = taskCardFactory.build({
+				creator: user,
+				cardElements: [richTextCardElementFactory.buildWithId()],
+				task,
+			});
 
-	// 		currentUser = mapUserToCurrentUser(user);
+			await em.persistAndFlush([user, task, taskCard]);
+			em.clear();
 
-	// 		await request(app.getHttpServer())
-	// 			.delete(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.expect(200);
+			const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
+			const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
+			expect(foundCardElementsInitial[1]).toEqual(1);
 
-	// 		const foundCardElements = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
-	// 		expect(foundCardElements[1]).toEqual(0);
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		const foundTask = await em.findOne(Task, { id: taskCard.task.id });
-	// 		expect(foundTask).toEqual(null);
+			await request(app.getHttpServer())
+				.delete(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(200);
 
-	// 		const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
-	// 		expect(foundTaskCard).toEqual(null);
-	// 	});
-	// 	it('PATCH should update the task card', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			const foundCardElements = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
+			expect(foundCardElements[1]).toEqual(0);
 
-	// 		const title = 'title test';
-	// 		const richTextCardElement = richTextCardElementFactory.buildWithId();
-	// 		// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-	// 		const task = taskFactory.build({ name: title, creator: user });
-	// 		const taskCard = taskCardFactory.buildWithId({ creator: user, task });
-	// 		const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
+			const foundTask = await em.findOne(Task, { id: taskCard.task.id });
+			expect(foundTask).toEqual(null);
 
-	// 		await em.persistAndFlush([user, task, taskCard, course]);
-	// 		em.clear();
+			const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
+			expect(foundTaskCard).toEqual(null);
+		});
+		it('should throw if feature is not enabled', async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+			const user = setupUser([]);
 
-	// 		currentUser = mapUserToCurrentUser(user);
+			const taskCard = taskCardFactory.build({ creator: user });
 
-	// 		const taskCardUpdateParams = {
-	// 			title: 'updated title',
-	// 			cardElements: [
-	// 				{
-	// 					id: richTextCardElement.id,
-	// 					content: {
-	// 						type: 'richText',
-	// 						value: 'rich updated',
-	// 						inputFormat: 'richtext_ck5',
-	// 					},
-	// 				},
-	// 				{
-	// 					content: {
-	// 						type: 'richText',
-	// 						value: 'rich added',
-	// 						inputFormat: 'richtext_ck5',
-	// 					},
-	// 				},
-	// 			],
-	// 			visibleAtDate: inTwoDays,
-	// 			dueDate: inThreeDays,
-	// 			courseId: course.id,
-	// 		};
-	// 		const response = await request(app.getHttpServer())
-	// 			.patch(`/cards/task/${taskCard.id}`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(taskCardUpdateParams)
-	// 			.expect(200);
+			await em.persistAndFlush([user, taskCard]);
+			em.clear();
 
-	// 		const responseTaskCard = response.body as TaskCardResponse;
+			currentUser = mapUserToCurrentUser(user);
 
-	// 		expect(responseTaskCard.id).toEqual(taskCard.id);
-	// 		expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
-	// 		expect(responseTaskCard.cardElements?.length).toEqual(2);
-	// 		expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
-	// 		expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
-	// 	});
-
-	// 	describe('Sanitize richtext', () => {
-
-	// 		});
-
-	// 		it('should sanitize richtext on update, with given format', async () => {
-	// 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
-	// 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-	// 			const task = taskFactory.build({ creator: user });
-	// 			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
-	// 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
-
-	// 			await em.persistAndFlush([user, task, taskCard, course]);
-	// 			em.clear();
-
-	// 			currentUser = mapUserToCurrentUser(user);
-
-	// 			const text = '<iframe>rich text 1</iframe> some more text';
-	// 			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
-
-	// 			const taskCardUpdateParams = {
-	// 				title: 'test title updated',
-	// 				courseId: course.id,
-	// 				cardElements: [
-	// 					{
-	// 						content: {
-	// 							type: 'richText',
-	// 							value: text,
-	// 							inputFormat: InputFormat.RICH_TEXT_CK5,
-	// 						},
-	// 					},
-	// 				],
-	// 				dueDate: inTwoDays,
-	// 			};
-
-	// 			const response = await request(app.getHttpServer())
-	// 				.patch(`/cards/task/${taskCard.id}`)
-	// 				.set('Accept', 'application/json')
-	// 				.send(taskCardUpdateParams)
-	// 				.expect(200);
-
-	// 			const responseTaskCard = response.body as TaskCardResponse;
-	// 			const richTextElement = responseTaskCard.cardElements?.filter(
-	// 				(element) => element.cardElementType === CardElementType.RichText
-	// 			);
-	// 			const expectedRichTextElement = richTextElement ? richTextElement[0].content.value : '';
-	// 			expect(expectedRichTextElement).toEqual(sanitizedText);
-	// 		});
-	// 	});
-
-	// 	describe('Validate dueDate', () => {
-
-	// 	});
-	// });
-	// describe('When title is provided', () => {
-	// 	it('should create a task card with title', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-	// 		const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
-
-	// 		await em.persistAndFlush([user, course]);
-	// 		em.clear();
-
-	// 		currentUser = mapUserToCurrentUser(user);
-
-	// 		const taskCardParams: TaskCardParams = {
-	// 			title: 'test title',
-	// 			courseId: course.id,
-	// 			dueDate: inTwoDays,
-	// 		};
-
-	// 		const response = await request(app.getHttpServer())
-	// 			.post(`/cards/task/`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(taskCardParams)
-	// 			.expect(201);
-
-	// 		const responseTaskCard = response.body as TaskCardResponse;
-
-	// 		expect(responseTaskCard.title).toEqual(taskCardParams.title);
-	// 	});
-
-	// 	it('should throw an error if title is not a string', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-
-	// 		await em.persistAndFlush([user]);
-	// 		em.clear();
-
-	// 		currentUser = mapUserToCurrentUser(user);
-
-	// 		const taskCardParams = {
-	// 			title: 1234,
-	// 		};
-
-	// 		await request(app.getHttpServer())
-	// 			.post(`/cards/task/`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(taskCardParams)
-	// 			.expect(501);
-	// 	});
-	// });
-	// describe('When title is not provided', () => {
-	// 	it('should throw an Error when create', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-
-	// 		await em.persistAndFlush([user]);
-	// 		em.clear();
-
-	// 		currentUser = mapUserToCurrentUser(user);
-
-	// 		const taskCardParams = {};
-
-	// 		await request(app.getHttpServer())
-	// 			.post(`/cards/task/`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(taskCardParams)
-	// 			.expect(400);
-	// 	});
-	// });
+			await request(app.getHttpServer())
+				.delete(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.expect(500);
+		});
+	});
 });
