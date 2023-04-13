@@ -15,6 +15,7 @@ import { Readable } from 'node:stream';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecord } from '../../entity';
+import { ErrorType } from '../../error';
 
 class API {
 	app: INestApplication;
@@ -78,7 +79,8 @@ class API {
 const createRndInt = (max) => Math.floor(Math.random() * max);
 
 const createFileResponse = (contentRange?: string) => {
-	const buffer = Buffer.from('text.txt', 'base64');
+	const text = 'testText';
+	const buffer = Buffer.from(text);
 	const readable = new Readable();
 	readable._read = () => {};
 	readable.push(buffer);
@@ -87,7 +89,7 @@ const createFileResponse = (contentRange?: string) => {
 	const fileResponse = {
 		data: readable,
 		contentType: 'text/plain',
-		contentLength: 5,
+		contentLength: text.length,
 		contentRange,
 		etag: 'testTag',
 	};
