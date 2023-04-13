@@ -98,9 +98,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
-	// TODO: this value should be optional has be null in case,
-	// because we want to option to bypass the users if missing and filter by course
 	users = new Collection<User>(this);
+
+	ignoreUsers = true;
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })
@@ -120,7 +120,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.school = props.school;
 		this.lesson = props.lesson;
 		this.submissions.set(props.submissions || []);
-		if (props.users) this.users.set(props.users);
+		// if (props.users) this.users?.set(props.users); // = new Collection<User>(props.users);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 		this.teamSubmissions = props.teamSubmissions || false;
@@ -146,7 +146,9 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		return finishedIds;
 	}
 
-	public getUsersList(): UsersList[] {
+	public getUsersList(): UsersList[] | undefined {
+		if (!this.users) return undefined;
+
 		const users = this.users.getItems();
 		if (users.length) {
 			const usersList: UsersList[] = users.map((user) => {
@@ -354,6 +356,15 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 
 	public unpublish(): void {
 		this.private = true;
+	}
+
+	public setAssignedUsers(users?: User[]): void {
+		if (users) {
+			this.users.set(users);
+		} else {
+			this.users.removeAll();
+			this.ignoreUsers = true;
+		}
 	}
 }
 

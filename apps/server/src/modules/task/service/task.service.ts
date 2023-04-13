@@ -155,14 +155,16 @@ export class TaskService {
 					throw new ForbiddenException('Users do not belong to course');
 				}
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
-				task.users.set(users);
+				task.setAssignedUsers(users);
+			} else if (task.users && params.usersIds === undefined) {
+				task.setAssignedUsers(undefined);
 			} else if (remove) {
-				task.users.removeAll();
+				task.setAssignedUsers(undefined);
 			}
 		} else if (remove) {
 			task.course = undefined;
 			task.lesson = undefined;
-			task.users.removeAll();
+			task.setAssignedUsers(undefined);
 		}
 
 		if (params.lessonId) {
