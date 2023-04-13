@@ -171,7 +171,7 @@ describe('AuthorizationHelper', () => {
 	});
 
 	describe('hasAccessToEntity', () => {
-		describe('when entity prop is instance of Collection', () => {
+		describe('when only one prop is given and prop is instance of Collection', () => {
 			it('should return true if user is contained in prop', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user] });
@@ -191,7 +191,7 @@ describe('AuthorizationHelper', () => {
 			});
 		});
 
-		describe('when entity prop is instance of User', () => {
+		describe('when when only one prop is given and prop is instance of User', () => {
 			it('should return true if user is equal to user in prop', () => {
 				const user = userFactory.build();
 				const task = taskFactory.build({ creator: user });
@@ -212,7 +212,7 @@ describe('AuthorizationHelper', () => {
 			});
 		});
 
-		describe('when entity prop is instance of ObjectId', () => {
+		describe('when only one prop is given and prop is instance of ObjectId', () => {
 			it('should return true if userId is equal to id in prop', () => {
 				const user = userFactory.build();
 
@@ -226,6 +226,29 @@ describe('AuthorizationHelper', () => {
 				const user2 = userFactory.buildWithId();
 
 				const permissions = service.hasAccessToEntity(user, user2, ['id']);
+
+				expect(permissions).toEqual(false);
+			});
+		});
+
+		describe('when several props are given', () => {
+			it('should return true if the user is referenced in at least one prop', () => {
+				const user = userFactory.build();
+				const user2 = userFactory.build();
+				const task = taskFactory.build({ creator: user, users: [user2] });
+
+				const permissions = service.hasAccessToEntity(user, task, ['creator', 'users']);
+
+				expect(permissions).toEqual(true);
+			});
+
+			it('should return false if the user is referenced in none of the props', () => {
+				const user = userFactory.build();
+				const user2 = userFactory.build();
+				const user3 = userFactory.build();
+				const task = taskFactory.build({ creator: user, users: [user2] });
+
+				const permissions = service.hasAccessToEntity(user3, task, ['creator', 'users']);
 
 				expect(permissions).toEqual(false);
 			});
