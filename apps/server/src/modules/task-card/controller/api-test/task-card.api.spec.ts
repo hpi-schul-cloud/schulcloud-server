@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Permission } from '@shared/domain';
+import { sanitizeRichText } from '@shared/controller';
+
+import { CardElementType, InputFormat, Permission } from '@shared/domain';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -107,47 +109,48 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
 			expect(responseTaskCard.task.status.isDraft).toEqual(false);
 		});
-				it('should sanitize richtext on create with inputformat ck5', async () => {
-					const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-					const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
+		it('should sanitize richtext on create with inputformat ck5', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
-					await em.persistAndFlush([user, course]);
-					em.clear();
+			await em.persistAndFlush([user, course]);
+			em.clear();
 
-					currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(user);
 
-					const text = '<iframe>rich text 1</iframe> some more text';
+			const text = '<iframe>rich text 1</iframe> some more text';
 
-					const taskCardParams = {
-						title: 'test title',
-						courseId: course.id,
-						cardElements: [
-							{
-								content: {
-									type: 'richText',
-									value: text,
-									inputFormat: 'richtext_ck5',
-								},
-							},
-						],
-						dueDate: inTwoDays,
-					};
+			const taskCardParams = {
+				title: 'test title',
+				courseId: course.id,
+				cardElements: [
+					{
+						content: {
+							type: 'richText',
+							value: text,
+							inputFormat: 'richtext_ck5',
+						},
+					},
+				],
+				dueDate: inTwoDays,
+			};
 
-					const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-					const response = await request(app.getHttpServer())
-						.post(`/cards/task/`)
-						.set('Accept', 'application/json')
-						.send(taskCardParams)
-						.expect(201);
+			const response = await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(201);
 
-					const responseTaskCard = response.body as TaskCardResponse;
-					const richTextElement = responseTaskCard.cardElements?.filter(
-						(element) => element.cardElementType === CardElementType.RichText
-					);
-					if (richTextElement?.[0]?.content) {
-						expect(richTextElement[0].content.value).toEqual(sanitizedText);
-					}
+			const responseTaskCard = response.body as TaskCardResponse;
+			const richTextElement = responseTaskCard.cardElements?.filter(
+				(element) => element.cardElementType === CardElementType.RichText
+			);
+			if (richTextElement?.[0]?.content) {
+				expect(richTextElement[0].content.value).toEqual(sanitizedText);
+			}
+		});
 		it('should throw if feature is NOT enabled', async () => {
 			await cleanupCollections(em);
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
@@ -165,6 +168,103 @@ describe('Task-Card Controller (api)', () => {
 				dueDate: inThreeDays,
 			};
 			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
+		});
+		it('should throw if courseId is empty', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				cardElements: [],
+				courseId: '',
+			};
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should should throw if no course is matching', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				cardElements: [],
+				courseId: new ObjectId().toHexString(),
+			};
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should should throw if dueDate is empty', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
+
+			await em.persistAndFlush([user, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				cardElements: [],
+				courseId: course.id,
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should should throw if dueDate is earlier than today', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user] });
+
+			await em.persistAndFlush([user, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				cardElements: [],
+				courseId: course.id,
+				dueDate: new Date(Date.now() - 259200000),
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should throw an error if title is empty', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: '',
+			};
+
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
 		});
 	});
 
@@ -385,88 +485,8 @@ describe('Task-Card Controller (api)', () => {
 	// 		});
 	// 	});
 
-	// 	describe('Validate courseId', () => {
-	// 		it('should throw if courseId is empty', async () => {
-	// 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-	// 			await em.persistAndFlush([user]);
-	// 			em.clear();
-
-	// 			currentUser = mapUserToCurrentUser(user);
-
-	// 			const taskCardParams = {
-	// 				title: 'test title',
-	// 				cardElements: [],
-	// 				courseId: '',
-	// 			};
-	// 			await request(app.getHttpServer())
-	// 				.post(`/cards/task/`)
-	// 				.set('Accept', 'application/json')
-	// 				.send(taskCardParams)
-	// 				.expect(400);
-	// 		});
-	// 		it('should should throw if no course is matching', async () => {
-	// 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-	// 			await em.persistAndFlush([user]);
-	// 			em.clear();
-
-	// 			currentUser = mapUserToCurrentUser(user);
-
-	// 			const taskCardParams = {
-	// 				title: 'test title',
-	// 				cardElements: [],
-	// 				courseId: new ObjectId().toHexString(),
-	// 			};
-	// 			await request(app.getHttpServer())
-	// 				.post(`/cards/task/`)
-	// 				.set('Accept', 'application/json')
-	// 				.send(taskCardParams)
-	// 				.expect(400);
-	// 		});
-	// 	});
 	// 	describe('Validate dueDate', () => {
-	// 		it('should should throw if dueDate is empty', async () => {
-	// 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-	// 			const course = courseFactory.buildWithId({ teachers: [user] });
 
-	// 			await em.persistAndFlush([user, course]);
-	// 			em.clear();
-
-	// 			currentUser = mapUserToCurrentUser(user);
-
-	// 			const taskCardParams = {
-	// 				title: 'test title',
-	// 				cardElements: [],
-	// 				courseId: course.id,
-	// 			};
-
-	// 			await request(app.getHttpServer())
-	// 				.post(`/cards/task/`)
-	// 				.set('Accept', 'application/json')
-	// 				.send(taskCardParams)
-	// 				.expect(400);
-	// 		});
-	// 		it('should should throw if dueDate is earlier than today', async () => {
-	// 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-	// 			const course = courseFactory.buildWithId({ teachers: [user] });
-
-	// 			await em.persistAndFlush([user, course]);
-	// 			em.clear();
-
-	// 			currentUser = mapUserToCurrentUser(user);
-
-	// 			const taskCardParams = {
-	// 				title: 'test title',
-	// 				cardElements: [],
-	// 				courseId: course.id,
-	// 				dueDate: new Date(Date.now() - 259200000),
-	// 			};
-
-	// 			await request(app.getHttpServer())
-	// 				.post(`/cards/task/`)
-	// 				.set('Accept', 'application/json')
-	// 				.send(taskCardParams)
-	// 				.expect(400);
-	// 		});
 	// 	});
 	// });
 	// describe('When title is provided', () => {
@@ -495,24 +515,7 @@ describe('Task-Card Controller (api)', () => {
 
 	// 		expect(responseTaskCard.title).toEqual(taskCardParams.title);
 	// 	});
-	// 	it('should throw an error if title is empty', async () => {
-	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
-	// 		await em.persistAndFlush([user]);
-	// 		em.clear();
-
-	// 		currentUser = mapUserToCurrentUser(user);
-
-	// 		const taskCardParams = {
-	// 			title: '',
-	// 		};
-
-	// 		await request(app.getHttpServer())
-	// 			.post(`/cards/task/`)
-	// 			.set('Accept', 'application/json')
-	// 			.send(taskCardParams)
-	// 			.expect(400);
-	// 	});
 	// 	it('should throw an error if title is not a string', async () => {
 	// 		const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
