@@ -29,7 +29,7 @@ export class CardUc {
 		cardId: EntityId,
 		type: ContentElementType
 	): Promise<TextElement | FileElement> {
-		this.logger.debug({ action: 'createElement', userId, cardId });
+		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
 

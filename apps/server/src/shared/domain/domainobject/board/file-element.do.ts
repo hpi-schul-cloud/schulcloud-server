@@ -1,4 +1,3 @@
-import { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import type { AnyBoardDo } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
@@ -12,12 +11,12 @@ export class FileElement extends BoardComposite implements FileElementProps, Boa
 		this.description = props.description;
 	}
 
-	addChild(child: AnyBoardDo) {
-		throw new Error(`Cannot add children to FileElement. Object of type '${child.constructor.name}' given`);
+	isAllowedAsChild(): boolean {
+		return false;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildFileElementNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildFileElementNode(this, parent);
 	}
 }
 

@@ -91,15 +91,15 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 		this.registerNode(textElementNode);
 	}
 
-	buildFileElementNode(fileElement: FileElement, parentId?: string | undefined, position?: number | undefined): void {
-		const parent = this.getParent(parentId);
-		this.ensureBoardNodeType(parent, BoardNodeType.CARD);
+	buildFileElementNode(fileElement: FileElement, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.CARD);
 
 		const fileElementNode = new FileElementNode({
 			id: fileElement.id,
 			description: fileElement.description,
-			parent,
-			position,
+			parent: parentNode,
+			position: this.getChildPosition(fileElement, parent),
 		});
 		this.registerNode(fileElementNode);
 	}
