@@ -64,6 +64,7 @@ export class TaskService {
 		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
+			// TODO: Should be ForbiddenException
 			throw new UnauthorizedException();
 		}
 
