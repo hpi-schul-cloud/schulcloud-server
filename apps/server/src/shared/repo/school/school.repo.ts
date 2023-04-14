@@ -1,9 +1,10 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { Logger } from '@src/core/logger';
+import { InternalServerError } from 'express-openapi-validator/dist/framework/types';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
@@ -24,9 +25,12 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 	}
 
 	async findBySchoolNumber(officialSchoolNumber: string): Promise<SchoolDO | null> {
-		const school: School | null = await this._em.findOne(School, { officialSchoolNumber });
+		const [schools, count] = await this._em.findAndCount(School, { officialSchoolNumber });
+		if (count > 1) {
+			throw new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`);
+		}
 
-		const schoolDo: SchoolDO | null = school ? this.mapEntityToDO(school) : null;
+		const schoolDo: SchoolDO | null = schools[0] ? this.mapEntityToDO(schools[0]) : null;
 		return schoolDo;
 	}
 
