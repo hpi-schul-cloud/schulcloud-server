@@ -56,7 +56,7 @@ describe('FwuLearningContents Controller (api)', () => {
 		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
 		describe('when the file has a file-extension', () => {
 			const setup = () => {
-				const fileKey = '12345/example.txt';
+				const path = '12345/example.txt';
 				const text = 'testText';
 				const readable = Readable.from(text);
 
@@ -70,35 +70,35 @@ describe('FwuLearningContents Controller (api)', () => {
 
 				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
 
-				return { fileKey, fileResponse, text };
+				return { path, fileResponse, text };
 			};
 
 			it('should return 200 status', async () => {
-				const { fileKey } = setup();
+				const { path } = setup();
 
-				const response = await api.get(fileKey);
+				const response = await api.get(path);
 				expect(response.status).toEqual(200);
 			});
 
 			it('should return 206 status (bytesRange)', async () => {
-				const { fileKey } = setup();
+				const { path } = setup();
 
-				const response = await api.getBytesRange(fileKey, '12345');
+				const response = await api.getBytesRange(path, '12345');
 				expect(response.status).toEqual(206);
 			});
 
 			it('should return file content', async () => {
-				const { fileKey, text } = setup();
+				const { path, text } = setup();
 
-				const response = await api.get(fileKey);
+				const response = await api.get(path);
 
 				expect(response.text).toEqual(text);
 			});
 
 			it('should have the correct content-type', async () => {
-				const { fileKey, fileResponse } = setup();
+				const { path, fileResponse } = setup();
 
-				const response = await api.get(fileKey);
+				const response = await api.get(path);
 
 				expect(response.type).toEqual(fileResponse.contentType);
 			});
