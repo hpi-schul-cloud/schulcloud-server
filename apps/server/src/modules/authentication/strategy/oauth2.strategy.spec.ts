@@ -77,7 +77,7 @@ describe('Oauth2Strategy', () => {
 				const { systemId, user, account } = setup();
 
 				const result: ICurrentUser = await strategy.validate({
-					body: { error: 'error', redirectUri: 'redirectUri', systemId },
+					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 
 				expect(result).toEqual<ICurrentUser>({
@@ -87,21 +87,6 @@ describe('Oauth2Strategy', () => {
 					schoolId: user.schoolId,
 					accountId: account.id,
 				});
-			});
-		});
-
-		describe('when an error is provided', () => {
-			const setup = () => {
-				oauthService.authenticateUser.mockRejectedValue(new UnauthorizedException('error in body'));
-			};
-
-			it('should throw an UnauthorizedException', async () => {
-				setup();
-
-				const func = async () =>
-					strategy.validate({ body: { error: 'error', redirectUri: 'redirectUri', systemId: 'systemId' } });
-
-				await expect(func).rejects.toThrow(new UnauthorizedException('error in body'));
 			});
 		});
 
@@ -147,7 +132,7 @@ describe('Oauth2Strategy', () => {
 
 				const func = async () =>
 					strategy.validate({
-						body: { error: 'error', redirectUri: 'redirectUri', systemId: 'systemId' },
+						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
 					});
 
 				await expect(func).rejects.toThrow(new UnauthorizedException('no account found'));

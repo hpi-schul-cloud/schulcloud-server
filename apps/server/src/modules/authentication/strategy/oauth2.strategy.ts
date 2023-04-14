@@ -18,9 +18,9 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 	}
 
 	async validate(request: { body: Oauth2AuthorizationParams }): Promise<ICurrentUser> {
-		const { systemId, redirectUri, code, error } = request.body;
+		const { systemId, redirectUri, code } = request.body;
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code, error);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
 		const { user }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
 			systemId,
@@ -29,8 +29,6 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		);
 
 		if (!user || !user.id) {
-			// TODO: return schoolId when the user should automatically redirected in frontend
-			// for this we have to adjust the provisionUser which increases the complexity
 			throw new SchoolInMigrationError();
 		}
 
