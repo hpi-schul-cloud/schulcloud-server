@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo } from './types';
 
@@ -23,7 +23,7 @@ export abstract class BoardComposite {
 
 	addChild(child: AnyBoardDo, position?: number): void {
 		if (!this.isAllowedAsChild(child)) {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
 		if (position === undefined || position >= this.children.length) {
 			this.children.push(child);

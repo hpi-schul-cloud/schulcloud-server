@@ -86,13 +86,13 @@ describe(`content element delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, element } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.delete(element.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete element', async () => {
