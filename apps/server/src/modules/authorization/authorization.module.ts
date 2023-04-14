@@ -16,7 +16,7 @@ import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { FeathersAuthorizationService, FeathersAuthProvider, FeathersJwtProvider } from './feathers';
+import { FeathersAuthProvider, FeathersAuthorizationService } from './feathers';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 import { ALL_RULES } from './rules';
@@ -26,7 +26,6 @@ import { ALL_RULES } from './rules';
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
-		FeathersJwtProvider,
 		AuthorizationService,
 		...ALL_RULES,
 		ReferenceLoader,
@@ -42,6 +41,6 @@ import { ALL_RULES } from './rules';
 		RuleManager,
 		AuthorizationHelper,
 	],
-	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
+	exports: [FeathersAuthorizationService, AuthorizationService],
 })
 export class AuthorizationModule {}
