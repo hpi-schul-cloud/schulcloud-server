@@ -58,11 +58,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			const setup = () => {
 				const fileKey = '12345/example.txt';
 				const text = 'testText';
-				const buffer = Buffer.from(text);
-				const readable = new Readable();
-				readable._read = () => {};
-				readable.push(buffer);
-				readable.push(null);
+				const readable = Readable.from(text);
 
 				const fileResponse = {
 					data: readable,

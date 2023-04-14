@@ -80,11 +80,7 @@ const createRndInt = (max) => Math.floor(Math.random() * max);
 
 const createFileResponse = (contentRange?: string) => {
 	const text = 'testText';
-	const buffer = Buffer.from(text);
-	const readable = new Readable();
-	readable._read = () => {};
-	readable.push(buffer);
-	readable.push(null);
+	const readable = Readable.from(text);
 
 	const fileResponse = {
 		data: readable,
