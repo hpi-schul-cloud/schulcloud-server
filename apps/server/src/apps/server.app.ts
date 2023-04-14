@@ -15,7 +15,6 @@ import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
 import express from 'express';
 import { join } from 'path';
-
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 import { INestApplication, VersioningType } from '@nestjs/common';

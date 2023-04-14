@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { Logger } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@nestjs/common';
 import { FeathersProxyMiddleware } from './feathers-proxy.middleware';
 
 describe('FeathersProxyMiddleware', () => {
