@@ -445,7 +445,7 @@ describe('OAuth SSO Controller (API)', () => {
 				const sourceSchool: School = schoolFactory.buildWithId(
 					{
 						systems: [sourceSystem],
-						officialSchoolNumber: '11111',
+						officialSchoolNumber: '11110',
 						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
 					},
