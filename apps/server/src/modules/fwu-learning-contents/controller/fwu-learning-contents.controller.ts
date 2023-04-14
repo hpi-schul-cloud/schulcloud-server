@@ -1,29 +1,25 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	Controller,
 	Get,
-	Req,
-	Res,
+	HttpStatus,
 	InternalServerErrorException,
 	Param,
+	Req,
+	Res,
 	StreamableFile,
-	HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
-import { ConfigService } from '@nestjs/config';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
+import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 
 @ApiTags('fwu')
 @Authenticate('jwt')
 @Controller('fwu')
 export class FwuLearningContentsController {
-	constructor(
-		private readonly fwuLearningContentsUc: FwuLearningContentsUc,
-		private readonly configService: ConfigService
-	) {}
+	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get('*/:fwuLearningContent')
 	async get(
