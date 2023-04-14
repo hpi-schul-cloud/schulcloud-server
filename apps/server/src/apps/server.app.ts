@@ -57,14 +57,14 @@ async function bootstrapFeathers(nestApp: INestApplication): Promise<express.Exp
 async function bootstrap() {
 	sourceMapInstall();
 
-	const nestExpress = express();
+	const nestExpress: express.Express = express();
 	nestExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
+	const nestApp: INestApplication = await NestFactory.create(ServerModule, nestExpressAdapter);
 
 	// WinstonLogger
-	const logger = await nestApp.resolve(Logger);
+	const logger: Logger = await nestApp.resolve(Logger);
 	nestApp.useLogger(logger);
 
 	// Versioning
@@ -76,7 +76,7 @@ async function bootstrap() {
 
 	const feathersExpress: express.Express = await bootstrapFeathers(nestApp);
 
-	const feathersProxyMiddleware = new FeathersProxyMiddleware(feathersExpress);
+	const feathersProxyMiddleware: FeathersProxyMiddleware = new FeathersProxyMiddleware(feathersExpress);
 	nestApp.use(feathersProxyMiddleware.use.bind(feathersProxyMiddleware));
 
 	// set reference to legacy app as an express setting so we can
@@ -100,4 +100,5 @@ async function bootstrap() {
 	console.log(`### /         --> feathers    ###`);
 	console.log('#################################');
 }
+
 void bootstrap();
