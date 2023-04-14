@@ -17,6 +17,7 @@ import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
+import { ErrorUtils } from './utils/error.utils';
 
 @Injectable()
 export class AuthorizationService extends BasePermissionManager {
@@ -50,7 +51,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new ForbiddenException(ErrorUtils.createMessageForForbidden(user, context));
 		}
 	}
 

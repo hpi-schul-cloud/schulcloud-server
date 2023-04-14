@@ -14,6 +14,7 @@ import {
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { CrudOperation, LoggingUtils } from '../utils/logging.utils';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
@@ -52,7 +53,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(`news ${news.id} created by user ${userId}`);
+		this.logger.log(LoggingUtils.createMessageForCrudOperation(CrudOperation.CREATE, userId, news));
 
 		return news;
 	}
