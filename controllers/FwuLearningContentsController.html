@@ -133,8 +133,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/controller/fwu-learning-contents.controller.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/controller/fwu-learning-contents.controller.ts:25</a></div>
                 </td>
             </tr>
 
@@ -210,32 +210,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import {
 	Controller,
 	Get,
-	Req,
-	Res,
+	HttpStatus,
 	InternalServerErrorException,
 	Param,
+	Req,
+	Res,
 	StreamableFile,
-	HttpStatus,
 } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Authenticate } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { Request, Response } from &#x27;express&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { GetFwuLearningContentParams } from &#x27;./dto/fwu-learning-contents.params&#x27;;
 import { FwuLearningContentsUc } from &#x27;../uc/fwu-learning-contents.uc&#x27;;
+import { GetFwuLearningContentParams } from &#x27;./dto/fwu-learning-contents.params&#x27;;
 
 @ApiTags(&#x27;fwu&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;fwu&#x27;)
 export class FwuLearningContentsController {
-	constructor(
-		private readonly fwuLearningContentsUc: FwuLearningContentsUc,
-		private readonly configService: ConfigService
-	) {}
+	constructor(private readonly fwuLearningContentsUc: FwuLearningContentsUc) {}
 
 	@Get(&#x27;*/:fwuLearningContent&#x27;)
 	async get(

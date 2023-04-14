@@ -2570,30 +2570,7 @@ must use @ApiProperty</p>
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[
-	FwuLearningContentsUc,
-	{
-		provide: &#x27;S3_Client&#x27;,
-		scope: Scope.REQUEST,
-		useFactory: (configProvider: S3Config) &#x3D;&gt;
-			new S3Client({
-				region: configProvider.region,
-				credentials: {
-					accessKeyId: configProvider.accessKeyId,
-					secretAccessKey: configProvider.secretAccessKey,
-				},
-				endpoint: configProvider.endpoint,
-				forcePathStyle: true,
-				tls: true,
-			}),
-		inject: [&#x27;S3_Config&#x27;],
-	},
-	{
-		provide: &#x27;S3_Config&#x27;,
-		useValue: s3Config,
-	},
-	S3ClientAdapter,
-]</code>
+                        <i>Default value : </i><code>[FwuLearningContentsUc, S3ClientAdapter]</code>
                     </td>
                 </tr>
 

@@ -100,12 +100,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, config: <a href="../interfaces/S3Config.html" target="_self">S3Config</a>, client: S3Client, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
+<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/fwu-learning-contents/uc/fwu-learning-contents.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/fwu-learning-contents/uc/fwu-learning-contents.uc.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -127,30 +127,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>config</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/S3Config.html" target="_self" >S3Config</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>client</td>
-                                                  
-                                                        <td>
-                                                                    <code>S3Client</code>
                                                         </td>
                                                   
                                                     <td>
@@ -206,8 +182,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/uc/fwu-learning-contents.uc.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/uc/fwu-learning-contents.uc.ts:11</a></div>
                 </td>
             </tr>
 
@@ -273,20 +249,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Inject } from &#x27;@nestjs/common&#x27;;
-import { S3Client } from &#x27;@aws-sdk/client-s3&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { S3ClientAdapter } from &#x27;../../files-storage/client/s3-client.adapter&#x27;;
-import { S3Config } from &#x27;../interface/config&#x27;;
 
 @Injectable()
 export class FwuLearningContentsUc {
-	constructor(
-		private logger: Logger,
-		@Inject(&#x27;S3_Config&#x27;) readonly config: S3Config,
-		@Inject(&#x27;S3_Client&#x27;) readonly client: S3Client,
-		private readonly storageClient: S3ClientAdapter
-	) {
+	constructor(private logger: Logger, private readonly storageClient: S3ClientAdapter) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 

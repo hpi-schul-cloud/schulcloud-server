@@ -265,8 +265,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/fwu-learning-contents-test.module.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/fwu-learning-contents/fwu-learning-contents-test.module.ts:34</a></div>
                 </td>
             </tr>
 
@@ -319,23 +319,21 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module, Scope } from &#x27;@nestjs/common&#x27;;
-import { Account, User, Role, School, System, SchoolYear } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule } from &#x27;@nestjs/config&#x27;;
+import { Account, Role, School, SchoolYear, System, User } from &#x27;@shared/domain&#x27;;
 import { MongoMemoryDatabaseModule } from &#x27;@shared/infra/database&#x27;;
 import { MongoDatabaseModuleOptions } from &#x27;@shared/infra/database/mongo-memory-database/types&#x27;;
-import { HttpModule } from &#x27;@nestjs/axios&#x27;;
-import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
-import { S3Client } from &#x27;@aws-sdk/client-s3&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationModule } from &#x27;@src/modules/authentication/authentication.module&#x27;;
 import { AuthorizationModule } from &#x27;@src/modules/authorization&#x27;;
 import { S3ClientAdapter } from &#x27;../files-storage/client/s3-client.adapter&#x27;;
-import { s3Config, config } from &#x27;./fwu-learning-contents.config&#x27;;
 import { FwuLearningContentsController } from &#x27;./controller/fwu-learning-contents.controller&#x27;;
+import { config } from &#x27;./fwu-learning-contents.config&#x27;;
 import { FwuLearningContentsUc } from &#x27;./uc/fwu-learning-contents.uc&#x27;;
-import { S3Config } from &#x27;./interface/config&#x27;;
 
 const imports &#x3D; [
 	MongoMemoryDatabaseModule.forRoot({ entities: [User, Account, Role, School, System, SchoolYear] }),
@@ -347,30 +345,7 @@ const imports &#x3D; [
 	LoggerModule,
 ];
 const controllers &#x3D; [FwuLearningContentsController];
-const providers &#x3D; [
-	FwuLearningContentsUc,
-	{
-		provide: &#x27;S3_Client&#x27;,
-		scope: Scope.REQUEST,
-		useFactory: (configProvider: S3Config) &#x3D;&gt;
-			new S3Client({
-				region: configProvider.region,
-				credentials: {
-					accessKeyId: configProvider.accessKeyId,
-					secretAccessKey: configProvider.secretAccessKey,
-				},
-				endpoint: configProvider.endpoint,
-				forcePathStyle: true,
-				tls: true,
-			}),
-		inject: [&#x27;S3_Config&#x27;],
-	},
-	{
-		provide: &#x27;S3_Config&#x27;,
-		useValue: s3Config,
-	},
-	S3ClientAdapter,
-];
+const providers &#x3D; [FwuLearningContentsUc, S3ClientAdapter];
 @Module({
 	imports,
 	controllers,
