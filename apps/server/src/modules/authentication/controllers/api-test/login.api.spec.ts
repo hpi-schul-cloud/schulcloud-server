@@ -204,6 +204,8 @@ describe('Login Controller (api)', () => {
 				const params = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
+					schoolId: school.id,
+					systemId: system.id,
 				};
 				await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
 			});
