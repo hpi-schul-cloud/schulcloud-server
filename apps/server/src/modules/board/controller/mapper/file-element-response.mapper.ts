@@ -8,7 +8,7 @@ export class FileElementResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.FILE,
-			content: new FileElementContent({ description: element.description }),
+			content: new FileElementContent({ caption: element.caption }),
 		});
 
 		return result;

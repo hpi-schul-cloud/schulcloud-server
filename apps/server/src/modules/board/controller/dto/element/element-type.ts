@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '@src/modules/board/types/content-elements.enum';
 import { IsEnum } from 'class-validator';
+import { ContentElementType } from '../../../types';
 
-export class ElementsTypeParams {
+export class ElementTypeParams {
 	@IsEnum(ContentElementType)
 	@ApiProperty({
 		description: 'The type of element',

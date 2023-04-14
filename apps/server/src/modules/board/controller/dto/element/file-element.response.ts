@@ -3,12 +3,12 @@ import { ContentElementType } from '../../../types/content-elements.enum';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {
-	constructor({ description }: FileElementContent) {
-		this.description = description;
+	constructor({ caption }: FileElementContent) {
+		this.caption = caption;
 	}
 
 	@ApiProperty()
-	description: string;
+	caption: string;
 }
 
 export class FileElementResponse {

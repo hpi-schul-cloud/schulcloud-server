@@ -8,7 +8,7 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
-	ElementsTypeParams,
+	ElementTypeParams,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	TextElementResponse,
@@ -73,12 +73,13 @@ export class CardController {
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
-		@Body() bodyParams: ElementsTypeParams,
+		@Body() bodyParams: ElementTypeParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const response = ElementsResponseMapper.mapToResponse(element);
 
-		return ElementsResponseMapper.mapToResponse(element);
+		return response;
 	}
 }

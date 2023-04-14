@@ -97,7 +97,7 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 
 		const fileElementNode = new FileElementNode({
 			id: fileElement.id,
-			description: fileElement.description,
+			caption: fileElement.caption,
 			parent: parentNode,
 			position: this.getChildPosition(fileElement, parent),
 		});
