@@ -4,8 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { RequestBody } from '@src/modules/authentication/strategy/ldap.strategy';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { LdapAuthorizationParams } from '../../../authentication/controllers/dto';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
@@ -141,7 +141,7 @@ describe('Login Controller (e2e)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', async () => {
-				const params: RequestBody = {
+				const params: LdapAuthorizationParams = {
 					username: ldapAccountUserName,
 					password: defaultPassword,
 					schoolId: school.id,

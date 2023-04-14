@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { SSOErrorCode } from '@src/modules/oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
@@ -71,7 +70,6 @@ describe('Login Controller (api)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
-	let kcAdminService: KeycloakAdministrationService;
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -84,7 +82,6 @@ describe('Login Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		kcAdminService = app.get(KeycloakAdministrationService);
 	});
 
 	afterAll(async () => {
@@ -201,7 +198,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails', () => {
 			it('should return error response', async () => {
-				const params = {
+				const params: LdapAuthorizationParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
 					schoolId: school.id,
