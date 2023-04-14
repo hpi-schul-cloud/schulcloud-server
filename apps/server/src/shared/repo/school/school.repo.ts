@@ -4,7 +4,6 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { Logger } from '@src/core/logger';
-import { InternalServerError } from 'express-openapi-validator/dist/framework/types';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
