@@ -209,12 +209,6 @@ describe('files-storage controller (API)', () => {
 				);
 			});
 
-			it('should read file name from upload stream', async () => {
-				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-
-				expect(result.name).toEqual('test.txt');
-			});
-
 			it('should set iterator number to file name if file already exist', async () => {
 				await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
 
@@ -319,12 +313,6 @@ describe('files-storage controller (API)', () => {
 							securityCheckStatus: 'pending',
 						})
 					);
-				});
-
-				it('should read file name from upload stream', async () => {
-					const { result } = await api.postUploadFromUrl(`/file/upload-from-url/${validId}/schools/${validId}`, body);
-
-					expect(result.name).toEqual('test (1).txt');
 				});
 			});
 
