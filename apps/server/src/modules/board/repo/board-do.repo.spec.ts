@@ -10,7 +10,9 @@ import {
 	cleanupCollections,
 	columnBoardFactory,
 	columnBoardNodeFactory,
+	columnFactory,
 	columnNodeFactory,
+	textElementFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoRepo } from './board-do.repo';
@@ -179,11 +181,12 @@ describe(BoardDoRepo.name, () => {
 		const setup = async () => {
 			const board = columnBoardFactory.build();
 			const cards = cardFactory.buildList(3);
+			const column = columnFactory.build({ children: cards });
 
-			const columnNode = columnNodeFactory.build();
+			const columnNode = columnNodeFactory.build({ id: column.id });
 			await em.persistAndFlush(columnNode);
 
-			return { board, columnId: columnNode.id, card1: cards[0], card2: cards[1], card3: cards[2] };
+			return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
 		};
 
 		it('should save the object', async () => {
@@ -198,9 +201,9 @@ describe(BoardDoRepo.name, () => {
 		});
 
 		it('should persist order to positions', async () => {
-			const { columnId, card1, card2, card3 } = await setup();
+			const { column, card1, card2, card3 } = await setup();
 
-			await repo.save([card1, card2, card3], columnId);
+			await repo.save([card1, card2, card3], column);
 			em.clear();
 
 			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
@@ -209,26 +212,36 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('deleteById', () => {
+	describe('delete', () => {
 		describe('when deleting a domainObject and its descendants', () => {
 			const setup = async () => {
-				const cardNode = cardNodeFactory.buildWithId();
-				const textElementNodes = textElementNodeFactory.buildListWithId(3, { parent: cardNode });
-				const independentTextElementNode = textElementNodeFactory.buildWithId();
-				await em.persistAndFlush([cardNode, ...textElementNodes, independentTextElementNode]);
-
-				const card = await repo.findById(cardNode.id);
-
-				return { card, cardNode, textElementNodes, independentTextElementNode };
-			};
-
-			it('should delete an element', async () => {
-				const { textElementNodes } = await setup();
-
-				await repo.deleteById(textElementNodes[0].id);
+				const elements = textElementFactory.buildList(3);
+				const card = cardFactory.build({ children: elements });
+				await repo.save(card);
+				await repo.save(elements, card);
 				em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, textElementNodes[0].id)).rejects.toThrow();
+				return { card, elements };
+			};
+
+			it('should delete a domain object', async () => {
+				const { elements } = await setup();
+
+				await repo.delete(elements[0]);
+				em.clear();
+
+				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+			});
+
+			it('should delete all descendants', async () => {
+				const { card, elements } = await setup();
+
+				await repo.delete(card);
+				em.clear();
+
+				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
 			});
 		});
 	});

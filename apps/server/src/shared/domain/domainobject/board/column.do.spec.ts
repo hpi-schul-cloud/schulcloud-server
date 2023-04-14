@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, columnBoardFactory, columnBoardNodeFactory, columnFactory } from '@shared/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
 import { Column } from './column.do';
 import { BoardNodeBuilder } from './types';
 
@@ -8,32 +8,32 @@ describe(Column.name, () => {
 		const setup = () => {
 			const column = columnFactory.build();
 			const card = cardFactory.build();
-			const boardNode = columnBoardNodeFactory.buildWithId();
+			const board = columnBoardFactory.build();
 			const builder = createMock<BoardNodeBuilder>();
 
-			return { column, card, builder, parentId: boardNode.id };
+			return { column, card, builder, board };
 		};
 
 		it('should call the specific builder method', () => {
-			const { column, builder, parentId } = setup();
+			const { column, builder, board } = setup();
 			jest.spyOn(builder, 'buildColumnNode');
 
-			column.useBoardNodeBuilder(builder, parentId);
+			column.useBoardNodeBuilder(builder, board);
 
-			expect(builder.buildColumnNode).toHaveBeenCalledWith(column, parentId, undefined);
+			expect(builder.buildColumnNode).toHaveBeenCalledWith(column, board);
 		});
 	});
 
 	describe('addChild', () => {
+		const setup = () => {
+			const children = cardFactory.buildListWithId(3);
+			const column = columnFactory.build({ children });
+			const card = cardFactory.build();
+
+			return { column, card };
+		};
+
 		describe('when adding a child', () => {
-			const setup = () => {
-				const children = cardFactory.buildListWithId(3);
-				const column = columnFactory.build({ children });
-				const card = cardFactory.build();
-
-				return { column, card };
-			};
-
 			it('should throw error on unsupported child type', () => {
 				const { column } = setup();
 				const board = columnBoardFactory.build();
@@ -55,6 +55,22 @@ describe(Column.name, () => {
 
 				expect(column.children[1]).toEqual(card);
 			});
+		});
+
+		it('should be able to add children', () => {
+			const { column, card } = setup();
+
+			column.addChild(card);
+
+			expect(column.children[column.children.length - 1]).toEqual(card);
+		});
+
+		it('should add child to correct position', () => {
+			const { column, card } = setup();
+
+			column.addChild(card, 1);
+
+			expect(column.children[1]).toEqual(card);
 		});
 	});
 });

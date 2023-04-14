@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Column } from '@shared/domain';
-import { boardFactory, setupEntities } from '@shared/testing';
+import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -75,7 +75,7 @@ describe(ColumnService.name, () => {
 			};
 
 			it('should save a list of columns using the repo', async () => {
-				const { board, boardId } = setup();
+				const { board } = setup();
 
 				await service.create(board);
 
@@ -89,7 +89,7 @@ describe(ColumnService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					boardId
+					board
 				);
 			});
 		});
@@ -97,26 +97,50 @@ describe(ColumnService.name, () => {
 
 	describe('delete', () => {
 		describe('when deleting a column', () => {
-			it('should call the the board-do-repo', async () => {
-				const board = columnBoardFactory.build();
+			it('should call the service', async () => {
 				const column = columnFactory.build();
 
-				await service.delete(board, column.id);
+				await service.delete(column);
 
-				expect(boardDoService.deleteChildWithDescendants).toHaveBeenCalledWith(board, column.id);
+				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(column);
 			});
 		});
 	});
 
 	describe('move', () => {
 		describe('when moving a column', () => {
-			it('should call do service', async () => {
-				const board = boardFactory.build();
+			it('should call the service', async () => {
+				const board = columnBoardFactory.build();
 				const column = columnFactory.build();
 
-				await service.move(column.id, board.id, 3);
+				await service.move(column, board, 3);
 
-				expect(boardDoService.moveBoardDo).toHaveBeenCalledWith(column.id, board.id, 3);
+				expect(boardDoService.move).toHaveBeenCalledWith(column, board, 3);
+			});
+		});
+	});
+
+	describe('updateTitle', () => {
+		describe('when updating the title', () => {
+			it('should call the service', async () => {
+				const column = columnFactory.build();
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
+
+				const newTitle = 'new title';
+
+				await service.updateTitle(column, newTitle);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: newTitle,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+					columnBoard
+				);
 			});
 		});
 	});

@@ -33,16 +33,22 @@ export class CardService {
 
 		parent.addChild(card);
 
-		await this.boardDoRepo.save(parent.children, parent.id);
+		await this.boardDoRepo.save(parent.children, parent);
 
 		return card;
 	}
 
-	async delete(parent: Column, cardId: EntityId): Promise<void> {
-		await this.boardDoService.deleteChildWithDescendants(parent, cardId);
+	async delete(card: Card): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(card);
 	}
 
-	async move(cardId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
-		await this.boardDoService.moveBoardDo(cardId, targetColumnId, toIndex);
+	async move(card: Card, targetColumn: Column, targetPosition?: number): Promise<void> {
+		await this.boardDoService.move(card, targetColumn, targetPosition);
+	}
+
+	async updateTitle(card: Card, title: string): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(card.id);
+		card.title = title;
+		await this.boardDoRepo.save(card, parent);
 	}
 }

@@ -1,11 +1,12 @@
 /* istanbul ignore file */
 // application imports
-import { MikroORM } from '@mikro-orm/core';
 /* eslint-disable no-console */
+import { MikroORM } from '@mikro-orm/core';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
+import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -13,7 +14,6 @@ import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/co
 import { RocketChatService } from '@src/modules/rocketchat';
 import { ServerModule } from '@src/modules/server';
 import express from 'express';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { join } from 'path';
 
 // register source-map-support for debugging
@@ -65,7 +65,8 @@ async function bootstrap() {
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
 	// WinstonLogger
-	nestApp.useLogger(nestApp.get(WINSTON_MODULE_NEST_PROVIDER));
+	const logger = await nestApp.resolve(Logger);
+	nestApp.useLogger(logger);
 
 	// Versioning
 	nestApp.enableVersioning({ prefix: 'v', defaultVersion: '3', type: VersioningType.URI }).setGlobalPrefix('/api/');
@@ -91,13 +92,13 @@ async function bootstrap() {
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);
-	console.log(`### Port: ${port}                ###`);
+	console.log(`### Port: ${port}             ###`);
 	console.log(`### Mounts                    ###`);
-	console.log(`### /api/v1 --> feathers      ###`);
-	console.log(`### /api/vX --> nest          ###`);
-	console.log(`### /api    --> feathers      ###`);
-	console.log(`### /       --> feathers      ###`);
+	console.log(`### /api/v1   --> feathers    ###`);
+	console.log(`### /api/v2   --> feathers    ###`);
+	console.log(`### /api/v3-9 --> nest        ###`);
+	console.log(`### /api      --> feathers    ###`);
+	console.log(`### /         --> feathers    ###`);
 	console.log('#################################');
 }
-
 void bootstrap();

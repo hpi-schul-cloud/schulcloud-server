@@ -52,19 +52,16 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
-	async save(domainObject: AnyBoardDo | AnyBoardDo[], parentId?: EntityId) {
-		const getParent = async (id?: EntityId): Promise<BoardNode | undefined> =>
-			id ? this.boardNodeRepo.findById(BoardNode, id) : undefined;
-
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const domainObjects = Utils.asArray(domainObject);
-		const parentNode = await getParent(parentId);
+		const parentNode = parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
 		const builder = new BoardNodeBuilderImpl(parentNode);
-		const boardNodes = builder.buildBoardNodes(domainObjects, parentNode?.id);
+		const boardNodes = builder.buildBoardNodes(domainObjects, parent);
 		await this.boardNodeRepo.save(boardNodes);
 	}
 
-	async deleteById(id: EntityId): Promise<void> {
-		const boardNode = await this.boardNodeRepo.findById(BoardNode, id);
+	async delete(domainObject: AnyBoardDo): Promise<void> {
+		const boardNode = await this.boardNodeRepo.findById(BoardNode, domainObject.id);
 		await this.boardNodeRepo.deleteWithDescendants(boardNode);
 	}
 }

@@ -17,7 +17,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/boards';
+const baseRouteName = '/columns';
 
 class API {
 	app: INestApplication;
@@ -26,11 +26,11 @@ class API {
 		this.app = app;
 	}
 
-	async move(boardId: string, columnId: string, toIndex: number) {
+	async move(columnId: string, toBoardId: string, toPosition: number) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${boardId}/columns/${columnId}/position`)
+			.put(`${baseRouteName}/${columnId}/position`)
 			.set('Accept', 'application/json')
-			.send({ toIndex });
+			.send({ toBoardId, toPosition });
 
 		return {
 			error: response.body as ApiValidationError,
@@ -74,7 +74,9 @@ describe(`column move (api)`, () => {
 		const user = userFactory.build();
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNodes = columnNodeFactory.buildListWithId(7, { parent: columnBoardNode });
+		const columnNodes = new Array(10)
+			.fill(1)
+			.map((o, i) => columnNodeFactory.buildWithId({ parent: columnBoardNode, position: i }));
 		const columnToMove = columnNodes[2];
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnToMove });
 
@@ -89,7 +91,7 @@ describe(`column move (api)`, () => {
 			const { user, columnToMove, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.move(columnBoardNode.id, columnToMove.id, 5);
+			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
 
 			expect(response.status).toEqual(200);
 		});
@@ -98,7 +100,7 @@ describe(`column move (api)`, () => {
 			const { user, columnToMove, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.move(columnBoardNode.id, columnToMove.id, 5);
+			await api.move(columnToMove.id, columnBoardNode.id, 5);
 			const result = await em.findOneOrFail(ColumnNode, columnToMove.id);
 
 			expect(result.position).toEqual(5);

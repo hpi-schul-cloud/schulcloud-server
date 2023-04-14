@@ -8,6 +8,11 @@ import { BoardDoService } from './board-do.service';
 export class ContentElementService {
 	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
+	async findById(elementId: EntityId): Promise<TextElement> {
+		const column = await this.boardDoRepo.findByClassAndId(TextElement, elementId);
+		return column;
+	}
+
 	async create(parent: Card): Promise<TextElement> {
 		const element = new TextElement({
 			id: new ObjectId().toHexString(),
@@ -18,16 +23,16 @@ export class ContentElementService {
 
 		parent.addChild(element);
 
-		await this.boardDoRepo.save(parent.children, parent.id);
+		await this.boardDoRepo.save(parent.children, parent);
 
 		return element;
 	}
 
-	async delete(parent: Card, elementId: EntityId): Promise<void> {
-		await this.boardDoService.deleteChildWithDescendants(parent, elementId);
+	async delete(element: TextElement): Promise<void> {
+		await this.boardDoService.deleteWithDescendants(element);
 	}
 
-	async move(elementId: EntityId, targetColumnId: EntityId, toIndex: number): Promise<void> {
-		await this.boardDoService.moveBoardDo(elementId, targetColumnId, toIndex);
+	async move(element: TextElement, targetCard: Card, targetPosition: number): Promise<void> {
+		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 }
