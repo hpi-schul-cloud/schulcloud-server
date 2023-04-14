@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseDOProps } from '@shared/domain';
-import { FileRecord, IFileRecordParams } from '../domain';
+import { FileRecord, fileRecordFactory, FileRecordParams } from '../domain';
 import { FileRecordEntity } from './filerecord.entity';
 
 // TODO: change naming Entity to Datarecord, or without entity
@@ -8,12 +8,12 @@ import { FileRecordEntity } from './filerecord.entity';
 // TODO: include factory methods..
 export class FileRecordDOMapper {
 	static entityToDO(fileRecordEntity: FileRecordEntity): FileRecord {
-		const props: IFileRecordParams & BaseDOProps = {
+		const props: FileRecordParams & BaseDOProps = {
 			id: fileRecordEntity.id,
 			size: fileRecordEntity.size,
 			name: fileRecordEntity.name,
 			mimeType: fileRecordEntity.mimeType,
-			parentType: fileRecordEntity.parentType,
+			parentType: FileRecordEntity.parentType,
 			parentId: fileRecordEntity.parentId,
 			schoolId: fileRecordEntity.schoolId,
 			creatorId: fileRecordEntity.creatorId,
@@ -21,7 +21,7 @@ export class FileRecordDOMapper {
 			deletedSince: fileRecordEntity.deletedSince,
 		};
 
-		const fileRecordDO = new FileRecord(props);
+		const fileRecordDO = fileRecordFactory.build(props);
 
 		return fileRecordDO;
 	}
@@ -72,13 +72,13 @@ export class FileRecordDOMapper {
 		}
 	}
 
-	static createNewEntities(props: IFileRecordParams[]): FileRecordEntity[] {
+	static createNewEntities(props: FileRecordParams[]): FileRecordEntity[] {
 		const entities = props.map((p) => FileRecordDOMapper.createNewEntity(p));
 
 		return entities;
 	}
 
-	static createNewEntity(props: IFileRecordParams): FileRecordEntity {
+	static createNewEntity(props: FileRecordParams): FileRecordEntity {
 		const entity = new FileRecordEntity(props);
 
 		return entity;

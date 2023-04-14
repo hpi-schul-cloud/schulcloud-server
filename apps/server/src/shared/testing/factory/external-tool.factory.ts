@@ -13,9 +13,9 @@ import {
 	Oauth2ToolConfig,
 	ToolConfigType,
 } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-export class ExternalToolFactory extends BaseFactory<ExternalTool, IExternalToolProperties> {
+export class ExternalToolFactory extends BaseEntityTestFactory<ExternalTool, IExternalToolProperties> {
 	withName(name: string): this {
 		const params: DeepPartial<IExternalToolProperties> = {
 			name,

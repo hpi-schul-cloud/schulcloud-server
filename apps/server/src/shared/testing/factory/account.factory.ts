@@ -2,9 +2,9 @@ import { Account, EntityId, IAccountProperties } from '@shared/domain';
 
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-class AccountFactory extends BaseFactory<Account, IAccountProperties> {
+class AccountFactory extends BaseEntityTestFactory<Account, IAccountProperties> {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial<IAccountProperties> = { systemId: id };
 		return this.params(params);

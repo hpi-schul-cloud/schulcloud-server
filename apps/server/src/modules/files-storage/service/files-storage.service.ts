@@ -30,7 +30,7 @@ import {
 } from '../helper';
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
-import { FileRecord, FileRecordPropertiesFactory } from '../domain';
+import { FileRecord, fileRecordFactory } from '../domain';
 
 // TODO: Ticket for rename EntityId to more generic Name
 
@@ -55,9 +55,10 @@ export interface FilesStorageRepo {
 
 	delete(FileRecord: FileRecord[]): Promise<void>;
 
-	create(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
+	// TODO: hint -> Not needed anymore
+	// create(FileRecord: FileRecordParams[]): Promise<FileRecord[]>;
 
-	update(FileRecords: FileRecord[]): Promise<FileRecord[]>;
+	persist(FileRecords: FileRecord[]): Promise<FileRecord[]>;
 }
 
 // TODO: FileRecordParams should be define in domain layer
@@ -118,8 +119,8 @@ export class FilesStorageService {
 	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const name = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-		const fileRecordParams = FileRecordPropertiesFactory.buildFromDtos(name, userId, params, fileDescription);
-		const [fileRecord] = await this.fileRecordRepo.create([fileRecordParams]);
+		const fileRecord = fileRecordFactory.buildFromDtos(name, userId, params, fileDescription);
+		await this.fileRecordRepo.persist([fileRecord]);
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 
 		return fileRecord;
@@ -138,7 +139,7 @@ export class FilesStorageService {
 
 		this.checkDuplicatedNames(fileRecords, data.fileName);
 		fileRecord.setName(data.fileName);
-		await this.fileRecordRepo.update([fileRecord]);
+		await this.fileRecordRepo.persist([fileRecord]);
 
 		return fileRecord;
 	}
@@ -149,7 +150,7 @@ export class FilesStorageService {
 		const scanResult = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
 		fileRecord.updateSecurityCheckStatus(scanResult);
 
-		await this.fileRecordRepo.update([fileRecord]);
+		await this.fileRecordRepo.persist([fileRecord]);
 	}
 
 	// download
@@ -202,7 +203,7 @@ export class FilesStorageService {
 		try {
 			await this.deleteFilesInFilesStorageClient(fileRecords);
 		} catch (error) {
-			await this.fileRecordRepo.update(fileRecords);
+			await this.fileRecordRepo.persist(fileRecords);
 			throw new InternalServerErrorException(error, `${FilesStorageService.name}:delete`);
 		}
 	}
@@ -211,7 +212,7 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'delete', fileRecords });
 
 		const markedFileRecords = markForDelete(fileRecords);
-		await this.fileRecordRepo.update(markedFileRecords);
+		await this.fileRecordRepo.persist(markedFileRecords);
 
 		await this.deleteWithRollbackByError(fileRecords);
 	}
@@ -238,7 +239,7 @@ export class FilesStorageService {
 			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
 			markForDelete(fileRecords);
-			await this.fileRecordRepo.update(fileRecords);
+			await this.fileRecordRepo.persist(fileRecords);
 			throw new InternalServerErrorException(err, `${FilesStorageService.name}:restore`);
 		}
 	}
@@ -259,7 +260,7 @@ export class FilesStorageService {
 		this.logger.debug({ action: 'restore', fileRecords });
 
 		const unmarkFileRecords = unmarkForDelete(fileRecords);
-		await this.fileRecordRepo.update(unmarkFileRecords);
+		await this.fileRecordRepo.persist(unmarkFileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
 	}
@@ -286,10 +287,10 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const fileRecordProps = sourceFile.copy(userId, targetParams);
-		const [fileRecord] = await this.fileRecordRepo.create([fileRecordProps]);
+		const fileRecordCopy = sourceFile.copy(userId, targetParams);
+		await this.fileRecordRepo.persist([fileRecordCopy]);
 
-		return fileRecord;
+		return fileRecordCopy;
 	}
 
 	private sendToAntiVirusService(sourceFile: FileRecord) {

@@ -1,7 +1,7 @@
 import { StorageProvider, IStorageProviderProperties } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-export const storageProviderFactory = BaseFactory.define<StorageProvider, IStorageProviderProperties>(
+export const storageProviderFactory = BaseEntityTestFactory.define<StorageProvider, IStorageProviderProperties>(
 	StorageProvider,
 	() => {
 		return {

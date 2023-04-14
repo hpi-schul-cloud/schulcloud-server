@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { BaseDO2, BaseDOProps, EntityId } from '@shared/domain';
 import { ErrorType } from '../error';
+import { FileRecordParentType } from '../interface';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -10,17 +11,8 @@ export enum ScanStatus {
 	ERROR = 'error',
 }
 
-export enum FileRecordParentType {
-	'User' = 'users',
-	'School' = 'schools',
-	'Course' = 'courses',
-	'Task' = 'tasks',
-	'Lesson' = 'lessons',
-	'Submission' = 'submissions',
-}
-
 // TODO: Naming of params is wrong look like it is related to dto params
-export interface IFileSecurityCheckParams {
+export interface FileSecurityCheckParams {
 	status: ScanStatus;
 	reason: string;
 	requestToken?: string;
@@ -28,7 +20,7 @@ export interface IFileSecurityCheckParams {
 }
 
 // We need to check how we work with keys from other collections, lile task.submission.coursegroup.
-export interface IFileRecordParams extends BaseDOProps {
+export interface FileRecordParams extends BaseDOProps {
 	id: EntityId;
 	size: number;
 	name: string;
@@ -36,12 +28,12 @@ export interface IFileRecordParams extends BaseDOProps {
 	parentType: FileRecordParentType;
 	parentId: EntityId;
 	schoolId: EntityId;
-	securityCheck: IFileSecurityCheckParams;
+	securityCheck: FileSecurityCheckParams;
 	creatorId: EntityId;
 	deletedSince?: Date;
 }
 
-interface IParentInfo {
+export interface IFileRecordParentInfo {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
@@ -52,7 +44,7 @@ export interface IUpdateSecurityCheckStatus {
 	reason: string;
 }
 
-export class FileRecord extends BaseDO2<IFileRecordParams> {
+export class FileRecord extends BaseDO2<FileRecordParams> {
 	public updateSecurityCheckStatus(scanStatus: IUpdateSecurityCheckStatus): void {
 		this.props.securityCheck.status = scanStatus.status;
 		this.props.securityCheck.reason = scanStatus.reason;
@@ -65,12 +57,12 @@ export class FileRecord extends BaseDO2<IFileRecordParams> {
 		return this.props.securityCheck.requestToken;
 	}
 
-	public copy(userId: EntityId, targetParentInfo: IParentInfo): IFileRecordParams {
+	public copy(userId: EntityId, targetParentInfo: IFileRecordParentInfo): FileRecord {
 		const { size, name, mimeType } = this.props;
 		const { parentType, parentId, schoolId } = targetParentInfo;
 		// TODO: wrong location for init, should be a constructor, builder, or factory
 		// updatedAt should not be required
-		const securityCheck: IFileSecurityCheckParams = this.isVerified()
+		const securityCheck: FileSecurityCheckParams = this.isVerified()
 			? this.props.securityCheck
 			: {
 					status: ScanStatus.PENDING,
@@ -79,6 +71,7 @@ export class FileRecord extends BaseDO2<IFileRecordParams> {
 					updatedAt: new Date(),
 			  };
 
+		// TODO: move to factory
 		const copyFileRecordParams = {
 			size,
 			name,
@@ -90,7 +83,11 @@ export class FileRecord extends BaseDO2<IFileRecordParams> {
 			securityCheck,
 		};
 
-		return copyFileRecordParams;
+		// TODO: check new FileRecord(copyFileRecordParams) vs fileRecordFactory.build(copyFileRecordParams)
+		// dependce on the location of the id generation
+		const copyFileRecord = new FileRecord(copyFileRecordParams);
+
+		return copyFileRecord;
 	}
 
 	public markForDelete(): void {
@@ -137,7 +134,7 @@ export class FileRecord extends BaseDO2<IFileRecordParams> {
 		return isVerified;
 	}
 
-	public getParentInfo(): IParentInfo {
+	public getParentInfo(): IFileRecordParentInfo {
 		const { parentId, parentType, schoolId } = this.props;
 
 		return { parentId, parentType, schoolId };

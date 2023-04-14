@@ -1,7 +1,9 @@
 import { IRoleProperties, Role, RoleName } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-export const roleFactory = BaseFactory.define<Role, IRoleProperties>(Role, ({ sequence }) => {
+class RoleFactory extends BaseEntityTestFactory<Role, IRoleProperties> {}
+
+export const roleFactory = RoleFactory.define(Role, ({ sequence }) => {
 	return {
 		name: `role #${sequence}` as unknown as RoleName,
 	};

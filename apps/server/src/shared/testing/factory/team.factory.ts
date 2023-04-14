@@ -1,9 +1,9 @@
 import { ITeamProperties, Role, Team, TeamUser } from '@shared/domain';
 import { DeepPartial } from 'fishery';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-class TeamFactory extends BaseFactory<Team, ITeamProperties> {
+class TeamFactory extends BaseEntityTestFactory<Team, ITeamProperties> {
 	withRoleAndUserId(role: Role, userId: string): this {
 		const params: DeepPartial<ITeamProperties> = {
 			teamUsers: [teamUserFactory.withRoleAndUserId(role, userId).buildWithId()],

@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-
 import { IImportUserProperties, IImportUserRoleName, ImportUser, MatchCreator, RoleName, User } from '@shared/domain';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { schoolFactory } from './school.factory';
 import { systemFactory } from './system.factory';
 
-class ImportUserFactory extends BaseFactory<ImportUser, IImportUserProperties> {
+class ImportUserFactory extends BaseEntityTestFactory<ImportUser, IImportUserProperties> {
 	matched(matchedBy: MatchCreator, user: User): this {
 		const params: DeepPartial<IImportUserProperties> = { matchedBy, user };
 		return this.params(params);

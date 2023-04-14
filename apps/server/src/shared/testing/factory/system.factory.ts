@@ -1,9 +1,9 @@
 import { ISystemProperties, LdapConfig, OauthConfig, OidcConfig, System } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-export class SystemFactory extends BaseFactory<System, ISystemProperties> {
+export class SystemFactory extends BaseEntityTestFactory<System, ISystemProperties> {
 	withOauthConfig(): this {
 		const params: DeepPartial<ISystemProperties> = {
 			oauthConfig: new OauthConfig({

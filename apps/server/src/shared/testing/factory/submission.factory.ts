@@ -1,11 +1,11 @@
 import { ISubmissionProperties, Submission } from '@shared/domain';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { schoolFactory } from './school.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 
-class SubmissionFactory extends BaseFactory<Submission, ISubmissionProperties> {
+class SubmissionFactory extends BaseEntityTestFactory<Submission, ISubmissionProperties> {
 	graded(): this {
 		const params: DeepPartial<ISubmissionProperties> = { graded: true };
 

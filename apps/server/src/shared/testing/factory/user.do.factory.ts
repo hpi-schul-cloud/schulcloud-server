@@ -1,9 +1,9 @@
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BuildOptions, DeepPartial } from 'fishery';
 import { ObjectId } from 'bson';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-class UserDoFactory extends BaseFactory<UserDO, UserDO> {
+class UserDoFactory extends BaseEntityTestFactory<UserDO, UserDO> {
 	buildWithId(params?: DeepPartial<UserDO>, id?: string, options: BuildOptions<UserDO, any> = {}): UserDO {
 		const entity: UserDO = super.buildWithId(params, id, options);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

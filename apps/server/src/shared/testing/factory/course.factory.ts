@@ -1,14 +1,12 @@
 import { DeepPartial } from 'fishery';
-
 import { Course, ICourseProperties } from '@shared/domain';
-
 import { schoolFactory } from './school.factory';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class CourseFactory extends BaseFactory<Course, ICourseProperties> {
+class CourseFactory extends BaseEntityTestFactory<Course, ICourseProperties> {
 	isFinished(): this {
 		const untilDate = new Date(Date.now() - oneDay);
 		const params: DeepPartial<ICourseProperties> = { untilDate };

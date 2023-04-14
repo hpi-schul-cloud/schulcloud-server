@@ -1,13 +1,13 @@
 import { ITaskProperties, Task } from '@shared/domain';
 import { User } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { schoolFactory } from './school.factory';
 import { userFactory } from './user.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 
-class TaskFactory extends BaseFactory<Task, ITaskProperties> {
+class TaskFactory extends BaseEntityTestFactory<Task, ITaskProperties> {
 	draft(): this {
 		const params: DeepPartial<ITaskProperties> = { private: true };
 

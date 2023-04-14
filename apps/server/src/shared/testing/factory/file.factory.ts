@@ -1,9 +1,9 @@
 import { File, IFileProperties } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { storageProviderFactory } from './storageprovider.factory';
 import { userFactory } from './user.factory';
 
-export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
+export const fileFactory = BaseEntityTestFactory.define<File, IFileProperties>(File, ({ sequence }) => {
 	return {
 		storageFileName: `file-${sequence}`,
 		bucket: 'test-bucket',
@@ -14,7 +14,7 @@ export const fileFactory = BaseFactory.define<File, IFileProperties>(File, ({ se
 	};
 });
 
-export const directoryFactory = BaseFactory.define<File, IFileProperties>(File, ({ sequence }) => {
+export const directoryFactory = BaseEntityTestFactory.define<File, IFileProperties>(File, ({ sequence }) => {
 	return {
 		isDirectory: true,
 		creator: userFactory.build(),

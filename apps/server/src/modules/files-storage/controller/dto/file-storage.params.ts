@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain';
 import { Allow, IsEnum, IsMongoId, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { FileRecordParentType } from '../../domain';
+import { FileRecordParentType } from '../../interface';
 
 export class FileRecordParams {
 	@ApiProperty()

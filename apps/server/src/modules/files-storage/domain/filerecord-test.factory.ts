@@ -1,39 +1,18 @@
+import { BaseDOProps } from '@shared/domain';
+import { BaseTestFactory } from '@shared/testing/factory/base-test.factory';
 import { ObjectId } from 'bson';
-import { v4 as uuid } from 'uuid';
-import {
+import { FileRecordParentType } from '../interface';
+import { FileRecord, FileRecordParams } from './filerecord.do';
+import { fileRecordFactory } from './filerecord.factory';
+
+export const fileRecordTestFactory = BaseTestFactory.define<FileRecord, FileRecordParams>(
 	FileRecord,
-	IFileRecordParams,
-	FileRecordParentType,
-	IFileSecurityCheckParams,
-	ScanStatus,
-} from './filerecord.do';
-// TODO: check bson vs uuid
-
-// TODO: rename file to ...TestFactory
-// TODO: check factory package, or add BaseTestFactory or Interface.
-// TODO: chain like .XXX().YYY().build() is needed
-export class FileRecordTestFactory {
-	public static buildSecurityCheckProps(
-		partialProps: Partial<IFileSecurityCheckParams> = {}
-	): IFileSecurityCheckParams {
-		const defaultProps: IFileSecurityCheckParams = {
-			status: ScanStatus.PENDING,
-			reason: 'not yet scanned',
-			requestToken: uuid(),
-			updatedAt: new Date(),
-		};
-
-		const props = Object.assign(defaultProps, partialProps);
-
-		return props;
-	}
-
-	public static build(partialProps: Partial<IFileRecordParams> = {}): FileRecord {
-		const securityCheck = FileRecordTestFactory.buildSecurityCheckProps();
+	({ sequence }) => {
+		const securityCheck = fileRecordFactory.buildSecurityCheckProperties();
 		const defaultProps = {
-			id: new ObjectId().toHexString(),
+			id: new ObjectId().toHexString(), // TODO: check on which place the id is generated
 			size: 1000,
-			name: 'file-record name',
+			name: `file-record name ${sequence}`,
 			mimeType: 'application/octet-stream',
 			securityCheck,
 			parentType: FileRecordParentType.Course,
@@ -42,16 +21,6 @@ export class FileRecordTestFactory {
 			schoolId: new ObjectId().toHexString(),
 		};
 
-		const props = Object.assign(defaultProps, partialProps);
-		const fileRecord = new FileRecord(props);
-
-		return fileRecord;
+		return defaultProps;
 	}
-
-	public static buildList(number = 1, partialProps: Partial<IFileRecordParams> = {}): FileRecord[] {
-		// TODO: check if Array(number).map work like expected
-		const fileRecords = Array(number).map(() => FileRecordTestFactory.build(partialProps));
-
-		return fileRecords;
-	}
-}
+);

@@ -5,9 +5,10 @@ import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { Logger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
-import { FileRecordParentType, FileRecordTestFactory } from '../domain';
+import { fileRecordTestFactory } from '../domain';
 import { FileDto } from '../dto';
 import { createPath, resolveFileNameDuplicates } from '../helper';
+import { FileRecordParentType } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
@@ -16,9 +17,9 @@ const buildFileRecordsWithParams = () => {
 	const schoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		FileRecordTestFactory.build({ parentId, schoolId, name: 'text.txt' }),
-		FileRecordTestFactory.build({ parentId, schoolId, name: 'text-two.txt' }),
-		FileRecordTestFactory.build({ parentId, schoolId, name: 'text-tree.txt' }),
+		fileRecordTestFactory.build({ parentId, schoolId, name: 'text.txt' }),
+		fileRecordTestFactory.build({ parentId, schoolId, name: 'text-two.txt' }),
+		fileRecordTestFactory.build({ parentId, schoolId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -209,7 +210,7 @@ describe('FilesStorageService upload methods', () => {
 
 			const newName = resolveFileNameDuplicates(name, fileRecords);
 
-			const fileRecord = FileRecordTestFactory.build({
+			const fileRecord = fileRecordTestFactory.build({
 				creatorId: userId,
 				name: newName,
 				size,

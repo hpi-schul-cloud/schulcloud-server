@@ -2,7 +2,8 @@ import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps, type EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
-import { FileRecordParentType, ScanStatus } from '../domain/filerecord.do';
+import { ScanStatus } from '../domain/filerecord.do';
+import { FileRecordParentType } from '../interface';
 
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;

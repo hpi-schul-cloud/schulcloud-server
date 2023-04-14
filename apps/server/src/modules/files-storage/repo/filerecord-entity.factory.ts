@@ -6,11 +6,11 @@ import {
 } from '@src/modules/files-storage/repo/filerecord.entity';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from '../../../shared/testing/factory/base.factory';
+import { BaseEntityTestFactory } from '../../../shared/testing/factory/base-entity-test.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 
-class FileRecordEntityFactory extends BaseFactory<FileRecordEntity, IFileRecordProperties> {
+class FileRecordEntityFactory extends BaseEntityTestFactory<FileRecordEntity, IFileRecordProperties> {
 	markedForDelete(): this {
 		const params: DeepPartial<IFileRecordProperties> = { deletedSince: yesterday };
 		return this.params(params);

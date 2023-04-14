@@ -1,7 +1,7 @@
 import { BaseRepo2, Counted, EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { Injectable } from '@nestjs/common';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
-import { FileRecord, IFileRecordParams } from '../domain';
+import { FileRecord } from '../domain';
 import type { FilesStorageRepo } from '../service';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
 import { FileRecordScope } from './filerecord-scope';
@@ -62,21 +62,14 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 		await this.dbm.remove(entities);
 	}
 
-	// note: persist is split in update and create
-	public async update(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+	public async persist(fileRecords: FileRecord[]): Promise<FileRecord[]> {
 		const entities = await this.find(fileRecords);
+
 		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
-		const updatedFileRecords = await this.persist(entities);
+		await this.dbm.persist(entities);
+		const persistedFileRecords = FileRecordDOMapper.entitiesToDOs(entities);
 
-		return updatedFileRecords;
-	}
-
-	// note: is renamed to create
-	public async create(props: IFileRecordParams[]): Promise<FileRecord[]> {
-		const entities = FileRecordDOMapper.createNewEntities(props);
-		const fileRecords = await this.persist(entities);
-
-		return fileRecords;
+		return persistedFileRecords;
 	}
 
 	// ---------------------------------------------------------------
@@ -115,12 +108,6 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 		return [fileRecords, count];
 	}
 
-	private async persist(entities: FileRecordEntity[]): Promise<FileRecord[]> {
-		await this.dbm.persist(entities);
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(entities);
-
-		return fileRecords;
-	}
 	/* solution for delete over PK
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		const entities = this.getEntitiesReferenceFromDOs(fileRecords);

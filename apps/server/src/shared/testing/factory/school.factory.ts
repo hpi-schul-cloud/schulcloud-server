@@ -1,8 +1,10 @@
 import { ISchoolProperties, School } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { schoolYearFactory } from './schoolyear.factory';
 
-export const schoolFactory = BaseFactory.define<School, ISchoolProperties>(School, ({ sequence }) => {
+class SchoolFactory extends BaseEntityTestFactory<School, ISchoolProperties> {}
+
+export const schoolFactory = SchoolFactory.define(School, ({ sequence }) => {
 	return {
 		name: `school #${sequence}`,
 		schoolYear: schoolYearFactory.build(),

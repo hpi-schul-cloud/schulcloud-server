@@ -2,7 +2,7 @@ import { EntityId } from '@shared/domain';
 import { v4 as uuid } from 'uuid';
 import type { FileRecordParams } from '../controller/dto';
 import type { FileDto } from '../dto';
-import { IFileRecordParams, IFileSecurityCheckParams, ScanStatus } from './filerecord.do';
+import { FileRecordParams, FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
 // TODO: should be also used for fileRecord.copy actions, but dependecy cycle
 // TODO: no clean line up to entity default values atm
@@ -17,8 +17,8 @@ export class FileRecordPropertiesFactory {
 	}
 	*/
 	// TODO: must be based on domain layer
-	public static buildSecurityCheckProperties(): IFileSecurityCheckParams {
-		const securityCheckProperties: IFileSecurityCheckParams = {
+	public static buildSecurityCheckProperties(): FileSecurityCheckParams {
+		const securityCheckProperties: FileSecurityCheckParams = {
 			status: ScanStatus.PENDING,
 			reason: 'not yet scanned',
 			requestToken: uuid(),
@@ -33,9 +33,9 @@ export class FileRecordPropertiesFactory {
 		creatorId: EntityId,
 		params: FileRecordParams,
 		fileDescription: FileDto
-	): IFileRecordParams {
+	): FileRecordParams {
 		const securityCheckProperties = FileRecordPropertiesFactory.buildSecurityCheckProperties();
-		const fileRecordParams: IFileRecordParams = {
+		const fileRecordParams: FileRecordParams = {
 			name,
 			size: fileDescription.size,
 			mimeType: fileDescription.mimeType,

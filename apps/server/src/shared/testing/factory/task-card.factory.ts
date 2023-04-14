@@ -1,10 +1,10 @@
 import { CardType, ITaskCardProps, TaskCard } from '@shared/domain';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 import { schoolFactory } from './school.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 
-class TaskCardFactory extends BaseFactory<TaskCard, ITaskCardProps> {}
+class TaskCardFactory extends BaseEntityTestFactory<TaskCard, ITaskCardProps> {}
 
 export const taskCardFactory = TaskCardFactory.define(TaskCard, () => {
 	const task = taskFactory.buildWithId();

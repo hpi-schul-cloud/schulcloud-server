@@ -1,7 +1,7 @@
 import { IMaterialProperties, Material } from '@shared/domain/entity/materials.entity';
-import { BaseFactory } from './base.factory';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-class MaterialFactory extends BaseFactory<Material, IMaterialProperties> {}
+class MaterialFactory extends BaseEntityTestFactory<Material, IMaterialProperties> {}
 
 export const materialFactory = MaterialFactory.define<Material, IMaterialProperties>(Material, ({ sequence }) => {
 	return {

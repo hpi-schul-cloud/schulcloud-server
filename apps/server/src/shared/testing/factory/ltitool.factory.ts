@@ -1,9 +1,9 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/';
 import { DeepPartial } from 'fishery';
 import { CustomLtiProperty } from '@shared/domain/domainobject/ltitool.do';
+import { BaseEntityTestFactory } from './base-entity-test.factory';
 
-class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
+class LtiToolFactory extends BaseEntityTestFactory<LtiTool, ILtiToolProperties> {
 	withName(name: string): this {
 		const params: DeepPartial<ILtiToolProperties> = {
 			name,
