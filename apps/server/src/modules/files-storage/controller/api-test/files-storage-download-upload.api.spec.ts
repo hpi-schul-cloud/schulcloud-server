@@ -420,7 +420,7 @@ describe('files-storage controller (API)', () => {
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 				const { result } = await api.postUploadFile(`/file/upload/${validId}/schools/${validId}`);
-				const newRecord: FileRecord = await em.findOneOrFail(FileRecord, result.id);
+				const newRecord = await em.findOneOrFail(FileRecord, result.id);
 
 				return { newRecord };
 			};
