@@ -13,6 +13,7 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2AuthorizationParams } from './dto/request/oauth2-authorization.params';
+import { UserMigrationResponse } from './dto/response/user-migration.response';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -58,7 +59,15 @@ export class UserLoginMigrationController {
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2AuthorizationParams
-	): Promise<void> {
-		await this.migrationUc.migrateUser(jwt, currentUser.userId, body.systemId, body.redirectUri, body.code, body.error);
+	): Promise<UserMigrationResponse> {
+		const migrationDto = await this.migrationUc.migrateUser(
+			jwt,
+			currentUser.userId,
+			body.systemId,
+			body.redirectUri,
+			body.code
+		);
+		const response = UserLoginMigrationMapper.mapMigrationDtoToResponse(migrationDto);
+		return response;
 	}
 }

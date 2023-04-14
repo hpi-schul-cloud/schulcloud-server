@@ -1,5 +1,8 @@
-import { OAuthMigrationError } from '../../../error/oauth-migration.error';
-
 export class UserMigrationResponse {
-	error?: OAuthMigrationError;
+	redirect: string;
+
+	// TODO: N21-632 - Remove client redirects
+	constructor(props: UserMigrationResponse) {
+		this.redirect = props.redirect;
+	}
 }

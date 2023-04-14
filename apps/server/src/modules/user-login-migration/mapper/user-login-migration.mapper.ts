@@ -1,6 +1,8 @@
 import { UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../controller/dto';
 import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
+import { MigrationDto } from '../service/dto/migration.dto';
+import { UserMigrationResponse } from '../controller/dto/response/user-migration.response';
 
 export class UserLoginMigrationMapper {
 	static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {
@@ -19,6 +21,14 @@ export class UserLoginMigrationMapper {
 			finishedAt: domainObject.finishedAt,
 			mandatorySince: domainObject.mandatorySince,
 		});
+		return response;
+	}
+
+	static mapMigrationDtoToResponse(dto: MigrationDto): UserMigrationResponse {
+		const response: UserMigrationResponse = new UserMigrationResponse({
+			redirect: dto.redirect,
+		});
+
 		return response;
 	}
 }
