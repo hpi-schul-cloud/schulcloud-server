@@ -86,7 +86,6 @@ describe(`${baseRouteName} (api)`, () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
-			providers: [FilesStorageTestModule],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())

@@ -30,7 +30,6 @@ describe('FwuLearningContents Controller (api)', () => {
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
 			imports: [FwuLearningContentsTestModule],
-			providers: [FwuLearningContentsTestModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({

@@ -112,7 +112,6 @@ describe('files-storage controller (API)', () => {
 
 		module = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
-			providers: [FilesStorageTestModule],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
