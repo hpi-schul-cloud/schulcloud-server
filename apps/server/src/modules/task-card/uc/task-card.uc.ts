@@ -191,7 +191,9 @@ export class TaskCardUc {
 	}
 
 	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
-		if (schoolYearEndDate < dueDate) {
+		const schoolYearEndDateIgnoresTime = new Date(schoolYearEndDate).setHours(0, 0, 0, 0);
+		const dueDateWithoutIgnoresTime = new Date(dueDate).setHours(0, 0, 0, 0);
+		if (schoolYearEndDateIgnoresTime < dueDateWithoutIgnoresTime) {
 			throw new ValidationError('Due date must be before school year end date');
 		}
 	}
