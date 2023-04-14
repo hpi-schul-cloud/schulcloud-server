@@ -34,6 +34,6 @@ export class FeathersProxyMiddleware implements NestMiddleware {
 	}
 
 	private logDeprecatedPaths(req: express.Request) {
-		Logger.error(req.path, 'DEPRECATED-PATH');
+		Logger.warn(req.path, 'DEPRECATED-PATH');
 	}
 }

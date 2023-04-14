@@ -22,7 +22,7 @@ describe('FeathersProxyMiddleware', () => {
 		const mockNextFunction = jest.fn();
 
 		jest.spyOn(Logger, 'debug').mockImplementation();
-		jest.spyOn(Logger, 'error').mockImplementation();
+		jest.spyOn(Logger, 'warn').mockImplementation();
 
 		return { mockRequest, mockResponse, mockNextFunction };
 	};
@@ -45,7 +45,7 @@ describe('FeathersProxyMiddleware', () => {
 
 				middleware.use(mockRequest, mockResponse, mockNextFunction);
 
-				expect(Logger.error).toHaveBeenCalledWith('/something', 'DEPRECATED-PATH');
+				expect(Logger.warn).toHaveBeenCalledWith('/something', 'DEPRECATED-PATH');
 				expect(mockRequest.url).toBe('/something');
 			});
 		});
