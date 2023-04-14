@@ -2,7 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Card } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	textElementFactory,
+} from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
@@ -112,7 +117,7 @@ describe(CardService.name, () => {
 			};
 
 			it('should save a list of cards using the boardDo repo', async () => {
-				const { column, columnId } = setup();
+				const { column } = setup();
 
 				await service.create(column);
 
@@ -125,7 +130,7 @@ describe(CardService.name, () => {
 							updatedAt: expect.any(Date),
 						}),
 					],
-					columnId
+					column
 				);
 			});
 		});
@@ -152,6 +157,32 @@ describe(CardService.name, () => {
 				await service.move(card, targetParent, 3);
 
 				expect(boardDoService.move).toHaveBeenCalledWith(card, targetParent, 3);
+			});
+		});
+	});
+
+	describe('updateTitle', () => {
+		describe('when updating the title', () => {
+			it('should call the service', async () => {
+				const card = cardFactory.build();
+				const column = columnFactory.build({ children: [card] });
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
+
+				const newTitle = 'new title';
+
+				await service.updateTitle(card, newTitle);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: newTitle,
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+					columnBoard
+				);
 			});
 		});
 	});

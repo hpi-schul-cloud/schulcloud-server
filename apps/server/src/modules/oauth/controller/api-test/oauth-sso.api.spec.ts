@@ -195,7 +195,7 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system, query } = await setup();
+				const { system, query, externalUserId } = await setup();
 				const { state, cookies } = await setupSessionState(system.id, false);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.code = 'code';
@@ -204,6 +204,8 @@ describe('OAuth SSO Controller (API)', () => {
 				const idToken: string = jwt.sign(
 					{
 						sub: 'testUser',
+						// For OIDC provisioning strategy
+						external_sub: externalUserId,
 						iss: system.oauthConfig?.issuer,
 						aud: system.oauthConfig?.clientId,
 						iat: Date.now(),
