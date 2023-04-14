@@ -154,7 +154,7 @@ await this.isAuthorized(userId, course, AuthorizationContextBuilder.read([Permis
 
 ```javascript
 /** const **/
-export const PermissionContexts = {
+export const AuthorizationContext = {
    create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
    read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
    update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),

@@ -7,7 +7,7 @@ export enum FilesStorageInternalActions {
 }
 export const API_VERSION_PATH = '/api/v3';
 
-export const PermissionContexts = {
+export const AuthorizationContext = {
 	create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
 	read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
 	update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
