@@ -9,12 +9,7 @@ export class Oauth2AuthorizationParams {
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
-	code?: string;
-
-	@IsOptional()
-	@IsString()
-	@ApiPropertyOptional()
-	error?: string;
+	code!: string;
 
 	@IsMongoId()
 	@ApiProperty()
