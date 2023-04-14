@@ -1,4 +1,3 @@
-import type { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
@@ -15,16 +14,13 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		this.height = props.height;
 	}
 
-	addChild(child: AnyBoardDo, position?: number) {
-		if (child instanceof TextElement || child instanceof FileElement) {
-			this._addChild(child, position);
-		} else {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
-		}
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed = domainObject instanceof TextElement || domainObject instanceof FileElement;
+		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildCardNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildCardNode(this, parent);
 	}
 }
 

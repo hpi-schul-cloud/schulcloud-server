@@ -24,46 +24,46 @@ describe('FileRecord Entity', () => {
 				name: `file-record #1`,
 				mimeType: 'application/octet-stream',
 				parentType: FileRecordParentType.Course,
-				parentId: new ObjectId(),
-				creatorId: new ObjectId(),
-				schoolId: new ObjectId(),
+				parentId: new ObjectId().toHexString(),
+				creatorId: new ObjectId().toHexString(),
+				schoolId: new ObjectId().toHexString(),
 			};
 		});
 
 		it('should provide the target id as entity id', () => {
-			const parentId = new ObjectId();
+			const parentId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				parentId,
 			});
-			expect(fileRecord.parentId).toEqual(parentId.toHexString());
+			expect(fileRecord.parentId).toEqual(parentId);
 		});
 
 		it('should provide the creator id as entity id', () => {
-			const creatorId = new ObjectId();
+			const creatorId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				creatorId,
 			});
-			expect(fileRecord.creatorId).toEqual(creatorId.toHexString());
+			expect(fileRecord.creatorId).toEqual(creatorId);
 		});
 
 		it('should provide the school id as entity id', () => {
-			const schoolId = new ObjectId();
+			const schoolId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				schoolId,
 			});
-			expect(fileRecord.schoolId).toEqual(schoolId.toHexString());
+			expect(fileRecord.schoolId).toEqual(schoolId);
 		});
 
 		it('should provide the isCopyFrom as entity id', () => {
-			const isCopyFrom = new ObjectId();
+			const isCopyFrom = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				isCopyFrom,
 			});
-			expect(fileRecord.isCopyFrom).toEqual(isCopyFrom.toHexString());
+			expect(fileRecord.isCopyFrom).toEqual(isCopyFrom);
 		});
 	});
 
@@ -222,6 +222,24 @@ describe('FileRecord Entity', () => {
 				const result = fileRecord.getSchoolId();
 
 				expect(result).toEqual(schoolId);
+			});
+		});
+	});
+
+	describe('getSecurityToken is called', () => {
+		describe('WHEN security token exists', () => {
+			const setup = () => {
+				const fileRecord = fileRecordFactory.build();
+
+				return { fileRecord };
+			};
+
+			it('should return the correct token', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.getSecurityToken();
+
+				expect(result).toEqual(fileRecord.securityCheck.requestToken);
 			});
 		});
 	});

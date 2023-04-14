@@ -6,6 +6,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const MockNode = JSON.stringify(require('../mock/response-node.json'));
 const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
+const MockH5PRenderer = JSON.stringify(require('../mock/response-h5p-renderer.json'));
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const EduSharingConnectorV7 = require('../../../../src/services/edusharing/services/EduSharingConnectorV7');
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -16,6 +17,7 @@ describe('EduSharingV7 FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
+	let eduSharingPlayerService;
 	let server;
 	let nestServices;
 
@@ -23,6 +25,7 @@ describe('EduSharingV7 FIND', () => {
 		Configuration.set('ES_API_V7', true);
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
+		eduSharingPlayerService = app.service('edu-sharing/player');
 		eduSharingService.connector = EduSharingConnectorV7;
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
@@ -41,6 +44,7 @@ describe('EduSharingV7 FIND', () => {
 
 	it('registered the service', async () => {
 		assert.ok(eduSharingService);
+		assert.ok(eduSharingPlayerService);
 	});
 
 	it('search with an empty query', async () => {
@@ -121,7 +125,6 @@ describe('EduSharingV7 FIND', () => {
 			await eduSharingService.get('dummyNodeId', params);
 			throw new Error('should have failed');
 		} catch (err) {
-			chai.expect(err.message).to.not.equal('should have failed');
 			chai.expect(err.code).to.equal(404);
 			chai.expect(err.message).to.equal('Invalid node id dummyNodeId');
 		}
@@ -144,6 +147,53 @@ describe('EduSharingV7 FIND', () => {
 				.contains(`{"property":"ccm:replicationsourceuuid","values":["9ff3ee4e-e679-4576-bad7-0eeb9b174716"]`);
 		} catch (err) {
 			throw new Error(err);
+		}
+	});
+
+	it('player should return h5p data', async () => {
+		const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+		const params = await testObjects.generateRequestParamsFromUser(user);
+		const getStub = sinon.stub(request, 'get');
+
+		getStub.onCall(0).returns(MockH5PRenderer);
+
+		const result = await eduSharingPlayerService.get('dummy-id', params);
+
+		chai.expect(result).to.eql({ iframe_src: 'iframeDummySrc', script_src: 'https://test.test/dummy.js' });
+	});
+
+	it('player should fail when edushare response is invalid', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const getStub = sinon.stub(request, 'get');
+
+			getStub.onCall(0).returns('{}');
+
+			await eduSharingPlayerService.get('dummy-id', params);
+
+			throw new Error('should have failed');
+		} catch (err) {
+			chai.expect(err.code).to.equal(503);
+			chai.expect(err.message).to.equal('Unexpected response from Edu-Sharing renderer.');
+		}
+	});
+
+	it('player should fail when edushare response has invalid details', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const getStub = sinon.stub(request, 'get');
+
+			getStub.onCall(0).returns('{"detailsSnippet":""}');
+
+			await eduSharingPlayerService.get('dummy-id', params);
+
+			throw new Error('should have failed');
+		} catch (err) {
+			chai.expect(err.message).to.not.equal('should have failed');
+			chai.expect(err.code).to.equal(503);
+			chai.expect(err.message).to.equal('No data detected in Edu-Sharing renderer response.');
 		}
 	});
 });
