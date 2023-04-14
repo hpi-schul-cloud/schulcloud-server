@@ -56,12 +56,11 @@ export class UserLoginMigrationUc {
 		userId: EntityId,
 		targetSystemId: EntityId,
 		redirectUri: string,
-		code?: string,
-		error?: string
-	): Promise<void> {
+		code?: string
+	): Promise<MigrationDto> {
 		this.logMigrationInformation(userId, `Migrates to targetSystem with id ${targetSystemId}`);
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code, error);
+		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
 
 		const data: OauthDataDto = await this.provisioningService.getData(
 			targetSystemId,
@@ -106,6 +105,8 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(userId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
 
 		await this.authenticationService.removeJwtFromWhitelist(jwt);
+
+		return migrationDto;
 	}
 
 	private logMigrationInformation(
