@@ -23,7 +23,7 @@ export class ContentElementService {
 
 		parent.addChild(element);
 
-		await this.boardDoRepo.save(parent.children, parent.id);
+		await this.boardDoRepo.save(parent.children, parent);
 
 		return element;
 	}
