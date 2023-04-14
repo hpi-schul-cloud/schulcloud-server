@@ -26,7 +26,7 @@ export class TaskCardMapper {
 			title: card.title,
 			courseId: card.course.id,
 			courseName: card.course.name,
-			completed: card.getCompletedUserIds(),
+			completedBy: card.getCompletedUserIds(),
 		});
 		if (card.cardElements.length) {
 			dto.cardElements = this.getCardElementResponse(card);

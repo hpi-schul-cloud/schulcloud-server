@@ -102,7 +102,7 @@ export class TaskService {
 
 		const status = task.createTeacherStatusForUser(user);
 		if (task.taskCard) {
-			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 		}
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
@@ -119,12 +119,12 @@ export class TaskService {
 		if (this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])) {
 			status = task.createTeacherStatusForUser(user);
 			if (task.taskCard) {
-				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 			}
 		} else {
 			status = task.createStudentStatusForUser(user);
 			if (task.taskCard) {
-				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
 			}
 		}
 
@@ -190,7 +190,7 @@ export class TaskService {
 
 		const status = task.createTeacherStatusForUser(user);
 		if (task.taskCard) {
-			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 		}
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 

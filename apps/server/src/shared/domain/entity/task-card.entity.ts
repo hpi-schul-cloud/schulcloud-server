@@ -6,7 +6,7 @@ import { Course } from './course.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; completed: User[] };
+export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; completedUserIds: User[] };
 
 export interface ITaskCard extends ICard {
 	task: Task;
@@ -32,7 +32,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.title = props.title;
 		this.course = props.course;
 		Object.assign(this, { creator: props.creator });
-		this.completed.set(props.completed || []);
+		this.completedUserIds.set(props.completedUserIds || []);
 	}
 
 	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds', cascade: [Cascade.ALL] })
@@ -64,8 +64,8 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
 	task!: Task;
 
-	@ManyToMany('User', undefined, { fieldName: 'completed' })
-	completed = new Collection<User>(this);
+	@ManyToMany('User', undefined)
+	completedUserIds = new Collection<User>(this);
 
 	public getCardElements() {
 		return this.cardElements.getItems();
@@ -75,36 +75,16 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		return this.visibleAtDate < this.dueDate;
 	}
 
-	public completeForUser(user: User): void {
-		this.completed.add(user);
+	public addUserToCompletedList(user: User): void {
+		this.completedUserIds.add(user);
 	}
 
-	public undoForUser(user: User): void {
-		this.completed.remove(user);
+	public removeUserFromCompletedList(user: User): void {
+		this.completedUserIds.remove(user);
 	}
-
-	/* public isCompletedForUser(user: User): boolean {
-		const completedUserIds = this.getCompletedUserIds();
-		const isCompleted = completedUserIds.some((id) => id === user.id);
-		return isCompleted;
-	} */
 
 	public getCompletedUserIds(): string[] {
-		const users = this.completed.getItems();
-		if (users.length) {
-			const usersList = users.map((user) => user.id);
-			return usersList;
-		}
-
-		return [];
-
-		// return this.completed.getItems();
+		const completedUsers = this.completedUserIds.getItems().map((user) => user.id);
+		return completedUsers;
 	}
-
-	/* private getCompletedUserIds(): EntityId[] {
-		const completedObjectIds = this.completed.getIdentifiers('_id');
-		const completedIds = completedObjectIds.map((id): string => id.toString());
-
-		return completedIds;
-	} */
 }

@@ -5,12 +5,12 @@ export class TaskStatusMapper {
 	static mapToResponse(status: ITaskStatus): TaskStatusResponse {
 		const dto = new TaskStatusResponse(status);
 
-		if (status.isTaskCardCompleted) {
-			dto.isTaskCardCompleted = status.isTaskCardCompleted;
+		if (status.taskCard.isCompleted) {
+			dto.taskCard.isCompleted = status.taskCard.isCompleted;
 		}
 
-		if (status.taskCardCompleted) {
-			dto.taskCardCompleted = status.taskCardCompleted;
+		if (status.taskCard.completedBy) {
+			dto.taskCard.completedBy = status.taskCard.completedBy;
 		}
 
 		return dto;

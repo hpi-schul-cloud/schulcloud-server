@@ -63,12 +63,12 @@ export class TaskUC {
 			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 				if (task.taskCard) {
-					status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+					status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 				}
 			} else {
 				status = task.createStudentStatusForUser(user);
 				if (task.taskCard) {
-					status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+					status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
 				}
 			}
 
@@ -116,12 +116,12 @@ export class TaskUC {
 		if (this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
 			status = task.createTeacherStatusForUser(user);
 			if (task.taskCard) {
-				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 			}
 		} else {
 			status = task.createStudentStatusForUser(user);
 			if (task.taskCard) {
-				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
 			}
 		}
 
@@ -141,7 +141,7 @@ export class TaskUC {
 
 		const status = task.createTeacherStatusForUser(user);
 		if (task.taskCard) {
-			status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+			status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 		}
 
 		const result = new TaskWithStatusVo(task, status);
@@ -173,7 +173,7 @@ export class TaskUC {
 		const taskWithStatusVos = tasks.map(async (task) => {
 			const status = task.createStudentStatusForUser(user);
 			if (task.taskCard) {
-				status.isTaskCardCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
+				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
 			}
 			return new TaskWithStatusVo(task, status);
 		});
@@ -206,7 +206,7 @@ export class TaskUC {
 		const taskWithStatusVos = tasks.map(async (task) => {
 			const status = task.createTeacherStatusForUser(user);
 			if (task.taskCard) {
-				status.taskCardCompleted = await this.taskCardService.countCompletedForUsers(user.id, task.taskCard);
+				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
 			}
 			return new TaskWithStatusVo(task, status);
 		});

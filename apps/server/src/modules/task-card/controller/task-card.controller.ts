@@ -75,7 +75,7 @@ export class TaskCardController {
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
-		const { card, taskWithStatusVo } = await this.taskCardUc.changeCompleteForUser(
+		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
 			currentUser.userId,
 			urlParams.id,
 			false
@@ -85,14 +85,14 @@ export class TaskCardController {
 		return taskCardResponse;
 	}
 
-	@Patch(':id/undo')
-	async undoForUser(
+	@Patch(':id/uncomplete')
+	async uncompleteForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskCardUrlParams
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
-		const { card, taskWithStatusVo } = await this.taskCardUc.changeCompleteForUser(
+		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
 			currentUser.userId,
 			urlParams.id,
 			true

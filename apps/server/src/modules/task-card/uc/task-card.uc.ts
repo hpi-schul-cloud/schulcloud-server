@@ -48,7 +48,7 @@ export class TaskCardUc {
 			visibleAtDate: new Date(),
 			dueDate: params.dueDate,
 			title: params.title,
-			completed: [],
+			completedUserIds: [],
 		};
 
 		if (params.visibleAtDate) {
@@ -131,9 +131,9 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	async changeCompleteForUser(userId: EntityId, id: EntityId, isComplete: boolean) {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const card = await this.taskCardRepo.findById(id);
+	async setCompletionStateForStudent(studentId: EntityId, taskCardId: EntityId, newState: boolean) {
+		const user = await this.authorizationService.getUserWithPermissions(studentId);
+		const card = await this.taskCardRepo.findById(taskCardId);
 
 		if (
 			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
@@ -141,15 +141,15 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
-		if (!isComplete) {
-			card.completeForUser(user);
+		if (!newState) {
+			card.addUserToCompletedList(user);
 		} else {
-			card.undoForUser(user);
+			card.removeUserFromCompletedList(user);
 		}
 
 		await this.taskCardRepo.save(card);
 
-		const taskWithStatusVo = await this.taskService.find(userId, card.task.id);
+		const taskWithStatusVo = await this.taskService.find(user.id, card.task.id);
 
 		return { card, taskWithStatusVo };
 	}

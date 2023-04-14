@@ -14,7 +14,7 @@ export class TaskCardResponse {
 		title,
 		courseId,
 		courseName,
-		completed,
+		completedBy,
 	}: TaskCardResponse) {
 		this.id = id;
 		this.draggable = draggable;
@@ -25,7 +25,7 @@ export class TaskCardResponse {
 		this.cardElements = cardElements;
 		this.courseId = courseId;
 		this.courseName = courseName;
-		this.completed = completed;
+		this.completedBy = completedBy;
 	}
 
 	@ApiProperty({
@@ -75,5 +75,5 @@ export class TaskCardResponse {
 	@ApiProperty({
 		description: 'List of users who marked task card as completed',
 	})
-	completed: string[];
+	completedBy: string[];
 }

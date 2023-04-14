@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules';
+import { AuthorizationService, TaskCardService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
@@ -54,6 +54,10 @@ describe('TaskService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: TaskCardService,
+					useValue: createMock<TaskCardService>(),
 				},
 			],
 		}).compile();

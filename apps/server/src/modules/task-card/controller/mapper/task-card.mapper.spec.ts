@@ -27,6 +27,7 @@ describe('task-card mapper', () => {
 	describe('mapToResponse', () => {
 		it('should map task-card to response', () => {
 			const user = userFactory.buildWithId();
+			const completedUser = userFactory.buildWithId();
 			const course = courseFactory.buildWithId();
 			const tomorrow = new Date(Date.now() + 86400000);
 			const inTwoDays = new Date(Date.now() + 172800000);
@@ -36,6 +37,7 @@ describe('task-card mapper', () => {
 				course,
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				completedUserIds: [completedUser],
 			});
 			const status = taskCard.task.createTeacherStatusForUser(user);
 
@@ -54,6 +56,7 @@ describe('task-card mapper', () => {
 				task: taskResponse,
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
+				completedBy: [completedUser.id],
 			});
 		});
 		it('should map card elements to response', () => {

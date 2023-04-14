@@ -41,6 +41,8 @@ export interface ITaskStatus {
 	isDraft: boolean;
 	isSubstitutionTeacher: boolean;
 	isFinished: boolean;
-	taskCardCompleted?: number;
-	isTaskCardCompleted?: boolean;
+	taskCard: {
+		completedBy?: string[];
+		isCompleted?: boolean;
+	};
 }

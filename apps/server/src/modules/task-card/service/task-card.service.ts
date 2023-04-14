@@ -10,7 +10,7 @@ export class TaskCardService {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async countCompletedForUsers(userId: EntityId, taskCardId: EntityId): Promise<number> {
+	async getCompletedForUsers(userId: EntityId, taskCardId: EntityId): Promise<string[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const taskCard = await this.taskCardRepo.findById(taskCardId);
 
@@ -22,7 +22,7 @@ export class TaskCardService {
 
 		const completedForUsers = taskCard.getCompletedUserIds();
 
-		return completedForUsers.length;
+		return completedForUsers;
 	}
 
 	async isCompletedForUser(userId: EntityId, taskCardId: EntityId): Promise<boolean> {
@@ -38,6 +38,7 @@ export class TaskCardService {
 		const completedForUsers = taskCard.getCompletedUserIds();
 		completedForUsers.filter((completedUserId) => completedUserId === userId);
 
-		return completedForUsers.length > 0;
+		const result = completedForUsers.length === 1;
+		return result;
 	}
 }
