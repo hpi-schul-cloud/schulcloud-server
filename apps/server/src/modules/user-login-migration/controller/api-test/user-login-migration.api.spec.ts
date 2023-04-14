@@ -17,6 +17,7 @@ import { UUID } from 'bson';
 import { SSOErrorCode } from '../../../oauth/error/sso-error-code.enum';
 import { OauthTokenResponse } from '../../../oauth/service/dto';
 import { SanisResponse, SanisRole } from '../../../provisioning/strategy/sanis/sanis.response';
+import { Oauth2AuthorizationParams } from '../dto/request/oauth2-authorization.params';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -141,6 +142,11 @@ describe('UserLoginMigrationController (API)', () => {
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
 		describe('when providing a code and being eligible to migrate', () => {
 			const setup = async () => {
+				const query: Oauth2AuthorizationParams = new Oauth2AuthorizationParams();
+				query.code = 'code';
+				query.systemId = 'systemId';
+				query.redirectUri = 'redirectUri';
+
 				const sourceSystem: System = systemFactory.buildWithId();
 				const targetSystem: System = systemFactory
 					.withOauthConfig()
@@ -222,20 +228,22 @@ describe('UserLoginMigrationController (API)', () => {
 					});
 
 				return {
+					query,
+					user,
 					sourceSystem,
 					targetSystem,
 				};
 			};
 
 			it('should migrate the user', async () => {
-				const { targetSystem } = await setup();
+				const { query } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
 					.send({
-						redirectUri: 'redirectUri',
-						code: 'code',
-						systemId: targetSystem.id,
+						redirectUri: query.redirectUri,
+						code: query.code,
+						systemId: query.systemId,
 					});
 
 				expect(response.status).toEqual(HttpStatus.OK);
