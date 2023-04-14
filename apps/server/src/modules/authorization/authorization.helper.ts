@@ -64,13 +64,6 @@ export class AuthorizationHelper {
 		return hasPermission;
 	}
 
-	/**
-	 * Determines whether a user has access to the specified entity by reference props.
-	 * @param user a user
-	 * @param entity An entity to access
-	 * @param userRefProps Array of properties in the entity the user is associated with
-	 * @returns
-	 */
 	public hasAccessToEntity<T, K extends keyof T>(user: User, entity: T, userRefProps: K[]): boolean {
 		const result = userRefProps.some((prop) => this.isUserReferenced(user, entity, prop));
 
