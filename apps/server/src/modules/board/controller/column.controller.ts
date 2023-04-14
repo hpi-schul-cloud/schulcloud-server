@@ -3,10 +3,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardUc } from '../uc';
-import { CardResponse, ColumnUrlParams, MoveColumnBodyParams } from './dto';
+import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';
 
-@ApiTags('Columns')
+@ApiTags('Board Column')
 @Authenticate('jwt')
 @Controller('columns')
 export class ColumnController {
@@ -23,14 +23,14 @@ export class ColumnController {
 		return true;
 	}
 
-	// @Put(':columnId/title')
-	// renameColumn(
-	// 	@Param() urlParams: ColumnUrlParams,
-	// 	@Body() bodyParams: RenameBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise<void> {
-	// 	throw new NotImplementedException();
-	// }
+	@Put(':columnId/title')
+	async updateColumnTitle(
+		@Param() urlParams: ColumnUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
+	}
 
 	@Delete(':columnId')
 	async deleteColumn(@Param() urlParams: ColumnUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {

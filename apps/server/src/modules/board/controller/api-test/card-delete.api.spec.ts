@@ -122,6 +122,18 @@ describe(`card delete (api)`, () => {
 			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
 			expect(siblingFromDb).toBeDefined();
 		});
+
+		it('should update position of the siblings', async () => {
+			const { user, cardNode, siblingCardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+			cardNode.position = 0;
+			siblingCardNode.position = 1;
+
+			await api.delete(cardNode.id);
+
+			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			expect(siblingFromDb.position).toEqual(0);
+		});
 	});
 
 	// TODO: add tests for permission checks... during their implementation
