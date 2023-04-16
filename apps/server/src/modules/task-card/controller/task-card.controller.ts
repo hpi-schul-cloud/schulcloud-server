@@ -78,7 +78,7 @@ export class TaskCardController {
 		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
 			currentUser.userId,
 			urlParams.id,
-			false
+			true
 		);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);
@@ -95,7 +95,7 @@ export class TaskCardController {
 		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
 			currentUser.userId,
 			urlParams.id,
-			true
+			false
 		);
 		const mapper = new TaskCardMapper();
 		const taskCardResponse = mapper.mapToResponse(card, taskWithStatusVo);

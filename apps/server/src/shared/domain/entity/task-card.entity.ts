@@ -11,7 +11,8 @@ export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: 
 export interface ITaskCard extends ICard {
 	task: Task;
 	dueDate: Date;
-	course?: Course;
+	course: Course;
+	completedUserIds: Collection<User>;
 }
 
 @Entity({

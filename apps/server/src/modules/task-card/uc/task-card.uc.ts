@@ -141,7 +141,7 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
-		if (!newState) {
+		if (newState) {
 			card.addUserToCompletedList(user);
 		} else {
 			card.removeUserFromCompletedList(user);

@@ -502,4 +502,72 @@ describe('TaskCardUc', () => {
 			}).rejects.toThrow(ValidationError);
 		});
 	});
+
+	describe('setCompletionStateForStudent', () => {
+		beforeEach(() => {
+			user = userFactory.buildWithId();
+			taskCard = taskCardFactory.buildWithId();
+
+			const status = taskCard.task.createTeacherStatusForUser(user);
+			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
+			taskService.find.mockResolvedValue(taskWithStatusVo);
+
+			userRepo.findById.mockResolvedValue(user);
+			taskCardRepo.findById.mockResolvedValue(taskCard);
+			authorizationService.hasPermission.mockReturnValue(true);
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+		});
+		afterEach(() => {
+			userRepo.findById.mockRestore();
+			taskCardRepo.findById.mockRestore();
+			authorizationService.hasPermission.mockRestore();
+			authorizationService.getUserWithPermissions.mockRestore();
+			taskService.find.mockRestore();
+		});
+		it('should check for permission to view the beta task', async () => {
+			await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
+				action: Actions.read,
+				requiredPermissions: [Permission.TASK_CARD_VIEW],
+			});
+		});
+		it('should throw if user has no permission', async () => {
+			authorizationService.hasPermission.mockReturnValue(false);
+			await expect(async () => {
+				await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+			}).rejects.toThrow(ForbiddenException);
+		});
+		it('should add user to completed list if new state is set to true', async () => {
+			const addUserToCompletedListMock = jest.spyOn(taskCard, 'addUserToCompletedList');
+			const newCompletionState = true;
+			await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+			expect(taskCard.addUserToCompletedList).toBeCalled();
+
+			const completedUserIds = taskCard.getCompletedUserIds();
+			expect(completedUserIds).toContain(user.id);
+			addUserToCompletedListMock.mockRestore();
+		});
+		it('should remove user from completed list if new state is set to false', async () => {
+			const taskCardWithCompletedUser = taskCardFactory.buildWithId({
+				completedUserIds: [user],
+			});
+			taskCardRepo.findById.mockResolvedValue(taskCardWithCompletedUser);
+			const removeUserFromCompletedListMock = jest.spyOn(taskCardWithCompletedUser, 'removeUserFromCompletedList');
+
+			const newCompletionState = false;
+			await uc.setCompletionStateForStudent(user.id, taskCardWithCompletedUser.id, newCompletionState);
+			expect(taskCardWithCompletedUser.removeUserFromCompletedList).toBeCalled();
+
+			const completedUserIds = taskCardWithCompletedUser.getCompletedUserIds();
+			expect(completedUserIds).not.toContain(user.id);
+			removeUserFromCompletedListMock.mockRestore();
+		});
+		it('should return the beta task and task', async () => {
+			const result = await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+
+			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
+			expect(result.card.cardType).toEqual(CardType.Task);
+			expect(result.card.completedUserIds).toContain(user);
+		});
+	});
 });
