@@ -14,6 +14,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
+import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
@@ -58,6 +59,10 @@ describe('TaskUC', () => {
 				{
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
+				},
+				{
+					provide: TaskCardService,
+					useValue: createMock<TaskCardService>(),
 				},
 				{
 					provide: TaskService,
@@ -470,6 +475,7 @@ describe('TaskUC', () => {
 						isDraft: false,
 						isFinished: false,
 						isSubstitutionTeacher: false,
+						taskCard: {},
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
@@ -497,6 +503,7 @@ describe('TaskUC', () => {
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
+					taskCard: {},
 				});
 			});
 		});
@@ -595,6 +602,7 @@ describe('TaskUC', () => {
 						isDraft: false,
 						isFinished: false,
 						isSubstitutionTeacher: false,
+						taskCard: {},
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
@@ -621,6 +629,7 @@ describe('TaskUC', () => {
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
+					taskCard: {},
 				});
 			});
 		});
@@ -634,6 +643,7 @@ describe('TaskUC', () => {
 			isDraft: false,
 			isSubstitutionTeacher: false,
 			isFinished: false,
+			taskCard: {},
 		};
 
 		describe('without permission for task', () => {
