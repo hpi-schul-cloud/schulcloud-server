@@ -395,16 +395,4 @@ describe('AuthorizationService', () => {
 			expect(result).toEqual(user);
 		});
 	});
-
-	describe('resolvePermissions', () => {
-		it('should return permissions received from AuthorizationHelper', () => {
-			const user = userFactory.build();
-			const permissions = [Permission.ACCOUNT_CREATE];
-			authorizationHelper.resolvePermissions.mockReturnValueOnce(permissions);
-
-			const result = service.resolvePermissions(user);
-
-			expect(result).toEqual(permissions);
-		});
-	});
 });

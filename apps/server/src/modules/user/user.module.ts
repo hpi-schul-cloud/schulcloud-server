@@ -5,11 +5,10 @@ import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolModule } from '@src/modules/school/school.module';
-import { AuthorizationModule } from '../authorization';
 import { UserService } from './service/user.service';
 
 @Module({
-	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule, AuthorizationModule],
+	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
 	providers: [UserRepo, UserDORepo, UserService],
 	exports: [UserService, UserRepo],
 })

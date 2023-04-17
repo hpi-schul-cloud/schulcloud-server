@@ -3,16 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { RoleRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
 import { CurrentUserMapper } from '@src/modules/authentication/mapper';
-import { AuthorizationService } from '@src/modules/authorization';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { RoleService } from '@src/modules/role/service/role.service';
-import { SchoolService } from '@src/modules/school';
 import { IUserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -23,9 +21,6 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
-		private readonly roleRepo: RoleRepo,
-		private readonly schoolService: SchoolService,
-		private readonly authorizationService: AuthorizationService,
 		private readonly configService: ConfigService<IUserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService
@@ -33,7 +28,7 @@ export class UserService {
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
-		const permissions = this.authorizationService.resolvePermissions(user);
+		const permissions = user.resolvePermissions();
 
 		return [user, permissions];
 	}

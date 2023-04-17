@@ -1,19 +1,16 @@
-import { MikroORM } from '@mikro-orm/core';
-import { Permission, Role } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { courseFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
 	// If we have a class with no dependencies, do we still wanna build a testing module? Or is it fine like this?
 	const service = new AuthorizationHelper();
-	let orm: MikroORM;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		await setupEntities();
 	});
 
 	afterEach(() => {
@@ -22,53 +19,6 @@ describe('AuthorizationHelper', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
-	});
-
-	describe('resolvePermissions', () => {
-		it('should throw an error if the roles are not populated', () => {
-			const user = userFactory.build();
-			user.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
-
-			expect(() => service.resolvePermissions(user)).toThrowError();
-		});
-
-		it('should throw an error if the sub-roles are not populated', () => {
-			const role = roleFactory.build();
-			role.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
-			const user = userFactory.build({ roles: [role] });
-
-			expect(() => service.resolvePermissions(user)).toThrowError();
-		});
-
-		it('should return permissions of a user with one role', () => {
-			const role = roleFactory.build({ permissions: [permissionA] });
-			const user = userFactory.build({ roles: [role] });
-
-			const permissions = service.resolvePermissions(user);
-
-			expect(permissions).toEqual([permissionA]);
-		});
-
-		it('should return the unique permissions of a user with many roles', () => {
-			const roleA = roleFactory.build({ permissions: [permissionA, permissionB] });
-			const roleB = roleFactory.build({ permissions: [permissionB, permissionC] });
-			const user = userFactory.build({ roles: [roleA, roleB] });
-
-			const permissions = service.resolvePermissions(user);
-
-			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
-		});
-
-		it('should return the unique permissions of nested sub roles', () => {
-			const roleC = roleFactory.build({ permissions: [permissionC, permissionA] });
-			const roleB = roleFactory.build({ permissions: [permissionB], roles: [roleC] });
-			const roleA = roleFactory.build({ permissions: [permissionA], roles: [roleB] });
-			const user = userFactory.build({ roles: [roleA] });
-
-			const permissions = service.resolvePermissions(user);
-
-			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
-		});
 	});
 
 	describe('hasAllPermissions', () => {
@@ -104,9 +54,8 @@ describe('AuthorizationHelper', () => {
 			const roleA = roleFactory.buildWithId({ permissions: [permissionA] });
 			const roleB = roleFactory.buildWithId({ permissions: [permissionB], roles: [roleA] });
 			const role = roleFactory.buildWithId({ permissions: [permissionC], roles: [roleB] });
-			return {
-				role,
-			};
+
+			return { role };
 		};
 
 		it('should return true when no permissions are given to be checked', () => {

@@ -81,8 +81,4 @@ export class AuthorizationService {
 
 		return userWithPermissions;
 	}
-
-	public resolvePermissions(user: User): string[] {
-		return this.authorizationHelper.resolvePermissions(user);
-	}
 }
