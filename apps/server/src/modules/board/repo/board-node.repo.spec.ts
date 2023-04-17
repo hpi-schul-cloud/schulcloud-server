@@ -291,5 +291,27 @@ describe('BoardNodeRepo', () => {
 			const result = await em.find(CardNode, {});
 			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
 		});
+
+		it('should not update timestamps of existing siblings', async () => {
+			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+			await em.persistAndFlush(node1);
+			em.clear();
+			await new Promise((resolve) => {
+				setTimeout(resolve, 200);
+			});
+
+			const node1Copy = new CardNode({
+				id: node1.id,
+				height: node1.height,
+				title: node1.title,
+			});
+			const node2 = cardNodeFactory.buildWithId({ title: 'created' });
+
+			await repo.save([node1Copy, node2]);
+			em.clear();
+
+			const result1 = await em.findOneOrFail(CardNode, node1.id);
+			expect(result1.updatedAt).toEqual(node1.updatedAt);
+		});
 	});
 });

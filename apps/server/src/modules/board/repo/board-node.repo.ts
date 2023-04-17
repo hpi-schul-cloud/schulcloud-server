@@ -72,7 +72,8 @@ export class BoardNodeRepo {
 		boardNodes.forEach((node) => {
 			const existing = nodeCache.get(node.id);
 			if (existing) {
-				this.em.assign(existing, node);
+				const { createdAt, updatedAt } = existing;
+				this.em.assign(existing, { ...node, createdAt, updatedAt });
 			} else {
 				this.em.create(BoardNode, node, { managed: true, persist: true });
 			}
