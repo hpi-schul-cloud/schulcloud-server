@@ -1,9 +1,11 @@
-import { Controller, Param, Post, All, Query } from '@nestjs/common';
+import { Controller, Param, Post, All, Query, Get } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { courseFactory } from '@shared/testing';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 @Controller('management/database')
 export class DatabaseManagementController {
-	constructor(private databaseManagementUc: DatabaseManagementUc) {}
+	constructor(private databaseManagementUc: DatabaseManagementUc, private em: EntityManager) {}
 
 	@All('seed')
 	async importCollections(@Query('with-indexes') withIndexes: boolean): Promise<string[]> {
@@ -32,5 +34,12 @@ export class DatabaseManagementController {
 	@Post('sync-indexes')
 	syncIndexes() {
 		return this.databaseManagementUc.syncIndexes();
+	}
+
+	@Get('hack')
+	async hack() {
+		const course = courseFactory.build();
+		await this.em.persistAndFlush(course);
+		return course.name;
 	}
 }

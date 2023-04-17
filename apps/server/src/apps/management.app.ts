@@ -11,6 +11,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 import { Logger } from '@src/core/logger';
 import { ManagementServerModule } from '@src/modules/management';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
+import { EntityManager } from '@mikro-orm/mongodb';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -45,5 +46,26 @@ async function bootstrap() {
 	console.log(`### Port:     ${port}            ###`);
 	console.log(`### Base path: ${basePath}           ###`);
 	console.log('#################################');
+
+	// https://www.mongodb.com/docs/drivers/node/v4.4/fundamentals/monitoring/cluster-monitoring/
+	const em = nestApp.get(EntityManager);
+	const client = em.getConnection('write').getClient();
+	const eventNames = [
+		'serverOpening',
+		'serverClosed',
+		'serverDescriptionChanged',
+		'topologyOpening',
+		'topologyClosed',
+		'topologyDescriptionChanged',
+		'serverHeartbeatStarted',
+		'serverHeartbeatSucceeded',
+		'serverHeartbeatFailed',
+	];
+	for (const eventName of eventNames) {
+		console.log(`registering event listener for ${eventName}`);
+		client.on(eventName, (event) => {
+			console.log(`XXXXreceived ${eventName}: ${JSON.stringify(event, null, 2)}`);
+		});
+	}
 }
 void bootstrap();
