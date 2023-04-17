@@ -137,7 +137,7 @@ describe('Task-Card Controller (api)', () => {
 						content: {
 							type: 'richText',
 							value: text,
-							inputFormat: 'richtext_ck5',
+							inputFormat: InputFormat.RICH_TEXT_CK5,
 						},
 					},
 				],
@@ -196,7 +196,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should should throw if no course is matching', async () => {
+		it('should throw if no course is matching', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			await em.persistAndFlush([user]);
 			em.clear();
@@ -214,7 +214,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should should throw if dueDate is empty', async () => {
+		it('should throw if dueDate is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user] });
 
@@ -235,7 +235,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should should throw if dueDate is earlier than today', async () => {
+		it('should throw if dueDate is earlier than today', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user] });
 
@@ -257,7 +257,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw an error if title is empty', async () => {
+		it('should throw if title is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
 			await em.persistAndFlush([user]);
@@ -275,7 +275,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw an error if title is not a string', async () => {
+		it('should throw if title is not a string', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
 			await em.persistAndFlush([user]);
@@ -293,7 +293,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(501);
 		});
-		it('should throw an Error if title is not provided', async () => {
+		it('should throw if title is not provided', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 
 			await em.persistAndFlush([user]);
@@ -402,7 +402,7 @@ describe('Task-Card Controller (api)', () => {
 			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
 			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
 		});
-		it('should sanitize richtext on update, with given format', async () => {
+		it('should sanitize richtext on update with inputformat ck5', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
 			const task = taskFactory.build({ creator: user });
