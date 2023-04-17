@@ -9,6 +9,7 @@ import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { CreateJwtPayload } from '../interface/jwt-payload';
+import { OAuthService } from '../../oauth/service/oauth.service';
 
 @Injectable()
 export class AuthenticationService {

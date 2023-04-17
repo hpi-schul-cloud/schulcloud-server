@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { EntityId } from '@shared/domain';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
+// import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
@@ -15,8 +15,7 @@ export class UserLoginMigrationUc {
 		private readonly oauthService: OAuthService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userMigrationService: UserMigrationService,
-		private readonly authenticationService: AuthenticationService
+		private readonly userMigrationService: UserMigrationService // TODO: what is with auth and oauth circular dependency // private readonly authenticationService: AuthenticationService
 	) {}
 
 	async migrate(
@@ -52,6 +51,6 @@ export class UserLoginMigrationUc {
 			throw new InternalServerErrorException();
 		}
 
-		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+		// await this.authenticationService.removeJwtFromWhitelist(userJwt);
 	}
 }

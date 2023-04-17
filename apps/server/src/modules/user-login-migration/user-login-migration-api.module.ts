@@ -4,10 +4,14 @@ import { UserMigrationController } from './controller/user-migration.controller'
 import { PageContentMapper } from './mapper/page-content.mapper';
 import { UserLoginMigrationUc } from './uc/user-login-migration.uc';
 import { UserLoginMigrationModule } from './user-login-migration.module';
+import { OauthModule } from '../oauth';
+import { ProvisioningModule } from '../provisioning';
+import { AuthenticationModule } from '../authentication/authentication.module';
+import { MigrationUc } from './uc/migration.uc';
 
 @Module({
-	imports: [UserLoginMigrationModule],
-	providers: [UserLoginMigrationUc, PageContentMapper],
+	imports: [UserLoginMigrationModule, OauthModule, ProvisioningModule, AuthenticationModule],
+	providers: [MigrationUc, UserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}
