@@ -26,18 +26,28 @@ import { SSOAuthenticationError } from '../../interface/sso-authentication-error
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
 
+jest.mock('jwks-rsa', () => () => {
+	return {
+		getKeys: jest.fn(),
+		getSigningKey: jest.fn().mockResolvedValue({
+			kid: 'kid',
+			alg: 'RS256',
+			getPublicKey: jest.fn().mockReturnValue(JwtTestFactory.getPublicKey()),
+			rsaPublicKey: JwtTestFactory.getPublicKey(),
+		}),
+		getSigningKeys: jest.fn(),
+	};
+});
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
-
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-
-		JwtTestFactory.mockJwksRsa();
 		const schulcloudJwt: string = JwtTestFactory.createJwt();
 
 		const moduleRef: TestingModule = await Test.createTestingModule({

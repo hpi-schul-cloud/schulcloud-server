@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
+import * as buffer from 'buffer';
 
 const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
@@ -20,6 +21,10 @@ interface CreateJwtParams {
 }
 
 export class JwtTestFactory {
+	static getPublicKey(): string | Buffer {
+		return publicKey;
+	}
+
 	public static mockJwksRsa(params?: MockJwtParams): void {
 		jest.mock('jwks-rsa', () => () => {
 			return {
