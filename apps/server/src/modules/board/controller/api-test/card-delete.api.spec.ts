@@ -86,13 +86,13 @@ describe(`card delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.delete(cardNode.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete card', async () => {

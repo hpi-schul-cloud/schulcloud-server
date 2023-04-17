@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Card, EntityId, TextElement } from '@shared/domain';
-import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -15,10 +14,7 @@ export class ContentElementService {
 
 	async create(parent: Card): Promise<TextElement> {
 		const element = new TextElement({
-			id: new ObjectId().toHexString(),
 			text: ``,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		});
 
 		parent.addChild(element);
