@@ -260,7 +260,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:33</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:36</a></code>
 </div>
                 </td>
             </tr>
@@ -489,7 +489,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:57</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:60</a></code>
 </div>
                 </td>
             </tr>
@@ -564,7 +564,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:37</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:40</a></code>
 </div>
                 </td>
             </tr>
@@ -1426,7 +1426,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, ISchoolProperties, School, System } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
@@ -1450,9 +1450,12 @@ export class SchoolRepo extends BaseDORepo&lt;SchoolDO, School, ISchoolPropertie
 	}
 
 	async findBySchoolNumber(officialSchoolNumber: string): Promise&lt;SchoolDO | null&gt; {
-		const school: School | null &#x3D; await this._em.findOne(School, { officialSchoolNumber });
+		const [schools, count] &#x3D; await this._em.findAndCount(School, { officialSchoolNumber });
+		if (count &gt; 1) {
+			throw new InternalServerErrorException(&#x60;Multiple schools found for officialSchoolNumber ${officialSchoolNumber}&#x60;);
+		}
 
-		const schoolDo: SchoolDO | null &#x3D; school ? this.mapEntityToDO(school) : null;
+		const schoolDo: SchoolDO | null &#x3D; schools[0] ? this.mapEntityToDO(schools[0]) : null;
 		return schoolDo;
 	}
 
