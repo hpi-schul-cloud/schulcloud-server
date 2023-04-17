@@ -1,5 +1,6 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import type { AnyBoardDo } from './types';
 
 export abstract class BoardComposite {
@@ -14,11 +15,11 @@ export abstract class BoardComposite {
 	updatedAt: Date;
 
 	constructor(props: BoardCompositeProps) {
-		this.id = props.id;
+		this.id = props.id ?? new ObjectId().toHexString();
 		this.title = props.title;
 		this.children = props.children;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
+		this.createdAt = props.createdAt ?? new Date();
+		this.updatedAt = props.updatedAt ?? new Date();
 	}
 
 	addChild(child: AnyBoardDo, position?: number): void {
@@ -52,13 +53,13 @@ export abstract class BoardComposite {
 }
 
 export interface BoardCompositeProps {
-	id: EntityId;
+	id?: EntityId;
 
 	title?: string;
 
 	children: AnyBoardDo[];
 
-	createdAt: Date;
+	createdAt?: Date;
 
-	updatedAt: Date;
+	updatedAt?: Date;
 }
