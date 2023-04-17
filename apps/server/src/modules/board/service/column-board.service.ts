@@ -31,4 +31,9 @@ export class ColumnBoardService {
 	async delete(board: ColumnBoard): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(board);
 	}
+
+	async updateTitle(board: ColumnBoard, title: string): Promise<void> {
+		board.title = title;
+		await this.boardDoRepo.save(board);
+	}
 }

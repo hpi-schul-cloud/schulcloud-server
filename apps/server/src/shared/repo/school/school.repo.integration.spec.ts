@@ -9,6 +9,7 @@ import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { Logger } from '@src/core/logger';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolRepo } from '..';
 
 describe('SchoolRepo', () => {
@@ -136,6 +137,30 @@ describe('SchoolRepo', () => {
 			const result: SchoolDO | null = await repo.findBySchoolNumber('fail');
 
 			expect(result).toBeNull();
+		});
+
+		describe('when there is more than school with the same officialSchoolNumber', () => {
+			const setup = async () => {
+				const officialSchoolNumber = '12345';
+				const schoolEntity: School = schoolFactory.build({ officialSchoolNumber });
+				const schoolEntity2: School = schoolFactory.build({ officialSchoolNumber });
+
+				await em.persistAndFlush([schoolEntity, schoolEntity2]);
+
+				return {
+					officialSchoolNumber,
+				};
+			};
+
+			it('should throw an internal server error', async () => {
+				const { officialSchoolNumber } = await setup();
+
+				const func = () => repo.findBySchoolNumber(officialSchoolNumber);
+
+				await expect(func()).rejects.toThrow(
+					new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`)
+				);
+			});
 		});
 	});
 
