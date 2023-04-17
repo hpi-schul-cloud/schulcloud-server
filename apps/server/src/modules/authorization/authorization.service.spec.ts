@@ -16,6 +16,8 @@ describe('AuthorizationService', () => {
 	let loader: DeepMocked<ReferenceLoader>;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
+	const testPermission = 'CAN_TEST' as Permission;
+
 	beforeAll(async () => {
 		await setupEntities();
 
@@ -236,7 +238,7 @@ describe('AuthorizationService', () => {
 		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
 
@@ -253,7 +255,7 @@ describe('AuthorizationService', () => {
 		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
 
@@ -272,7 +274,7 @@ describe('AuthorizationService', () => {
 		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
 
@@ -291,7 +293,7 @@ describe('AuthorizationService', () => {
 		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
 
@@ -312,7 +314,7 @@ describe('AuthorizationService', () => {
 		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
 
@@ -329,7 +331,7 @@ describe('AuthorizationService', () => {
 		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
 
@@ -348,7 +350,7 @@ describe('AuthorizationService', () => {
 		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
 
@@ -367,7 +369,7 @@ describe('AuthorizationService', () => {
 		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const requiredPermissions = [Permission.ACCOUNT_CREATE];
+				const requiredPermissions = [testPermission];
 
 				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
 
