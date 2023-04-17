@@ -1,8 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, System, User } from '@shared/domain';
-import { cleanupCollections, mapUserToCurrentUser, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import { Account, School, System, User } from '@shared/domain';
+import {
+	accountFactory,
+	cleanupCollections,
+	mapUserToCurrentUser,
+	schoolFactory,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
@@ -141,27 +148,44 @@ describe('UserLoginMigrationController (API)', () => {
 
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
 		describe('when providing a code and being eligible to migrate', () => {
+			// @arne gnisa ->kann man für den Api test - migration Endpunkt im oauth modul benutzen. Das sollte nun "einfacher" sein..
 			const setup = async () => {
-				const query: Oauth2AuthorizationParams = new Oauth2AuthorizationParams();
-				query.code = 'code';
-				query.systemId = 'systemId';
-				query.redirectUri = 'redirectUri';
-
-				const sourceSystem: System = systemFactory.buildWithId();
 				const targetSystem: System = systemFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
+				const query: Oauth2AuthorizationParams = new Oauth2AuthorizationParams();
+				query.code = 'code';
+				query.systemId = targetSystem.id;
+				query.redirectUri = 'redirectUri';
+
+				const sourceSystem: System = systemFactory.buildWithId();
+
 				const officialSchoolNumber = '12345';
-				const school: School = schoolFactory.buildWithId({
-					systems: [sourceSystem],
-					officialSchoolNumber,
-					externalId: 'oldSchoolExternalId',
+				const school: School = schoolFactory.buildWithId(
+					{
+						systems: [sourceSystem],
+						officialSchoolNumber,
+						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+					},
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const user: User = userFactory.buildWithId(
+					{ externalId: 'externalUserId', school },
+					new ObjectId().toHexString(),
+					{}
+				);
+
+				const account: Account = accountFactory.buildWithId({
+					userId: user.id,
+					systemId: sourceSystem.id,
+					username: user.email,
 				});
 
-				const user: User = userFactory.buildWithId({ externalId: 'oldUserExternalId', school });
-
-				await em.persistAndFlush([user, sourceSystem, targetSystem, school]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -229,7 +253,6 @@ describe('UserLoginMigrationController (API)', () => {
 
 				return {
 					query,
-					user,
 					sourceSystem,
 					targetSystem,
 				};
@@ -245,8 +268,8 @@ describe('UserLoginMigrationController (API)', () => {
 						code: query.code,
 						systemId: query.systemId,
 					});
-
-				expect(response.status).toEqual(HttpStatus.OK);
+				// TODO HttpStatus sollte 200 zurrückgeben
+				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 		});
 

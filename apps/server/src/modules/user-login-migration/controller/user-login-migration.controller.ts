@@ -53,21 +53,13 @@ export class UserLoginMigrationController {
 	}
 
 	@Post('migrate-to-oauth2')
-	@ApiOkResponse({ description: 'The User has been successfully migrated.' })
+	@ApiOkResponse({ description: 'The User has been successfully migrated.', status: 200 })
 	@ApiInternalServerErrorResponse({ description: 'The migration of the User was not possible.' })
 	async migrateUser(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2AuthorizationParams
-	): Promise<UserMigrationResponse> {
-		const migrationDto = await this.migrationUc.migrateUser(
-			jwt,
-			currentUser.userId,
-			body.systemId,
-			body.redirectUri,
-			body.code
-		);
-		const response = UserLoginMigrationMapper.mapMigrationDtoToResponse(migrationDto);
-		return response;
+	): Promise<void> {
+		await this.migrationUc.migrateUser(jwt, currentUser.userId, body.systemId, body.redirectUri, body.code);
 	}
 }

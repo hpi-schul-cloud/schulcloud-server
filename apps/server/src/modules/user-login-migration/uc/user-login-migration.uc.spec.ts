@@ -20,6 +20,7 @@ import { PageContentDto } from '../service/dto/page-content.dto';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 import { MigrationDto } from '../service/dto/migration.dto';
 import { Oauth2AuthorizationParams } from '../controller/dto/request/oauth2-authorization.params';
+import clearAllMocks = jest.clearAllMocks;
 
 describe('UserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -31,6 +32,7 @@ describe('UserLoginMigrationUc', () => {
 	let oAuthService: DeepMocked<OAuthService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -74,10 +76,15 @@ describe('UserLoginMigrationUc', () => {
 		oAuthService = module.get(OAuthService);
 		provisioningService = module.get(ProvisioningService);
 		authenticationService = module.get(AuthenticationService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		clearAllMocks();
 	});
 
 	describe('getPageContent is called', () => {
@@ -197,19 +204,60 @@ describe('UserLoginMigrationUc', () => {
 				provisioningService.getData.mockResolvedValue(oauthData);
 				schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolDO);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+				const message1 = `MIGRATION (userId: currentUserId): Migrates to targetSystem with id ${oauthData.system.systemId}`;
+				const message2 = `MIGRATION (userId: currentUserId): Provisioning data received from targetSystem (${
+					oauthData.system.systemId ?? 'N/A'
+				} with data: 
+			{ 
+				"officialSchoolNumber": ${oauthData.externalSchool?.officialSchoolNumber ?? 'N/A'},
+				"externalSchoolId": ${oauthData.externalSchool?.externalId ?? ''}
+				"externalUserId": ${oauthData.externalUser.externalId},
+			})`;
+				const message3 = `MIGRATION (userId: currentUserId): Found school with officialSchoolNumber (${
+					oauthData.externalSchool?.officialSchoolNumber ?? ''
+				})`;
 
 				return {
 					query,
 					userMigrationDto,
+					oauthData,
+					tokenDto,
+					message1,
+					message2,
+					message3,
 				};
 			};
 
-			it('should return redirect to migration succeed page', async () => {
-				const { query, userMigrationDto } = setupMigration();
+			it('should call authenticate User', async () => {
+				const { query } = setupMigration();
 
-				const result = await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
 
-				expect(result).toEqual(userMigrationDto);
+				expect(oAuthService.authenticateUser).toHaveBeenCalledWith(query.systemId, query.redirectUri, query.code);
+			});
+
+			it('should call get provisioning data', async () => {
+				const { query, tokenDto } = setupMigration();
+
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+
+				expect(provisioningService.getData).toHaveBeenCalledWith(
+					query.systemId,
+					tokenDto.idToken,
+					tokenDto.accessToken
+				);
+			});
+
+			it('should call migrate user successfully', async () => {
+				const { query, oauthData } = setupMigration();
+
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+
+				expect(userMigrationService.migrateUser).toHaveBeenCalledWith(
+					'currentUserId',
+					oauthData.externalUser.externalId,
+					query.systemId
+				);
 			});
 
 			it('should remove the jwt from the whitelist', async () => {
@@ -218,6 +266,16 @@ describe('UserLoginMigrationUc', () => {
 				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
 
 				expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
+			});
+
+			it('should log migration information', async () => {
+				const { query, message1, message2, message3 } = setupMigration();
+
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+
+				expect(logger.debug).toHaveBeenCalledWith(message1);
+				expect(logger.debug).toHaveBeenCalledWith(message2);
+				expect(logger.debug).toHaveBeenCalledWith(message3);
 			});
 		});
 
@@ -282,76 +340,6 @@ describe('UserLoginMigrationUc', () => {
 				const func = () => uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
 
 				await expect(func).rejects.toThrow(new InternalServerErrorException('Error during migration of user'));
-			});
-		});
-
-		describe('when migration failed', () => {
-			const setupMigration = () => {
-				const query: Oauth2AuthorizationParams = new Oauth2AuthorizationParams();
-				query.code = 'code';
-				query.systemId = 'systemId';
-				query.redirectUri = 'redirectUri';
-
-				const sourceSystem: System = systemFactory
-					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
-
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
-					systems: [sourceSystem.id],
-					officialSchoolNumber: 'officialSchoolNumber',
-					externalId: 'oldSchoolExternalId',
-				});
-
-				const externalUserId = 'externalUserId';
-
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'externalId',
-						officialSchoolNumber: 'officialSchoolNumber',
-						name: 'schoolName',
-					}),
-				});
-
-				const userMigrationDto: MigrationDto = new MigrationDto({
-					redirect: 'https://mock.de/dashboard',
-				});
-
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
-					idToken: 'idToken',
-					refreshToken: 'refreshToken',
-					accessToken: 'accessToken',
-				});
-
-				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolDO);
-				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-
-				return {
-					query,
-					userMigrationDto,
-				};
-			};
-
-			it('should return redirect to dashboard ', async () => {
-				const { query, userMigrationDto } = setupMigration();
-
-				const result: MigrationDto = await uc.migrateUser(
-					'jwt',
-					'currentUserId',
-					query.systemId,
-					query.redirectUri,
-					query.code
-				);
-
-				expect(result.redirect).toStrictEqual(userMigrationDto.redirect);
 			});
 		});
 
@@ -473,11 +461,17 @@ describe('UserLoginMigrationUc', () => {
 				schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolDO);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
 
+				const text = `Successfully migrated school (${schoolDO.name} - (${schoolDO.id ?? 'N/A'}) to targetSystem ${
+					query.systemId ?? 'N/A'
+				} which has the externalSchoolId ${oauthData.externalSchool?.externalId ?? 'N/A'}`;
+				const message = `MIGRATION (userId: currentUserId): ${text ?? ''}`;
+
 				return {
 					query,
 					userMigrationDto,
 					schoolDO,
 					oauthData,
+					message,
 				};
 			};
 
@@ -491,6 +485,13 @@ describe('UserLoginMigrationUc', () => {
 					schoolDO,
 					'systemId'
 				);
+			});
+			it('should log migration information', async () => {
+				const { query, message } = setupMigration();
+
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+
+				expect(logger.debug).toHaveBeenCalledWith(message);
 			});
 		});
 
@@ -530,12 +531,17 @@ describe('UserLoginMigrationUc', () => {
 
 				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
 				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolMigrationService.schoolToMigrate.mockResolvedValue(null);
+				schoolMigrationService.schoolToMigrate.mockResolvedValueOnce(null);
+				schoolMigrationService.migrateSchool.mockResolvedValue();
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+				const message = `MIGRATION (userId: currentUserId): Found school with officialSchoolNumber (officialSchoolNumber)`;
 
 				return {
 					query,
 					userMigrationDto,
+					oauthData,
+					message,
 				};
 			};
 
@@ -545,6 +551,14 @@ describe('UserLoginMigrationUc', () => {
 				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
 
 				expect(schoolMigrationService.migrateSchool).not.toHaveBeenCalled();
+			});
+
+			it('should log migration information', async () => {
+				const { query, message } = setupMigration();
+
+				await uc.migrateUser('jwt', 'currentUserId', query.systemId, query.redirectUri, query.code);
+
+				expect(logger.debug).toHaveBeenCalledWith(message);
 			});
 		});
 
@@ -579,11 +593,20 @@ describe('UserLoginMigrationUc', () => {
 
 				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
 				provisioningService.getData.mockResolvedValue(oauthData);
+				schoolMigrationService.schoolToMigrate.mockResolvedValueOnce(null);
 				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+				const message = `Provisioning data received from targetSystem (${oauthData.system.systemId ?? 'N/A'} with data: 
+			{ 
+				"officialSchoolNumber": ${oauthData.externalSchool?.officialSchoolNumber ?? 'N/A'},
+				"externalSchoolId": ${oauthData.externalSchool?.externalId ?? ''}
+				"externalUserId": ${oauthData.externalUser.externalId},
+			})`;
 
 				return {
 					query,
 					userMigrationDto,
+					message,
 				};
 			};
 

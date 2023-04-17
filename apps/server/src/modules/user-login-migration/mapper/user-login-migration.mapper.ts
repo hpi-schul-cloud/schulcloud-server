@@ -23,12 +23,4 @@ export class UserLoginMigrationMapper {
 		});
 		return response;
 	}
-
-	static mapMigrationDtoToResponse(dto: MigrationDto): UserMigrationResponse {
-		const response: UserMigrationResponse = new UserMigrationResponse({
-			redirect: dto.redirect,
-		});
-
-		return response;
-	}
 }

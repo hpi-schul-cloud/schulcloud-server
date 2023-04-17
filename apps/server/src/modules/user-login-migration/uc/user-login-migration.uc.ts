@@ -57,7 +57,7 @@ export class UserLoginMigrationUc {
 		targetSystemId: EntityId,
 		redirectUri: string,
 		code?: string
-	): Promise<MigrationDto> {
+	): Promise<void> {
 		this.logMigrationInformation(userId, `Migrates to targetSystem with id ${targetSystemId}`);
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
@@ -68,6 +68,8 @@ export class UserLoginMigrationUc {
 			tokenDto.accessToken
 		);
 
+		this.logMigrationInformation(userId, undefined, data, targetSystemId);
+
 		if (data.externalSchool) {
 			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
 				userId,
@@ -77,7 +79,7 @@ export class UserLoginMigrationUc {
 
 			this.logMigrationInformation(
 				userId,
-				`Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber ?? ''})}`
+				`Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber ?? ''})`
 			);
 
 			if (schoolToMigrate) {
@@ -87,7 +89,7 @@ export class UserLoginMigrationUc {
 					targetSystemId
 				);
 
-				this.logMigrationInformation(userId, undefined, data, undefined, schoolToMigrate);
+				this.logMigrationInformation(userId, undefined, data, data.system.systemId, schoolToMigrate);
 			}
 		}
 
@@ -105,8 +107,6 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(userId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
 
 		await this.authenticationService.removeJwtFromWhitelist(jwt);
-
-		return migrationDto;
 	}
 
 	private logMigrationInformation(
