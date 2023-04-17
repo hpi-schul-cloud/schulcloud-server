@@ -8,7 +8,6 @@ import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { ALL_RULES } from './rules';
 import { AllowedAuthorizationEntityType } from './types';
 
 describe('AuthorizationService', () => {
@@ -23,7 +22,6 @@ describe('AuthorizationService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				AuthorizationService,
-				...ALL_RULES,
 				{
 					provide: RuleManager,
 					useValue: createMock<RuleManager>(),
@@ -129,17 +127,19 @@ describe('AuthorizationService', () => {
 				const entityId = 'test';
 				const entityName = AllowedAuthorizationEntityType.Course;
 
-				jest.spyOn(service, 'isAuthorizedByReferences').mockResolvedValueOnce(false);
+				const spy = jest.spyOn(service, 'isAuthorizedByReferences').mockResolvedValueOnce(false);
 
-				return { context, userId, entityId, entityName };
+				return { context, userId, entityId, entityName, spy };
 			};
 
 			it('should reject with ForbiddenException', async () => {
-				const { context, userId, entityId, entityName } = setup();
+				const { context, userId, entityId, entityName, spy } = setup();
 
 				await expect(service.checkIfAuthorizedByReferences(userId, entityName, entityId, context)).rejects.toThrow(
 					ForbiddenException
 				);
+
+				spy.mockRestore();
 			});
 		});
 

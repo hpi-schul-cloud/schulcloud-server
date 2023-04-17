@@ -25,6 +25,7 @@ export class AuthorizationHelper {
 		}
 		const permissions = user.resolvePermissions();
 		const hasPermission = requiredPermissions.some((p) => permissions.includes(p));
+
 		return hasPermission;
 	}
 
