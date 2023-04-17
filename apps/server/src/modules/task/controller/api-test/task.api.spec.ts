@@ -4,7 +4,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat, Permission, Task } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,10 +11,12 @@ import {
 	mapUserToCurrentUser,
 	roleFactory,
 	submissionFactory,
+	taskCardFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
@@ -235,10 +236,44 @@ describe('Task Controller (API)', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
+				taskCard: {},
 			});
 		});
 
-		it('[FIND] /tasks retun a status flag in task if the teacher is only a substitution teacher.', async () => {
+		it('[FIND] /tasks return task status for teacher with completed beta task information.', async () => {
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3, Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT],
+			});
+			const teacher = userFactory.build({ roles });
+			const student = userFactory.build();
+			const course = courseFactory.build({
+				teachers: [teacher],
+				students: [student],
+			});
+			const task = taskFactory.build({ course });
+			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [student] });
+
+			task.taskCard = taskCard.id;
+			await em.persistAndFlush([task, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(teacher);
+			const { result } = await api.get();
+
+			expect(result.data[0].status).toEqual({
+				submitted: 0,
+				maxSubmissions: 1,
+				graded: 0,
+				isDraft: false,
+				isFinished: false,
+				isSubstitutionTeacher: false,
+				taskCard: {
+					completedBy: [student.id],
+				},
+			});
+		});
+
+		it('[FIND] /tasks return a status flag in task if the teacher is only a substitution teacher.', async () => {
 			const teacher = setup();
 			const course = courseFactory.build({ substitutionTeachers: [teacher] });
 			const task = taskFactory.build({ course });
@@ -905,6 +940,40 @@ describe('Task Controller (API)', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
+				taskCard: {},
+			});
+		});
+
+		it('[FIND] /tasks return task status for student with completed beta task.', async () => {
+			const teacher = userFactory.build();
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.TASK_DASHBOARD_VIEW_V3, Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW],
+			});
+			const student = userFactory.build({ roles });
+			const course = courseFactory.build({
+				teachers: [teacher],
+				students: [student],
+			});
+			const task = taskFactory.build({ course });
+			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [student] });
+
+			task.taskCard = taskCard.id;
+			await em.persistAndFlush([task, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(student);
+			const { result } = await api.get();
+
+			expect(result.data[0].status).toEqual({
+				submitted: 0,
+				maxSubmissions: 1,
+				graded: 0,
+				isDraft: false,
+				isFinished: false,
+				isSubstitutionTeacher: false,
+				taskCard: {
+					isCompleted: true,
+				},
 			});
 		});
 

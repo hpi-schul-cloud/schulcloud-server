@@ -48,7 +48,7 @@ export class TaskCardUc {
 			visibleAtDate: new Date(),
 			dueDate: params.dueDate,
 			title: params.title,
-			completedUserIds: [],
+			completedUsers: [],
 		};
 
 		if (params.visibleAtDate) {

@@ -6,13 +6,13 @@ import { Course } from './course.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; completedUserIds: User[] };
+export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; completedUsers: User[] };
 
 export interface ITaskCard extends ICard {
 	task: Task;
 	dueDate: Date;
 	course: Course;
-	completedUserIds: Collection<User>;
+	completedUsers: Collection<User>;
 }
 
 @Entity({
@@ -33,7 +33,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.title = props.title;
 		this.course = props.course;
 		Object.assign(this, { creator: props.creator });
-		this.completedUserIds.set(props.completedUserIds || []);
+		this.completedUsers.set(props.completedUsers || []);
 	}
 
 	@ManyToMany('CardElement', undefined, { fieldName: 'cardElementsIds', cascade: [Cascade.ALL] })
@@ -66,7 +66,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	task!: Task;
 
 	@ManyToMany('User', undefined)
-	completedUserIds = new Collection<User>(this);
+	completedUsers = new Collection<User>(this);
 
 	public getCardElements() {
 		return this.cardElements.getItems();
@@ -77,15 +77,15 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	}
 
 	public addUserToCompletedList(user: User): void {
-		this.completedUserIds.add(user);
+		this.completedUsers.add(user);
 	}
 
 	public removeUserFromCompletedList(user: User): void {
-		this.completedUserIds.remove(user);
+		this.completedUsers.remove(user);
 	}
 
 	public getCompletedUserIds(): string[] {
-		const completedUsers = this.completedUserIds.getItems().map((user) => user.id);
+		const completedUsers = this.completedUsers.getItems().map((user) => user.id);
 		return completedUsers;
 	}
 }

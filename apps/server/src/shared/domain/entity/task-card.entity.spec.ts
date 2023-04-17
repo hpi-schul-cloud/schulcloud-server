@@ -1,4 +1,4 @@
-import { richTextCardElementFactory, setupEntities, taskCardFactory } from '@shared/testing';
+import { richTextCardElementFactory, setupEntities, taskCardFactory, userFactory } from '@shared/testing';
 import { CardElementType, RichTextCardElement } from '.';
 
 describe('Task Card Entity', () => {
@@ -53,104 +53,87 @@ describe('Task Card Entity', () => {
 			});
 		});
 	});
-	/* 
-	describe('completeForUser is called', () => {
-		it('should add the user to the completed collection', () => {
+
+	describe('addUserToCompletedList is called', () => {
+		it('should add the user to the completed users list', () => {
 			const user = userFactory.buildWithId();
 			const taskCard = taskCardFactory.buildWithId();
 
-			taskCard.completeForUser(user);
+			taskCard.addUserToCompletedList(user);
 
-			expect(taskCard.completed.contains(user)).toBe(true);
+			expect(taskCard.completedUsers.contains(user)).toBe(true);
 		});
 
 		it('should make sure the user is added only once', () => {
 			const user = userFactory.buildWithId();
 			const taskCard = taskCardFactory.buildWithId();
 
-			taskCard.completeForUser(user);
-			taskCard.completeForUser(user);
+			taskCard.addUserToCompletedList(user);
+			taskCard.addUserToCompletedList(user);
 
-			expect(taskCard.completed.count()).toBe(1);
+			expect(taskCard.completedUsers.count()).toBe(1);
 		});
 
-		it('should not overwrite other users in the completed collection', () => {
+		it('should not overwrite other users in the completed users list', () => {
 			const user1 = userFactory.buildWithId();
 			const user2 = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ completed: [user1] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [user1] });
 
-			taskCard.completeForUser(user2);
+			taskCard.addUserToCompletedList(user2);
 
-			expect(taskCard.completed.contains(user1)).toBe(true);
-			expect(taskCard.completed.contains(user2)).toBe(true);
+			expect(taskCard.completedUsers.contains(user1)).toBe(true);
+			expect(taskCard.completedUsers.contains(user2)).toBe(true);
 		});
 	});
 
-	describe('undoForUser is called', () => {
-		it('should remove the user from the completed collection', () => {
+	describe('removeUserFromCompletedList is called', () => {
+		it('should remove the user from the completed users list', () => {
 			const user = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ completed: [user] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [user] });
 
-			taskCard.undoForUser(user);
+			taskCard.removeUserFromCompletedList(user);
 
-			expect(taskCard.completed.contains(user)).toBe(false);
+			expect(taskCard.completedUsers.contains(user)).toBe(false);
 		});
 
-		it('should make sure the beta task can be undone even if already done', () => {
+		it('should make sure the beta task can be marked as uncompleted even if already done', () => {
 			const user = userFactory.buildWithId();
 			const taskCard = taskCardFactory.buildWithId();
 
-			taskCard.undoForUser(user);
-			taskCard.undoForUser(user);
+			taskCard.removeUserFromCompletedList(user);
+			taskCard.removeUserFromCompletedList(user);
 
-			expect(taskCard.completed.count()).toBe(0);
+			expect(taskCard.completedUsers.count()).toBe(0);
 		});
 
-		it('should not remove other users from the completed collection', () => {
+		it('should not remove other users from the completed users list', () => {
 			const user1 = userFactory.buildWithId();
 			const user2 = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ completed: [user1, user2] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [user1, user2] });
 
-			taskCard.undoForUser(user2);
+			taskCard.removeUserFromCompletedList(user2);
 
-			expect(taskCard.completed.contains(user1)).toBe(true);
-			expect(taskCard.completed.contains(user2)).toBe(false);
+			expect(taskCard.completedUsers.contains(user1)).toBe(true);
+			expect(taskCard.completedUsers.contains(user2)).toBe(false);
 		});
 	});
 
-	describe('isCompletedForUser is called', () => {
-		describe('when user completed the beta task', () => {
-			it('should return true', () => {
-				const user = userFactory.buildWithId();
-				const taskCard = taskCardFactory.buildWithId({ completed: [user] });
+	describe('getCompletedUserIds is called', () => {
+		it('should return list of IDs for completed users', () => {
+			const user = userFactory.buildWithId();
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [user] });
 
-				const result = taskCard.isCompletedForUser(user);
+			const result = taskCard.getCompletedUserIds();
 
-				expect(result).toEqual(true);
-			});
+			const expectedUserIds = [user.id];
+			expect(result).toEqual(expectedUserIds);
 		});
+		it('should return empty list if nobody completed yet', () => {
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [] });
 
-		describe('when user not yet completed the beta task', () => {
-			it('should return false', () => {
-				const user = userFactory.buildWithId();
-				const taskCard = taskCardFactory.buildWithId({ completed: [] });
+			const result = taskCard.getCompletedUserIds();
 
-				const result = taskCard.isCompletedForUser(user);
-
-				expect(result).toEqual(false);
-			});
+			expect(result).toEqual([]);
 		});
-
-		describe('when other users have completed the beta task but the user did not', () => {
-			it('should return false', () => {
-				const user1 = userFactory.buildWithId();
-				const user2 = userFactory.buildWithId();
-				const taskCard = taskCardFactory.buildWithId({ completed: [user1] });
-
-				const result = taskCard.isCompletedForUser(user2);
-
-				expect(result).toEqual(false);
-			});
-		});
-	}); */
+	});
 });

@@ -65,6 +65,7 @@ describe('TaskCardRepo', () => {
 			expect(result.cardElements).toBeDefined();
 			expect(result.task).toBeDefined();
 			expect(result.task.course).toBeDefined();
+			expect(result.completedUsers).toBeDefined();
 		});
 	});
 });

@@ -1,4 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export class BoardTaskCardStatusResponse {
+	@ApiPropertyOptional({
+		description: 'List of users who marked task card as completed',
+	})
+	completedBy?: string[];
+
+	@ApiPropertyOptional({
+		description: 'Returns wether the student completed the task card or not',
+	})
+	isCompleted?: boolean;
+}
 
 export class BoardTaskStatusResponse {
 	constructor({
@@ -8,6 +20,7 @@ export class BoardTaskStatusResponse {
 		isDraft,
 		isSubstitutionTeacher,
 		isFinished,
+		taskCard,
 	}: BoardTaskStatusResponse) {
 		this.submitted = submitted;
 		this.maxSubmissions = maxSubmissions;
@@ -15,6 +28,7 @@ export class BoardTaskStatusResponse {
 		this.isDraft = isDraft;
 		this.isSubstitutionTeacher = isSubstitutionTeacher;
 		this.isFinished = isFinished;
+		this.taskCard = taskCard;
 	}
 
 	@ApiProperty()
@@ -34,4 +48,7 @@ export class BoardTaskStatusResponse {
 
 	@ApiProperty()
 	isFinished: boolean;
+
+	@ApiProperty()
+	taskCard: BoardTaskCardStatusResponse;
 }

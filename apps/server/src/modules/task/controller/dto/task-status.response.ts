@@ -11,6 +11,7 @@ export class TaskCardStatusResponse {
 	})
 	isCompleted?: boolean;
 }
+
 export class TaskStatusResponse {
 	constructor({
 		submitted,

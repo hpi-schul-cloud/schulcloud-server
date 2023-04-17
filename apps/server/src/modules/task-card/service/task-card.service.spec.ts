@@ -64,7 +64,7 @@ describe('TaskService', () => {
 
 		it('should return list of completed userIds', async () => {
 			const completedUser = userFactory.buildWithId();
-			const taskCard = taskCardFactory.buildWithId({ completedUserIds: [completedUser] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [completedUser] });
 			taskCardRepo.findById.mockResolvedValueOnce(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
 			const result = await taskCardService.getCompletedForUsers(user.id, taskCard.id);
@@ -89,7 +89,7 @@ describe('TaskService', () => {
 		});
 
 		it('should return true if user completed beta task', async () => {
-			const taskCard = taskCardFactory.buildWithId({ completedUserIds: [user] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [user] });
 			taskCardRepo.findById.mockResolvedValueOnce(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
 			const result = await taskCardService.isCompletedForUser(user.id, taskCard.id);
@@ -97,7 +97,7 @@ describe('TaskService', () => {
 		});
 
 		it('should return false if user did not complete beta task', async () => {
-			const taskCard = taskCardFactory.buildWithId({ completedUserIds: [] });
+			const taskCard = taskCardFactory.buildWithId({ completedUsers: [] });
 			taskCardRepo.findById.mockResolvedValueOnce(taskCard);
 			authorizationService.hasPermission.mockReturnValue(true);
 			const result = await taskCardService.isCompletedForUser(user.id, taskCard.id);

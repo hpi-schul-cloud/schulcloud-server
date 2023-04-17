@@ -11,11 +11,13 @@ import {
 	lessonFactory,
 	setupEntities,
 	submissionFactory,
+	taskCardFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService, TaskCardService } from '@src/modules';
+import { AuthorizationService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { TaskCardService } from '../../task-card/service/task-card.service';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -29,6 +31,7 @@ describe('TaskService', () => {
 	let module: TestingModule;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let taskService: TaskService;
+	let taskCardService: DeepMocked<TaskCardService>;
 	let submissionService: DeepMocked<SubmissionService>;
 	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
@@ -64,6 +67,7 @@ describe('TaskService', () => {
 
 		taskRepo = module.get(TaskRepo);
 		taskService = module.get(TaskService);
+		taskCardService = module.get(TaskCardService);
 		submissionService = module.get(SubmissionService);
 		userRepo = module.get(UserRepo);
 		courseRepo = module.get(CourseRepo);
@@ -279,6 +283,13 @@ describe('TaskService', () => {
 				expect(result.task).toEqual(expect.objectContaining(taskMock));
 				expect(result.status.isDraft).toEqual(true);
 			});
+			it('should set beta task status info in task status without details', async () => {
+				authorizationService.hasPermission.mockReturnValue(true);
+				const result = await taskService.create(user.id, { name: 'test', courseId: course.id });
+				expect(result.status.taskCard).toBeDefined();
+				expect(result.status.taskCard.completedBy).not.toBeDefined();
+				expect(result.status.taskCard.isCompleted).not.toBeDefined();
+			});
 		});
 		describe('update task', () => {
 			let course: Course;
@@ -468,6 +479,21 @@ describe('TaskService', () => {
 				expect(taskRepo.save).toBeCalled();
 				expect(taskWithStatusVo.task.users.getItems()).toEqual([student2]);
 			});
+			it('should return the updated task with correct beta task teacher status', async () => {
+				const completedUser = userFactory.buildWithId({});
+				userRepo.findById.mockResolvedValueOnce(completedUser);
+				const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [completedUser] });
+				const params = {
+					name: 'test',
+					courseId: course.id,
+					taskCard: taskCard.id,
+				};
+				taskCardService.getCompletedForUsers.mockResolvedValueOnce([completedUser.id]);
+				const result = await taskService.update(user.id, task.id, params);
+				expect(result.task).toEqual({ ...task, name: params.name });
+				expect(result.status.taskCard.completedBy).toEqual([completedUser.id]);
+				expect(result.status.taskCard.isCompleted).not.toBeDefined();
+			});
 		});
 		describe('find task', () => {
 			let task: Task;
@@ -501,6 +527,32 @@ describe('TaskService', () => {
 				const result = await taskService.find(user.id, task.id);
 				expect(result.task).toEqual(task);
 				expect(result.status).toBeDefined();
+			});
+			it('should return the task with correct beta task teacher status', async () => {
+				const completedUser = userFactory.buildWithId({});
+				userRepo.findById.mockResolvedValueOnce(completedUser);
+				const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [completedUser] });
+				task.taskCard = taskCard.id;
+
+				authorizationService.hasOneOfPermissions.mockReturnValue(true);
+				taskCardService.getCompletedForUsers.mockResolvedValueOnce([completedUser.id]);
+				const result = await taskService.find(user.id, task.id);
+				expect(result.task).toEqual(task);
+				expect(result.status.taskCard.completedBy).toEqual([completedUser.id]);
+				expect(result.status.taskCard.isCompleted).not.toBeDefined();
+			});
+			it('should return the task with correct beta task student status', async () => {
+				const completedUser = userFactory.buildWithId({});
+				userRepo.findById.mockResolvedValueOnce(completedUser);
+				const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [completedUser] });
+				task.taskCard = taskCard.id;
+
+				authorizationService.hasOneOfPermissions.mockReturnValue(false);
+				taskCardService.isCompletedForUser.mockResolvedValueOnce(true);
+				const result = await taskService.find(completedUser.id, task.id);
+				expect(result.task).toEqual(task);
+				expect(result.status.taskCard.completedBy).not.toBeDefined();
+				expect(result.status.taskCard.isCompleted).toEqual(true);
 			});
 		});
 	});

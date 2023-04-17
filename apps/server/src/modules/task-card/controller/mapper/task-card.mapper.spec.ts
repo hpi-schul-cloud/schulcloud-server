@@ -37,7 +37,7 @@ describe('task-card mapper', () => {
 				course,
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
-				completedUserIds: [completedUser],
+				completedUsers: [completedUser],
 			});
 			const status = taskCard.task.createTeacherStatusForUser(user);
 

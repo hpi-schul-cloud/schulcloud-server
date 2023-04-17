@@ -549,7 +549,7 @@ describe('TaskCardUc', () => {
 		});
 		it('should remove user from completed list if new state is set to false', async () => {
 			const taskCardWithCompletedUser = taskCardFactory.buildWithId({
-				completedUserIds: [user],
+				completedUsers: [user],
 			});
 			taskCardRepo.findById.mockResolvedValue(taskCardWithCompletedUser);
 			const removeUserFromCompletedListMock = jest.spyOn(taskCardWithCompletedUser, 'removeUserFromCompletedList');
@@ -567,7 +567,7 @@ describe('TaskCardUc', () => {
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
 			expect(result.card.cardType).toEqual(CardType.Task);
-			expect(result.card.completedUserIds).toContain(user);
+			expect(result.card.completedUsers).toContain(user);
 		});
 	});
 });
