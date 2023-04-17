@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { User } from '../../shared/domain/entity/user.entity';
+import { User } from '@shared/domain/entity/user.entity';
 import { CourseGroupRule } from './rules/course-group.rule';
 import { CourseRule } from './rules/course.rule';
 import { LessonRule } from './rules/lesson.rule';

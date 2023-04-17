@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Role, School, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { SchoolDO } from '../../../shared/domain/domainobject/school.do';
-import { Role, School, User } from '../../../shared/domain/entity';
-import { Permission } from '../../../shared/domain/interface';
-import { Action } from '../types';
 import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../types';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {

@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { Role, SchoolExternalTool, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolExternalToolFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { schoolExternalToolDOFactory } from '../../../shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '../../../shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Role, SchoolExternalTool, User } from '../../../shared/domain/entity';
-import { Permission } from '../../../shared/domain/interface';
-import { Action } from '../types';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
 import { AuthorizationHelper } from '../authorization.helper';
+import { Action } from '../types';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 describe('SchoolExternalToolRule', () => {

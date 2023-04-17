@@ -8,7 +8,7 @@ import KeycloakAdministration from '@shared/infra/identity-management/keycloak-a
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 

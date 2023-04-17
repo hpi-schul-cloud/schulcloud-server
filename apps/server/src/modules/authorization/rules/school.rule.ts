@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolDO } from '../../../shared/domain/domainobject/school.do';
-import { School, User } from '../../../shared/domain/entity';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { School, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
 import { AuthorizationContext, Rule } from '../types';
 

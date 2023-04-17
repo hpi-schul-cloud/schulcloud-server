@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import {
 	courseFactory,
 	courseGroupFactory,
@@ -9,7 +10,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
-import { Permission } from '../../../shared/domain/interface';
 import { AuthorizationHelper } from '../authorization.helper';
 import { Action } from '../types';
 

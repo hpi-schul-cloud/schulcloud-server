@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CourseGroup, User } from '../../../shared/domain/entity';
+import { CourseGroup, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '../authorization.helper';
 import { Action, AuthorizationContext, Rule } from '../types';
 import { CourseRule } from './course.rule';
