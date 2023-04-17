@@ -46,6 +46,7 @@ Browser: ${data.browserName}
 Browser Version: ${data.browserVersion}
 Betriebssystem: ${data.os}
 Gerät: ${device}
+Problembereich: ${data.problemArea}
 `;
 
 	if (data.desire && data.desire !== '') {
@@ -61,7 +62,6 @@ Akzeptanzkriterien: ${data.acceptanceCriteria}
 		text = `
 ${text}
 User meldet folgendes:
-Problembereich: ${data.problemArea}
 Problem Kurzbeschreibung: ${data.subject}
 Problembeschreibung: ${data.problemDescription}
 `;
