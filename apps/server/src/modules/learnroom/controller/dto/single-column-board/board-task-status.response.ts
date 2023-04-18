@@ -20,7 +20,6 @@ export class BoardTaskStatusResponse {
 		isDraft,
 		isSubstitutionTeacher,
 		isFinished,
-		taskCard,
 	}: BoardTaskStatusResponse) {
 		this.submitted = submitted;
 		this.maxSubmissions = maxSubmissions;
@@ -28,7 +27,6 @@ export class BoardTaskStatusResponse {
 		this.isDraft = isDraft;
 		this.isSubstitutionTeacher = isSubstitutionTeacher;
 		this.isFinished = isFinished;
-		this.taskCard = taskCard;
 	}
 
 	@ApiProperty()
@@ -48,7 +46,4 @@ export class BoardTaskStatusResponse {
 
 	@ApiProperty()
 	isFinished: boolean;
-
-	@ApiProperty()
-	taskCard: BoardTaskCardStatusResponse;
 }

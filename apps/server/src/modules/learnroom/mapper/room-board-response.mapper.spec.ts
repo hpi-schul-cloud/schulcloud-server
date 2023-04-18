@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
 import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -46,7 +46,6 @@ describe('room board response mapper', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
-				taskCard: {},
 			};
 			const board = {
 				roomId: 'roomId',
@@ -61,7 +60,6 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map tasks with status and its task card on board to response', () => {
-			const usersList = userFactory.buildListWithId(2);
 			const course = courseFactory.buildWithId();
 			const linkedTask = taskFactory.buildWithId({ course });
 			const mockTaskCardId = 'taskCardId #1';
@@ -73,7 +71,6 @@ describe('room board response mapper', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
-				taskCard: { isCompleted: true, completedBy: [usersList[0].id, usersList[1].id] },
 			};
 			const board = {
 				roomId: 'roomId',
@@ -86,7 +83,6 @@ describe('room board response mapper', () => {
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 			expect((result.elements[0].content as BoardTaskResponse).taskCardId).toEqual(mockTaskCardId);
-			expect((result.elements[0].content as BoardTaskResponse).status.taskCard).toEqual(status.taskCard);
 		});
 
 		it('should map lessons on board to response', () => {
@@ -135,7 +131,6 @@ describe('room board response mapper', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
-				taskCard: {},
 			};
 			const board = {
 				roomId: 'roomId',

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import {
 	Counted,
@@ -6,24 +6,17 @@ import {
 	IFindOptions,
 	ITaskCreate,
 	ITaskProperties,
-	ITaskStatus,
 	ITaskUpdate,
 	Permission,
 	PermissionContextBuilder,
 	Task,
 	TaskWithStatusVo,
-	User,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { SubmissionService } from './submission.service';
 
-enum TaskStatusType {
-	'TEACHER' = 'TEACHER',
-	'STUDENT' = 'STUDENT',
-}
 @Injectable()
 export class TaskService {
 	constructor(
@@ -33,8 +26,7 @@ export class TaskService {
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
 		private readonly submissionService: SubmissionService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly taskCardService: TaskCardService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
 	async findBySingleParent(
@@ -105,7 +97,7 @@ export class TaskService {
 
 		await this.taskRepo.save(task);
 
-		const status = await this.statusWrapper(task, user, TaskStatusType.TEACHER);
+		const status = task.createTeacherStatusForUser(user);
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
 		return taskWithStatusVo;
@@ -118,8 +110,8 @@ export class TaskService {
 		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
 		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
-			? await this.statusWrapper(task, user, TaskStatusType.TEACHER)
-			: await this.statusWrapper(task, user, TaskStatusType.STUDENT);
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -181,7 +173,7 @@ export class TaskService {
 
 		await this.taskRepo.save(task);
 
-		const status = await this.statusWrapper(task, user, TaskStatusType.TEACHER);
+		const status = task.createTeacherStatusForUser(user);
 		const taskWithStatusVo = new TaskWithStatusVo(task, status);
 
 		return taskWithStatusVo;
@@ -191,24 +183,5 @@ export class TaskService {
 		if (availableDate && dueDate && !(availableDate < dueDate)) {
 			throw new ValidationError('availableDate must be before dueDate');
 		}
-	}
-
-	private async statusWrapper(task: Task, user: User, statusType: TaskStatusType) {
-		let status: ITaskStatus;
-		if (statusType === TaskStatusType.TEACHER) {
-			status = task.createTeacherStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
-			}
-			return status;
-		}
-		if (statusType === TaskStatusType.STUDENT) {
-			status = task.createStudentStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
-			}
-			return status;
-		}
-		throw new BadRequestException('provide valid TaskStatusType');
 	}
 }

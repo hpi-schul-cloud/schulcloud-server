@@ -292,14 +292,6 @@ describe('Task Entity', () => {
 
 				expect(status.maxSubmissions).toEqual(maxSubmission);
 			});
-
-			it('should create status property for beta task', () => {
-				const { task, user } = setup();
-
-				const status = task.createTeacherStatusForUser(user);
-
-				expect(status.taskCard).toEqual({});
-			});
 		});
 
 		// bad to split it in coursegroup lesson and course lesson,
@@ -590,14 +582,6 @@ describe('Task Entity', () => {
 				const status = task.createStudentStatusForUser(user);
 
 				expect(status.isFinished).toEqual(false);
-			});
-
-			it('should create status property for beta task', () => {
-				const { task, user } = setup();
-
-				const status = task.createStudentStatusForUser(user);
-
-				expect(status.taskCard).toEqual({});
 			});
 		});
 

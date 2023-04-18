@@ -5,7 +5,7 @@ import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-ele
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { TaskService } from '@src/modules/task/service';
+import { SubmissionService, TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class TaskCardUc {
 		private cardElementRepo: CardElementRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly submissionService: SubmissionService
 	) {}
 
 	async create(userId: EntityId, params: ITaskCardCRUD) {
@@ -143,8 +144,10 @@ export class TaskCardUc {
 
 		if (newState) {
 			card.addUserToCompletedList(user);
+			await this.createSubmission(user.id, card.task.id);
 		} else {
 			card.removeUserFromCompletedList(user);
+			await this.deleteSubmission(user.id, card.task.id);
 		}
 
 		await this.taskCardRepo.save(card);
@@ -198,6 +201,19 @@ export class TaskCardUc {
 		taskCard.cardElements.set(newCardElements);
 
 		return taskCard;
+	}
+
+	private async createSubmission(userId: EntityId, taskId: EntityId) {
+		await this.submissionService.createForTaskCard(userId, taskId);
+	}
+
+	private async deleteSubmission(userId: EntityId, taskId: EntityId) {
+		const submissions = await this.submissionService.findByUserAndTask(userId, taskId);
+		if (submissions.length > 1 || submissions[0].student.id !== userId || submissions[0].task.id !== taskId) {
+			throw new ForbiddenException('Submissions do not belong to user or task');
+		}
+		const deletableSubmission = submissions[0];
+		await this.submissionService.delete(deletableSubmission);
 	}
 
 	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {

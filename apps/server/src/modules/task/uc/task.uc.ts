@@ -17,7 +17,6 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
-import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -27,8 +26,7 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonRepo: LessonRepo,
-		private readonly taskService: TaskService,
-		private readonly taskCardService: TaskCardService
+		private readonly taskService: TaskService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -58,26 +56,18 @@ export class TaskUC {
 			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
-		const taskWithStatusVos = tasks.map(async (task) => {
+		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
 			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
-				if (task.taskCard) {
-					status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
-				}
 			} else {
 				status = task.createStudentStatusForUser(user);
-				if (task.taskCard) {
-					status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
-				}
 			}
 
 			return new TaskWithStatusVo(task, status);
 		});
 
-		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
-
-		return [resultTaskWithStatusVos, total];
+		return [taskWithStatusVos, total];
 	}
 
 	async findAll(userId: EntityId, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -112,18 +102,9 @@ export class TaskUC {
 		// TODO fix student case - why have student as fallback?
 		//  should be based on permission too and use this.createStatus() instead
 		// add status
-		let status: ITaskStatus;
-		if (this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
-			status = task.createTeacherStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
-			}
-		} else {
-			status = task.createStudentStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
-			}
-		}
+		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -140,9 +121,6 @@ export class TaskUC {
 		await this.taskRepo.save(task);
 
 		const status = task.createTeacherStatusForUser(user);
-		if (task.taskCard) {
-			status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
-		}
 
 		const result = new TaskWithStatusVo(task, status);
 
@@ -170,17 +148,12 @@ export class TaskUC {
 			}
 		);
 
-		const taskWithStatusVos = tasks.map(async (task) => {
+		const taskWithStatusVos = tasks.map((task) => {
 			const status = task.createStudentStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.isCompleted = await this.taskCardService.isCompletedForUser(user.id, task.taskCard);
-			}
 			return new TaskWithStatusVo(task, status);
 		});
 
-		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
-
-		return [resultTaskWithStatusVos, total];
+		return [taskWithStatusVos, total];
 	}
 
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -203,17 +176,12 @@ export class TaskUC {
 			}
 		);
 
-		const taskWithStatusVos = tasks.map(async (task) => {
+		const taskWithStatusVos = tasks.map((task) => {
 			const status = task.createTeacherStatusForUser(user);
-			if (task.taskCard) {
-				status.taskCard.completedBy = await this.taskCardService.getCompletedForUsers(user.id, task.taskCard);
-			}
 			return new TaskWithStatusVo(task, status);
 		});
 
-		const resultTaskWithStatusVos = await Promise.all(taskWithStatusVos);
-
-		return [resultTaskWithStatusVos, total];
+		return [taskWithStatusVos, total];
 	}
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }

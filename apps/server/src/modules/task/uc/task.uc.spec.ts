@@ -14,7 +14,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { TaskCardService } from '@src/modules/task-card/service/task-card.service';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
@@ -59,10 +58,6 @@ describe('TaskUC', () => {
 				{
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
-				},
-				{
-					provide: TaskCardService,
-					useValue: createMock<TaskCardService>(),
 				},
 				{
 					provide: TaskService,
@@ -158,6 +153,17 @@ describe('TaskUC', () => {
 
 					expect(typeof count).toBe('number');
 					expect(Array.isArray(data)).toBe(true);
+				});
+
+				it('should return read status vo for tasks', async () => {
+					const { user, task } = setup();
+					const status = task.createStudentStatusForUser(user);
+
+					const [data] = await service.findAllFinished(user.id);
+
+					expect(data[0].task).toEqual(task);
+					expect(data[0].status).toEqual(status);
+					expect(data[0]).toEqual({ task, status });
 				});
 
 				it('should return read status vo for tasks', async () => {
@@ -475,7 +481,6 @@ describe('TaskUC', () => {
 						isDraft: false,
 						isFinished: false,
 						isSubstitutionTeacher: false,
-						taskCard: {},
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
@@ -503,7 +508,6 @@ describe('TaskUC', () => {
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
-					taskCard: {},
 				});
 			});
 		});
@@ -602,7 +606,6 @@ describe('TaskUC', () => {
 						isDraft: false,
 						isFinished: false,
 						isSubstitutionTeacher: false,
-						taskCard: {},
 					},
 				});
 				expect(result[0].task.course).toBeDefined();
@@ -629,7 +632,6 @@ describe('TaskUC', () => {
 					isDraft: false,
 					isFinished: false,
 					isSubstitutionTeacher: false,
-					taskCard: {},
 				});
 			});
 		});
@@ -643,7 +645,6 @@ describe('TaskUC', () => {
 			isDraft: false,
 			isSubstitutionTeacher: false,
 			isFinished: false,
-			taskCard: {},
 		};
 
 		describe('without permission for task', () => {

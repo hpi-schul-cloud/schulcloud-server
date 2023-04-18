@@ -284,7 +284,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			isDraft,
 			isSubstitutionTeacher,
 			isFinished,
-			taskCard: {},
 		};
 
 		return status;
@@ -305,7 +304,6 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 			isDraft,
 			isSubstitutionTeacher,
 			isFinished,
-			taskCard: {},
 		};
 
 		return status;

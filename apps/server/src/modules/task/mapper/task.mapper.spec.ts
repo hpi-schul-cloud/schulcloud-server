@@ -17,7 +17,6 @@ const createExpectedResponse = (
 	expectedStatus.isDraft = status.isDraft;
 	expectedStatus.isFinished = status.isFinished;
 	expectedStatus.isSubstitutionTeacher = status.isSubstitutionTeacher;
-	expectedStatus.taskCard = status.taskCard;
 
 	const expected = Object.create(TaskResponse.prototype) as TaskResponse;
 	expected.id = task.id;
@@ -88,7 +87,6 @@ describe('task.mapper', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
-				taskCard: { isCompleted: true, completedBy: [usersList[0].id, usersList[1].id] },
 			};
 
 			const result = TaskMapper.mapToResponse({ task, status });
