@@ -364,38 +364,36 @@ const addLessonInfo = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.before = () => {
-	return {
-		all: [authenticate('jwt')],
-		find: [
-			iff(isProvider('external'), [
-				globalHooks.hasPermission('HOMEWORK_VIEW'),
-				globalHooks.mapPaginationQuery.bind(this),
-				hasViewPermissionBefore,
-			]),
-			globalHooks.addCollation,
-		],
-		get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
-		create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
-		update: [iff(isProvider('external'), disallow())],
-		patch: [
-			iff(isProvider('external'), [
-				globalHooks.hasPermission('HOMEWORK_EDIT'),
-				globalHooks.permitGroupOperation,
-				hasPatchPermission,
-			]),
-		],
-		remove: [
-			iff(isProvider('external'), [
-				globalHooks.hasPermission('HOMEWORK_CREATE'),
-				globalHooks.permitGroupOperation,
-				logDeletionAttempt,
-				restrictHomeworkDeletion,
-				logDeletionPermit,
-			]),
-		],
-	};
-};
+exports.before = () => ({
+	all: [authenticate('jwt')],
+	find: [
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_VIEW'),
+			globalHooks.mapPaginationQuery.bind(this),
+			hasViewPermissionBefore,
+		]),
+		globalHooks.addCollation,
+	],
+	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
+	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
+	update: [iff(isProvider('external'), disallow())],
+	patch: [
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_EDIT'),
+			globalHooks.permitGroupOperation,
+			hasPatchPermission,
+		]),
+	],
+	remove: [
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_CREATE'),
+			globalHooks.permitGroupOperation,
+			logDeletionAttempt,
+			restrictHomeworkDeletion,
+			logDeletionPermit,
+		]),
+	],
+});
 
 exports.after = {
 	all: [],
