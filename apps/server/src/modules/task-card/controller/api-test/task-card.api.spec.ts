@@ -951,7 +951,6 @@ describe('Task-Card Controller (api)', () => {
 
 				currentUser = mapUserToCurrentUser(teacher);
 				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
-					console.log('body', body);
 					expect(status).toBe(200);
 					expect(body).toBeDefined();
 					expect(body.id).toBe(taskCard.id);
