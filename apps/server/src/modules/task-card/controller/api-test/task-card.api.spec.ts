@@ -565,7 +565,14 @@ describe('Task-Card Controller (api)', () => {
 		 */
 		describe('test create endpoint', () => {
 			const createEntities = () => {
-				const teacher = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+				const teacher = setupUser([
+					Permission.TASK_CARD_EDIT,
+					Permission.HOMEWORK_CREATE,
+					Permission.HOMEWORK_EDIT,
+					Permission.HOMEWORK_VIEW,
+					Permission.TASK_CARD_VIEW,
+					Permission.TASK_CARD_EDIT,
+				]);
 				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 				const student2 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
 				const student3 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
@@ -757,7 +764,14 @@ describe('Task-Card Controller (api)', () => {
 
 			const createEntities = () => {
 				const teacher = setupUser(
-					[Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT],
+					[
+						Permission.TASK_CARD_EDIT,
+						Permission.HOMEWORK_CREATE,
+						Permission.HOMEWORK_EDIT,
+						Permission.HOMEWORK_VIEW,
+						Permission.TASK_CARD_VIEW,
+						Permission.TASK_CARD_EDIT,
+					],
 					'Teacher 1'
 				);
 				const student1 = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW], 'Student 1');
@@ -898,7 +912,6 @@ describe('Task-Card Controller (api)', () => {
 			});
 
 			it('updating assignedUsers to null allows all students from course to access the task', async () => {
-				// jest.setTimeout(5 * 60 * 1000);
 				const { teacher, student1, student2, student3 } = createEntities();
 				const course = courseFactory.buildWithId({ teachers: [teacher], students: [student1, student2] });
 				const title = 'title test';
@@ -935,10 +948,10 @@ describe('Task-Card Controller (api)', () => {
 					expect(status).toBe(200);
 					return true;
 				});
-				console.log('teacher', teacher);
 
 				currentUser = mapUserToCurrentUser(teacher);
 				await getTaskCardEndpoint(taskCard.id).then(({ body, status }) => {
+					console.log('body', body);
 					expect(status).toBe(200);
 					expect(body).toBeDefined();
 					expect(body.id).toBe(taskCard.id);

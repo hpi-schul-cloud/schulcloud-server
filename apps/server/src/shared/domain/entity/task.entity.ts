@@ -100,7 +100,11 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 	@ManyToMany('User', undefined, { fieldName: 'userIds' })
 	users = new Collection<User>(this);
 
-	ignoreAssignedUsers = true;
+	// NOTE: this is not a nice solution, to distinguish between a task with no assigned users
+	// and a task with with empty users this variable was introduced.
+	// But this is currently exposed to the client, would like to find a better solution.
+	@Property({ nullable: true })
+	ignoreAssignedUsers? = true;
 
 	@Index()
 	@ManyToMany('User', undefined, { fieldName: 'archived' })

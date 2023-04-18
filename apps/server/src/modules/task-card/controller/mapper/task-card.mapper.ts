@@ -26,9 +26,13 @@ export class TaskCardMapper {
 			title: card.title,
 			courseId: card.course.id,
 			courseName: card.course.name,
+			assignedUsers: taskWithStatusVo.task.users?.toArray(),
 		});
 		if (card.cardElements.length) {
 			dto.cardElements = this.getCardElementResponse(card);
+		}
+		if (taskWithStatusVo.task.ignoreAssignedUsers) {
+			dto.assignedUsers = undefined;
 		}
 
 		return dto;
