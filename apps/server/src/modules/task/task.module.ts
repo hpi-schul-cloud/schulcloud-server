@@ -27,6 +27,6 @@ import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 		SubmissionRepo,
 		UserRepo,
 	],
-	exports: [TaskService, TaskCopyService],
+	exports: [TaskService, TaskCopyService, SubmissionService],
 })
 export class TaskModule {}
