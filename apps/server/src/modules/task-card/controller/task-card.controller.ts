@@ -85,8 +85,8 @@ export class TaskCardController {
 		return taskCardResponse;
 	}
 
-	@Patch(':id/uncomplete')
-	async uncompleteForUser(
+	@Patch(':id/undoCompletion')
+	async undoCompletionForUser(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskCardUrlParams
 	): Promise<TaskCardResponse> {
