@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { AuthenticationService } from '../services/authentication.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
 
 describe('LoginUc', () => {

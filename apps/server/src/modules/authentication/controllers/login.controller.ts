@@ -3,9 +3,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../decorator/auth.decorator';
 import type { ICurrentUser } from '../interface';
-import { LoginDto } from '../uc/dto/login.dto';
+import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
-import { LdapAuthorizationParams, LocalAuthorizationParams, LoginResponse, Oauth2AuthorizationParams } from './dto';
+import {
+	LdapAuthorizationBodyParams,
+	LocalAuthorizationBodyParams,
+	LoginResponse,
+	Oauth2AuthorizationBodyParams,
+} from './dto';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
 @ApiTags('Authentication')
@@ -17,7 +22,7 @@ export class LoginController {
 	@HttpCode(HttpStatus.OK)
 	@Post('ldap')
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationParams): Promise<LoginResponse> {
+	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
@@ -29,7 +34,7 @@ export class LoginController {
 	@HttpCode(HttpStatus.OK)
 	@Post('local')
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationParams): Promise<LoginResponse> {
+	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);
@@ -41,7 +46,10 @@ export class LoginController {
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async loginOauth2(@CurrentUser() user: ICurrentUser, @Body() _: Oauth2AuthorizationParams): Promise<LoginResponse> {
+	async loginOauth2(
+		@CurrentUser() user: ICurrentUser,
+		@Body() _: Oauth2AuthorizationBodyParams
+	): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 
 		const mapped: LoginResponse = LoginResponseMapper.mapLoginDtoToResponse(loginDto);

@@ -6,7 +6,7 @@ import { AccountDto } from '@src/modules/account/services/dto';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
-import { Oauth2AuthorizationParams } from '../controllers/dto';
+import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { SchoolInMigrationError } from '../errors/school-in-migration.error';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
@@ -17,7 +17,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 		super();
 	}
 
-	async validate(request: { body: Oauth2AuthorizationParams }): Promise<ICurrentUser> {
+	async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { systemId, redirectUri, code } = request.body;
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);

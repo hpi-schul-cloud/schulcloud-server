@@ -9,7 +9,7 @@ import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
-import { LdapAuthorizationParams } from '../controllers/dto';
+import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';
@@ -95,7 +95,7 @@ describe('LdapStrategy', () => {
 	describe('validate', () => {
 		describe('when user has no LDAP DN', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -111,7 +111,7 @@ describe('LdapStrategy', () => {
 
 		describe('when school has no external id', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -127,7 +127,7 @@ describe('LdapStrategy', () => {
 
 		describe('when account has no user id', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -145,7 +145,7 @@ describe('LdapStrategy', () => {
 
 		describe('when authentication with ldap fails', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -165,7 +165,7 @@ describe('LdapStrategy', () => {
 		describe('when connection to ldap fails', () => {
 			const setup = () => {
 				const error = new Error('error');
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -196,7 +196,7 @@ describe('LdapStrategy', () => {
 
 		describe('when authentication with LDAP succeeds', () => {
 			it('should return user', async () => {
-				const request: { body: LdapAuthorizationParams } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',

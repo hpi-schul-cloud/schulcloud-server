@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationParams, LocalAuthorizationParams } from '../dto';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams } from '../dto';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -113,7 +113,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', async () => {
-				const params: LocalAuthorizationParams = {
+				const params: LocalAuthorizationBodyParams = {
 					username: user.email,
 					password: defaultPassword,
 				};
@@ -173,7 +173,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login succeeds', () => {
 			it('should return jwt', async () => {
-				const params: LdapAuthorizationParams = {
+				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
 					password: defaultPassword,
 					schoolId: school.id,
@@ -198,7 +198,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails', () => {
 			it('should return error response', async () => {
-				const params: LdapAuthorizationParams = {
+				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
 					schoolId: school.id,

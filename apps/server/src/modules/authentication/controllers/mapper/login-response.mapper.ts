@@ -1,5 +1,5 @@
 import { LoginResponse } from '../dto';
-import { LoginDto } from '../../uc/dto/login.dto';
+import { LoginDto } from '../../uc/dto';
 
 export class LoginResponseMapper {
 	static mapLoginDtoToResponse(loginDto: LoginDto): LoginResponse {

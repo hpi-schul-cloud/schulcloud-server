@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
-export class LdapAuthorizationParams {
+export class LdapAuthorizationBodyParams {
 	@IsMongoId()
 	@ApiProperty()
 	systemId!: string;

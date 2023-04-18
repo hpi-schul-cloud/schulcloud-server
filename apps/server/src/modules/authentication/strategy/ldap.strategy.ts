@@ -5,7 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { Strategy } from 'passport-custom';
-import { LdapAuthorizationParams } from '../controllers/dto';
+import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
@@ -23,7 +23,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		super();
 	}
 
-	async validate(request: { body: LdapAuthorizationParams }): Promise<ICurrentUser> {
+	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
 		const system = await this.systemRepo.findById(systemId);
@@ -43,7 +43,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		return currentUser;
 	}
 
-	private extractParamsFromRequest(request: { body: LdapAuthorizationParams }): Required<LdapAuthorizationParams> {
+	private extractParamsFromRequest(request: {
+		body: LdapAuthorizationBodyParams;
+	}): Required<LdapAuthorizationBodyParams> {
 		const { systemId, schoolId } = request.body;
 		let { username, password } = request.body;
 
