@@ -18,7 +18,7 @@ describe(ColumnBoard.name, () => {
 
 			board.useBoardNodeBuilder(builder);
 
-			expect(builder.buildColumnBoardNode).toHaveBeenCalledWith(board);
+			expect(builder.buildColumnBoardNode).toHaveBeenCalledWith(board, undefined);
 		});
 	});
 

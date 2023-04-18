@@ -1,12 +1,12 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse } from './dto';
+import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
-@ApiTags('Boards')
+@ApiTags('Board')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
@@ -33,14 +33,14 @@ export class BoardController {
 		return response;
 	}
 
-	// @Put('/:boardId/title')
-	// renameBoard(
-	// 	@Param() urlParams: BoardUrlParams,
-	// 	@Body() bodyParams: RenameBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise<void> {
-	// 	throw new NotImplementedException();
-	// }
+	@Put(':boardId/title')
+	async updateBoardTitle(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
+	}
 
 	@Delete(':boardId')
 	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
