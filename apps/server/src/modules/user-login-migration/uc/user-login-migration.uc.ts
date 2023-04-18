@@ -6,6 +6,7 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { MigrationDto } from '../service/dto/migration.dto';
 import { SchoolMigrationService, UserMigrationService } from '../service';
 
@@ -15,7 +16,8 @@ export class UserLoginMigrationUc {
 		private readonly oauthService: OAuthService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userMigrationService: UserMigrationService // TODO: what is with auth and oauth circular dependency // private readonly authenticationService: AuthenticationService
+		private readonly userMigrationService: UserMigrationService,
+		private readonly authenticationService: AuthenticationService
 	) {}
 
 	async migrate(
@@ -51,6 +53,6 @@ export class UserLoginMigrationUc {
 			throw new InternalServerErrorException();
 		}
 
-		// await this.authenticationService.removeJwtFromWhitelist(userJwt);
+		await this.authenticationService.removeJwtFromWhitelist(userJwt);
 	}
 }
