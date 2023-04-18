@@ -63,10 +63,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		return this.cardElements.getItems();
 	}
 
-	public isVisibleBeforeDueDate() {
-		return this.visibleAtDate < this.dueDate;
-	}
-
 	@OneToOne({ type: 'Task', fieldName: 'taskId', eager: true, unique: true, cascade: [Cascade.ALL] })
 	task!: Task;
 }
