@@ -1665,8 +1665,12 @@ describe('Task Controller (API)', () => {
 		it('students1 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student1);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
-			const { total } = response.body as TaskListResponse;
+			const { total, data } = response.body as TaskListResponse;
+			const taskNames = data.map((task) => task.name);
 			expect(response.status).toBe(200);
+			expect(taskNames).toContain(entities.englishTask4.name);
+			expect(taskNames).toContain(entities.historyTask1.name);
+			expect(taskNames).toContain(entities.historyTask3.name);
 			expect(total).toBe(3);
 		});
 
@@ -1684,16 +1688,26 @@ describe('Task Controller (API)', () => {
 		it('students2 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student2);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
-			const { total } = response.body as TaskListResponse;
+			const { total, data } = response.body as TaskListResponse;
+			const taskNames = data.map((task) => task.name);
 			expect(response.status).toBe(200);
+			expect(taskNames).toContain(entities.englishTask1.name);
+			expect(taskNames).toContain(entities.englishTask4.name);
+			expect(taskNames).toContain(entities.historyTask1.name);
+			expect(taskNames).toContain(entities.historyTask3.name);
+			expect(taskNames).toContain(entities.mathsTask1.name);
+			expect(taskNames).toContain(entities.mathsTask3.name);
 			expect(total).toBe(6);
 		});
 
 		it('students3 gets their tasks', async () => {
 			currentUser = mapUserToCurrentUser(entities.student3);
 			const response = await request(app.getHttpServer()).get(`/tasks`).set('Accept', 'application/json').send();
-			const { total } = response.body as TaskListResponse;
+			const { total, data } = response.body as TaskListResponse;
 			expect(response.status).toBe(200);
+			const taskNames = data.map((task) => task.name);
+			expect(taskNames).toContain(entities.englishTask4.name);
+			expect(taskNames).toContain(entities.historyTask3.name);
 			expect(total).toBe(2);
 		});
 
