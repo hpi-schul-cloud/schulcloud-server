@@ -1,16 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-
-export class BoardTaskCardStatusResponse {
-	@ApiPropertyOptional({
-		description: 'List of users who marked task card as completed',
-	})
-	completedBy?: string[];
-
-	@ApiPropertyOptional({
-		description: 'Returns wether the student completed the task card or not',
-	})
-	isCompleted?: boolean;
-}
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BoardTaskStatusResponse {
 	constructor({

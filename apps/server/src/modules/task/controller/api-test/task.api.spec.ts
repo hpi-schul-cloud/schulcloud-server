@@ -905,7 +905,6 @@ describe('Task Controller (API)', () => {
 				isDraft: false,
 				isFinished: false,
 				isSubstitutionTeacher: false,
-				taskCard: {},
 			});
 		});
 
