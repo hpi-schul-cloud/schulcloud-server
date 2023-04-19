@@ -13,6 +13,7 @@ import {
 	richTextCardElementFactory,
 	setupEntities,
 	taskCardFactory,
+	taskFactory,
 	userFactory,
 } from '@shared/testing';
 import { RichTextCardElementParam } from '@src/modules/task-card/controller/dto';
@@ -80,6 +81,74 @@ describe('task-card mapper', () => {
 			expect(result.cardElements ? result.cardElements[0] : '').toEqual(
 				expect.objectContaining({ ...richtTextCardElementResponse })
 			);
+		});
+		it('should map with assignedUsers', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+			const task = taskFactory.build({ users: [user] });
+
+			const taskCard = taskCardFactory.buildWithId({
+				creator: user,
+				course,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				task,
+			});
+			const status = taskCard.task.createTeacherStatusForUser(user);
+
+			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
+			const taskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
+
+			const mapper = new TaskCardMapper();
+			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
+
+			expect(result).toEqual({
+				title: taskCard.title,
+				id: taskCard.id,
+				draggable: true,
+				courseId: course.id,
+				courseName: course.name,
+				task: taskResponse,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				assignedUsers: [{ firstName: user.firstName, lastName: user.lastName, id: user.id }],
+			});
+		});
+
+		it('should map ignore assignedUsers if ignoreAssignedUsers = true', () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.buildWithId();
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+			const task = taskFactory.build({ users: [user], ignoreAssignedUsers: true });
+
+			const taskCard = taskCardFactory.buildWithId({
+				creator: user,
+				course,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				task,
+			});
+			const status = taskCard.task.createTeacherStatusForUser(user);
+
+			const taskWithStatusVo = new TaskWithStatusVo(taskCard.task, status);
+			const taskResponse = TaskMapper.mapToResponse(taskWithStatusVo);
+
+			const mapper = new TaskCardMapper();
+			const result = mapper.mapToResponse(taskCard, taskWithStatusVo);
+
+			expect(result).toEqual({
+				title: taskCard.title,
+				id: taskCard.id,
+				draggable: true,
+				courseId: course.id,
+				courseName: course.name,
+				task: taskResponse,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+			});
 		});
 	});
 
@@ -215,6 +284,54 @@ describe('task-card mapper', () => {
 			const result = TaskCardMapper.mapToDomain(params);
 
 			expect(result.text).toBeUndefined();
+		});
+		it('should map params to domain with assignedUsers', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const params = {
+				cardElements: [],
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+				assignedUsers: ['1', '2', '3'],
+			};
+			const result = TaskCardMapper.mapToDomain(params);
+
+			const expectedDto = {
+				title: 'test-title',
+				text: [],
+				courseId: params.courseId,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				assignedUsers: ['1', '2', '3'],
+			};
+			expect(result).toEqual(expectedDto);
+		});
+		it('should map assignedUsers to undefined if null', () => {
+			const tomorrow = new Date(Date.now() + 86400000);
+			const inTwoDays = new Date(Date.now() + 172800000);
+
+			const params = {
+				cardElements: [],
+				courseId: new ObjectId().toHexString(),
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				title: 'test-title',
+				assignedUsers: null,
+			};
+			const result = TaskCardMapper.mapToDomain(params);
+
+			const expectedDto = {
+				title: 'test-title',
+				text: [],
+				courseId: params.courseId,
+				visibleAtDate: tomorrow,
+				dueDate: inTwoDays,
+				assignedUsers: undefined,
+			};
+			expect(result).toEqual(expectedDto);
 		});
 	});
 });
