@@ -45,9 +45,9 @@ export class LoginController {
 	@UseGuards(AuthGuard('oauth2'))
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginOauth2(
 		@CurrentUser() user: ICurrentUser,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<LoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
