@@ -295,7 +295,6 @@ describe('BoardNodeRepo', () => {
 		it('should not update timestamps of existing siblings', async () => {
 			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
 			await em.persistAndFlush(node1);
-			em.clear();
 			await new Promise((resolve) => {
 				setTimeout(resolve, 200);
 			});

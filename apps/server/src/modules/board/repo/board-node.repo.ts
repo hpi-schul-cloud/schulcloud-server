@@ -65,12 +65,13 @@ export class BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		// fill identity map with existing board nodes
-		const boardNodeIds = boardNodes.map((bn) => bn.id);
-		const existingNodes = await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
-		const nodeCache = new Map<EntityId, BoardNode>(existingNodes.map((node) => [node.id, node]));
+		// const boardNodeIds = boardNodes.map((bn) => bn.id);
+		// await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
+		// => should not be be necessary because existing board nodes should
+		//    already be part of the unit of work
 
 		boardNodes.forEach((node) => {
-			const existing = nodeCache.get(node.id);
+			const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, node.id);
 			if (existing) {
 				const { createdAt, updatedAt } = existing;
 				this.em.assign(existing, { ...node, createdAt, updatedAt });
