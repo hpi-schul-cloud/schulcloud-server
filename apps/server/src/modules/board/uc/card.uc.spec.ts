@@ -5,6 +5,7 @@ import { cardFactory, textElementFactory } from '@shared/testing/factory/domaino
 import { Logger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
+import { ContentElementType } from '../types';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
@@ -82,7 +83,7 @@ describe(CardUc.name, () => {
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
 				expect(cardService.findById).toHaveBeenCalledWith(card.id);
 			});
@@ -91,9 +92,9 @@ describe(CardUc.name, () => {
 				const { user, card } = setup();
 				cardService.findById.mockResolvedValueOnce(card);
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
-				expect(elementService.create).toHaveBeenCalledWith(card);
+				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.TEXT);
 			});
 		});
 	});

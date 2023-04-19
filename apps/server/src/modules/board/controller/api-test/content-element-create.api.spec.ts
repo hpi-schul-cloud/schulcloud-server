@@ -15,7 +15,8 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-import { CardResponse } from '../dto';
+import { ContentElementType } from '../../types';
+import { AnyContentElementResponse } from '../dto';
 
 const baseRouteName = '/cards';
 
@@ -26,13 +27,14 @@ class API {
 		this.app = app;
 	}
 
-	async post(cardId: string) {
+	async post(cardId: string, type: ContentElementType) {
 		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${cardId}/elements`)
-			.set('Accept', 'application/json');
+			.set('Accept', 'application/json')
+			.send({ type });
 
 		return {
-			result: response.body as CardResponse,
+			result: response.body as AnyContentElementResponse,
 			error: response.body as ApiValidationError,
 			status: response.status,
 		};
@@ -88,18 +90,27 @@ describe(`content element create (api)`, () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(cardNode.id);
+			const response = await api.post(cardNode.id, ContentElementType.TEXT);
 
 			expect(response.status).toEqual(201);
 		});
 
-		it('should return the created content element', async () => {
+		it('should return the created content element of type TEXT', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { result } = await api.post(cardNode.id);
+			const { result } = await api.post(cardNode.id, ContentElementType.TEXT);
 
-			expect(result.id).toBeDefined();
+			expect(result.type).toEqual(ContentElementType.TEXT);
+		});
+
+		it('should return the created content element of type FILE', async () => {
+			const { user, cardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const { result } = await api.post(cardNode.id, ContentElementType.FILE);
+
+			expect(result.type).toEqual(ContentElementType.FILE);
 		});
 	});
 

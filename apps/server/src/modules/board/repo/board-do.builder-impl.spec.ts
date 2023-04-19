@@ -3,6 +3,7 @@ import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	fileElementNodeFactory,
 	setupEntities,
 	textElementNodeFactory,
 } from '@shared/testing';
@@ -197,5 +198,15 @@ describe(BoardDoBuilderImpl.name, () => {
 		builder.buildDomainObject(textElementNode);
 
 		expect(textElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
+	});
+
+	it('should delegate to the board node', () => {
+		const fileElementNode = fileElementNodeFactory.build();
+		jest.spyOn(fileElementNode, 'useDoBuilder');
+
+		const builder = new BoardDoBuilderImpl();
+		builder.buildDomainObject(fileElementNode);
+
+		expect(fileElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
 	});
 });
