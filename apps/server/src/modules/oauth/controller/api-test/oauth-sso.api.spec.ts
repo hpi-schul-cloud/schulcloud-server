@@ -43,7 +43,6 @@ describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
-
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
@@ -189,6 +188,7 @@ describe('OAuth SSO Controller (API)', () => {
 					sub: 'testUser',
 					iss: system.oauthConfig?.issuer,
 					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
 					external_sub: externalUserId,
 				});
 

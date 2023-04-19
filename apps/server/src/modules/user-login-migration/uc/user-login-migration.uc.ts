@@ -1,6 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { PageTypes } from '../interface/page-types.enum';
+import { UserLoginMigrationService, UserMigrationService, SchoolMigrationService } from '../service';
+import { PageContentDto } from '../service/dto';
+import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { EntityId } from '@shared/domain';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
@@ -8,18 +13,42 @@ import { ProvisioningService } from '@src/modules/provisioning';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { Logger } from '@src/core/logger';
 import { MigrationDto } from '../service/dto/migration.dto';
-import { SchoolMigrationService, UserMigrationService } from '../service';
 
 @Injectable()
 export class UserLoginMigrationUc {
 	constructor(
+		private readonly userMigrationService: UserMigrationService,
+		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly oauthService: OAuthService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userMigrationService: UserMigrationService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly logger: Logger
 	) {}
+
+	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise<PageContentDto> {
+		const content: PageContentDto = await this.userMigrationService.getPageContent(
+			pageType,
+			sourceSystem,
+			targetSystem
+		);
+
+		return content;
+	}
+
+	async getMigrations(
+		userId: EntityId,
+		query: UserLoginMigrationQuery,
+		options: IFindOptions<UserLoginMigrationDO>
+	): Promise<Page<UserLoginMigrationDO>> {
+		if (userId !== query.userId) {
+			throw new ForbiddenException('Accessing migration status of another user is forbidden.');
+		}
+
+		const userLoginMigrations: Page<UserLoginMigrationDO> =
+			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
+		return userLoginMigrations;
+	}
 
 	async migrate(
 		userJwt: string,

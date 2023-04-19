@@ -1,11 +1,7 @@
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import MockAdapter from 'axios-mock-adapter';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import axios from 'axios';
-import request, { Response } from 'supertest';
+import { School, System, User, Account } from '@shared/domain';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -14,10 +10,14 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
-import { Account, School, System, User } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Request } from 'express';
+import request, { Response } from 'supertest';
+import MockAdapter from 'axios-mock-adapter';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import axios from 'axios';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { UUID } from 'bson';
@@ -38,11 +38,11 @@ jest.mock('jwks-rsa', () => () => {
 	};
 });
 
-describe('UserLoginMigration Controller (API)', () => {
+describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser | undefined;
 	let userJwt: string;
+	let currentUser: ICurrentUser | undefined;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
@@ -73,7 +73,74 @@ describe('UserLoginMigration Controller (API)', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		jest.clearAllMocks();
+	});
+
+	describe('[GET] /user-login-migrations', () => {
+		describe('when data is given', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					oauthMigrationStart: date,
+					oauthMigrationFinished: date,
+					oauthMigrationFinalFinish: date,
+					oauthMigrationMandatory: date,
+					systems: [sourceSystem],
+				});
+				const user: User = userFactory.buildWithId({ school });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					sourceSystem,
+					targetSystem,
+					school,
+					user,
+				};
+			};
+
+			it('should return the users migration', async () => {
+				const { sourceSystem, targetSystem, school, user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.get(`/user-login-migrations`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					data: [
+						{
+							sourceSystemId: sourceSystem.id,
+							targetSystemId: targetSystem.id,
+							startedAt: school.oauthMigrationStart?.toISOString(),
+							closedAt: school.oauthMigrationFinished?.toISOString(),
+							finishedAt: school.oauthMigrationFinalFinish?.toISOString(),
+							mandatorySince: school.oauthMigrationMandatory?.toISOString(),
+						},
+					],
+					total: 1,
+				});
+			});
+		});
+
+		describe('when unauthorized', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return Unauthorized', async () => {
+				setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.get(`/user-login-migrations`)
+					.query({ userId: new ObjectId().toHexString() });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
 	});
 
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
