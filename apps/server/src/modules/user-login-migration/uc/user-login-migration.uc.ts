@@ -3,7 +3,7 @@ import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { PageTypes } from '../interface/page-types.enum';
 import { UserLoginMigrationService, UserMigrationService } from '../service';
-import { PageContentDto } from '../service/dto/page-content.dto';
+import { PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 
 @Injectable()

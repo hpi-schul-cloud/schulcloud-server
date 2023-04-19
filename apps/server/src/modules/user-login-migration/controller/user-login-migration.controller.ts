@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -22,6 +22,7 @@ export class UserLoginMigrationController {
 	@Get()
 	@ApiForbiddenResponse()
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
+	@ApiInternalServerErrorResponse({ description: 'Cannot find Sanis system information.' })
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams

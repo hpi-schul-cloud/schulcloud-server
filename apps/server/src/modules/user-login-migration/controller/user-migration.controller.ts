@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PageContentMapper } from '../mapper/page-content.mapper';
-import { PageContentDto } from '../service/dto/page-content.dto';
+import { PageContentDto } from '../service/dto';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
 import { PageContentQueryParams, PageContentResponse } from './dto';
 
