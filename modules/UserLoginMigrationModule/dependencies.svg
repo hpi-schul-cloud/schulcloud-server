@@ -14,13 +14,13 @@
 <title>cluster_UserLoginMigrationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-230.8 1532,-230.8 1532,-32.8 8,-32.8"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_UserLoginMigrationModule_exports</title>
-<polygon fill="none" stroke="black" points="645,-170.8 645,-222.8 1347,-222.8 1347,-170.8 645,-170.8"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_UserLoginMigrationModule_imports</title>
 <polygon fill="none" stroke="black" points="945,-40.8 945,-92.8 1524,-92.8 1524,-40.8 945,-40.8"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_UserLoginMigrationModule_exports</title>
+<polygon fill="none" stroke="black" points="645,-170.8 645,-222.8 1347,-222.8 1347,-170.8 645,-170.8"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_UserLoginMigrationModule_providers</title>

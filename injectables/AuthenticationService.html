@@ -126,7 +126,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -225,8 +225,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:63</a></div>
                 </td>
             </tr>
 
@@ -296,8 +296,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:40</a></div>
                 </td>
             </tr>
 
@@ -335,7 +335,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                        <b>Returns : </b>        <code><a href="../classes/LoginDto.html" target="_self" >Promise&lt;LoginDto&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -367,8 +367,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:23</a></div>
                 </td>
             </tr>
 
@@ -448,8 +448,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="81"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:81</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
                 </td>
             </tr>
 
@@ -517,8 +517,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:78</a></div>
                 </td>
             </tr>
 
@@ -588,8 +588,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:55</a></div>
                 </td>
             </tr>
 
@@ -659,8 +659,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:74</a></div>
                 </td>
             </tr>
 
@@ -725,6 +725,7 @@ import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { BruteForceError } from &#x27;../errors/brute-force.error&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
+import { LoginDto } from &#x27;../uc/dto&#x27;;
 
 @Injectable()
 export class AuthenticationService {
@@ -752,15 +753,15 @@ export class AuthenticationService {
 		return account;
 	}
 
-	async generateJwt(user: CreateJwtPayload): Promise&lt;{ accessToken: string }&gt; {
+	async generateJwt(user: CreateJwtPayload): Promise&lt;LoginDto&gt; {
 		const jti &#x3D; randomUUID();
 
-		const result &#x3D; {
+		const result: LoginDto &#x3D; new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
 			}),
-		};
+		});
 
 		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
 

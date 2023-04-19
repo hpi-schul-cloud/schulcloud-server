@@ -123,7 +123,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -237,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:65</a></div>
                 </td>
             </tr>
 
@@ -344,8 +344,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:58</a></div>
                 </td>
             </tr>
 
@@ -423,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:46</a></div>
                 </td>
             </tr>
 
@@ -462,7 +462,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RequestBody" target="_self" >Required&lt;RequestBody&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/LdapAuthorizationBodyParams.html" target="_self" >Required&lt;LdapAuthorizationBodyParams&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -495,8 +495,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:76</a></div>
                 </td>
             </tr>
 
@@ -590,8 +590,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:26</a></div>
                 </td>
             </tr>
 
@@ -648,16 +648,15 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
 import { System } from &#x27;@shared/domain&#x27;;
-import { SchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
-import { Strategy } from &#x27;passport-custom&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { SchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
+import { Strategy } from &#x27;passport-custom&#x27;;
+import { LdapAuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
+import { ICurrentUser } from &#x27;../interface&#x27;;
+import { CurrentUserMapper } from &#x27;../mapper&#x27;;
 import { AuthenticationService } from &#x27;../services/authentication.service&#x27;;
 import { LdapService } from &#x27;../services/ldap.service&#x27;;
-import { ICurrentUser } from &#x27;../interface/user&#x27;;
-import { CurrentUserMapper } from &#x27;../mapper&#x27;;
-
-export type RequestBody &#x3D; { systemId?: string; username?: string; password?: string; schoolId?: string };
 
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
@@ -671,28 +670,35 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		super();
 	}
 
-	async validate(request: { body: RequestBody }): Promise&lt;ICurrentUser&gt; {
+	async validate(request: { body: LdapAuthorizationBodyParams }): Promise&lt;ICurrentUser&gt; {
 		const { username, password, systemId, schoolId } &#x3D; this.extractParamsFromRequest(request);
+
 		const system &#x3D; await this.systemRepo.findById(systemId);
 		const school &#x3D; await this.schoolRepo.findById(schoolId);
 		const account &#x3D; await this.loadAccount(username, systemId, school);
 		const userId &#x3D; this.checkValue(account.userId);
+
 		this.authenticationService.checkBrutForce(account);
+
 		const user &#x3D; await this.userRepo.findById(userId);
 		const ldapDn &#x3D; this.checkValue(user.ldapDn);
+
 		await this.checkCredentials(account, system, ldapDn, password);
+
 		const currentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+
 		return currentUser;
 	}
 
-	private extractParamsFromRequest(request: { body: RequestBody }): Required&lt;RequestBody&gt; {
+	private extractParamsFromRequest(request: {
+		body: LdapAuthorizationBodyParams;
+	}): Required&lt;LdapAuthorizationBodyParams&gt; {
 		const { systemId, schoolId } &#x3D; request.body;
 		let { username, password } &#x3D; request.body;
-		if (!systemId || !username || !password || !schoolId) {
-			throw new UnauthorizedException();
-		}
+
 		username &#x3D; this.authenticationService.normalizeUsername(username);
 		password &#x3D; this.authenticationService.normalizePassword(password);
+
 		return { username, password, systemId, schoolId };
 	}
 
@@ -716,8 +722,11 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 
 	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise&lt;AccountDto&gt; {
 		const externalSchoolId &#x3D; this.checkValue(school.externalId);
+
 		const userNameWithSchool &#x3D; &#x60;${externalSchoolId}/${username}&#x60;;
+
 		const account &#x3D; await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), systemId);
+
 		return account;
 	}
 }

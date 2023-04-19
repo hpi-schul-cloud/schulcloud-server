@@ -109,9 +109,6 @@
                                 <a href="#buildWithId" >buildWithId</a>
                             </li>
                             <li>
-                                <a href="#withDates" >withDates</a>
-                            </li>
-                            <li>
                                 <a href="#afterBuild" >afterBuild</a>
                             </li>
                             <li>
@@ -312,34 +309,6 @@
                     </div>
                 </td>
             </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="withDates"></a>
-                    <span class="name">
-                        <span ><b>withDates</b></span>
-                        <a href="#withDates"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>withDates()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/user.do.factory.ts:15</a></div>
-                </td>
-            </tr>
-
-
         </tbody>
     </table>
     <table class="table table-sm table-bordered">
@@ -1291,11 +1260,6 @@ class UserDoFactory extends BaseFactory&lt;UserDO, UserDO&gt; {
 		const entityWithId &#x3D; Object.assign(entity, { id: new ObjectId(id).toString() });
 
 		return entityWithId;
-	}
-
-	withDates(): this {
-		const params: DeepPartial&lt;UserDO&gt; &#x3D; { createdAt: new Date(), updatedAt: new Date() };
-		return this.params(params);
 	}
 }
 
