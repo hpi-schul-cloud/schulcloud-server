@@ -5,11 +5,6 @@ const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modu
 const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
 const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
 
-interface MockJwtParams {
-	publicKey: string | Buffer;
-	privateKey: string | Buffer;
-}
-
 interface CreateJwtParams {
 	privateKey?: string | Buffer;
 	sub?: string;
@@ -22,21 +17,6 @@ interface CreateJwtParams {
 export class JwtTestFactory {
 	public static getPublicKey(): string | Buffer {
 		return publicKey;
-	}
-
-	public static mockJwksRsa(params?: MockJwtParams): void {
-		jest.mock('jwks-rsa', () => () => {
-			return {
-				getKeys: jest.fn(),
-				getSigningKey: jest.fn().mockResolvedValue({
-					kid: 'kid',
-					alg: 'RS256',
-					getPublicKey: jest.fn().mockReturnValue(params?.publicKey ?? this.getPublicKey()),
-					rsaPublicKey: params?.publicKey ?? this.getPublicKey(),
-				}),
-				getSigningKeys: jest.fn(),
-			};
-		});
 	}
 
 	public static createJwt(params?: CreateJwtParams): string {

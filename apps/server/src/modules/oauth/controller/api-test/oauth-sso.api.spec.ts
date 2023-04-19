@@ -39,8 +39,6 @@ jest.mock('jwks-rsa', () => () => {
 	};
 });
 
-jest.setTimeout(9999999);
-
 describe('OAuth SSO Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
