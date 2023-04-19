@@ -13,7 +13,7 @@ import {
 	RenameBodyParams,
 	TextElementResponse,
 } from './dto';
-import { CardResponseMapper, ElementsResponseMapper } from './mapper';
+import { CardResponseMapper, ContentElementResponseBuilder } from './mapper';
 
 @ApiTags('Board Card')
 @Authenticate('jwt')
@@ -78,7 +78,7 @@ export class CardController {
 	): Promise<AnyContentElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
-		const response = ElementsResponseMapper.mapToResponse(element);
+		const response = ContentElementResponseBuilder.mapToResponse(element);
 
 		return response;
 	}
