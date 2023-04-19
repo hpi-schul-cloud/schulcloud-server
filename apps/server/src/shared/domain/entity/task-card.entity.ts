@@ -23,13 +23,16 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 
 		this.draggable = props.draggable || true;
 		this.cardType = props.cardType;
-		this.visibleAtDate = props.visibleAtDate;
+
 		this.dueDate = props.dueDate;
 
 		this.cardElements.set(props.cardElements);
 		this.task = props.task;
 		this.cardType = CardType.Task;
 		this.title = props.title;
+		if (props.visibleAtDate) {
+			this.visibleAtDate = props.visibleAtDate;
+		}
 		if (props.course) this.course = props.course;
 		Object.assign(this, { creator: props.creator });
 	}
@@ -54,7 +57,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	@Property()
 	title!: string;
 
-	@Property()
+	@Property({ nullable: true })
 	visibleAtDate?: Date;
 
 	@Property()

@@ -18,12 +18,14 @@ export class TaskCardResponse {
 		this.id = id;
 		this.draggable = draggable;
 		this.task = task;
-		this.visibleAtDate = visibleAtDate;
 		this.dueDate = dueDate;
 		this.title = title;
 		this.cardElements = cardElements;
 		this.courseId = courseId;
 		this.courseName = courseName;
+		if (visibleAtDate) {
+			this.visibleAtDate = visibleAtDate;
+		}
 	}
 
 	@ApiProperty({
