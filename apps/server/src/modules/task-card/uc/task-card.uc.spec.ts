@@ -221,7 +221,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, taskCardCreateParams);
 			}).rejects.toThrow(ForbiddenException);
 		});
-		it('should check for course permission to create the task related to the task card in a course', async () => {
+		it('should check for course write permission to create', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
@@ -407,6 +407,13 @@ describe('TaskCardUc', () => {
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			}).rejects.toThrow(ForbiddenException);
+		});
+		it('should check for course write permission to edit', async () => {
+			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
+				action: Actions.write,
+				requiredPermissions: [],
+			});
 		});
 		it('should call task update and with task name same like task-card title, updated courseId and dueDate', async () => {
 			const taskParams = {
