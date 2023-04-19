@@ -2,7 +2,6 @@ import { ValidationError } from '@shared/common';
 import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
@@ -62,16 +61,14 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				const roles: RoleDto[] = [];
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
 			});
 		});
 
 		describe('when userDO is valid', () => {
 			it('should return valid ICurrentUser instance', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
-				const roles: RoleDto[] = [];
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
@@ -86,8 +83,7 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance with systemId', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
 				const systemId = 'mockSystemId';
-				const roles: RoleDto[] = [];
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles, systemId);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
@@ -101,14 +97,13 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO is valid and contains roles', () => {
 			it('should return valid ICurrentUser instance without systemId', () => {
 				const roleIds = ['mockRoleId'];
-				const roles: RoleDto[] = [{ id: 'mockRoleId', name: RoleName.USER }];
 				const user: UserDO = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 					roleIds,
 				});
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
