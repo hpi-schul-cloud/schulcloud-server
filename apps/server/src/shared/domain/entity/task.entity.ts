@@ -126,6 +126,7 @@ export class Task extends BaseEntityWithTimestamps implements ILearnroomElement,
 		this.submissions.set(props.submissions || []);
 		if (props.users) this.ignoreAssignedUsers = false;
 		if (props.users) this.users.set(props.users);
+		if (props.ignoreAssignedUsers) this.ignoreAssignedUsers = props.ignoreAssignedUsers;
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
 		this.teamSubmissions = props.teamSubmissions || false;

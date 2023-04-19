@@ -62,7 +62,7 @@ describe('TaskRepo', () => {
 				return student;
 			};
 
-			const setup = async () => {
+			const setup = async (ignoreAssignedUsers = false) => {
 				const teachers = [1, 2].map(createTeacher);
 				const [teacher1, teacher2] = teachers;
 				const students = [1, 2, 3, 4].map(createStudent);
@@ -84,7 +84,7 @@ describe('TaskRepo', () => {
 				const mathsCourse = courseFactory.build({
 					name: 'maths',
 					teachers: [teacher2],
-					students: [student1, student2],
+					students: [student4, student2],
 				});
 				const algebraLesson = lessonFactory.build({
 					name: 'maths',
@@ -109,17 +109,20 @@ describe('TaskRepo', () => {
 					creator: teacher1,
 					lesson: grammerLesson,
 					users: [],
+					ignoreAssignedUsers,
 				});
 				const englishTask4 = taskFactory.build({
 					name: 'grammer3',
 					creator: teacher1,
 					lesson: grammerLesson,
+					ignoreAssignedUsers,
 				});
 
 				const historyTask1 = taskFactory.build({
 					name: 'cause of ww2',
 					course: historyCourse,
 					users: [student1, student2],
+					ignoreAssignedUsers,
 				});
 
 				const historyTask2 = taskFactory.build({
@@ -142,13 +145,14 @@ describe('TaskRepo', () => {
 				const mathsTask2 = taskFactory.build({
 					name: 'all primes under million',
 					course: mathsCourse,
-					users: [student3],
+					users: [student4],
 				});
 
 				const mathsTask3 = taskFactory.build({
 					name: 'algebra 1',
 					lesson: algebraLesson,
 					users: [student2],
+					ignoreAssignedUsers,
 				});
 
 				await em.persistAndFlush([
@@ -266,6 +270,60 @@ describe('TaskRepo', () => {
 				);
 				expect(total).toBe(1);
 				expect(result.map((r) => r.name)).toContain('grammer3');
+			});
+
+			describe('with ignoreAssignedUsers = true, users should be ignored', () => {
+				it('ignoreAssignedUsers should not affect all courses', async () => {
+					const { englishCourse, mathsCourse, historyCourse } = await setup();
+					const [, total] = await repo.findAllByParentIds({
+						courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
+					});
+					expect(total).toBe(6);
+				});
+
+				it('Filter by assigned users and courses for student 1', async () => {
+					const { englishCourse, mathsCourse, historyCourse, student1 } = await setup(true);
+					const [, total] = await repo.findAllByParentIds(
+						{
+							courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
+						},
+						{
+							userId: student1.id,
+						}
+					);
+					expect(total).toBe(3);
+				});
+
+				it('Filter by assigned users for student 3', async () => {
+					const { englishCourse, mathsCourse, historyCourse, student3 } = await setup(true);
+					const [, total] = await repo.findAllByParentIds(
+						{
+							courseIds: [englishCourse.id, mathsCourse.id, historyCourse.id],
+						},
+						{
+							userId: student3.id,
+						}
+					);
+					expect(total).toBe(3);
+				});
+
+				it('Filter by assigned users and lessons', async () => {
+					const { grammerLesson, algebraLesson, student1 } = await setup(true);
+					const [result, total] = await repo.findAllByParentIds(
+						{
+							lessonIds: [grammerLesson.id, algebraLesson.id],
+						},
+						{
+							userId: student1.id,
+						}
+					);
+
+					expect(total).toBe(4);
+					expect(result.map((r) => r.name)).toContain('grammer1');
+					expect(result.map((r) => r.name)).toContain('grammer2');
+					expect(result.map((r) => r.name)).toContain('grammer3');
+					expect(result.map((r) => r.name)).toContain('algebra 1');
+				});
 			});
 		});
 

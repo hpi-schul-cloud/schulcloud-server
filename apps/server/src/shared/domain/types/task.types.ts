@@ -26,6 +26,7 @@ export interface ITaskProperties extends ITask {
 	lesson?: Lesson;
 	creator: User;
 	users?: User[];
+	ignoreAssignedUsers?: boolean;
 	school: School;
 	finished?: User[];
 	private?: boolean;

@@ -16,7 +16,28 @@ export class TaskScope extends Scope<Task> {
 
 	byAssignedUser(assignedUserId: EntityId): TaskScope {
 		this.addQuery({
-			$or: [{ users: { $exists: false } }, { users: { $in: [assignedUserId] } }],
+			$or: [
+				{
+					ignoreAssignedUsers: {
+						$exists: false,
+					},
+				},
+				{
+					ignoreAssignedUsers: true,
+				},
+				{
+					$and: [
+						{
+							ignoreAssignedUsers: false,
+						},
+						{
+							users: {
+								$in: [assignedUserId],
+							},
+						},
+					],
+				},
+			],
 		});
 
 		return this;
