@@ -321,7 +321,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should return the task card with default visible at date if params are not given', async () => {
+		it('should return the task card with no visible at date if params are not given', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -332,8 +332,7 @@ describe('TaskCardUc', () => {
 				dueDate: tomorrow,
 			};
 			const result = await uc.create(user.id, taskCardCreateDefaultParams);
-			const expectedVisibleAtDate = new Date();
-			expect(result.card.visibleAtDate).toEqual(expectedVisibleAtDate);
+			expect(result.card.visibleAtDate).toBeUndefined();
 		});
 	});
 
