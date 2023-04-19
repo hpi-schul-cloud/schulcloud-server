@@ -1,9 +1,9 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { ContentElementType } from '@src/modules/board/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
+import { ContentElementType } from './types/content-elements.enum';
 
 @Injectable()
 export class ContentElementProvider {

@@ -1,8 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
-import { ContentElementType } from '@src/modules/board/types';
 import { ContentElementProvider } from './content-element.provider';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
+import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementProvider.name, () => {
 	const setup = () => {
