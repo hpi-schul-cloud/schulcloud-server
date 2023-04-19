@@ -8,9 +8,10 @@ import { OauthModule } from '../oauth';
 import { ProvisioningModule } from '../provisioning';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { MigrationUc } from './uc/migration.uc';
+import { LoggerModule } from '../../core/logger';
 
 @Module({
-	imports: [UserLoginMigrationModule, OauthModule, ProvisioningModule, AuthenticationModule],
+	imports: [UserLoginMigrationModule, OauthModule, ProvisioningModule, AuthenticationModule, LoggerModule],
 	providers: [MigrationUc, UserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
