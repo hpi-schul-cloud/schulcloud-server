@@ -143,7 +143,12 @@ export class TaskCardUc {
 
 		this.validateDueDate({ params, course, user });
 
-		let taskWithStatusVo = await this.updateTaskName(userId, card.task.id, params);
+		if (Object.keys(params).includes('assignedUsers') && params.assignedUsers === undefined) {
+			await this.removeTaskAssignedUsers(userId, card.task.id, params.title);
+			delete params.assignedUsers;
+		}
+
+		const taskWithStatusVo = await this.updateTask(userId, card.task.id, params);
 
 		const cardElements: CardElement[] = [];
 		card.title = params.title;
@@ -158,12 +163,7 @@ export class TaskCardUc {
 		if (params.visibleAtDate) {
 			card.visibleAtDate = params.visibleAtDate;
 		}
-		if (params.assignedUsers) {
-			taskWithStatusVo = await this.updateTaskAssignedUsers(userId, card.task.id, params.title, params.assignedUsers);
-		} else if (Object.keys(params).includes('assignedUsers') && params.assignedUsers === undefined) {
-			// incase we explicitly set assignedUsers to undefined, remove all assignments
-			taskWithStatusVo = await this.removeTaskAssignedUsers(userId, card.task.id, params.title);
-		}
+
 		await this.replaceCardElements(card, cardElements);
 		await this.taskCardRepo.save(card);
 
@@ -176,6 +176,28 @@ export class TaskCardUc {
 			taskCard: taskCard.id,
 		};
 		const taskWithStatusVo = await this.taskService.update(userId, taskCard.task.id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
+	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
+		const taskParams: ITaskUpdate = {
+			name: params.title,
+			courseId: params.courseId,
+			dueDate: params.dueDate,
+		};
+		if (params.assignedUsers) taskParams.usersIds = params.assignedUsers;
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
+
+		return taskWithStatusVo;
+	}
+
+	private async removeTaskAssignedUsers(userId: EntityId, id: EntityId, title: string) {
+		const taskParams: ITaskUpdate = {
+			name: title,
+			usersIds: undefined,
+		};
+		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
 		return taskWithStatusVo;
 	}
@@ -218,34 +240,5 @@ export class TaskCardUc {
 		if (lastDayOfNextYear < dueDate) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
-	}
-
-	private async removeTaskAssignedUsers(userId: EntityId, id: EntityId, title: string) {
-		const taskParams: ITaskUpdate = {
-			name: title,
-			usersIds: undefined,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
-	}
-
-	private async updateTaskAssignedUsers(userId: EntityId, id: EntityId, title: string, assignedUsers: string[]) {
-		const taskParams: ITaskUpdate = {
-			name: title,
-			usersIds: assignedUsers,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
-	}
-
-	private async updateTaskName(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
-		const taskParams = {
-			name: params.title,
-		};
-		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
-
-		return taskWithStatusVo;
 	}
 }

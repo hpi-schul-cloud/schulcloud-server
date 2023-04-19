@@ -161,7 +161,8 @@ export class TaskService {
 			} else if (remove) {
 				task.setAssignedUsers(undefined);
 			}
-		} else if (remove) {
+		}
+		if (!params.courseId && remove) {
 			task.course = undefined;
 			task.lesson = undefined;
 			task.setAssignedUsers(undefined);
