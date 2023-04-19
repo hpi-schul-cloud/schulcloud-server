@@ -11,6 +11,7 @@ import {
 	richTextCardElementFactory,
 	schoolFactory,
 	setupEntities,
+	submissionFactory,
 	taskCardFactory,
 	userFactory,
 } from '@shared/testing';
@@ -27,6 +28,7 @@ describe('TaskCardUc', () => {
 	let taskCardRepo: DeepMocked<TaskCardRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let submissionService: DeepMocked<SubmissionService>;
 	let taskService: DeepMocked<TaskService>;
 	let taskCard: TaskCard;
 	let user!: User;
@@ -82,6 +84,7 @@ describe('TaskCardUc', () => {
 		taskCardRepo = module.get(TaskCardRepo);
 		userRepo = module.get(UserRepo);
 		authorizationService = module.get(AuthorizationService);
+		submissionService = module.get(SubmissionService);
 		taskService = module.get(TaskService);
 	});
 
@@ -541,38 +544,102 @@ describe('TaskCardUc', () => {
 				await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
 			}).rejects.toThrow(ForbiddenException);
 		});
-		it('should add user to completed list if new state is set to true', async () => {
-			const addUserToCompletedListMock = jest.spyOn(taskCard, 'addUserToCompletedList');
-			const newCompletionState = true;
-			await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
-			expect(taskCard.addUserToCompletedList).toBeCalled();
-
-			const completedUserIds = taskCard.getCompletedUserIds();
-			expect(completedUserIds).toContain(user.id);
-			addUserToCompletedListMock.mockRestore();
-		});
-		// will do tomorrow
-		/* it('should remove user from completed list if new state is set to false', async () => {
-			const taskCardWithCompletedUser = taskCardFactory.buildWithId({
-				completedUsers: [user],
-			});
-			taskCardRepo.findById.mockResolvedValue(taskCardWithCompletedUser);
-			const removeUserFromCompletedListMock = jest.spyOn(taskCardWithCompletedUser, 'removeUserFromCompletedList');
-
-			const newCompletionState = false;
-			await uc.setCompletionStateForStudent(user.id, taskCardWithCompletedUser.id, newCompletionState);
-			expect(taskCardWithCompletedUser.removeUserFromCompletedList).toBeCalled();
-
-			const completedUserIds = taskCardWithCompletedUser.getCompletedUserIds();
-			expect(completedUserIds).not.toContain(user.id);
-			removeUserFromCompletedListMock.mockRestore();
-		}); */
 		it('should return the beta task and task', async () => {
 			const result = await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
 			expect(result.card.cardType).toEqual(CardType.Task);
 			expect(result.card.completedUsers).toContain(user);
+		});
+
+		describe('when new completion state should be true', () => {
+			const newCompletionState = true;
+			it('should add user to completed list', async () => {
+				jest.spyOn(taskCard, 'addUserToCompletedList');
+				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				expect(taskCard.addUserToCompletedList).toBeCalled();
+
+				const completedUserIds = taskCard.getCompletedUserIds();
+				expect(completedUserIds).toContain(user.id);
+			});
+			it('should call submission service to create submission for completed beta task', async () => {
+				jest.spyOn(submissionService, 'createForTaskCard');
+				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				expect(submissionService.createForTaskCard).toBeCalledWith(user.id, taskCard.task.id);
+			});
+		});
+
+		describe('when new completion state should be false', () => {
+			const newCompletionState = false;
+			it('should remove user from completed list if new state is set to false', async () => {
+				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
+				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
+				jest.spyOn(taskCardWithCompletedUser, 'removeUserFromCompletedList');
+				const submissionForTaskCard = submissionFactory.buildWithId({
+					school: user.school,
+					task: taskCardWithCompletedUser.task,
+					student: user,
+					comment: '',
+					submitted: true,
+					teamMembers: [user],
+				});
+				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
+
+				await uc.setCompletionStateForStudent(user.id, taskCardWithCompletedUser.id, newCompletionState);
+				expect(taskCardWithCompletedUser.removeUserFromCompletedList).toBeCalled();
+
+				const completedUserIds = taskCardWithCompletedUser.getCompletedUserIds();
+				expect(completedUserIds).not.toContain(user.id);
+			});
+			it('should call submission service to delete submission for completed beta task', async () => {
+				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
+				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
+				jest.spyOn(submissionService, 'delete');
+				const submissionForTaskCard = submissionFactory.buildWithId({
+					school: user.school,
+					task: taskCardWithCompletedUser.task,
+					student: user,
+					comment: '',
+					submitted: true,
+					teamMembers: [user],
+				});
+				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
+
+				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				expect(submissionService.delete).toBeCalledWith(submissionForTaskCard);
+			});
+			it('should throw if wrong submission data is provided', async () => {
+				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
+				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
+				jest.spyOn(submissionService, 'delete');
+				const wrongSubmissionForTaskCard = submissionFactory.buildWithId({
+					comment: '',
+					submitted: true,
+				});
+				submissionService.findByUserAndTask.mockResolvedValueOnce([wrongSubmissionForTaskCard]);
+
+				await expect(async () => {
+					await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				}).rejects.toThrow(ForbiddenException);
+			});
+			it('should throw if more than 1 submission is provided', async () => {
+				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
+				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
+				jest.spyOn(submissionService, 'delete');
+				const submissionsForTaskCard = submissionFactory.buildListWithId(2, {
+					school: user.school,
+					task: taskCardWithCompletedUser.task,
+					student: user,
+					comment: '',
+					submitted: true,
+					teamMembers: [user],
+				});
+				submissionService.findByUserAndTask.mockResolvedValueOnce(submissionsForTaskCard);
+
+				await expect(async () => {
+					await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				}).rejects.toThrow(ForbiddenException);
+			});
 		});
 	});
 });
