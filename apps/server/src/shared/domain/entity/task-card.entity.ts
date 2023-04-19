@@ -12,6 +12,7 @@ export interface ITaskCard extends ICard {
 	task: Task;
 	dueDate: Date;
 	course?: Course;
+	visibleAtDate?: Date;
 }
 @Entity({
 	tableName: 'card',
@@ -54,7 +55,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 	title!: string;
 
 	@Property()
-	visibleAtDate: Date;
+	visibleAtDate?: Date;
 
 	@Property()
 	dueDate: Date;

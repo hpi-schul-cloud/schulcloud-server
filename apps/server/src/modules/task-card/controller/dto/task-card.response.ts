@@ -60,10 +60,10 @@ export class TaskCardResponse {
 	})
 	task: TaskResponse;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Visible at date of the task card',
 	})
-	visibleAtDate: Date;
+	visibleAtDate?: Date;
 
 	@ApiProperty({
 		description: 'Due date of the task card',

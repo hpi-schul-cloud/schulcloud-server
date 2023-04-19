@@ -45,7 +45,7 @@ export class TaskCardUc {
 			creator: user,
 			draggable: true,
 			task: taskWithStatusVo.task,
-			visibleAtDate: new Date(),
+			visibleAtDate: params.visibleAtDate,
 			dueDate: params.dueDate,
 			title: params.title,
 		};
@@ -135,13 +135,9 @@ export class TaskCardUc {
 			name: params.title,
 			courseId: params.courseId,
 			dueDate: params.dueDate,
-			availableDate: new Date(),
+			availableDate: params.visibleAtDate,
 			private: false,
 		};
-
-		if (params.visibleAtDate) {
-			taskParams.availableDate = params.visibleAtDate;
-		}
 
 		const taskWithStatusVo = await this.taskService.create(userId, taskParams);
 
