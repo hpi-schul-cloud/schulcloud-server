@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
+import { DeleteHookService } from './delete-hook.service';
 
 @Injectable()
 export class BoardDoService {
-	constructor(private readonly boardDoRepo: BoardDoRepo) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly deleteHookService: DeleteHookService) {}
 
 	async deleteWithDescendants(domainObject: AnyBoardDo): Promise<void> {
 		const parent = await this.boardDoRepo.findParentOfId(domainObject.id);
@@ -15,6 +16,8 @@ export class BoardDoService {
 		}
 
 		await this.boardDoRepo.delete(domainObject);
+
+		await domainObject.acceptAsync(this.deleteHookService);
 	}
 
 	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {

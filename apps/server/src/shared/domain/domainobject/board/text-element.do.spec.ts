@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { cardFactory, textElementFactory } from '@shared/testing';
 import { TextElement } from './text-element.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardNodeBuilder } from './types';
 
 describe(TextElement.name, () => {
 	const setup = () => {
@@ -27,6 +27,28 @@ describe(TextElement.name, () => {
 			const textElementChild = textElementFactory.build();
 
 			expect(() => textElement.addChild(textElementChild)).toThrow();
+		});
+	});
+
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const textElement = textElementFactory.build();
+
+			textElement.accept(visitor);
+
+			expect(visitor.visitTextElement).toHaveBeenCalledWith(textElement);
+		});
+	});
+
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const textElement = textElementFactory.build();
+
+			await textElement.acceptAsync(visitor);
+
+			expect(visitor.visitTextElementAsync).toHaveBeenCalledWith(textElement);
 		});
 	});
 });

@@ -1,6 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import type { AnyBoardDo } from './types';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export abstract class BoardComposite {
 	id: EntityId;
@@ -49,6 +49,10 @@ export abstract class BoardComposite {
 		this.children = this.children.filter((ch) => ch.id !== childId);
 		return removedChild;
 	}
+
+	abstract accept(visitor: BoardCompositeVisitor): void;
+
+	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
 }
 
 export interface BoardCompositeProps {

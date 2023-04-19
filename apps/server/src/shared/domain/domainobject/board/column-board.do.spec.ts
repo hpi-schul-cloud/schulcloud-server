@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
 import { ColumnBoard } from './column-board.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardNodeBuilder } from './types';
 
 describe(ColumnBoard.name, () => {
 	describe('useBoardNodeBuilder', () => {
@@ -51,6 +51,28 @@ describe(ColumnBoard.name, () => {
 			board.addChild(column, 1);
 
 			expect(board.children[1]).toEqual(column);
+		});
+	});
+
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const columnBoard = columnBoardFactory.build();
+
+			columnBoard.accept(visitor);
+
+			expect(visitor.visitColumnBoard).toHaveBeenCalledWith(columnBoard);
+		});
+	});
+
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const columnBoard = columnBoardFactory.build();
+
+			await columnBoard.acceptAsync(visitor);
+
+			expect(visitor.visitColumnBoardAsync).toHaveBeenCalledWith(columnBoard);
 		});
 	});
 });
