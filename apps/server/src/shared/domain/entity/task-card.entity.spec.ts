@@ -34,26 +34,6 @@ describe('Task Card Entity', () => {
 		});
 	});
 
-	describe('isVisibleBeforeDueDate is called', () => {
-		describe('when task card visible at date is before due date', () => {
-			it('should return true', () => {
-				const taskCard = taskCardFactory.build();
-
-				expect(taskCard.isVisibleBeforeDueDate()).toEqual(true);
-			});
-		});
-
-		describe('when task card visible at date is after due date', () => {
-			it('should return true', () => {
-				const tomorrow = new Date(Date.now() + 86400000);
-				const inTwoDays = new Date(Date.now() + 172800000);
-				const taskCard = taskCardFactory.build({ dueDate: tomorrow, visibleAtDate: inTwoDays });
-
-				expect(taskCard.isVisibleBeforeDueDate()).toEqual(false);
-			});
-		});
-	});
-
 	describe('addUserToCompletedList is called', () => {
 		it('should add the user to the completed users list', () => {
 			const user = userFactory.buildWithId();

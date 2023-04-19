@@ -72,10 +72,6 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		return this.cardElements.getItems();
 	}
 
-	public isVisibleBeforeDueDate() {
-		return this.visibleAtDate < this.dueDate;
-	}
-
 	public addUserToCompletedList(user: User): void {
 		this.completedUsers.add(user);
 	}
