@@ -556,13 +556,6 @@ describe('Task-Card Controller (api)', () => {
 		});
 	});
 	describe('When assignment is provided', () => {
-		/**
-		 * Things to test:
-		 * [ ] /cards/task/create endpoint
-		 * [ ] /cards/task/:id/update endpoint
-		 * [ ] /cards/task/:id/findone endpoint
-		 * [ ] /cards/task/:id/delete endpoint
-		 */
 		describe('test create endpoint', () => {
 			const createEntities = () => {
 				const teacher = setupUser([
