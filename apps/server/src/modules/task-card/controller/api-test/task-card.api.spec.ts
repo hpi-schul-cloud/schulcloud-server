@@ -12,6 +12,7 @@ import {
 	mapUserToCurrentUser,
 	richTextCardElementFactory,
 	roleFactory,
+	submissionFactory,
 	taskCardFactory,
 	taskFactory,
 	userFactory,
@@ -465,6 +466,103 @@ describe('Task-Card Controller (api)', () => {
 				.patch(`/cards/task/${taskCard.id}`)
 				.set('Accept', 'application/json')
 				.send(params)
+				.expect(500);
+		});
+	});
+	describe('[PATCH] /cards/task/:id/complete', () => {
+		it('should set the beta task as completed for the user', async () => {
+			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ users: [user] });
+			const taskCard = taskCardFactory.buildWithId({ task });
+
+			await em.persistAndFlush([user, task, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}/complete`)
+				.set('Accept', 'application/json')
+				.send()
+				.expect(200);
+
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.id).toEqual(taskCard.id);
+			expect(responseTaskCard.completedBy).toContain(user.id);
+			expect(responseTaskCard.task.status.submitted).toEqual(1);
+		});
+		it('should throw if feature is not enabled', async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+			const user = setupUser([]);
+			const task = taskFactory.build({ users: [user] });
+			const taskCard = taskCardFactory.buildWithId({ task });
+
+			await em.persistAndFlush([user, task, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}/complete`)
+				.set('Accept', 'application/json')
+				.send()
+				.expect(500);
+		});
+	});
+	describe('[PATCH] /cards/task/:id/undoCompletion', () => {
+		it('should set the beta task as not completed for the user', async () => {
+			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ users: [user] });
+			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [user] });
+			const submission = submissionFactory.buildWithId({
+				school: user.school,
+				task: taskCard.task,
+				student: user,
+				comment: '',
+				submitted: true,
+				teamMembers: [user],
+			});
+
+			await em.persistAndFlush([user, task, taskCard, submission]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const response = await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}/undoCompletion`)
+				.set('Accept', 'application/json')
+				.send()
+				.expect(200);
+
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.id).toEqual(taskCard.id);
+			expect(responseTaskCard.completedBy).not.toContain(user.id);
+			expect(responseTaskCard.completedBy).toEqual([]);
+			expect(responseTaskCard.task.status.submitted).toEqual(0);
+		});
+		it('should throw if feature is not enabled', async () => {
+			await cleanupCollections(em);
+			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+			const user = setupUser([]);
+			const task = taskFactory.build({ users: [user] });
+			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [user] });
+
+			await em.persistAndFlush([user, task, taskCard]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}/undoCompletion`)
+				.set('Accept', 'application/json')
+				.send()
 				.expect(500);
 		});
 	});
