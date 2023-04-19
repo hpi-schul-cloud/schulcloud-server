@@ -12,6 +12,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async createAccount(account: IAccount, password?: string): Promise<string> {
+		const releaseLock = await this.kcAdminClient.acquireKcAdminClient();
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const id = await kc.users.create({
 			username: account.username,
@@ -40,10 +41,12 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 				throw err;
 			}
 		}
+		releaseLock();
 		return id.id;
 	}
 
 	async updateAccount(id: string, account: IAccountUpdate): Promise<string> {
+		const releaseLock = await this.kcAdminClient.acquireKcAdminClient();
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.update(
@@ -56,10 +59,12 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 				enabled: true,
 			}
 		);
+		releaseLock();
 		return id;
 	}
 
 	async updateAccountPassword(id: string, password: string): Promise<string> {
+		const releaseLock = await this.kcAdminClient.acquireKcAdminClient();
 		await (
 			await this.kcAdminClient.callKcAdminClient()
 		).users.resetPassword({
@@ -70,6 +75,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 				value: password,
 			},
 		});
+		releaseLock();
 		return id;
 	}
 
@@ -129,7 +135,9 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	}
 
 	async deleteAccountById(id: string): Promise<string> {
+		const releaseLock = await this.kcAdminClient.acquireKcAdminClient();
 		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id });
+		releaseLock();
 		return id;
 	}
 
@@ -154,6 +162,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		attributeName: string,
 		attributeValue: TValue
 	): Promise<void> {
+		const releaseLock = await this.kcAdminClient.acquireKcAdminClient();
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const user = await kc.users.findOne({ id: userId });
 		if (!user) {
@@ -165,6 +174,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 			user.attributes = { [attributeName]: attributeValue };
 		}
 		await kc.users.update({ id: userId }, user);
+		releaseLock();
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {

@@ -9,7 +9,7 @@ export class KeycloakAdministrationService {
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
-	private static KC_SEMAPHORE_WITH_TIMEOUT: MutexInterface;
+	private static KC_MUTEX_WITH_TIMEOUT: MutexInterface;
 
 	public constructor(
 		private readonly kcAdminClient: KeycloakAdminClient,
@@ -19,14 +19,16 @@ export class KeycloakAdministrationService {
 			baseUrl: kcSettings.baseUrl,
 			realmName: kcSettings.realmName,
 		});
-		KeycloakAdministrationService.KC_SEMAPHORE_WITH_TIMEOUT = withTimeout(new Mutex(), 1000);
+		KeycloakAdministrationService.KC_MUTEX_WITH_TIMEOUT = withTimeout(new Mutex(), 1000);
 	}
 
 	public async callKcAdminClient(): Promise<KeycloakAdminClient> {
-		await KeycloakAdministrationService.KC_SEMAPHORE_WITH_TIMEOUT.runExclusive(async () => {
-			await this.authorizeAccess();
-		});
+		await this.authorizeAccess();
 		return this.kcAdminClient;
+	}
+
+	public async acquireKcAdminClient(): Promise<MutexInterface.Releaser> {
+		return KeycloakAdministrationService.KC_MUTEX_WITH_TIMEOUT.acquire();
 	}
 
 	public async testKcConnection(): Promise<boolean> {
