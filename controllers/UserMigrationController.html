@@ -133,8 +133,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-migration.controller.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-migration.controller.ts:17</a></div>
                 </td>
             </tr>
 
@@ -186,18 +186,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
-import { PageContentQueryParams } from &#x27;./dto/page-type.query.param&#x27;;
-import { PageContentResponse } from &#x27;./dto/page-content.response&#x27;;
-import { MigrationUc } from &#x27;../uc/migration.uc&#x27;;
-import { PageContentDto } from &#x27;../service/dto/page-content.dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
+import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { PageContentMapper } from &#x27;../mapper/page-content.mapper&#x27;;
+import { PageContentDto } from &#x27;../service/dto&#x27;;
+import { UserLoginMigrationUc } from &#x27;../uc/user-login-migration.uc&#x27;;
+import { PageContentQueryParams, PageContentResponse } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;UserMigration&#x27;)
 @Controller(&#x27;user-migration&#x27;)
+/**
+ * @Deprecated
+ */
 export class UserMigrationController {
-	constructor(private readonly uc: MigrationUc, private readonly pageContentMapper: PageContentMapper) {}
+	constructor(private readonly uc: UserLoginMigrationUc, private readonly pageContentMapper: PageContentMapper) {}
 
 	@Get(&#x27;page-content&#x27;)
 	async getMigrationPageDetails(@Query() pageTypeQuery: PageContentQueryParams): Promise&lt;PageContentResponse&gt; {

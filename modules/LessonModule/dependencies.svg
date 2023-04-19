@@ -18,13 +18,13 @@
 <title>cluster_LessonModule_imports</title>
 <polygon fill="none" stroke="black" points="1076,-40.8 1076,-92.8 1624,-92.8 1624,-40.8 1076,-40.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LessonModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 1068,-92.8 1068,-40.8 16,-40.8"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_LessonModule_exports</title>
 <polygon fill="none" stroke="black" points="759,-170.8 759,-222.8 1026,-222.8 1026,-170.8 759,-170.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LessonModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 1068,-92.8 1068,-40.8 16,-40.8"/>
 </g>
 <!-- CopyHelperModule -->
 <g id="node1" class="node">
