@@ -9,9 +9,10 @@ import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
+import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
-import { LdapStrategy, RequestBody } from './ldap.strategy';
+import { LdapStrategy } from './ldap.strategy';
 
 describe('LdapStrategy', () => {
 	let module: TestingModule;
@@ -92,61 +93,9 @@ describe('LdapStrategy', () => {
 	});
 
 	describe('validate', () => {
-		describe('when username parameter is missing', () => {
-			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
-					body: {
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
-					},
-				};
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
-			});
-		});
-
-		describe('when password parameter is missing', () => {
-			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
-					body: {
-						username: 'mockUserName',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
-					},
-				};
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
-			});
-		});
-
-		describe('when schoolId parameter is missing', () => {
-			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
-					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						systemId: 'mockSystemId',
-					},
-				};
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
-			});
-		});
-
-		describe('when systemId parameter is missing', () => {
-			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
-					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-					},
-				};
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
-			});
-		});
-
 		describe('when user has no LDAP DN', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -155,13 +104,14 @@ describe('LdapStrategy', () => {
 					},
 				};
 				userRepoMock.findById.mockResolvedValueOnce({ ...mockUser });
+
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when school has no external id', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -170,13 +120,14 @@ describe('LdapStrategy', () => {
 					},
 				};
 				schoolRepoMock.findById.mockResolvedValueOnce({} as SchoolDO);
+
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when account has no user id', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -187,13 +138,14 @@ describe('LdapStrategy', () => {
 				const mockAccountWithoutUserId = { ...mockAccount };
 				delete mockAccountWithoutUserId.userId;
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
+
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when authentication with ldap fails', () => {
 			it('should throw unauthorized error', async () => {
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -201,8 +153,11 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
+
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
+
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+
 				expect(authenticationServiceMock.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
 			});
 		});
@@ -210,7 +165,7 @@ describe('LdapStrategy', () => {
 		describe('when connection to ldap fails', () => {
 			const setup = () => {
 				const error = new Error('error');
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -218,25 +173,30 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
+
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(error);
+
 				return { error, request };
 			};
 
 			it('should throw error', async () => {
 				const { error, request } = setup();
+
 				await expect(strategy.validate(request)).rejects.toThrow(error);
 			});
 
 			it('should not update last tried login failed', async () => {
 				const { error, request } = setup();
+
 				await expect(strategy.validate(request)).rejects.toThrow(error);
+
 				expect(authenticationServiceMock.updateLastTriedFailedLogin).not.toHaveBeenCalledWith(mockAccount.id);
 			});
 		});
 
 		describe('when authentication with LDAP succeeds', () => {
 			it('should return user', async () => {
-				const request: { body: RequestBody } = {
+				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username: 'mockUserName',
 						password: 'somePassword1234$',
@@ -244,7 +204,9 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
+
 				const user = await strategy.validate(request);
+
 				expect(user).toMatchObject({
 					userId: mockUser.id,
 					roles: [mockUser.roles[0].id],

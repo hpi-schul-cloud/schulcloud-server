@@ -11,11 +11,6 @@ class UserDoFactory extends BaseFactory<UserDO, UserDO> {
 
 		return entityWithId;
 	}
-
-	withDates(): this {
-		const params: DeepPartial<UserDO> = { createdAt: new Date(), updatedAt: new Date() };
-		return this.params(params);
-	}
 }
 
 export const userDoFactory = UserDoFactory.define(UserDO, ({ sequence }) => {

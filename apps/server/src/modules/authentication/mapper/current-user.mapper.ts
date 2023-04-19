@@ -1,7 +1,6 @@
 import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { RoleDto } from '../../role/service/dto/role.dto';
 import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
 
@@ -16,7 +15,7 @@ export class CurrentUserMapper {
 		};
 	}
 
-	static userDoToICurrentUser(accountId: string, user: UserDO, roles: RoleDto[], systemId?: string): ICurrentUser {
+	static userDoToICurrentUser(accountId: string, user: UserDO, systemId?: string): ICurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');
 		}
