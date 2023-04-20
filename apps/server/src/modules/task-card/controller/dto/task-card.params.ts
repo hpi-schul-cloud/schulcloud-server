@@ -80,7 +80,7 @@ export class TaskCardParams {
 	title!: string;
 
 	@IsOptional()
-	@IsDateString()
+	@IsDate()
 	@ApiPropertyOptional({ description: 'Visible at date of the card' })
 	visibleAtDate?: Date;
 
