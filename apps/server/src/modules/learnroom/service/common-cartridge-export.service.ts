@@ -24,6 +24,7 @@ export class CommonCartridgeExportService {
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addAssignments(this.mapTasksToAssignments(tasks));
+		/* addTopics(); */
 		return builder.build();
 	}
 
@@ -32,6 +33,7 @@ export class CommonCartridgeExportService {
 			return {
 				identifier: `i${lesson.id}`,
 				title: lesson.name,
+				contents: lesson.contents,
 			};
 		});
 	}
