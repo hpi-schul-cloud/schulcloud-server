@@ -162,7 +162,7 @@ describe('lesson copy uc', () => {
 		it('should check authorisation for destination course', async () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
-			expect(authorisation.checkIfAuthorizedByReferences).toBeCalledWith(
+			expect(authorisation.checkAuthorizationByReferences).toBeCalledWith(
 				user.id,
 				AllowedAuthorizationEntityType.Course,
 				course.id,
@@ -245,7 +245,7 @@ describe('lesson copy uc', () => {
 				lessonRepo.findById.mockResolvedValue(lesson);
 				courseRepo.findById.mockResolvedValue(course);
 				authorisation.isAuthorized.mockReturnValue(true);
-				authorisation.checkIfAuthorizedByReferences.mockImplementation(() => {
+				authorisation.checkAuthorizationByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 

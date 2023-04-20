@@ -221,7 +221,7 @@ describe('TaskCardUc', () => {
 		});
 		it('should check for course permission to create the task related to the task card in a course', async () => {
 			await uc.create(user.id, taskCardCreateParams);
-			expect(authorizationService.checkIfAuthorized).toBeCalledWith(user, course, {
+			expect(authorizationService.checkAuthorization).toBeCalledWith(user, course, {
 				action: Action.write,
 				requiredPermissions: [],
 			});

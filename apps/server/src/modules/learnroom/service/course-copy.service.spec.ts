@@ -99,7 +99,7 @@ describe('course copy service', () => {
 			courseRepo.findById.mockResolvedValue(course);
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkIfAuthorized.mockReturnValue();
+			authorization.checkAuthorization.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const courseCopyName = 'Copy';
@@ -322,7 +322,7 @@ describe('course copy service', () => {
 			courseRepo.findAllByUserId.mockResolvedValue([[course], 1]);
 			authorization.getUserWithPermissions.mockResolvedValue(user);
 			// boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkIfAuthorized.mockReturnValue();
+			authorization.checkAuthorization.mockReturnValue();
 			// roomsService.updateBoard.mockResolvedValue(originalBoard);
 			const boardCopy = boardFactory.build();
 			const boardCopyStatus = {
@@ -413,7 +413,7 @@ describe('course copy service', () => {
 
 			authorization.getUserWithPermissions.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkIfAuthorized.mockReturnValue();
+			authorization.checkAuthorization.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const courseCopyName = 'Copy';
@@ -459,7 +459,7 @@ describe('course copy service', () => {
 
 			authorization.getUserWithPermissions.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
-			authorization.checkIfAuthorized.mockReturnValue();
+			authorization.checkAuthorization.mockReturnValue();
 			roomsService.updateBoard.mockResolvedValue(originalBoard);
 
 			const boardCopy = boardFactory.build();

@@ -28,7 +28,7 @@ export class TaskCardUc {
 
 		if (params.courseId) {
 			const fetchedCourse = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkIfAuthorized(user, fetchedCourse, AuthorizationContextBuilder.write([]));
+			this.authorizationService.checkAuthorization(user, fetchedCourse, AuthorizationContextBuilder.write([]));
 			course = fetchedCourse;
 		}
 

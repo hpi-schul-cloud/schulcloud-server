@@ -24,7 +24,7 @@ export class SchoolUc {
 		oauthMigrationFinished: boolean,
 		userId: string
 	): Promise<OauthMigrationDto> {
-		await this.authService.checkIfAuthorizedByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
+		await this.authService.checkAuthorizationByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
@@ -58,7 +58,7 @@ export class SchoolUc {
 	}
 
 	async getMigration(schoolId: string, userId: string): Promise<OauthMigrationDto> {
-		await this.authService.checkIfAuthorizedByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
+		await this.authService.checkAuthorizationByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});

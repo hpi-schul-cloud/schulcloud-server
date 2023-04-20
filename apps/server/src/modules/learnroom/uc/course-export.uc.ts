@@ -11,7 +11,7 @@ export class CourseExportUc {
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
-		await this.authorizationService.checkIfAuthorizedByReferences(
+		await this.authorizationService.checkAuthorizationByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
 			courseId,

@@ -25,7 +25,7 @@ export class SubmissionUc {
 			this.submissionService.findById(submissionId),
 		]);
 
-		this.authorizationService.checkIfAuthorized(
+		this.authorizationService.checkAuthorization(
 			user,
 			submission,
 			AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])

@@ -77,7 +77,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.findSchoolExternalTools(user.id, tool);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					schoolId,
@@ -138,7 +138,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.deleteSchoolExternalTool(user.id, schoolExternalToolId);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
@@ -176,7 +176,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.createSchoolExternalTool(user.id, tool);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					schoolId,
@@ -214,7 +214,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.getSchoolExternalTool(user.id, schoolExternalToolId);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
@@ -256,7 +256,7 @@ describe('SchoolExternalToolUc', () => {
 
 			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool);
 
-			expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+			expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 				user.id,
 				AllowedAuthorizationEntityType.SchoolExternalTool,
 				schoolExternalToolId,

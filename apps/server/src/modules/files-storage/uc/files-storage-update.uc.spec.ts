@@ -132,7 +132,7 @@ describe('FilesStorageUC', () => {
 				const data: RenameFileParams = { fileName: 'test_new_name.txt' };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValueOnce();
 				filesStorageService.patchFilename.mockResolvedValueOnce(fileRecord);
 
 				return { userId, params, fileRecord, data };
@@ -150,7 +150,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.patchFilename(userId, params, data);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					userId,
 					fileRecord.parentType,
 					fileRecord.parentId,

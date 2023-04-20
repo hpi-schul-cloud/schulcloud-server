@@ -88,7 +88,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkIfAuthorized(user, task, AuthorizationContextBuilder.read([]));
+		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.read([]));
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -113,7 +113,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkIfAuthorized(user, task, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.write([]));
 
 		task.unpublish();
 		await this.taskRepo.save(task);
@@ -228,7 +228,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkIfAuthorized(user, task, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.write([]));
 
 		await this.taskService.delete(task);
 

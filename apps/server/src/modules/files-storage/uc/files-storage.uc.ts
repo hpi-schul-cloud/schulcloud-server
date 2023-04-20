@@ -44,7 +44,7 @@ export class FilesStorageUC {
 		context: AuthorizationContext
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkIfAuthorizedByReferences(userId, allowedType, parentId, context);
+		await this.authorizationService.checkAuthorizationByReferences(userId, allowedType, parentId, context);
 	}
 
 	// upload

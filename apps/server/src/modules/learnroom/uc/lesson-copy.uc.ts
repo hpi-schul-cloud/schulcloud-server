@@ -34,7 +34,7 @@ export class LessonCopyUC {
 		const destinationCourse = parentParams.courseId
 			? await this.courseRepo.findById(parentParams.courseId)
 			: originalLesson.course;
-		await this.authorisation.checkIfAuthorizedByReferences(
+		await this.authorisation.checkAuthorizationByReferences(
 			userId,
 			AllowedAuthorizationEntityType.Course,
 			destinationCourse.id,

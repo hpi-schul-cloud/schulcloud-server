@@ -49,7 +49,7 @@ describe('AuthorizationService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('checkIfAuthorized', () => {
+	describe('checkAuthorization', () => {
 		describe('when isAuthorized of RuleManager returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
@@ -62,7 +62,7 @@ describe('AuthorizationService', () => {
 			it('should throw ForbiddenException', () => {
 				const { context, user } = setup();
 
-				expect(() => service.checkIfAuthorized(user, user, context)).toThrow(ForbiddenException);
+				expect(() => service.checkAuthorization(user, user, context)).toThrow(ForbiddenException);
 			});
 		});
 
@@ -78,7 +78,7 @@ describe('AuthorizationService', () => {
 			it('should not throw', () => {
 				const { context, user } = setup();
 
-				expect(() => service.checkIfAuthorized(user, user, context)).not.toThrow();
+				expect(() => service.checkAuthorization(user, user, context)).not.toThrow();
 			});
 		});
 	});
@@ -121,7 +121,7 @@ describe('AuthorizationService', () => {
 		});
 	});
 
-	describe('checkIfAuthorizedByReferences', () => {
+	describe('checkAuthorizationByReferences', () => {
 		describe('when isAuthorizedByReferences returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
@@ -137,7 +137,7 @@ describe('AuthorizationService', () => {
 			it('should reject with ForbiddenException', async () => {
 				const { context, userId, entityId, entityName, spy } = setup();
 
-				await expect(service.checkIfAuthorizedByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+				await expect(service.checkAuthorizationByReferences(userId, entityName, entityId, context)).rejects.toThrow(
 					ForbiddenException
 				);
 
@@ -161,7 +161,7 @@ describe('AuthorizationService', () => {
 				const { context, userId, entityId, entityName, spy } = setup();
 
 				await expect(
-					service.checkIfAuthorizedByReferences(userId, entityName, entityId, context)
+					service.checkAuthorizationByReferences(userId, entityName, entityId, context)
 				).resolves.not.toThrow();
 
 				spy.mockRestore();

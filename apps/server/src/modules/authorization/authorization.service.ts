@@ -13,7 +13,7 @@ export class AuthorizationService {
 		private readonly authorizationHelper: AuthorizationHelper
 	) {}
 
-	public checkIfAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
+	public checkAuthorization(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
 		if (!this.ruleManager.isAuthorized(user, entity, context)) {
 			throw new ForbiddenException();
 		}
@@ -23,7 +23,7 @@ export class AuthorizationService {
 		return this.ruleManager.isAuthorized(user, entity, context);
 	}
 
-	public async checkIfAuthorizedByReferences(
+	public async checkAuthorizationByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,

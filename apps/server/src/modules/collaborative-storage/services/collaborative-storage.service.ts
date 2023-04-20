@@ -45,7 +45,7 @@ export class CollaborativeStorageService {
 		roleId: string,
 		teamPermissions: TeamPermissionsDto
 	): Promise<void> {
-		this.authService.checkIfAuthorized(
+		this.authService.checkAuthorization(
 			await this.authService.getUserWithPermissions(currentUserId),
 			await this.teamsRepo.findById(teamId, true),
 			AuthorizationContextBuilder.write([Permission.CHANGE_TEAM_ROLES])

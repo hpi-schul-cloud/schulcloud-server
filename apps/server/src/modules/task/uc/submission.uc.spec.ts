@@ -171,7 +171,7 @@ describe('Submission Uc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				submissionService.findById.mockResolvedValueOnce(submission);
-				authorizationService.checkIfAuthorized.mockImplementation();
+				authorizationService.checkAuthorization.mockImplementation();
 				submissionService.delete.mockResolvedValueOnce();
 
 				return { submission, user };
@@ -184,7 +184,7 @@ describe('Submission Uc', () => {
 
 				expect(submissionService.findById).toHaveBeenCalledWith(submission.id);
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
-				expect(authorizationService.checkIfAuthorized).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorization).toHaveBeenCalledWith(
 					user,
 					submission,
 					AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])
@@ -239,7 +239,7 @@ describe('Submission Uc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				submissionService.findById.mockResolvedValueOnce(submission);
-				authorizationService.checkIfAuthorized.mockImplementation(() => {
+				authorizationService.checkAuthorization.mockImplementation(() => {
 					throw error;
 				});
 
@@ -261,7 +261,7 @@ describe('Submission Uc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				submissionService.findById.mockResolvedValueOnce(submission);
-				authorizationService.checkIfAuthorized.mockImplementation();
+				authorizationService.checkAuthorization.mockImplementation();
 				submissionService.delete.mockRejectedValueOnce(error);
 
 				return { submission, user, error };

@@ -33,7 +33,7 @@ export class TaskCopyUC {
 
 		const destinationCourse = await this.getDestinationCourse(parentParams.courseId);
 		if (parentParams.courseId) {
-			await this.authorisation.checkIfAuthorizedByReferences(
+			await this.authorisation.checkAuthorizationByReferences(
 				userId,
 				AllowedAuthorizationEntityType.Course,
 				parentParams.courseId,

@@ -94,7 +94,7 @@ describe('FilesStorageUC', () => {
 				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValue();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValue();
 				filesStorageService.download.mockResolvedValueOnce(fileResponse);
 
 				return { fileDownloadParams, userId, fileRecord, fileResponse };
@@ -110,13 +110,13 @@ describe('FilesStorageUC', () => {
 				});
 			});
 
-			it('should call checkIfAuthorizedByReferences with correct params', async () => {
+			it('should call checkAuthorizationByReferences with correct params', async () => {
 				const { fileDownloadParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.download(userId, fileDownloadParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
-				expect(authorizationService.checkIfAuthorizedByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					fileRecord.parentId,
@@ -166,7 +166,7 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(error);
+				authorizationService.checkAuthorizationByReferences.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, fileRecord };
 			};
@@ -185,7 +185,7 @@ describe('FilesStorageUC', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValue();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValue();
 				filesStorageService.download.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, error };

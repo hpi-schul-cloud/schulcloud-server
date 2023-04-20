@@ -644,7 +644,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkIfAuthorized.mockImplementationOnce(() => {
+				authorizationService.checkAuthorization.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -686,7 +686,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(authorizationService.checkIfAuthorized).toBeCalledWith(user, task, {
+				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -819,7 +819,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkIfAuthorized.mockImplementationOnce(() => {
+				authorizationService.checkAuthorization.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -833,7 +833,7 @@ describe('TaskUC', () => {
 					await service.revertPublished(user.id, task.id);
 				}).rejects.toThrow(ForbiddenException);
 
-				expect(authorizationService.checkIfAuthorized).toBeCalledWith(user, task, {
+				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -909,7 +909,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkIfAuthorized.mockImplementationOnce(() => {
+				authorizationService.checkAuthorization.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -961,7 +961,7 @@ describe('TaskUC', () => {
 
 				await service.delete(user.id, task.id);
 
-				expect(authorizationService.checkIfAuthorized).toBeCalledWith(user, task, {
+				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});

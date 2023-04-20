@@ -115,19 +115,19 @@ describe('FilesStorageUC delete methods', () => {
 				const fileRecord = fileRecords[0];
 				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
 
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockResolvedValueOnce(mockedResult);
 
 				return { params, userId, mockedResult, requestParams };
 			};
 
-			it('should call authorizationService.checkIfAuthorizedByReferences', async () => {
+			it('should call authorizationService.checkAuthorizationByReferences', async () => {
 				const { userId, requestParams } = setup();
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toBeCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toBeCalledWith(
 					userId,
 					allowedType,
 					requestParams.parentId,
@@ -156,7 +156,7 @@ describe('FilesStorageUC delete methods', () => {
 			const setup = () => {
 				const { requestParams, userId } = createParams();
 
-				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkAuthorizationByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams, userId };
 			};
@@ -177,7 +177,7 @@ describe('FilesStorageUC delete methods', () => {
 				const { requestParams, userId } = createParams();
 				const error = new Error('test');
 
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValueOnce();
 				filesStorageService.deleteFilesOfParent.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };
@@ -199,20 +199,20 @@ describe('FilesStorageUC delete methods', () => {
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValueOnce();
 				filesStorageService.delete.mockResolvedValueOnce();
 
 				return { requestParams, userId, fileRecord };
 			};
 
-			it('should call authorizationService.checkIfAuthorizedByReferences', async () => {
+			it('should call authorizationService.checkAuthorizationByReferences', async () => {
 				const { requestParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.deleteOneFile(userId, requestParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(requestParams.parentType);
 
-				expect(authorizationService.checkIfAuthorizedByReferences).toBeCalledWith(
+				expect(authorizationService.checkAuthorizationByReferences).toBeCalledWith(
 					userId,
 					allowedType,
 					fileRecord.parentId,
@@ -278,7 +278,7 @@ describe('FilesStorageUC delete methods', () => {
 				const requestParams = { fileRecordId: fileRecord.id, parentType: fileRecord.parentType };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationService.checkAuthorizationByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { requestParams, userId };
 			};
@@ -299,7 +299,7 @@ describe('FilesStorageUC delete methods', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkIfAuthorizedByReferences.mockResolvedValueOnce();
+				authorizationService.checkAuthorizationByReferences.mockResolvedValueOnce();
 				filesStorageService.delete.mockRejectedValueOnce(error);
 
 				return { requestParams, userId, error };

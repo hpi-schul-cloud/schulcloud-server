@@ -218,7 +218,7 @@ describe('task copy uc', () => {
 				const { course, user, task, userId } = setup();
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
-				expect(authorisation.checkIfAuthorizedByReferences).toBeCalledWith(
+				expect(authorisation.checkAuthorizationByReferences).toBeCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -298,7 +298,7 @@ describe('task copy uc', () => {
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
 					authorisation.isAuthorized.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
-					authorisation.checkIfAuthorizedByReferences.mockImplementation(() => {
+					authorisation.checkAuthorizationByReferences.mockImplementation(() => {
 						throw new ForbiddenException();
 					});
 					return { user, course, task };
