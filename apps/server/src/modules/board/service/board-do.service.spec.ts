@@ -6,13 +6,13 @@ import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
-import { DeleteHookService } from './delete-hook.service';
+import { RecursiveDeleteVisitor } from '../repo/recursive-delete.vistor';
 
 describe(BoardDoService.name, () => {
 	let module: TestingModule;
 	let service: BoardDoService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let deleteHookService: DeepMocked<DeleteHookService>;
+	let recursiveDeleteVisitor: DeepMocked<RecursiveDeleteVisitor>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,8 +23,8 @@ describe(BoardDoService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: DeleteHookService,
-					useValue: createMock<DeleteHookService>(),
+					provide: RecursiveDeleteVisitor,
+					useValue: createMock<RecursiveDeleteVisitor>(),
 				},
 				{
 					provide: Logger,
@@ -35,7 +35,7 @@ describe(BoardDoService.name, () => {
 
 		service = module.get(BoardDoService);
 		boardDoRepo = module.get(BoardDoRepo);
-		deleteHookService = module.get(DeleteHookService);
+		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
 		await setupEntities();
 	});
 
@@ -152,15 +152,6 @@ describe(BoardDoService.name, () => {
 				await service.deleteWithDescendants(elements[0]);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card);
-			});
-
-			it('should use the delete hook service', async () => {
-				const { card } = setup();
-				card.acceptAsync = jest.fn();
-
-				await service.deleteWithDescendants(card);
-
-				expect(card.acceptAsync).toHaveBeenCalledWith(deleteHookService);
 			});
 		});
 	});

@@ -17,19 +17,22 @@ import {
 } from '@shared/testing';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
+import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(BoardDoRepo.name, () => {
 	let module: TestingModule;
 	let repo: BoardDoRepo;
 	let em: EntityManager;
+	let recursiveDeleteVisitor: RecursiveDeleteVisitor;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [BoardDoRepo, BoardNodeRepo],
+			providers: [BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor],
 		}).compile();
 		repo = module.get(BoardDoRepo);
 		em = module.get(EntityManager);
+		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
 	});
 
 	afterAll(async () => {
@@ -219,7 +222,6 @@ describe(BoardDoRepo.name, () => {
 				const card = cardFactory.build({ children: elements });
 				await repo.save(card);
 				await repo.save(elements, card);
-				em.clear();
 
 				return { card, elements };
 			};
@@ -242,6 +244,15 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
+			});
+
+			it('should use the visitor', async () => {
+				const { card } = await setup();
+				card.acceptAsync = jest.fn();
+
+				await repo.delete(card);
+
+				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
 			});
 		});
 	});
