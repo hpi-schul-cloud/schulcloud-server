@@ -50,6 +50,4 @@ export class AuthorizationHelper {
 
 		return result;
 	}
-
-	// todo: hasAccessToDomainObject
 }
