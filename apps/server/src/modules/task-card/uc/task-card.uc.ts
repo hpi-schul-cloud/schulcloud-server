@@ -143,6 +143,8 @@ export class TaskCardUc {
 
 		this.validateDueDate({ params, course, user });
 
+		// NOTE: here we need to distinguish between the case when the user wants to explicity
+		// remove the task assignment
 		if (Object.keys(params).includes('assignedUsers') && params.assignedUsers === undefined) {
 			await this.removeTaskAssignedUsers(userId, card.task.id, params.title);
 			delete params.assignedUsers;

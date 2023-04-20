@@ -157,6 +157,9 @@ export class TaskService {
 				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
 				task.setAssignedUsers(users);
 			} else if (task.users && Object.keys(params).includes('usersIds') && params.usersIds === undefined) {
+				// NOTE: this currently is meant to work for the beta task MVP. The assignment should only be removed
+				// if the api caller has explicitly set the assignedUsers to undefined.
+				// This complexity will be removed once we have the database migration and require users to be of type (null | string [])
 				task.setAssignedUsers(undefined);
 			} else if (remove) {
 				task.setAssignedUsers(undefined);
