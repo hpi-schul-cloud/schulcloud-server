@@ -30,9 +30,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.task = props.task;
 		this.cardType = CardType.Task;
 		this.title = props.title;
-		if (props.visibleAtDate) {
-			this.visibleAtDate = props.visibleAtDate;
-		}
+		this.visibleAtDate = props.visibleAtDate;
 		if (props.course) this.course = props.course;
 		Object.assign(this, { creator: props.creator });
 	}

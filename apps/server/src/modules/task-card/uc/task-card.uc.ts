@@ -114,14 +114,11 @@ export class TaskCardUc {
 		card.title = params.title;
 		card.course = course;
 		card.dueDate = params.dueDate;
+		card.visibleAtDate = params.visibleAtDate;
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
 			cardElements.push(...texts);
-		}
-
-		if (params.visibleAtDate) {
-			card.visibleAtDate = params.visibleAtDate;
 		}
 
 		await this.replaceCardElements(card, cardElements);
