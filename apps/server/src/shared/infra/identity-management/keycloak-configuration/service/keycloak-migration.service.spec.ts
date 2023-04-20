@@ -3,7 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { KeycloakMigrationService } from './keycloak-migration.service';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 describe('KeycloakMigrationService', () => {
 	let module: TestingModule;
@@ -14,7 +18,11 @@ describe('KeycloakMigrationService', () => {
 	let errorLogSpy: jest.SpyInstance;
 
 	let maxAccounts = 0;
+	const existingAccountId = '900';
 	const errorAccountId = '1100';
+
+	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
+	const kcApiUsersMock = createMock<Users>();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,33 +31,33 @@ describe('KeycloakMigrationService', () => {
 				{
 					provide: AccountService,
 					useValue: {
-						save: jest.fn().mockImplementation((account: AccountDto): Promise<Partial<AccountDto>> => {
-							if (account.id === errorAccountId) {
-								return Promise.resolve({ idmReferenceId: undefined });
+						findMany: jest.fn().mockImplementation((skip: number, amount: number): Promise<Partial<AccountDto>[]> => {
+							if (skip >= maxAccounts) {
+								return Promise.resolve([]);
 							}
-							return Promise.resolve({ idmReferenceId: `New${account.id}` });
+							const accountArr = Array.from({ length: Math.min(amount, maxAccounts - skip) }, (value, index) => {
+								const mockId = (index + skip).toString();
+								return { id: mockId, username: mockId };
+							});
+							return Promise.resolve(accountArr);
 						}),
-						searchByUsernamePartialMatch: jest
-							.fn()
-							.mockImplementation(
-								(
-									query: string,
-									skip: number,
-									amount: number
-								): Promise<{ accounts: Partial<AccountDto>[]; total: number }> => {
-									if (skip >= maxAccounts) {
-										return Promise.resolve({ accounts: [], total: 0 });
-									}
-									const accountArr = Array.from({ length: Math.min(amount, maxAccounts - skip) }, (value, index) => {
-										return { id: (index + skip).toString() + query };
-									});
-									return Promise.resolve({
-										accounts: accountArr,
-										total: amount,
-									});
-								}
-							),
 					},
+				},
+				{
+					provide: KeycloakAdministrationService,
+					useValue: {
+						callKcAdminClient: jest
+							.fn()
+							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(kcAdminClient)),
+					},
+				},
+				{
+					provide: KeycloakAdminClient,
+					useValue: createMock<KeycloakAdminClient>({
+						auth: (): Promise<void> => Promise.resolve(),
+						setConfig: () => {},
+						users: kcApiUsersMock,
+					}),
 				},
 				{
 					provide: Logger,
@@ -58,6 +66,19 @@ describe('KeycloakMigrationService', () => {
 			],
 		}).compile();
 		service = module.get(KeycloakMigrationService);
+		kcAdminClient = module.get(KeycloakAdminClient);
+
+		kcApiUsersMock.create.mockResolvedValue({ id: 'new-idm-id' });
+		kcApiUsersMock.find.mockImplementation(async (arg): Promise<UserRepresentation[]> => {
+			if (arg?.username === existingAccountId) {
+				return Promise.resolve([{ id: 'existing-dbaccount-id' }]);
+			}
+			if (arg?.username === errorAccountId) {
+				return Promise.resolve([{ id: 'existing-dbaccount-id-1' }, { id: 'existing-dbaccount-id-2' }]);
+			}
+			return Promise.resolve([]);
+		});
+
 		logger = module.get(Logger);
 		infoLogSpy = jest.spyOn(logger, 'log');
 		errorLogSpy = jest.spyOn(logger, 'error');
@@ -84,7 +105,7 @@ describe('KeycloakMigrationService', () => {
 		describe('When verbose is set', () => {
 			it('migration should log all account ids (old and new)', async () => {
 				maxAccounts = 1000;
-				const migratedAccountCounts = await service.migrate(0, '', true);
+				const migratedAccountCounts = await service.migrate(0, true);
 				expect(migratedAccountCounts).toBe(maxAccounts);
 				expect(infoLogSpy).toHaveBeenCalledTimes(maxAccounts);
 			});
@@ -102,22 +123,13 @@ describe('KeycloakMigrationService', () => {
 				expect(migratedAccountCounts).toBe(0);
 			});
 		});
-		describe('When query was set', () => {
-			it('migration should forward the query', async () => {
-				maxAccounts = 1;
-				const queryString = 'test';
-				const migratedAccountCounts = await service.migrate(0, queryString, true);
-				expect(infoLogSpy).toHaveBeenCalledTimes(migratedAccountCounts);
-				expect(infoLogSpy).toHaveBeenCalledWith(expect.stringContaining(queryString));
-			});
-		});
 		describe('When error cases exists', () => {
 			it('should log all errors ', async () => {
 				maxAccounts = 1200;
 				const migratedAccountCounts = await service.migrate();
 				expect(migratedAccountCounts).toBe(maxAccounts - 1);
 				expect(errorLogSpy).toHaveBeenCalledTimes(1);
-				expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorAccountId));
+				expect(errorLogSpy).toHaveBeenCalledWith(expect.stringContaining(errorAccountId), expect.anything());
 			});
 		});
 	});
