@@ -331,7 +331,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw if visible at Date is empty', async () => {
+		it('should throw if visibleAtDate is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
@@ -352,7 +352,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw if visible at Date is not a valid date', async () => {
+		it('should throw if visibleAtDate is not a valid date', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
@@ -564,7 +564,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(params)
 				.expect(500);
 		});
-		it('should throw if availableDate is empty', async () => {
+		it('should throw if visibleAtDate is empty', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
 			const title = 'title test';
 			const task = taskFactory.build({ name: title, creator: user });
