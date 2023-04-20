@@ -33,7 +33,7 @@ class UserAccountService {
 	}
 
 	async createAccount(account) {
-		return this.mutex.runExclusive(async () =>
+		return this.lock.runExclusive(async () =>
 			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
 				const newAccountData = {
 					userId: account.userId,
@@ -47,7 +47,7 @@ class UserAccountService {
 	}
 
 	async updateAccount(userId, account) {
-		return this.mutex.runExclusive(async () =>
+		return this.lock.runExclusive(async () =>
 			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
 				const nestAccountService = this.app.service('nest-account-service');
 				const createdAccount = await nestAccountService.findByUserId(userId);
