@@ -113,6 +113,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
+                                <a href="#findMany" class="deprecated-name">findMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
                                 <a href="#findMultipleByUserId" >findMultipleByUserId</a>
                             </li>
                             <li>
@@ -322,8 +326,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/account/services/account.service.abstract.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/account/services/account.service.abstract.ts:45</a></div>
                 </td>
             </tr>
 
@@ -658,6 +662,94 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto | null&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findMany"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span class="deprecated-name"><b>findMany</b></span>
+                        <a href="#findMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    For migration purpose only
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findMany(offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/account/services/account.service.abstract.ts:43</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>offset</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>limit</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1277,6 +1369,11 @@ export abstract class AbstractAccountService {
 	): Promise&lt;{ accounts: AccountDto[]; total: number }&gt;;
 
 	abstract searchByUsernameExactMatch(userName: string): Promise&lt;{ accounts: AccountDto[]; total: number }&gt;;
+
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	abstract findMany(offset: number, limit: number): Promise&lt;AccountDto[]&gt;;
 
 	protected encryptPassword(password: string): Promise&lt;string&gt; {
 		return bcrypt.hash(password, 10);

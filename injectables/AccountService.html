@@ -115,6 +115,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findMany" class="deprecated-name">findMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findMultipleByUserId" >findMultipleByUserId</a>
                             </li>
                             <li>
@@ -440,8 +444,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/modules/account/services/account.service.ts:139</a></div>
                 </td>
             </tr>
 
@@ -808,6 +812,107 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto | null&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findMany"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span class="deprecated-name"><b>findMany</b></span>
+                        <a href="#findMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    For migration purpose only
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findMany(offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, limit: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../injectables/AccountService.html" target="_self" >AbstractAccountService</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:135</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>offset</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>0</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>limit</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>100</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1515,7 +1620,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:40</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:45</a></code>
 </div>
                 </td>
             </tr>
@@ -1699,6 +1804,13 @@ export class AccountService extends AbstractAccountService {
 	async deleteByUserId(userId: string): Promise&lt;void&gt; {
 		await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () &#x3D;&gt; this.accountIdm.deleteByUserId(userId));
+	}
+
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;AccountDto[]&gt; {
+		return this.accountDb.findMany(offset, limit);
 	}
 
 	private async executeIdmMethod&lt;T&gt;(idmCallback: () &#x3D;&gt; Promise&lt;T&gt;) {

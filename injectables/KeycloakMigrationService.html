@@ -79,6 +79,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createOrUpdateIdmAccount" >createOrUpdateIdmAccount</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#migrate" >migrate</a>
                             </li>
@@ -100,12 +105,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -122,6 +127,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>kcAdmin</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/KeycloakAdministrationService.html" target="_self" >KeycloakAdministrationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>accountService</td>
                                                   
@@ -164,6 +181,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createOrUpdateIdmAccount"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createOrUpdateIdmAccount</b></span>
+                        <a href="#createOrUpdateIdmAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createOrUpdateIdmAccount(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:48</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>account</td>
+                                    <td>
+                                                <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="migrate"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -175,15 +264,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>migrate(start: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, userNamePattern: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, verbose)</code>
+                    <code>migrate(start: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, verbose)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/service/keycloak-migration.service.ts:18</a></div>
                 </td>
             </tr>
 
@@ -216,21 +305,6 @@
 
                                     <td>
                                         <code>0</code>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>userNamePattern</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-                                    <td>
-                                        <code>&#x27;&#x27;</code>
                                     </td>
 
                                 </tr>
@@ -272,16 +346,22 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger/logger.service&#x27;;
-import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
+import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
+import UserRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/userRepresentation&#x27;;
+import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
 
 @Injectable()
 export class KeycloakMigrationService {
-	constructor(private readonly accountService: AccountService, private readonly logger: Logger) {
+	constructor(
+		private readonly kcAdmin: KeycloakAdministrationService,
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}
 
-	async migrate(start &#x3D; 0, userNamePattern &#x3D; &#x27;&#x27;, verbose &#x3D; false): Promise&lt;number&gt; {
+	async migrate(start &#x3D; 0, verbose &#x3D; false): Promise&lt;number&gt; {
 		const amount &#x3D; 100;
 		let skip &#x3D; start;
 		let foundAccounts &#x3D; 1;
@@ -289,22 +369,18 @@ export class KeycloakMigrationService {
 		let accounts: AccountDto[] &#x3D; [];
 		while (foundAccounts &gt; 0) {
 			// eslint-disable-next-line no-await-in-loop
-			({ accounts, total: foundAccounts } &#x3D; await this.accountService.searchByUsernamePartialMatch(
-				userNamePattern,
-				skip,
-				amount
-			));
+			accounts &#x3D; await this.accountService.findMany(skip, amount);
 			foundAccounts &#x3D; accounts.length;
 			for (const account of accounts) {
-				// eslint-disable-next-line no-await-in-loop
-				const ret &#x3D; await this.accountService.save(account);
-				if (ret.idmReferenceId) {
+				try {
+					// eslint-disable-next-line no-await-in-loop
+					const retAccountId &#x3D; await this.createOrUpdateIdmAccount(account);
 					migratedAccounts +&#x3D; 1;
 					if (verbose) {
-						this.logger.log(&#x60;Migration of account ${account.id} done, new id is ${ret.idmReferenceId}.&#x60;);
+						this.logger.log(&#x60;Migration of account ${account.id} done, new id is ${retAccountId}.&#x60;);
 					}
-				} else {
-					this.logger.error(&#x60;Migration of account ${account.id} failed.&#x60;);
+				} catch (err) {
+					this.logger.error(&#x60;Migration of account ${account.id} failed.&#x60;, err);
 				}
 			}
 			skip +&#x3D; foundAccounts;
@@ -313,6 +389,37 @@ export class KeycloakMigrationService {
 			}
 		}
 		return migratedAccounts;
+	}
+
+	private async createOrUpdateIdmAccount(account: AccountDto): Promise&lt;string&gt; {
+		const idmUserRepresentation: UserRepresentation &#x3D; {
+			username: account.username,
+			enabled: true,
+			credentials: [
+				{
+					type: &#x27;password&#x27;,
+					secretData: &#x60;{&quot;value&quot;: &quot;${account.password ?? &#x27;&#x27;}&quot;, &quot;salt&quot;: &quot;&quot;, &quot;additionalParameters&quot;: {}}&#x60;,
+					credentialData: &#x27;{ &quot;hashIterations&quot;: 10, &quot;algorithm&quot;: &quot;bcrypt&quot;, &quot;additionalParameters&quot;: {}}&#x27;,
+				},
+			],
+			attributes: {
+				refTechnicalId: account.id,
+				refFunctionalIntId: account.userId,
+				refFunctionalExtId: account.systemId,
+			},
+		};
+		const kc &#x3D; await this.kcAdmin.callKcAdminClient();
+		const existingAccounts &#x3D; await kc.users.find({ username: account.username, exact: true });
+		if (existingAccounts.length &#x3D;&#x3D;&#x3D; 1 &amp;&amp; existingAccounts[0].id) {
+			const existingAccountId &#x3D; existingAccounts[0].id;
+			await kc.users.update({ id: existingAccountId }, idmUserRepresentation);
+			return existingAccountId;
+		}
+		if (existingAccounts.length &#x3D;&#x3D;&#x3D; 0) {
+			const createdAccountId &#x3D; await kc.users.create(idmUserRepresentation);
+			return createdAccountId.id;
+		}
+		throw Error(&#x60;Duplicate username ${account.username} update operation aborted.&#x60;);
 	}
 }
 </code></pre>

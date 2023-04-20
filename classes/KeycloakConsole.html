@@ -499,8 +499,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="192"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:192</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="189"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:189</a></div>
                 </td>
             </tr>
 
@@ -577,8 +577,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="150"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:150</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:144</a></div>
                 </td>
             </tr>
 
@@ -647,8 +647,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="163"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:163</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="160"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/keycloak-configuration/console/keycloak-configuration.console.ts:160</a></div>
                 </td>
             </tr>
 
@@ -971,12 +971,6 @@ export class KeycloakConsole {
 		options: [
 			...KeycloakConsole.retryFlags,
 			{
-				flags: &#x27;-q, --query&#x27;,
-				description: &#x27;Limit migration to accounts with username partially matching the query string.&#x27;,
-				required: false,
-				defaultValue: undefined,
-			},
-			{
 				flags: &#x27;-s, --skip&#x27;,
 				description: &#x27;Skip the first &quot;s&quot; accounts during migration. Default 0.&#x27;,
 				required: false,
@@ -994,7 +988,10 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			&#x27;migrate&#x27;,
 			async () &#x3D;&gt; {
-				const count &#x3D; await this.keycloakConfigurationUc.migrate(options.skip, options.query, options.verbose);
+				const count &#x3D; await this.keycloakConfigurationUc.migrate(
+					options.skip ? Number(options.skip) : undefined,
+					options.verbose ? Boolean(options.verbose) : false
+				);
 				this.console.info(&#x60;Migrated ${count} users into IDM&#x60;);
 				return count;
 			},
