@@ -1,10 +1,10 @@
-import { IComponentProperties } from '@src/shared/domain/entity/lesson.entity';
+import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartrigde-lesson-content-element';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
 	title?: string;
-	contents?: IComponentProperties[] | [];
+	contents?: ICommonCartridgeLessonContentProps[] | [];
 };
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {

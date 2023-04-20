@@ -3,6 +3,8 @@ import { EntityId, Lesson, Task } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
+import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartrigde-lesson-content-element';
+import { IComponentProperties } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
 import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from '../common-cartridge';
 
@@ -32,7 +34,7 @@ export class CommonCartridgeExportService {
 			return {
 				identifier: `i${lesson.id}`,
 				title: lesson.name,
-				contents: lesson.contents,
+				contents: this.mapLessonContetnToOrganization(lesson.contents),
 			};
 		});
 	}
@@ -43,6 +45,16 @@ export class CommonCartridgeExportService {
 				identifier: `i${task.id}`,
 				title: task.name,
 				description: task.description,
+			};
+		});
+	}
+
+	private mapLessonContetnToOrganization(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] | [] {
+		return contents.map((item) => {
+			return {
+				identifier: item._id,
+				title: item.title,
+				content: item.content,
 			};
 		});
 	}
