@@ -13,7 +13,8 @@ import { PageContentDto } from '../service/dto';
 import { UserLoginMigrationService, UserMigrationService, SchoolMigrationService } from '../service';
 import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from '../service/dto/migration.dto';
-import { UserMigrationError } from '../error/user-login-migration.error';
+import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { SchoolMigrationError } from '../error/school-migration-error';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -71,11 +72,16 @@ export class UserLoginMigrationUc {
 		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
 
 		if (data.externalSchool) {
-			const schoolToMigrate: SchoolDO | null = await this.schoolMigrationService.schoolToMigrate(
-				currentUserId,
-				data.externalSchool.externalId,
-				data.externalSchool.officialSchoolNumber
-			);
+			let schoolToMigrate: SchoolDO | null;
+			try {
+				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
+					currentUserId,
+					data.externalSchool.externalId,
+					data.externalSchool.officialSchoolNumber
+				);
+			} catch (error) {
+				throw new SchoolMigrationError({ oauthMigrationError: error });
+			}
 
 			this.logMigrationInformation(
 				currentUserId,
@@ -101,7 +107,7 @@ export class UserLoginMigrationUc {
 
 		// TODO: N21-820 after implementation of new client login flow, redirects will be obsolete and migrate should throw errors directly
 		if (migrationDto.redirect.includes('migration/error')) {
-			throw new UserMigrationError({ rev: '' });
+			throw new UserLoginMigrationError();
 		}
 
 		this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);

@@ -1,11 +1,9 @@
-import { Controller, Get, Query, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, Post, Body } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
-import { ISession } from '@shared/domain/types/session';
-import { Response } from 'express';
 import { UserLoginMigrationMapper } from '../mapper/user-login-migration.mapper';
 import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
@@ -15,22 +13,12 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
 @Authenticate('jwt')
 export class UserLoginMigrationController {
 	constructor(private readonly userLoginMigrationUc: UserLoginMigrationUc) {}
-
-	private userLoginMigrationErrorHandler(error: unknown) {
-		const migrationError: OAuthMigrationError =
-			error instanceof OAuthMigrationError ? error : new OAuthMigrationError();
-
-		if (migrationError.officialSchoolNumberFromSource && migrationError.officialSchoolNumberFromTarget) {
-			throw new HttpException(migrationError, HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-	}
 
 	@Get()
 	@ApiForbiddenResponse()

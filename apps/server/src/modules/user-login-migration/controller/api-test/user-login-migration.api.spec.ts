@@ -203,11 +203,11 @@ describe('UserLoginMigrationController (API)', () => {
 				const sourceSystem: System = systemFactory.buildWithId();
 
 				const officialSchoolNumber = '12345';
-
+				const externalId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 				const school: School = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber,
-					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+					externalId,
 					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
 				});
 
@@ -230,7 +230,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, school.externalId!, officialSchoolNumber);
+				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, officialSchoolNumber);
 
 				return {
 					query,
@@ -269,11 +269,11 @@ describe('UserLoginMigrationController (API)', () => {
 				const sourceSystem: System = systemFactory.buildWithId();
 
 				const officialSchoolNumber = '12345';
-
+				const externalId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 				const school: School = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber,
-					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+					externalId,
 					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
 				});
 
@@ -296,7 +296,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, school.externalId!, 'kennung');
+				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, externalId, 'kennung');
 
 				return {
 					query,

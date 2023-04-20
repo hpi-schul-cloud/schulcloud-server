@@ -1,13 +1,13 @@
 import { BusinessError } from '@shared/common';
 import { HttpStatus } from '@nestjs/common';
 
-export class UserMigrationError extends BusinessError {
+export class UserLoginMigrationError extends BusinessError {
 	constructor(details?: Record<string, unknown>) {
 		super(
 			{
 				type: 'USER_IN_MIGRATION',
-				title: 'Migration of user failed',
-				defaultMessage: 'Migration failed because user transfer is not possible during migration',
+				title: 'Migration failed',
+				defaultMessage: 'Migration of user failed during migration process',
 			},
 			HttpStatus.INTERNAL_SERVER_ERROR,
 			details

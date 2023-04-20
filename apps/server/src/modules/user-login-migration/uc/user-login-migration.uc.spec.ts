@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO, System } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
@@ -20,7 +20,9 @@ import { PageContentDto } from '../service/dto/page-content.dto';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 import { MigrationDto } from '../service/dto/migration.dto';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { UserMigrationError } from '../error/user-login-migration.error';
+import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { SchoolMigrationError } from '../error/school-migration-error';
 
 describe('UserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -327,12 +329,84 @@ describe('UserLoginMigrationUc', () => {
 				};
 			};
 
-			it('should throw InternalServerErrorException', async () => {
+			it('should throw UserloginMigrationError', async () => {
 				const { query } = setupMigration();
 
 				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
 
-				await expect(func).rejects.toThrow(new UserMigrationError());
+				await expect(func).rejects.toThrow(new UserLoginMigrationError());
+			});
+		});
+
+		describe('when migration of school failed', () => {
+			const setupMigration = () => {
+				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
+				query.code = 'code';
+				query.systemId = 'systemId';
+				query.redirectUri = 'redirectUri';
+
+				const sourceSystem: System = systemFactory
+					.withOauthConfig()
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					systems: [sourceSystem.id],
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'oldSchoolExternalId',
+				});
+
+				const externalUserId = 'externalUserId';
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+					externalSchool: new ExternalSchoolDto({
+						externalId: 'externalId',
+						officialSchoolNumber: 'officialSchoolNumber',
+						name: 'schoolName',
+					}),
+				});
+
+				const userMigrationDto: MigrationDto = new MigrationDto({
+					redirect: 'https://mock.de/migration/error',
+				});
+
+				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				});
+
+				const error: OAuthMigrationError = new OAuthMigrationError(
+					'Current users school is not the same as school found by official school number from target migration system',
+					'ext_official_school_number_mismatch',
+					schoolDO.officialSchoolNumber,
+					oauthData.externalSchool?.officialSchoolNumber
+				);
+
+				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
+				provisioningService.getData.mockResolvedValue(oauthData);
+				schoolMigrationService.schoolToMigrate.mockRejectedValue(error);
+				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+				return {
+					query,
+					userMigrationDto,
+					error,
+				};
+			};
+
+			it('should throw UserloginMigrationError', async () => {
+				const { query, error } = setupMigration();
+
+				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
+
+				await expect(func).rejects.toThrow(new SchoolMigrationError({ oauthMigrationError: error }));
 			});
 		});
 
