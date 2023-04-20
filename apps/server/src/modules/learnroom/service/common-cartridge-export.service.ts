@@ -24,7 +24,6 @@ export class CommonCartridgeExportService {
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addAssignments(this.mapTasksToAssignments(tasks));
-		/* addTopics(); */
 		return builder.build();
 	}
 
