@@ -52,7 +52,6 @@ export class CommonCartridgeExportService {
 	private mapLessonContetnToOrganization(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] | [] {
 		return contents.map((item) => {
 			return {
-				identifier: item._id,
 				title: item.title,
 				content: item.content,
 			};
