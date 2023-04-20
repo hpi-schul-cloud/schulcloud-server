@@ -211,7 +211,6 @@ describe('Task-Card Controller (api)', () => {
 				title: 'test title',
 				cardElements: [],
 				courseId: course.id,
-				// visibleAtDate: '',
 			};
 			await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -353,7 +352,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw if visible at Date is not a date', async () => {
+		it('should throw if visible at Date is not a valid date', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
@@ -366,7 +365,7 @@ describe('Task-Card Controller (api)', () => {
 				title: 'test title',
 				courseId: course.id,
 				dueDate: inTwoDays,
-				visibleAtDate: '1234',
+				visibleAtDate: 'abc',
 			};
 			await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -581,6 +580,30 @@ describe('Task-Card Controller (api)', () => {
 				title: 'updated title',
 
 				visibleAtDate: '',
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(taskCardUpdateParams)
+				.expect(400);
+		});
+		it('should throw if availableDate is not a valid date', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			const title = 'title test';
+			const task = taskFactory.build({ name: title, creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
+
+			await em.persistAndFlush([user, task, taskCard, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardUpdateParams = {
+				title: 'updated title',
+				visibleAtDate: 'abc',
 				dueDate: inThreeDays,
 				courseId: course.id,
 			};

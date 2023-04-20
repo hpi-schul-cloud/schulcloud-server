@@ -5,6 +5,7 @@ import { Type } from 'class-transformer';
 import {
 	IsArray,
 	IsDate,
+	IsDateString,
 	IsEnum,
 	IsMongoId,
 	IsOptional,
@@ -79,7 +80,7 @@ export class TaskCardParams {
 	title!: string;
 
 	@IsOptional()
-	@IsDate()
+	@IsDateString()
 	@ApiPropertyOptional({ description: 'Visible at date of the card' })
 	visibleAtDate?: Date;
 
