@@ -43,6 +43,7 @@ describe('UserLoginMigrationController (API)', () => {
 	let em: EntityManager;
 	let userJwt: string;
 	let currentUser: ICurrentUser | undefined;
+	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
@@ -61,7 +62,7 @@ describe('UserLoginMigrationController (API)', () => {
 				},
 			})
 			.compile();
-
+		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
@@ -144,6 +145,49 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[GET] /user-login-migrations/migrate-to-oauth2', () => {
+		const mockPostOauthTokenEndpoint = (
+			idToken: string,
+			targetSystem: System,
+			targetUserId: string,
+			schoolExternalId: string,
+			officialSchoolNumber: string
+		) => {
+			axiosMock
+				.onPost(targetSystem.oauthConfig?.tokenEndpoint)
+				.replyOnce<OauthTokenResponse>(200, {
+					id_token: idToken,
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				})
+				.onGet(targetSystem.provisioningUrl)
+				.replyOnce<SanisResponse>(200, {
+					pid: targetUserId,
+					person: {
+						name: {
+							familienname: 'familienName',
+							vorname: 'vorname',
+						},
+						geschlecht: 'weiblich',
+						lokalisierung: 'not necessary',
+						vertrauensstufe: 'not necessary',
+					},
+					personenkontexte: [
+						{
+							id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+							rolle: SanisRole.LEHR,
+							organisation: {
+								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
+								kennung: officialSchoolNumber,
+								name: 'schulName',
+								typ: 'not necessary',
+							},
+							personenstatus: 'not necessary',
+							email: 'email',
+						},
+					],
+				});
+		};
+
 		describe('when providing a code and being eligible to migrate', () => {
 			const setup = async () => {
 				const targetSystem: System = systemFactory
@@ -160,22 +204,14 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const officialSchoolNumber = '12345';
 
-				const school: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber,
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString(),
-					{}
-				);
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber,
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+				});
 
-				const user: User = userFactory.buildWithId(
-					{ externalId: 'externalUserId', school },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
 
 				const account: Account = accountFactory.buildWithId({
 					userId: user.id,
@@ -194,41 +230,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				const axiosMock = new MockAdapter(axios);
-				axiosMock
-					.onPost(targetSystem.oauthConfig?.tokenEndpoint)
-					.replyOnce<OauthTokenResponse>(200, {
-						id_token: idToken,
-						refresh_token: 'refreshToken',
-						access_token: 'accessToken',
-					})
-					.onGet(targetSystem.provisioningUrl)
-					.replyOnce<SanisResponse>(200, {
-						pid: new UUID('aef1f4fd-c323-466e-962b-a84354c0e715').toString(),
-						person: {
-							name: {
-								familienname: 'familienName',
-								vorname: 'vorname',
-							},
-							geschlecht: 'weiblich',
-							lokalisierung: 'not necessary',
-							vertrauensstufe: 'not necessary',
-						},
-						personenkontexte: [
-							{
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
-								rolle: SanisRole.LEHR,
-								organisation: {
-									id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
-									kennung: officialSchoolNumber,
-									name: 'schulName',
-									typ: 'not necessary',
-								},
-								personenstatus: 'not necessary',
-								email: 'email',
-							},
-						],
-					});
+				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, school.externalId!, officialSchoolNumber);
 
 				return {
 					query,
@@ -240,6 +242,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 			it('should migrate the user', async () => {
 				const { query } = await setup();
+
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
 					.send({
@@ -267,22 +270,14 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const officialSchoolNumber = '12345';
 
-				const school: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber,
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString(),
-					{}
-				);
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber,
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
+				});
 
-				const user: User = userFactory.buildWithId(
-					{ externalId: 'externalUserId', school },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
 
 				const account: Account = accountFactory.buildWithId({
 					userId: user.id,
@@ -301,41 +296,7 @@ describe('UserLoginMigrationController (API)', () => {
 					aud: targetSystem.oauthConfig?.clientId,
 				});
 
-				const axiosMock = new MockAdapter(axios);
-				axiosMock
-					.onPost(targetSystem.oauthConfig?.tokenEndpoint)
-					.replyOnce<OauthTokenResponse>(200, {
-						id_token: idToken,
-						refresh_token: 'refreshToken',
-						access_token: 'accessToken',
-					})
-					.onGet(targetSystem.provisioningUrl)
-					.replyOnce<SanisResponse>(200, {
-						pid: new UUID('aef1f4fd-c323-466e-962b-a84354c0e715').toString(),
-						person: {
-							name: {
-								familienname: 'familienName',
-								vorname: 'vorname',
-							},
-							geschlecht: 'weiblich',
-							lokalisierung: 'not necessary',
-							vertrauensstufe: 'not necessary',
-						},
-						personenkontexte: [
-							{
-								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
-								rolle: SanisRole.LEHR,
-								organisation: {
-									id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713'),
-									kennung: 'kennung',
-									name: 'schulName',
-									typ: 'not necessary',
-								},
-								personenstatus: 'not necessary',
-								email: 'email',
-							},
-						],
-					});
+				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, school.externalId!, 'kennung');
 
 				return {
 					query,
@@ -344,8 +305,10 @@ describe('UserLoginMigrationController (API)', () => {
 					targetSystem,
 				};
 			};
+
 			it('should throw Internal Server Error', async () => {
 				const { query } = await setup();
+
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
 					.send({
@@ -362,8 +325,10 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = () => {
 				currentUser = undefined;
 			};
+
 			it('should throw an UnauthorizedException', async () => {
 				setup();
+
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
 					.send({
@@ -371,6 +336,7 @@ describe('UserLoginMigrationController (API)', () => {
 						code: 'code',
 						systemId: new ObjectId().toHexString(),
 					});
+
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});

@@ -20,6 +20,7 @@ import { PageContentDto } from '../service/dto/page-content.dto';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 import { MigrationDto } from '../service/dto/migration.dto';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
+import { UserMigrationError } from '../error/user-login-migration.error';
 
 describe('UserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -269,16 +270,6 @@ describe('UserLoginMigrationUc', () => {
 
 				expect(authenticationService.removeJwtFromWhitelist).toHaveBeenCalledWith('jwt');
 			});
-
-			it('should log migration information', async () => {
-				const { query, message1, message2, message3 } = setupMigration();
-
-				await uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
-
-				expect(logger.debug).toHaveBeenCalledWith(message1);
-				expect(logger.debug).toHaveBeenCalledWith(message2);
-				expect(logger.debug).toHaveBeenCalledWith(message3);
-			});
 		});
 
 		describe('when migration of user failed', () => {
@@ -338,9 +329,10 @@ describe('UserLoginMigrationUc', () => {
 
 			it('should throw InternalServerErrorException', async () => {
 				const { query } = setupMigration();
+
 				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
 
-				await expect(func).rejects.toThrow(new InternalServerErrorException());
+				await expect(func).rejects.toThrow(new UserMigrationError());
 			});
 		});
 

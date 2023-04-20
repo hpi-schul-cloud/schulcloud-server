@@ -1,10 +1,6 @@
-import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { PageTypes } from '../interface/page-types.enum';
-import { UserLoginMigrationService, UserMigrationService, SchoolMigrationService } from '../service';
-import { PageContentDto } from '../service/dto';
-import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
@@ -12,7 +8,12 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { Logger } from '@src/core/logger';
+import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
+import { PageContentDto } from '../service/dto';
+import { UserLoginMigrationService, UserMigrationService, SchoolMigrationService } from '../service';
+import { PageTypes } from '../interface/page-types.enum';
 import { MigrationDto } from '../service/dto/migration.dto';
+import { UserMigrationError } from '../error/user-login-migration.error';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -98,9 +99,9 @@ export class UserLoginMigrationUc {
 			targetSystemId
 		);
 
-		// TODO: N21-820 when the userMigrationService.migrateUser will not longer be used throw errors directly
+		// TODO: N21-820 after implementation of new client login flow, redirects will be obsolete and migrate should throw errors directly
 		if (migrationDto.redirect.includes('migration/error')) {
-			throw new InternalServerErrorException();
+			throw new UserMigrationError({ rev: '' });
 		}
 
 		this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);
