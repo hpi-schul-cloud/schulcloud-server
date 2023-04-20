@@ -272,6 +272,13 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('findMany', () => {
+		it('should call findMany in accountServiceDb', async () => {
+			await expect(accountService.findMany()).resolves.not.toThrow();
+			expect(accountServiceDb.findMany).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('searchByUsernamePartialMatch', () => {
 		it('should call searchByUsernamePartialMatch in accountServiceDb', async () => {
 			await expect(accountService.searchByUsernamePartialMatch('username', 1, 1)).resolves.not.toThrow();

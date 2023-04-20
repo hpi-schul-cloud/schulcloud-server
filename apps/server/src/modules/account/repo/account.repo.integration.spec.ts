@@ -206,4 +206,21 @@ describe('account repo', () => {
 			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
 		});
 	});
+
+	describe('findMany', () => {
+		it('should find all accounts', async () => {
+			const foundAccounts = await repo.findMany();
+			expect(foundAccounts).toEqual(mockAccounts);
+		});
+		it('limit the result set ', async () => {
+			const limit = 1;
+			const foundAccounts = await repo.findMany(0, limit);
+			expect(foundAccounts).toHaveLength(limit);
+		});
+		it('skip n entries ', async () => {
+			const offset = 2;
+			const foundAccounts = await repo.findMany(offset);
+			expect(foundAccounts).toHaveLength(mockAccounts.length - offset);
+		});
+	});
 });

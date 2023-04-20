@@ -87,7 +87,6 @@ describe('AccountService', () => {
 							}
 							return Promise.resolve(null);
 						},
-
 						findById: jest.fn().mockImplementation((accountId: EntityId): Promise<Account> => {
 							const account = mockAccounts.find((tempAccount) => tempAccount.id === accountId);
 
@@ -105,6 +104,7 @@ describe('AccountService', () => {
 								(): Promise<[Account[], number]> => Promise.resolve([mockAccounts, mockAccounts.length])
 							),
 						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
+						findMany: jest.fn().mockImplementation((): Promise<Account[]> => Promise.resolve(mockAccounts)),
 					},
 				},
 				{
@@ -450,6 +450,14 @@ describe('AccountService', () => {
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(foundAccounts.total).toBe(1);
 			expect(foundAccounts.accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+		});
+	});
+
+	describe('findMany', () => {
+		it('should call repo', async () => {
+			const foundAccounts = await accountService.findMany(1, 1);
+			expect(accountRepo.findMany).toHaveBeenCalledWith(1, 1);
+			expect(foundAccounts).toBeDefined();
 		});
 	});
 });
