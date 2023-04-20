@@ -88,13 +88,13 @@ describe(`content element move (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, element, targetCard } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.move(element.id, targetCard.id, 5);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually move the element', async () => {
