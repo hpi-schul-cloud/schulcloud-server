@@ -6,6 +6,16 @@ import type { FileDto } from '../dto';
 import { FileRecord, type FileRecordParams, type FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
 export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
+	private static singelton: BaseDOFactory<FileRecordParams, FileRecord>;
+
+	public static getInstance() {
+		if (!FileRecordFactory.singelton) {
+			FileRecordFactory.singelton = new FileRecordFactory();
+		}
+
+		return FileRecordFactory.singelton;
+	}
+
 	// TODO: outsource build if possible
 	// TODO: we want to use it also if id is in props for mapper
 	public build(props: FileRecordParams): FileRecord {
@@ -51,12 +61,3 @@ export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecor
 		return fileRecord;
 	}
 }
-
-// TODO:
-// singleton (code schöner, export unschön)
-// vs
-// injectable (ist syncron und könnte zur Verfälschung in test führen)
-// vs
-// static code nicht so schön, export ist sauber, protected?
-
-export const fileRecordFactory = new FileRecordFactory();

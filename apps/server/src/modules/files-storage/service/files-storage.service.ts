@@ -30,7 +30,7 @@ import {
 } from '../helper';
 import { IGetFileResponse } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../mapper';
-import { FileRecord, fileRecordFactory } from '../domain';
+import { FileRecord, FileRecordFactory } from '../domain';
 
 // TODO: Ticket for rename EntityId to more generic Name
 
@@ -64,6 +64,8 @@ export interface FilesStorageRepo {
 // TODO: FileRecordParams should be define in domain layer
 @Injectable()
 export class FilesStorageService {
+	fileRecordFactory = FileRecordFactory.getInstance();
+
 	constructor(
 		private readonly fileRecordRepo: FilesStorageRepo,
 		private readonly storageClient: S3ClientAdapter,

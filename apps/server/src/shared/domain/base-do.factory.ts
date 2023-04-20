@@ -5,6 +5,9 @@ import { BaseDO2, BaseDOProps } from './base.do';
 // static?
 export abstract class BaseDOFactory<Properties extends BaseDOProps, T extends BaseDO2<Properties>> {
 	// constructor(private DoConstructor: { new (): T }) {}
+	// protected static singelton: BaseDOFactory<Properties, T>;
+
+	// public static getInstance(): BaseDOFactory<Properties, T>;
 
 	protected createId() {
 		const id = new ObjectID().toHexString();
