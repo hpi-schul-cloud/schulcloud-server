@@ -156,6 +156,7 @@ export class TaskCardUc {
 			name: params.title,
 			courseId: params.courseId,
 			dueDate: params.dueDate,
+			availableDate: params.visibleAtDate,
 		};
 		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 

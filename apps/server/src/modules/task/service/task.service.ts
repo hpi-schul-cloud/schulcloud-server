@@ -169,6 +169,10 @@ export class TaskService {
 			task.lesson = undefined;
 		}
 
+		if (!params.availableDate) {
+			task.availableDate = undefined;
+		}
+
 		this.taskDateValidation(params.availableDate, params.dueDate);
 
 		await this.taskRepo.save(task);
