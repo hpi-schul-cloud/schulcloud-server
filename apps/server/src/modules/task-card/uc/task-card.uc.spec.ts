@@ -405,6 +405,7 @@ describe('TaskCardUc', () => {
 				name: taskCardUpdateParams.title,
 				courseId: taskCardUpdateParams.courseId,
 				dueDate: taskCardUpdateParams.dueDate,
+				availableDate: taskCardUpdateParams.visibleAtDate,
 			};
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);

@@ -26,6 +26,7 @@ import request from 'supertest';
 describe('Task-Card Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	const tomorrow = new Date(Date.now() + 86400000);
 	const inTwoDays = new Date(Date.now() + 172800000);
 	const inThreeDays = new Date(Date.now() + 259200000);
 	const inFourDays = new Date(Date.now() + 345600000);
@@ -99,6 +100,7 @@ describe('Task-Card Controller (api)', () => {
 				],
 				courseId: course.id,
 				dueDate: inTwoDays,
+				visibleAtDate: tomorrow,
 			};
 			const response = await request(app.getHttpServer())
 				.post(`/cards/task/`)
@@ -111,7 +113,7 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
 			expect(responseTaskCard.task.name).toEqual('test title');
 			expect(responseTaskCard.title).toEqual('test title');
-			expect(responseTaskCard.visibleAtDate).toBeDefined();
+			expect(responseTaskCard.visibleAtDate).toEqual(tomorrow.toISOString());
 			expect(responseTaskCard.dueDate).toBe(inTwoDays.toISOString());
 			expect(responseTaskCard.courseId).toEqual(course.id);
 			expect(responseTaskCard.courseName).toEqual(course.name);
@@ -330,6 +332,48 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
+		it('should throw if visible at Date is empty', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
+
+			await em.persistAndFlush([user, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				courseId: course.id,
+				dueDate: inTwoDays,
+				visibleAtDate: '',
+			};
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
+		it('should throw if visible at Date is not a date', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
+
+			await em.persistAndFlush([user, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardParams = {
+				title: 'test title',
+				courseId: course.id,
+				dueDate: inTwoDays,
+				visibleAtDate: '1234',
+			};
+			await request(app.getHttpServer())
+				.post(`/cards/task/`)
+				.set('Accept', 'application/json')
+				.send(taskCardParams)
+				.expect(400);
+		});
 	});
 	describe('[GET] /cards/task/:id', () => {
 		it('should return existing task-card', async () => {
@@ -420,8 +464,41 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
-			expect(new Date(responseTaskCard.visibleAtDate)).toEqual(inTwoDays);
+			expect(new Date(responseTaskCard.visibleAtDate ? responseTaskCard.visibleAtDate : '')).toEqual(inTwoDays);
+			expect(new Date(responseTaskCard.task?.availableDate ? responseTaskCard.task?.availableDate : '')).toEqual(
+				inTwoDays
+			);
 			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
+		});
+		it('should remove visibleAtDate in task card and available date in task ', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+
+			const title = 'title test';
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ name: title, creator: user, availableDate: tomorrow });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
+
+			await em.persistAndFlush([user, task, taskCard, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardUpdateParams = {
+				title: 'title test',
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			const response = await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(taskCardUpdateParams)
+				.expect(200);
+
+			const responseTaskCard = response.body as TaskCardResponse;
+
+			expect(responseTaskCard.visibleAtDate).toBeUndefined();
+			expect(responseTaskCard.task?.availableDate).toBeUndefined();
 		});
 		it('should sanitize richtext on update with inputformat ck5', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
@@ -487,6 +564,31 @@ describe('Task-Card Controller (api)', () => {
 				.set('Accept', 'application/json')
 				.send(params)
 				.expect(500);
+		});
+		it('should throw if availableDate is empty', async () => {
+			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
+			const title = 'title test';
+			const task = taskFactory.build({ name: title, creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inFourDays });
+
+			await em.persistAndFlush([user, task, taskCard, course]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			const taskCardUpdateParams = {
+				title: 'updated title',
+
+				visibleAtDate: '',
+				dueDate: inThreeDays,
+				courseId: course.id,
+			};
+			await request(app.getHttpServer())
+				.patch(`/cards/task/${taskCard.id}`)
+				.set('Accept', 'application/json')
+				.send(taskCardUpdateParams)
+				.expect(400);
 		});
 	});
 	describe('[DELETE] /cards/task/:id', () => {
