@@ -117,7 +117,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -194,8 +194,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:15</a></div>
                 </td>
             </tr>
 
@@ -265,8 +265,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -336,8 +336,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:10</a></div>
                 </td>
             </tr>
 
@@ -407,8 +407,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -488,7 +488,6 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Card, EntityId, TextElement } from &#x27;@shared/domain&#x27;;
-import { ObjectId } from &#x27;bson&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 
@@ -503,10 +502,7 @@ export class ContentElementService {
 
 	async create(parent: Card): Promise&lt;TextElement&gt; {
 		const element &#x3D; new TextElement({
-			id: new ObjectId().toHexString(),
 			text: &#x60;&#x60;,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		});
 
 		parent.addChild(element);

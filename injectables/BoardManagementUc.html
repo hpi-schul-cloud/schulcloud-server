@@ -200,7 +200,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId&gt;</a></code>
 
                     </div>
                 </td>
@@ -229,8 +229,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:39</a></div>
                 </td>
             </tr>
 
@@ -312,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:29</a></div>
                 </td>
             </tr>
 
@@ -395,8 +395,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:50</a></div>
                 </td>
             </tr>
 
@@ -478,8 +478,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:60</a></div>
                 </td>
             </tr>
 
@@ -569,8 +569,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board-management.uc.ts:64</a></div>
                 </td>
             </tr>
 
@@ -638,14 +638,14 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardNode } from &#x27;@shared/domain&#x27;;
+import { BoardNode, EntityId } from &#x27;@shared/domain&#x27;;
 import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from &#x27;@shared/testing&#x27;;
 
 @Injectable()
 export class BoardManagementUc {
 	constructor(private em: EntityManager) {}
 
-	async createBoards(): Promise&lt;void&gt; {
+	async createBoards(): Promise&lt;EntityId&gt; {
 		const board &#x3D; columnBoardNodeFactory.build();
 		await this.em.persistAndFlush(board);
 
@@ -659,6 +659,8 @@ export class BoardManagementUc {
 		const elementsPerCard &#x3D; cards.map((card) &#x3D;&gt; this.createElements(this.random(2, 5), card));
 		const elements &#x3D; elementsPerCard.flat();
 		await this.em.persistAndFlush(elements);
+
+		return board.id;
 	}
 
 	private createColumns(amount: number, parent: BoardNode): BoardNode[] {
@@ -686,7 +688,7 @@ export class BoardManagementUc {
 		return this.generateArray(amount, (i) &#x3D;&gt;
 			textElementNodeFactory.build({
 				parent,
-				text: &#x60;&lt;p&gt;text ${i + 1}&lt;/p&gt;&#x60;,
+				text: &#x60;Text ${i + 1}&#x60;,
 				position: i,
 			})
 		);

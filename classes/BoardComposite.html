@@ -146,7 +146,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -208,7 +208,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -234,7 +234,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -260,7 +260,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:7</a></div>
                         </td>
                     </tr>
 
@@ -287,7 +287,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -313,7 +313,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -347,8 +347,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:25</a></div>
                 </td>
             </tr>
 
@@ -428,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:38</a></div>
                 </td>
             </tr>
 
@@ -499,8 +499,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:36</a></div>
                 </td>
             </tr>
 
@@ -568,8 +568,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:47</a></div>
                 </td>
             </tr>
 
@@ -627,8 +627,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotFoundException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 import type { AnyBoardDo } from &#x27;./types&#x27;;
 
 export abstract class BoardComposite {
@@ -643,16 +644,16 @@ export abstract class BoardComposite {
 	updatedAt: Date;
 
 	constructor(props: BoardCompositeProps) {
-		this.id &#x3D; props.id;
+		this.id &#x3D; props.id ?? new ObjectId().toHexString();
 		this.title &#x3D; props.title;
 		this.children &#x3D; props.children;
-		this.createdAt &#x3D; props.createdAt;
-		this.updatedAt &#x3D; props.updatedAt;
+		this.createdAt &#x3D; props.createdAt ?? new Date();
+		this.updatedAt &#x3D; props.updatedAt ?? new Date();
 	}
 
 	addChild(child: AnyBoardDo, position?: number): void {
 		if (!this.isAllowedAsChild(child)) {
-			throw new Error(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
+			throw new ForbiddenException(&#x60;Cannot add child of type &#x27;${child.constructor.name}&#x27;&#x60;);
 		}
 		if (position &#x3D;&#x3D;&#x3D; undefined || position &gt;&#x3D; this.children.length) {
 			this.children.push(child);
@@ -681,15 +682,15 @@ export abstract class BoardComposite {
 }
 
 export interface BoardCompositeProps {
-	id: EntityId;
+	id?: EntityId;
 
 	title?: string;
 
 	children: AnyBoardDo[];
 
-	createdAt: Date;
+	createdAt?: Date;
 
-	updatedAt: Date;
+	updatedAt?: Date;
 }
 </code></pre>
     </div>

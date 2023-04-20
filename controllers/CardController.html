@@ -143,14 +143,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiExtraModels(TextElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(TextElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:108</a></div>
                 </td>
             </tr>
 
@@ -233,14 +233,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:cardId&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Delete a single card.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Delete(&#x27;:cardId&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:92</a></div>
                 </td>
             </tr>
 
@@ -290,7 +290,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -323,14 +323,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Get a list of cards by their ids.&#x27;})<br />@ApiResponse({status: 200, type: CardListResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@Get()<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:41</a></div>
                 </td>
             </tr>
 
@@ -413,14 +413,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Put(&#x27;:cardId/position&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Move a single card.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:cardId/position&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:62</a></div>
                 </td>
             </tr>
 
@@ -482,7 +482,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -515,14 +515,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Put(&#x27;:cardId/title&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Update the title of a single card.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:cardId/title&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:77</a></div>
                 </td>
             </tr>
 
@@ -598,10 +598,23 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Post,
+	Put,
+	Query,
+} from &#x27;@nestjs/common&#x27;;
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { BoardUc, CardUc } from &#x27;../uc&#x27;;
 import {
 	AnyContentElementResponse,
@@ -620,6 +633,10 @@ import { CardResponseMapper, TextElementResponseMapper } from &#x27;./mapper&#x2
 export class CardController {
 	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
 
+	@ApiOperation({ summary: &#x27;Get a list of cards by their ids.&#x27; })
+	@ApiResponse({ status: 200, type: CardListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get()
 	async getCards(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -635,17 +652,27 @@ export class CardController {
 		return result;
 	}
 
+	@ApiOperation({ summary: &#x27;Move a single card.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
 	@Put(&#x27;:cardId/position&#x27;)
 	async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;boolean&gt; {
+	): Promise&lt;void&gt; {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
-
-		return true;
 	}
 
+	@ApiOperation({ summary: &#x27;Update the title of a single card.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
 	@Put(&#x27;:cardId/title&#x27;)
 	async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
@@ -655,13 +682,18 @@ export class CardController {
 		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
 
+	@ApiOperation({ summary: &#x27;Delete a single card.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
 	@Delete(&#x27;:cardId&#x27;)
-	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;boolean&gt; {
+	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise&lt;void&gt; {
 		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
-
-		return true;
 	}
 
+	@ApiOperation({ summary: &#x27;Create a new element on a card.&#x27; })
 	@ApiExtraModels(TextElementResponse)
 	@ApiResponse({
 		status: 201,
@@ -669,6 +701,9 @@ export class CardController {
 			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
 		},
 	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
