@@ -132,8 +132,8 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	async setCompletionStateForUser(studentId: EntityId, taskCardId: EntityId, newState: boolean) {
-		const user = await this.authorizationService.getUserWithPermissions(studentId);
+	async setCompletionStateForUser(userId: EntityId, taskCardId: EntityId, newState: boolean) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const card = await this.taskCardRepo.findById(taskCardId);
 
 		if (
@@ -210,7 +210,10 @@ export class TaskCardUc {
 	}
 
 	private async createSubmission(user: User, task: Task) {
-		await this.submissionService.createEmptySubmissionForUser(user, task);
+		const existingSubmissions = await this.submissionService.findByUserAndTask(user.id, task.id);
+		if (existingSubmissions.length === 0) {
+			await this.submissionService.createEmptySubmissionForUser(user, task);
+		}
 	}
 
 	private async deleteSubmission(userId: EntityId, taskId: EntityId) {

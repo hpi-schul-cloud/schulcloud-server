@@ -576,10 +576,28 @@ describe('TaskCardUc', () => {
 				const completedUserIds = taskCard.getCompletedUserIds();
 				expect(completedUserIds).toContain(user.id);
 			});
-			it('should call submission service to create submission for completed beta task', async () => {
+			it('should call submission service to create submission for completed beta task if no suitable submission exists yet', async () => {
+				submissionService.findByUserAndTask.mockResolvedValueOnce([]);
 				jest.spyOn(submissionService, 'createEmptySubmissionForUser');
 				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				expect(submissionService.createEmptySubmissionForUser).toBeCalledWith(user, taskCard.task);
+			});
+			it('should not call submission service to create if submission already exists', async () => {
+				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
+				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
+				jest.spyOn(submissionService, 'delete');
+				const submissionForTaskCard = submissionFactory.buildWithId({
+					school: user.school,
+					task: taskCardWithCompletedUser.task,
+					student: user,
+					comment: '',
+					submitted: true,
+					teamMembers: [user],
+				});
+				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
+				jest.spyOn(submissionService, 'createEmptySubmissionForUser');
+				await uc.setCompletionStateForUser(user.id, taskCardWithCompletedUser.id, newCompletionState);
+				expect(submissionService.createEmptySubmissionForUser).not.toBeCalledWith(user, taskCardWithCompletedUser.task);
 			});
 		});
 
