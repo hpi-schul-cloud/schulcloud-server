@@ -3,7 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -14,22 +13,18 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { UUID } from 'bson';
-import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import { Request } from 'express';
-import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { UUID } from 'bson';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
+import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
-
-const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
-const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
-const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -37,8 +32,8 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
 			alg: 'RS256',
-			getPublicKey: jest.fn().mockReturnValue(publicKey),
-			rsaPublicKey: publicKey,
+			getPublicKey: jest.fn().mockReturnValue(JwtTestFactory.getPublicKey()),
+			rsaPublicKey: JwtTestFactory.getPublicKey(),
 		}),
 		getSigningKeys: jest.fn(),
 	};
@@ -51,21 +46,9 @@ describe('OAuth SSO Controller (API)', () => {
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
-
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-
-		const schulcloudJwt: string = jwt.sign(
-			{
-				sub: 'testUser',
-				accountId: 'accountId',
-				jti: 'jti',
-			},
-			privateKey,
-			{
-				algorithm: 'RS256',
-			}
-		);
+		const schulcloudJwt: string = JwtTestFactory.createJwt();
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -195,27 +178,19 @@ describe('OAuth SSO Controller (API)', () => {
 
 		describe('when code and state are valid', () => {
 			it('should set a jwt and redirect', async () => {
-				const { system, query, externalUserId } = await setup();
+				const { system, externalUserId, query } = await setup();
 				const { state, cookies } = await setupSessionState(system.id, false);
 				const baseUrl: string = Configuration.get('HOST') as string;
 				query.code = 'code';
 				query.state = state;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser',
-						// For OIDC provisioning strategy
-						external_sub: externalUserId,
-						iss: system.oauthConfig?.issuer,
-						aud: system.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'testUser',
+					iss: system.oauthConfig?.issuer,
+					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
+					external_sub: externalUserId,
+				});
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
@@ -373,20 +348,12 @@ describe('OAuth SSO Controller (API)', () => {
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser',
-						iss: targetSystem.oauthConfig?.issuer,
-						aud: targetSystem.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						external_sub: externalUserId,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'testUser',
+					iss: targetSystem.oauthConfig?.issuer,
+					aud: targetSystem.oauthConfig?.clientId,
+					external_sub: externalUserId,
+				});
 
 				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, targetSchoolExternalId, 'NI_11111');
 
@@ -578,20 +545,13 @@ describe('OAuth SSO Controller (API)', () => {
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'differentExternalUserId',
-						iss: targetSystem.oauthConfig?.issuer,
-						aud: targetSystem.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						external_sub: 'differentExternalUserId',
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'differentExternalUserId',
+					iss: targetSystem.oauthConfig?.issuer,
+					aud: targetSystem.oauthConfig?.clientId,
+					external_sub: 'differentExternalUserId',
+				});
+
 				mockPostOauthTokenEndpoint(idToken, targetSystem, targetUser.id, targetSchoolExternalId, 'NI_22222');
 
 				await request(app.getHttpServer())
