@@ -47,6 +47,7 @@ describe('ExternalToolValidation', () => {
 	describe('validateCreate is called', () => {
 		it('should call the common validation service', async () => {
 			externalToolService.isOauth2Config.mockReturnValue(false);
+			externalToolService.isLti11Config.mockReturnValue(false);
 
 			await service.validateCreate(externalToolDO);
 
@@ -64,6 +65,7 @@ describe('ExternalToolValidation', () => {
 				it('should not find a tool with this client id', async () => {
 					const { externalOauthToolDO } = setup();
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
+					externalToolService.isLti11Config.mockReturnValue(false);
 
 					const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
@@ -73,6 +75,7 @@ describe('ExternalToolValidation', () => {
 				it('should return without error', async () => {
 					const { externalOauthToolDO } = setup();
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalOauthToolDO);
+					externalToolService.isLti11Config.mockReturnValue(false);
 
 					const result: Promise<void> = service.validateCreate(externalOauthToolDO);
 
@@ -124,6 +127,32 @@ describe('ExternalToolValidation', () => {
 					await expect(result).rejects.toThrow(
 						new ValidationError(
 							`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`
+						)
+					);
+				});
+			});
+		});
+
+		describe('when external tool config is lti11Config', () => {
+			describe('when there is no secret', () => {
+				const setup = () => {
+					const externalLti11ToolDOWithoutSecret: ExternalToolDO = externalToolDOFactory
+						.withLti11Config({ key: 'lti11Key', secret: undefined })
+						.buildWithId();
+					return { externalLti11ToolDOWithoutSecret };
+				};
+				it('should throw validation error', async () => {
+					const { externalLti11ToolDOWithoutSecret } = setup();
+					externalToolService.isLti11Config.mockReturnValue(true);
+					externalToolService.isOauth2Config.mockReturnValue(false);
+
+					const result: Promise<void> = service.validateCreate(externalLti11ToolDOWithoutSecret);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_secret_missing: The secret of the LTI tool ${
+								externalLti11ToolDOWithoutSecret.name || ''
+							} is missing.`
 						)
 					);
 				});

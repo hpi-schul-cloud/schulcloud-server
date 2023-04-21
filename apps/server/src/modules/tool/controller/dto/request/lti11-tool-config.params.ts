@@ -18,7 +18,7 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 
 	@IsString()
 	@ApiProperty()
-	secret!: string;
+	secret?: string;
 
 	@IsString()
 	@IsOptional()
