@@ -311,11 +311,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send({
-						redirectUri: query.redirectUri,
-						code: query.code,
-						systemId: query.systemId,
-					});
+					.send(query);
 
 				expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 			});
@@ -323,19 +319,24 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when being unauthorized', () => {
 			const setup = () => {
+				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
+				query.code = 'code';
+				query.systemId = new ObjectId().toHexString();
+				query.redirectUri = 'redirectUri';
+
 				currentUser = undefined;
+
+				return {
+					query,
+				};
 			};
 
 			it('should throw an UnauthorizedException', async () => {
-				setup();
+				const { query } = setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/migrate-to-oauth2`)
-					.send({
-						redirectUri: 'redirectUri',
-						code: 'code',
-						systemId: new ObjectId().toHexString(),
-					});
+					.send(query);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
