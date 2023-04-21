@@ -198,7 +198,7 @@ describe('Task-Card Controller (api)', () => {
 				.send(taskCardParams)
 				.expect(400);
 		});
-		it('should throw if visible at date is empty', async () => {
+		it('should throw if visibleAtDate does not exists', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
 			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
 
