@@ -84,14 +84,14 @@ describe(`card update title (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 			const newTitle = 'new title';
 
 			const response = await api.updateCardTitle(cardNode.id, newTitle);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually change the column title', async () => {
