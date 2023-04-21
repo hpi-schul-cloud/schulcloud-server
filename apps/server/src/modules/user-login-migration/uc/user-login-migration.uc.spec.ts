@@ -473,75 +473,6 @@ describe('UserLoginMigrationUc', () => {
 			});
 		});
 
-		describe('when external school and official school number is defined ', () => {
-			const setupMigration = () => {
-				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
-				query.code = 'code';
-				query.systemId = 'systemId';
-				query.redirectUri = 'redirectUri';
-
-				const sourceSystem: System = systemFactory
-					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
-
-				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
-					systems: [sourceSystem.id],
-					officialSchoolNumber: 'officialSchoolNumber',
-					externalId: 'oldSchoolExternalId',
-				});
-
-				const externalUserId = 'externalUserId';
-
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'externalId',
-						officialSchoolNumber: 'officialSchoolNumber',
-						name: 'schoolName',
-					}),
-				});
-
-				const userMigrationDto: MigrationDto = new MigrationDto({
-					redirect: 'https://mock.de/dashboard',
-				});
-
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
-					idToken: 'idToken',
-					refreshToken: 'refreshToken',
-					accessToken: 'accessToken',
-				});
-
-				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolMigrationService.schoolToMigrate.mockResolvedValue(schoolDO);
-				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
-
-				return {
-					query,
-					userMigrationDto,
-					oauthData,
-				};
-			};
-
-			it('should call schoolToMigrate', async () => {
-				const { oauthData, query } = setupMigration();
-
-				await uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
-
-				expect(schoolMigrationService.schoolToMigrate).toHaveBeenCalledWith(
-					'currentUserId',
-					oauthData.externalSchool?.externalId,
-					oauthData.externalSchool?.officialSchoolNumber
-				);
-			});
-		});
-
 		describe('when external school and official school number is defined and school has to be migrated', () => {
 			const setupMigration = () => {
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
@@ -605,6 +536,18 @@ describe('UserLoginMigrationUc', () => {
 					message,
 				};
 			};
+
+			it('should call schoolToMigrate', async () => {
+				const { oauthData, query } = setupMigration();
+
+				await uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
+
+				expect(schoolMigrationService.schoolToMigrate).toHaveBeenCalledWith(
+					'currentUserId',
+					oauthData.externalSchool?.externalId,
+					oauthData.externalSchool?.officialSchoolNumber
+				);
+			});
 
 			it('should call migrateSchool', async () => {
 				const { oauthData, query, schoolDO } = setupMigration();

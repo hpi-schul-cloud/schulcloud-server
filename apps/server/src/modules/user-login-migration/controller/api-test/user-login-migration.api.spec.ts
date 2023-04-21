@@ -22,7 +22,7 @@ import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { UUID } from 'bson';
 import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
 jest.mock('jwks-rsa', () => () => {
@@ -317,7 +317,7 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
-		describe('when being unauthorized', () => {
+		describe('when authentication of user failed', () => {
 			const setup = () => {
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';

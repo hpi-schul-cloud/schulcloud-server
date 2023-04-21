@@ -20,7 +20,7 @@ import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { UUID } from 'bson';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
