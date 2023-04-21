@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Column, ColumnBoard, EntityId } from '@shared/domain';
-import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -15,11 +14,8 @@ export class ColumnService {
 
 	async create(parent: ColumnBoard): Promise<Column> {
 		const column = new Column({
-			id: new ObjectId().toHexString(),
 			title: '',
 			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		});
 
 		parent.addChild(column);

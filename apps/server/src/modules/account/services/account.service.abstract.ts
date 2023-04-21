@@ -37,6 +37,11 @@ export abstract class AbstractAccountService {
 
 	abstract searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }>;
 
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	abstract findMany(offset: number, limit: number): Promise<AccountDto[]>;
+
 	protected encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
 	}

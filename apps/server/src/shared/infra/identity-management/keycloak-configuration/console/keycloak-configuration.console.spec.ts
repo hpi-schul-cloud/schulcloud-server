@@ -93,15 +93,7 @@ describe('KeycloakConsole', () => {
 			migrateSpy.mockResolvedValue(1);
 			const skipValue = 10;
 			await console.migrate({ skip: skipValue });
-			expect(migrateSpy).toHaveBeenCalledWith(skipValue, undefined, undefined);
-		});
-		it('should forward the query option', async () => {
-			const migrateSpy = jest.spyOn(uc, 'migrate');
-			migrateSpy.mockClear();
-			migrateSpy.mockResolvedValue(1);
-			const queryValue = 'test';
-			await console.migrate({ query: queryValue });
-			expect(migrateSpy).toHaveBeenCalledWith(undefined, queryValue, undefined);
+			expect(migrateSpy).toHaveBeenCalledWith(skipValue, expect.anything());
 		});
 		it('should forward the verbose option', async () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
@@ -109,7 +101,7 @@ describe('KeycloakConsole', () => {
 			migrateSpy.mockResolvedValue(1);
 			const verboseValue = true;
 			await console.migrate({ verbose: verboseValue });
-			expect(migrateSpy).toHaveBeenCalledWith(undefined, undefined, verboseValue);
+			expect(migrateSpy).toHaveBeenCalledWith(undefined, verboseValue);
 		});
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());

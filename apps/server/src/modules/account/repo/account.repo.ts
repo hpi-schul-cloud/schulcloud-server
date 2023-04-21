@@ -67,6 +67,13 @@ export class AccountRepo extends BaseRepo<Account> {
 		}
 	}
 
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+		return this._em.find(this.entityName, {}, { offset, limit });
+	}
+
 	private async searchByUsername(
 		username: string,
 		offset: number,

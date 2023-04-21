@@ -87,13 +87,13 @@ describe(`column move (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, columnToMove, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.move(columnToMove.id, columnBoardNode.id, 5);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually move the column', async () => {

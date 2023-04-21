@@ -1,5 +1,4 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
@@ -13,19 +12,13 @@ export class ContentElementProvider {
 		this.elements.set(
 			ContentElementType.TEXT,
 			new TextElement({
-				id: new ObjectId().toHexString(),
 				text: ``,
-				createdAt: new Date(),
-				updatedAt: new Date(),
 			})
 		);
 		this.elements.set(
 			ContentElementType.FILE,
 			new FileElement({
-				id: new ObjectId().toHexString(),
 				caption: ``,
-				createdAt: new Date(),
-				updatedAt: new Date(),
 			})
 		);
 	}
