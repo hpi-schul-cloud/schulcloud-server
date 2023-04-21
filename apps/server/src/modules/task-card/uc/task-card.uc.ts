@@ -132,7 +132,7 @@ export class TaskCardUc {
 		return { card, taskWithStatusVo };
 	}
 
-	async setCompletionStateForStudent(studentId: EntityId, taskCardId: EntityId, newState: boolean) {
+	async setCompletionStateForUser(studentId: EntityId, taskCardId: EntityId, newState: boolean) {
 		const user = await this.authorizationService.getUserWithPermissions(studentId);
 		const card = await this.taskCardRepo.findById(taskCardId);
 

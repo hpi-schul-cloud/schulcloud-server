@@ -75,7 +75,7 @@ export class TaskCardController {
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
-		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
+		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForUser(
 			currentUser.userId,
 			urlParams.id,
 			true
@@ -92,7 +92,7 @@ export class TaskCardController {
 	): Promise<TaskCardResponse> {
 		this.featureEnabled();
 
-		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForStudent(
+		const { card, taskWithStatusVo } = await this.taskCardUc.setCompletionStateForUser(
 			currentUser.userId,
 			urlParams.id,
 			false

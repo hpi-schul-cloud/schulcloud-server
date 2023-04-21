@@ -517,7 +517,7 @@ describe('TaskCardUc', () => {
 		});
 	});
 
-	describe('setCompletionStateForStudent', () => {
+	describe('setCompletionStateForUser', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			taskCard = taskCardFactory.buildWithId();
@@ -539,7 +539,7 @@ describe('TaskCardUc', () => {
 			taskService.find.mockRestore();
 		});
 		it('should check for permission to view the beta task', async () => {
-			await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+			await uc.setCompletionStateForUser(user.id, taskCard.id, true);
 			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
 				action: Actions.read,
 				requiredPermissions: [Permission.TASK_CARD_VIEW],
@@ -548,11 +548,11 @@ describe('TaskCardUc', () => {
 		it('should throw if user has no permission', async () => {
 			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
-				await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+				await uc.setCompletionStateForUser(user.id, taskCard.id, true);
 			}).rejects.toThrow(ForbiddenException);
 		});
 		it('should return the beta task and task', async () => {
-			const result = await uc.setCompletionStateForStudent(user.id, taskCard.id, true);
+			const result = await uc.setCompletionStateForUser(user.id, taskCard.id, true);
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
 			expect(result.card.cardType).toEqual(CardType.Task);
@@ -563,7 +563,7 @@ describe('TaskCardUc', () => {
 			const newCompletionState = true;
 			it('should add user to completed list', async () => {
 				jest.spyOn(taskCard, 'addUserToCompletedList');
-				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				expect(taskCard.addUserToCompletedList).toBeCalled();
 
 				const completedUserIds = taskCard.getCompletedUserIds();
@@ -571,7 +571,7 @@ describe('TaskCardUc', () => {
 			});
 			it('should call submission service to create submission for completed beta task', async () => {
 				jest.spyOn(submissionService, 'createForTaskCard');
-				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				expect(submissionService.createForTaskCard).toBeCalledWith(user.id, taskCard.task.id);
 			});
 		});
@@ -592,7 +592,7 @@ describe('TaskCardUc', () => {
 				});
 				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
 
-				await uc.setCompletionStateForStudent(user.id, taskCardWithCompletedUser.id, newCompletionState);
+				await uc.setCompletionStateForUser(user.id, taskCardWithCompletedUser.id, newCompletionState);
 				expect(taskCardWithCompletedUser.removeUserFromCompletedList).toBeCalled();
 
 				const completedUserIds = taskCardWithCompletedUser.getCompletedUserIds();
@@ -612,7 +612,7 @@ describe('TaskCardUc', () => {
 				});
 				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
 
-				await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				expect(submissionService.delete).toBeCalledWith(submissionForTaskCard);
 			});
 			it('should throw if wrong submission data is provided', async () => {
@@ -626,7 +626,7 @@ describe('TaskCardUc', () => {
 				submissionService.findByUserAndTask.mockResolvedValueOnce([wrongSubmissionForTaskCard]);
 
 				await expect(async () => {
-					await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+					await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				}).rejects.toThrow(ForbiddenException);
 			});
 			it('should throw if more than 1 submission is provided', async () => {
@@ -644,7 +644,7 @@ describe('TaskCardUc', () => {
 				submissionService.findByUserAndTask.mockResolvedValueOnce(submissionsForTaskCard);
 
 				await expect(async () => {
-					await uc.setCompletionStateForStudent(user.id, taskCard.id, newCompletionState);
+					await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				}).rejects.toThrow(ForbiddenException);
 			});
 		});
