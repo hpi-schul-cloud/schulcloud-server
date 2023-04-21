@@ -338,7 +338,7 @@ describe('UserLoginMigrationUc', () => {
 			});
 		});
 
-		describe('when migration of school failed', () => {
+		describe('when schoolnumbers mismatch', () => {
 			const setupMigration = () => {
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';
@@ -401,7 +401,67 @@ describe('UserLoginMigrationUc', () => {
 				};
 			};
 
-			it('should throw UserloginMigrationError', async () => {
+			it('should throw SchoolMigrationError', async () => {
+				const { query, error } = setupMigration();
+
+				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
+
+				await expect(func).rejects.toThrow(new SchoolMigrationError({ oauthMigrationError: error }));
+			});
+		});
+
+		describe('when school is missing', () => {
+			const setupMigration = () => {
+				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
+				query.code = 'code';
+				query.systemId = 'systemId';
+				query.redirectUri = 'redirectUri';
+
+				const externalUserId = 'externalUserId';
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+					externalSchool: new ExternalSchoolDto({
+						externalId: 'externalId',
+						officialSchoolNumber: 'officialSchoolNumber',
+						name: 'schoolName',
+					}),
+				});
+
+				const userMigrationDto: MigrationDto = new MigrationDto({
+					redirect: 'https://mock.de/migration/error',
+				});
+
+				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+					idToken: 'idToken',
+					refreshToken: 'refreshToken',
+					accessToken: 'accessToken',
+				});
+
+				const error: OAuthMigrationError = new OAuthMigrationError(
+					'Official school number from target migration system is missing',
+					'ext_official_school_number_missing'
+				);
+
+				oAuthService.authenticateUser.mockResolvedValue(tokenDto);
+				provisioningService.getData.mockResolvedValue(oauthData);
+				schoolMigrationService.schoolToMigrate.mockRejectedValue(error);
+				userMigrationService.migrateUser.mockResolvedValue(userMigrationDto);
+
+				return {
+					query,
+					userMigrationDto,
+					error,
+				};
+			};
+
+			it('should throw SchoolMigrationError', async () => {
 				const { query, error } = setupMigration();
 
 				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
