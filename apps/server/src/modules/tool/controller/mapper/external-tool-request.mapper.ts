@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
 import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
+import {
+	BasicToolConfig,
+	CreateExternalTool,
+	CustomParameter,
+	ExternalTool,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+	UpdateExternalTool,
+} from '../../uc/dto';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -12,15 +21,6 @@ import {
 	Oauth2ToolConfigParams,
 	SortExternalToolParams,
 } from '../dto';
-import {
-	BasicToolConfig,
-	CreateExternalTool,
-	CustomParameter,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-	UpdateExternalTool,
-} from '../../uc/dto';
 
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -31,7 +31,7 @@ const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {
 	[CustomParameterLocationParams.PATH]: CustomParameterLocation.PATH,
 	[CustomParameterLocationParams.QUERY]: CustomParameterLocation.QUERY,
-	[CustomParameterLocationParams.TOKEN]: CustomParameterLocation.TOKEN,
+	[CustomParameterLocationParams.BODY]: CustomParameterLocation.BODY,
 };
 
 const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
@@ -99,6 +99,8 @@ export class ExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterPostParams) => {
 			return {
 				name: customParameterParam.name,
+				displayName: customParameterParam.displayName,
+				description: customParameterParam.description,
 				default: customParameterParam.defaultValue,
 				regex: customParameterParam.regex,
 				regexComment: customParameterParam.regexComment,

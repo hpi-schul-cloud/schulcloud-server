@@ -13,6 +13,7 @@ export class SystemMapper {
 			provisioningStrategy: entity.provisioningStrategy,
 			provisioningUrl: entity.provisioningUrl,
 			oauthConfig: SystemMapper.mapFromOauthConfigEntityToDto(entity.oauthConfig),
+			ldapActive: entity.ldapConfig?.active,
 		});
 	}
 

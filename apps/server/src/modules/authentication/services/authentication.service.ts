@@ -8,7 +8,8 @@ import type { IServerConfig } from '@src/modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
-import { ICurrentUser } from '../interface';
+import { CreateJwtPayload } from '../interface/jwt-payload';
+import { LoginDto } from '../uc/dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -36,16 +37,15 @@ export class AuthenticationService {
 		return account;
 	}
 
-	// if user does not contain a systemId the JWT won't contain it, thus the user needs to change his PW during first login
-	async generateJwt(user: ICurrentUser): Promise<{ accessToken: string }> {
+	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result = {
+		const result: LoginDto = new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
 			}),
-		};
+		});
 
 		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
 

@@ -13,6 +13,16 @@ export class CustomParameterPostParams {
 	name!: string;
 
 	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	displayName!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional()
+	description?: string;
+
+	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
 	defaultValue?: string;

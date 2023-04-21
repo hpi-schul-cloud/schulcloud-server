@@ -15,5 +15,5 @@ export class MoveCardBodyParams {
 		required: true,
 		nullable: false,
 	})
-	toIndex!: number;
+	toPosition!: number;
 }

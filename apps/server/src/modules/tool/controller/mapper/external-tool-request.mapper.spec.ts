@@ -1,12 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	BasicToolConfigDO,
-	CustomParameterDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
@@ -15,14 +8,12 @@ import {
 	ToolConfigType,
 } from '@shared/domain';
 import {
-	BasicToolConfigParams,
-	CustomParameterPostParams,
-	ExternalToolSearchParams,
-	ExternalToolSortOrder,
-	Lti11ToolConfigParams,
-	Oauth2ToolConfigParams,
-	SortExternalToolParams,
-} from '../dto';
+	BasicToolConfigDO,
+	CustomParameterDO,
+	ExternalToolDO,
+	Lti11ToolConfigDO,
+	Oauth2ToolConfigDO,
+} from '@shared/domain/domainobject/external-tool';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeParams,
@@ -31,9 +22,18 @@ import {
 	LtiPrivacyPermission,
 	TokenEndpointAuthMethod,
 } from '../../interface';
+import {
+	BasicToolConfigParams,
+	CustomParameterPostParams,
+	ExternalToolPostParams,
+	ExternalToolSearchParams,
+	ExternalToolSortOrder,
+	ExternalToolUpdateParams,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+	SortExternalToolParams,
+} from '../dto';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
-import { ExternalToolPostParams } from '../dto/request/external-tool-post.params';
-import { ExternalToolUpdateParams } from '../dto/request/external-tool-update.params';
 
 describe('ExternalToolRequestMapper', () => {
 	let module: TestingModule;
@@ -58,6 +58,8 @@ describe('ExternalToolRequestMapper', () => {
 
 		const customParameterPostParams = new CustomParameterPostParams();
 		customParameterPostParams.name = 'mockName';
+		customParameterPostParams.displayName = 'displayName';
+		customParameterPostParams.description = 'description';
 		customParameterPostParams.defaultValue = 'mockDefault';
 		customParameterPostParams.location = CustomParameterLocationParams.PATH;
 		customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
@@ -82,6 +84,8 @@ describe('ExternalToolRequestMapper', () => {
 
 		const customParameterDO: CustomParameterDO = new CustomParameterDO({
 			name: 'mockName',
+			displayName: 'displayName',
+			description: 'description',
 			default: 'mockDefault',
 			location: CustomParameterLocation.PATH,
 			scope: CustomParameterScope.SCHOOL,

@@ -488,7 +488,7 @@ describe('ImportUser Controller (API)', () => {
 							expect(listResponse.data.some((elem) => elem.userId === currentSchoolsUser.id)).toEqual(false);
 						});
 						it('should respond userMatch with all properties', async () => {
-							const currentSchoolsUser = userFactory.withRole(RoleName.TEACHER).build({
+							const currentSchoolsUser = userFactory.withRoleByName(RoleName.TEACHER).build({
 								school,
 							});
 							await em.persistAndFlush([currentSchoolsUser]);
@@ -573,7 +573,7 @@ describe('ImportUser Controller (API)', () => {
 					});
 					it('should return importUsers with all properties including match and roles', async () => {
 						const otherSchoolsImportUser = importUserFactory.build();
-						const userMatch = userFactory.withRole(RoleName.TEACHER).build({ school });
+						const userMatch = userFactory.withRoleByName(RoleName.TEACHER).build({ school });
 						const currentSchoolsImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({ school });
 						await em.persistAndFlush([otherSchoolsImportUser, currentSchoolsImportUser]);
 						em.clear();
@@ -814,7 +814,7 @@ describe('ImportUser Controller (API)', () => {
 				describe('[setMatch]', () => {
 					describe('[PATCH] user/import/:id/match', () => {
 						it('should set a manual match', async () => {
-							const userToBeMatched = userFactory.withRole(RoleName.STUDENT).build({
+							const userToBeMatched = userFactory.withRoleByName(RoleName.STUDENT).build({
 								school,
 							});
 							const unmatchedImportUser = importUserFactory.build({
@@ -833,13 +833,13 @@ describe('ImportUser Controller (API)', () => {
 							expect(importUserResponse.match?.userId).toEqual(userToBeMatched.id);
 						});
 						it('should update an existing auto match to manual', async () => {
-							const userMatch = userFactory.withRole(RoleName.STUDENT).build({
+							const userMatch = userFactory.withRoleByName(RoleName.STUDENT).build({
 								school,
 							});
 							const alreadyMatchedImportUser = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
 								school,
 							});
-							const manualUserMatch = userFactory.withRole(RoleName.STUDENT).build({
+							const manualUserMatch = userFactory.withRoleByName(RoleName.STUDENT).build({
 								school,
 							});
 							await em.persistAndFlush([userMatch, alreadyMatchedImportUser, manualUserMatch]);
@@ -860,7 +860,7 @@ describe('ImportUser Controller (API)', () => {
 				describe('[removeMatch]', () => {
 					describe('[DELETE] user/import/:id/match', () => {
 						it('should remove a match', async () => {
-							const userMatch = userFactory.withRole(RoleName.STUDENT).build({
+							const userMatch = userFactory.withRoleByName(RoleName.STUDENT).build({
 								school,
 							});
 							const importUserWithMatch = importUserFactory.matched(MatchCreator.AUTO, userMatch).build({
