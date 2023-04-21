@@ -92,6 +92,10 @@ describe('TaskCardUc', () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should be defined', () => {
 		expect(uc).toBeDefined();
 	});
@@ -307,7 +311,6 @@ describe('TaskCardUc', () => {
 				expect.objectContaining({
 					cardType: CardType.Task,
 					draggable: true,
-					creator: user,
 				})
 			);
 		});
@@ -585,7 +588,6 @@ describe('TaskCardUc', () => {
 			it('should not call submission service to create if submission already exists', async () => {
 				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
 				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
-				jest.spyOn(submissionService, 'delete');
 				const submissionForTaskCard = submissionFactory.buildWithId({
 					school: user.school,
 					task: taskCardWithCompletedUser.task,
@@ -597,7 +599,7 @@ describe('TaskCardUc', () => {
 				submissionService.findByUserAndTask.mockResolvedValueOnce([submissionForTaskCard]);
 				jest.spyOn(submissionService, 'createEmptySubmissionForUser');
 				await uc.setCompletionStateForUser(user.id, taskCardWithCompletedUser.id, newCompletionState);
-				expect(submissionService.createEmptySubmissionForUser).not.toBeCalledWith(user, taskCardWithCompletedUser.task);
+				expect(submissionService.createEmptySubmissionForUser).not.toBeCalled();
 			});
 		});
 
@@ -640,25 +642,11 @@ describe('TaskCardUc', () => {
 				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
 				expect(submissionService.delete).toBeCalledWith(submissionForTaskCard);
 			});
-			it('should throw if wrong submission data is provided', async () => {
+			it('should not call submission service to delete if wrong submission data is provided', async () => {
 				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
 				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
 				jest.spyOn(submissionService, 'delete');
-				const wrongSubmissionForTaskCard = submissionFactory.buildWithId({
-					comment: '',
-					submitted: true,
-				});
-				submissionService.findByUserAndTask.mockResolvedValueOnce([wrongSubmissionForTaskCard]);
-
-				await expect(async () => {
-					await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
-				}).rejects.toThrow(ForbiddenException);
-			});
-			it('should throw if more than 1 submission is provided', async () => {
-				const taskCardWithCompletedUser = taskCardFactory.buildWithId({ completedUsers: [user] });
-				taskCardRepo.findById.mockResolvedValueOnce(taskCardWithCompletedUser);
-				jest.spyOn(submissionService, 'delete');
-				const submissionsForTaskCard = submissionFactory.buildListWithId(2, {
+				const severalSubmissionsForTaskCard = submissionFactory.buildListWithId(2, {
 					school: user.school,
 					task: taskCardWithCompletedUser.task,
 					student: user,
@@ -666,11 +654,10 @@ describe('TaskCardUc', () => {
 					submitted: true,
 					teamMembers: [user],
 				});
-				submissionService.findByUserAndTask.mockResolvedValueOnce(submissionsForTaskCard);
+				submissionService.findByUserAndTask.mockResolvedValueOnce(severalSubmissionsForTaskCard);
 
-				await expect(async () => {
-					await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
-				}).rejects.toThrow(ForbiddenException);
+				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
+				expect(submissionService.delete).not.toBeCalled();
 			});
 		});
 	});

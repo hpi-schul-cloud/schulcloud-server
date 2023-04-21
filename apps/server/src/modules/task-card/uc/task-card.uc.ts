@@ -218,11 +218,10 @@ export class TaskCardUc {
 
 	private async deleteSubmission(userId: EntityId, taskId: EntityId) {
 		const submissions = await this.submissionService.findByUserAndTask(userId, taskId);
-		if (submissions.length > 1 || submissions[0].student.id !== userId || submissions[0].task.id !== taskId) {
-			throw new ForbiddenException('Submissions do not belong to user or task');
+		if (submissions.length === 1) {
+			const deletableSubmission = submissions[0];
+			await this.submissionService.delete(deletableSubmission);
 		}
-		const deletableSubmission = submissions[0];
-		await this.submissionService.delete(deletableSubmission);
 	}
 
 	private validateDueDate(validationObject: { params: ITaskCardCRUD; course: Course; user: User }) {
