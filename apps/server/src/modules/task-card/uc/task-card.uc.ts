@@ -210,6 +210,8 @@ export class TaskCardUc {
 	}
 
 	private isFirstDateLessThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
-		return new Date(dateToCompare.setHours(0, 0, 0, 0)) < new Date(referenceDate.setHours(0, 0, 0, 0));
+		const firstDate = new Date(dateToCompare);
+		const secondDate = new Date(referenceDate);
+		return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 	}
 }

@@ -335,7 +335,6 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
