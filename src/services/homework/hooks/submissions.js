@@ -376,9 +376,7 @@ const hasEditPermission = (context) => {
 	return Promise.reject(new Forbidden());
 };
 
-const isAssigned = async (context, homeworkId, userId) => {
-	const homeworkService = context.app.service('/homework');
-	const homework = await homeworkService.get(homeworkId);
+const isAssigned = (homework, userId) => {
 	// teachers can access
 	if (equalIds(homework.teacherId, userId)) {
 		return true;
@@ -391,8 +389,6 @@ const isAssigned = async (context, homeworkId, userId) => {
 	if ((homework.userIds || []).map((s) => s.toString()).includes(userId)) {
 		return true;
 	}
-
-	// team
 
 	return false;
 };
@@ -407,12 +403,13 @@ const hasTaskAssignment = async (context) => {
 		homeworkId = context.data.homeworkId || (context.data.submission || {}).homeworkId;
 	}
 
-	const checkHomeworkAssigment = await isAssigned(context, homeworkId, currentUserId);
+	const homeworkService = context.app.service('/homework');
+	const homework = await homeworkService.get(homeworkId);
+	const checkHomeworkAssigment = isAssigned(homework, currentUserId);
 	if (checkHomeworkAssigment) {
-		return Promise.resolve(context);
+		return context;
 	}
 
-	// user is someone else and not authorized
 	return Promise.reject(new Forbidden());
 };
 

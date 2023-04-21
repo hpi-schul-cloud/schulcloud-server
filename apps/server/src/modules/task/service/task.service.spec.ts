@@ -86,11 +86,10 @@ describe('TaskService', () => {
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 		});
 		afterEach(() => {
-			// userRepo.findById.mockRestore();
 			authorizationService.hasAllPermissions.mockRestore();
 			authorizationService.getUserWithPermissions.mockRestore();
 		});
-		it('should call findBySingleParent from task repod', async () => {
+		it('should call findBySingleParent from task repo', async () => {
 			const userId = 'user-id';
 			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
 

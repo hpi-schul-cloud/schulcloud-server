@@ -101,7 +101,7 @@ export class TaskRepo extends BaseRepo<Task> {
 			filtersScope.addQuery(forAssignedUser.query);
 			filtersScope.addQuery(scope.query);
 
-			query = filtersScope.query;
+			({ query } = filtersScope);
 		}
 
 		const countedTaskList = await this.findTasksAndCount(query, options);

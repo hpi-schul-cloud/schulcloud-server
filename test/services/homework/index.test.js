@@ -459,7 +459,7 @@ describe('homework service', () => {
 				const result = await homeworkService.find(params);
 				expect(result.total).to.equal(1);
 			});
-			it('as a student I not able to FIND a task to which I am not assigned', async () => {
+			it('as a student, I not able to FIND a task to which I am not assigned', async () => {
 				const { student2 } = await setupHomeworkWithAssignment();
 				const params = await testObjects.generateRequestParamsFromUser(student2);
 				params.query = {};
