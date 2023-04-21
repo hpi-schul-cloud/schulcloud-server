@@ -4,14 +4,15 @@ import {
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
+	FileElementRule,
 	LessonRule,
+	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskRule,
 	TaskCardRule,
+	TaskRule,
 	User,
 	UserRule,
-	SchoolExternalToolRule,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
@@ -31,7 +32,8 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly loader: ReferenceLoader,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule
+		private readonly schoolExternalToolRule: SchoolExternalToolRule,
+		private readonly fileElementRule: FileElementRule
 	) {
 		super();
 		this.registerPermissions([
@@ -45,6 +47,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
+			this.fileElementRule,
 		]);
 	}
 

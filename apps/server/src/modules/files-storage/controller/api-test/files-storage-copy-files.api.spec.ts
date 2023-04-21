@@ -169,7 +169,7 @@ describe(`${baseRouteName} (api)`, () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [
-							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions, file-element',
 						],
 						field: ['parentType'],
 					},

@@ -1,4 +1,4 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -255,7 +255,7 @@ describe('files-storage controller (API)', () => {
 				expect(response.error.validationErrors).toEqual([
 					{
 						errors: [
-							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
+							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions, file-element',
 						],
 						field: ['parentType'],
 					},

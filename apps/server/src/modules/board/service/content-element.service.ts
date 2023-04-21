@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, ContentElementProvider, EntityId, TextElement } from '@shared/domain';
+import { Card, ContentElementProvider, EntityId } from '@shared/domain';
 import { AnyContentElementDo } from '@shared/domain/domainobject/board/types/any-content-element-do';
 import { BoardDoRepo } from '../repo';
 import { ContentElementType } from '../types/content-elements.enum';
@@ -14,9 +14,9 @@ export class ContentElementService {
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
-		const column = await this.boardDoRepo.findByClassAndId(TextElement, elementId);
+		const column = await this.boardDoRepo.findById(elementId);
 
-		return column;
+		return column as AnyContentElementDo;
 	}
 
 	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {

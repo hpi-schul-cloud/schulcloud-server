@@ -1,6 +1,6 @@
-import { Course, CourseGroup, Lesson, Submission, Task, Team, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { AnyBoardDo, Course, CourseGroup, Lesson, Submission, Task, Team, User } from '@shared/domain';
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export enum AllowedAuthorizationEntityType {
 	'User' = 'users',
@@ -12,6 +12,7 @@ export enum AllowedAuthorizationEntityType {
 	'Team' = 'teams',
 	'Submission' = 'submissions',
 	'SchoolExternalTool' = 'school_external_tools',
+	'BoardNode' = 'boardnodes',
 }
 
 export type AllowedEntity =
@@ -23,4 +24,5 @@ export type AllowedEntity =
 	| Lesson
 	| Team
 	| Submission
-	| SchoolExternalToolDO;
+	| SchoolExternalToolDO
+	| AnyBoardDo;
