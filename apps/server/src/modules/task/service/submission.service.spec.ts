@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Counted, Permission, Submission } from '@shared/domain';
+import { Counted, Submission } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { SubmissionRepo, TaskRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
@@ -286,7 +286,7 @@ describe('Submission Service', () => {
 		});
 	});
 
-	describe('createForTaskCard is called', () => {
+	describe('createEmptySubmissionForUser is called', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const task = taskFactory.buildWithId({ users: [user] });
@@ -296,14 +296,6 @@ describe('Submission Service', () => {
 			return { user, task };
 		};
 
-		it('should check for task permission to create the submission to a task', async () => {
-			const { user, task } = setup();
-			await service.createForTaskCard(user.id, task.id);
-			expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-				action: Actions.read,
-				requiredPermissions: [Permission.HOMEWORK_VIEW],
-			});
-		});
 		it('should save the submission for beta task', async () => {
 			const { user, task } = setup();
 			const submissionMock = {
@@ -313,7 +305,7 @@ describe('Submission Service', () => {
 				comment: '',
 				submitted: true,
 			};
-			await service.createForTaskCard(user.id, task.id);
+			await service.createEmptySubmissionForUser(user, task);
 			expect(submissionRepo.save).toHaveBeenCalledWith(expect.objectContaining({ ...submissionMock }));
 		});
 		it('should return the submission', async () => {
@@ -325,7 +317,7 @@ describe('Submission Service', () => {
 				comment: '',
 				submitted: true,
 			};
-			const result = await service.createForTaskCard(user.id, task.id);
+			const result = await service.createEmptySubmissionForUser(user, task);
 			expect(result).toEqual(expect.objectContaining(submissionMock));
 			expect(result).toBeInstanceOf(Submission);
 		});

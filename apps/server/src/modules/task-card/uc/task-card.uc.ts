@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import { CardType, Course, EntityId, Permission, PermissionContextBuilder, Task, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -142,9 +142,15 @@ export class TaskCardUc {
 			throw new ForbiddenException();
 		}
 
+		this.authorizationService.checkPermission(
+			user,
+			card.task,
+			PermissionContextBuilder.read([Permission.HOMEWORK_VIEW])
+		);
+
 		if (newState) {
 			card.addUserToCompletedList(user);
-			await this.createSubmission(user.id, card.task.id);
+			await this.createSubmission(user, card.task);
 		} else {
 			card.removeUserFromCompletedList(user);
 			await this.deleteSubmission(user.id, card.task.id);
@@ -203,8 +209,8 @@ export class TaskCardUc {
 		return taskCard;
 	}
 
-	private async createSubmission(userId: EntityId, taskId: EntityId) {
-		await this.submissionService.createForTaskCard(userId, taskId);
+	private async createSubmission(user: User, task: Task) {
+		await this.submissionService.createEmptySubmissionForUser(user, task);
 	}
 
 	private async deleteSubmission(userId: EntityId, taskId: EntityId) {

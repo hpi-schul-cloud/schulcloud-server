@@ -1,12 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-	Counted,
-	EntityId,
-	ISubmissionProperties,
-	Permission,
-	PermissionContextBuilder,
-	Submission,
-} from '@shared/domain';
+import { Counted, EntityId, ISubmissionProperties, Submission, Task, User } from '@shared/domain';
 import { SubmissionRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationService } from '@src/modules/authorization';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -44,12 +37,7 @@ export class SubmissionService {
 		await this.submissionRepo.delete(submission);
 	}
 
-	async createForTaskCard(userId: EntityId, taskId: EntityId): Promise<Submission> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
-
+	async createEmptySubmissionForUser(user: User, task: Task): Promise<Submission> {
 		const submissionParams: ISubmissionProperties = {
 			school: user.school,
 			task,

@@ -551,6 +551,13 @@ describe('TaskCardUc', () => {
 				await uc.setCompletionStateForUser(user.id, taskCard.id, true);
 			}).rejects.toThrow(ForbiddenException);
 		});
+		it('should check for task permission to create the submission to a task', async () => {
+			await uc.setCompletionStateForUser(user.id, taskCard.id, true);
+			expect(authorizationService.checkPermission).toBeCalledWith(user, taskCard.task, {
+				action: Actions.read,
+				requiredPermissions: [Permission.HOMEWORK_VIEW],
+			});
+		});
 		it('should return the beta task and task', async () => {
 			const result = await uc.setCompletionStateForUser(user.id, taskCard.id, true);
 
@@ -570,9 +577,9 @@ describe('TaskCardUc', () => {
 				expect(completedUserIds).toContain(user.id);
 			});
 			it('should call submission service to create submission for completed beta task', async () => {
-				jest.spyOn(submissionService, 'createForTaskCard');
+				jest.spyOn(submissionService, 'createEmptySubmissionForUser');
 				await uc.setCompletionStateForUser(user.id, taskCard.id, newCompletionState);
-				expect(submissionService.createForTaskCard).toBeCalledWith(user.id, taskCard.task.id);
+				expect(submissionService.createEmptySubmissionForUser).toBeCalledWith(user, taskCard.task);
 			});
 		});
 
