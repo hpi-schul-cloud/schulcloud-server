@@ -199,7 +199,9 @@ export class TaskCardUc {
 	}
 
 	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
-		if (courseEndDate < dueDate) {
+		const courseEndDateAtMidnight = new Date(courseEndDate).setHours(0, 0, 0, 0);
+		const dueDateAtMidnight = new Date(dueDate).setHours(0, 0, 0, 0);
+		if (courseEndDateAtMidnight < dueDateAtMidnight) {
 			throw new ValidationError('Due date must be before course end date');
 		}
 	}
