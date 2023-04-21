@@ -316,6 +316,9 @@
                             <a href="#KeycloakSettings" title="apps/server/src/shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface.ts" ><b>KeycloakSettings</b>&nbsp;&nbsp;&nbsp;(apps/.../keycloak-settings.interface.ts)</a>
                         </li>
                         <li>
+                            <a href="#keyPair" title="apps/server/src/shared/testing/factory/jwt.test.factory.ts" ><b>keyPair</b>&nbsp;&nbsp;&nbsp;(apps/.../jwt.test.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#LdapEncryptionService" title="apps/server/src/shared/infra/encryption/encryption.interface.ts" ><b>LdapEncryptionService</b>&nbsp;&nbsp;&nbsp;(apps/.../encryption.interface.ts)</a>
                         </li>
                         <li>
@@ -376,6 +379,9 @@
                             <a href="#PermissionScopeMapping" title="apps/server/src/modules/video-conference/uc/video-conference.uc.ts" ><b>PermissionScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.uc.ts)</a>
                         </li>
                         <li>
+                            <a href="#privateKey" title="apps/server/src/shared/testing/factory/jwt.test.factory.ts" ><b>privateKey</b>&nbsp;&nbsp;&nbsp;(apps/.../jwt.test.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#providers" title="apps/server/src/modules/files-storage/files-storage-test.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage-test.module.ts)</a>
                         </li>
                         <li>
@@ -392,6 +398,9 @@
                         </li>
                         <li>
                             <a href="#pseudonymFactory" title="apps/server/src/shared/testing/factory/pseudonym.factory.ts" ><b>pseudonymFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../pseudonym.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#publicKey" title="apps/server/src/shared/testing/factory/jwt.test.factory.ts" ><b>publicKey</b>&nbsp;&nbsp;&nbsp;(apps/.../jwt.test.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#REDIS_CLIENT" title="apps/server/src/shared/infra/redis/interface/redis.constants.ts" ><b>REDIS_CLIENT</b>&nbsp;&nbsp;&nbsp;(apps/.../redis.constants.ts)</a>
@@ -4755,6 +4764,87 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>Symbol(&#x27;KeycloakSettings&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/jwt.test.factory.ts</h3>
+    <section>
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="keyPair"></a>
+                    <span class="name">
+                        <span ><b>keyPair</b></span>
+                        <a href="#keyPair"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>KeyPairKeyObjectResult</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>crypto.generateKeyPairSync(&#x27;rsa&#x27;, { modulusLength: 4096 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="privateKey"></a>
+                    <span class="name">
+                        <span ><b>privateKey</b></span>
+                        <a href="#privateKey"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string | Buffer</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>keyPair.privateKey.export({ type: &#x27;pkcs1&#x27;, format: &#x27;pem&#x27; })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="publicKey"></a>
+                    <span class="name">
+                        <span ><b>publicKey</b></span>
+                        <a href="#publicKey"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string | Buffer</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>keyPair.publicKey.export({ type: &#x27;pkcs1&#x27;, format: &#x27;pem&#x27; })</code>
                     </td>
                 </tr>
 

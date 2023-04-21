@@ -1927,13 +1927,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationApiModule.html" data-type="entity-link" >UserLoginMigrationApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                            'data-target="#controllers-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' : 'data-target="#xs-controllers-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' }>
+                                            'data-target="#controllers-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' : 'data-target="#xs-controllers-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' :
-                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' :
+                                            'id="xs-controllers-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' }>
                                             <li class="link">
                                                 <a href="controllers/UserLoginMigrationController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationController</a>
                                             </li>
@@ -1944,13 +1944,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' : 'data-target="#xs-injectables-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' }>
+                                        'data-target="#injectables-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' : 'data-target="#xs-injectables-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-2ddbba35405eb5adad6e0ceb4ee20de55b594f12ef2671396dbcfacd1f244546b184170526421ce4f458d85d21c5ca375549804a25694b18cd53249f80d1406e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationApiModule-2efc722ca34ba3ffce1e08838c6425f17aa28192414973aea5fc0214ebac9ea08eb975e56eba7ac4b6ddd4c518e4f76d57485e2dd3677d9b6446e2ef238cbc9e"' }>
                                         <li class="link">
                                             <a href="injectables/PageContentMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >PageContentMapper</a>
                                         </li>
@@ -2815,6 +2815,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/JwtExtractor.html" data-type="entity-link" >JwtExtractor</a>
                             </li>
                             <li class="link">
+                                <a href="classes/JwtTestFactory.html" data-type="entity-link" >JwtTestFactory</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/KeycloakAdministration.html" data-type="entity-link" >KeycloakAdministration</a>
                             </li>
                             <li class="link">
@@ -2963,6 +2966,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Oauth2AuthorizationBodyParams.html" data-type="entity-link" >Oauth2AuthorizationBodyParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Oauth2MigrationParams.html" data-type="entity-link" >Oauth2MigrationParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Oauth2ToolConfig.html" data-type="entity-link" >Oauth2ToolConfig</a>
@@ -3203,6 +3209,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolInMigrationError.html" data-type="entity-link" >SchoolInMigrationError</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolMigrationError.html" data-type="entity-link" >SchoolMigrationError</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolParams.html" data-type="entity-link" >SchoolParams</a>
@@ -3506,6 +3515,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationDO.html" data-type="entity-link" >UserLoginMigrationDO</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserLoginMigrationError.html" data-type="entity-link" >UserLoginMigrationError</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserLoginMigrationMapper.html" data-type="entity-link" >UserLoginMigrationMapper</a>
@@ -4051,6 +4063,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/CardProps.html" data-type="entity-link" >CardProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CreateJwtParams.html" data-type="entity-link" >CreateJwtParams</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CreateJwtPayload.html" data-type="entity-link" >CreateJwtPayload</a>

@@ -87,6 +87,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getMigrations" >getMigrations</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#migrateUserLogin" >migrateUserLogin</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -133,8 +137,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:27</a></div>
                 </td>
             </tr>
 
@@ -194,16 +198,118 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="migrateUserLogin"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>migrateUserLogin</b></span>
+                        <a href="#migrateUserLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>migrateUserLogin(jwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, body: <a href="../classes/Oauth2MigrationParams.html" target="_self">Oauth2MigrationParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;migrate-to-oauth2&#x27;)<br />@ApiOkResponse({description: &#x27;The User has been successfully migrated.&#x27;, status: 200})<br />@ApiInternalServerErrorResponse({description: &#x27;The migration of the User was not possible.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:58</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>jwt</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>body</td>
+                                    <td>
+                                                <code><a href="../classes/Oauth2MigrationParams.html" target="_self" >Oauth2MigrationParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query, Post, Body } from &#x27;@nestjs/common&#x27;;
 import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { UserLoginMigrationMapper } from &#x27;../mapper/user-login-migration.mapper&#x27;;
 import { UserLoginMigrationQuery } from &#x27;../uc/dto/user-login-migration-query&#x27;;
 import { UserLoginMigrationUc } from &#x27;../uc/user-login-migration.uc&#x27;;
@@ -212,12 +318,13 @@ import {
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from &#x27;./dto&#x27;;
+import { Oauth2MigrationParams } from &#x27;./dto/oauth2-migration.params&#x27;;
 
 @ApiTags(&#x27;UserLoginMigration&#x27;)
 @Controller(&#x27;user-login-migrations&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 export class UserLoginMigrationController {
-	constructor(private readonly migrationUc: UserLoginMigrationUc) {}
+	constructor(private readonly userLoginMigrationUc: UserLoginMigrationUc) {}
 
 	@Get()
 	@ApiForbiddenResponse()
@@ -230,7 +337,7 @@ export class UserLoginMigrationController {
 	): Promise&lt;UserLoginMigrationSearchListResponse&gt; {
 		const userLoginMigrationQuery: UserLoginMigrationQuery &#x3D; UserLoginMigrationMapper.mapSearchParamsToQuery(params);
 
-		const migrationPage: Page&lt;UserLoginMigrationDO&gt; &#x3D; await this.migrationUc.getMigrations(
+		const migrationPage: Page&lt;UserLoginMigrationDO&gt; &#x3D; await this.userLoginMigrationUc.getMigrations(
 			user.userId,
 			userLoginMigrationQuery,
 			{}
@@ -249,6 +356,17 @@ export class UserLoginMigrationController {
 		);
 
 		return response;
+	}
+
+	@Post(&#x27;migrate-to-oauth2&#x27;)
+	@ApiOkResponse({ description: &#x27;The User has been successfully migrated.&#x27;, status: 200 })
+	@ApiInternalServerErrorResponse({ description: &#x27;The migration of the User was not possible.&#x27; })
+	async migrateUserLogin(
+		@JWT() jwt: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: Oauth2MigrationParams
+	): Promise&lt;void&gt; {
+		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
 	}
 }
 </code></pre>

@@ -86,6 +86,14 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getPageContent" >getPageContent</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#logMigrationInformation" >logMigrationInformation</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#migrate" >migrate</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -104,12 +112,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>)</code>
+<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -143,6 +151,66 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/UserLoginMigrationService.html" target="_self" >UserLoginMigrationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>oauthService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OAuthService.html" target="_self" >OAuthService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>provisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProvisioningService.html" target="_self" >ProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolMigrationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolMigrationService.html" target="_self" >SchoolMigrationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authenticationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthenticationService.html" target="_self" >AuthenticationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -186,8 +254,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:40</a></div>
                 </td>
             </tr>
 
@@ -281,8 +349,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:30</a></div>
                 </td>
             </tr>
 
@@ -354,6 +422,244 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logMigrationInformation"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>logMigrationInformation</b></span>
+                        <a href="#logMigrationInformation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>logMigrationInformation(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, text?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, oauthData?: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>, targetSystemId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school?: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:132</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>text</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthData</td>
+                                    <td>
+                                                <code><a href="../classes/OauthDataDto.html" target="_self" >OauthDataDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetSystemId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>school</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="migrate"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>migrate</b></span>
+                        <a href="#migrate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>migrate(userJwt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUserId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, targetSystemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, code: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, redirectUri: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userJwt</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>currentUserId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>targetSystemId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>code</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>redirectUri</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -363,16 +669,30 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, IFindOptions, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
+import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
+import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
+import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
+import { ProvisioningService } from &#x27;@src/modules/provisioning&#x27;;
+import { OauthDataDto } from &#x27;@src/modules/provisioning/dto&#x27;;
+import { SchoolMigrationError } from &#x27;../error/school-migration.error&#x27;;
+import { UserLoginMigrationError } from &#x27;../error/user-login-migration.error&#x27;;
 import { PageTypes } from &#x27;../interface/page-types.enum&#x27;;
-import { UserLoginMigrationService, UserMigrationService } from &#x27;../service&#x27;;
-import { PageContentDto } from &#x27;../service/dto&#x27;;
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from &#x27;../service&#x27;;
+import { MigrationDto, PageContentDto } from &#x27;../service/dto&#x27;;
 import { UserLoginMigrationQuery } from &#x27;./dto/user-login-migration-query&#x27;;
 
 @Injectable()
 export class UserLoginMigrationUc {
 	constructor(
 		private readonly userMigrationService: UserMigrationService,
-		private readonly userLoginMigrationService: UserLoginMigrationService
+		private readonly userLoginMigrationService: UserLoginMigrationService,
+		private readonly oauthService: OAuthService,
+		private readonly provisioningService: ProvisioningService,
+		private readonly schoolMigrationService: SchoolMigrationService,
+		private readonly authenticationService: AuthenticationService,
+		private readonly logger: Logger
 	) {}
 
 	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise&lt;PageContentDto&gt; {
@@ -397,6 +717,108 @@ export class UserLoginMigrationUc {
 		const userLoginMigrations: Page&lt;UserLoginMigrationDO&gt; &#x3D;
 			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
 		return userLoginMigrations;
+	}
+
+	async migrate(
+		userJwt: string,
+		currentUserId: string,
+		targetSystemId: EntityId,
+		code: string,
+		redirectUri: string
+	): Promise&lt;void&gt; {
+		const tokenDto: OAuthTokenDto &#x3D; await this.oauthService.authenticateUser(targetSystemId, redirectUri, code);
+
+		this.logMigrationInformation(currentUserId, &#x60;Migrates to targetSystem with id ${targetSystemId}&#x60;);
+
+		const data: OauthDataDto &#x3D; await this.provisioningService.getData(
+			targetSystemId,
+			tokenDto.idToken,
+			tokenDto.accessToken
+		);
+
+		this.logMigrationInformation(currentUserId, undefined, data, targetSystemId);
+
+		if (data.externalSchool) {
+			let schoolToMigrate: SchoolDO | null;
+			// TODO: N21-820 after implementation of new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
+			try {
+				schoolToMigrate &#x3D; await this.schoolMigrationService.schoolToMigrate(
+					currentUserId,
+					data.externalSchool.externalId,
+					data.externalSchool.officialSchoolNumber
+				);
+			} catch (error: unknown) {
+				let details: Record&lt;string, unknown&gt; | undefined;
+
+				if (
+					error &amp;&amp;
+					typeof error &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp;
+					&#x27;officialSchoolNumberFromSource&#x27; in error &amp;&amp;
+					&#x27;officialSchoolNumberFromTarget&#x27; in error
+				) {
+					details &#x3D; {
+						sourceSchoolNumber: error.officialSchoolNumberFromSource,
+						targetSchoolNumber: error.officialSchoolNumberFromTarget,
+					};
+				}
+
+				throw new SchoolMigrationError(details);
+			}
+
+			this.logMigrationInformation(
+				currentUserId,
+				&#x60;Found school with officialSchoolNumber (${data.externalSchool.officialSchoolNumber ?? &#x27;&#x27;})&#x60;
+			);
+
+			if (schoolToMigrate) {
+				await this.schoolMigrationService.migrateSchool(
+					data.externalSchool.externalId,
+					schoolToMigrate,
+					targetSystemId
+				);
+
+				this.logMigrationInformation(currentUserId, undefined, data, data.system.systemId, schoolToMigrate);
+			}
+		}
+
+		const migrationDto: MigrationDto &#x3D; await this.userMigrationService.migrateUser(
+			currentUserId,
+			data.externalUser.externalId,
+			targetSystemId
+		);
+
+		// TODO: N21-820 after implementation of new client login flow, redirects will be obsolete and migrate should throw errors directly
+		if (migrationDto.redirect.includes(&#x27;migration/error&#x27;)) {
+			throw new UserLoginMigrationError({ userId: currentUserId });
+		}
+
+		this.logMigrationInformation(currentUserId, &#x60;Successfully migrated user and redirects to ${migrationDto.redirect}&#x60;);
+
+		await this.authenticationService.removeJwtFromWhitelist(userJwt);
+	}
+
+	private logMigrationInformation(
+		userId: string,
+		text?: string,
+		oauthData?: OauthDataDto,
+		targetSystemId?: string,
+		school?: SchoolDO
+	) {
+		let message &#x3D; &#x60;MIGRATION (userId: ${userId}): ${text ?? &#x27;&#x27;}&#x60;;
+		if (!school &amp;&amp; oauthData) {
+			message +&#x3D; &#x60;Provisioning data received from targetSystem (${targetSystemId ?? &#x27;N/A&#x27;} with data: 
+			{ 
+				&quot;officialSchoolNumber&quot;: ${oauthData.externalSchool?.officialSchoolNumber ?? &#x27;N/A&#x27;},
+				&quot;externalSchoolId&quot;: ${oauthData.externalSchool?.externalId ?? &#x27;&#x27;}
+				&quot;externalUserId&quot;: ${oauthData.externalUser.externalId},
+			})&#x60;;
+		}
+		if (school &amp;&amp; oauthData) {
+			message +&#x3D; &#x60;Successfully migrated school (${school.name} - (${school.id ?? &#x27;N/A&#x27;}) to targetSystem ${
+				targetSystemId ?? &#x27;N/A&#x27;
+			} which has the externalSchoolId ${oauthData.externalSchool?.externalId ?? &#x27;N/A&#x27;}&#x60;;
+		}
+		this.logger.debug(message);
 	}
 }
 </code></pre>
