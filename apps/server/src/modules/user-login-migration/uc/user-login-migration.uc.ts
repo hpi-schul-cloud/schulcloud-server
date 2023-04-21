@@ -2,19 +2,18 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Logger } from '@src/core/logger';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
-import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { Logger } from '@src/core/logger';
-import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
-import { PageContentDto } from '../service/dto';
-import { UserLoginMigrationService, UserMigrationService, SchoolMigrationService } from '../service';
-import { PageTypes } from '../interface/page-types.enum';
-import { MigrationDto } from '../service/dto/migration.dto';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
-import { SchoolMigrationError } from '../error/school-migration-error';
+import { PageTypes } from '../interface/page-types.enum';
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
+import { MigrationDto, PageContentDto } from '../service/dto';
+import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -73,14 +72,29 @@ export class UserLoginMigrationUc {
 
 		if (data.externalSchool) {
 			let schoolToMigrate: SchoolDO | null;
+			// TODO: N21-820 after implementation of new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
 					currentUserId,
 					data.externalSchool.externalId,
 					data.externalSchool.officialSchoolNumber
 				);
-			} catch (error) {
-				throw new SchoolMigrationError({ oauthMigrationError: error });
+			} catch (error: unknown) {
+				let details: Record<string, unknown> | undefined;
+
+				if (
+					error &&
+					typeof error === 'object' &&
+					'officialSchoolNumberFromSource' in error &&
+					'officialSchoolNumberFromTarget' in error
+				) {
+					details = {
+						sourceSchoolNumber: error.officialSchoolNumberFromSource,
+						targetSchoolNumber: error.officialSchoolNumberFromTarget,
+					};
+				}
+
+				throw new SchoolMigrationError(details);
 			}
 
 			this.logMigrationInformation(
@@ -107,7 +121,7 @@ export class UserLoginMigrationUc {
 
 		// TODO: N21-820 after implementation of new client login flow, redirects will be obsolete and migrate should throw errors directly
 		if (migrationDto.redirect.includes('migration/error')) {
-			throw new UserLoginMigrationError();
+			throw new UserLoginMigrationError({ userId: currentUserId });
 		}
 
 		this.logMigrationInformation(currentUserId, `Successfully migrated user and redirects to ${migrationDto.redirect}`);

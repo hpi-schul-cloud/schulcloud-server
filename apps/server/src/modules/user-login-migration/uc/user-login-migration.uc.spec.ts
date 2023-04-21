@@ -1,28 +1,27 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO, System } from '@shared/domain';
+import { System, UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { Logger } from '@src/core/logger';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { systemFactory } from '@shared/testing';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { Logger } from '@src/core/logger';
+import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
+import { OAuthService } from '@src/modules/oauth/service/oauth.service';
+import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { UserLoginMigrationService, SchoolMigrationService } from '../service';
-import { PageTypes } from '../interface/page-types.enum';
-import { PageContentDto } from '../service/dto/page-content.dto';
-import { UserLoginMigrationUc } from './user-login-migration.uc';
-import { MigrationDto } from '../service/dto/migration.dto';
+import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { SchoolMigrationError } from '../error/school-migration-error';
+import { SchoolMigrationError } from '../error/school-migration.error';
+import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { PageTypes } from '../interface/page-types.enum';
+import { SchoolMigrationService, UserLoginMigrationService } from '../service';
+import { MigrationDto, PageContentDto } from '../service/dto';
+import { UserLoginMigrationUc } from './user-login-migration.uc';
 
 describe('UserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -406,7 +405,12 @@ describe('UserLoginMigrationUc', () => {
 
 				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
 
-				await expect(func).rejects.toThrow(new SchoolMigrationError({ oauthMigrationError: error }));
+				await expect(func).rejects.toThrow(
+					new SchoolMigrationError({
+						sourceSchoolNumber: error.officialSchoolNumberFromSource,
+						targetSchoolNumber: error.officialSchoolNumberFromTarget,
+					})
+				);
 			});
 		});
 
@@ -457,16 +461,15 @@ describe('UserLoginMigrationUc', () => {
 				return {
 					query,
 					userMigrationDto,
-					error,
 				};
 			};
 
 			it('should throw SchoolMigrationError', async () => {
-				const { query, error } = setupMigration();
+				const { query } = setupMigration();
 
 				const func = () => uc.migrate('jwt', 'currentUserId', query.systemId, query.code, query.redirectUri);
 
-				await expect(func).rejects.toThrow(new SchoolMigrationError({ oauthMigrationError: error }));
+				await expect(func).rejects.toThrow(new SchoolMigrationError());
 			});
 		});
 
