@@ -410,7 +410,7 @@ describe('TaskCardUc', () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
-		it('should throw if due date is before visible at date', async () => {
+		it('should throw if due date is before visibleAtDate', async () => {
 			const failingTaskCardUpdateParams = {
 				id: taskCard.id,
 				title,
@@ -453,7 +453,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should throw if course end date is before dueDate ', async () => {
+		it('should throw if courseEndDate is before dueDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: tomorrow });
 			user = userFactory.buildWithId();
 			courseRepo.findById.mockResolvedValue(course);
@@ -467,7 +467,20 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
+		it('should not throw if courseEndDate is before dueDate but only regarding the time not the date ', async () => {
+			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
+			user = userFactory.buildWithId();
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should throw if courseEndDate is missing and dueDate after schoolYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
