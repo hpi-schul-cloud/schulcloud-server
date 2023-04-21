@@ -34,7 +34,7 @@ export class ExternalToolService {
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		if (this.isLti11Config(externalToolDO.config) && externalToolDO.config.secret) {
+		if (this.isLti11Config(externalToolDO.config)) {
 			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
 		} else if (this.isOauth2Config(externalToolDO.config)) {
 			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(
