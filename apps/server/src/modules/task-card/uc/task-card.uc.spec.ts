@@ -258,6 +258,49 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
+		it('should not throw if course end is before due date (same date, different time)', async () => {
+			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
+		it('should not throw if school year end is before due date (same date, different time)', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: new Date(tomorrow.setHours(23, 58)) } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
+		it('should not throw if next year end is before due date (same date, different time)', async () => {
+			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(lastDayOfNextYear.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
 		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
@@ -467,14 +510,47 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should not throw if courseEndDate is before dueDate but only regarding the time not the date ', async () => {
+		it('should not throw if courseEndDate is before dueDate (same date, different time)', async () => {
 			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
 			user = userFactory.buildWithId();
 			courseRepo.findById.mockResolvedValue(course);
 			taskCardUpdateParams = {
 				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should not throw if schoolYearEndDate is before dueDate (same date, different time)', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: new Date(tomorrow.setHours(23, 58)) } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
 				visibleAtDate: new Date(Date.now()),
 				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should not throw if nextYearEndDate is before dueDate (same date, different time)', async () => {
+			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
+				dueDate: new Date(lastDayOfNextYear.setHours(23, 59)),
 				courseId: course.id,
 			};
 			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);

@@ -191,25 +191,25 @@ export class TaskCardUc {
 	}
 
 	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
-		const schoolYearEndDateAtMidnight = new Date(schoolYearEndDate).setHours(0, 0, 0, 0);
-		const dueDateAtMidnight = new Date(dueDate).setHours(0, 0, 0, 0);
-		if (schoolYearEndDateAtMidnight < dueDateAtMidnight) {
+		if (this.isFirstDateLessThanSecondDate(schoolYearEndDate, dueDate)) {
 			throw new ValidationError('Due date must be before school year end date');
 		}
 	}
 
 	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
-		const courseEndDateAtMidnight = new Date(courseEndDate).setHours(0, 0, 0, 0);
-		const dueDateAtMidnight = new Date(dueDate).setHours(0, 0, 0, 0);
-		if (courseEndDateAtMidnight < dueDateAtMidnight) {
+		if (this.isFirstDateLessThanSecondDate(courseEndDate, dueDate)) {
 			throw new ValidationError('Due date must be before course end date');
 		}
 	}
 
 	private checkNextYearEndDate(dueDate: Date) {
 		const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
-		if (lastDayOfNextYear < dueDate) {
+		if (this.isFirstDateLessThanSecondDate(lastDayOfNextYear, dueDate)) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
+	}
+
+	private isFirstDateLessThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
+		return new Date(dateToCompare.setHours(0, 0, 0, 0)) < new Date(referenceDate.setHours(0, 0, 0, 0));
 	}
 }
