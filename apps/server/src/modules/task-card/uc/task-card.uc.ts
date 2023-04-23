@@ -1,15 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import {
-	CardType,
-	Course,
-	EntityId,
-	ITaskUpdate,
-	Permission,
-	PermissionContextBuilder,
-	TaskCard,
-	User,
-} from '@shared/domain';
+import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
@@ -122,7 +113,7 @@ export class TaskCardUc {
 		card.title = params.title;
 		card.course = course;
 		card.dueDate = params.dueDate;
-		if (params.visibleAtDate) card.visibleAtDate = params.visibleAtDate;
+		card.visibleAtDate = params.visibleAtDate;
 
 		if (params.text) {
 			const texts = params.text.map((text) => new RichTextCardElement(text));
@@ -160,12 +151,12 @@ export class TaskCardUc {
 	}
 
 	private async updateTask(userId: EntityId, id: EntityId, params: ITaskCardCRUD) {
-		const taskParams: ITaskUpdate = {
+		const taskParams = {
 			name: params.title,
 			courseId: params.courseId,
 			dueDate: params.dueDate,
+			availableDate: params.visibleAtDate,
 		};
-		if (params.visibleAtDate) taskParams.availableDate = params.visibleAtDate;
 		const taskWithStatusVo = await this.taskService.update(userId, id, taskParams);
 
 		return taskWithStatusVo;
