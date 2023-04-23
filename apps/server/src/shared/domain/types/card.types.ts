@@ -13,7 +13,6 @@ export type ICardCProps = {
 	cardType: CardType;
 	creator: User;
 	draggable: boolean;
-	visibleAtDate?: Date;
 	title: string;
 };
 

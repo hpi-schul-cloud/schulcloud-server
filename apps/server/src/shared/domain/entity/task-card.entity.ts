@@ -6,7 +6,7 @@ import { Course } from './course.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course };
+export type ITaskCardProps = ICardCProps & { task: Task; dueDate: Date; course: Course; visibleAtDate?: Date };
 
 export interface ITaskCard extends ICard {
 	task: Task;
@@ -30,7 +30,7 @@ export class TaskCard extends BaseEntityWithTimestamps implements ICard, ITaskCa
 		this.task = props.task;
 		this.cardType = CardType.Task;
 		this.title = props.title;
-		this.visibleAtDate = props.visibleAtDate;
+		if (props.visibleAtDate) this.visibleAtDate = props.visibleAtDate;
 		if (props.course) this.course = props.course;
 		Object.assign(this, { creator: props.creator });
 	}

@@ -463,11 +463,9 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.title).toEqual(taskCardUpdateParams.title);
 			expect(responseTaskCard.cardElements?.length).toEqual(2);
-			expect(new Date(responseTaskCard.visibleAtDate ? responseTaskCard.visibleAtDate : '')).toEqual(inTwoDays);
-			expect(new Date(responseTaskCard.task?.availableDate ? responseTaskCard.task?.availableDate : '')).toEqual(
-				inTwoDays
-			);
-			expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
+			expect(responseTaskCard.visibleAtDate).toEqual(inTwoDays.toISOString());
+			expect(responseTaskCard.task?.availableDate).toEqual(inTwoDays.toISOString());
+			expect(responseTaskCard.dueDate).toEqual(inThreeDays.toISOString());
 		});
 		it('should remove visibleAtDate in task card and available date in task ', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
