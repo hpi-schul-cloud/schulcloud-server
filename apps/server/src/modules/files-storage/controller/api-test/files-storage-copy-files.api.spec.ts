@@ -16,7 +16,7 @@ import {
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule, s3Config } from '@src/modules/files-storage';
+import { FilesStorageTestModule } from '@src/modules/files-storage';
 import {
 	CopyFileParams,
 	CopyFilesOfParentParams,
@@ -24,8 +24,8 @@ import {
 	FileRecordResponse,
 } from '@src/modules/files-storage/controller/dto';
 import { Request } from 'express';
-import S3rver from 's3rver';
 import request from 'supertest';
+import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecordParentType } from '../../entity';
 
 const baseRouteName = '/file/copy';
@@ -77,37 +77,20 @@ class API {
 	}
 }
 
-const createRndInt = (max) => Math.floor(Math.random() * max);
-
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 	let api: API;
-	let s3instance: S3rver;
 
 	beforeAll(async () => {
-		const port = 10000 + createRndInt(10000);
-		const overridetS3Config = Object.assign(s3Config, { endpoint: `http://localhost:${port}` });
-
-		s3instance = new S3rver({
-			directory: `/tmp/s3rver_test_directory${port}`,
-			port,
-		});
-
-		await s3instance.run();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [FilesStorageTestModule],
-			providers: [
-				FilesStorageTestModule,
-				{
-					provide: 'S3_Config',
-					useValue: overridetS3Config,
-				},
-			],
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
+			.overrideProvider(S3ClientAdapter)
+			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
@@ -126,7 +109,6 @@ describe(`${baseRouteName} (api)`, () => {
 
 	afterAll(async () => {
 		await app.close();
-		await s3instance.close();
 	});
 
 	describe('copy files of parent', () => {

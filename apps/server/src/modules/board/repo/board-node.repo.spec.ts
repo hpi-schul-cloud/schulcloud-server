@@ -87,6 +87,8 @@ describe('BoardNodeRepo', () => {
 			// ---- level2[1]
 			// ------ level3[0]
 			// ------ level3[1]
+			// ---- level2b[0]
+			// ---- level2b[1]
 			// -- level1[1]
 
 			const root = columnBoardNodeFactory.build();
@@ -95,21 +97,23 @@ describe('BoardNodeRepo', () => {
 			await em.persistAndFlush(level1);
 			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
 			await em.persistAndFlush(level2);
+			const level2b = cardNodeFactory.buildList(2, { parent: level1[1] });
+			await em.persistAndFlush(level2b);
 			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
 			await em.persistAndFlush(level3);
 			em.clear();
 
-			return { root, level1, level2, level3 };
+			return { root, level1, level2, level2b, level3 };
 		};
 
 		describe('when starting at the root node', () => {
 			it('should find descendents with a specific depth', async () => {
-				const { root, level1, level2 } = await setup();
+				const { root, level1, level2, level2b } = await setup();
 
 				const result = await repo.findDescendants(root, 2);
 
 				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level1, ...level2].map((o) => o.id).sort();
+				const expectedIds = [...level1, ...level2, ...level2b].map((o) => o.id).sort();
 				expect(resultIds).toEqual(expectedIds);
 			});
 		});
@@ -286,6 +290,27 @@ describe('BoardNodeRepo', () => {
 
 			const result = await em.find(CardNode, {});
 			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
+		});
+
+		it('should not update timestamps of existing siblings', async () => {
+			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+			await em.persistAndFlush(node1);
+			await new Promise((resolve) => {
+				setTimeout(resolve, 200);
+			});
+
+			const node1Copy = new CardNode({
+				id: node1.id,
+				height: node1.height,
+				title: node1.title,
+			});
+			const node2 = cardNodeFactory.buildWithId({ title: 'created' });
+
+			await repo.save([node1Copy, node2]);
+			em.clear();
+
+			const result1 = await em.findOneOrFail(CardNode, node1.id);
+			expect(result1.updatedAt).toEqual(node1.updatedAt);
 		});
 	});
 });

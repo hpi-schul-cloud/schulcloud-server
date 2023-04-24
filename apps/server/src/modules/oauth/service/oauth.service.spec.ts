@@ -626,6 +626,7 @@ describe('OAuthService', () => {
 					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state'
 				);
 			});
+
 			it('should return add an idp hint if existing authentication url', () => {
 				const oauthConfig: OauthConfig = new OauthConfig({
 					clientId: '12345',
@@ -649,6 +650,16 @@ describe('OAuthService', () => {
 					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=TheIdpHint'
 				);
 			});
+		});
+	});
+
+	describe('createErrorRedirect is called', () => {
+		it('should return redirect with errorCode', () => {
+			const expectedErrorCode = 'ERROR_CODE';
+
+			const redirect = service.createErrorRedirect(expectedErrorCode);
+
+			expect(redirect).toEqual(`${hostUri}/login?error=${expectedErrorCode}`);
 		});
 	});
 });
