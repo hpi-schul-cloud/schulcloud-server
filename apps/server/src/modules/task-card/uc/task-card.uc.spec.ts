@@ -452,7 +452,7 @@ describe('TaskCardUc', () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
-		it('should throw if due date is before visibleAtDate', async () => {
+		it('should throw if dueDate is before visibleAtDate', async () => {
 			const failingTaskCardUpdateParams = {
 				id: taskCard.id,
 				title,
