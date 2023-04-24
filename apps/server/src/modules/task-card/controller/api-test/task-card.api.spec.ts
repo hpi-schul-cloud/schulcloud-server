@@ -15,6 +15,7 @@ import {
 	submissionFactory,
 	taskCardFactory,
 	taskFactory,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -470,17 +471,26 @@ describe('Task-Card Controller (api)', () => {
 		});
 	});
 	describe('[PATCH] /cards/task/:id/complete', () => {
-		it('should set the beta task as completed for the user', async () => {
-			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+		const setup = async () => {
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
+				Permission.TASK_CARD_VIEW,
+				Permission.HOMEWORK_VIEW,
+			]);
 
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-			const task = taskFactory.build({ users: [user] });
+			const task = taskFactory.build({ users: [studentUser] });
 			const taskCard = taskCardFactory.buildWithId({ task });
 
-			await em.persistAndFlush([user, task, taskCard]);
+			await em.persistAndFlush([studentAccount, studentUser, task, taskCard]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
+			return { studentUser, taskCard };
+		};
+
+		it('should set the beta task as completed for the user', async () => {
+			const { studentUser, taskCard } = await setup();
+
+			currentUser = mapUserToCurrentUser(studentUser);
 
 			const response = await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}/complete`)
@@ -491,11 +501,11 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 
 			expect(responseTaskCard.id).toEqual(taskCard.id);
-			expect(responseTaskCard.completedBy).toContain(user.id);
+			expect(responseTaskCard.completedBy).toContain(studentUser.id);
 			expect(responseTaskCard.task.status.submitted).toEqual(1);
 
 			const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
-			expect(foundTaskCard?.getCompletedUserIds()).toEqual([user.id]);
+			expect(foundTaskCard?.getCompletedUserIds()).toEqual([studentUser.id]);
 
 			const foundSubmissions = await em.findAndCount(Submission, { task: taskCard.task.id });
 			expect(foundSubmissions[1]).toEqual(1);
@@ -503,14 +513,9 @@ describe('Task-Card Controller (api)', () => {
 		it('should throw if feature is not enabled', async () => {
 			await cleanupCollections(em);
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-			const user = setupUser([]);
-			const task = taskFactory.build({ users: [user] });
-			const taskCard = taskCardFactory.buildWithId({ task });
+			const { studentUser, taskCard } = await setup();
 
-			await em.persistAndFlush([user, task, taskCard]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(studentUser);
 
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}/complete`)
@@ -520,29 +525,38 @@ describe('Task-Card Controller (api)', () => {
 		});
 	});
 	describe('[PATCH] /cards/task/:id/undoCompletion', () => {
-		it('should set the beta task as not completed for the user', async () => {
-			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
+		const setup = async () => {
+			const { studentAccount, studentUser, school } = UserAndAccountTestFactory.buildStudent({}, [
+				Permission.TASK_CARD_VIEW,
+				Permission.HOMEWORK_VIEW,
+			]);
 
 			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-			const task = taskFactory.build({ users: [user] });
-			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [user] });
+			const task = taskFactory.build({ users: [studentUser] });
+			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [studentUser] });
 			const submission = submissionFactory.buildWithId({
-				school: user.school,
+				school,
 				task: taskCard.task,
-				student: user,
+				student: studentUser,
 				comment: '',
 				submitted: true,
-				teamMembers: [user],
+				teamMembers: [studentUser],
 			});
 
-			await em.persistAndFlush([user, task, taskCard, submission]);
+			await em.persistAndFlush([studentAccount, studentUser, task, taskCard, submission]);
 			em.clear();
+
+			return { studentUser, taskCard };
+		};
+
+		it('should set the beta task as not completed for the user', async () => {
+			const { studentUser, taskCard } = await setup();
 
 			const initialTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
-			expect(initialTaskCard?.getCompletedUserIds()).toEqual([user.id]);
+			expect(initialTaskCard?.getCompletedUserIds()).toEqual([studentUser.id]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(studentUser);
 
 			const response = await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}/undoCompletion`)
@@ -553,12 +567,12 @@ describe('Task-Card Controller (api)', () => {
 			const responseTaskCard = response.body as TaskCardResponse;
 
 			expect(responseTaskCard.id).toEqual(taskCard.id);
-			expect(responseTaskCard.completedBy).not.toContain(user.id);
+			expect(responseTaskCard.completedBy).not.toContain(studentUser.id);
 			expect(responseTaskCard.completedBy).toEqual([]);
 			expect(responseTaskCard.task.status.submitted).toEqual(0);
 
 			const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
-			expect(foundTaskCard?.getCompletedUserIds()).not.toContain(user.id);
+			expect(foundTaskCard?.getCompletedUserIds()).not.toContain(studentUser.id);
 
 			const foundSubmissions = await em.findAndCount(Submission, { task: taskCard.task.id });
 			expect(foundSubmissions[1]).toEqual(0);
@@ -566,14 +580,9 @@ describe('Task-Card Controller (api)', () => {
 		it('should throw if feature is not enabled', async () => {
 			await cleanupCollections(em);
 			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-			const user = setupUser([]);
-			const task = taskFactory.build({ users: [user] });
-			const taskCard = taskCardFactory.buildWithId({ task, completedUsers: [user] });
+			const { studentUser, taskCard } = await setup();
 
-			await em.persistAndFlush([user, task, taskCard]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(studentUser);
 
 			await request(app.getHttpServer())
 				.patch(`/cards/task/${taskCard.id}/undoCompletion`)
