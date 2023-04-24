@@ -19,7 +19,7 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
-	'FileElement' = 'file-element',
+	'BoardNode' = 'boardnodes',
 }
 export interface IFileSecurityCheckProperties {
 	status?: ScanStatus;

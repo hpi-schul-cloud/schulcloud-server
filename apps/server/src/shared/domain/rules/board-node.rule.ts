@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { FileElement } from '../domainobject';
+import { AnyBoardDo, BoardComposite } from '../domainobject';
 import { User } from '../entity';
 import { IPermissionContext } from '../interface/permission';
 import { BasePermission } from './base-permission';
 
 @Injectable()
-export class FileElementRule extends BasePermission<FileElement> {
-	public isApplicable(user: User, entity: FileElement): boolean {
-		const isMatched = entity instanceof FileElement;
+export class BoardNodeRule extends BasePermission<AnyBoardDo> {
+	public isApplicable(user: User, entity: AnyBoardDo): boolean {
+		const isMatched = entity instanceof BoardComposite;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: FileElement, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: AnyBoardDo, context: IPermissionContext): boolean {
 		const hasPermission = this.utils.hasAllPermissions(user, context.requiredPermissions);
 
 		// TODO: create really permission checks

@@ -12,13 +12,13 @@ export class ContentElementResponseBuilder {
 	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {
-		const mapper = this.mappers.find((mapper1) => mapper1.canMap(element));
+		const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 
-		if (!mapper) {
+		if (!elementMapper) {
 			throw new NotImplementedException(`unsupported element type: ${element.constructor.name}`);
 		}
 
-		const result = mapper.mapToResponse(element);
+		const result = elementMapper.mapToResponse(element);
 
 		return result;
 	}

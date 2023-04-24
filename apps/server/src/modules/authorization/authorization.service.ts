@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
 	BasePermissionManager,
+	BoardNodeRule,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
-	FileElementRule,
 	LessonRule,
 	SchoolExternalToolRule,
 	SchoolRule,
@@ -33,7 +33,7 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly submissionRule: SubmissionRule,
 		private readonly loader: ReferenceLoader,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly fileElementRule: FileElementRule
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		super();
 		this.registerPermissions([
@@ -47,7 +47,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-			this.fileElementRule,
+			this.boardNodeRule,
 		]);
 	}
 

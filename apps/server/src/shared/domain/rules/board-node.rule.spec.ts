@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { fileElementFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
-import { FileElementRule } from './file-element.rule';
+import { BoardNodeRule } from './board-node.rule';
 
-describe('FileElementRule', () => {
-	let service: FileElementRule;
+describe(BoardNodeRule.name, () => {
+	let service: BoardNodeRule;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 
@@ -13,10 +13,10 @@ describe('FileElementRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [FileElementRule],
+			providers: [BoardNodeRule],
 		}).compile();
 
-		service = await module.get(FileElementRule);
+		service = await module.get(BoardNodeRule);
 	});
 
 	describe('when user has permissions', () => {
