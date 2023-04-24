@@ -1,6 +1,5 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Inject, Injectable } from '@nestjs/common';
-import { Mutex, withTimeout, MutexInterface } from 'async-mutex';
 import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
 
 @Injectable()
@@ -8,8 +7,6 @@ export class KeycloakAdministrationService {
 	private lastAuthorizationTime = 0;
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
-
-	private static KC_MUTEX_WITH_TIMEOUT: MutexInterface;
 
 	public constructor(
 		private readonly kcAdminClient: KeycloakAdminClient,
@@ -19,16 +16,11 @@ export class KeycloakAdministrationService {
 			baseUrl: kcSettings.baseUrl,
 			realmName: kcSettings.realmName,
 		});
-		KeycloakAdministrationService.KC_MUTEX_WITH_TIMEOUT = withTimeout(new Mutex(), 1000);
 	}
 
 	public async callKcAdminClient(): Promise<KeycloakAdminClient> {
 		await this.authorizeAccess();
 		return this.kcAdminClient;
-	}
-
-	public async acquireKcAdminClient(): Promise<MutexInterface.Releaser> {
-		return KeycloakAdministrationService.KC_MUTEX_WITH_TIMEOUT.acquire();
 	}
 
 	public async testKcConnection(): Promise<boolean> {
