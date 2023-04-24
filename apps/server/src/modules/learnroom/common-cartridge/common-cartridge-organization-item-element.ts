@@ -4,7 +4,7 @@ import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
 	title?: string;
-	contents?: ICommonCartridgeLessonContentProps[] | [];
+	contents?: ICommonCartridgeLessonContentProps[];
 };
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
@@ -16,7 +16,6 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 				identifier: this.props.identifier,
 			},
 			title: this.props.title,
-			content: this.props.contents,
 		};
 	}
 }
