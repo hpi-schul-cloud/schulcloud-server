@@ -16,9 +16,13 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
+	async exportCourse(courseId: EntityId, userId: EntityId, lessonId?: EntityId): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
+		let lesson;
+		if (lessonId) {
+			lesson = await this.lessonService.findById(lessonId);
+		}
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: `i${course.id}`,
@@ -26,6 +30,9 @@ export class CommonCartridgeExportService {
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addAssignments(this.mapTasksToAssignments(tasks));
+		if (lesson) {
+			builder.addLessonContents(this.mapContentsToLesson(lesson.contents));
+		}
 		return builder.build();
 	}
 
@@ -34,7 +41,7 @@ export class CommonCartridgeExportService {
 			return {
 				identifier: `i${lesson.id}`,
 				title: lesson.name,
-				contents: this.mapLessonContetnToOrganization(lesson.contents),
+				// contents: this.mapLessonContetnToOrganization(lesson.contents),
 			};
 		});
 	}
@@ -49,11 +56,21 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	private mapLessonContetnToOrganization(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] | [] {
+	/* 	private mapLessonContetnToOrganization(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] | [] {
 		return contents.map((item) => {
 			return {
 				title: item.title,
 				content: item.content,
+			};
+		});
+	} */
+
+	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
+		return contents.map((content) => {
+			return {
+				identifier: `i${content._id}`,
+				title: content.title,
+				content: content.content,
 			};
 		});
 	}

@@ -14,6 +14,8 @@ import {
 	ICommonCartridgeResourceProps,
 	CommonCartridgeResourceItemElement,
 } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeLessonContentProps } from './common-cartrigde-lesson-content-element';
+import { CommonCartridgeLessonContentResourceItemElement } from './common-cartridge-lesson-content-ressource-item-element';
 
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;
@@ -87,6 +89,21 @@ export class CommonCartridgeFileBuilder {
 			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
 			this.resources.push(
 				new CommonCartridgeAssignmentResourceItemElement({
+					identifier: prop.identifier,
+					type: 'webcontent',
+					href: htmlPath,
+				})
+			);
+		});
+		return this;
+	}
+
+	addLessonContents(props: ICommonCartridgeLessonContentProps[]): CommonCartridgeFileBuilder {
+		props.forEach((prop) => {
+			const htmlPath = `${prop.identifier}/lessonContent.html`;
+			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.content}`));
+			this.resources.push(
+				new CommonCartridgeLessonContentResourceItemElement({
 					identifier: prop.identifier,
 					type: 'webcontent',
 					href: htmlPath,
