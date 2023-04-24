@@ -1,6 +1,5 @@
 const { RequestContext } = require('@mikro-orm/core');
-const { Mutex } = require('async-mutex');
-const { withTimeout } = require('async-mutex');
+const { Semaphore } = require('async-mutex');
 const { UserRepo } = require('../repo');
 
 class UserAccountService {
@@ -10,7 +9,7 @@ class UserAccountService {
 
 	async setup(app) {
 		this.app = app;
-		this.lock = withTimeout(new Mutex(), 1000);
+		this.lock = new Semaphore(5);
 	}
 
 	async createUserAndAccount(inputUser, inputAccount, school) {
