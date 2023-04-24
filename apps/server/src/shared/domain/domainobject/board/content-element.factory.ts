@@ -6,25 +6,23 @@ import { ContentElementType } from './types/content-elements.enum';
 
 @Injectable()
 export class ContentElementFactory {
-	private elements = new Map<ContentElementType, AnyContentElementDo>();
+	build(type: ContentElementType): AnyContentElementDo {
+		let element!: AnyContentElementDo;
 
-	constructor() {
-		this.elements.set(
-			ContentElementType.TEXT,
-			new TextElement({
-				text: ``,
-			})
-		);
-		this.elements.set(
-			ContentElementType.FILE,
-			new FileElement({
-				caption: ``,
-			})
-		);
-	}
-
-	getElement(type: ContentElementType): AnyContentElementDo {
-		const element = this.elements.get(type);
+		switch (type) {
+			case ContentElementType.TEXT:
+				element = new TextElement({
+					text: ``,
+				});
+				break;
+			case ContentElementType.FILE:
+				element = new FileElement({
+					caption: ``,
+				});
+				break;
+			default:
+				break;
+		}
 
 		if (!element) {
 			throw new NotImplementedException(`unknown type ${type} of element`);

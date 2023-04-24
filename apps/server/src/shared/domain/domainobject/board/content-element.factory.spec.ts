@@ -6,31 +6,31 @@ import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {
 	const setup = () => {
-		const contentElementProvider = new ContentElementFactory();
+		const contentElementFactory = new ContentElementFactory();
 
-		return { contentElementProvider };
+		return { contentElementFactory };
 	};
 
 	it('should return element of TEXT', () => {
-		const { contentElementProvider } = setup();
+		const { contentElementFactory } = setup();
 
-		const element = contentElementProvider.getElement(ContentElementType.TEXT);
+		const element = contentElementFactory.build(ContentElementType.TEXT);
 
 		expect(element).toBeInstanceOf(TextElement);
 	});
 
 	it('should return element of FILE', () => {
-		const { contentElementProvider } = setup();
+		const { contentElementFactory } = setup();
 
-		const element = contentElementProvider.getElement(ContentElementType.FILE);
+		const element = contentElementFactory.build(ContentElementType.FILE);
 
 		expect(element).toBeInstanceOf(FileElement);
 	});
 
 	it('should throw NotImplementedException', () => {
-		const { contentElementProvider } = setup();
+		const { contentElementFactory } = setup();
 
 		// @ts-expect-error check unknown type
-		expect(() => contentElementProvider.getElement('UNKNOWN')).toThrow(NotImplementedException);
+		expect(() => contentElementFactory.build('UNKNOWN')).toThrow(NotImplementedException);
 	});
 });

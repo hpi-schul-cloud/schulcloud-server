@@ -14,7 +14,7 @@ describe(ContentElementService.name, () => {
 	let service: ContentElementService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
-	let contentElementProvider: DeepMocked<ContentElementFactory>;
+	let contentElementFactory: DeepMocked<ContentElementFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,7 +42,7 @@ describe(ContentElementService.name, () => {
 		service = module.get(ContentElementService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
-		contentElementProvider = module.get(ContentElementFactory);
+		contentElementFactory = module.get(ContentElementFactory);
 
 		await setupEntities();
 	});
@@ -59,7 +59,7 @@ describe(ContentElementService.name, () => {
 					const cardId = card.id;
 					const textElement = textElementFactory.build();
 
-					contentElementProvider.getElement.mockReturnValue(textElement);
+					contentElementFactory.build.mockReturnValue(textElement);
 
 					return { card, cardId, textElement };
 				};
@@ -69,7 +69,7 @@ describe(ContentElementService.name, () => {
 
 					await service.create(card, ContentElementType.TEXT);
 
-					expect(contentElementProvider.getElement).toHaveBeenCalledWith(ContentElementType.TEXT);
+					expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.TEXT);
 				});
 
 				it('should call save method of boardDo repo', async () => {
@@ -87,7 +87,7 @@ describe(ContentElementService.name, () => {
 					const cardId = card.id;
 					const fileElement = fileElementFactory.build();
 
-					contentElementProvider.getElement.mockReturnValue(fileElement);
+					contentElementFactory.build.mockReturnValue(fileElement);
 
 					return { card, cardId, fileElement };
 				};

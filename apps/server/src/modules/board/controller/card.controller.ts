@@ -12,9 +12,9 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ApiValidationError } from '@shared/common';
 import { BoardUc, CardUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -22,6 +22,7 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	ElementTypeParams,
+	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	TextElementResponse,
@@ -96,10 +97,17 @@ export class CardController {
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(TextElementResponse)
+	@ApiExtraModels(FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+		},
+	})
+	@ApiResponse({
+		status: 201,
+		schema: {
+			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
