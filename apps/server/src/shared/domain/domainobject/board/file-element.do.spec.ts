@@ -20,12 +20,14 @@ describe(FileElement.name, () => {
 
 			expect(builder.buildFileElementNode).toHaveBeenCalledWith(element, card);
 		});
+	});
 
+	describe('when trying to add an invalid element', () => {
 		it('should throw an error ', () => {
-			const fileElement = fileElementFactory.build();
+			const { element } = setup();
 			const fileElementChild = fileElementFactory.build();
 
-			expect(() => fileElement.addChild(fileElementChild)).toThrow();
+			expect(() => element.addChild(fileElementChild)).toThrow();
 		});
 	});
 });

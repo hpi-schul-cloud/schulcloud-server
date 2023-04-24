@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementProvider } from '@shared/domain';
+import { ContentElementFactory } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -14,7 +14,7 @@ describe(ContentElementService.name, () => {
 	let service: ContentElementService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
-	let contentElementProvider: DeepMocked<ContentElementProvider>;
+	let contentElementProvider: DeepMocked<ContentElementFactory>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,8 +33,8 @@ describe(ContentElementService.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ContentElementProvider,
-					useValue: createMock<ContentElementProvider>(),
+					provide: ContentElementFactory,
+					useValue: createMock<ContentElementFactory>(),
 				},
 			],
 		}).compile();
@@ -42,7 +42,7 @@ describe(ContentElementService.name, () => {
 		service = module.get(ContentElementService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
-		contentElementProvider = module.get(ContentElementProvider);
+		contentElementProvider = module.get(ContentElementFactory);
 
 		await setupEntities();
 	});

@@ -5,7 +5,7 @@ import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 
 @Injectable()
-export class ContentElementProvider {
+export class ContentElementFactory {
 	private elements = new Map<ContentElementType, AnyContentElementDo>();
 
 	constructor() {

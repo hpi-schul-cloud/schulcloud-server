@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, ContentElementProvider, EntityId } from '@shared/domain';
+import { Card, ContentElementFactory, EntityId } from '@shared/domain';
 import { AnyContentElementDo } from '@shared/domain/domainobject/board/types/any-content-element-do';
 import { BoardDoRepo } from '../repo';
 import { ContentElementType } from '../types/content-elements.enum';
@@ -10,7 +10,7 @@ export class ContentElementService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
 		private readonly boardDoService: BoardDoService,
-		private readonly contentElementProvider: ContentElementProvider
+		private readonly contentElementProvider: ContentElementFactory
 	) {}
 
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {

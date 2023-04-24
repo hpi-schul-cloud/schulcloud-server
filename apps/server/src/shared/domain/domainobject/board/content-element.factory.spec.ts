@@ -1,12 +1,12 @@
 import { NotImplementedException } from '@nestjs/common';
-import { ContentElementProvider } from './content-element.provider';
+import { ContentElementFactory } from './content-element.factory';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import { ContentElementType } from './types/content-elements.enum';
 
-describe(ContentElementProvider.name, () => {
+describe(ContentElementFactory.name, () => {
 	const setup = () => {
-		const contentElementProvider = new ContentElementProvider();
+		const contentElementProvider = new ContentElementFactory();
 
 		return { contentElementProvider };
 	};

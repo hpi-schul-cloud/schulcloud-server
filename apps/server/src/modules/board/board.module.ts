@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ContentElementProvider } from '@shared/domain';
+import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
 import { BoardManagementConsole } from './console';
@@ -19,7 +19,7 @@ import { BoardManagementUc } from './uc';
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
-		ContentElementProvider,
+		ContentElementFactory,
 	],
 	exports: [ColumnBoardService, ColumnService, CardService, ContentElementService],
 })
