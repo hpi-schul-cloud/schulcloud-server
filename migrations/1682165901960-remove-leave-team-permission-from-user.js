@@ -31,6 +31,18 @@ module.exports = {
 				},
 			}
 		).exec();
+		await Roles.updateOne(
+			{
+				name: 'teamexpert'
+			},
+			{
+				$pull: {
+					permissions: {
+						$in: ['LEAVE_TEAM']
+					}
+				},
+			}
+		).exec();
 		await close();
 	},
 
@@ -39,6 +51,18 @@ module.exports = {
 		await Roles.updateOne(
 			{
 				name: 'teammember'
+			},
+			{
+				$addToSet: {
+					permissions: {
+						$each: ['LEAVE_TEAM']
+					}
+				},
+			}
+		).exec();
+		await Roles.updateOne(
+			{
+				name: 'teamexpert'
 			},
 			{
 				$addToSet: {

@@ -329,7 +329,6 @@
 		"roles": [],
 		"permissions": [
 			"CALENDAR_VIEW",
-			"LEAVE_TEAM",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
 			"USE_LIBREOFFICE",
