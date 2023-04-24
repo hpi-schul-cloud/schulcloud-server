@@ -5,7 +5,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 
-import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
+import { CardElement, CardElementType, InputFormat, Permission, Submission, Task, TaskCard } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -493,6 +493,12 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.id).toEqual(taskCard.id);
 			expect(responseTaskCard.completedBy).toContain(user.id);
 			expect(responseTaskCard.task.status.submitted).toEqual(1);
+
+			const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
+			expect(foundTaskCard?.getCompletedUserIds()).toEqual([user.id]);
+
+			const foundSubmissions = await em.findAndCount(Submission, { task: taskCard.task.id });
+			expect(foundSubmissions[1]).toEqual(1);
 		});
 		it('should throw if feature is not enabled', async () => {
 			await cleanupCollections(em);
@@ -532,6 +538,10 @@ describe('Task-Card Controller (api)', () => {
 			await em.persistAndFlush([user, task, taskCard, submission]);
 			em.clear();
 
+			const initialTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
+			expect(initialTaskCard?.getCompletedUserIds()).toEqual([user.id]);
+			em.clear();
+
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await request(app.getHttpServer())
@@ -546,6 +556,12 @@ describe('Task-Card Controller (api)', () => {
 			expect(responseTaskCard.completedBy).not.toContain(user.id);
 			expect(responseTaskCard.completedBy).toEqual([]);
 			expect(responseTaskCard.task.status.submitted).toEqual(0);
+
+			const foundTaskCard = await em.findOne(TaskCard, { id: taskCard.id });
+			expect(foundTaskCard?.getCompletedUserIds()).not.toContain(user.id);
+
+			const foundSubmissions = await em.findAndCount(Submission, { task: taskCard.task.id });
+			expect(foundSubmissions[1]).toEqual(0);
 		});
 		it('should throw if feature is not enabled', async () => {
 			await cleanupCollections(em);
@@ -583,6 +599,7 @@ describe('Task-Card Controller (api)', () => {
 			const cardElementsIds = taskCard.getCardElements().map((element) => element.id);
 			const foundCardElementsInitial = await em.findAndCount(CardElement, { id: { $in: cardElementsIds } });
 			expect(foundCardElementsInitial[1]).toEqual(1);
+			em.clear();
 
 			currentUser = mapUserToCurrentUser(user);
 
