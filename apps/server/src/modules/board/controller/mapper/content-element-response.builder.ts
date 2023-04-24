@@ -6,16 +6,13 @@ import { FileElementResponseMapper } from './file-element-response.mapper';
 import { TextElementResponseMapper } from './text-element-response.mapper';
 
 export class ContentElementResponseBuilder {
-	private static mappers = new Set<BaseResponseMapper>([
+	private static mappers: BaseResponseMapper[] = [
 		TextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
-	]);
+	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {
-		let mapper: BaseResponseMapper<AnyBoardDo> | undefined;
-		ContentElementResponseBuilder.mappers.forEach((map) => {
-			if (map.canMap(element)) mapper = map;
-		});
+		const mapper = this.mappers.find((mapper1) => mapper1.canMap(element));
 
 		if (!mapper) {
 			throw new NotImplementedException(`unsupported element type: ${element.constructor.name}`);
