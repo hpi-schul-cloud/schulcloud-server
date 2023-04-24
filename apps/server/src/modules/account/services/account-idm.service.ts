@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
 import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
@@ -92,10 +92,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attRefFunctionalExtId: accountDto.systemId,
 		};
 		if (accountDto.id) {
+			let idmId: string | undefined;
 			try {
-				const idmId = await this.getIdmAccountId(accountDto.id);
-				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
+				idmId = await this.getIdmAccountId(accountDto.id);
 			} catch {
+				idmId = undefined;
+			}
+			if (idmId) {
+				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
+			} else {
 				accountId = await this.createAccount(idmAccount, accountDto.password);
 			}
 		} else {
@@ -146,6 +151,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async deleteByUserId(userId: EntityId): Promise<void> {
 		const idmAccount = await this.identityManager.findAccountByFctIntId(userId);
 		await this.identityManager.deleteAccountById(idmAccount.id);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
+		throw new NotImplementedException();
 	}
 
 	private async getIdmAccountId(accountId: string): Promise<string> {

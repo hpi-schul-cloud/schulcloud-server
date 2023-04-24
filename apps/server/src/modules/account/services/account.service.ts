@@ -157,6 +157,13 @@ export class AccountService extends AbstractAccountService {
 		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
 	}
 
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
+		return this.accountDb.findMany(offset, limit);
+	}
+
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			try {

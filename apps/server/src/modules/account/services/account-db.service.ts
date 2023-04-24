@@ -1,12 +1,12 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import bcrypt from 'bcryptjs';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, Counted, EntityId } from '@shared/domain';
-import bcrypt from 'bcryptjs';
-import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
-import { AbstractAccountService } from './account.service.abstract';
+import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';
 
 @Injectable()
@@ -141,5 +141,9 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	private encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
+	}
+
+	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
+		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
 	}
 }

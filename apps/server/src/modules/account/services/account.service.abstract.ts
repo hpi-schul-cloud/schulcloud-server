@@ -33,4 +33,8 @@ export abstract class AbstractAccountService {
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>>;
 
 	abstract validatePassword(account: AccountDto, comparePassword: string): Promise<boolean>;
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	abstract findMany(offset: number, limit: number): Promise<AccountDto[]>;
 }

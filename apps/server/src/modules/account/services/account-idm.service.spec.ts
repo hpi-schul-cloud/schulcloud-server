@@ -4,6 +4,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
+import { NotImplementedException } from '@nestjs/common';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -454,6 +455,10 @@ describe('AccountIdmService', () => {
 				await accountIdmService.updateLastTriedFailedLogin('id', new Date());
 				expect(idmServiceMock.setUserAttribute).toHaveBeenCalledTimes(1);
 			});
+		});
+
+		it('findMany should throw', async () => {
+			await expect(accountIdmService.findMany(0, 0)).rejects.toThrow(NotImplementedException);
 		});
 	});
 });

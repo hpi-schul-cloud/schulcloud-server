@@ -1,5 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
@@ -7,6 +8,7 @@ import { IdentityManagementService } from '@shared/infra/identity-management/ide
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
+import { IServerConfig } from '@src/modules/server';
 import bcrypt from 'bcryptjs';
 import { Logger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
@@ -106,11 +108,16 @@ describe('AccountDbService', () => {
 								(): Promise<[Account[], number]> => Promise.resolve([mockAccounts, mockAccounts.length])
 							),
 						deleteByUserId: jest.fn().mockImplementation((): Promise<void> => Promise.resolve()),
+						findMany: jest.fn().mockImplementation((): Promise<Account[]> => Promise.resolve(mockAccounts)),
 					},
 				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<IServerConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,
@@ -497,6 +504,14 @@ describe('AccountDbService', () => {
 			expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 			expect(total).toBe(1);
 			expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+		});
+	});
+
+	describe('findMany', () => {
+		it('should call repo', async () => {
+			const foundAccounts = await accountService.findMany(1, 1);
+			expect(accountRepo.findMany).toHaveBeenCalledWith(1, 1);
+			expect(foundAccounts).toBeDefined();
 		});
 	});
 });
