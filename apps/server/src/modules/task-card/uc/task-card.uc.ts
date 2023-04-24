@@ -191,27 +191,27 @@ export class TaskCardUc {
 	}
 
 	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
-		if (this.isFirstDateLessThanSecondDate(schoolYearEndDate, dueDate)) {
+		if (this.isFirstDateEarlierThanSecondDate(schoolYearEndDate, dueDate)) {
 			throw new ValidationError('Due date must be before school year end date');
 		}
 	}
 
 	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
-		if (this.isFirstDateLessThanSecondDate(courseEndDate, dueDate)) {
+		if (this.isFirstDateEarlierThanSecondDate(courseEndDate, dueDate)) {
 			throw new ValidationError('Due date must be before course end date');
 		}
 	}
 
 	private checkNextYearEndDate(dueDate: Date) {
 		const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
-		if (this.isFirstDateLessThanSecondDate(lastDayOfNextYear, dueDate)) {
+		if (this.isFirstDateEarlierThanSecondDate(lastDayOfNextYear, dueDate)) {
 			throw new ValidationError('Due date must be before end of next year');
 		}
 	}
 
-	private isFirstDateLessThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
+	private isFirstDateEarlierThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
 		const firstDate = new Date(dateToCompare);
 		const secondDate = new Date(referenceDate);
-		return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
+		return secondDate.setHours(0, 0, 0, 0) > firstDate.setHours(0, 0, 0, 0);
 	}
 }
