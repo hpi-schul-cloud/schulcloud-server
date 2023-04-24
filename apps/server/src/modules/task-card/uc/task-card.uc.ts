@@ -150,10 +150,10 @@ export class TaskCardUc {
 
 		if (newState) {
 			card.addUserToCompletedList(user);
-			await this.createSubmission(user, card.task);
+			await this.createSubmissionForUser(user, card.task);
 		} else {
 			card.removeUserFromCompletedList(user);
-			await this.deleteSubmission(user.id, card.task.id);
+			await this.deleteSubmissionForUser(user.id, card.task.id);
 		}
 
 		await this.taskCardRepo.save(card);
@@ -209,14 +209,14 @@ export class TaskCardUc {
 		return taskCard;
 	}
 
-	private async createSubmission(user: User, task: Task) {
+	private async createSubmissionForUser(user: User, task: Task) {
 		const existingSubmissions = await this.submissionService.findByUserAndTask(user.id, task.id);
 		if (existingSubmissions.length === 0) {
 			await this.submissionService.createEmptySubmissionForUser(user, task);
 		}
 	}
 
-	private async deleteSubmission(userId: EntityId, taskId: EntityId) {
+	private async deleteSubmissionForUser(userId: EntityId, taskId: EntityId) {
 		const submissions = await this.submissionService.findByUserAndTask(userId, taskId);
 		if (submissions.length === 1) {
 			const deletableSubmission = submissions[0];
