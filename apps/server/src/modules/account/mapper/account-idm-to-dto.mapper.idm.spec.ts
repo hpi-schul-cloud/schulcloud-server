@@ -53,24 +53,28 @@ describe('AccountIdmToDtoMapperIdm', () => {
 			);
 		});
 
-		it('should use actual date if date is undefined', () => {
-			const testIdmEntity: IAccount = {
-				id: 'id',
-			};
-			const ret = mapper.mapToDto(testIdmEntity);
+		describe('when date is undefined', () => {
+			it('should use actual date', () => {
+				const testIdmEntity: IAccount = {
+					id: 'id',
+				};
+				const ret = mapper.mapToDto(testIdmEntity);
 
-			const now = new Date();
-			expect(ret.createdAt).toEqual(now);
-			expect(ret.updatedAt).toEqual(now);
+				const now = new Date();
+				expect(ret.createdAt).toEqual(now);
+				expect(ret.updatedAt).toEqual(now);
+			});
 		});
 
-		it('should fill missing fields with empty string', () => {
-			const testIdmEntity: IAccount = {
-				id: 'id',
-			};
-			const ret = mapper.mapToDto(testIdmEntity);
+		describe('when a fields value is missing', () => {
+			it('should fill with empty string', () => {
+				const testIdmEntity: IAccount = {
+					id: 'id',
+				};
+				const ret = mapper.mapToDto(testIdmEntity);
 
-			expect(ret.username).toBe('');
+				expect(ret.username).toBe('');
+			});
 		});
 	});
 });
