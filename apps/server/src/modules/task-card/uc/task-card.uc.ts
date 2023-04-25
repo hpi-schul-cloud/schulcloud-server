@@ -212,6 +212,6 @@ export class TaskCardUc {
 	private isFirstDateEarlierThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
 		const firstDate = new Date(dateToCompare);
 		const secondDate = new Date(referenceDate);
-		return secondDate.setHours(0, 0, 0, 0) > firstDate.setHours(0, 0, 0, 0);
+		return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 	}
 }

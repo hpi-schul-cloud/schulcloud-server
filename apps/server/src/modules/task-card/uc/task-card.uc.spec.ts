@@ -214,7 +214,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, taskCardCreateParams);
 			}).rejects.toThrow(ForbiddenException);
 		});
-		it('should check for course permission to create the task related to the task card in a course', async () => {
+		it('should check for course permission to create the task related to the taskCard in a course', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 				action: Actions.write,
@@ -232,7 +232,7 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
-		it('should throw if due date is before visible at date', async () => {
+		it('should throw if dueDate is before visibleAtDate', async () => {
 			const failingTaskCardCreateParams = {
 				title,
 				text: [
@@ -247,7 +247,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end is before due date', async () => {
+		it('should throw if courseEndDate is beforeDueDate', async () => {
 			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
@@ -258,7 +258,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should not throw if the date of dueDate and courseDate is the same, but they differ in time', async () => {
+		it('should not throw if courseEndDate is before dueDate', async () => {
 			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
 			courseRepo.findById.mockResolvedValue(course);
 			taskCardCreateParams = {
@@ -301,7 +301,7 @@ describe('TaskCardUc', () => {
 			const { card } = await uc.create(user.id, taskCardCreateParams);
 			expect(card).toBeDefined();
 		});
-		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
+		it('should throw if courseEndDate is missing and dueDate after schoolYearEndDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
@@ -318,7 +318,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+		it('should throw if courseEndDate and schoolYearEndDate is missing and dueDate after nextYearEndDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: undefined });
@@ -351,7 +351,7 @@ describe('TaskCardUc', () => {
 
 			expect(taskService.update).toBeCalled();
 		});
-		it('should return the task card and task', async () => {
+		it('should return the taskCard and task', async () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
 			expect(result.card.task).toEqual(result.taskWithStatusVo.task);
 			expect(result.card.cardType).toEqual(CardType.Task);
@@ -363,7 +363,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should return the task card with default visible at date if params are not given', async () => {
+		it('should return the taskCard with default visibleAtDate if params are not given', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -483,7 +483,7 @@ describe('TaskCardUc', () => {
 			expect(richTextCardElements[0].value).toEqual(richText[0]);
 			expect(richTextCardElements[1].value).toEqual(richText[1]);
 		});
-		it('should return the task card and task', async () => {
+		it('should return the taskCard and task', async () => {
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
@@ -572,7 +572,7 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+		it('should throw if courseEndDate and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: undefined });
