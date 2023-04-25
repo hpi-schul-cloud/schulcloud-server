@@ -6,7 +6,7 @@ import type { FileDto } from '../dto';
 import { FileRecord, type FileRecordParams, type FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
 export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
-	private static singelton: BaseDOFactory<FileRecordParams, FileRecord>;
+	private static singelton: FileRecordFactory;
 
 	public static getInstance() {
 		if (!FileRecordFactory.singelton) {

@@ -3,11 +3,12 @@ import { BaseTestFactory } from '@shared/testing/factory/base-test.factory';
 import { ObjectId } from 'bson';
 import { FileRecordParentType } from '../interface';
 import { FileRecord, FileRecordParams } from './filerecord.do';
-import { fileRecordFactory } from './filerecord.factory';
+import { FileRecordFactory } from './filerecord.factory';
 
 export const fileRecordTestFactory = BaseTestFactory.define<FileRecord, FileRecordParams>(
 	FileRecord,
 	({ sequence }) => {
+		const fileRecordFactory = FileRecordFactory.getInstance();
 		const securityCheck = fileRecordFactory.buildSecurityCheckProperties();
 		const defaultProps = {
 			id: new ObjectId().toHexString(), // TODO: check on which place the id is generated
