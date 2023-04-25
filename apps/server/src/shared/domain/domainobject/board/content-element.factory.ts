@@ -11,14 +11,10 @@ export class ContentElementFactory {
 
 		switch (type) {
 			case ContentElementType.TEXT:
-				element = new TextElement({
-					text: ``,
-				});
+				element = this.buildText();
 				break;
 			case ContentElementType.FILE:
-				element = new FileElement({
-					caption: ``,
-				});
+				element = this.buildFile();
 				break;
 			default:
 				break;
@@ -27,6 +23,22 @@ export class ContentElementFactory {
 		if (!element) {
 			throw new NotImplementedException(`unknown type ${type} of element`);
 		}
+
+		return element;
+	}
+
+	private buildText() {
+		const element = new TextElement({
+			text: ``,
+		});
+
+		return element;
+	}
+
+	private buildFile() {
+		const element = new FileElement({
+			caption: ``,
+		});
 
 		return element;
 	}
