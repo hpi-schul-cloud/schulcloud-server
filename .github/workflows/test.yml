@@ -11,7 +11,7 @@ permissions:
 
 env:
   MONGODB_VERSION: 4.4
-  NODE_VERSION: '16'
+  NODE_VERSION: '18'
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest
