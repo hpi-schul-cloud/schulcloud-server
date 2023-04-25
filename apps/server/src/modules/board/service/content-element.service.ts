@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, ContentElementFactory, EntityId, FileElement, TextElement } from '@shared/domain';
-import { AnyContentElementDo } from '@shared/domain/domainobject/board/types/any-content-element-do';
+import { AnyContentElementDo, Card, ContentElementFactory, EntityId, FileElement, TextElement } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 import { ContentElementType } from '../types/content-elements.enum';
 import { BoardDoService } from './board-do.service';

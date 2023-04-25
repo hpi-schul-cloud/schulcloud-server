@@ -15,7 +15,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { ContentElementService } from '../board';
+import { BoardNodeService } from '@src/modules/board';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -30,7 +30,7 @@ describe('reference.loader', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let contentElementService: DeepMocked<ContentElementService>;
+	let findNodeService: DeepMocked<BoardNodeService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -76,8 +76,8 @@ describe('reference.loader', () => {
 					useValue: createMock<SchoolExternalToolRepo>(),
 				},
 				{
-					provide: ContentElementService,
-					useValue: createMock<ContentElementService>(),
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
 				},
 			],
 		}).compile();
@@ -92,7 +92,7 @@ describe('reference.loader', () => {
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		contentElementService = await module.get(ContentElementService);
+		findNodeService = await module.get(BoardNodeService);
 	});
 
 	afterEach(() => {
@@ -158,10 +158,10 @@ describe('reference.loader', () => {
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});
 
-		it('should call contentElementService.findById', async () => {
+		it('should call findNodeService.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.BoardNode, entityId);
 
-			expect(contentElementService.findById).toBeCalledWith(entityId);
+			expect(findNodeService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {

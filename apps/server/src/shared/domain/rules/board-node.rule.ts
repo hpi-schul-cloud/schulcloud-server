@@ -6,13 +6,13 @@ import { BasePermission } from './base-permission';
 
 @Injectable()
 export class BoardNodeRule extends BasePermission<AnyBoardDo> {
-	public isApplicable(user: User, entity: AnyBoardDo): boolean {
-		const isMatched = entity instanceof BoardComposite;
+	public isApplicable(user: User, domainObject: AnyBoardDo): boolean {
+		const isMatched = domainObject instanceof BoardComposite;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: AnyBoardDo, context: IPermissionContext): boolean {
+	public hasPermission(user: User, domainObject: AnyBoardDo, context: IPermissionContext): boolean {
 		const hasPermission = this.utils.hasAllPermissions(user, context.requiredPermissions);
 
 		// TODO: create really permission checks

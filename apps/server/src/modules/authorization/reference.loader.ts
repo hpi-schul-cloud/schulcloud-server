@@ -11,7 +11,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { ContentElementService } from '../board';
+import { BoardNodeService } from '@src/modules/board';
 import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
 
 type RepoType =
@@ -24,7 +24,7 @@ type RepoType =
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
-	| ContentElementService;
+	| BoardNodeService;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -45,7 +45,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly contentElementService: ContentElementService
+		private readonly boardNodeService: BoardNodeService
 	) {
 		this.repos.set(AllowedAuthorizationEntityType.Task, { repo: this.taskRepo });
 		this.repos.set(AllowedAuthorizationEntityType.Course, { repo: this.courseRepo });
@@ -56,7 +56,7 @@ export class ReferenceLoader {
 		this.repos.set(AllowedAuthorizationEntityType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AllowedAuthorizationEntityType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AllowedAuthorizationEntityType.BoardNode, { repo: this.contentElementService });
+		this.repos.set(AllowedAuthorizationEntityType.BoardNode, { repo: this.boardNodeService });
 	}
 
 	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
