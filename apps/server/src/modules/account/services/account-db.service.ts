@@ -128,7 +128,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
-		return Promise.resolve(bcrypt.compare(comparePassword, account.password));
+		return bcrypt.compare(comparePassword, account.password);
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
