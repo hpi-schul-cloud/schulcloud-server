@@ -144,7 +144,7 @@ describe('AccountIdmService', () => {
 		});
 		it('should create a new account on update error', async () => {
 			setup();
-			idmServiceMock.updateAccount.mockRejectedValueOnce(new Error('Update Failed'));
+			accountLookupServiceMock.getExternalId.mockResolvedValue(null);
 			const mockAccountDto = {
 				id: mockIdmAccountRefId,
 				username: 'testUserName',
@@ -168,6 +168,7 @@ describe('AccountIdmService', () => {
 
 	describe('updateUsername', () => {
 		it('should map result correctly', async () => {
+			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
 			const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');
 
 			expect(ret).toBeDefined();
@@ -183,6 +184,7 @@ describe('AccountIdmService', () => {
 
 	describe('updatePassword', () => {
 		it('should map result correctly', async () => {
+			accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
 			const ret = await accountIdmService.updatePassword(mockIdmAccountRefId, 'any');
 
 			expect(ret).toBeDefined();
