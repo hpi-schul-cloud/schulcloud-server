@@ -173,7 +173,6 @@ describe('TaskService', () => {
 			let course: Course;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
-				// userRepo.findById.mockResolvedValue(user);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				course = courseFactory.buildWithId({ teachers: [user] });
 				courseRepo.findById.mockResolvedValue(course);
@@ -181,7 +180,6 @@ describe('TaskService', () => {
 				authorizationService.hasAllPermissions.mockReturnValue(true);
 			});
 			afterEach(() => {
-				// userRepo.findById.mockRestore();
 				courseRepo.findById.mockRestore();
 				taskRepo.save.mockRestore();
 				authorizationService.hasOneOfPermissions.mockRestore();
@@ -311,7 +309,6 @@ describe('TaskService', () => {
 				course = courseFactory.buildWithId({ teachers: [user] });
 
 				task = taskFactory.build({ course });
-				// userRepo.findById.mockResolvedValue(user);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
 
@@ -320,7 +317,6 @@ describe('TaskService', () => {
 			});
 
 			afterEach(() => {
-				// userRepo.findById.mockRestore();
 				courseRepo.findById.mockRestore();
 				taskRepo.save.mockRestore();
 				taskRepo.findById.mockRestore();
@@ -499,7 +495,6 @@ describe('TaskService', () => {
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				task = taskFactory.build();
-				// userRepo.findById.mockResolvedValue(user);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				taskRepo.findById.mockResolvedValue(task);
 			});
