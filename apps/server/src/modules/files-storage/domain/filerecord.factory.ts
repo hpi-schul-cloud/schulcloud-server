@@ -6,12 +6,14 @@ import type { FileDto } from '../dto';
 import { FileRecord, type FileRecordParams, type FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
 export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
-	private static singelton: FileRecordFactory;
+	// singelton = new FileRecordFactory();
+	// private static singelton: FileRecordFactory;
+	private static singelton = new FileRecordFactory();
 
 	public static getInstance() {
-		if (!FileRecordFactory.singelton) {
-			FileRecordFactory.singelton = new FileRecordFactory();
-		}
+		//	if (!FileRecordFactory.singelton) {
+		//		FileRecordFactory.singelton = new FileRecordFactory();
+		//	}
 
 		return FileRecordFactory.singelton;
 	}
