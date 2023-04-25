@@ -8,7 +8,7 @@ import { KeycloakAdministrationService } from '@shared/infra/identity-management
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';
@@ -62,7 +62,7 @@ describe('AccountIdmService Integration', () => {
 				AccountLookupService,
 				{
 					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperLegacy,
+					useClass: AccountIdmToDtoMapperDb,
 				},
 			],
 		}).compile();

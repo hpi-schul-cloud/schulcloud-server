@@ -13,7 +13,7 @@ import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
 import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { Logger } from '../../../core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy } from '../mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -97,7 +97,7 @@ describe('AccountService Integration', () => {
 				AccountLookupService,
 				{
 					provide: AccountIdmToDtoMapper,
-					useValue: new AccountIdmToDtoMapperLegacy(),
+					useValue: new AccountIdmToDtoMapperDb(),
 				},
 				{
 					provide: Logger,

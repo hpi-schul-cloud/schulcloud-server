@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperNew } from './account-idm-to-dto.mapper.new';
+import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
 
-describe('AccountIdmToDtoMapperNew', () => {
+describe('AccountIdmToDtoMapperIdm', () => {
 	let module: TestingModule;
 	let mapper: AccountIdmToDtoMapper;
 
@@ -13,7 +13,7 @@ describe('AccountIdmToDtoMapperNew', () => {
 			providers: [
 				{
 					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperNew,
+					useClass: AccountIdmToDtoMapperIdm,
 				},
 			],
 		}).compile();

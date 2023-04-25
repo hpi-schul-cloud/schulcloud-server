@@ -2,7 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { AccountModule } from './account.module';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy, AccountIdmToDtoMapperNew } from './mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 
@@ -63,9 +63,9 @@ describe('AccountModule', () => {
 			await moduleFeatureEnabled.close();
 		});
 
-		it('should use AccountIdmToDtoMapperNew', () => {
+		it('should use AccountIdmToDtoMapperIdm', () => {
 			const mapper = moduleFeatureEnabled.get(AccountIdmToDtoMapper);
-			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperNew);
+			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperIdm);
 		});
 	});
 
@@ -95,9 +95,9 @@ describe('AccountModule', () => {
 			await moduleFeatureDisabled.close();
 		});
 
-		it('should use AccountIdmToDtoMapperLegacy', () => {
+		it('should use AccountIdmToDtoMapperDb', () => {
 			const mapper = moduleFeatureDisabled.get(AccountIdmToDtoMapper);
-			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperLegacy);
+			expect(mapper).toBeInstanceOf(AccountIdmToDtoMapperDb);
 		});
 	});
 });

@@ -9,15 +9,15 @@ import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperLegacy, AccountIdmToDtoMapperNew } from './mapper';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
 import { IServerConfig } from '../server/server.config';
 import { AccountLookupService } from './services/account-lookup.service';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<IServerConfig, true>): AccountIdmToDtoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-		return new AccountIdmToDtoMapperNew();
+		return new AccountIdmToDtoMapperIdm();
 	}
-	return new AccountIdmToDtoMapperLegacy();
+	return new AccountIdmToDtoMapperDb();
 }
 
 @Module({
