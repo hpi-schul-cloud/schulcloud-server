@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/';
 import { Counted, Course, EntityId, Permission, PermissionContextBuilder, SortOrder } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
@@ -16,11 +16,7 @@ export class CourseUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const course = await this.courseRepo.findOneForTeacherOrSubstitueTeacher(userId, courseId);
 
-		if (
-			!this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([Permission.COURSE_EDIT]))
-		) {
-			throw new ForbiddenException();
-		}
+		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([Permission.COURSE_EDIT]));
 
 		return course;
 	}
