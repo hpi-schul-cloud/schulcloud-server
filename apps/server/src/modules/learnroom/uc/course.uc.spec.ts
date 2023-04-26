@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
@@ -10,6 +11,7 @@ describe('CourseUc', () => {
 	let module: TestingModule;
 	let uc: CourseUc;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -33,13 +35,14 @@ describe('CourseUc', () => {
 
 		uc = module.get(CourseUc);
 		courseRepo = module.get(CourseRepo);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('findByUser', () => {
+	describe('findAllByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
 			courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
@@ -59,6 +62,25 @@ describe('CourseUc', () => {
 			await uc.findAllByUser('someUserId', pagination);
 
 			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
+		});
+	});
+	describe('getCourseForTeacher', () => {
+		beforeEach(() => {});
+		afterEach(() => {});
+		it('should return course for teacher', async () => {
+			const course = courseFactory.build();
+			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
+
+			const result = await uc.getCourseForTeacher('someUserId', 'someCourseId');
+
+			expect(result).toEqual(course);
+		});
+		// TODO: it should check permissions for editing course
+		it('should throw error if user has no permission to edit course', async () => {
+			authorizationService.hasPermission.mockReturnValue(false);
+			await expect(async () => {
+				await uc.getCourseForTeacher('someUserId', 'someCourseId');
+			}).rejects.toThrow(ForbiddenException);
 		});
 	});
 });
