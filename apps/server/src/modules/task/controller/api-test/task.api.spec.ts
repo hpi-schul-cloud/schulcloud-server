@@ -1273,7 +1273,7 @@ describe('Task Controller (API)', () => {
 				type: InputFormat.RICH_TEXT_CK5,
 			});
 			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
-			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
+			expect(responseTask.dueDate).toEqual(updateTaskParams.dueDate);
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
 			expect(responseTask.lessonName).toEqual(lesson.name);
 			expect(responseTask.users).toEqual([
