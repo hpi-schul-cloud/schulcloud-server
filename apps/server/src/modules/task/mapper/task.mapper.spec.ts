@@ -32,7 +32,7 @@ const createExpectedResponse = (
 	if (task.taskCard) {
 		expected.taskCardId = task.taskCard;
 	}
-	expected.duedate = task.dueDate;
+	expected.dueDate = task.dueDate;
 	expected.updatedAt = task.updatedAt;
 	expected.status = expectedStatus;
 

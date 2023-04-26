@@ -243,7 +243,7 @@ describe('TaskCardUc', () => {
 			await uc.create(user.id, taskCardCreateParams);
 			expect(taskService.create).toBeCalledWith(user.id, taskParams);
 		});
-		it('should throw if due date is before visible at date', async () => {
+		it('should throw if dueDate is before visibleAtDate', async () => {
 			const failingTaskCardCreateParams = {
 				title,
 				text: [
@@ -258,7 +258,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end is before due date', async () => {
+		it('should throw if courseUntilDate is before dueDate', async () => {
 			const failingTaskCardCreateParams = {
 				title,
 				visibleAtDate: new Date(Date.now()),
@@ -269,7 +269,50 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
+		it('should not throw if the courseUntilDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
+		it('should not throw if the schoolYearEndDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: new Date(tomorrow.setHours(23, 58)) } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
+		it('should not throw if the nextYearEndDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardCreateParams = {
+				title,
+				dueDate: new Date(lastDayOfNextYear.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.create(user.id, taskCardCreateParams);
+			expect(card).toBeDefined();
+		});
+		it('should throw if courseEndDate is missing and dueDate after schoolYearEndDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
@@ -286,7 +329,7 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+		it('should throw if courseEndDate and schoolYearEndDate is missing and dueDate after nextYearEndDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: undefined });
@@ -303,7 +346,6 @@ describe('TaskCardUc', () => {
 				await uc.create(user.id, failingTaskCardCreateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-
 		it('should create task-card', async () => {
 			await uc.create(user.id, taskCardCreateParams);
 
@@ -319,7 +361,7 @@ describe('TaskCardUc', () => {
 
 			expect(taskService.update).toBeCalled();
 		});
-		it('should return the task card and task', async () => {
+		it('should return the taskCard and task', async () => {
 			const result = await uc.create(user.id, taskCardCreateParams);
 			expect(result.card.task).toEqual(result.taskWithStatusVo.task);
 			expect(result.card.cardType).toEqual(CardType.Task);
@@ -331,7 +373,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should return the task card with default visible at date if params are not given', async () => {
+		it('should return the taskCard with default visibleAtDate if params are not given', async () => {
 			const taskCardCreateDefaultParams = {
 				title,
 				text: [
@@ -427,7 +469,7 @@ describe('TaskCardUc', () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			expect(taskService.update).toBeCalledWith(user.id, taskCard.task.id, taskParams);
 		});
-		it('should throw if due date is before visible at date', async () => {
+		it('should throw if dueDate is before visibleAtDate', async () => {
 			const failingTaskCardUpdateParams = {
 				id: taskCard.id,
 				title,
@@ -458,7 +500,7 @@ describe('TaskCardUc', () => {
 			expect(richTextCardElements[0].value).toEqual(richText[0]);
 			expect(richTextCardElements[1].value).toEqual(richText[1]);
 		});
-		it('should return the task card and task', async () => {
+		it('should return the taskCard and task', async () => {
 			const result = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 
 			expect(result.card.task.id).toEqual(result.taskWithStatusVo.task.id);
@@ -470,7 +512,7 @@ describe('TaskCardUc', () => {
 			expect((result.card.cardElements.getItems()[0] as RichTextCardElement).value).toEqual(richText[0]);
 			expect((result.card.cardElements.getItems()[1] as RichTextCardElement).value).toEqual(richText[1]);
 		});
-		it('should throw if course end date is before dueDate ', async () => {
+		it('should throw if courseEndDate is before dueDate ', async () => {
 			course = courseFactory.buildWithId({ untilDate: tomorrow });
 			user = userFactory.buildWithId();
 			courseRepo.findById.mockResolvedValue(course);
@@ -484,7 +526,53 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date is missing and dueDate after schoolYearEnd ', async () => {
+		it('should not throw if the courseUntilDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			course = courseFactory.buildWithId({ untilDate: new Date(tomorrow.setHours(23, 58)) });
+			user = userFactory.buildWithId();
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should not throw if the schoolYearEndDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: { endDate: new Date(tomorrow.setHours(23, 58)) } });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
+				visibleAtDate: new Date(Date.now()),
+				dueDate: new Date(tomorrow.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should not throw if the nextYearEndDate is chronologically before the dueDate but they share the same calendar date', async () => {
+			const lastDayOfNextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+			course = courseFactory.buildWithId({ untilDate: undefined });
+			user = userFactory.buildWithId();
+			const school = schoolFactory.buildWithId({ schoolYear: undefined });
+			const userWithSchool = userFactory.buildWithId({ school });
+			userRepo.findById.mockResolvedValue(userWithSchool);
+			authorizationService.getUserWithPermissions.mockResolvedValue(userWithSchool);
+			courseRepo.findById.mockResolvedValue(course);
+			taskCardUpdateParams = {
+				title,
+				dueDate: new Date(lastDayOfNextYear.setHours(23, 59)),
+				courseId: course.id,
+			};
+			const { card } = await uc.update(user.id, taskCard.id, taskCardUpdateParams);
+			expect(card.dueDate).toEqual(taskCardUpdateParams.dueDate);
+		});
+		it('should throw if courseEndDate is missing and dueDate after schoolYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: { endDate: inTwoDays } });
@@ -501,7 +589,7 @@ describe('TaskCardUc', () => {
 				await uc.update(user.id, taskCard.id, failingTaskCardUpdateParams);
 			}).rejects.toThrow(ValidationError);
 		});
-		it('should throw if course end date and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
+		it('should throw if courseEndDate and schoolYearEndDate is missing and dueDate after nextYearEnd ', async () => {
 			course = courseFactory.buildWithId({ untilDate: undefined });
 			courseRepo.findById.mockResolvedValue(course);
 			const school = schoolFactory.buildWithId({ schoolYear: undefined });
