@@ -237,7 +237,7 @@ export class BoardManagementConsole {
 	})
 	async createBoards(): Promise&lt;string&gt; {
 		const boardId &#x3D; await this.boardManagementUc.createBoards();
-		const report &#x3D; &#x60;creation of boards is completed (${boardId})&#x60;;
+		const report &#x3D; &#x60;creation of boards is completed (${boardId ?? &#x27;&#x27;})&#x60;;
 		this.consoleWriter.info(report);
 		return report;
 	}
