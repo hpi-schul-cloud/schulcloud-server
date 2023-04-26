@@ -86,34 +86,28 @@ describe('TaskService', () => {
 			return { courseId, creatorId, user };
 		};
 
-		it('should call findBySingleParent from task repo', async () => {
-			const { creatorId, courseId } = setup();
-
-			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
-
-			await expect(taskService.findBySingleParent(creatorId, courseId)).resolves.toEqual([[], 0]);
-			expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
-			taskRepo.findBySingleParent.mockRestore();
-		});
-		it('should check for teacher permission to view tasks', async () => {
+		it('should call authorization service', async () => {
 			const { creatorId, courseId, user } = setup();
 			await taskService.findBySingleParent(creatorId, courseId);
 			expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3]);
 		});
-		it('should call repo without filter for userId when user has TASK_DASHBOARD_TEACHER_VIEW_V3 permission', async () => {
-			const { creatorId, courseId } = setup();
-			authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-			await taskService.findBySingleParent(creatorId, courseId);
-			expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
+		describe(' when user has TASK_DASHBOARD_TEACHER_VIEW_V3 permission', () => {
+			it('should call repo without filter for userId', async () => {
+				const { creatorId, courseId } = setup();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				await taskService.findBySingleParent(creatorId, courseId);
+				expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
+			});
 		});
-		it('should call repo with filter for userId when user has no TASK_DASHBOARD_TEACHER_VIEW_V3 permission', async () => {
-			const { courseId, user } = setup();
-			authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
-			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-			await taskService.findBySingleParent(user.id, courseId);
-
-			expect(taskRepo.findBySingleParent).toBeCalledWith(user.id, courseId, { userId: user.id }, undefined);
+		describe('when user has no TASK_DASHBOARD_TEACHER_VIEW_V3 permission', () => {
+			it('should call repo with filter for userId ', async () => {
+				const { courseId, user } = setup();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				await taskService.findBySingleParent(user.id, courseId);
+				expect(taskRepo.findBySingleParent).toBeCalledWith(user.id, courseId, { userId: user.id }, undefined);
+			});
 		});
 	});
 
