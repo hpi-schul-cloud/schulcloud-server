@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
+import { Course, Permission, PermissionContextBuilder, SortOrder, User } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
-import { courseFactory, setupEntities } from '@shared/testing';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
 import { CourseUc } from './course.uc';
 
@@ -11,7 +11,9 @@ describe('CourseUc', () => {
 	let module: TestingModule;
 	let uc: CourseUc;
 	let courseRepo: DeepMocked<CourseRepo>;
+	let course: Course;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let user!: User;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -65,21 +67,34 @@ describe('CourseUc', () => {
 		});
 	});
 	describe('getCourseForTeacher', () => {
-		beforeEach(() => {});
+		beforeEach(() => {
+			user = userFactory.buildWithId();
+			course = courseFactory.build();
+		});
 		afterEach(() => {});
 		it('should return course for teacher', async () => {
-			const course = courseFactory.build();
 			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
-
 			const result = await uc.getCourseForTeacher('someUserId', 'someCourseId');
 
 			expect(result).toEqual(course);
 		});
-		// TODO: it should check permissions for editing course
+		it('should check for permission to edit course', async () => {
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
+			await uc.getCourseForTeacher(user.id, course.id);
+			expect(authorizationService.checkPermission).toBeCalledWith(
+				user,
+				course,
+				PermissionContextBuilder.write([Permission.COURSE_EDIT])
+			);
+		});
 		it('should throw error if user has no permission to edit course', async () => {
-			authorizationService.hasPermission.mockReturnValue(false);
+			authorizationService.checkPermission.mockImplementation(() => {
+				throw new ForbiddenException();
+			});
+			user = userFactory.buildWithId();
 			await expect(async () => {
-				await uc.getCourseForTeacher('someUserId', 'someCourseId');
+				await uc.getCourseForTeacher(user.id, course.id);
 			}).rejects.toThrow(ForbiddenException);
 		});
 	});
