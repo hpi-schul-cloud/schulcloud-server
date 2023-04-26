@@ -8,7 +8,7 @@ import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
 	let module: TestingModule;
-	let service: CourseUc;
+	let uc: CourseUc;
 	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
@@ -31,7 +31,7 @@ describe('CourseUc', () => {
 			],
 		}).compile();
 
-		service = module.get(CourseUc);
+		uc = module.get(CourseUc);
 		courseRepo = module.get(CourseRepo);
 	});
 
@@ -39,13 +39,12 @@ describe('CourseUc', () => {
 		await module.close();
 	});
 
-	// TODO: find by user is not in course.uc.ts
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
 			courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
 
-			const [array, count] = await service.findAllByUser('someUserId');
+			const [array, count] = await uc.findAllByUser('someUserId');
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
 		});
@@ -57,7 +56,7 @@ describe('CourseUc', () => {
 			const pagination = { skip: 1, limit: 2 };
 			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
 
-			await service.findAllByUser('someUserId', pagination);
+			await uc.findAllByUser('someUserId', pagination);
 
 			expect(spy).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
