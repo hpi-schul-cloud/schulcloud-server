@@ -7,9 +7,10 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { NotFoundError } from '@mikro-orm/core';
 import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
-import { FileRecord, FileRecordParentType, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
+import { FileRecord, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
 import { fileRecordEntityFactory } from './filerecord-entity.factory';
 import { FileRecordDOMapper } from './fileRecordDO.mapper';
+import { FileRecordParentType } from '../interface';
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
@@ -34,53 +35,9 @@ describe('FileRecordRepo', () => {
 	afterEach(async () => {
 		await cleanupCollections(em);
 	});
-	/*
-	describe('getEntityReferenceFromDO', () => {
-		describe('when no DB record exists', () => {
-			it('result should be a entity reference with id', () => {
-				const fileRecord = FileRecordTestFactory.build();
 
-				const result = repo.getEntityReferenceFromDO(fileRecord);
-
-				expect(result.id).toBe(fileRecord.id);
-				expect(result.size).toBe(undefined);
-			});
-		});
-
-		describe('when DB record exists but not loaded', () => {
-			it('result should be a entity reference with id', async () => {
-				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
-
-				await em.persistAndFlush(fileRecordEntity);
-				em.clear();
-
-				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
-
-				const result = repo.getEntityReferenceFromDO(fileRecord);
-
-				expect(result.id).toBe(fileRecord.id);
-				expect(result.size).toBe(undefined);
-			});
-		});
-
-		describe('when DB record exists and not loaded', () => {
-			it('result should be a entity reference with id', async () => {
-				const fileRecordEntity = fileRecordEntityFactory.buildWithId();
-
-				await em.persistAndFlush(fileRecordEntity);
-
-				const fileRecord = FileRecordDOMapper.entityToDO(fileRecordEntity);
-
-				const result = repo.getEntityReferenceFromDO(fileRecord);
-
-				expect(result.id).toBe(fileRecord.id);
-				expect(result.size).toBe(undefined);
-			});
-		});
-	});
-*/
-	describe('update', () => {
-		describe('when the element to be updated does not exist in the database', () => {
+	describe('persist', () => {
+		describe('when the element to be persist does not exist in the database', () => {
 			const setup = async () => {
 				const fileRecordEntityDB = fileRecordEntityFactory.build();
 				// must create with id, for testcase. Without persisting no id is added
@@ -95,17 +52,17 @@ describe('FileRecordRepo', () => {
 			it('should be throw an internal server error', async () => {
 				const { fileRecord } = await setup();
 
-				await expect(() => repo.update([fileRecord])).rejects.toThrowError(InternalServerErrorException);
+				await expect(() => repo.persist([fileRecord])).rejects.toThrowError(InternalServerErrorException);
 			});
 
 			it('should be throw an internal server error', async () => {
 				const { fileRecord, fileRecordDB } = await setup();
 
-				await expect(() => repo.update([fileRecord, fileRecordDB])).rejects.toThrowError(InternalServerErrorException);
+				await expect(() => repo.persist([fileRecord, fileRecordDB])).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
-		describe('when update elements exists in database but not in the unit of work', () => {
+		describe('when persist elements exists in database but not in the unit of work', () => {
 			const setup = async () => {
 				const fileRecordEntity = fileRecordEntityFactory.build();
 				await em.persistAndFlush(fileRecordEntity);
@@ -118,26 +75,26 @@ describe('FileRecordRepo', () => {
 			it('should be return instance of FileRecord', async () => {
 				const { fileRecord } = await setup();
 
-				const result = await repo.update([fileRecord]);
+				const result = await repo.persist([fileRecord]);
 
 				expect(result[0]).toBeInstanceOf(FileRecord);
 			});
 
 			// note: normally the keys are only tested in the mapper it self but as show case and validation also added on this place
-			it('should be update the changed name', async () => {
+			it('should be persist the changed name', async () => {
 				const { fileRecord } = await setup();
 
-				const newName = 'updated name';
+				const newName = 'persistd name';
 				fileRecord.setName(newName);
 
-				const updatedFileRecords = await repo.update([fileRecord]);
+				const persistdFileRecords = await repo.persist([fileRecord]);
 				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
-				expect(updatedFileRecords[0].getName()).toEqual(newName);
+				expect(persistdFileRecords[0].getName()).toEqual(newName);
 				expect(result?.name).toEqual(newName);
 			});
 
-			it('should be update the changed securityCheck', async () => {
+			it('should be persist the changed securityCheck', async () => {
 				const { fileRecord } = await setup();
 
 				// TODO: builder?
@@ -147,10 +104,10 @@ describe('FileRecordRepo', () => {
 				};
 				fileRecord.updateSecurityCheckStatus(scanStatus);
 
-				const updatedFileRecords = await repo.update([fileRecord]);
+				const persistdFileRecords = await repo.persist([fileRecord]);
 				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
-				const { reason, status } = updatedFileRecords[0].getProps().securityCheck;
+				const { reason, status } = persistdFileRecords[0].getProps().securityCheck;
 
 				expect(reason).toEqual(scanStatus.reason);
 				expect(status).toEqual(scanStatus.status);
@@ -170,20 +127,20 @@ describe('FileRecordRepo', () => {
 			};
 
 			// note: normally the keys are only tested in the mapper it self but as show case and validation also added on this place
-			it('should be update the changed name', async () => {
+			it('should be persist the changed name', async () => {
 				const { fileRecord } = await setup();
 
-				const newName = 'updated name';
+				const newName = 'persistd name';
 				fileRecord.setName(newName);
 
-				const updatedFileRecords = await repo.update([fileRecord]);
+				const persistdFileRecords = await repo.persist([fileRecord]);
 				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
-				expect(updatedFileRecords[0].getName()).toEqual(newName);
+				expect(persistdFileRecords[0].getName()).toEqual(newName);
 				expect(result?.name).toEqual(newName);
 			});
 
-			it('should be update the changed securityCheck', async () => {
+			it('should be persist the changed securityCheck', async () => {
 				const { fileRecord } = await setup();
 
 				// TODO: builder?
@@ -193,10 +150,10 @@ describe('FileRecordRepo', () => {
 				};
 				fileRecord.updateSecurityCheckStatus(scanStatus);
 
-				const updatedFileRecords = await repo.update([fileRecord]);
+				const persistdFileRecords = await repo.persist([fileRecord]);
 				const result = await em.findOne(FileRecordEntity, { id: fileRecord.id });
 
-				const { reason, status } = updatedFileRecords[0].getProps().securityCheck;
+				const { reason, status } = persistdFileRecords[0].getProps().securityCheck;
 
 				expect(reason).toEqual(scanStatus.reason);
 				expect(status).toEqual(scanStatus.status);
@@ -368,26 +325,6 @@ describe('FileRecordRepo', () => {
 			});
 		});
 	});
-
-	/*
-	describe.skip('save', () => {
-		it('should update the updatedAt property', async () => {
-			const fileRecord = fileRecordEntityFactory.build();
-			await em.persistAndFlush(fileRecord);
-			const origUpdatedAt = fileRecord.updatedAt;
-
-			await new Promise((resolve) => {
-				setTimeout(resolve, 20);
-			});
-			fileRecord.name = `updated-${fileRecord.name}`;
-
-			await repo.save(fileRecord);
-			// load also from DB and test if value is set
-
-			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
-		});
-	});
-	*/
 
 	describe('findBySchoolIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();

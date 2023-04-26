@@ -11,6 +11,18 @@ export class DataBaseManager {
 	public async remove(entities: BaseEntity[]): Promise<void> {
 		await this.em.removeAndFlush(entities);
 	}
+	/*
+	private assignOrCreate<S>(EntityClass: { new (props: S): EntityType }, domainObject: BaseDO2<Props>) {
+		const existing = this.em.getUnitOfWork().getById<EntityType>(EntityClass.name, domainObject.id);
+		if (existing) {
+			// const { createdAt } = existing;
+			const props = domainObject.getProps();
+			this.em.assign(existing, props);
+		} else {
+			this.em.create(EntityClass, domainObject, { managed: true, persist: true });
+		}
+	}
+	*/
 
 	// TODO: check if it is work?
 	public async persist(entities: BaseEntity[]): Promise<void> {

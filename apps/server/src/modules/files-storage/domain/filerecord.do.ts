@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { BaseDO2, BaseDOProps, EntityId } from '@shared/domain';
 import { ErrorType } from '../error';
 import { FileRecordParentType } from '../interface';
+import { ObjectId } from 'bson';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -73,6 +74,7 @@ export class FileRecord extends BaseDO2<FileRecordParams> {
 
 		// TODO: move to factory
 		const copyFileRecordParams = {
+			id: new ObjectId().toHexString(),
 			size,
 			name,
 			mimeType,

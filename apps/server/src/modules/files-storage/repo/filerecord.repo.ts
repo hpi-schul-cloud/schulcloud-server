@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
 import { FileRecord } from '../domain';
 import type { FilesStorageRepo } from '../service';
-import { FileRecordDOMapper } from './fileRecordDO.mapper';
+import { fileRecordDOMapper } from './fileRecordDO.mapper';
 import { FileRecordScope } from './filerecord-scope';
 import { FileRecordEntity } from './filerecord.entity';
 
@@ -65,9 +65,9 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 	public async persist(fileRecords: FileRecord[]): Promise<FileRecord[]> {
 		const entities = await this.find(fileRecords);
 
-		FileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
+		fileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
 		await this.dbm.persist(entities);
-		const persistedFileRecords = FileRecordDOMapper.entitiesToDOs(entities);
+		const persistedFileRecords = fileRecordDOMapper.entitiesToDOs(entities);
 
 		return persistedFileRecords;
 	}
@@ -85,7 +85,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 
 	private async findOne(scope: FileRecordScope): Promise<FileRecord> {
 		const filesRecordEntity = await this.dbm.findOne(FileRecordEntity, scope.query);
-		const fileRecord = FileRecordDOMapper.entityToDO(filesRecordEntity);
+		const fileRecord = fileRecordDOMapper.entityToDO(filesRecordEntity);
 
 		return fileRecord;
 	}
@@ -103,7 +103,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 			orderBy: order,
 		});
 
-		const fileRecords = FileRecordDOMapper.entitiesToDOs(fileRecordEntities);
+		const fileRecords = fileRecordDOMapper.entitiesToDOs(fileRecordEntities);
 
 		return [fileRecords, count];
 	}

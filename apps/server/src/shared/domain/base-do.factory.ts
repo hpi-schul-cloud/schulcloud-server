@@ -4,7 +4,8 @@ import { BaseDO2, BaseDOProps } from './base.do';
 
 // static?
 export abstract class BaseDOFactory<Properties extends BaseDOProps, T extends BaseDO2<Properties>> {
-	// constructor(private DoConstructor: { new (): T }) {}
+	// constructor(private instance: { new (): T }) {}
+
 	// protected static singelton: BaseDOFactory<Properties, T>;
 
 	// public static getInstance(): BaseDOFactory<Properties, T>;
@@ -22,6 +23,12 @@ export abstract class BaseDOFactory<Properties extends BaseDOProps, T extends Ba
 	}
 
 	abstract build(props: Properties): T;
+
+	/* public build2(props: Properties): T {
+		const domainObject = new BaseDOFactory<Properties, T>(props);
+
+		return domainObject;
+	} */
 	/*
 	protected assignProps(props: Properties): Properties & BaseDOProps {
 		const id = this.createId();

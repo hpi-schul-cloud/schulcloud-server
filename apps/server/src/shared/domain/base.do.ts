@@ -13,7 +13,7 @@ export abstract class BaseDO2<T extends BaseDOProps> {
 	}
 
 	get id() {
-		return this.props.id.toString();
+		return this.props.id;
 	}
 
 	public getProps(): T {

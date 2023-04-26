@@ -8,3 +8,4 @@ export * from './base.authorisation-loader.service';
 export * from './base.do';
 export * from './base.repo';
 export * from './base-do.factory';
+export * from './base-do.mapper';
