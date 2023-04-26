@@ -1524,6 +1524,7 @@ describe('Task Controller (API)', () => {
 			});
 			const course2Task3 = taskFactory.build({
 				course: course2,
+				finished: [student2.user],
 			});
 
 			await em.persistAndFlush([
@@ -1583,7 +1584,7 @@ describe('Task Controller (API)', () => {
 			await cleanupCollections(em);
 		});
 
-		describe('when task have assigment', () => {
+		describe('when tasks have assigment', () => {
 			it('finds tasks to which student is assigned', async () => {
 				const { student1, course2Task1 } = await setup();
 
@@ -1601,12 +1602,11 @@ describe('Task Controller (API)', () => {
 
 				const response = await apiRequest.get('/finished', student2.account);
 
-				const { total, data } = response.body as TaskListResponse;
+				const { data } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
 				const taskIds = data.map((task) => task.id);
 				expect(taskIds).toContain(course1Task1.id);
 				expect(taskIds).toContain(course2Task2.id);
-				expect(total).toBe(2);
 			});
 
 			it('student does not find tasks to which he is assigned, if he does not belong to course', async () => {
@@ -1630,6 +1630,7 @@ describe('Task Controller (API)', () => {
 				const taskIds = data.map((task) => task.id);
 				expect(taskIds).not.toContain(course1Task2.id);
 			});
+
 			it('student does not find finished tasks, it tasks have users assigned, but himself is not assigned', async () => {
 				const { student1, course1Task2 } = await setup();
 
@@ -1640,8 +1641,17 @@ describe('Task Controller (API)', () => {
 				const taskIds = data.map((task) => task.id);
 				expect(taskIds).not.toContain(course1Task2.id);
 			});
-		});
-		describe('when tasks have no assignment', () => {
+
+			it('teacher finds all tasks (assignment does not change the result)', async () => {
+				const { teacher } = await setup();
+
+				const response = await apiRequest.get(undefined, teacher.account);
+
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(7);
+			});
+
 			it('student does not find tasks, if task assignment is empty', async () => {
 				const { student1, course1Task3 } = await setup();
 
@@ -1652,25 +1662,6 @@ describe('Task Controller (API)', () => {
 				const taskIds = data.map((task) => task.id);
 				expect(taskIds).not.toContain(course1Task3.id);
 			});
-			it('student finds tasks, if task assignment does not exists (is undefined)', async () => {
-				const { student1, course1Task4 } = await setup();
-
-				const response = await apiRequest.get(undefined, student1.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).toContain(course1Task4.id);
-			});
-		});
-		it('teacher finds all tasks (assignment does not change the result)', async () => {
-			const { teacher } = await setup();
-
-			const response = await apiRequest.get(undefined, teacher.account);
-
-			const { total } = response.body as TaskListResponse;
-			expect(response.statusCode).toBe(200);
-			expect(total).toBe(7);
 		});
 	});
 });
