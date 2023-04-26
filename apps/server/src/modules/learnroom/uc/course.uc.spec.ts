@@ -70,17 +70,19 @@ describe('CourseUc', () => {
 		beforeEach(() => {
 			user = userFactory.buildWithId();
 			course = courseFactory.build();
-		});
-		afterEach(() => {});
-		it('should return course for teacher', async () => {
-			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
-			const result = await uc.getCourseForTeacher('someUserId', 'someCourseId');
 
+			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
+			authorizationService.getUserWithPermissions.mockResolvedValue(user);
+		});
+		afterEach(() => {
+			courseRepo.findAllForTeacherOrSubstituteTeacher.mockRestore();
+			authorizationService.hasPermission.mockRestore();
+		});
+		it('should return course for teacher', async () => {
+			const result = await uc.getCourseForTeacher(user.id, course.id);
 			expect(result).toEqual(course);
 		});
 		it('should check for permission to edit course', async () => {
-			authorizationService.getUserWithPermissions.mockResolvedValue(user);
-			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
 			await uc.getCourseForTeacher(user.id, course.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(
 				user,
@@ -92,7 +94,6 @@ describe('CourseUc', () => {
 			authorizationService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
-			user = userFactory.buildWithId();
 			await expect(async () => {
 				await uc.getCourseForTeacher(user.id, course.id);
 			}).rejects.toThrow(ForbiddenException);
