@@ -9,7 +9,7 @@ import { FileRecordEntity } from './filerecord.entity';
 
 @Injectable()
 export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorageRepo {
-	constructor(private readonly dbm: DataBaseManager) {
+	constructor(private readonly dbm: DataBaseManager<FileRecordEntity>) {
 		super();
 	}
 
