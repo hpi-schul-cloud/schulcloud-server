@@ -34,23 +34,6 @@ export interface IUserProperties {
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
-@Index({
-	name: 'userSearchIndex',
-	properties: ['firstName', 'lastName', 'email', 'firstNameSearchValues', 'lastNameSearchValues', 'emailSearchValues'],
-	type: 'text',
-	options: {
-		weights: {
-			firstName: 15,
-			lastName: 15,
-			email: 15,
-			firstNameSearchValues: 3,
-			lastNameSearchValues: 3,
-			emailSearchValues: 2,
-		},
-		default_language: 'none', // no stop words and no stemming,
-		language_override: 'de',
-	},
-})
 export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
 	@Property()
 	@Index()

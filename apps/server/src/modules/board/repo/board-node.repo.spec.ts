@@ -51,7 +51,7 @@ describe('BoardNodeRepo', () => {
 			const foundNode = await repo.findById(BoardNode, cardNodes[0].id);
 
 			expect(foundNode.id).toBe(cardNodes[0].id);
-			expect(foundNode.path).toBe(cardNodes[0].path);
+			expect(foundNode.pathOfChildren).toBe(cardNodes[0].pathOfChildren);
 		});
 	});
 
@@ -87,6 +87,8 @@ describe('BoardNodeRepo', () => {
 			// ---- level2[1]
 			// ------ level3[0]
 			// ------ level3[1]
+			// ---- level2b[0]
+			// ---- level2b[1]
 			// -- level1[1]
 
 			const root = columnBoardNodeFactory.build();
@@ -95,21 +97,23 @@ describe('BoardNodeRepo', () => {
 			await em.persistAndFlush(level1);
 			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
 			await em.persistAndFlush(level2);
+			const level2b = cardNodeFactory.buildList(2, { parent: level1[1] });
+			await em.persistAndFlush(level2b);
 			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
 			await em.persistAndFlush(level3);
 			em.clear();
 
-			return { root, level1, level2, level3 };
+			return { root, level1, level2, level2b, level3 };
 		};
 
 		describe('when starting at the root node', () => {
 			it('should find descendents with a specific depth', async () => {
-				const { root, level1, level2 } = await setup();
+				const { root, level1, level2, level2b } = await setup();
 
 				const result = await repo.findDescendants(root, 2);
 
 				const resultIds = result.map((o) => o.id).sort();
-				const expectedIds = [...level1, ...level2].map((o) => o.id).sort();
+				const expectedIds = [...level1, ...level2, ...level2b].map((o) => o.id).sort();
 				expect(resultIds).toEqual(expectedIds);
 			});
 		});
@@ -149,39 +153,105 @@ describe('BoardNodeRepo', () => {
 		});
 	});
 
-	describe('findChildrenOfMany', () => {
-		const setup = async () => {
-			// root
-			// -- level1[0]
-			// ---- level2[0]
-			// ---- level2[1]
-			// ------ level3[0]
-			// ------ level3[1]
-			// -- level1[1]
+	describe('findDescendantsOfMany', () => {
+		describe('when giving ids from boardNodes of different levels', () => {
+			const setup = async () => {
+				// root
+				// -- level1[0]
+				// ---- level2[0]
+				// ---- level2[1]
+				// ------ level3[0]
+				// ------ level3[1]
+				// -- level1[1]
 
-			const root = columnBoardNodeFactory.build();
-			await em.persistAndFlush(root);
-			const level1 = columnNodeFactory.buildList(2, { parent: root });
-			await em.persistAndFlush(level1);
-			const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
-			await em.persistAndFlush(level2);
-			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
-			await em.persistAndFlush(level3);
-			em.clear();
+				const root = columnBoardNodeFactory.build();
+				await em.persistAndFlush(root);
+				const level1 = columnNodeFactory.buildList(2, { parent: root });
+				await em.persistAndFlush(level1);
+				const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
+				await em.persistAndFlush(level2);
+				const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
+				await em.persistAndFlush(level3);
+				em.clear();
 
-			return { root, level1, level2, level3 };
-		};
+				return { root, level1, level2, level3 };
+			};
 
-		it('should find a map of children', async () => {
-			const { root, level1, level2 } = await setup();
+			it('should find a map of children that is complete', async () => {
+				const { root, level1, level2 } = await setup();
 
-			const result = await repo.findChildrenOfMany([root, ...level1, ...level2]);
+				const result = await repo.findDescendantsOfMany([root, ...level1, ...level2]);
 
-			expect(Object.keys(result)).toEqual([root.pathOfChildren, level1[0].pathOfChildren, level2[1].pathOfChildren]);
+				expect(Object.keys(result)).toEqual([root.pathOfChildren, level1[0].pathOfChildren, level2[1].pathOfChildren]);
 
-			expect(result[root.pathOfChildren]).toHaveLength(2);
-			expect(result[level1[0].pathOfChildren]).toHaveLength(2);
-			expect(result[level2[1].pathOfChildren]).toHaveLength(2);
+				expect(result[root.pathOfChildren]).toHaveLength(6);
+				expect(result[level1[0].pathOfChildren]).toHaveLength(4);
+				expect(result[level2[1].pathOfChildren]).toHaveLength(2);
+			});
+		});
+
+		describe('when giving ids of some boardNodes', () => {
+			const setup = async () => {
+				const root = columnBoardNodeFactory.build();
+				await em.persistAndFlush(root);
+				const [column0, column1, column2] = columnNodeFactory.buildList(3, { parent: root });
+				await em.persistAndFlush([column0, column1, column2]);
+				const [card00, card01] = cardNodeFactory.buildList(2, { parent: column0 });
+				await em.persistAndFlush([card00, card01]);
+				const [text000, text001] = textElementNodeFactory.buildList(2, { parent: card00 });
+				await em.persistAndFlush([text000, text001]);
+				const [card20, card21] = cardNodeFactory.buildList(2, { parent: column2 });
+				await em.persistAndFlush([card20, card21]);
+				const [text210, text211] = textElementNodeFactory.buildList(2, { parent: card21 });
+				await em.persistAndFlush([text210, text211]);
+				em.clear();
+
+				return { root, column0, card00, card01, text000, text001, column1, column2, card20, card21, text210, text211 };
+			};
+
+			it('should return all decendants of those part trees', async () => {
+				// root
+				// -- column0     <-- requested
+				// ---- card00    <-- returned
+				// ------ text000 <-- returned
+				// ------ text001 <-- returned
+				// ---- card01    <-- returned
+				// -- column1
+				// -- column2
+				// ---- card20
+				// ---- card21    <-- requested
+				// ------ text210 <-- returned
+				// ------ text211 <-- returned
+				const { column0, card00, card01, text000, text001, card21, text210, text211 } = await setup();
+
+				const result = await repo.findDescendantsOfMany([column0, card21]);
+				const returnedColumnDescendantIds = result[column0.pathOfChildren].map((o) => o.id);
+				const returnedCardDescendantIds = result[card21.pathOfChildren].map((o) => o.id);
+
+				expect(returnedCardDescendantIds).toEqual([text210.id, text211.id]);
+				expect(returnedColumnDescendantIds).toEqual([card00.id, card01.id, text000.id, text001.id]);
+			});
+
+			it('should return no decendants of leaf nodes', async () => {
+				// root
+				// -- column0
+				// ---- card00
+				// ------ text000
+				// ------ text001
+				// ---- card01
+				// -- column1     <-- requested
+				// -- column2
+				// ---- card20    <-- requested
+				// ---- card21
+				// ------ text210
+				// ------ text211
+				const { column1, card20 } = await setup();
+
+				const result = await repo.findDescendantsOfMany([column1, card20]);
+				const returnedDescendants = Object.values(result).flat();
+
+				expect(returnedDescendants).toHaveLength(0);
+			});
 		});
 	});
 
@@ -220,6 +290,27 @@ describe('BoardNodeRepo', () => {
 
 			const result = await em.find(CardNode, {});
 			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
+		});
+
+		it('should not update timestamps of existing siblings', async () => {
+			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+			await em.persistAndFlush(node1);
+			await new Promise((resolve) => {
+				setTimeout(resolve, 200);
+			});
+
+			const node1Copy = new CardNode({
+				id: node1.id,
+				height: node1.height,
+				title: node1.title,
+			});
+			const node2 = cardNodeFactory.buildWithId({ title: 'created' });
+
+			await repo.save([node1Copy, node2]);
+			em.clear();
+
+			const result1 = await em.findOneOrFail(CardNode, node1.id);
+			expect(result1.updatedAt).toEqual(node1.updatedAt);
 		});
 	});
 });

@@ -119,4 +119,8 @@ export class AccountServiceDb extends AbstractAccountService {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
+
+	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
+		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+	}
 }

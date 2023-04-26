@@ -1,9 +1,9 @@
 import { ValidationError } from '@shared/common';
-import { Permission, Role, RoleName } from '@shared/domain';
+import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { RoleDto } from '../../role/service/dto/role.dto';
+import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '../interface';
+import { JwtPayload } from '../interface/jwt-payload';
 import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
@@ -16,26 +16,16 @@ describe('CurrentUserMapper', () => {
 	describe('userToICurrentUser', () => {
 		describe('when mapping from a user entity to the current user object', () => {
 			it('should map with roles', () => {
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] });
 				const user = userFactory.buildWithId({
-					roles: [new Role({ name: RoleName.TEACHER, permissions: [Permission.STUDENT_EDIT] })],
+					roles: [teacherRole],
 				});
 				const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
-					roles: ['teacher'],
+					roles: [teacherRole.id],
 					schoolId: null,
-					user: {
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [
-							{
-								id: null,
-								name: 'teacher',
-							},
-						],
-						permissions: ['STUDENT_EDIT'],
-					},
 				});
 			});
 
@@ -47,12 +37,6 @@ describe('CurrentUserMapper', () => {
 					systemId: undefined,
 					roles: [],
 					schoolId: null,
-					user: {
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [],
-						permissions: [],
-					},
 				});
 			});
 
@@ -67,12 +51,6 @@ describe('CurrentUserMapper', () => {
 					systemId,
 					roles: [],
 					schoolId: user.school.id,
-					user: {
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [],
-						permissions: [],
-					},
 				});
 			});
 		});
@@ -83,45 +61,20 @@ describe('CurrentUserMapper', () => {
 		describe('when userDO has no ID', () => {
 			it('should throw error', () => {
 				const user: UserDO = userDoFactory.build({ createdAt: new Date(), updatedAt: new Date() });
-				const roles: RoleDto[] = [];
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
+				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user)).toThrow(ValidationError);
 			});
 		});
-		describe('when userDO has no createdAt', () => {
-			it('should throw error', () => {
-				const user: UserDO = userDoFactory.buildWithId({ id: userId, updatedAt: new Date() });
-				const roles: RoleDto[] = [];
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
-			});
-		});
-		describe('when userDO has no updatedAt', () => {
-			it('should throw error', () => {
-				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date() });
-				const roles: RoleDto[] = [];
-				expect(() => CurrentUserMapper.userDoToICurrentUser(accountId, user, roles)).toThrow(ValidationError);
-			});
-		});
+
 		describe('when userDO is valid', () => {
 			it('should return valid ICurrentUser instance', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
-				const roles: RoleDto[] = [];
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
 					roles: [],
 					schoolId: user.schoolId,
 					userId: user.id,
-					user: {
-						id: user.id,
-						createdAt: user.createdAt,
-						updatedAt: user.updatedAt,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [],
-						schoolId: user.schoolId,
-						permissions: [],
-					},
 				});
 			});
 		});
@@ -130,55 +83,86 @@ describe('CurrentUserMapper', () => {
 			it('should return valid ICurrentUser instance with systemId', () => {
 				const user: UserDO = userDoFactory.buildWithId({ id: userId, createdAt: new Date(), updatedAt: new Date() });
 				const systemId = 'mockSystemId';
-				const roles: RoleDto[] = [];
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles, systemId);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, systemId);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId,
 					roles: [],
 					schoolId: user.schoolId,
 					userId: user.id,
-					user: {
-						id: user.id,
-						createdAt: user.createdAt,
-						updatedAt: user.updatedAt,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [],
-						schoolId: user.schoolId,
-						permissions: [],
-					},
 				});
 			});
 		});
 
 		describe('when userDO is valid and contains roles', () => {
-			it('should return valid ICurrentUser instance with systemId', () => {
+			it('should return valid ICurrentUser instance without systemId', () => {
 				const roleIds = ['mockRoleId'];
-				const roles: RoleDto[] = [{ id: 'mockRoleId', name: RoleName.USER }];
 				const user: UserDO = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 					roleIds,
 				});
-				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user, roles);
+				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,
 					roles: ['mockRoleId'],
 					schoolId: user.schoolId,
 					userId: user.id,
-					user: {
-						id: user.id,
-						createdAt: user.createdAt,
-						updatedAt: user.updatedAt,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						roles: [{ id: 'mockRoleId', name: RoleName.USER }],
-						schoolId: user.schoolId,
-						permissions: [],
-					},
+				});
+			});
+		});
+	});
+
+	describe('jwtToICurrentUser', () => {
+		describe('when JWT is provided with all claims', () => {
+			it('should return current user', () => {
+				const jwtPayload: JwtPayload = {
+					accountId: 'dummyAccountId',
+					systemId: 'dummySystemId',
+					roles: ['mockRoleId'],
+					schoolId: 'dummySchoolId',
+					userId: 'dummyUserId',
+					support: true,
+					sub: 'dummyAccountId',
+					jti: 'random string',
+					aud: 'some audience',
+					iss: 'feathers',
+					iat: Math.floor(new Date().getTime() / 1000),
+					exp: Math.floor(new Date().getTime() / 1000) + 3600,
+				};
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				expect(currentUser).toMatchObject({
+					accountId: jwtPayload.accountId,
+					systemId: jwtPayload.systemId,
+					roles: [jwtPayload.roles[0]],
+					schoolId: jwtPayload.schoolId,
+					userId: jwtPayload.userId,
+					impersonated: jwtPayload.support,
+				});
+			});
+		});
+		describe('when JWT is provided without optional claims', () => {
+			it('should return current user', () => {
+				const jwtPayload: JwtPayload = {
+					accountId: 'dummyAccountId',
+					roles: ['mockRoleId'],
+					schoolId: 'dummySchoolId',
+					userId: 'dummyUserId',
+					sub: 'dummyAccountId',
+					jti: 'random string',
+					aud: 'some audience',
+					iss: 'feathers',
+					iat: Math.floor(new Date().getTime() / 1000),
+					exp: Math.floor(new Date().getTime() / 1000) + 3600,
+				};
+				const currentUser = CurrentUserMapper.jwtToICurrentUser(jwtPayload);
+				expect(currentUser).toMatchObject({
+					accountId: jwtPayload.accountId,
+					roles: [jwtPayload.roles[0]],
+					schoolId: jwtPayload.schoolId,
+					userId: jwtPayload.userId,
 				});
 			});
 		});
