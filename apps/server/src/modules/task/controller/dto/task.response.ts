@@ -35,7 +35,7 @@ export class TaskResponse {
 	availableDate?: Date;
 
 	@ApiPropertyOptional()
-	duedate?: Date;
+	dueDate?: Date;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
