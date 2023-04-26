@@ -2,7 +2,7 @@ import { BaseDOMapper } from '@shared/domain';
 import { FileRecord, fileRecordFactory, FileRecordParams } from '../domain';
 import { FileRecordEntity } from './filerecord.entity';
 
-class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord> {
+class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, FileRecordEntity> {
 	public entityToDO(fileRecordEntity: FileRecordEntity): FileRecord {
 		const props: FileRecordParams = {
 			id: fileRecordEntity.id,

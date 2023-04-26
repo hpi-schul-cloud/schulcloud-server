@@ -2,18 +2,24 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { BaseDO2, BaseDOProps } from './base.do';
 import { BaseEntityWithTimestamps } from './entity';
 
-export abstract class BaseDOMapper<T extends BaseDOProps, DomainObject extends BaseDO2<T>> {
-	abstract entityToDO(entity: BaseEntityWithTimestamps): DomainObject;
+export abstract class BaseDOMapper<
+	T extends BaseDOProps,
+	DomainObject extends BaseDO2<T>,
+	Entity extends BaseEntityWithTimestamps
+> {
+	abstract entityToDO(entity: Entity): DomainObject;
 
-	abstract mergeDOintoEntity(domainObject: DomainObject, entity: BaseEntityWithTimestamps): void;
+	abstract mergeDOintoEntity(domainObject: DomainObject, entity: Entity): void;
 
-	public entitiesToDOs(entities: BaseEntityWithTimestamps[]): DomainObject[] {
-		const domainObjects = entities.map((fileRecordEntity) => this.entityToDO(fileRecordEntity));
+	abstract createEntity(domainObject: DomainObject): Entity;
+
+	public entitiesToDOs(entities: Entity[]): DomainObject[] {
+		const domainObjects = entities.map((e) => this.entityToDO(e));
 
 		return domainObjects;
 	}
 
-	public mergeDOsIntoEntities(domainObjects: DomainObject[], entities: BaseEntityWithTimestamps[]): void {
+	public mergeDOsIntoEntities(domainObjects: DomainObject[], entities: Entity[]): void {
 		domainObjects.forEach((domainObject) => {
 			const entity = entities.find((e) => e.id === domainObject.id);
 			if (entity) {
@@ -24,7 +30,7 @@ export abstract class BaseDOMapper<T extends BaseDOProps, DomainObject extends B
 		});
 	}
 
-	public getValidProps(domainObject: BaseDO2<T>, entity: BaseEntityWithTimestamps): T {
+	public getValidProps(domainObject: BaseDO2<T>, entity: Entity): T {
 		let props: T;
 		if (domainObject.id === entity.id) {
 			props = domainObject.getProps();
