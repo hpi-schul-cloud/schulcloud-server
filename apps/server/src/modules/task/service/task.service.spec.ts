@@ -19,7 +19,6 @@ import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
-let user!: User;
 let userRepo: DeepMocked<UserRepo>;
 let courseRepo: DeepMocked<CourseRepo>;
 let lessonRepo: DeepMocked<LessonRepo>;
@@ -79,35 +78,39 @@ describe('TaskService', () => {
 	});
 
 	describe('findBySingleParent', () => {
-		const courseId = 'courseId';
-		const creatorId = 'user-id';
-		beforeEach(() => {
-			user = userFactory.buildWithId();
-			authorizationService.getUserWithPermissions.mockResolvedValue(user);
-		});
-		afterEach(() => {
-			authorizationService.hasAllPermissions.mockRestore();
-			authorizationService.getUserWithPermissions.mockRestore();
-		});
+		const setup = () => {
+			const courseId = 'courseId';
+			const creatorId = 'user-id';
+			const user = userFactory.buildWithId();
+
+			return { courseId, creatorId, user };
+		};
+
 		it('should call findBySingleParent from task repo', async () => {
-			const userId = 'user-id';
+			const { creatorId, courseId } = setup();
+
 			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
 
-			await expect(taskService.findBySingleParent(userId, courseId)).resolves.toEqual([[], 0]);
-			expect(taskRepo.findBySingleParent).toBeCalledWith(userId, courseId, {}, undefined);
+			await expect(taskService.findBySingleParent(creatorId, courseId)).resolves.toEqual([[], 0]);
+			expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
 			taskRepo.findBySingleParent.mockRestore();
 		});
 		it('should check for teacher permission to view tasks', async () => {
+			const { creatorId, courseId, user } = setup();
 			await taskService.findBySingleParent(creatorId, courseId);
 			expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3]);
 		});
 		it('should call repo without filter for userId when user has TASK_DASHBOARD_TEACHER_VIEW_V3 permission', async () => {
+			const { creatorId, courseId } = setup();
 			authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 			await taskService.findBySingleParent(creatorId, courseId);
 			expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
 		});
 		it('should call repo with filter for userId when user has no TASK_DASHBOARD_TEACHER_VIEW_V3 permission', async () => {
+			const { courseId, user } = setup();
 			authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 			await taskService.findBySingleParent(user.id, courseId);
 
 			expect(taskRepo.findBySingleParent).toBeCalledWith(user.id, courseId, { userId: user.id }, undefined);
@@ -171,6 +174,7 @@ describe('TaskService', () => {
 
 		describe('create task', () => {
 			let course: Course;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
@@ -304,6 +308,7 @@ describe('TaskService', () => {
 		describe('update task', () => {
 			let course: Course;
 			let task: Task;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				course = courseFactory.buildWithId({ teachers: [user] });
@@ -492,6 +497,7 @@ describe('TaskService', () => {
 		});
 		describe('find task', () => {
 			let task: Task;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				task = taskFactory.build();
