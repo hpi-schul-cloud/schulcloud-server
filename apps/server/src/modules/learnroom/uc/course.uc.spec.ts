@@ -39,6 +39,7 @@ describe('CourseUc', () => {
 		await module.close();
 	});
 
+	// TODO: find by user is not in course.uc.ts
 	describe('findByUser', () => {
 		it('should return courses of user', async () => {
 			const courses = courseFactory.buildList(5);
