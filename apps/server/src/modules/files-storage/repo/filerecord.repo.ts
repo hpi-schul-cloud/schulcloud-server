@@ -63,6 +63,7 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 	}
 
 	public async persist(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+		// find geht nicht für create ... -.-
 		const entities = await this.find(fileRecords);
 
 		fileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);

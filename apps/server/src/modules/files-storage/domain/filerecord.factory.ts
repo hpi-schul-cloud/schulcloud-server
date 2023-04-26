@@ -5,19 +5,7 @@ import type { FileRecordParams as FileRecordParamsDto } from '../controller/dto'
 import type { FileDto } from '../dto';
 import { FileRecord, type FileRecordParams, type FileSecurityCheckParams, ScanStatus } from './filerecord.do';
 
-export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
-	// singelton = new FileRecordFactory();
-	// private static singelton: FileRecordFactory;
-	private static singelton = new FileRecordFactory();
-
-	public static getInstance() {
-		//	if (!FileRecordFactory.singelton) {
-		//		FileRecordFactory.singelton = new FileRecordFactory();
-		//	}
-
-		return FileRecordFactory.singelton;
-	}
-
+class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 	// TODO: outsource build if possible
 	// TODO: we want to use it also if id is in props for mapper
 	public build(props: FileRecordParams): FileRecord {
@@ -63,3 +51,5 @@ export class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecor
 		return fileRecord;
 	}
 }
+
+export const fileRecordFactory = new FileRecordFactory();

@@ -1,11 +1,9 @@
 import { BaseDOMapper } from '@shared/domain';
-import { FileRecord, FileRecordFactory, FileRecordParams } from '../domain';
+import { FileRecord, fileRecordFactory, FileRecordParams } from '../domain';
 import { FileRecordEntity } from './filerecord.entity';
 
 class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord> {
 	public entityToDO(fileRecordEntity: FileRecordEntity): FileRecord {
-		const fileRecordFactory = FileRecordFactory.getInstance();
-
 		const props: FileRecordParams = {
 			id: fileRecordEntity.id,
 			size: fileRecordEntity.size,
@@ -33,6 +31,14 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord> {
 		fileRecordEntity.securityCheck.requestToken = props.securityCheck.requestToken;
 
 		fileRecordEntity.name = props.name;
+	}
+
+	// Das brauchen wir auch irgendwo..
+	public createEntity(fileRecord: FileRecord): FileRecordEntity {
+		const props = fileRecord.getProps();
+		const fileRecordEntity = new FileRecordEntity(props);
+
+		return fileRecordEntity;
 	}
 }
 
