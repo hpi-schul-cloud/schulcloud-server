@@ -112,7 +112,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
-                                <a href="#duedate" >duedate</a>
+                                <a href="#dueDate" >dueDate</a>
                             </li>
                             <li>
                                 <a href="#id" >id</a>
@@ -434,11 +434,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="duedate"></a>
+                    <a name="dueDate"></a>
                     <span class="name">
                             <span class="modifier">Optional</span>
-                        <span ><b>duedate</b></span>
-                        <a href="#duedate"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>dueDate</b></span>
+                        <a href="#dueDate"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -798,7 +798,7 @@ export class TaskResponse {
 	availableDate?: Date;
 
 	@ApiPropertyOptional()
-	duedate?: Date;
+	dueDate?: Date;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
