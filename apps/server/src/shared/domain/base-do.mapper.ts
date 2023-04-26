@@ -19,15 +19,19 @@ export abstract class BaseDOMapper<
 		return domainObjects;
 	}
 
-	public mergeDOsIntoEntities(domainObjects: DomainObject[], entities: Entity[]): void {
+	public createOrMergeintoEntities(domainObjects: DomainObject[], entities: Entity[]): Entity[] {
 		domainObjects.forEach((domainObject) => {
 			const entity = entities.find((e) => e.id === domainObject.id);
 			if (entity) {
 				this.mergeDOintoEntity(domainObject, entity);
 			} else {
-				throw new InternalServerErrorException('BaseDOMapper: id not found.');
+				// throw new InternalServerErrorException('BaseDOMapper: id not found.');
+				const newEntity = this.createEntity(domainObject);
+				entities.push(newEntity);
 			}
 		});
+
+		return entities;
 	}
 
 	public getValidProps(domainObject: BaseDO2<T>, entity: Entity): T {

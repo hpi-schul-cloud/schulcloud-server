@@ -62,15 +62,27 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 		await this.dbm.remove(entities);
 	}
 
-	public async persist(fileRecords: FileRecord[]): Promise<FileRecord[]> {
-		// find geht nicht für create ... -.-
-		const entities = await this.find(fileRecords);
+	// required that the entity must be loaded before...if not it is override
+	/*
+	private async persist2(fileRecords: FileRecord[]): Promise<void> {
+		fileRecords.forEach((domainObject) => {
+			const existing = this.dbm.em.getUnitOfWork().getById<FileRecordEntity>(FileRecordEntity.name, domainObject.id);
+			if (existing) {
+				this.dbm.em.assign(existing, domainObject);
+			} else {
+				const entity = fileRecordDOMapper.createEntity(domainObject);
+				this.dbm.em.persist(entity);
+			}
+		});
 
-		fileRecordDOMapper.mergeDOsIntoEntities(fileRecords, entities);
+		await this.dbm.em.flush();
+	}
+	*/
+
+	public async persist(fileRecords: FileRecord[]): Promise<void> {
+		const foundEntities = await this.find(fileRecords);
+		const entities = fileRecordDOMapper.createOrMergeintoEntities(fileRecords, foundEntities);
 		await this.dbm.persist(entities);
-		const persistedFileRecords = fileRecordDOMapper.entitiesToDOs(entities);
-
-		return persistedFileRecords;
 	}
 
 	// ---------------------------------------------------------------

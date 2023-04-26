@@ -2,10 +2,11 @@ import { EntityName, FilterQuery, FindOptions } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 // TODO: check why we have mix of both of them
 import { Injectable } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Counted } from '@shared/domain';
+import { BaseDO2, BaseEntityWithTimestamps, Counted, EntityId } from '@shared/domain';
 
 @Injectable()
 export class DataBaseManager<Entity extends BaseEntityWithTimestamps> {
+	// DomainObject extends BaseDO2,
 	constructor(public readonly em: EntityManager) {}
 
 	public async remove(entities: Entity[]): Promise<void> {
@@ -21,6 +22,11 @@ export class DataBaseManager<Entity extends BaseEntityWithTimestamps> {
 		} else {
 			this.em.create(EntityClass, domainObject, { managed: true, persist: true });
 		}
+	}
+	*/
+	/*
+	public getFromUnitOfWorkById(constructor: EntityName<Entity>, id: EntityId) {
+		const existing = this.em.getUnitOfWork().getById(constructor, id);
 	}
 	*/
 
