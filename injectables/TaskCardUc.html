@@ -114,6 +114,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#isFirstDateEarlierThanSecondDate" >isFirstDateEarlierThanSecondDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#replaceCardElements" >replaceCardElements</a>
                             </li>
@@ -350,8 +354,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="201"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:201</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="199"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:199</a></div>
                 </td>
             </tr>
 
@@ -433,8 +437,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="207"
-                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:207</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="205"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:205</a></div>
                 </td>
             </tr>
 
@@ -889,6 +893,89 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFirstDateEarlierThanSecondDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>isFirstDateEarlierThanSecondDate</b></span>
+                        <a href="#isFirstDateEarlierThanSecondDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isFirstDateEarlierThanSecondDate(dateToCompare: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, referenceDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="212"
+                            class="link-to-prism">apps/server/src/modules/task-card/uc/task-card.uc.ts:212</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dateToCompare</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>referenceDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1443,24 +1530,28 @@ export class TaskCardUc {
 	}
 
 	private checkSchoolYearEndDate(schoolYearEndDate: Date, dueDate: Date) {
-		const schoolYearEndDateAtMidnight &#x3D; new Date(schoolYearEndDate).setHours(0, 0, 0, 0);
-		const dueDateAtMidnight &#x3D; new Date(dueDate).setHours(0, 0, 0, 0);
-		if (schoolYearEndDateAtMidnight &lt; dueDateAtMidnight) {
+		if (this.isFirstDateEarlierThanSecondDate(schoolYearEndDate, dueDate)) {
 			throw new ValidationError(&#x27;Due date must be before school year end date&#x27;);
 		}
 	}
 
 	private checkCourseEndDate(courseEndDate: Date, dueDate: Date) {
-		if (courseEndDate &lt; dueDate) {
+		if (this.isFirstDateEarlierThanSecondDate(courseEndDate, dueDate)) {
 			throw new ValidationError(&#x27;Due date must be before course end date&#x27;);
 		}
 	}
 
 	private checkNextYearEndDate(dueDate: Date) {
 		const lastDayOfNextYear &#x3D; new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
-		if (lastDayOfNextYear &lt; dueDate) {
+		if (this.isFirstDateEarlierThanSecondDate(lastDayOfNextYear, dueDate)) {
 			throw new ValidationError(&#x27;Due date must be before end of next year&#x27;);
 		}
+	}
+
+	private isFirstDateEarlierThanSecondDate(dateToCompare: Date, referenceDate: Date): boolean {
+		const firstDate &#x3D; new Date(dateToCompare);
+		const secondDate &#x3D; new Date(referenceDate);
+		return firstDate.setHours(0, 0, 0, 0) &lt; secondDate.setHours(0, 0, 0, 0);
 	}
 }
 </code></pre>
