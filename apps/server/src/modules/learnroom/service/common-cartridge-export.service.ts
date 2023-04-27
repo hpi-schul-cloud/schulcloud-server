@@ -4,7 +4,7 @@ import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
 import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartrigde-lesson-content-element';
-import { IComponentProperties } from '@src/shared/domain/entity/lesson.entity';
+import { IComponentProperties, IComponentTextProperties } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
 import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from '../common-cartridge';
 
@@ -59,16 +59,31 @@ export class CommonCartridgeExportService {
 	} */
 
 	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
+		/* if (Array.isArray(contents) && contents.length > 0) {
+			contents.forEach((contentOfLesson) => {
+				if (contentOfLesson.component === ComponentType.TEXT) {
+					lessonContents.push({
+						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+						identifier: `i${contentOfLesson._id}`,
+						title: contentOfLesson.title,
+						content: contentOfLesson.content?.toString(),
+					});
+				}
+			});
+		}
+		return lessonContents; */
 		return contents.map((content) => {
 			let mappedContent = '';
 
-			if ('text' in content.component) {
-				mappedContent = content.content.text;
+			if (content.content && (content.content as IComponentTextProperties).text) {
+				mappedContent = (content.content as IComponentTextProperties).text;
 			}
 
 			return {
 				identifier: `i${content._id || ''}`,
+
 				title: content.title || '',
+
 				content: mappedContent,
 			};
 		});
