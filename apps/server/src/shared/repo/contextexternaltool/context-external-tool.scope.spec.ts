@@ -1,5 +1,5 @@
 import { SchoolExternalTool } from '@shared/domain';
-import { schoolExternalToolFactory } from '../../testing';
+import { schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 describe('CourseExternalToolScope', () => {

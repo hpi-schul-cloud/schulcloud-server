@@ -1,7 +1,11 @@
-import { ContextExternalTool, CustomParameterEntry, IContextExternalToolProperties } from '@shared/domain';
+import {
+	ContextExternalTool,
+	CustomParameterEntry,
+	IContextExternalToolProperties,
+	ContextExternalToolType,
+} from '@shared/domain';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { schoolExternalToolFactory } from './school-external-tool.factory';
-import { ContextExternalToolType } from '../../domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { courseFactory } from './course.factory';
 
 export const contextExternalToolFactory = BaseFactory.define<ContextExternalTool, IContextExternalToolProperties>(
