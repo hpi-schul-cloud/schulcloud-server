@@ -4,7 +4,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { SubmissionMapper } from '../mapper';
 import { SubmissionUc } from '../uc';
-import { SubmissionUrlParams, TaskUrlParams, SubmissionStatusListResponse } from './dto';
+import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
 
 @ApiTags('Submission')
 @Authenticate('jwt')
