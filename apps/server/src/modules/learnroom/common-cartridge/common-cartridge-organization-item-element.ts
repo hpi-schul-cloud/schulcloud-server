@@ -21,7 +21,7 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 				const newId = new ObjectId();
 				return {
 					$: {
-						identifier: `i${newId.toHexString()}`,
+						identifier: `i${newId.toString()}`,
 						identifierref: content.identifier,
 					},
 

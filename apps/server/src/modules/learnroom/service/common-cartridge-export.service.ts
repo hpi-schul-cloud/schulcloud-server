@@ -49,29 +49,7 @@ export class CommonCartridgeExportService {
 		});
 	}
 
-	/* 	private mapLessonContetnToOrganization(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] | [] {
-		return contents.map((item) => {
-			return {
-				title: item.title,
-				content: item.content,
-			};
-		});
-	} */
-
 	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
-		/* if (Array.isArray(contents) && contents.length > 0) {
-			contents.forEach((contentOfLesson) => {
-				if (contentOfLesson.component === ComponentType.TEXT) {
-					lessonContents.push({
-						// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-						identifier: `i${contentOfLesson._id}`,
-						title: contentOfLesson.title,
-						content: contentOfLesson.content?.toString(),
-					});
-				}
-			});
-		}
-		return lessonContents; */
 		return contents.map((content) => {
 			let mappedContent = '';
 
