@@ -410,14 +410,13 @@ export class AccountUc {
 	}
 
 	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
-		if (this.configService.get<boolean>('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE')) {
-			if (
-				roles.find((role) => role === RoleName.TEACHER) &&
-				permissions.find((permission) => permission === Permission.STUDENT_LIST)
-			) {
-				return school.permissions?.teacher?.STUDENT_LIST ?? false;
-			}
+		if (
+			roles.find((role) => role === RoleName.TEACHER) &&
+			permissions.find((permission) => permission === Permission.STUDENT_LIST)
+		) {
+			return school.permissions?.teacher?.STUDENT_LIST ?? false;
 		}
+
 		return false;
 	}
 
