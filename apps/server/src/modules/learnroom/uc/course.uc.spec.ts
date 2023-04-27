@@ -11,9 +11,7 @@ describe('CourseUc', () => {
 	let module: TestingModule;
 	let uc: CourseUc;
 	let courseRepo: DeepMocked<CourseRepo>;
-	let course: Course;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let user!: User;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -45,9 +43,16 @@ describe('CourseUc', () => {
 	});
 
 	describe('findAllByUser', () => {
-		it('should return courses of user', async () => {
+		const setup = () => {
 			const courses = courseFactory.buildList(5);
+			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
+			const pagination = { skip: 1, limit: 2 };
+			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
 			courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
+			return { courses, spy, pagination, resultingOptions };
+		};
+		it('should return courses of user', async () => {
+			const { courses } = setup();
 
 			const [array, count] = await uc.findAllByUser('someUserId');
 			expect(count).toEqual(5);
@@ -55,11 +60,7 @@ describe('CourseUc', () => {
 		});
 
 		it('should pass on options correctly', async () => {
-			const courses = courseFactory.buildList(5);
-			const spy = courseRepo.findAllByUserId.mockResolvedValue([courses, 5]);
-
-			const pagination = { skip: 1, limit: 2 };
-			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
+			const { spy, pagination, resultingOptions } = setup();
 
 			await uc.findAllByUser('someUserId', pagination);
 
@@ -67,22 +68,20 @@ describe('CourseUc', () => {
 		});
 	});
 	describe('getCourseForTeacher', () => {
-		beforeEach(() => {
-			user = userFactory.buildWithId();
-			course = courseFactory.build();
-
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const course = courseFactory.build();
 			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValue(course);
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
-		});
-		afterEach(() => {
-			courseRepo.findAllForTeacherOrSubstituteTeacher.mockRestore();
-			authorizationService.hasPermission.mockRestore();
-		});
+			return { user, course };
+		};
 		it('should return course for teacher', async () => {
+			const { user, course } = setup();
 			const result = await uc.getCourseForTeacher(user.id, course.id);
 			expect(result).toEqual(course);
 		});
 		it('should check for permission to edit course', async () => {
+			const { user, course } = setup();
 			await uc.getCourseForTeacher(user.id, course.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(
 				user,
@@ -91,6 +90,7 @@ describe('CourseUc', () => {
 			);
 		});
 		it('should throw error if user has no permission to edit course', async () => {
+			const { user, course } = setup();
 			authorizationService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
