@@ -1,4 +1,4 @@
-import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartrigde-lesson-content-element';
+import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
 import { ObjectId } from 'mongodb';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
