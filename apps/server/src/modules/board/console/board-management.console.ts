@@ -12,8 +12,8 @@ export class BoardManagementConsole {
 		description: 'create some boards',
 	})
 	async createBoards(): Promise<string> {
-		await this.boardManagementUc.createBoards();
-		const report = 'creation of boards is completed';
+		const boardId = await this.boardManagementUc.createBoards();
+		const report = `creation of boards is completed (${boardId ?? ''})`;
 		this.consoleWriter.info(report);
 		return report;
 	}

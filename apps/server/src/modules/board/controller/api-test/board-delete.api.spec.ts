@@ -82,13 +82,13 @@ describe(`board delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, columnBoardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.delete(columnBoardNode.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete the board', async () => {
