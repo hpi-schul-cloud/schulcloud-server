@@ -7,7 +7,7 @@ export class TaskScope extends Scope<Task> {
 	byFinished(userId: EntityId, value: boolean): TaskScope {
 		if (value === true) {
 			this.addQuery({ finished: userId });
-		} else if (value === false) {
+		} else {
 			this.addQuery({ finished: { $ne: userId } });
 		}
 
@@ -15,8 +15,10 @@ export class TaskScope extends Scope<Task> {
 	}
 
 	byAssignedUser(assignedUserId: EntityId): TaskScope {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		this.addQuery({
-			$or: [{ users: { $exists: false } }, { users: { $in: [assignedUserId] } }],
+			$or: [{ users: { $exists: false } }, { users: { $eq: [] } }, { users: { $in: [assignedUserId] } }],
 		});
 
 		return this;

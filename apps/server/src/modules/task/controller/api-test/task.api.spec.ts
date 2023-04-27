@@ -1590,11 +1590,10 @@ describe('Task Controller (API)', () => {
 
 				const response = await apiRequest.get(undefined, student1.account);
 
-				const { total, data } = response.body as TaskListResponse;
+				const { data } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
 				const taskIds = data.map((task) => task.id);
 				expect(taskIds).toContain(course2Task1.id);
-				expect(total).toBe(3);
 			});
 
 			it('find finished tasks to which student is assigned ', async () => {
@@ -1652,7 +1651,7 @@ describe('Task Controller (API)', () => {
 				expect(total).toBe(7);
 			});
 
-			it('student does not find tasks, if task assignment is empty', async () => {
+			it('student finds tasks, if task assignment list is empty', async () => {
 				const { student1, course1Task3 } = await setup();
 
 				const response = await apiRequest.get(undefined, student1.account);
@@ -1660,7 +1659,7 @@ describe('Task Controller (API)', () => {
 				const { data } = response.body as TaskListResponse;
 				expect(response.statusCode).toBe(200);
 				const taskIds = data.map((task) => task.id);
-				expect(taskIds).not.toContain(course1Task3.id);
+				expect(taskIds).toContain(course1Task3.id);
 			});
 		});
 	});

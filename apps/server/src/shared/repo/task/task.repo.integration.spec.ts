@@ -993,12 +993,12 @@ describe('TaskRepo', () => {
 				});
 
 				it('should not return tasks finished, but for which student is not assigned (should not happen, but data could be inconsistent)', async () => {
-					const { course, teacher, student1, task5 } = setup();
+					const { course, teacher, student1, task2 } = setup();
 
-					await em.persistAndFlush([task5]);
+					await em.persistAndFlush([task2]);
 					em.clear();
 
-					const [, totalStudent1] = await repo.findAllFinishedByParentIds(
+					const [data] = await repo.findAllFinishedByParentIds(
 						{
 							creatorId: teacher.id,
 							openCourseIds: [course.id],
@@ -1010,7 +1010,8 @@ describe('TaskRepo', () => {
 							userId: student1.id,
 						}
 					);
-					expect(totalStudent1).toEqual(0);
+					const taskIds = data.map((task) => task.id);
+					expect(taskIds).not.toContain(task2.id);
 				});
 			});
 		});
