@@ -11,21 +11,17 @@ import {
 	LtiPrivacyPermission,
 	SortOrder,
 	ToolConfigType,
-} from '@shared/domain';
-import {
+	Page,
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+} from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
-import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { ExternalToolSortingMapper, ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { Page } from '../../domain/domainobject/page';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;

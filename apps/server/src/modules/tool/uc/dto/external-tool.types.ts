@@ -4,7 +4,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+} from '@shared/domain/domainobject/tool';
 
 export type ExternalTool = ExternalToolDO;
 

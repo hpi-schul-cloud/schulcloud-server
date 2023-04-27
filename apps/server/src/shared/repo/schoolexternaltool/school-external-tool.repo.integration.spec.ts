@@ -6,9 +6,9 @@ import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.
 import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/custom-parameter-entry.do';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
+import { CustomParameterEntryDO } from '@shared/domain/domainobject/tool/custom-parameter-entry.do';
+import { schoolExternalToolDOFactory } from '../../testing/factory/domainobject/tool/school-external-tool.factory';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 

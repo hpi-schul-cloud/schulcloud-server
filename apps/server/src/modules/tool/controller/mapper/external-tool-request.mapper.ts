@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, SortOrderMap } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
 import {
 	BasicToolConfig,

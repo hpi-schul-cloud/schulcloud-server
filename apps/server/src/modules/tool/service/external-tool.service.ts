@@ -5,17 +5,17 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { CustomParameterScope, EntityId, IFindOptions } from '@shared/domain';
-import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Page } from '@shared/domain/domainobject/page';
+	CustomParameterScope,
+	EntityId,
+	IFindOptions,
+	SchoolExternalToolDO,
+	Page,
+} from '@shared/domain';
+import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { Logger } from '@src/core/logger';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
@@ -27,7 +27,7 @@ export class ExternalToolService {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly courseExternalToolRepo: CourseExternalToolRepo,
+		private readonly courseExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
 		private readonly logger: Logger,
 		private readonly externalToolVersionService: ExternalToolVersionService

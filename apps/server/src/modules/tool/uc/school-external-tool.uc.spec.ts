@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, EntityId, Permission, User } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { setupEntities, userFactory } from '@shared/testing';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
-import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalToolQueryInput } from './dto';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 
 describe('SchoolExternalToolUc', () => {
@@ -15,7 +15,7 @@ describe('SchoolExternalToolUc', () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let courseExternalToolService: DeepMocked<CourseExternalToolService>;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 
 	beforeAll(async () => {
@@ -32,8 +32,8 @@ describe('SchoolExternalToolUc', () => {
 					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
-					provide: CourseExternalToolService,
-					useValue: createMock<CourseExternalToolService>(),
+					provide: ContextExternalToolService,
+					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
 					provide: SchoolExternalToolValidationService,
@@ -45,7 +45,7 @@ describe('SchoolExternalToolUc', () => {
 		uc = module.get(SchoolExternalToolUc);
 		authorizationService = module.get(AuthorizationService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
-		courseExternalToolService = module.get(CourseExternalToolService);
+		contextExternalToolService = module.get(ContextExternalToolService);
 		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 	});
 
@@ -156,7 +156,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.deleteSchoolExternalTool(userId, schoolExternalToolId);
 
-				expect(courseExternalToolService.deleteBySchoolExternalToolId).toHaveBeenCalledWith(schoolExternalToolId);
+				expect(contextExternalToolService.deleteBySchoolExternalToolId).toHaveBeenCalledWith(schoolExternalToolId);
 			});
 
 			it('should call the schoolExternalToolService', async () => {

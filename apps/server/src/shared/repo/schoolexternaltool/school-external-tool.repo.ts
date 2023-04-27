@@ -2,7 +2,7 @@ import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Logger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto/school-external-tool.types';

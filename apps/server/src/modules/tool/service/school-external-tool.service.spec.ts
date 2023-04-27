@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { SchoolExternalToolStatus } from '@shared/domain/domainobject/external-tool/school-external-tool-status';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
+import { SchoolExternalToolStatus } from '@shared/domain/domainobject/tool/school-external-tool-status';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
 import { ExternalToolService } from './external-tool.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
 

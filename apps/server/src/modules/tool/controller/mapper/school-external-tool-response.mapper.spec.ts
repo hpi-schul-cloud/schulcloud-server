@@ -1,5 +1,5 @@
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { SchoolExternalToolDO } from '@shared/domain';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
 import {
 	SchoolExternalToolResponse,

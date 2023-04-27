@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { CustomParameterDO, CustomParameterEntryDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { isNaN } from 'lodash';
 import { ExternalToolService } from '../external-tool.service';
 

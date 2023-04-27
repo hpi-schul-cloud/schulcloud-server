@@ -1,6 +1,6 @@
 import { Course, CourseGroup, Lesson, Submission, Task, Team, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 
 export enum AllowedAuthorizationEntityType {
 	'User' = 'users',

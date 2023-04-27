@@ -1,9 +1,9 @@
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '@shared/domain';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
-} from '@shared/testing/factory/domainobject/external-tool.factory';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { ExternalToolVersionService } from './external-tool-version.service';
 
 describe('ExternalToolVersionService', () => {

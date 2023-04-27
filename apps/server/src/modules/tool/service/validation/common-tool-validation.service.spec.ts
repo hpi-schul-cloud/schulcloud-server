@@ -1,10 +1,10 @@
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
-} from '@shared/testing/factory/domainobject/external-tool.factory';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { CustomParameterScope } from '@shared/domain';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';

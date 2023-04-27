@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, CustomParameterScope, EntityId, Permission } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { Actions, CustomParameterScope, EntityId, Permission, SchoolExternalToolDO } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { Page } from '@shared/domain/domainobject/page';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 
 @Injectable()

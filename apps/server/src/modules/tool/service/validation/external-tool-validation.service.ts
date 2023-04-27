@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { CommonToolValidationService } from './common-tool-validation.service';

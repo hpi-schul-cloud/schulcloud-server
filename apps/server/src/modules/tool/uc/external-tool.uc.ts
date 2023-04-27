@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IFindOptions, Permission, User } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO, Page } from '@shared/domain/domainobject';
 import { AuthorizationService } from '@src/modules/authorization';
-import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { CreateExternalTool, UpdateExternalTool } from './dto';
 
