@@ -28,7 +28,7 @@ export class TaskMapper {
 			dto.taskCardId = task.taskCard;
 		}
 		dto.availableDate = task.availableDate;
-		dto.duedate = task.dueDate;
+		dto.dueDate = task.dueDate;
 
 		dto.displayColor = taskDesc.color;
 		if (taskDesc.lessonName) {
