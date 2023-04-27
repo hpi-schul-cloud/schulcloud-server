@@ -3,25 +3,41 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-ldapsync-cronjob
+    app: api
+    cronjob: ldapsync-full
   name: api-ldapsync-full-cronjob
 spec:
   schedule: "{{ SERVER_LDAP_SYNC_FULL_CRONJOB|default("0 3 * * 3,6", true) }}"
   concurrencyPolicy: Forbid
   jobTemplate:
+    labels:
+      app: api
+      cronjob: ldapsync-full
     spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
-        metadata:
-          labels:
-            app: api-ldapsync-cronjob
         spec:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            runAsNonRoot: true
           containers:
           - name: api-ldapsync-cronjob
-            image: schulcloud/infra-tools:latest
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            imagePullPolicy: IfNotPresent
             envFrom:
+            - configMapRef:
+                name: api-configmap
             - secretRef:
                 name: api-secret
             command: ['/bin/sh','-c']
-            args: ['curl --max-time {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }} -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_LDAP_SYNC_SVC|default("api-ldapsync-svc", true) }}:3030/api/v1/sync?target=ldap&forceFullSync=true" | python3 -m json.tool']
+            args: ['npm run nest:start:console -- ldap-sync cleanup-job 7']
+            resources:
+              limits:
+                cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
+                memory: {{ API_MEMORY_LIMITS|default("2Gi", true) }}
+              requests:
+                cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
+                memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure

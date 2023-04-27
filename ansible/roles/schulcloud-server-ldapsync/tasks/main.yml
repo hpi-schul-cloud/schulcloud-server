@@ -16,10 +16,3 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-sync-service.yml.j2
-
-  - name: Ldap Syncer Deployment
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-ldap-sync-deployment.yml.j2
-
