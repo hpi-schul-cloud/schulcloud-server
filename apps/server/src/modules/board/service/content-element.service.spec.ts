@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementFactory } from '@shared/domain';
+import { ContentElementFactory, FileElement, TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { ContentElementType } from '../types';
@@ -51,6 +52,57 @@ describe(ContentElementService.name, () => {
 		await module.close();
 	});
 
+	describe('findById', () => {
+		describe('when trying get TextElement by id', () => {
+			const setup = () => {
+				const textElement = textElementFactory.build();
+				boardDoRepo.findById.mockResolvedValue(textElement);
+
+				return { textElement };
+			};
+
+			it('should return instance of TextElement', async () => {
+				const { textElement } = setup();
+
+				const result = await service.findById(textElement.id);
+
+				expect(result).toBeInstanceOf(TextElement);
+			});
+		});
+
+		describe('when trying get FileElement by id', () => {
+			const setup = () => {
+				const fileElement = fileElementFactory.build();
+				boardDoRepo.findById.mockResolvedValue(fileElement);
+
+				return { fileElement };
+			};
+
+			it('should return a FileElement', async () => {
+				const { fileElement } = setup();
+
+				const result = await service.findById(fileElement.id);
+
+				expect(result).toBeInstanceOf(FileElement);
+			});
+		});
+
+		describe('when trying get an wrong element by id', () => {
+			const setup = () => {
+				const cardElement = cardFactory.build();
+				boardDoRepo.findById.mockResolvedValue(cardElement);
+
+				return { cardElement };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { cardElement } = setup();
+
+				await expect(service.findById(cardElement.id)).rejects.toThrowError(NotFoundException);
+			});
+		});
+	});
+
 	describe('create', () => {
 		describe('when creating a content element of type', () => {
 			const setup = () => {
@@ -69,6 +121,15 @@ describe(ContentElementService.name, () => {
 				await service.create(card, ContentElementType.TEXT);
 
 				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.TEXT);
+			});
+
+			it('should call addChild method of parent element', async () => {
+				const { card, textElement } = setup();
+				const spy = jest.spyOn(card, 'addChild');
+
+				await service.create(card, ContentElementType.TEXT);
+
+				expect(spy).toHaveBeenCalledWith(textElement);
 			});
 
 			it('should call save method of boardDo repo', async () => {
