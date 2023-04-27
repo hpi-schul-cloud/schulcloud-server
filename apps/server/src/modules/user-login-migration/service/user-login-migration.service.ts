@@ -2,16 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, UserLoginMigrationDO } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { SchoolService } from '@src/modules/school';
-import { SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 
 @Injectable()
 export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly schoolService: SchoolService,
-		private readonly systemService: SystemService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
