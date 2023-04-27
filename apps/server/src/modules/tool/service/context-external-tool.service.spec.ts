@@ -26,23 +26,22 @@ describe('ContextExternalToolService', () => {
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
 	});
 
-	const setup = () => {
-		const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-		const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
-		const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
-		return {
-			schoolExternalTool,
-			schoolExternalToolId: schoolExternalTool.id as string,
-			contextExternalTool1,
-			contextExternalTool2,
-		};
-	};
-
 	describe('deleteBySchoolExternalToolId is called', () => {
+		const setup = () => {
+			const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+			const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
+			const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
+			return {
+				schoolExternalTool,
+				schoolExternalToolId: schoolExternalTool.id as string,
+				contextExternalTool1,
+				contextExternalTool2,
+			};
+		};
+
 		describe('when schoolExternalToolId is given', () => {
 			it('should call find()', async () => {
 				const { schoolExternalToolId } = setup();
-
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
 				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({ schoolToolId: schoolExternalToolId });
@@ -55,6 +54,28 @@ describe('ContextExternalToolService', () => {
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
 				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1.id, contextExternalTool2.id]);
+			});
+		});
+	});
+
+	describe('createContextExternalTool is called', () => {
+		const setup = () => {
+			const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
+			contextExternalToolRepo.save.mockResolvedValue(contextExternalTool1);
+
+			return {
+				contextExternalTool1,
+			};
+		};
+
+		describe('when contextExternalTool is given', () => {
+			it('should call contextExternalToolRepo ', async () => {
+				const { contextExternalTool1 } = setup();
+
+				await service.createContextExternalTool(contextExternalTool1);
+
+				expect(contextExternalToolRepo).toHaveBeenCalledWith(contextExternalTool1);
 			});
 		});
 	});

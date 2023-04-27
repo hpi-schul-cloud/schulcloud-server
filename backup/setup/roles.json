@@ -242,7 +242,8 @@
 			"TEAM_EDIT",
 			"START_MEETING",
 			"HOMEWORK_CREATE",
-			"HOMEWORK_EDIT"
+			"HOMEWORK_EDIT",
+			"CONTEXT_TOOL_ADMIN"
 		],
 		"__v": 2
 	},
