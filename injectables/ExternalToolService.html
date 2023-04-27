@@ -1299,7 +1299,7 @@ export class ExternalToolService {
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise&lt;ExternalToolDO&gt; {
-		if (this.isLti11Config(externalToolDO.config)) {
+		if (this.isLti11Config(externalToolDO.config) &amp;&amp; externalToolDO.config.secret) {
 			externalToolDO.config.secret &#x3D; this.encryptionService.encrypt(externalToolDO.config.secret);
 		} else if (this.isOauth2Config(externalToolDO.config)) {
 			const oauthClient: ProviderOauthClient &#x3D; this.mapper.mapDoToProviderOauthClient(

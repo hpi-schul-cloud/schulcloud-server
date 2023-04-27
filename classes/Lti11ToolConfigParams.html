@@ -105,6 +105,7 @@
                                 <a href="#resource_link_id" >resource_link_id</a>
                             </li>
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#secret" >secret</a>
                             </li>
                             <li>
@@ -234,7 +235,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -269,7 +270,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:34</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -305,7 +306,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -318,6 +319,7 @@
                 <td class="col-md-4">
                     <a name="secret"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>secret</b></span>
                         <a href="#secret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -334,13 +336,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@ApiProperty()<br />
+                            @IsString()<br />@IsOptional()<br />@ApiPropertyOptional()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/lti11-tool-config.params.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -420,8 +422,9 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 	key!: string;
 
 	@IsString()
-	@ApiProperty()
-	secret!: string;
+	@IsOptional()
+	@ApiPropertyOptional()
+	secret?: string;
 
 	@IsString()
 	@IsOptional()

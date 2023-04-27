@@ -89,6 +89,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#validateLti11Config" >validateLti11Config</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#validateOauth2Config" >validateOauth2Config</a>
                             </li>
@@ -197,8 +201,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -321,6 +325,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="validateLti11Config"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>validateLti11Config</b></span>
+                        <a href="#validateLti11Config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateLti11Config(externalToolDO: <a href="../classes/ExternalToolDO.html" target="_self">ExternalToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:38</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>externalToolDO</td>
+                                    <td>
+                                                <code><a href="../classes/ExternalToolDO.html" target="_self" >ExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validateOauth2Config"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -340,8 +415,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:22</a></div>
                 </td>
             </tr>
 
@@ -411,8 +486,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/external-tool-validation.service.ts:56</a></div>
                 </td>
             </tr>
 
@@ -495,6 +570,8 @@ export class ExternalToolValidationService {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
 		await this.validateOauth2Config(externalToolDO);
+
+		this.validateLti11Config(externalToolDO);
 	}
 
 	private async validateOauth2Config(externalToolDO: ExternalToolDO) {
@@ -508,6 +585,16 @@ export class ExternalToolValidationService {
 			if (!(await this.isClientIdUnique(externalToolDO))) {
 				throw new ValidationError(
 					&#x60;tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || &#x27;&#x27;} is already used.&#x60;
+				);
+			}
+		}
+	}
+
+	private validateLti11Config(externalToolDO: ExternalToolDO) {
+		if (this.externalToolService.isLti11Config(externalToolDO.config)) {
+			if (!externalToolDO.config.secret) {
+				throw new ValidationError(
+					&#x60;tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || &#x27;&#x27;} is missing.&#x60;
 				);
 			}
 		}
