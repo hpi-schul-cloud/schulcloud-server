@@ -88,7 +88,7 @@ export class School extends BaseEntity {
 	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
 	schoolYear?: SchoolYear;
 
-	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration, {
+	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
 		owner: true,
 		orphanRemoval: true,
 	})

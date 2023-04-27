@@ -65,11 +65,16 @@ export class SchoolService {
 			throw new InternalServerErrorException(`UserLoginMigration was never started for school ${schoolDo.id}`);
 		}
 
+		const systemIds: EntityId[] = schoolDo.systems
+			? schoolDo.systems.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string))
+			: [];
+		const sourceSystemId = systemIds.length >= 1 ? systemIds[0] : undefined;
+
 		const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 			id: schoolDo.userLoginMigrationId,
 			schoolId: schoolDo.id,
 			targetSystemId: sanisSystem.id as string,
-			sourceSystemId: schoolDo.systems && schoolDo.systems.length >= 1 ? schoolDo.systems[0] : undefined,
+			sourceSystemId,
 			mandatorySince: schoolDo.oauthMigrationMandatory,
 			startedAt: schoolDo.oauthMigrationStart,
 			closedAt: schoolDo.oauthMigrationFinished,

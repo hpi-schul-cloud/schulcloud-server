@@ -207,5 +207,16 @@
 			"$date": "2023-04-04T12:25:50.707Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "644a5cc76018bf037415806a"
+		},
+		"state": "up",
+		"name": "move-school-migration-attributes-to-entity",
+		"createdAt": {
+			"$date": "2023-04-27T11:30:15.605Z"
+		},
+		"__v": 0
 	}
 ]
