@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
+import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/domainobject/page';
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { ValidationError } from '@shared/common';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 
 @Injectable()
@@ -104,8 +104,6 @@ export class SchoolMigrationService {
 			user.outdatedSince = undefined;
 		});
 		await this.userService.saveAll(migratedUsers.data);
-
-		school.oauthMigrationMandatory = undefined;
 
 		const endTime: number = performance.now();
 		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);

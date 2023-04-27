@@ -1,71 +1,49 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, IFindOptions, SystemTypeEnum, UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Injectable } from '@nestjs/common';
+import { EntityId, UserLoginMigrationDO } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
-import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
 
 @Injectable()
 export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
+		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	// TODO: N21-822 after introduction of entity use repo instead of services
-	async findUserLoginMigrations(
-		query: UserLoginMigrationQuery,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		options: IFindOptions<UserLoginMigrationDO>
-	): Promise<Page<UserLoginMigrationDO>> {
-		const page = new Page<UserLoginMigrationDO>([], 0);
+	async save(userLoginMigration: UserLoginMigrationDO): Promise<UserLoginMigrationDO> {
+		const savedDO: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
 
-		if (query.userId) {
-			const userDO: UserDO = await this.userService.findById(query.userId);
-			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
+		return savedDO;
+	}
 
-			if (schoolDO.oauthMigrationStart) {
-				// TODO: N21-824 change logic with post migration endpoint
-				const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-				const sanisSystem: SystemDto | undefined = oauthSystems.find(
-					(system: SystemDto): boolean => system.alias === 'SANIS'
-				);
+	async findById(userLoginMigrationId: EntityId): Promise<UserLoginMigrationDO> {
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.findById(userLoginMigrationId);
 
-				if (!sanisSystem?.id) {
-					throw new InternalServerErrorException('Cannot find Sanis system information.');
-				}
+		return userLoginMigration;
+	}
 
-				// TODO: N21-824 change logic with post migration endpoint
-				const sourceSystemId: EntityId | undefined =
-					schoolDO.systems && schoolDO.systems.length > 0 && schoolDO.systems[0] !== sanisSystem.id
-						? schoolDO.systems[0]
-						: undefined;
+	async findByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
+		const userDO: UserDO = await this.userService.findById(userId);
+		const { schoolId } = userDO;
 
-				const hasUserMigrated =
-					userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > schoolDO.oauthMigrationStart;
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
-				if (!hasUserMigrated) {
-					page.data = [
-						new UserLoginMigrationDO({
-							id: undefined,
-							sourceSystemId,
-							targetSystemId: sanisSystem.id,
-							startedAt: schoolDO.oauthMigrationStart,
-							closedAt: schoolDO.oauthMigrationFinished,
-							finishedAt: schoolDO.oauthMigrationFinalFinish,
-							mandatorySince: schoolDO.oauthMigrationMandatory,
-						}),
-					];
-					page.total = 1;
-				}
-			}
+		if (!userLoginMigration) {
+			return null;
 		}
 
-		return Promise.resolve(page);
+		const hasUserMigrated: boolean =
+			!!userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > userLoginMigration.startedAt;
+
+		if (hasUserMigrated) {
+			return null;
+		}
+
+		return userLoginMigration;
 	}
 }

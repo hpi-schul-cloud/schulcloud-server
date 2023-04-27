@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { Logger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
@@ -45,15 +46,11 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
 			name: entity.name,
-			oauthMigrationStart: entity.oauthMigrationStart,
-			oauthMigrationMandatory: entity.oauthMigrationMandatory,
-			oauthMigrationPossible: entity.oauthMigrationPossible,
-			oauthMigrationFinished: entity.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entity.oauthMigrationFinalFinish,
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
+			userLoginMigrationId: entity.userLoginMigration?.id,
 		});
 	}
 
@@ -64,17 +61,15 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entityDO.inMaintenanceSince,
 			inUserMigration: entityDO.inUserMigration,
 			name: entityDO.name,
-			oauthMigrationStart: entityDO.oauthMigrationStart,
-			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
-			oauthMigrationPossible: entityDO.oauthMigrationPossible,
-			oauthMigrationFinished: entityDO.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entityDO.oauthMigrationFinalFinish,
 			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,
 			systems: entityDO.systems
 				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(System, systemId))
 				: [],
+			userLoginMigration: entityDO.userLoginMigrationId
+				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
+				: undefined,
 		};
 	}
 }

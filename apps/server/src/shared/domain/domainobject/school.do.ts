@@ -47,6 +47,8 @@ export class SchoolDO extends BaseDO {
 
 	schoolYear?: SchoolYear;
 
+	userLoginMigrationId?: EntityId;
+
 	constructor(params: SchoolDO) {
 		super();
 		this.id = params.id;
@@ -64,5 +66,6 @@ export class SchoolDO extends BaseDO {
 		this.officialSchoolNumber = params.officialSchoolNumber;
 		this.schoolYear = params.schoolYear;
 		this.systems = params.systems;
+		this.userLoginMigrationId = params.userLoginMigrationId;
 	}
 }

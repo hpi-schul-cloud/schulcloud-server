@@ -1,13 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId, SchoolFeatures, SystemTypeEnum, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo } from '@shared/repo';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service';
+import { UserLoginMigrationService } from '@src/modules/user-login-migration';
 import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolService {
-	constructor(private readonly schoolRepo: SchoolRepo) {}
+	constructor(
+		private readonly schoolRepo: SchoolRepo,
+		private readonly userLoginMigrationService: UserLoginMigrationService,
+		private readonly systemService: SystemService
+	) {}
 
 	async createOrUpdateSchool(school: SchoolDO): Promise<SchoolDO> {
 		let createdSchool: SchoolDO;
@@ -24,6 +31,54 @@ export class SchoolService {
 		return entity.features ? entity.features.includes(feature) : false;
 	}
 
+	private async fillSchoolDoWithUserLoginMigration(schoolDo: SchoolDO): Promise<void> {
+		if (!schoolDo.userLoginMigrationId) {
+			return;
+		}
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.findById(
+			schoolDo.userLoginMigrationId
+		);
+
+		schoolDo.oauthMigrationStart = userLoginMigration.startedAt;
+		schoolDo.oauthMigrationPossible = !userLoginMigration.closedAt ? userLoginMigration.startedAt : undefined;
+		schoolDo.oauthMigrationMandatory = userLoginMigration.mandatorySince;
+		schoolDo.oauthMigrationFinished = userLoginMigration.closedAt;
+		schoolDo.oauthMigrationFinalFinish = userLoginMigration.finishedAt;
+	}
+
+	private async saveUserLoginMigrationFromSchoolDo(schoolDo: SchoolDO): Promise<void> {
+		if (!schoolDo.id) {
+			throw new InternalServerErrorException('Cannot save UserLoginMigration without school id');
+		}
+
+		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
+		const sanisSystem: SystemDto | undefined = oauthSystems.find(
+			(system: SystemDto): boolean => system.alias === 'SANIS'
+		);
+
+		if (!sanisSystem) {
+			throw new InternalServerErrorException('Cannot find SANIS system');
+		}
+
+		if (!schoolDo.oauthMigrationStart) {
+			throw new InternalServerErrorException(`UserLoginMigration was never started for school ${schoolDo.id}`);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+			id: schoolDo.userLoginMigrationId,
+			schoolId: schoolDo.id,
+			targetSystemId: sanisSystem.id as string,
+			sourceSystemId: schoolDo.systems && schoolDo.systems.length >= 1 ? schoolDo.systems[0] : undefined,
+			mandatorySince: schoolDo.oauthMigrationMandatory,
+			startedAt: schoolDo.oauthMigrationStart,
+			closedAt: schoolDo.oauthMigrationFinished,
+			finishedAt: schoolDo.oauthMigrationFinalFinish,
+		});
+
+		await this.userLoginMigrationService.save(userLoginMigration);
+	}
+
 	async setMigration(
 		schoolId: EntityId,
 		oauthMigrationPossible?: boolean,
@@ -31,6 +86,9 @@ export class SchoolService {
 		oauthMigrationFinished?: boolean
 	): Promise<OauthMigrationDto> {
 		const schoolDo: SchoolDO = await this.schoolRepo.findById(schoolId);
+
+		await this.fillSchoolDoWithUserLoginMigration(schoolDo);
+
 		if (oauthMigrationPossible !== undefined) {
 			if (this.isNewMigration(schoolDo)) {
 				this.setMigrationStart(schoolDo, oauthMigrationPossible);
@@ -50,6 +108,8 @@ export class SchoolService {
 		}
 
 		await this.schoolRepo.save(schoolDo);
+
+		await this.saveUserLoginMigrationFromSchoolDo(schoolDo);
 
 		const response: OauthMigrationDto = new OauthMigrationDto({
 			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
