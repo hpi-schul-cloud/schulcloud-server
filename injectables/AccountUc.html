@@ -370,8 +370,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="442"
-                            class="link-to-prism">apps/server/src/modules/account/uc/account.uc.ts:442</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="441"
+                            class="link-to-prism">apps/server/src/modules/account/uc/account.uc.ts:441</a></div>
                 </td>
             </tr>
 
@@ -643,8 +643,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="429"
-                            class="link-to-prism">apps/server/src/modules/account/uc/account.uc.ts:429</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="428"
+                            class="link-to-prism">apps/server/src/modules/account/uc/account.uc.ts:428</a></div>
                 </td>
             </tr>
 
@@ -2105,14 +2105,13 @@ export class AccountUc {
 	}
 
 	private schoolPermissionExists(roles: string[], school: School, permissions: string[]): boolean {
-		if (this.configService.get&lt;boolean&gt;(&#x27;TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE&#x27;)) {
-			if (
-				roles.find((role) &#x3D;&gt; role &#x3D;&#x3D;&#x3D; RoleName.TEACHER) &amp;&amp;
-				permissions.find((permission) &#x3D;&gt; permission &#x3D;&#x3D;&#x3D; Permission.STUDENT_LIST)
-			) {
-				return school.permissions?.teacher?.STUDENT_LIST ?? false;
-			}
+		if (
+			roles.find((role) &#x3D;&gt; role &#x3D;&#x3D;&#x3D; RoleName.TEACHER) &amp;&amp;
+			permissions.find((permission) &#x3D;&gt; permission &#x3D;&#x3D;&#x3D; Permission.STUDENT_LIST)
+		) {
+			return school.permissions?.teacher?.STUDENT_LIST ?? false;
 		}
+
 		return false;
 	}
 
