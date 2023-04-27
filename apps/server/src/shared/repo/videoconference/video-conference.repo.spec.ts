@@ -109,8 +109,6 @@ describe('Video Conference Repo', () => {
 			const testEntity: VideoConference = {
 				id: id.toHexString(),
 				_id: id,
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
 				options: new VideoConferenceOptions({
 					everybodyJoinsAsModerator: true,
 					everyAttendeJoinsMuted: true,
@@ -126,8 +124,6 @@ describe('Video Conference Repo', () => {
 			// Assert
 			expect(videoConferenceDO.id).toEqual(testEntity.id);
 			expect(videoConferenceDO.target).toEqual(testEntity.target);
-			expect(videoConferenceDO.createdAt).toEqual(testEntity.createdAt);
-			expect(videoConferenceDO.updatedAt).toEqual(testEntity.updatedAt);
 			expect(videoConferenceDO.targetModel).toEqual(VideoConferenceScope.COURSE);
 			const { options } = videoConferenceDO;
 			expect(options.everybodyJoinsAsModerator).toEqual(testEntity.options.everybodyJoinsAsModerator);
