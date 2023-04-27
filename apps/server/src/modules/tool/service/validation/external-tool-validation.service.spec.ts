@@ -62,6 +62,7 @@ describe('ExternalToolValidation', () => {
 						.buildWithId();
 					return { externalOauthToolDO };
 				};
+
 				it('should not find a tool with this client id', async () => {
 					const { externalOauthToolDO } = setup();
 					externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
@@ -96,6 +97,7 @@ describe('ExternalToolValidation', () => {
 						existingExternalOauthToolDO,
 					};
 				};
+
 				it('should find a tool with this client id', async () => {
 					const { externalOauthToolDO } = setup();
 					const { existingExternalOauthToolDO } = setup();
@@ -111,6 +113,7 @@ describe('ExternalToolValidation', () => {
 					);
 				});
 			});
+
 			describe('when there is no client secret', () => {
 				const setup = () => {
 					const externalOauthToolDOWithoutSecret: ExternalToolDO = externalToolDOFactory
@@ -118,6 +121,7 @@ describe('ExternalToolValidation', () => {
 						.buildWithId();
 					return { externalOauthToolDOWithoutSecret };
 				};
+
 				it('should throw validation error', async () => {
 					const { externalOauthToolDOWithoutSecret } = setup();
 					externalToolService.isOauth2Config.mockReturnValue(true);
@@ -141,6 +145,7 @@ describe('ExternalToolValidation', () => {
 						.buildWithId();
 					return { externalLti11ToolDOWithoutSecret };
 				};
+
 				it('should throw validation error', async () => {
 					const { externalLti11ToolDOWithoutSecret } = setup();
 					externalToolService.isLti11Config.mockReturnValue(true);
@@ -181,6 +186,7 @@ describe('ExternalToolValidation', () => {
 					.buildWithId();
 				return { externalOauthToolDO };
 			};
+
 			it('should throw an error if not matches', async () => {
 				externalToolService.isOauth2Config.mockReturnValue(true);
 
@@ -211,6 +217,7 @@ describe('ExternalToolValidation', () => {
 						.buildWithId();
 					return { existingExternalOauthToolDO };
 				};
+
 				it('should throw', async () => {
 					const { existingExternalOauthToolDO } = setup();
 					externalToolService.findExternalToolById.mockResolvedValue(existingExternalOauthToolDO);
@@ -231,6 +238,7 @@ describe('ExternalToolValidation', () => {
 						.buildWithId();
 					return { externalOauthToolDO };
 				};
+
 				it('should pass', async () => {
 					const { externalOauthToolDO } = setup();
 					externalToolService.findExternalToolById.mockResolvedValue(externalOauthToolDO);
@@ -255,6 +263,7 @@ describe('ExternalToolValidation', () => {
 						existingExternalOauthToolDOWithDifferentClientId,
 					};
 				};
+
 				it('should throw', async () => {
 					const { externalOauthToolDO } = setup();
 					const { existingExternalOauthToolDOWithDifferentClientId } = setup();
