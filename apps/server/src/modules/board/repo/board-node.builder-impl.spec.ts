@@ -117,6 +117,33 @@ describe(BoardNodeBuilderImpl.name, () => {
 			return { builder, fileElement, card };
 		};
 
+		it('should call getParentNode', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'getParentNode');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
+		it('should call ensureBoardNodeType', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'ensureBoardNodeType');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
+		it('should call registerNode', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'registerNode');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
 		it('should build a file element boardnode', () => {
 			const { builder, fileElement, card } = setup();
 

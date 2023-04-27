@@ -27,7 +27,7 @@ import {
 	RenameBodyParams,
 	TextElementResponse,
 } from './dto';
-import { CardResponseMapper, ContentElementResponseBuilder } from './mapper';
+import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
 @Authenticate('jwt')
@@ -96,18 +96,11 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(TextElementResponse)
-	@ApiExtraModels(FileElementResponse)
+	@ApiExtraModels(TextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
-		},
-	})
-	@ApiResponse({
-		status: 201,
-		schema: {
-			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -121,7 +114,7 @@ export class CardController {
 	): Promise<AnyContentElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
-		const response = ContentElementResponseBuilder.mapToResponse(element);
+		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
 	}

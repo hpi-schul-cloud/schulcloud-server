@@ -30,7 +30,7 @@ describe('reference.loader', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let findNodeService: DeepMocked<BoardNodeService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -92,7 +92,7 @@ describe('reference.loader', () => {
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		findNodeService = await module.get(BoardNodeService);
+		boardNodeService = await module.get(BoardNodeService);
 	});
 
 	afterEach(() => {
@@ -161,7 +161,7 @@ describe('reference.loader', () => {
 		it('should call findNodeService.findById', async () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.BoardNode, entityId);
 
-			expect(findNodeService.findById).toBeCalledWith(entityId);
+			expect(boardNodeService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementFactory } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { ContentElementType } from '../types';
@@ -53,52 +53,30 @@ describe(ContentElementService.name, () => {
 
 	describe('create', () => {
 		describe('when creating a content element of type', () => {
-			describe('TEXT', () => {
-				const setup = () => {
-					const card = cardFactory.build();
-					const cardId = card.id;
-					const textElement = textElementFactory.build();
+			const setup = () => {
+				const card = cardFactory.build();
+				const cardId = card.id;
+				const textElement = textElementFactory.build();
 
-					contentElementFactory.build.mockReturnValue(textElement);
+				contentElementFactory.build.mockReturnValue(textElement);
 
-					return { card, cardId, textElement };
-				};
+				return { card, cardId, textElement };
+			};
 
-				it('should call getElement method of ContentElementProvider', async () => {
-					const { card } = setup();
+			it('should call getElement method of ContentElementProvider', async () => {
+				const { card } = setup();
 
-					await service.create(card, ContentElementType.TEXT);
+				await service.create(card, ContentElementType.TEXT);
 
-					expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.TEXT);
-				});
-
-				it('should call save method of boardDo repo', async () => {
-					const { card, textElement } = setup();
-
-					await service.create(card, ContentElementType.TEXT);
-
-					expect(boardDoRepo.save).toHaveBeenCalledWith([textElement], card);
-				});
+				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.TEXT);
 			});
 
-			describe('FILE', () => {
-				const setup = () => {
-					const card = cardFactory.build();
-					const cardId = card.id;
-					const fileElement = fileElementFactory.build();
+			it('should call save method of boardDo repo', async () => {
+				const { card, textElement } = setup();
 
-					contentElementFactory.build.mockReturnValue(fileElement);
+				await service.create(card, ContentElementType.TEXT);
 
-					return { card, cardId, fileElement };
-				};
-
-				it('should call save method of boardDo repo', async () => {
-					const { card, fileElement } = setup();
-
-					await service.create(card, ContentElementType.FILE);
-
-					expect(boardDoRepo.save).toHaveBeenCalledWith([fileElement], card);
-				});
+				expect(boardDoRepo.save).toHaveBeenCalledWith([textElement], card);
 			});
 		});
 	});

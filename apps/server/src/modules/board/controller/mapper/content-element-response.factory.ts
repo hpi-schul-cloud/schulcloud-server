@@ -5,7 +5,7 @@ import { BaseResponseMapper } from './base-mapper.interface';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { TextElementResponseMapper } from './text-element-response.mapper';
 
-export class ContentElementResponseBuilder {
+export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] = [
 		TextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),

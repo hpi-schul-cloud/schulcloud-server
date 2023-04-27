@@ -1,1 +1,1 @@
-export * from './content-elements.enum';
+export * from './content-element-type.enum';

@@ -1,9 +1,9 @@
 import { NotImplementedException } from '@nestjs/common';
 import { fileElementFactory, textElementFactory } from '@shared/testing';
 import { FileElementResponse, TextElementResponse } from '../dto';
-import { ContentElementResponseBuilder } from './content-element-response.builder';
+import { ContentElementResponseFactory } from './content-element-response.factory';
 
-describe(ContentElementResponseBuilder.name, () => {
+describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
 		const textElement = textElementFactory.build();
 		const fileElement = fileElementFactory.build();
@@ -14,7 +14,7 @@ describe(ContentElementResponseBuilder.name, () => {
 	it('should return instance of TextElementResponse', () => {
 		const { textElement } = setup();
 
-		const result = ContentElementResponseBuilder.mapToResponse(textElement);
+		const result = ContentElementResponseFactory.mapToResponse(textElement);
 
 		expect(result).toBeInstanceOf(TextElementResponse);
 	});
@@ -22,13 +22,13 @@ describe(ContentElementResponseBuilder.name, () => {
 	it('should return instance of FileElementResponse', () => {
 		const { fileElement } = setup();
 
-		const result = ContentElementResponseBuilder.mapToResponse(fileElement);
+		const result = ContentElementResponseFactory.mapToResponse(fileElement);
 
 		expect(result).toBeInstanceOf(FileElementResponse);
 	});
 
 	it('should throw NotImplementedException', () => {
 		// @ts-expect-error check unknown type
-		expect(() => ContentElementResponseBuilder.mapToResponse('UNKNOWN')).toThrow(NotImplementedException);
+		expect(() => ContentElementResponseFactory.mapToResponse('UNKNOWN')).toThrow(NotImplementedException);
 	});
 });
