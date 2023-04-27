@@ -1219,7 +1219,8 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Query } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { Body, Controller, Delete, Get, NotImplementedException, Param, Patch, Post, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { RequestTimeout } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
@@ -1227,11 +1228,10 @@ import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { CopyApiResponse, CopyMapper } from &#x27;@src/modules/copy-helper&#x27;;
 import { serverConfig } from &#x27;@src/modules/server/server.config&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { TaskMapper } from &#x27;../mapper&#x27;;
 import { TaskCopyUC } from &#x27;../uc/task-copy.uc&#x27;;
 import { TaskUC } from &#x27;../uc/task.uc&#x27;;
-import { TaskCreateParams, TaskUpdateParams, TaskListResponse, TaskResponse, TaskUrlParams } from &#x27;./dto&#x27;;
+import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams, TaskUrlParams } from &#x27;./dto&#x27;;
 import { TaskCopyApiParams } from &#x27;./dto/task-copy.params&#x27;;
 
 @ApiTags(&#x27;Task&#x27;)

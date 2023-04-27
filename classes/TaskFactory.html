@@ -257,7 +257,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>finished(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+<code>finished(user: <a href="../interfaces/User.html" target="_self">User | User[]</a>)</code>
                 </td>
             </tr>
 
@@ -288,7 +288,7 @@
                                 <tr>
                                     <td>user</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                                <code><a href="../interfaces/User.html" target="_self" >User | User[]</a></code>
                                     </td>
 
                                     <td>
@@ -1437,8 +1437,8 @@ class TaskFactory extends BaseFactory&lt;Task, ITaskProperties&gt; {
 		return this.params(params);
 	}
 
-	finished(user: User): this {
-		const params: DeepPartial&lt;ITaskProperties&gt; &#x3D; { finished: [user] };
+	finished(user: User | User[]): this {
+		const params: DeepPartial&lt;ITaskProperties&gt; &#x3D; { finished: Array.isArray(user) ? user : [user] };
 		return this.params(params);
 	}
 }

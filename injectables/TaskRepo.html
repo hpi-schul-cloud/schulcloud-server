@@ -250,8 +250,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="107"
-                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:107</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:123</a></div>
                 </td>
             </tr>
 
@@ -358,7 +358,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllFinishedByParentIds(parentIds: literal type, options?: <a href="../classes/Task.html" target="_self">IFindOptions&lt;Task&gt;</a>)</code>
+                    <code>findAllFinishedByParentIds(parentIds: literal type, filters?: literal type, options?: <a href="../classes/Task.html" target="_self">IFindOptions&lt;Task&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -394,6 +394,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>filters</td>
+                                    <td>
+                                            <code>literal type</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -525,8 +537,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="165"
-                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:165</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="186"
+                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:186</a></div>
                 </td>
             </tr>
 
@@ -633,8 +645,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="191"
-                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:191</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="216"
+                            class="link-to-prism">apps/server/src/shared/repo/task/task.repo.ts:216</a></div>
                 </td>
             </tr>
 
@@ -1074,6 +1086,9 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 			finishedCourseIds: EntityId[];
 			lessonIdsOfFinishedCourses: EntityId[];
 		},
+		filters?: {
+			userId?: EntityId;
+		},
 		options?: IFindOptions&lt;Task&gt;
 	): Promise&lt;Counted&lt;Task[]&gt;&gt; {
 		const scope &#x3D; new TaskScope(&#x27;$or&#x27;);
@@ -1118,7 +1133,20 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 		scope.addQuery(allForFinishedCoursesAndLessons.query);
 		scope.addQuery(allForCreator.query);
 
-		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query, options);
+		let { query } &#x3D; scope;
+
+		if (filters?.userId) {
+			const forAssignedUser &#x3D; new TaskScope();
+			forAssignedUser.byAssignedUser(filters.userId);
+
+			const filtersScope &#x3D; new TaskScope(&#x27;$and&#x27;);
+			filtersScope.addQuery(forAssignedUser.query);
+			filtersScope.addQuery(scope.query);
+
+			({ query } &#x3D; filtersScope);
+		}
+
+		const countedTaskList &#x3D; await this.findTasksAndCount(query, options);
 
 		return countedTaskList;
 	}
@@ -1144,6 +1172,7 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 			afterDueDateOrNone?: Date;
 			finished?: { userId: EntityId; value: boolean };
 			availableOn?: Date;
+			userId?: EntityId;
 		},
 		options?: IFindOptions&lt;Task&gt;
 	): Promise&lt;Counted&lt;Task[]&gt;&gt; {
@@ -1164,6 +1193,10 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 		}
 
 		scope.addQuery(parentIdScope.query);
+
+		if (filters?.userId) {
+			scope.byAssignedUser(filters.userId);
+		}
 
 		if (filters?.finished) {
 			scope.byFinished(filters.finished.userId, filters.finished.value);
@@ -1195,7 +1228,7 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 	async findBySingleParent(
 		creatorId: EntityId,
 		courseId: EntityId,
-		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
+		filters?: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId },
 		options?: IFindOptions&lt;Task&gt;
 	): Promise&lt;Counted&lt;Task[]&gt;&gt; {
 		const scope &#x3D; new TaskScope();
@@ -1211,6 +1244,10 @@ export class TaskRepo extends BaseRepo&lt;Task&gt; {
 
 		if (filters?.noFutureAvailableDate !&#x3D;&#x3D; undefined) {
 			scope.noFutureAvailableDate();
+		}
+
+		if (filters?.userId) {
+			scope.byAssignedUser(filters.userId);
 		}
 
 		const countedTaskList &#x3D; await this.findTasksAndCount(scope.query, options);

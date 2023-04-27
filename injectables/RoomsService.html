@@ -100,12 +100,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>)</code>
+<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -123,10 +123,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>taskRepo</td>
+                                                        <td>taskService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/TaskRepo.html" target="_self" >TaskRepo</a></code>
+                                                                        <code><a href="../injectables/TaskService.html" target="_self" >TaskService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -194,8 +194,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -275,19 +275,20 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Board, EntityId } from &#x27;@shared/domain&#x27;;
-import { BoardRepo, LessonRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
+import { BoardRepo, LessonRepo } from &#x27;@shared/repo&#x27;;
+import { TaskService } from &#x27;@src/modules/task/service&#x27;;
 
 @Injectable()
 export class RoomsService {
 	constructor(
-		private readonly taskRepo: TaskRepo,
+		private readonly taskService: TaskService,
 		private readonly lessonRepo: LessonRepo,
 		private readonly boardRepo: BoardRepo
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise&lt;Board&gt; {
 		const [courseLessons] &#x3D; await this.lessonRepo.findAllByCourseIds([roomId]);
-		const [courseTasks] &#x3D; await this.taskRepo.findBySingleParent(userId, roomId);
+		const [courseTasks] &#x3D; await this.taskService.findBySingleParent(userId, roomId);
 		board.syncTasksFromList(courseTasks);
 		board.syncLessonsFromList(courseLessons);
 		await this.boardRepo.save(board);

@@ -211,8 +211,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/task.rule.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/task.rule.ts:45</a></div>
                 </td>
             </tr>
 
@@ -549,15 +549,16 @@ export class TaskRule extends BasePermission&lt;Task&gt; {
 
 		const isCreator &#x3D; this.utils.hasAccessToEntity(user, entity, [&#x27;creator&#x27;]);
 		const isAssigned &#x3D; this.utils.hasAccessToEntity(user, entity, [&#x27;users&#x27;]);
-
-		if (entity.isDraft()) {
+		const hasAssignees &#x3D; entity.users.length &gt; 0;
+		// task has assignees but user is not creator and not assigned -&gt; user must have write access to parent (aka for teacher, substituteTeacher)
+		if (entity.isDraft() || hasAssignees) {
 			action &#x3D; Actions.write;
 		}
 
 		const hasParentPermission &#x3D; this.hasParentPermission(user, entity, action);
 
-		// TODO why parent permission is with OR cond?
-		const result &#x3D; hasRequiredPermission &amp;&amp; (isCreator || isAssigned || hasParentPermission);
+		// TODO why parent permission has OR cond?
+		const result &#x3D; isCreator || isAssigned || hasParentPermission;
 
 		return result;
 	}
