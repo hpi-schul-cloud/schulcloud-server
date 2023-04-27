@@ -24,9 +24,6 @@ export type ShareTokenContext = {
 };
 
 export class ShareTokenDO extends BaseDO {
-	createdAt?: Date;
-
-	updatedAt?: Date;
 
 	token: ShareTokenString;
 
@@ -39,8 +36,6 @@ export class ShareTokenDO extends BaseDO {
 	constructor(domainObject: ShareTokenDO) {
 		super(domainObject.id);
 
-		this.createdAt = domainObject.createdAt;
-		this.updatedAt = domainObject.updatedAt;
 		this.token = domainObject.token;
 		this.payload = domainObject.payload;
 		this.context = domainObject.context;
