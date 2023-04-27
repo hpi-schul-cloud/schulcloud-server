@@ -1,6 +1,7 @@
 import { ContextExternalTool } from '../../uc/dto';
 import { CustomParameterEntryParam, CustomParameterEntryResponse, ContextExternalToolResponse } from '../dto';
 
+// TODO: testme - but this be implicit tested
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
 		return {

@@ -13,7 +13,7 @@ import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator
 import { ValidationError } from '@shared/common';
 import { ContextExternalToolDO } from '@shared/domain';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
-import { ContextExternalToolUc } from '../uc/context-external-tool.uc';
+import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from './mapper';
 import { ContextExternalTool } from '../uc/dto';
 
@@ -23,6 +23,7 @@ import { ContextExternalTool } from '../uc/dto';
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: Logger) {}
 
+	// TODO: testme
 	@Post()
 	@ApiCreatedResponse({
 		description: 'The ContextExternalTool has been successfully created.',

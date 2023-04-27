@@ -2,6 +2,7 @@ import { CustomParameterEntryDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalTool } from '../../uc/dto';
 import { ContextExternalToolPostParams, CustomParameterEntryParam } from '../dto';
 
+// TODO: testme - but this be implicit tested
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
 		return {
