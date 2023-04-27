@@ -86,13 +86,13 @@ describe(`card move (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, cardNode, targetColumn } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.move(cardNode.id, targetColumn.id, 3);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually move the card', async () => {

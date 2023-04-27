@@ -4,7 +4,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat, Permission, Task } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -16,6 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
@@ -1271,7 +1271,7 @@ describe('Task Controller (API)', () => {
 				type: InputFormat.RICH_TEXT_CK5,
 			});
 			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
-			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
+			expect(responseTask.dueDate).toEqual(updateTaskParams.dueDate);
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
 			expect(responseTask.lessonName).toEqual(lesson.name);
 			expect(responseTask.users).toEqual([

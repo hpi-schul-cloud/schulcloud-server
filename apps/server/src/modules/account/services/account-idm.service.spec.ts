@@ -284,5 +284,9 @@ describe('AccountService Integration', () => {
 				NotImplementedException
 			);
 		});
+
+		it('findMany should throw', async () => {
+			await expect(accountIdmService.findMany(0, 0)).rejects.toThrow(NotImplementedException);
+		});
 	});
 });

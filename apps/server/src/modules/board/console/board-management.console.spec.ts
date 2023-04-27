@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
+import { ObjectId } from 'bson';
 import { BoardManagementUc } from '../uc';
 import { BoardManagementConsole } from './board-management.console';
 
@@ -28,6 +29,7 @@ describe(BoardManagementConsole.name, () => {
 		service = module.get(BoardManagementConsole);
 		consoleWriter = module.get(ConsoleWriterService);
 		boarManagementUc = module.get(BoardManagementUc);
+		boarManagementUc.createBoards.mockResolvedValue(new ObjectId().toHexString());
 	});
 
 	afterAll(async () => {
