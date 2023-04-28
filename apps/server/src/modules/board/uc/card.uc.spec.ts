@@ -77,7 +77,12 @@ describe(CardUc.name, () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const card = cardFactory.build();
-				return { user, card };
+				const element = textElementFactory.build();
+
+				cardService.findById.mockResolvedValueOnce(card);
+				elementService.create.mockResolvedValueOnce(element);
+
+				return { user, card, element };
 			};
 
 			it('should call the service to find the card', async () => {
@@ -90,11 +95,18 @@ describe(CardUc.name, () => {
 
 			it('should call the service to create the content element', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
 
 				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
 				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.TEXT);
+			});
+
+			it('should return new content element', async () => {
+				const { user, card, element } = setup();
+
+				const result = await uc.createElement(user.id, card.id, ContentElementType.TEXT);
+
+				expect(result).toEqual(element);
 			});
 		});
 	});
