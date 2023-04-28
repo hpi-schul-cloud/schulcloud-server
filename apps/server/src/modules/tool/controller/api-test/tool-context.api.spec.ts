@@ -1,23 +1,14 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContextExternalTool,
-	Course,
-	Permission,
-	Role,
-	RoleName,
-	School,
-	SchoolExternalTool,
-	User,
-} from '@shared/domain';
+import { ContextExternalTool, Course, Permission, Role, RoleName, SchoolExternalTool, User } from '@shared/domain';
 import {
 	mapUserToCurrentUser,
 	roleFactory,
 	userFactory,
-	schoolFactory,
 	schoolExternalToolFactory,
 	courseFactory,
+	contextExternalToolFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -71,22 +62,31 @@ describe('ToolContextController (API)', () => {
 			name: RoleName.TEACHER,
 			permissions: [Permission.CONTEXT_TOOL_ADMIN],
 		});
-		const school: School = schoolFactory.buildWithId();
 
-		const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-		const userWithMissingPermission: User = userFactory.buildWithId({ school });
+		const teacherUser: User = userFactory.buildWithId({ roles: [teacherRole] });
+		const userWithMissingPermission: User = userFactory.buildWithId();
 
-		const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser, userWithMissingPermission] });
+		const course: Course = courseFactory.buildWithId({ teachers: [teacherUser, userWithMissingPermission] });
 
-		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+		const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+			schoolParameters: [],
+			toolVersion: 1,
+		});
 
-		em.persist([teacherRole, school, course, teacherUser, userWithMissingPermission, schoolExternalTool]);
+		const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			schoolTool: schoolExternalTool,
+			contextId: course.id,
+			parameters: [],
+			toolVersion: 1,
+		});
+
+		em.persist([teacherRole, course, teacherUser, userWithMissingPermission, schoolExternalTool, contextExternalTool]);
 		await em.flush();
 		em.clear();
 
 		return {
 			schoolExternalTool,
-			school,
+			contextExternalTool,
 			course,
 			teacherUser,
 			userWithMissingPermission,
@@ -97,6 +97,7 @@ describe('ToolContextController (API)', () => {
 		it('should return forbidden when user is not authorized', async () => {
 			const { userWithMissingPermission } = await setup();
 			currentUser = mapUserToCurrentUser(userWithMissingPermission);
+
 			const randomTestId = new ObjectId().toString();
 			const postParams: ContextExternalToolPostParams = {
 				schoolToolId: randomTestId,
@@ -105,13 +106,13 @@ describe('ToolContextController (API)', () => {
 				parameters: [],
 				toolVersion: 1,
 			};
-
 			await request(app.getHttpServer()).post(basePath).send(postParams).expect(403);
 		});
 
 		it('should create an context external tool', async () => {
 			const { schoolExternalTool, course, teacherUser } = await setup();
 			currentUser = mapUserToCurrentUser(teacherUser);
+
 			const postParams: ContextExternalToolPostParams = {
 				schoolToolId: schoolExternalTool.id,
 				contextId: course.id,

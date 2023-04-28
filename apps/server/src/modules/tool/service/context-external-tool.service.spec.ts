@@ -60,22 +60,20 @@ describe('ContextExternalToolService', () => {
 
 	describe('createContextExternalTool is called', () => {
 		const setup = () => {
-			const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
-
-			contextExternalToolRepo.save.mockResolvedValue(contextExternalTool1);
+			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
 			return {
-				contextExternalTool1,
+				contextExternalTool,
 			};
 		};
 
 		describe('when contextExternalTool is given', () => {
 			it('should call contextExternalToolRepo ', async () => {
-				const { contextExternalTool1 } = setup();
+				const { contextExternalTool } = setup();
 
-				await service.createContextExternalTool(contextExternalTool1);
+				await service.createContextExternalTool(contextExternalTool);
 
-				expect(contextExternalToolRepo).toHaveBeenCalledWith(contextExternalTool1);
+				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});

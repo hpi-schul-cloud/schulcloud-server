@@ -1,16 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@src/modules/tool/service';
-import { contextExternalToolDOFactory, schoolExternalToolDOFactory, setupEntities, userFactory } from "@shared/testing";
+import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolUc } from '@src/modules/tool/uc/context-external-tool.uc';
-import { ContextExternalToolDO, SchoolExternalToolDO } from "@shared/domain";
-import { CurrentUserMapper } from "@src/modules/authentication/mapper";
+import { Actions, ContextExternalToolDO, EntityId, IPermissionContext, Permission } from '@shared/domain';
+import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
+import { ToolContextType } from '@src/modules/tool/interface';
+import { CONTEXT } from '@nestjs/microservices';
 
 describe('ContextExternalTool', () => {
 	let module: TestingModule;
 	let uc: ContextExternalToolUc;
 
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -21,11 +24,16 @@ describe('ContextExternalTool', () => {
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(ContextExternalToolUc);
 		contextExternalToolService = module.get(ContextExternalToolService);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterAll(async () => {
@@ -37,21 +45,50 @@ describe('ContextExternalTool', () => {
 	});
 
 	describe('createContextExternalTool is called', () => {
-    const setup = () => {
-      const user: User = userFactory.buildWithId();
-      const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
-      return {
-        contextExternalTool,
-      };
-    };
+		const setup = () => {
+			const userId: EntityId = 'userId';
 
-    describe('when contextExternalTool is given and user has permission ', () => {
+			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+				contextType: ToolContextType.COURSE,
+				contextToolName: 'Course',
+				contextId: 'contextId',
+			});
+
+			const context = {
+				action: Actions.read,
+				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			};
+
+			authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+
+			return {
+				contextExternalTool,
+				userId,
+				context,
+			};
+		};
+
+		describe('when contextExternalTool is given and user has permission ', () => {
 			it('should call contextExternalToolService', async () => {
-            const { contextExternalTool } = setup();
+				const { contextExternalTool, userId } = setup();
 
-            await uc.createContextExternalTool(contextExternalTool);
+				await uc.createContextExternalTool(userId, contextExternalTool);
 
+				expect(contextExternalToolService.createContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+			});
 
-      });
+			it('should call authorizationService', async () => {
+				const { contextExternalTool, userId, context } = setup();
+
+				await uc.createContextExternalTool(userId, contextExternalTool);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AllowedAuthorizationEntityType.Course,
+					contextExternalTool.contextId,
+					context
+				);
+			});
+		});
 	});
 });
