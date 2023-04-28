@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { SchoolService } from '@src/modules/school/service/school.service';
 import { Actions, Permission } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { SchoolService } from '@src/modules/school/service/school.service';
+import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration/service';
+import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
 import { SchoolUcMapper } from '../mapper/school.uc.mapper';
 
@@ -13,7 +13,8 @@ export class SchoolUc {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly authService: AuthorizationService,
-		private readonly schoolMigrationService: SchoolMigrationService
+		private readonly schoolMigrationService: SchoolMigrationService,
+		private readonly userLoginMigrationService: UserLoginMigrationService
 	) {}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
@@ -43,7 +44,7 @@ export class SchoolUc {
 			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 
-		const migrationDto: OauthMigrationDto = await this.schoolService.setMigration(
+		const migrationDto: OauthMigrationDto = await this.userLoginMigrationService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
@@ -62,7 +63,7 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		const migrationDto: OauthMigrationDto = await this.schoolService.getMigration(schoolId);
+		const migrationDto: OauthMigrationDto = await this.userLoginMigrationService.getMigration(schoolId);
 
 		return migrationDto;
 	}

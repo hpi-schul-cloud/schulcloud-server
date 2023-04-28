@@ -89,8 +89,8 @@ export class School extends BaseEntity {
 	schoolYear?: SchoolYear;
 
 	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
-		owner: true,
 		orphanRemoval: true,
+		nullable: true,
 	})
 	userLoginMigration?: UserLoginMigration;
 

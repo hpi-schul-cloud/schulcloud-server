@@ -7,7 +7,7 @@ export type IUserLoginMigration = Readonly<Omit<UserLoginMigration, keyof BaseEn
 
 @Entity({ tableName: 'user_login_migrations' })
 export class UserLoginMigration extends BaseEntityWithTimestamps {
-	@OneToOne(() => School, (school: School) => school.userLoginMigration, { orphanRemoval: true })
+	@OneToOne(() => School, (school: School) => school.userLoginMigration, { owner: true })
 	school: School;
 
 	// undefined, if migrating from 'local'

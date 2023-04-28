@@ -1,21 +1,23 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { NotFoundException } from '@nestjs/common';
-import { SchoolMigrationService } from '@src/modules/user-login-migration';
-import { AuthorizationService } from '@src/modules/authorization';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
+import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { PublicSchoolResponse } from '../controller/dto/public.school.response';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
 	let schoolUc: SchoolUc;
+
 	let schoolService: DeepMocked<SchoolService>;
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
+	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,12 +35,18 @@ describe('SchoolUc', () => {
 					provide: SchoolMigrationService,
 					useValue: createMock<SchoolMigrationService>(),
 				},
+				{
+					provide: UserLoginMigrationService,
+					useValue: createMock<UserLoginMigrationService>(),
+				},
 			],
 		}).compile();
+
 		schoolService = module.get(SchoolService);
 		authService = module.get(AuthorizationService);
 		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
+		userLoginMigrationService = module.get(UserLoginMigrationService);
 	});
 
 	afterAll(async () => {
@@ -60,7 +68,7 @@ describe('SchoolUc', () => {
 				oauthMigrationFinished: new Date(),
 				enableMigrationStart: true,
 			});
-			schoolService.setMigration.mockResolvedValue(migrationResponse);
+			userLoginMigrationService.setMigration.mockResolvedValue(migrationResponse);
 			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 			schoolService.getSchoolById.mockResolvedValue(
 				schoolDOFactory.buildWithId({
@@ -78,7 +86,7 @@ describe('SchoolUc', () => {
 
 				await schoolUc.setMigration(mockId, true, true, true, mockId);
 
-				expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
+				expect(userLoginMigrationService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
 			});
 		});
 
@@ -134,12 +142,12 @@ describe('SchoolUc', () => {
 
 		describe('when schoolId and UserId are given', () => {
 			it('should call the service', async () => {
-				schoolService.getMigration.mockResolvedValue(migrationResponse);
+				userLoginMigrationService.getMigration.mockResolvedValue(migrationResponse);
 				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 
 				await schoolUc.getMigration(mockId, mockId);
 
-				expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
+				expect(userLoginMigrationService.getMigration).toHaveBeenCalledWith(mockId);
 			});
 		});
 	});

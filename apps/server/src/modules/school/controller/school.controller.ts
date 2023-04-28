@@ -1,3 +1,4 @@
+import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
 import {
 	ApiFoundResponse,
 	ApiNotFoundResponse,
@@ -5,13 +6,12 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { MigrationMapper } from '../mapper/migration.mapper';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { MigrationMapper } from '../mapper/migration.mapper';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from './dto/public.school.response';
 import { SchoolQueryParams } from './dto/school.query.params';
 

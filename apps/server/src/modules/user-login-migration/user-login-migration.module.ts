@@ -3,6 +3,7 @@ import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-log
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { SchoolModule } from '@src/modules/school';
+import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
 import {
 	MigrationCheckService,
@@ -12,7 +13,7 @@ import {
 } from './service';
 
 @Module({
-	imports: [UserModule, SchoolModule, LoggerModule, AccountModule],
+	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule],
 	providers: [
 		UserMigrationService,
 		SchoolMigrationService,

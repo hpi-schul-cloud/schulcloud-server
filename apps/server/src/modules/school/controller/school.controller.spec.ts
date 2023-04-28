@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { SchoolController } from './school.controller';
+import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { MigrationMapper } from '../mapper/migration.mapper';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { MigrationMapper } from '../mapper/migration.mapper';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { PublicSchoolResponse } from './dto/public.school.response';
 import { SchoolQueryParams } from './dto/school.query.params';
+import { SchoolController } from './school.controller';
 
 describe('School Controller', () => {
 	let module: TestingModule;

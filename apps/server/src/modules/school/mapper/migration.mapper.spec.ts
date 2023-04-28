@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { MigrationResponse } from '../controller/dto';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
 import { MigrationMapper } from './migration.mapper';
 
 describe('MigrationMapper', () => {
