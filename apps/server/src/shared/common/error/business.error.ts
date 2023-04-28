@@ -20,7 +20,8 @@ export abstract class BusinessError extends HttpException {
 	protected constructor(
 		{ type, title, defaultMessage }: IErrorType,
 		code: HttpStatus = HttpStatus.CONFLICT,
-		details?: Record<string, unknown>
+		details?: Record<string, unknown>,
+		cause?: unknown
 	) {
 		super({ code, type, title, message: defaultMessage }, code);
 		this.code = code;
@@ -28,6 +29,12 @@ export abstract class BusinessError extends HttpException {
 		this.title = title;
 		this.message = defaultMessage;
 		this.details = details;
+
+		if (cause instanceof Error) {
+			this.cause = cause;
+		} else if (cause !== undefined) {
+			this.cause = new Error(String(cause));
+		}
 	}
 
 	override getResponse(): ErrorResponse {
