@@ -62,13 +62,13 @@ describe('ExternalTool Entity', () => {
 				schoolParameters: [],
 				toolVersion: 1,
 			});
-			const courseExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 				schoolTool,
-				courseParameters: [],
+				parameters: [],
 				toolVersion: 1,
 			});
 
-			expect(courseExternalTool instanceof ContextExternalTool).toEqual(true);
+			expect(contextExternalTool instanceof ContextExternalTool).toEqual(true);
 		});
 	});
 });
