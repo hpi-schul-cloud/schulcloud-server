@@ -35,9 +35,6 @@ jobs:
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
-    strategy:
-      matrix:
-        shard: [1/3, 2/3, 3/3]
     runs-on: ubuntu-latest
     services:
       rabbitmq:
@@ -64,7 +61,7 @@ jobs:
           key: ${{ hashFiles('**/package-lock.json') }}
       - name: nest:test:cov - test all with coverage
         timeout-minutes: 25
-        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run test -- --maxWorkers=2 --coverage --force-exit --shard=${{ matrix.shard }}
+        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov:ci
       - name: SonarCloud upload coverage
         uses: SonarSource/sonarcloud-github-action@v1.9
         env:
