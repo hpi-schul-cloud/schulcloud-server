@@ -125,8 +125,23 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			);
 			this.logInfo('Done.');
 		}
+		await Promise.all(schools.map((school) => this.processSchool(school, teacherMap, studentMap, classMap)));
+		this.logInfo('Done.');
+	}
 
-		for (const school of schools) {
+	/**
+	 * For a school:
+	 *   * create teachers
+	 *   * create students
+	 *   * create classes
+	 * @param {Object} school
+	 * @param {Object} teacherMap
+	 * @param {Object} studentMap
+	 * @param {Object} classMap
+	 * @async
+	 */
+	async processSchool(school, teacherMap, studentMap, classMap) {
+		try {
 			const { schoolIdentifier } = school.sourceOptions;
 			this.logInfo(`Syncing ${school.name} (${school.sourceOptions.schoolIdentifier})...`);
 
@@ -138,36 +153,86 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				`School has ${schoolTeachers.length} teachers, ${schoolStudents.length} students` +
 					`, and ${schoolClasses.length} classes.`
 			);
-
-			const teacherMapping = {};
-			const classMapping = {};
-
-			this.logInfo('Syncing teachers...');
-			// create teachers and add them to the mapping (teacherUID => User)
-			for (const tspTeacher of schoolTeachers) {
-				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
-				if (teacher !== null) {
-					teacherMapping[tspTeacher.lehrerUid] = teacher;
-				}
-			}
-
-			this.logInfo('Syncing students...');
-			// create students and add them to the mapping (classUid => [User])
-			for (const tspStudent of schoolStudents) {
-				const student = await this.createOrUpdateStudent(tspStudent, school);
-				if (student !== null) {
-					classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
-					classMapping[tspStudent.klasseId].push(student._id);
-				}
-			}
-
+			const teacherMapping = await this.processTSPTeachers(schoolTeachers, school);
+			const classMapping = await this.processTSPStudents(schoolStudents, school);
 			this.logInfo('Syncing classes...');
 			// create classes based on API response and user mappings
 			await this.createOrUpdateClasses(schoolClasses, school, teacherMapping, classMapping);
 
 			this.logInfo('Done.');
+		} catch (err) {
+			this.logError('Error while syncing process TSP Schools', { error: err });
+			this.stats.errors.push(err);
 		}
-		this.logInfo('Done.');
+	}
+
+	/**
+	 * Create students and return classMapping
+	 * @param {Array} schoolStudents
+	 * @param {Object} school
+	 * @returns {Object} map (classIdentifier => [Entity])
+	 * @async
+	 */
+	async processTSPStudents(schoolStudents, school) {
+		const classMapping = {};
+		this.logInfo('Syncing students...');
+		// create students and add them to the mapping (classUid => [User])
+		await Promise.all(schoolStudents.map((tspStudent) => this.processStudent(tspStudent, school, classMapping)));
+		return classMapping;
+	}
+
+	/**
+	 * Create student and add entry to classMapping
+	 * @param {Object} tspStudent
+	 * @param {Object} school
+	 * @param {Object} classMapping
+	 * @async
+	 */
+	async processStudent(tspStudent, school, classMapping) {
+		try {
+			const student = await this.createOrUpdateStudent(tspStudent, school);
+			if (student !== null) {
+				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
+				classMapping[tspStudent.klasseId].push(student._id);
+			}
+		} catch (err) {
+			this.logError('Error while syncing process TSP Students', { error: err });
+			this.stats.errors.push(err);
+		}
+	}
+
+	/**
+	 * Create teachers and return teacherMapping
+	 * @param {Array} schoolTeachers
+	 * @param {Object} school
+	 * @returns {Object} map (teacherIdentifier => [Entity])
+	 * @async
+	 */
+	async processTSPTeachers(schoolTeachers, school) {
+		const teacherMapping = {};
+		this.logInfo('Syncing teachers...');
+		// create teachers and add them to the mapping (teacherUID => User)
+		await Promise.all(schoolTeachers.map((tspTeacher) => this.processTeacher(tspTeacher, school, teacherMapping)));
+		return teacherMapping;
+	}
+
+	/**
+	 * Create teacher and add entry to teacherMapping
+	 * @param {Object} tspTeacher
+	 * @param {Object} school
+	 * @param {Object} teacherMapping
+	 * @async
+	 */
+	async processTeacher(tspTeacher, school, teacherMapping) {
+		try {
+			const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
+			if (teacher !== null) {
+				teacherMapping[tspTeacher.lehrerUid] = teacher;
+			}
+		} catch (err) {
+			this.logError('Error while syncing process TSP Teachers', { error: err });
+			this.stats.errors.push(err);
+		}
 	}
 
 	/**
