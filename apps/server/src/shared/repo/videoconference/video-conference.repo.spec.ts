@@ -137,8 +137,6 @@ describe('Video Conference Repo', () => {
 			// Arrange
 			const testDO: VideoConferenceDO = new VideoConferenceDO({
 				id: 'testId',
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
 				target: new ObjectId().toHexString(),
 				targetModel: VideoConferenceScope.COURSE,
 				options: new VideoConferenceOptionsDO({
