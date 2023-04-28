@@ -1,30 +1,23 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ErrorResponse } from '@src/core/error/dto/error.response';
 import { IErrorType } from '@src/core/error/interface';
-import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Abstract base class for business errors, errors that are handled
  * within of a client or inside of the application.
  */
 export abstract class BusinessError extends HttpException {
-	@ApiProperty({ description: 'The response status code.' })
 	readonly code: number;
 
-	@ApiProperty({ description: 'The error type.' })
 	readonly type: string;
 
-	@ApiProperty({ description: 'The error title.' })
 	readonly title: string;
 
-	@ApiProperty({ description: 'The error message.' })
 	readonly message: string;
 
-	@ApiProperty({ description: 'The error details.' })
-	// Is not matched by type validation because HttpException is already declared
-	readonly details: Record<string, unknown>;
+	readonly details?: Record<string, unknown>;
 
-	constructor(
+	protected constructor(
 		{ type, title, defaultMessage }: IErrorType,
 		code: HttpStatus = HttpStatus.CONFLICT,
 		details?: Record<string, unknown>
@@ -34,14 +27,18 @@ export abstract class BusinessError extends HttpException {
 		this.type = type;
 		this.title = title;
 		this.message = defaultMessage;
-		this.details = details || {};
+		this.details = details;
 	}
 
-	getDetails(): Record<string, unknown> {
-		return this.details;
-	}
+	override getResponse(): ErrorResponse {
+		const errorResponse: ErrorResponse = new ErrorResponse(
+			this.type,
+			this.title,
+			this.message,
+			this.code,
+			this.details
+		);
 
-	getResponse(): ErrorResponse {
-		return new ErrorResponse(this.type, this.title, this.message, this.code);
+		return errorResponse;
 	}
 }

@@ -59,14 +59,14 @@ describe('BusinessError', () => {
 
 		it('should set details per default to empty object', () => {
 			const error = new BusinessErrorImpl('custom message', 123);
-			const result = error.getDetails();
-			expect(result).toEqual({});
+			const result = error.details;
+			expect(result).toBeUndefined();
 		});
 
 		it('should set details over parameter in constuctor', () => {
 			const details = { userId: 123 };
 			const error = new BusinessErrorImpl('custom message', 123, details);
-			const result = error.getDetails();
+			const result = error.details;
 			expect(result).toEqual(details);
 		});
 	});
