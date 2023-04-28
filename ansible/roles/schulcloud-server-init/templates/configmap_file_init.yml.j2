@@ -147,65 +147,19 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
 
-    # IServ & Sanis configurations (stored in the 'systems' collection + some related documents in other collections).
-    ISERV_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_CLIENT_SECRET)
-    ISERV_SYSTEM_ID=0000d186816abba584714c92
+    # Sanis configuration (stored in the 'systems' collection + some related documents in other collections).
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
     SANIS_SYSTEM_ID=0000d186816abba584714c93
     if [[ $SC_THEME == "n21" ]]; then
       mongo $DATABASE__URL --eval 'db.schools.updateOne(
           {
-            "_id": ObjectId("5f2987e020834114b8efd6f7")
-          },
-          {
-            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'") ] }
-          }
-      );'
-      mongo $DATABASE__URL --eval 'db.schools.updateOne(
-          {
             "_id": ObjectId("5f2987e020834114b8efd6f8")
           },
           {
-            $set: { "systems" : [ ObjectId("'$ISERV_SYSTEM_ID'"),
-            ObjectId("'$SANIS_SYSTEM_ID'") ] }
+            $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
           }
       );'
       mongo $DATABASE__URL --eval 'db.systems.insert([
-      {
-            "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
-            "alias" : "Schulserver",
-            "displayName" : "Schulserver",
-            "ldapConfig" : {
-              "active" : true,
-              "federalState": ObjectId("0000b186816abba584714c58"),
-              "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
-              "rootPath" : "dc=de,dc=example,dc=org",
-              "searchUser" : "cn=admin,dc=example,dc=org",
-              "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
-              "provider" : "iserv-idm",
-              "providerOptions" : {
-                "userAttributeNameMapping" : {},
-                "roleAttributeNameMapping" : {},
-                "classAttributeNameMapping" : {}
-              }
-            },
-            "type" : "ldap",
-            "provisioningStrategy": "iserv",
-            "oauthConfig": {
-              "clientId": "'$ISERV_CLIENT_ID'",
-              "clientSecret": "'$ISERV_CLIENT_SECRET'",
-              "tokenEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/public/token",
-              "grantType": "authorization_code",
-              "scope": "openid uuid",
-              "responseType": "code",
-              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth",
-              "authEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/auth",
-              "provider": "iserv",
-              "logoutEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/auth/logout",
-              "jwksEndpoint": "https://iserv.n21.dbildungscloud.de/iserv/public/jwk",
-              "issuer": "https://iserv.n21.dbildungscloud.de"
-            }
-          },
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
@@ -229,96 +183,75 @@ data:
             }
           }
       ]);'
-      mongo $DATABASE__URL --eval 'db.accounts.insert ([
-          {
-            "_id": ObjectId("632d776240633294deaa1837"),
-            "username": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
-            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "userId": ObjectId("632d765840633294deaa1833"),
-            "__v": 0,
-            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
-          },
-          {
-            "_id": ObjectId("632d7a9540633294deaa183e"),
-            "username": "iserv.testschueler@iserv.n21.dbildungscloud.de",
-            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "userId": ObjectId("632d77a940633294deaa183a"),
-            "__v": 0,
-            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
-
-          },
-          {
-            "_id": ObjectId("0000d213816abba58471abcd"),
-            "username": "max.mustermann@iserv.n21.dbildungscloud.de",
-            "password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "userId": ObjectId("0000d213816abba584711234"),
-            "__v": 0,
-            "systemId": ObjectId("'$ISERV_SYSTEM_ID'")
-          }
-      ]);'
-      mongo $DATABASE__URL --eval 'db.users.insert ([
-          {
-            "_id": ObjectId("632d765840633294deaa1833"),
-            "__v": 0,
-            "firstName": "Iserv",
-            "lastName": "Testlehrer",
-            "email": "iserv.testlehrer@iserv.n21.dbildungscloud.de",
-            "ldapId": "5fee8bdf-ad12-442c-9674-1770ce9f810b",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "preferences": {
-              "firstLogin": true
-            },
-            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-            "roles": [
-              ObjectId("0000d186816abba584714c98")
-            ]
-          },
-          {
-            "_id": ObjectId("632d77a940633294deaa183a"),
-            "__v": 0,
-            "firstName": "Iserv",
-            "lastName": "Testschueler",
-            "email": "iserv.testschueler@iserv.n21.dbildungscloud.de",
-            "ldapId": "7c5ca4fd-f564-4dd9-98e4-07eaf7ec4480",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "preferences": {
-              "firstLogin": true
-            },
-            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-            "roles": [
-                ObjectId("0000d186816abba584714c99")
-            ]
-          },
-          {
-            "_id": ObjectId("0000d213816abba584711234"),
-            "__v": 0,
-            "firstName": "Max",
-            "lastName": "Mustermann",
-            "email": "max.mustermann@iserv.n21.dbildungscloud.de",
-            "ldapId": "5190046d-aeed-424e-bfd7-8f281ae494a1",
-            "updatedAt": ISODate("2022-02-11T11:40:29.456Z"),
-            "birthday": ISODate("1979-01-01T11:25:43.556Z"),
-            "createdAt": ISODate("2022-02-11T10:30:37.148Z"),
-            "preferences": {
-                "firstLogin": true
-            },
-            "schoolId": ObjectId("5f2987e020834114b8efd6f8"),
-            "roles": [
-                ObjectId("0000d186816abba584714c96")
-            ]
-          }
-      ]);'
     fi
+
+    # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
+    NS=$K8S_NAMESPACE
+
+    # ========== Start of the Dev IServ configuration section.
+
+    # This is currently performed only for the following 2 namespaces:
+    #   - 'nbc-main',
+    #   - 'nbc-iserv-test';
+    # the first one being the namespace of the default nbc dev environment and the second one being
+    # the additional namespace intended for use for the testing (and development) purposes if one want
+    # to test anything that includes signing in with the IServ on nbc instance, but don't want to use
+    # the default dev nbc instance as it would require merging the code to the main branch first.
+
+    if [[ "$NS" =~ ^(nbc-main|nbc-iserv-test)$ ]]; then
+        ISERV_SYSTEM_ID=0000d186816abba584714c92
+
+        # Encrypt secrets that contain IServ's OAuth client secret and LDAP server's search user password.
+        ISERV_OAUTH_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $ISERV_OAUTH_CLIENT_SECRET)
+        ISERV_LDAP_SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $ISERV_LDAP_SEARCH_USER_PASSWORD)
+
+        # Add (or replace) document with the Dev IServ configuration.
+        mongo $DATABASE__URL --eval 'db.systems.replaceOne(
+            {
+                "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
+            },
+            {
+                "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
+                "alias": "Schulserver",
+                "displayName": "Schulserver",
+                "ldapConfig": {
+                    "active": true,
+                    "federalState": ObjectId("0000b186816abba584714c58"),
+                    "url": "'$ISERV_LDAP_URL'",
+                    "rootPath": "'$ISERV_LDAP_ROOT_PATH'",
+                    "searchUser": "'$ISERV_LDAP_SEARCH_USER'",
+                    "searchUserPassword": "'$ISERV_LDAP_SEARCH_USER_PASSWORD'",
+                    "provider": "iserv-idm",
+                    "providerOptions": {
+                        "userAttributeNameMapping": {},
+                        "roleAttributeNameMapping": {},
+                        "classAttributeNameMapping": {}
+                    }
+                },
+                "type": "ldap",
+                "provisioningStrategy": "iserv",
+                "oauthConfig": {
+                    "clientId": "'$ISERV_OAUTH_CLIENT_ID'",
+                    "clientSecret": "'$ISERV_OAUTH_CLIENT_SECRET'",
+                    "tokenEndpoint": "'$ISERV_URL'/iserv/auth/public/token",
+                    "grantType": "authorization_code",
+                    "scope": "openid uuid",
+                    "responseType": "code",
+                    "redirectUri": "https://'$NS'.cd.dbildungscloud.dev/api/v3/sso/oauth",
+                    "authEndpoint": "'$ISERV_URL'/iserv/auth/auth",
+                    "provider": "iserv",
+                    "logoutEndpoint": "'$ISERV_URL'/iserv/auth/logout",
+                    "jwksEndpoint": "'$ISERV_URL'/iserv/public/jwk",
+                    "issuer": "'$ISERV_URL'"
+                }
+            },
+            {
+                "upsert": true
+            }
+        );'
+    fi
+
+    # ========== End of the Dev IServ configuration section.
 
     # ========== Start of the Bettermarks tool configuration section.
 
@@ -332,9 +265,6 @@ data:
 
     # The Bettermarks URL (entrypoint) and client secret can be shared among the different environments,
     # but to not complicate the current configuration, they are configured separately for each environment.
-
-    # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
-    NS=$K8S_NAMESPACE
 
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
