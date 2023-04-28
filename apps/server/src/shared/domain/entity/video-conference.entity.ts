@@ -1,5 +1,5 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntity, BaseEntityWithTimestamps } from './base.entity';
 
 export enum TargetModels {
 	COURSES = 'courses',
@@ -20,12 +20,12 @@ export class VideoConferenceOptions {
 	}
 }
 
-export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof BaseEntity>>;
+export type IVideoConferenceProperties = Readonly<Omit<VideoConference, keyof BaseEntityWithTimestamps>>;
 
 // Preset options for opening a video conference
 @Entity({ tableName: 'videoconferences' })
 @Index({ properties: ['target', 'targetModel'] })
-export class VideoConference extends BaseEntity {
+export class VideoConference extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	target: string;
