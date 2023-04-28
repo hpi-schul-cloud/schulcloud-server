@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { ContentElementType } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -15,7 +16,6 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-import { ContentElementType } from '../../types';
 import { AnyContentElementResponse } from '../dto';
 
 const baseRouteName = '/cards';

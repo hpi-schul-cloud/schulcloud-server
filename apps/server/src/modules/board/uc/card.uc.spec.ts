@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
-import { ContentElementType } from '../types';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {

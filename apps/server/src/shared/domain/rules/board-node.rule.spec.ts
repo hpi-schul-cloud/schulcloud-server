@@ -6,8 +6,6 @@ import { BoardNodeRule } from './board-node.rule';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
-	const permissionA = 'a' as Permission;
-	const permissionB = 'b' as Permission;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -20,14 +18,13 @@ describe(BoardNodeRule.name, () => {
 	});
 
 	describe('isApplicable', () => {
-		const setup = () => {
-			const role = roleFactory.build({ permissions: [permissionA, permissionB] });
-			const user = userFactory.build({ roles: [role] });
-			const entity = fileElementFactory.build();
-			return { user, entity };
-		};
-
 		describe('when entity is applicable', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const entity = fileElementFactory.build();
+				return { user, entity };
+			};
+
 			it('should return true', () => {
 				const { user, entity } = setup();
 
@@ -37,7 +34,12 @@ describe(BoardNodeRule.name, () => {
 			});
 		});
 
-		describe('when entity  is not applicable', () => {
+		describe('when entity is not applicable', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				return { user };
+			};
+
 			it('should return false', () => {
 				const { user } = setup();
 				// @ts-expect-error test wrong entity
@@ -49,28 +51,32 @@ describe(BoardNodeRule.name, () => {
 	});
 
 	describe('hasPermission', () => {
-		const setup = () => {
-			const role = roleFactory.build({ permissions: [permissionA, permissionB] });
-			const user = userFactory.build({ roles: [role] });
-			const entity = fileElementFactory.build();
-			return { user, entity };
-		};
+		describe('when user has permission', () => {
+			const setup = () => {
+				const permissionA = 'a' as Permission;
+				const permissionB = 'b' as Permission;
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+				const user = userFactory.build({ roles: [role] });
+				const entity = fileElementFactory.build();
+				return { user, entity };
+			};
 
-		it('should call baseRule.hasAllPermissions', () => {
-			const { user, entity } = setup();
+			it('should call baseRule.hasAllPermissions', () => {
+				const { user, entity } = setup();
 
-			const spy = jest.spyOn(service.utils, 'hasAllPermissions');
-			service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+				service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 
-			expect(spy).toBeCalledWith(user, []);
-		});
+				expect(spy).toBeCalledWith(user, []);
+			});
 
-		it('should return "true"', () => {
-			const { user, entity } = setup();
+			it('should return "true"', () => {
+				const { user, entity } = setup();
 
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
 
-			expect(res).toBe(true);
+				expect(res).toBe(true);
+			});
 		});
 
 		it.todo('should implement really permission checks');
