@@ -448,6 +448,7 @@ data:
     # ========== End of the Bettermarks tool configuration section.
 
     # ========== Start of the Nextcloud configuration section.
+
     # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
          echo "Inserting nextcloud to ltitools..."
@@ -540,6 +541,8 @@ data:
 
          echo "Nextcloud config data init performed successfully."
     fi
+
+    # ========== End of the Nextcloud configuration section.
 
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
