@@ -15,6 +15,8 @@ export class ExternalToolValidationService {
 		await this.commonToolValidationService.validateCommon(externalToolDO);
 
 		await this.validateOauth2Config(externalToolDO);
+
+		this.validateLti11Config(externalToolDO);
 	}
 
 	private async validateOauth2Config(externalToolDO: ExternalToolDO) {
@@ -28,6 +30,16 @@ export class ExternalToolValidationService {
 			if (!(await this.isClientIdUnique(externalToolDO))) {
 				throw new ValidationError(
 					`tool_clientId_duplicate: The Client Id of the tool ${externalToolDO.name || ''} is already used.`
+				);
+			}
+		}
+	}
+
+	private validateLti11Config(externalToolDO: ExternalToolDO) {
+		if (this.externalToolService.isLti11Config(externalToolDO.config)) {
+			if (!externalToolDO.config.secret) {
+				throw new ValidationError(
+					`tool_secret_missing: The secret of the LTI tool ${externalToolDO.name || ''} is missing.`
 				);
 			}
 		}

@@ -26,8 +26,8 @@ class TaskFactory extends BaseFactory<Task, ITaskProperties> {
 		return this.params(params);
 	}
 
-	finished(user: User): this {
-		const params: DeepPartial<ITaskProperties> = { finished: [user] };
+	finished(user: User | User[]): this {
+		const params: DeepPartial<ITaskProperties> = { finished: Array.isArray(user) ? user : [user] };
 		return this.params(params);
 	}
 }
