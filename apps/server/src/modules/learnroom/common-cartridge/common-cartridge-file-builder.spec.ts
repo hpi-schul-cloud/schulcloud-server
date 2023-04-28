@@ -4,15 +4,24 @@ import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-c
 import { ICommonCartridgeFileBuilderOptions, CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
 
 describe('CommonCartridgeFileBuilder', () => {
 	const builderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'Placeholder Identifier',
 		title: 'Placeholder Title',
 	};
+	const lessonContent: ICommonCartridgeLessonContentProps[] = [
+		{
+			identifier: 'lesson-content-identifier',
+			title: 'lesson-content-title',
+			content: 'lesson-content',
+		},
+	];
 	const organizationProps: ICommonCartridgeOrganizationProps = {
 		identifier: 'organization-identifier',
 		title: 'organization-title',
+		contents: lessonContent,
 	};
 	const resourceProps: ICommonCartridgeResourceProps = {
 		identifier: 'resource-identifier',
@@ -60,6 +69,8 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			expect(builder.manifest).toContain(builderOptions.title);
 			expect(builder.manifest).toContain(organizationProps.title);
+			expect(organizationProps.contents).toBeDefined();
+			expect(builder.manifest).toContain(organizationProps.contents?.[0]?.identifier);
 		});
 	});
 
