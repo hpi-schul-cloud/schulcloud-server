@@ -122,8 +122,6 @@ describe('Pseudonym Repo', () => {
 		it('should map DO to Entity Properties', () => {
 			const testDO: PseudonymDO = new PseudonymDO({
 				id: 'testId',
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
 				pseudonym: uuidv4(),
 				toolId: new ObjectId().toHexString(),
 				userId: new ObjectId().toHexString(),

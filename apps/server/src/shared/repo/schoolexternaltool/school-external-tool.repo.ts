@@ -75,8 +75,6 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {
 		return new SchoolExternalToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			toolId: entity.tool.id,
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,

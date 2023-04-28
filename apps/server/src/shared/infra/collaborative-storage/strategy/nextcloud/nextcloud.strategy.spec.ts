@@ -79,8 +79,6 @@ describe('NextCloud Adapter Strategy', () => {
 		nextcloudTool = new LtiToolDO({
 			id: 'toolId',
 			name: toolName,
-			createdAt: new Date('2022-07-20'),
-			updatedAt: new Date('2022-07-20'),
 			isLocal: true,
 			oAuthClientId: 'oauthClientId',
 			secret: 'secret',

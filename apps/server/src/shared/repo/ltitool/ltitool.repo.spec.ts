@@ -165,8 +165,6 @@ describe('LtiTool Repo', () => {
 		it('should map DO to Entity Properties', () => {
 			const testDO: LtiToolDO = new LtiToolDO({
 				id: 'testId',
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
 				name: 'toolName',
 				oAuthClientId: 'clientId',
 				secret: 'secret',
