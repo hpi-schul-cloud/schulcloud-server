@@ -24,7 +24,6 @@ export type ShareTokenContext = {
 };
 
 export class ShareTokenDO extends BaseDO {
-
 	token: ShareTokenString;
 
 	payload: ShareTokenPayload;
