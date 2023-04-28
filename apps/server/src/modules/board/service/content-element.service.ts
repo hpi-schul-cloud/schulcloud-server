@@ -1,7 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyContentElementDo, Card, ContentElementFactory, EntityId, FileElement, TextElement } from '@shared/domain';
+import {
+	AnyContentElementDo,
+	Card,
+	ContentElementFactory,
+	ContentElementType,
+	EntityId,
+	isAnyContentElement,
+} from '@shared/domain';
 import { BoardDoRepo } from '../repo';
-import { ContentElementType } from '../types/content-element-type.enum';
 import { BoardDoService } from './board-do.service';
 
 @Injectable()
@@ -15,11 +21,11 @@ export class ContentElementService {
 	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
 		const element = await this.boardDoRepo.findById(elementId);
 
-		if (element instanceof TextElement || element instanceof FileElement) {
-			return element;
+		if (!isAnyContentElement(element)) {
+			throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
 		}
 
-		throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
+		return element;
 	}
 
 	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {

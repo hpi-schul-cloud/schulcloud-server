@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Card, EntityId, FileElement, TextElement } from '@shared/domain';
+import { Card, ContentElementType, EntityId, FileElement, TextElement } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { CardService, ContentElementService } from '../service';
-import { ContentElementType } from '../types/content-element-type.enum';
 
 @Injectable()
 export class CardUc {

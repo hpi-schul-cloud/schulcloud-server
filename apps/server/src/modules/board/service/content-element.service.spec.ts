@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementFactory, FileElement, TextElement } from '@shared/domain';
+import { ContentElementFactory, ContentElementType, FileElement, TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
-import { ContentElementType } from '../types';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
 

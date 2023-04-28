@@ -1,5 +1,4 @@
-import { TextElement } from '@shared/domain';
-import { ContentElementType } from '../../types/content-element-type.enum';
+import { ContentElementType, TextElement } from '@shared/domain';
 import { TextElementContent, TextElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 

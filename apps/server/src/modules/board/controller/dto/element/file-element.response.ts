@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '../../../types/content-element-type.enum';
+import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {
