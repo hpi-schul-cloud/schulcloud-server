@@ -1,14 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardRepo, LessonRepo, TaskRepo } from '@shared/repo';
+import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { TaskService } from '@src/modules/task/service';
 import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
 	let module: TestingModule;
 	let roomsService: RoomsService;
 	let lessonRepo: DeepMocked<LessonRepo>;
-	let taskRepo: DeepMocked<TaskRepo>;
+	let taskService: DeepMocked<TaskService>;
 	let boardRepo: DeepMocked<BoardRepo>;
 
 	afterAll(async () => {
@@ -26,8 +27,8 @@ describe('rooms service', () => {
 					useValue: createMock<LessonRepo>(),
 				},
 				{
-					provide: TaskRepo,
-					useValue: createMock<TaskRepo>(),
+					provide: TaskService,
+					useValue: createMock<TaskService>(),
 				},
 				{
 					provide: BoardRepo,
@@ -37,7 +38,7 @@ describe('rooms service', () => {
 		}).compile();
 		roomsService = module.get(RoomsService);
 		lessonRepo = module.get(LessonRepo);
-		taskRepo = module.get(TaskRepo);
+		taskService = module.get(TaskService);
 		boardRepo = module.get(BoardRepo);
 	});
 
@@ -52,7 +53,7 @@ describe('rooms service', () => {
 			board.syncLessonsFromList(lessons);
 			board.syncTasksFromList(tasks);
 
-			const tasksSpy = taskRepo.findBySingleParent.mockResolvedValue([tasks, 3]);
+			const tasksSpy = taskService.findBySingleParent.mockResolvedValue([tasks, 3]);
 			const lessonsSpy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, 3]);
 			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
 			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
