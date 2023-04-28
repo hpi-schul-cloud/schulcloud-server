@@ -16,6 +16,7 @@ import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecord } from '../../entity';
 import { ErrorType } from '../../error';
+import { availableParentTypes } from './mocks';
 
 class API {
 	app: INestApplication;
@@ -254,9 +255,7 @@ describe('files-storage controller (API)', () => {
 
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: [
-							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions, boardnodes',
-						],
+						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 						field: ['parentType'],
 					},
 				]);
