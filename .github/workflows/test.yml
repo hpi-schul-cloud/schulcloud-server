@@ -48,6 +48,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Cache Jest cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/jest_rt
+          key: ${{ hashFiles('**/package-lock.json') }}
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
