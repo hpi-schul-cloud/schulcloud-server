@@ -74,6 +74,11 @@ export class CommonCartridgeFileBuilder {
 		return this.zipBuilder.toBufferPromise();
 	}
 
+	/**
+	 * This method creates organization xml-items in the exported xml file.
+	 * @param props An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
 	addOrganizationItems(props: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
 		props.forEach((prop) => {
 			this.organizations.push(new CommonCartridgeOrganizationItemElement(prop));
@@ -93,11 +98,21 @@ export class CommonCartridgeFileBuilder {
 		return this;
 	}
 
+	/**
+	 * This method creates resources xml-items in the exported xml file.
+	 * @param props - An Array of ICommonCartridgeResourceProps objects that contain the resource properties.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
 	addResourceItems(props: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
 		props.forEach((prop) => this.resources.push(new CommonCartridgeResourceItemElement(prop)));
 		return this;
 	}
 
+	/**
+	 * This method adds assignments xml-items in the exported xml file.
+	 * @param props - An array of objects that contains the properties of each assignment.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
 	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
 		props.forEach((prop) => {
 			const resourceProps: ICommonCartridgeAssignmentResourceItemProps = {
