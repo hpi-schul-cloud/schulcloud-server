@@ -18,7 +18,6 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
-import { FeathersJwtProvider } from './feathers-jwt.provider';
 import { ReferenceLoader } from './reference.loader';
 
 @Module({
@@ -26,7 +25,6 @@ import { ReferenceLoader } from './reference.loader';
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
-		FeathersJwtProvider,
 		AuthorizationService,
 		...ALL_RULES,
 		ReferenceLoader,
@@ -40,6 +38,6 @@ import { ReferenceLoader } from './reference.loader';
 		SubmissionRepo,
 		SchoolExternalToolRepo,
 	],
-	exports: [FeathersAuthorizationService, FeathersJwtProvider, AuthorizationService],
+	exports: [FeathersAuthorizationService, AuthorizationService],
 })
 export class AuthorizationModule {}
