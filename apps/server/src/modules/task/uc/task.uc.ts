@@ -6,8 +6,8 @@ import {
 	EntityId,
 	IPagination,
 	ITaskCreate,
-	ITaskUpdate,
 	ITaskStatus,
+	ITaskUpdate,
 	Lesson,
 	Permission,
 	PermissionContextBuilder,
@@ -45,6 +45,11 @@ export class TaskUC {
 		const lessonIdsOfOpenCourses = lessons.filter((l) => !l.course.isFinished()).map((l) => l.id);
 		const lessonIdsOfFinishedCourses = lessons.filter((l) => l.course.isFinished()).map((l) => l.id);
 
+		let filters = {};
+		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
+			filters = { userId: user.id };
+		}
+
 		const [tasks, total] = await this.taskRepo.findAllFinishedByParentIds(
 			{
 				creatorId: userId,
@@ -53,6 +58,7 @@ export class TaskUC {
 				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
+			filters,
 			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
@@ -141,7 +147,7 @@ export class TaskUC {
 				courseIds: openCourses.map((c) => c.id),
 				lessonIds: lessons.map((l) => l.id),
 			},
-			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date() },
+			{ afterDueDateOrNone: dueDate, finished: notFinished, availableOn: new Date(), userId: user.id },
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },

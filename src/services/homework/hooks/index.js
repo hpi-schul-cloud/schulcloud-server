@@ -116,7 +116,15 @@ const hasViewPermissionAfter = (hook) => {
 			e.courseId != null &&
 			((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString());
 		const published = new Date(e.availableDate) < new Date() && !e.private;
-		return isOwnerCheck || isTeacherCheck || (isStudent && published);
+
+		let checkAssigned = false;
+		if (!e.userIds || e.userIds.length === 0) {
+			checkAssigned = true;
+		} else {
+			checkAssigned = (e.userIds || []).includes(((hook.params.account || {}).userId || '').toString());
+		}
+
+		return isOwnerCheck || isTeacherCheck || (isStudent && checkAssigned && published);
 	}
 
 	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
