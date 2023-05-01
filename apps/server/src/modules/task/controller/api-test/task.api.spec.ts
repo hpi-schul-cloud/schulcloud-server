@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, Task } from '@shared/domain';
+import { InputFormat, Permission, Task } from '@shared/domain';
 import {
 	cleanupCollections,
 	courseFactory,
+	lessonFactory,
 	mapUserToCurrentUser,
 	roleFactory,
+	submissionFactory,
 	taskFactory,
+	TestRequest,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
@@ -16,7 +20,7 @@ import { FilesStorageClientAdapterService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { TaskListResponse } from '@src/modules/task/controller/dto';
+import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
 import { ObjectID } from 'bson';
 import { Request } from 'express';
 import request from 'supertest';
