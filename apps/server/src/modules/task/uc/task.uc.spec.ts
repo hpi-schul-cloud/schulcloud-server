@@ -348,10 +348,8 @@ describe('TaskUC', () => {
 		});
 	});
 
-	/// ============================= OLD TEST =====================
-
-	describe('findAll', () => {
-		describe('without permissions', () => {
+	describe('[method] findAll', () => {
+		describe('when user has no permissions', () => {
 			const setup = () => {
 				const permissions = [];
 				const user = setupUser(permissions);
@@ -378,7 +376,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('as a student without task assignment', () => {
+		describe('when user is a student without task assignment ', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
@@ -496,7 +494,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('as a substitution teacher', () => {
+		describe('when user a substitution teacher in a course with lesson and a single task', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
@@ -526,7 +524,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('as a teacher', () => {
+		describe('when user is a teacher with a course and hidden lesson and 3 tasks', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
@@ -621,7 +619,7 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('changeFinishedForUser', () => {
+	describe('[method] changeFinishedForUser', () => {
 		const mockStatus: ITaskStatus = {
 			submitted: 1,
 			graded: 1,
@@ -631,31 +629,31 @@ describe('TaskUC', () => {
 			isFinished: false,
 		};
 
-		describe('without permission for task', () => {
+		describe('when task has 1 creator and 1 user without permission', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const user2 = userFactory.buildWithId();
-				const task = taskFactory.buildWithId({ creator: user });
+				const creator = userFactory.buildWithId();
+				const userWithoutPermission = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator });
 
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(creator);
 				taskRepo.findById.mockResolvedValueOnce(task);
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
-				return { user2, task };
+				return { creator, task, userWithoutPermission };
 			};
 
 			it('should throw ForbiddenException when not permitted', async () => {
-				const { user2, task } = setup();
+				const { userWithoutPermission, task } = setup();
 
 				await expect(async () => {
-					await service.changeFinishedForUser(user2.id, task.id, true);
+					await service.changeFinishedForUser(userWithoutPermission.id, task.id, true);
 				}).rejects.toThrow(ForbiddenException);
 			});
 		});
 
-		describe('without any dashboard permission', () => {
+		describe('when user is creator without any dashboard permission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId({ creator: user });
@@ -731,7 +729,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('with teacherDashboard permission', () => {
+		describe('when user is creator with teacherDashboard permission', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
@@ -768,7 +766,7 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('with studentDashboard permission', () => {
+		describe('when user is creator with studentDashboard permission', () => {
 			const setup = () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
@@ -806,8 +804,8 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('revertPublished', () => {
-		describe('without write permission', () => {
+	describe('[method] revertPublished', () => {
+		describe('when user is creator without write permission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId({ creator: user });
@@ -835,7 +833,35 @@ describe('TaskUC', () => {
 			});
 		});
 
-		describe('with write permission', () => {
+		describe('when user is creator without write permission and mocked authZ to throw 403', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				taskRepo.findById.mockResolvedValueOnce(task);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+
+				return { user, task };
+			};
+
+			it('should throw ForbiddenException when not permitted', async () => {
+				const { user, task } = setup();
+
+				await expect(async () => {
+					await service.revertPublished(user.id, task.id);
+				}).rejects.toThrow(ForbiddenException);
+
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+					action: Actions.write,
+					requiredPermissions: [],
+				});
+			});
+		});
+
+		describe('when user is creator with write permission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId({ creator: user });
@@ -896,8 +922,8 @@ describe('TaskUC', () => {
 		});
 	});
 
-	describe('delete task', () => {
-		describe('when user has not permission for task', () => {
+	describe('[method] delete', () => {
+		describe('when user has no permission to task', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const task = taskFactory.buildWithId();
