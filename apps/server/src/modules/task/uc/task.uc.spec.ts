@@ -82,265 +82,253 @@ describe('TaskUC', () => {
 		jest.resetAllMocks();
 	});
 
-	it('should be defined', () => {
-		expect(service).toBeDefined();
-	});
+	describe('[method] findAllFinished', () => {
+		describe('when finished tasks is given, and user has read permission to task and is found', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
+				const user = setupUser(permissions);
+				const finishedTask = taskFactory.finished(user).build();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
+				taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[finishedTask], 1]);
 
-	describe('findAllFinished', () => {
-		describe('when user has read permission', () => {
-			describe('When task has user parent and is found successfully', () => {
-				const setup = () => {
-					const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
-					const user = setupUser(permissions);
-					const task = taskFactory.finished(user).build();
+				return { user, finishedTask };
+			};
 
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.hasPermission.mockReturnValueOnce(false);
-					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+			it('should call auth getUserWithPermissions() with userId', async () => {
+				const { user } = setup();
 
-					return { user, task };
-				};
-
-				it('should call auth getUserWithPermissions() with userId', async () => {
-					const { user } = setup();
-
-					await service.findAllFinished(user.id);
-
-					expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
-				});
-
-				it('should return task for a user', async () => {
-					const { user } = setup();
-
-					const [, total] = await service.findAllFinished(user.id);
-
-					expect(total).toEqual(1);
-				});
-
-				it('should call task repo findAllFinishedByParentIds', async () => {
-					const { user } = setup();
-
-					await service.findAllFinished(user.id);
-
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalled();
-				});
-
-				it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
-					const { user } = setup();
-
-					await service.findAllFinished(user.id);
-
-					const expectedParams = [
-						{
-							creatorId: user.id,
-							openCourseIds: [],
-							finishedCourseIds: [],
-							lessonIdsOfOpenCourses: [],
-							lessonIdsOfFinishedCourses: [],
-						},
-						{ userId: user.id },
-						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
-					];
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
-				});
-
-				it('should return a counted type', async () => {
-					const { user } = setup();
-
-					const [data, count] = await service.findAllFinished(user.id);
-
-					expect(typeof count).toBe('number');
-					expect(Array.isArray(data)).toBe(true);
-				});
-
-				it('should return read status vo for tasks', async () => {
-					const { user, task } = setup();
-					const status = task.createStudentStatusForUser(user);
-
-					const [data] = await service.findAllFinished(user.id);
-
-					expect(data[0].task).toEqual(task);
-					expect(data[0].status).toEqual(status);
-					expect(data[0]).toEqual({ task, status });
-				});
-
-				it('should pass skip option', async () => {
-					const { user } = setup();
-					const skip = 5;
-
-					await service.findAllFinished(user.id, { skip });
-
-					const expectedParams = [
-						{
-							creatorId: user.id,
-							openCourseIds: [],
-							finishedCourseIds: [],
-							lessonIdsOfOpenCourses: [],
-							lessonIdsOfFinishedCourses: [],
-						},
-						{ userId: user.id },
-						{ pagination: { skip }, order: { dueDate: SortOrder.desc } },
-					];
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
-				});
-
-				it('should pass limit option', async () => {
-					const { user } = setup();
-					const limit = 5;
-					await service.findAllFinished(user.id, { limit });
-
-					const expectedParams = [
-						{
-							creatorId: user.id,
-							openCourseIds: [],
-							finishedCourseIds: [],
-							lessonIdsOfOpenCourses: [],
-							lessonIdsOfFinishedCourses: [],
-						},
-						{ userId: user.id },
-						{ pagination: { limit }, order: { dueDate: SortOrder.desc } },
-					];
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
-				});
+				await service.findAllFinished(user.id);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
 
-			describe('When task has lesson parent and is found successfully', () => {
-				const setup = () => {
-					const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
-					const user = setupUser(permissions);
-					const task = taskFactory.finished(user).build();
-					const lesson = lessonFactory.buildWithId();
+			it('should return task for a user', async () => {
+				const { user } = setup();
 
-					authorizationService.getUserWithPermissions.mockResolvedValue(user);
-					courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.hasPermission.mockReturnValueOnce(false);
-					taskRepo.findAllFinishedByParentIds.mockResolvedValue([[task], 1]);
-
-					return { user, task, lesson };
-				};
-
-				it('should used permitted lessons for search finished tasks', async () => {
-					const { user, lesson } = setup();
-
-					await service.findAllFinished(user.id);
-
-					const expectedParams = [
-						{
-							creatorId: user.id,
-							openCourseIds: [],
-							finishedCourseIds: [],
-							lessonIdsOfOpenCourses: [lesson.id],
-							lessonIdsOfFinishedCourses: [],
-						},
-						{ userId: user.id },
-						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
-					];
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
-				});
+				const [, total] = await service.findAllFinished(user.id);
+				expect(total).toEqual(1);
 			});
 
-			describe('When task has course parent and is found successfully', () => {
-				const setup = () => {
-					const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
-					const user = setupUser(permissions);
-					const task = taskFactory.finished(user).build();
-					const course = courseFactory.buildWithId();
+			it('should call task repo findAllFinishedByParentIds', async () => {
+				const { user } = setup();
 
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.hasPermission.mockReturnValueOnce(false);
-					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+				await service.findAllFinished(user.id);
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalled();
+			});
 
-					return { user, task, course };
-				};
+			it('should call task repo findAllFinishedByParentIds for finished tasks', async () => {
+				const { user } = setup();
 
-				it('should used permitted courses for search finished tasks', async () => {
-					const { user, course } = setup();
+				await service.findAllFinished(user.id);
 
-					await service.findAllFinished(user.id);
+				const expectedParams = [
+					{
+						creatorId: user.id,
+						openCourseIds: [],
+						finishedCourseIds: [],
+						lessonIdsOfOpenCourses: [],
+						lessonIdsOfFinishedCourses: [],
+					},
+					{ userId: user.id },
+					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
+				];
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
+			});
 
-					const expectedParams = [
-						{
-							creatorId: user.id,
-							openCourseIds: [course.id],
-							finishedCourseIds: [],
-							lessonIdsOfOpenCourses: [],
-							lessonIdsOfFinishedCourses: [],
-						},
-						{ userId: user.id },
-						{ pagination: undefined, order: { dueDate: SortOrder.desc } },
-					];
-					expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
-				});
+			it('should return a counted type', async () => {
+				const { user } = setup();
+
+				const [data, count] = await service.findAllFinished(user.id);
+
+				expect(typeof count).toBe('number');
+				expect(Array.isArray(data)).toBe(true);
+			});
+
+			it('should return read status vo for tasks', async () => {
+				const { user, finishedTask } = setup();
+				const status = finishedTask.createStudentStatusForUser(user);
+
+				const [data] = await service.findAllFinished(user.id);
+
+				expect(data[0].task).toEqual(finishedTask);
+				expect(data[0].status).toEqual(status);
+				expect(data[0]).toEqual({ task: finishedTask, status });
+			});
+
+			it('should pass skip option', async () => {
+				const { user } = setup();
+				const skip = 5;
+
+				await service.findAllFinished(user.id, { skip });
+
+				const expectedParams = [
+					{
+						creatorId: user.id,
+						openCourseIds: [],
+						finishedCourseIds: [],
+						lessonIdsOfOpenCourses: [],
+						lessonIdsOfFinishedCourses: [],
+					},
+					{ userId: user.id },
+					{ pagination: { skip }, order: { dueDate: SortOrder.desc } },
+				];
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
+			});
+
+			it('should pass limit option', async () => {
+				const { user } = setup();
+				const limit = 5;
+				await service.findAllFinished(user.id, { limit });
+
+				const expectedParams = [
+					{
+						creatorId: user.id,
+						openCourseIds: [],
+						finishedCourseIds: [],
+						lessonIdsOfOpenCourses: [],
+						lessonIdsOfFinishedCourses: [],
+					},
+					{ userId: user.id },
+					{ pagination: { limit }, order: { dueDate: SortOrder.desc } },
+				];
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 			});
 		});
 
-		describe('when user has write and teacher dashboard permission', () => {
-			describe('when task has user parent', () => {
-				const setup = () => {
-					const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
-					const user = setupUser(permissions);
+		describe('When finished task has lesson parent and is found successfully, and user has read permission to task and is found', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
+				const user = setupUser(permissions);
+				const task = taskFactory.finished(user).build();
+				const lesson = lessonFactory.buildWithId();
 
-					const task = taskFactory.finished(user).build({ creator: user });
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
+				taskRepo.findAllFinishedByParentIds.mockResolvedValue([[task], 1]);
 
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.hasPermission.mockReturnValueOnce(true);
-					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+				return { user, task, lesson };
+			};
 
-					return { user };
-				};
+			it('should used permitted lessons for search finished tasks', async () => {
+				const { user, lesson } = setup();
 
-				it('should return finished tasks', async () => {
-					const { user } = setup();
+				await service.findAllFinished(user.id);
 
-					const [, total] = await service.findAllFinished(user.id);
-
-					expect(total).toEqual(1);
-				});
-			});
-
-			describe('when task has course parent', () => {
-				const setup = () => {
-					const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
-					const user = setupUser(permissions);
-
-					const course = courseFactory.build({ teachers: [user] });
-					const task = taskFactory.finished(user).build({ course });
-
-					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.hasPermission.mockReturnValueOnce(true);
-					authorizationService.hasPermission.mockReturnValueOnce(true);
-					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
-					const spy = jest.spyOn(task, 'createTeacherStatusForUser');
-
-					return { user, task, spy };
-				};
-
-				it('should select the right status', async () => {
-					const { user, spy } = setup();
-
-					await service.findAllFinished(user.id);
-
-					expect(spy).toHaveBeenCalled();
-					spy.mockRestore();
-				});
+				const expectedParams = [
+					{
+						creatorId: user.id,
+						openCourseIds: [],
+						finishedCourseIds: [],
+						lessonIdsOfOpenCourses: [lesson.id],
+						lessonIdsOfFinishedCourses: [],
+					},
+					{ userId: user.id },
+					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
+				];
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
 			});
 		});
 
-		describe('when user has no task overview permissions', () => {
+		describe('When finished task has course parent and is found successfully, and user has read permission to task and is found', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
+				const user = setupUser(permissions);
+				const task = taskFactory.finished(user).build();
+				const course = courseFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
+				taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+
+				return { user, task, course };
+			};
+
+			it('should used permitted courses for search finished tasks', async () => {
+				const { user, course } = setup();
+
+				await service.findAllFinished(user.id);
+
+				const expectedParams = [
+					{
+						creatorId: user.id,
+						openCourseIds: [course.id],
+						finishedCourseIds: [],
+						lessonIdsOfOpenCourses: [],
+						lessonIdsOfFinishedCourses: [],
+					},
+					{ userId: user.id },
+					{ pagination: undefined, order: { dueDate: SortOrder.desc } },
+				];
+				expect(taskRepo.findAllFinishedByParentIds).toHaveBeenCalledWith(...expectedParams);
+			});
+		});
+
+		describe('when finished task has user parent, and user has write and teacher dashboard permission to task and is found', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
+				const user = setupUser(permissions);
+
+				const task = taskFactory.finished(user).build({ creator: user });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+
+				return { user };
+			};
+
+			it('should return finished tasks', async () => {
+				const { user } = setup();
+
+				const [, total] = await service.findAllFinished(user.id);
+
+				expect(total).toEqual(1);
+			});
+		});
+
+		describe('when task has course parent, and user has write and teacher dashboard permission to task and is found', () => {
+			const setup = () => {
+				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
+				const user = setupUser(permissions);
+
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.finished(user).build({ course });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
+				const spy = jest.spyOn(task, 'createTeacherStatusForUser');
+
+				return { user, task, spy };
+			};
+
+			it('should select the right status', async () => {
+				const { user, spy } = setup();
+
+				await service.findAllFinished(user.id);
+
+				expect(spy).toHaveBeenCalled();
+				spy.mockRestore();
+			});
+		});
+
+		describe('when user has no task overview permissions, and user has no task overview permission', () => {
 			const setup = () => {
 				const permissions = [];
 				const user = setupUser(permissions);
@@ -359,6 +347,8 @@ describe('TaskUC', () => {
 			});
 		});
 	});
+
+	/// ============================= OLD TEST =====================
 
 	describe('findAll', () => {
 		describe('without permissions', () => {
