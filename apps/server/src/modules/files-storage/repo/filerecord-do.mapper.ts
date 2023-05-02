@@ -48,28 +48,3 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 }
 
 export const fileRecordDOMapper = new FileRecordDOMapper();
-
-/*
-// TODO: change naming Entity to Datarecord, or without entity
-// TODO: include factory methods..
-
-	// For collection the ORM setter must be used.
-	// For embedded entities it must implement to, but should be in a additional method? additional const before
-	// On this place it is possible to match DOs that only include some of the entity keys.
-	// We must make the descision if all keys of the DO should be added or only the possible updates for now?
-	// Should no default values are added on this place?
-
-			entity {
-				key1, --> bleibt unverändert
-				key2, <-- wird überschrieben
-				keyAndererNameA, <-- keyAndererNameB
-				keyCollection <-- muss von Array auf collection übertragen werden
-			}
-
-			Do {
-				key2,
-				key3,
-				keyArray,
-				keyAndererNameB
-			}
-*/
