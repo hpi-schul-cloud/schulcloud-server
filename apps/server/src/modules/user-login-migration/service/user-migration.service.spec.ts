@@ -9,9 +9,12 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { setupEntities } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
@@ -21,7 +24,7 @@ import { OauthConfigDto } from '@src/modules/system/service/dto/oauth-config.dto
 import { SystemDto } from '@src/modules/system/service/dto/system.dto';
 import { UserService } from '@src/modules/user';
 import { PageTypes } from '../interface/page-types.enum';
-import { PageContentDto } from './dto/page-content.dto';
+import { PageContentDto } from './dto';
 import { UserMigrationService } from './user-migration.service';
 
 describe('UserMigrationService', () => {
@@ -34,6 +37,7 @@ describe('UserMigrationService', () => {
 	let systemService: DeepMocked<SystemService>;
 	let userService: DeepMocked<UserService>;
 	let accountService: DeepMocked<AccountService>;
+	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	const hostUri = 'http://this.de';
 	const apiUrl = 'http://mock.de';
@@ -68,6 +72,10 @@ describe('UserMigrationService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: UserLoginMigrationRepo,
+					useValue: createMock<UserLoginMigrationRepo>(),
+				},
 			],
 		}).compile();
 
@@ -77,6 +85,7 @@ describe('UserMigrationService', () => {
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		logger = module.get(Logger);
+		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 
 		await setupEntities();
 	});
@@ -121,18 +130,40 @@ describe('UserMigrationService', () => {
 
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
 				systemService.findByType.mockResolvedValue([iservSystem, sanisSystem]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(
+					new UserLoginMigrationDO({
+						id: 'userLoginMigrationId',
+						schoolId: school.id as string,
+						targetSystemId: 'targetSystemId',
+						startedAt: new Date(),
+						mandatorySince: new Date(),
+					})
+				);
 
 				const result: string = await service.getMigrationConsentPageRedirect(officialSchoolNumber, 'iservId');
 
 				expect(result).toEqual(
-					'http://this.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=false'
+					'http://this.de/migration?sourceSystem=iservId&targetSystem=sanisId&origin=iservId&mandatory=true'
 				);
+			});
+		});
+
+		describe('when the school was not found', () => {
+			it('should throw InternalServerErrorException', async () => {
+				const { officialSchoolNumber } = setup();
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+
+				const promise: Promise<string> = service.getMigrationConsentPageRedirect(officialSchoolNumber, 'systemId');
+
+				await expect(promise).rejects.toThrow(NotFoundException);
 			});
 		});
 
 		describe('when the migration systems have invalid data', () => {
 			it('should throw InternalServerErrorException', async () => {
 				const { officialSchoolNumber } = setup();
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDOFactory.buildWithId());
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 				systemService.findByType.mockResolvedValue([]);
 
 				const promise: Promise<string> = service.getMigrationConsentPageRedirect(

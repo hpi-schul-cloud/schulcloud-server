@@ -122,9 +122,13 @@ describe('UserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migrations: Page<UserLoginMigrationDO> = new Page<UserLoginMigrationDO>([], 0);
+				const migrations: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+				});
 
-				userLoginMigrationService.findUserLoginMigrations.mockResolvedValue(migrations);
+				userLoginMigrationService.findMigrationByUser.mockResolvedValue(migrations);
 
 				return { userId, migrations };
 			};
@@ -132,9 +136,33 @@ describe('UserLoginMigrationUc', () => {
 			it('should return a response', async () => {
 				const { userId, migrations } = setup();
 
-				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId }, {});
+				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
 
-				expect(result).toEqual(migrations);
+				expect(result).toEqual<Page<UserLoginMigrationDO>>({
+					data: [migrations],
+					total: 1,
+				});
+			});
+		});
+
+		describe('when a user has no migration available', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValue(null);
+
+				return { userId };
+			};
+
+			it('should return a response', async () => {
+				const { userId } = setup();
+
+				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
+
+				expect(result).toEqual<Page<UserLoginMigrationDO>>({
+					data: [],
+					total: 0,
+				});
 			});
 		});
 
@@ -148,7 +176,7 @@ describe('UserLoginMigrationUc', () => {
 			it('should return a response', async () => {
 				const { userId } = setup();
 
-				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' }, {});
+				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' });
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenException('Accessing migration status of another user is forbidden.')

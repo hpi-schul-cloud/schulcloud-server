@@ -45,7 +45,7 @@ export class UserLoginMigrationUc {
 				throw new ForbiddenException('Accessing migration status of another user is forbidden.');
 			}
 
-			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findByUser(
+			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationByUser(
 				query.userId
 			);
 

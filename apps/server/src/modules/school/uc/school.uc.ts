@@ -1,12 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Actions, Permission } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { Actions, Permission, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration/service';
-import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
-import { PublicSchoolResponse } from '../controller/dto/public.school.response';
-import { SchoolUcMapper } from '../mapper/school.uc.mapper';
+import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 @Injectable()
 export class SchoolUc {
@@ -29,31 +27,36 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-		const migrationStartedAt: Date | undefined = school.oauthMigrationStart;
 
-		const shouldRestartMigration: boolean = this.isRestartMigrationRequired(
-			school,
-			oauthMigrationPossible,
-			oauthMigrationMandatory,
-			oauthMigrationFinished
-		);
+		const existingUserLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
-		if (shouldRestartMigration) {
-			this.schoolMigrationService.validateGracePeriod(school);
-			await this.schoolMigrationService.restartMigration(schoolId);
+		if (existingUserLoginMigration) {
+			this.schoolMigrationService.validateGracePeriod(existingUserLoginMigration);
 		}
 
-		const migrationDto: OauthMigrationDto = await this.userLoginMigrationService.setMigration(
+		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
 			oauthMigrationFinished
 		);
 
-		if (oauthMigrationFinished) {
-			await this.schoolMigrationService.completeMigration(schoolId, migrationStartedAt);
+		if (!existingUserLoginMigration?.closedAt && updatedUserLoginMigration.closedAt) {
+			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
+		} else if (existingUserLoginMigration?.closedAt && !updatedUserLoginMigration.closedAt) {
+			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
+
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
+			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
+			oauthMigrationMandatory: updatedUserLoginMigration.mandatorySince,
+			oauthMigrationFinished: updatedUserLoginMigration.closedAt,
+			oauthMigrationFinalFinish: updatedUserLoginMigration.finishedAt,
+			enableMigrationStart: !!school.officialSchoolNumber,
+		});
 
 		return migrationDto;
 	}
@@ -63,34 +66,22 @@ export class SchoolUc {
 			action: Actions.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-		const migrationDto: OauthMigrationDto = await this.userLoginMigrationService.getMigration(schoolId);
+
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+			schoolId
+		);
+
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const migrationDto: OauthMigrationDto = new OauthMigrationDto({
+			oauthMigrationPossible:
+				userLoginMigration && !userLoginMigration.closedAt ? userLoginMigration.startedAt : undefined,
+			oauthMigrationMandatory: userLoginMigration ? userLoginMigration.mandatorySince : undefined,
+			oauthMigrationFinished: userLoginMigration ? userLoginMigration.closedAt : undefined,
+			oauthMigrationFinalFinish: userLoginMigration ? userLoginMigration.finishedAt : undefined,
+			enableMigrationStart: !!school.officialSchoolNumber,
+		});
 
 		return migrationDto;
-	}
-
-	async getPublicSchoolData(schoolnumber: string): Promise<PublicSchoolResponse> {
-		const schoolDO: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(schoolnumber);
-		if (schoolDO) {
-			const response: PublicSchoolResponse = SchoolUcMapper.mapDOToPublicResponse(schoolDO);
-			return response;
-		}
-		throw new NotFoundException(`No school found for schoolnumber: ${schoolnumber}`);
-	}
-
-	private isRestartMigrationRequired(
-		school: SchoolDO,
-		oauthMigrationPossible: boolean,
-		oauthMigrationMandatory: boolean,
-		oauthMigrationFinished: boolean
-	): boolean {
-		const hasSchoolOauthMigrationFinished = !!school.oauthMigrationFinished;
-		const isOauthMigrationMandatory = oauthMigrationMandatory === !!school.oauthMigrationMandatory;
-		const isOauthMigrationNotFinished = !oauthMigrationFinished;
-		const isRequired =
-			hasSchoolOauthMigrationFinished &&
-			oauthMigrationPossible &&
-			isOauthMigrationMandatory &&
-			isOauthMigrationNotFinished;
-		return isRequired;
 	}
 }

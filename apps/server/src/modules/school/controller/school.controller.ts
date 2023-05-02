@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import {
 	ApiFoundResponse,
 	ApiNotFoundResponse,
@@ -8,12 +8,10 @@ import {
 } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthMigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { MigrationMapper } from '../mapper/migration.mapper';
+import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { PublicSchoolResponse } from './dto/public.school.response';
-import { SchoolQueryParams } from './dto/school.query.params';
 
 @ApiTags('School')
 @Authenticate('jwt')
@@ -57,13 +55,5 @@ export class SchoolController {
 		const result: MigrationResponse = this.migrationMapper.mapDtoToResponse(migrationDto);
 
 		return result;
-	}
-
-	@Get('public')
-	@ApiOkResponse({ description: 'Public Schooldata found and returned', type: PublicSchoolResponse })
-	@ApiNotFoundResponse({ description: 'Schooldata not found for given query' })
-	async getPublicSchool(@Query() query: SchoolQueryParams): Promise<PublicSchoolResponse> {
-		const response: PublicSchoolResponse = await this.schoolUc.getPublicSchoolData(query.schoolnumber ?? '');
-		return response;
 	}
 }
