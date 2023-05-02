@@ -402,4 +402,307 @@ describe('submission service', function test() {
 			expect(err.code).to.equal(403);
 		}
 	});
+
+	describe('when the task has assignees', () => {
+		async function setup(
+			teachers,
+			students,
+			publicSubmission = false,
+			substitutionTeachers = [],
+			courseStudents = [],
+			createTeacherPrivateSubmission = false
+		) {
+			const originalTeacher = teachers[0];
+			const submitterId = students[0];
+			const studentIds = students.map((s) => s._id);
+			const courseStudentIds = courseStudents.map((s) => s._id);
+
+			const course = !createTeacherPrivateSubmission
+				? await testObjects.createTestCourse({
+						teacherIds: teachers.map((t) => t._id),
+						substitutionIds: substitutionTeachers.map((s) => s._id),
+						userIds: [...new Set([...studentIds, ...courseStudentIds])],
+						schoolId: originalTeacher.schoolId,
+				  })
+				: undefined;
+
+			const courseId = course ? course._id : undefined;
+
+			const homeworkParams = {
+				teacherId: originalTeacher._id,
+				name: 'Testaufgabe',
+				description: 'Schreibe ein Essay über Goethes Werk',
+				availableDate: Date.now(),
+				dueDate: '2030-11-16T12:47:00.000Z',
+				private: createTeacherPrivateSubmission,
+				archived: [originalTeacher._id],
+				lessonId: null,
+				courseId,
+				publicSubmissions: publicSubmission,
+				userIds: studentIds,
+			};
+
+			const homework = await testObjects.createTestHomework(homeworkParams);
+
+			const submission = await testObjects.createTestSubmission({
+				schoolId: originalTeacher.schoolId,
+				courseId,
+				homeworkId: homework._id,
+				studentId: submitterId,
+				teamMembers: studentIds,
+				comment: 'egal wie dicht du bist, Goethe war Dichter.',
+			});
+
+			return { course, homework, submission };
+		}
+
+		describe('when the student is not assigned', () => {
+			let teacher;
+			let substituteTeacher;
+			let student;
+			let otherStudent;
+			let course;
+			let homework;
+			let submission;
+			beforeEach(async () => {
+				[teacher, substituteTeacher, student, otherStudent] = await Promise.all([
+					testObjects.createTestUser({ roles: ['teacher'] }),
+					testObjects.createTestUser({ roles: ['teacher'] }),
+					testObjects.createTestUser({ roles: ['student'] }),
+					testObjects.createTestUser({ roles: ['student'] }),
+				]);
+				const result = await setup([teacher], [student], false, [substituteTeacher], [student, otherStudent]);
+				course = result.course;
+				homework = result.homework;
+				submission = result.submission;
+			});
+			afterEach(() => {
+				testObjects.cleanup();
+			});
+
+			it('student not assigned can not GET submissions', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+				params.query = {};
+				try {
+					await app.service('submissions').get(submission._id, params);
+					throw new Error('should have failed.');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed.');
+					expect(err.code).to.equal(403);
+				}
+			});
+			it('teacher can GET submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(teacher);
+				params.query = {};
+				const result = await app.service('submissions').get(submission._id, params);
+				expect(result._id.toString()).to.equal(submission._id.toString());
+			});
+			it('substitute teacher can GET submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(teacher);
+				params.query = {};
+				const result = await app.service('submissions').get(submission._id, params);
+				expect(result._id.toString()).to.equal(submission._id.toString());
+			});
+
+			it('teacher can FIND submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(teacher);
+				params.query = {};
+				const result = await app.service('submissions').find(params);
+				expect(result.total).to.equal(1);
+				expect(result.data[0]._id.toString()).to.equal(submission._id.toString());
+			});
+			it('substitute teacher can FIND submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(teacher);
+				params.query = {};
+				const result = await app.service('submissions').find(params);
+				expect(result.total).to.equal(1);
+				expect(result.data[0]._id.toString()).to.equal(submission._id.toString());
+			});
+			it('student not assigned can not FIND submissions', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+				params.query = {};
+				const result = await app.service('submissions').find(params);
+				expect(result.total).to.equal(0);
+			});
+
+			it('student not assigned can not CREATE submission', async () => {
+				const otherHomework = await testObjects.createTestHomework({
+					teacherId: teacher._id,
+					name: 'Testaufgabe',
+					description: 'was ist deine Lieblingsfarbe?',
+					availableDate: Date.now(),
+					dueDate: '2030-11-16T12:47:00.000Z',
+					private: false,
+					archived: [teacher._id],
+					lessonId: null,
+					courseId: course._id,
+					userIds: [student],
+				});
+
+				const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+				params.query = {};
+
+				try {
+					await app.service('submissions').create(
+						{
+							schoolId: course.schoolId,
+							courseId: course._id,
+							homeworkId: otherHomework._id,
+							studentId: otherStudent._id,
+							comment: 'create submission',
+						},
+						params
+					);
+					throw new Error('should have failed.');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed.');
+					expect(err.code).to.equal(403);
+				}
+			});
+
+			it('student not assigned can not UPDATE submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+				params.query = {};
+
+				try {
+					await app.service('submissions').update(
+						submission._id,
+						{
+							schoolId: course.schoolId,
+							courseId: course._id,
+							homeworkId: homework._id,
+							studentId: student._id,
+							comment: 'update submission',
+							teamMembers: [student._id],
+						},
+						params
+					);
+					throw new Error('should have failed.');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed.');
+					expect(err.code).to.equal(403);
+				}
+			});
+			it('student not assigned can not PATCH submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+				params.query = {};
+
+				try {
+					await app.service('submissions').patch(
+						submission._id,
+						{
+							comment: 'update submission',
+						},
+						params
+					);
+					throw new Error('should have failed.');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed.');
+					expect(err.code).to.equal(403);
+				}
+			});
+		});
+
+		describe('when student is assigned', () => {
+			let teacher;
+			let student;
+			let otherStudent;
+			let course;
+			let homework;
+			let submission;
+			beforeEach(async () => {
+				[teacher, student, otherStudent] = await Promise.all([
+					testObjects.createTestUser({ roles: ['teacher'] }),
+					testObjects.createTestUser({ roles: ['student'] }),
+					testObjects.createTestUser({ roles: ['student'] }),
+				]);
+				const result = await setup([teacher], [student], false, [], [student, otherStudent]);
+				course = result.course;
+				homework = result.homework;
+				submission = result.submission;
+			});
+			afterEach(() => {
+				testObjects.cleanup();
+			});
+			it('student assigned can get submissions', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				params.query = {};
+
+				const result = await app.service('submissions').get(submission._id, params);
+				expect(result._id.toString()).to.equal(submission._id.toString());
+			});
+			it('student assigned can FIND submissions', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				params.query = {};
+				const result = await app.service('submissions').find(params);
+				expect(result.total).to.equal(1);
+				expect(result.data[0]._id.toString()).to.equal(submission._id.toString());
+			});
+			it('student assigned can CREATE submission', async () => {
+				const otherHomework = await testObjects.createTestHomework({
+					teacherId: teacher._id,
+					name: 'Testaufgabe',
+					description: 'was ist deine Lieblingsfarbe?',
+					availableDate: Date.now(),
+					dueDate: '2030-11-16T12:47:00.000Z',
+					private: false,
+					archived: [teacher._id],
+					lessonId: null,
+					courseId: course._id,
+					usersIds: [student, otherStudent],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				params.query = {};
+
+				const result = await app.service('submissions').create(
+					{
+						schoolId: course.schoolId,
+						courseId: course._id,
+						homeworkId: otherHomework._id,
+						studentId: student._id,
+						comment: 'create submission',
+					},
+					params
+				);
+
+				expect(result.homeworkId.toString()).to.equal(otherHomework._id.toString());
+				expect(result.comment).to.eq('create submission');
+			});
+			it('student assigned can UPDATE submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				params.query = {};
+
+				const result = await app.service('submissions').update(
+					submission._id,
+					{
+						schoolId: course.schoolId,
+						courseId: course._id,
+						homeworkId: homework._id,
+						studentId: student._id,
+						comment: 'update submission',
+						teamMembers: [student._id],
+					},
+					params
+				);
+
+				expect(result.homeworkId.toString()).to.equal(homework._id.toString());
+				expect(result.comment).to.eq('update submission');
+			});
+			it('student assigned can PATCH submission', async () => {
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				params.query = {};
+
+				const result = await app.service('submissions').patch(
+					submission._id,
+					{
+						comment: 'update submission',
+					},
+					params
+				);
+
+				expect(result.homeworkId.toString()).to.equal(homework._id.toString());
+				expect(result.comment).to.eq('update submission');
+			});
+		});
+	});
 });
