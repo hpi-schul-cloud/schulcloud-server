@@ -41,6 +41,7 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 		const props = fileRecord.getProps();
 		// factory?
 		const fileRecordEntity = new FileRecordEntity(props);
+		fileRecordEntity.id = props.id;
 
 		return fileRecordEntity;
 	}

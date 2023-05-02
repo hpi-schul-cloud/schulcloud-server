@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DataBaseManager } from '@shared/infra/database/database-manager';
 import { FileRecord } from '../domain';
 import type { FilesStorageRepo } from '../service';
-import { fileRecordDOMapper } from './fileRecordDO.mapper';
+import { fileRecordDOMapper } from './filerecord-do.mapper';
 import { FileRecordScope } from './filerecord-scope';
 import { FileRecordEntity } from './filerecord.entity';
 

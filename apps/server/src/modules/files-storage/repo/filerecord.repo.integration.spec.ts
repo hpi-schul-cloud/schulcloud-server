@@ -9,7 +9,7 @@ import { FileRecordRepo } from './filerecord.repo';
 import { FileRecordEntity } from './filerecord.entity';
 import { FileRecord, fileRecordFactory, IUpdateSecurityCheckStatus, ScanStatus } from '../domain';
 import { fileRecordEntityFactory } from './filerecord-entity.factory';
-import { fileRecordDOMapper } from './fileRecordDO.mapper';
+import { fileRecordDOMapper } from './filerecord-do.mapper';
 import { FileRecordParentType } from '../interface';
 
 describe('FileRecordRepo', () => {
@@ -61,9 +61,6 @@ describe('FileRecordRepo', () => {
 			it('should also work if already persisted and not persisted dos are passed', async () => {
 				const { fileRecord, fileRecordDB } = await setup();
 
-				const newName = 'persisted name';
-				fileRecordDB.setName(newName);
-
 				await repo.persist([fileRecord]);
 
 				const results = await Promise.all([
@@ -71,8 +68,8 @@ describe('FileRecordRepo', () => {
 					em.findOne(FileRecordEntity, { id: fileRecordDB.id }),
 				]);
 
-				const fileRecordExits = results.find((r) => r?.id === fileRecord.id);
-				const fileRecordDBExits = results.find((r) => r?.id === fileRecordDB.id);
+				const fileRecordExits = results.some((r) => r?.id === fileRecord.id);
+				const fileRecordDBExits = results.some((r) => r?.id === fileRecordDB.id);
 				expect(fileRecordExits).toBe(true);
 				expect(fileRecordDBExits).toBe(true);
 			});
