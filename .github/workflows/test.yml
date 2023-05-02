@@ -57,6 +57,19 @@ jobs:
       - name: nest:test:cov - test all with coverage
         timeout-minutes: 25
         run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov:ci
+      - name: SonarCloud upload coverage
+        uses: SonarSource/sonarcloud-github-action@v1.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        with:
+          args: >
+            -Dsonar.sources=.
+            -Dsonar.organization=schulcloud-verbund
+            -Dsonar.projectKey=hpi-schul-cloud_schulcloud-server
+            -Dsonar.exclusions=**/*.js
+            -Dsonar.cpd.exclusions=**/controller/dto/*.ts,**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info  
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
