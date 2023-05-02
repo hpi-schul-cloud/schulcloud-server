@@ -39,7 +39,9 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 	// Das brauchen wir auch irgendwo..
 	public createEntity(fileRecord: FileRecord): FileRecordEntity {
 		const props = fileRecord.getProps();
-		// factory?
+		// TODO:
+		// I think the entity factory is missed, we can not create with or without id over constructor.
+		// The id is optional in entity props, but not mapped in constructor.
 		const fileRecordEntity = new FileRecordEntity(props);
 		fileRecordEntity.id = props.id;
 
