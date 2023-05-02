@@ -22,6 +22,9 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 		return fileRecordDO;
 	}
 
+	// passt für mehre DOs die auf eine entity zeigen
+	// passt nicht für mehre entities die auf ein DO zeigen!!!
+
 	public mergeDOintoEntity(fileRecord: FileRecord, fileRecordEntity: FileRecordEntity): void {
 		const props = this.getValidProps(fileRecord, fileRecordEntity);
 
@@ -36,6 +39,7 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 	// Das brauchen wir auch irgendwo..
 	public createEntity(fileRecord: FileRecord): FileRecordEntity {
 		const props = fileRecord.getProps();
+		// factory?
 		const fileRecordEntity = new FileRecordEntity(props);
 
 		return fileRecordEntity;

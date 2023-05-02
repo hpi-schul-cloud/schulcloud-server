@@ -15,10 +15,12 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 		return fileRercord;
 	}
 
-	public buildSecurityCheckProperties(): FileSecurityCheckParams {
+	public buildSecurityCheckProperties(scanStatus?: ScanStatus, scanReason?: string): FileSecurityCheckParams {
+		const status = scanStatus || ScanStatus.PENDING;
+		const reason = scanReason || 'not yet scanned'; // const
 		const securityCheckProperties: FileSecurityCheckParams = {
-			status: ScanStatus.PENDING,
-			reason: 'not yet scanned', // const
+			status,
+			reason,
 			requestToken: this.createUUID(),
 			updatedAt: new Date(), // TODO: can be possible move to factory
 		};
