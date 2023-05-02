@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseDO2, BaseDOProps } from './base.do';
-import { BaseEntityWithTimestamps } from './entity';
+import { BaseEntity } from './entity';
 /*
 // https://stackoverflow.com/questions/52856496/typescript-object-keys-return-string
 // https://www.reddit.com/r/typescript/comments/kfjhku/is_a_type_safe_version_of_objectkeys_possible/
@@ -63,11 +63,7 @@ export class RelationTable<
 	}
 }
 */
-export abstract class BaseDOMapper<
-	T extends BaseDOProps,
-	DomainObject extends BaseDO2<T>,
-	Entity extends BaseEntityWithTimestamps
-> {
+export abstract class BaseDOMapper<T extends BaseDOProps, DomainObject extends BaseDO2<T>, Entity extends BaseEntity> {
 	abstract entityToDO(entity: Entity): DomainObject;
 
 	abstract mergeDOintoEntity(domainObject: DomainObject, entity: Entity): void;
@@ -95,8 +91,8 @@ export abstract class BaseDOMapper<
 		return entities;
 	}
 
-	protected getValidProps(domainObject: BaseDO2<T>, entity: Entity): T {
-		let props: T;
+	static getValidProps<R extends BaseDOProps>(domainObject: BaseDO2<R>, entity: BaseEntity): R {
+		let props: R;
 		if (domainObject.id === entity.id) {
 			props = domainObject.getProps();
 		} else {

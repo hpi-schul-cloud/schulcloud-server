@@ -10,6 +10,7 @@ export interface IFileSecurityCheckProperties {
 	reason?: string;
 	requestToken?: string;
 }
+
 @Embeddable()
 export class FileSecurityCheck {
 	@Enum()
@@ -113,7 +114,6 @@ export class FileRecordEntity extends BaseEntityWithTimestamps {
 	}
 
 	constructor(props: IFileRecordProperties) {
-		// important when we go over constructor to also allow entity creating with ID
 		super();
 		this.size = props.size;
 		this.name = props.name;

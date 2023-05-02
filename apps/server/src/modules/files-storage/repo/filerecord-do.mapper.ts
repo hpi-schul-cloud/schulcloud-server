@@ -23,7 +23,7 @@ class FileRecordDOMapper extends BaseDOMapper<FileRecordParams, FileRecord, File
 	}
 
 	public mergeDOintoEntity(fileRecord: FileRecord, fileRecordEntity: FileRecordEntity): void {
-		const props = this.getValidProps(fileRecord, fileRecordEntity);
+		const props = FileRecordDOMapper.getValidProps(fileRecord, fileRecordEntity);
 
 		fileRecordEntity.securityCheck.updatedAt = props.securityCheck.updatedAt;
 		fileRecordEntity.securityCheck.status = props.securityCheck.status;
