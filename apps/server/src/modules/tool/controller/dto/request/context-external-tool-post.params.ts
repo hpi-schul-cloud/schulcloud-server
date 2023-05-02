@@ -6,12 +6,10 @@ import { ToolContextType } from '../../../interface';
 
 export class ContextExternalToolPostParams {
 	@ApiProperty()
-	@IsString()
 	@IsMongoId()
 	schoolToolId!: string;
 
 	@ApiProperty()
-	@IsString()
 	@IsMongoId()
 	contextId!: string;
 
@@ -21,6 +19,7 @@ export class ContextExternalToolPostParams {
 
 	@ApiProperty()
 	@IsString()
+	@IsOptional()
 	contextToolName?: string;
 
 	@ValidateNested({ each: true })
@@ -28,7 +27,7 @@ export class ContextExternalToolPostParams {
 	@IsOptional()
 	@ApiPropertyOptional({ type: [CustomParameterEntryParam] })
 	@Type(() => CustomParameterEntryParam)
-	parameters: CustomParameterEntryParam[] = [];
+	parameters?: CustomParameterEntryParam[];
 
 	@ApiProperty()
 	@IsNumber()

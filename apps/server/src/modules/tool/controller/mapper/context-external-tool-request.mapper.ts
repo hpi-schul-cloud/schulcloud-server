@@ -10,7 +10,7 @@ export class ContextExternalToolRequestMapper {
 			contextType: request.contextType,
 			contextId: request.contextId,
 			toolVersion: request.toolVersion,
-			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters),
+			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};
 	}
 
