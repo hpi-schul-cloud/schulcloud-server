@@ -14,6 +14,8 @@ import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
+	private readonly accountImpl: AbstractAccountService;
+
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
@@ -23,55 +25,39 @@ export class AccountService extends AbstractAccountService {
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+			this.accountImpl = accountIdm;
+		} else {
+			this.accountImpl = accountDb;
+		}
 	}
 
 	async findById(id: string): Promise<AccountDto> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.findById(id);
-		}
-		return this.accountDb.findById(id);
+		return this.accountImpl.findById(id);
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.findMultipleByUserId(userIds);
-		}
-		return this.accountDb.findMultipleByUserId(userIds);
+		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
 	async findByUserId(userId: string): Promise<AccountDto | null> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.findByUserId(userId);
-		}
-		return this.accountDb.findByUserId(userId);
+		return this.accountImpl.findByUserId(userId);
 	}
 
 	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.findByUserIdOrFail(userId);
-		}
-		return this.accountDb.findByUserIdOrFail(userId);
+		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.findByUsernameAndSystemId(username, systemId);
-		}
-		return this.accountDb.findByUsernameAndSystemId(username, systemId);
+		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.searchByUsernamePartialMatch(userName, skip, limit);
-		}
-		return this.accountDb.searchByUsernamePartialMatch(userName, skip, limit);
+		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.searchByUsernameExactMatch(userName);
-		}
-		return this.accountDb.searchByUsernameExactMatch(userName);
+		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
@@ -141,10 +127,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-			return this.accountIdm.validatePassword(account, comparePassword);
-		}
-		return this.accountDb.validatePassword(account, comparePassword);
+		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 
 	async delete(accountId: string): Promise<void> {
