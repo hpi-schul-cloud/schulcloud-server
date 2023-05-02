@@ -1,13 +1,14 @@
+import { NotFoundException } from '@nestjs/common';
 import { BoardNodeType } from '@shared/domain';
 import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	fileElementFactory,
 	textElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
-import { NotFoundException } from '@nestjs/common';
 import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 
 describe(BoardNodeBuilderImpl.name, () => {
@@ -103,6 +104,53 @@ describe(BoardNodeBuilderImpl.name, () => {
 			expect(boardNodes).toHaveLength(1);
 			expect(boardNodes[0].id).toBe(textElement.id);
 			expect(boardNodes[0].type).toBe(BoardNodeType.TEXT_ELEMENT);
+		});
+	});
+
+	describe('when building FileElements', () => {
+		const setup = () => {
+			const fileElement = fileElementFactory.build();
+			const card = cardFactory.build({ children: [fileElement] });
+
+			const builder = new BoardNodeBuilderImpl();
+
+			return { builder, fileElement, card };
+		};
+
+		it('should call getParentNode', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'getParentNode');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
+		it('should call ensureBoardNodeType', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'ensureBoardNodeType');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
+		it('should call registerNode', () => {
+			const { builder, fileElement, card } = setup();
+			const spy = jest.spyOn(builder, 'registerNode');
+
+			builder.buildBoardNodes([fileElement], card);
+
+			expect(spy).toBeCalledTimes(1);
+		});
+
+		it('should build a file element boardnode', () => {
+			const { builder, fileElement, card } = setup();
+
+			const boardNodes = builder.buildBoardNodes([fileElement], card);
+			expect(boardNodes).toHaveLength(1);
+			expect(boardNodes[0].id).toBe(fileElement.id);
+			expect(boardNodes[0].type).toBe(BoardNodeType.FILE_ELEMENT);
 		});
 	});
 

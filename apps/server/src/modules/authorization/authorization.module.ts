@@ -5,23 +5,24 @@ import {
 	CourseGroupRepo,
 	CourseRepo,
 	LessonRepo,
+	SchoolExternalToolRepo,
 	SchoolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
-	SchoolExternalToolRepo,
 } from '@shared/repo';
-import { ToolModule } from '@src/modules/tool';
-import { SchoolModule } from '@src/modules/school';
 import { LoggerModule } from '@src/core/logger';
+import { SchoolModule } from '@src/modules/school';
+import { ToolModule } from '@src/modules/tool';
+import { BoardModule } from '../board';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 import { FeathersAuthorizationService } from './feathers-authorization.service';
 import { ReferenceLoader } from './reference.loader';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],
+	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule, BoardModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
