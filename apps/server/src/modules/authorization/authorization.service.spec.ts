@@ -50,7 +50,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('checkAuthorization', () => {
-		describe('when isAuthorized of RuleManager returns false', () => {
+		describe('when isAuthorized returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
@@ -66,7 +66,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when isAuthorized of RuleManager returns true', () => {
+		describe('when isAuthorized returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
@@ -84,7 +84,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('isAuthorized', () => {
-		describe('when isAuthorized of RuleManager returns false', () => {
+		describe('when the delegated authorization request returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
@@ -102,7 +102,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when isAuthorized of RuleManager returns true', () => {
+		describe('when the delegated authorization request returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
@@ -170,7 +170,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('isAuthorizedByReferences', () => {
-		describe('when referenceLoader throws an error', () => {
+		describe('when loader throws an error', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
@@ -191,7 +191,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when isAuthorized of RuleManager returns true', () => {
+		describe('when the delegated authorization request returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
@@ -212,7 +212,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when isAuthorized of RuleManager returns false', () => {
+		describe('when the delegated authorization request returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
@@ -235,7 +235,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('checkAllPermissions', () => {
-		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
+		describe('when helper method returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -252,7 +252,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
+		describe('when helper method returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -271,7 +271,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('hasAllPermissions', () => {
-		describe('when hasAllPermissions of AuthorizationHelper returns false', () => {
+		describe('when helper method returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -290,7 +290,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when hasAllPermissions of AuthorizationHelper returns true', () => {
+		describe('when helper method returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -311,7 +311,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('checkOneOfPermissions', () => {
-		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
+		describe('when helper method returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -328,7 +328,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
+		describe('when helper method returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -347,7 +347,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('hasOneOfPermissions', () => {
-		describe('when hasOneOfPermissions of AuthorizationHelper returns false', () => {
+		describe('when helper method returns false', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -366,7 +366,7 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when hasOneOfPermissions of AuthorizationHelper returns true', () => {
+		describe('when helper method returns true', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const requiredPermissions = [testPermission];
@@ -387,7 +387,7 @@ describe('AuthorizationService', () => {
 	});
 
 	describe('getUserWithPermissions', () => {
-		it('should return user received from AuthorizationHelper', async () => {
+		it('should return user received from loader', async () => {
 			const userId = 'test';
 			const user = userFactory.build();
 			loader.getUserWithPermissions.mockResolvedValueOnce(user);

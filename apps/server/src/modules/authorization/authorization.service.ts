@@ -14,7 +14,7 @@ export class AuthorizationService {
 	) {}
 
 	public checkAuthorization(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
-		if (!this.ruleManager.isAuthorized(user, entity, context)) {
+		if (!this.isAuthorized(user, entity, context)) {
 			throw new ForbiddenException();
 		}
 	}

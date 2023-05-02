@@ -71,7 +71,7 @@ describe('RuleManager', () => {
 	});
 
 	describe('isAuthorized', () => {
-		// To discuss: I would say it is enough to test it for one rule as an example.
+		// We only test for one rule here, because every rule behaves the same.
 		describe('when courseRule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
