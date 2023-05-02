@@ -134,7 +134,7 @@ export class CourseRepo extends BaseRepo<Course> {
 		return course;
 	}
 
-	async findOneForTeacherOrSubstitueTeacher(userId: EntityId, courseId: EntityId): Promise<Course> {
+	async findOneForTeacherOrSubstituteTeacher(userId: EntityId, courseId: EntityId): Promise<Course> {
 		const scope = new CourseScope();
 		scope.forCourseId(courseId);
 		scope.forTeacherOrSubstituteTeacher(userId);

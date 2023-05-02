@@ -14,7 +14,7 @@ export class CourseUc {
 
 	public async getCourseForTeacher(userId: EntityId, courseId: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findOneForTeacherOrSubstitueTeacher(userId, courseId);
+		const course = await this.courseRepo.findOneForTeacherOrSubstituteTeacher(userId, courseId);
 
 		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([Permission.COURSE_EDIT]));
 

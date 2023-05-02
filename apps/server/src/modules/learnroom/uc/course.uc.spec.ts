@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, PermissionContextBuilder, SortOrder } from '@shared/domain';
+import { Course, Permission, PermissionContextBuilder, SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
@@ -76,15 +76,15 @@ describe('CourseUc', () => {
 		it('should return course for teacher', async () => {
 			const { user, course } = setup();
 
-			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValueOnce(course);
+			courseRepo.findOneForTeacherOrSubstituteTeacher.mockResolvedValueOnce(course);
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-			const result = await uc.getCourseForTeacher(user.id, course.id);
+			const result: Course = await uc.getCourseForTeacher(user.id, course.id);
 			expect(result).toEqual(course);
 		});
 		it('should check for permission to edit course', async () => {
 			const { user, course } = setup();
 
-			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValueOnce(course);
+			courseRepo.findOneForTeacherOrSubstituteTeacher.mockResolvedValueOnce(course);
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 			await uc.getCourseForTeacher(user.id, course.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(
@@ -96,7 +96,7 @@ describe('CourseUc', () => {
 		it('should throw error if user has no permission to edit course', async () => {
 			const { user, course } = setup();
 
-			courseRepo.findOneForTeacherOrSubstitueTeacher.mockResolvedValueOnce(course);
+			courseRepo.findOneForTeacherOrSubstituteTeacher.mockResolvedValueOnce(course);
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 			authorizationService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
