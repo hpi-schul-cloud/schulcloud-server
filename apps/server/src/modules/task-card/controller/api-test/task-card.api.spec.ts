@@ -7,6 +7,8 @@ import { sanitizeRichText } from '@shared/controller';
 
 import { CardElement, CardElementType, InputFormat, Permission, Task, TaskCard } from '@shared/domain';
 import {
+	TestRequest,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
 	mapUserToCurrentUser,
@@ -23,7 +25,228 @@ import { TaskCardResponse } from '@src/modules/task-card/controller/dto';
 import { Request } from 'express';
 import request from 'supertest';
 
-describe('Task-Card Controller (api)', () => {
+const createStudent = () => {
+	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
+		Permission.TASK_CARD_VIEW,
+		Permission.TASK_CARD_EDIT,
+		Permission.TASK_DASHBOARD_VIEW_V3,
+		Permission.HOMEWORK_VIEW,
+		Permission.HOMEWORK_CREATE,
+	]);
+	return { account: studentAccount, user: studentUser };
+};
+
+const createTeacher = () => {
+	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
+		Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
+	]);
+	return { account: teacherAccount, user: teacherUser };
+};
+
+const inTwoDays = new Date(Date.now() + 172800000);
+const inThreeDays = new Date(Date.now() + 259200000);
+const inFourDays = new Date(Date.now() + 345600000);
+
+// rewrite tests to conform new code style
+describe('Task-Card Controller (API)', () => {
+	let app: INestApplication;
+	let em: EntityManager;
+	let apiRequest: TestRequest;
+
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		}).compile();
+
+		app = module.createNestApplication();
+		await app.init();
+		em = app.get(EntityManager);
+		apiRequest = new TestRequest(app, 'cards/task');
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
+
+	beforeEach(async () => {
+		await cleanupCollections(em);
+		Configuration.set('FEATURE_TASK_CARD_ENABLED', true);
+	});
+
+	describe('[POST] /cards/task', () => {
+		describe('when a teacher of a course is given', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+
+				await em.persistAndFlush([account, user, course]);
+				em.clear();
+				return { account, teacher: user, course };
+			};
+			it('should return new a task card', async () => {
+				const { account, course } = await setup();
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [
+						{
+							content: {
+								type: 'richText',
+								value: 'rich 2',
+								inputFormat: 'richtext_ck5',
+							},
+						},
+						{
+							content: {
+								type: 'richText',
+								value: 'rich 2',
+								inputFormat: 'richtext_ck5',
+							},
+						},
+					],
+					courseId: course.id,
+					dueDate: inTwoDays,
+				};
+
+				const { body, statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const responseTaskCard = body as TaskCardResponse;
+
+				expect(statusCode).toEqual(201);
+				expect(responseTaskCard.cardElements?.length).toEqual(2);
+				expect(responseTaskCard.task.name).toEqual('test title');
+				expect(responseTaskCard.title).toEqual('test title');
+				expect(responseTaskCard.visibleAtDate).toBeDefined();
+				expect(responseTaskCard.dueDate).toBe(inTwoDays.toISOString());
+				expect(responseTaskCard.courseId).toEqual(course.id);
+				expect(responseTaskCard.courseName).toEqual(course.name);
+				expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
+				expect(responseTaskCard.task.status.isDraft).toEqual(false);
+			});
+
+			it('should sanitize richtext on create with inputformat ck5', async () => {
+				const { account, course } = await setup();
+
+				const text = '<iframe>rich text 1</iframe> some more text';
+
+				const taskCardParams = {
+					title: 'test title',
+					courseId: course.id,
+					cardElements: [
+						{
+							content: {
+								type: 'richText',
+								value: text,
+								inputFormat: InputFormat.RICH_TEXT_CK5,
+							},
+						},
+					],
+					dueDate: inTwoDays,
+				};
+
+				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+
+				const { body, statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const responseTaskCard = body as TaskCardResponse;
+				expect(statusCode).toEqual(201);
+				const richTextElement = responseTaskCard.cardElements?.filter(
+					(element) => element.cardElementType === CardElementType.RichText
+				);
+				if (richTextElement?.[0]?.content) {
+					expect(richTextElement[0].content.value).toEqual(sanitizedText);
+				}
+			});
+
+			it('should throw if feature is NOT enabled', async () => {
+				const { account, course } = await setup();
+				Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+
+				const taskCardParams = {
+					title: 'title',
+					courseId: course.id,
+					dueDate: inThreeDays,
+				};
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(500);
+			});
+			it('should throw if courseId is empty', async () => {
+				const { account } = await setup();
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: '',
+				};
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+			it('should throw if no course is matching', async () => {
+				const { account } = await setup();
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: new ObjectId().toHexString(),
+				};
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+			it('should throw if dueDate is empty', async () => {
+				const { account, course } = await setup();
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: course.id,
+				};
+
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+			it('should throw if dueDate is earlier than today', async () => {
+				const { account, course } = await setup();
+
+				const taskCardParams = {
+					title: 'test title',
+					cardElements: [],
+					courseId: course.id,
+					dueDate: new Date(Date.now() - 259200000),
+				};
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+			it('should throw if title is empty', async () => {
+				const { account } = await setup();
+
+				const taskCardParams = {
+					title: '',
+				};
+
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+			it('should throw if title is not a string', async () => {
+				const { account } = await setup();
+
+				const taskCardParams = {
+					title: 1234,
+				};
+
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(501);
+			});
+			it('should throw if title is not provided', async () => {
+				const { account } = await setup();
+
+				const taskCardParams = {};
+
+				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				expect(statusCode).toEqual(400);
+			});
+		});
+	});
+});
+
+describe('Task-Card Controller (api) 2', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	const inTwoDays = new Date(Date.now() + 172800000);
@@ -69,247 +292,6 @@ describe('Task-Card Controller (api)', () => {
 		Configuration.set('FEATURE_TASK_CARD_ENABLED', true);
 	});
 
-	describe('[POST] /cards/task', () => {
-		it('should return new task-card', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
-
-			await em.persistAndFlush([user, course]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 'test title',
-				cardElements: [
-					{
-						content: {
-							type: 'richText',
-							value: 'rich 2',
-							inputFormat: 'richtext_ck5',
-						},
-					},
-					{
-						content: {
-							type: 'richText',
-							value: 'rich 2',
-							inputFormat: 'richtext_ck5',
-						},
-					},
-				],
-				courseId: course.id,
-				dueDate: inTwoDays,
-			};
-			const response = await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(201);
-
-			const responseTaskCard = response.body as TaskCardResponse;
-
-			expect(responseTaskCard.cardElements?.length).toEqual(2);
-			expect(responseTaskCard.task.name).toEqual('test title');
-			expect(responseTaskCard.title).toEqual('test title');
-			expect(responseTaskCard.visibleAtDate).toBeDefined();
-			expect(responseTaskCard.dueDate).toBe(inTwoDays.toISOString());
-			expect(responseTaskCard.courseId).toEqual(course.id);
-			expect(responseTaskCard.courseName).toEqual(course.name);
-			expect(responseTaskCard.task.taskCardId).toEqual(responseTaskCard.id);
-			expect(responseTaskCard.task.status.isDraft).toEqual(false);
-		});
-		it('should sanitize richtext on create with inputformat ck5', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user], untilDate: inThreeDays });
-
-			await em.persistAndFlush([user, course]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const text = '<iframe>rich text 1</iframe> some more text';
-
-			const taskCardParams = {
-				title: 'test title',
-				courseId: course.id,
-				cardElements: [
-					{
-						content: {
-							type: 'richText',
-							value: text,
-							inputFormat: InputFormat.RICH_TEXT_CK5,
-						},
-					},
-				],
-				dueDate: inTwoDays,
-			};
-
-			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
-
-			const response = await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(201);
-
-			const responseTaskCard = response.body as TaskCardResponse;
-			const richTextElement = responseTaskCard.cardElements?.filter(
-				(element) => element.cardElementType === CardElementType.RichText
-			);
-			if (richTextElement?.[0]?.content) {
-				expect(richTextElement[0].content.value).toEqual(sanitizedText);
-			}
-		});
-		it('should throw if feature is NOT enabled', async () => {
-			await cleanupCollections(em);
-			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-			const user = setupUser([]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
-
-			await em.persistAndFlush([user, course]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const params = {
-				title: 'title',
-				courseId: course.id,
-				dueDate: inThreeDays,
-			};
-			await request(app.getHttpServer()).post(`/cards/task`).set('Accept', 'application/json').send(params).expect(500);
-		});
-		it('should throw if courseId is empty', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 'test title',
-				cardElements: [],
-				courseId: '',
-			};
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-		it('should throw if no course is matching', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 'test title',
-				cardElements: [],
-				courseId: new ObjectId().toHexString(),
-			};
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-		it('should throw if dueDate is empty', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
-
-			await em.persistAndFlush([user, course]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 'test title',
-				cardElements: [],
-				courseId: course.id,
-			};
-
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-		it('should throw if dueDate is earlier than today', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-			const course = courseFactory.buildWithId({ teachers: [user] });
-
-			await em.persistAndFlush([user, course]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 'test title',
-				cardElements: [],
-				courseId: course.id,
-				dueDate: new Date(Date.now() - 259200000),
-			};
-
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-		it('should throw if title is empty', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: '',
-			};
-
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-		it('should throw if title is not a string', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {
-				title: 1234,
-			};
-
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(501);
-		});
-		it('should throw if title is not provided', async () => {
-			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_CREATE, Permission.HOMEWORK_EDIT]);
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const taskCardParams = {};
-
-			await request(app.getHttpServer())
-				.post(`/cards/task/`)
-				.set('Accept', 'application/json')
-				.send(taskCardParams)
-				.expect(400);
-		});
-	});
 	describe('[GET] /cards/task/:id', () => {
 		it('should return existing task-card', async () => {
 			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
