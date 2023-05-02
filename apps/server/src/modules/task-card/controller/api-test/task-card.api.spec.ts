@@ -244,6 +244,39 @@ describe('Task-Card Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('[GET] /cards/task/:id', () => {
+		const setup = async () => {
+			const { account, user } = createTeacher();
+			const course = courseFactory.build({ teachers: [user] });
+			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+			const task = taskFactory.build({ name: 'title', creator: user });
+			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+			await em.persistAndFlush([account, user, course, task, taskCard]);
+			em.clear();
+			return { account, teacher: user, course, task, taskCard };
+		};
+
+		describe('when teacher and taskcard is given', () => {
+			it('should return existing task-card', async () => {
+				const { account, taskCard } = await setup();
+
+				const { body, statusCode } = await apiRequest.get(`${taskCard.id}`, account);
+				const responseTaskCard = body as TaskCardResponse;
+
+				expect(statusCode).toBe(200);
+				expect(responseTaskCard.id).toEqual(taskCard.id);
+			});
+
+			it('should throw if feature not enabled', async () => {
+				const { account, taskCard } = await setup();
+				Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
+
+				const { statusCode } = await apiRequest.get(`${taskCard.id}`, account);
+				expect(statusCode).toBe(500);
+			});
+		});
+	});
 });
 
 describe('Task-Card Controller (api) 2', () => {
@@ -292,45 +325,6 @@ describe('Task-Card Controller (api) 2', () => {
 		Configuration.set('FEATURE_TASK_CARD_ENABLED', true);
 	});
 
-	describe('[GET] /cards/task/:id', () => {
-		it('should return existing task-card', async () => {
-			const user = setupUser([Permission.TASK_CARD_VIEW, Permission.HOMEWORK_VIEW]);
-			const title = 'title test';
-			// for some reason taskCard factory messes up the creator of task, so it needs to be separated
-			const task = taskFactory.build({ name: title, creator: user });
-			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
-
-			await em.persistAndFlush([user, task, taskCard]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			const response = await request(app.getHttpServer())
-				.get(`/cards/task/${taskCard.id}`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const responseTaskCard = response.body as TaskCardResponse;
-
-			expect(responseTaskCard.id).toEqual(taskCard.id);
-		});
-		it('should throw if feature not enabled', async () => {
-			await cleanupCollections(em);
-			Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
-			const user = setupUser([]);
-			const taskCard = taskCardFactory.buildWithId({ creator: user });
-
-			await em.persistAndFlush([user, taskCard]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-
-			await request(app.getHttpServer())
-				.get(`/cards/task/${taskCard.id}`)
-				.set('Accept', 'application/json')
-				.expect(500);
-		});
-	});
 	describe('[PATCH] /cards/task/:id', () => {
 		it('should update the task card', async () => {
 			const user = setupUser([Permission.TASK_CARD_EDIT, Permission.HOMEWORK_EDIT]);
