@@ -5,13 +5,13 @@ import {
 	CourseGroup,
 	EntityId,
 	Lesson,
-	SchoolDO,
 	SchoolExternalToolDO,
 	Submission,
 	Task,
 	Team,
 	User,
 } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export enum AllowedAuthorizationEntityType {
 	'User' = 'users',
