@@ -24,7 +24,7 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 		const securityCheckProperties: FileSecurityCheckParams = {
 			status,
 			reason,
-			requestToken: this.createUUID(),
+			requestToken: this.createUuid(),
 			updatedAt: new Date(), // TODO: can be possible move to factory
 		};
 
@@ -64,7 +64,7 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 		const securityCheck = sourceFileRecordIsVerified ? sourceSecurityCheck : this.buildSecurityCheckProperties();
 		const id = this.createId();
 
-		const copyFileRecordParams = {
+		const copyFileRecordParams: FileRecordParams = {
 			id,
 			size,
 			name,
