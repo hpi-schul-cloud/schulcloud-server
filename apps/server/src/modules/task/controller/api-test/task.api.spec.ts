@@ -1508,6 +1508,8 @@ describe('Task Controller (API) 2', () => {
 		let app: INestApplication;
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		let api: API;
 
 		beforeAll(async () => {
 			const module: TestingModule = await Test.createTestingModule({
