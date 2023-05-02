@@ -24,14 +24,14 @@ describe(FileElement.name, () => {
 		});
 
 		describe('when trying to add an invalid element', () => {
+			const setup = () => {
+				const element = fileElementFactory.build();
+				const fileElementChild = fileElementFactory.build();
+
+				return { element, fileElementChild };
+			};
+
 			it('should throw an error ', () => {
-				const setup = () => {
-					const element = fileElementFactory.build();
-					const fileElementChild = fileElementFactory.build();
-
-					return { element, fileElementChild };
-				};
-
 				const { element, fileElementChild } = setup();
 
 				expect(() => element.addChild(fileElementChild)).toThrow();
