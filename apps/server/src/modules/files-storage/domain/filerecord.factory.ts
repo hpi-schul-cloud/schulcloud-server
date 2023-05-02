@@ -32,10 +32,10 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 	}
 
 	public buildFromDtos(
-		name: string,
 		creatorId: EntityId,
 		params: FileRecordParamsDto,
-		fileDescription: FileDto
+		fileDescription: FileDto,
+		name: string
 	): FileRecord {
 		const id = this.createId();
 		const securityCheckProperties = this.buildSecurityCheckProperties();

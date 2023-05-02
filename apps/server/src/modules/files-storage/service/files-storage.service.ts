@@ -119,7 +119,7 @@ export class FilesStorageService {
 	public async uploadFile(userId: EntityId, params: FileRecordParams, fileDescription: FileDto): Promise<FileRecord> {
 		const [fileRecords] = await this.getFileRecordsOfParent(params);
 		const name = resolveFileNameDuplicates(fileDescription.name, fileRecords);
-		const fileRecord = fileRecordFactory.buildFromDtos(name, userId, params, fileDescription);
+		const fileRecord = fileRecordFactory.buildFromDtos(userId, params, fileDescription, name);
 		await this.fileRecordRepo.persist([fileRecord]);
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, fileDescription);
 

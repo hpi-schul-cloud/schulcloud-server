@@ -14,6 +14,12 @@ export abstract class BaseDOFactory<Properties extends BaseDOProps, T extends Ba
 
 		return uuid;
 	}
+	/*
+	protected createDate(): Date {
+		const date = new Date();
 
+		return date;
+	}
+	*/
 	abstract build(props: Properties): T;
 }
