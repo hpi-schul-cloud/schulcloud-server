@@ -1,9 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
 import { BaseDO2, BaseDOProps, EntityId } from '@shared/domain';
 import { ErrorType } from '../error';
 import { FileRecordParentType } from '../interface';
-import { ObjectId } from 'bson';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -34,7 +32,7 @@ export interface FileRecordParams extends BaseDOProps {
 	deletedSince?: Date;
 }
 
-export interface IFileRecordParentInfo {
+export interface FileRecordParentInfo {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
@@ -53,43 +51,8 @@ export class FileRecord extends BaseDO2<FileRecordParams> {
 		this.props.securityCheck.requestToken = undefined;
 	}
 
-	// TODO: need test
 	public getSecurityCheckToken(): string | undefined {
 		return this.props.securityCheck.requestToken;
-	}
-
-	public copy(userId: EntityId, targetParentInfo: IFileRecordParentInfo): FileRecord {
-		const { size, name, mimeType } = this.props;
-		const { parentType, parentId, schoolId } = targetParentInfo;
-		// TODO: wrong location for init, should be a constructor, builder, or factory
-		// updatedAt should not be required
-		const securityCheck: FileSecurityCheckParams = this.isVerified()
-			? this.props.securityCheck
-			: {
-					status: ScanStatus.PENDING,
-					reason: 'not yet scanned',
-					requestToken: uuid(),
-					updatedAt: new Date(),
-			  };
-
-		// TODO: move to factory
-		const copyFileRecordParams = {
-			id: new ObjectId().toHexString(),
-			size,
-			name,
-			mimeType,
-			parentType,
-			parentId,
-			creatorId: userId,
-			schoolId,
-			securityCheck,
-		};
-
-		// TODO: check new FileRecord(copyFileRecordParams) vs fileRecordFactory.build(copyFileRecordParams)
-		// dependce on the location of the id generation
-		const copyFileRecord = new FileRecord(copyFileRecordParams);
-
-		return copyFileRecord;
 	}
 
 	public markForDelete(): void {
@@ -136,7 +99,7 @@ export class FileRecord extends BaseDO2<FileRecordParams> {
 		return isVerified;
 	}
 
-	public getParentInfo(): IFileRecordParentInfo {
+	public getParentInfo(): FileRecordParentInfo {
 		const { parentId, parentType, schoolId } = this.props;
 
 		return { parentId, parentType, schoolId };

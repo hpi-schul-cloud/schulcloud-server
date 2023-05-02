@@ -287,7 +287,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const fileRecordCopy = sourceFile.copy(userId, targetParams);
+		const fileRecordCopy = fileRecordFactory.copy(userId, sourceFile, targetParams);
 		await this.fileRecordRepo.persist([fileRecordCopy]);
 
 		return fileRecordCopy;

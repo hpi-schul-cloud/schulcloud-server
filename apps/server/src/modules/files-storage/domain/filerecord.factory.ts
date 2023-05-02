@@ -3,13 +3,16 @@ import { BaseDOFactory } from '@shared/domain/base-do.factory';
 // TODO: import order is a problem, das dto muss durch das export/import interface ersetzt werden Ticket: BC-1268
 import type { FileRecordParams as FileRecordParamsDto } from '../controller/dto';
 import type { FileDto } from '../dto';
-import { FileRecord, type FileRecordParams, type FileSecurityCheckParams, ScanStatus } from './filerecord.do';
+import {
+	FileRecord,
+	type FileRecordParams,
+	type FileSecurityCheckParams,
+	ScanStatus,
+	type FileRecordParentInfo,
+} from './filerecord.do';
 
 class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
-	// TODO: outsource build if possible
-	// TODO: we want to use it also if id is in props for mapper
 	public build(props: FileRecordParams): FileRecord {
-		// const propsWithId = this.assignProps(props);
 		const fileRercord = new FileRecord(props);
 
 		return fileRercord;
@@ -34,7 +37,7 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 		params: FileRecordParamsDto,
 		fileDescription: FileDto
 	): FileRecord {
-		const id = this.createId(); // can also be moved to do
+		const id = this.createId();
 		const securityCheckProperties = this.buildSecurityCheckProperties();
 		const fileRecordParams: FileRecordParams = {
 			id,
@@ -51,6 +54,31 @@ class FileRecordFactory extends BaseDOFactory<FileRecordParams, FileRecord> {
 		const fileRecord = this.build(fileRecordParams);
 
 		return fileRecord;
+	}
+
+	// Hint: must be move to this place, the factory can not be used inside of the fileRecord, because the factory has already a dependency to fileRecord
+	public copy(userId: EntityId, sourceFileRecord: FileRecord, targetParentInfo: FileRecordParentInfo): FileRecord {
+		const { size, name, mimeType, securityCheck: sourceSecurityCheck } = sourceFileRecord.getProps();
+		const { parentType, parentId, schoolId } = targetParentInfo;
+		const sourceFileRecordIsVerified = sourceFileRecord.isVerified();
+		const securityCheck = sourceFileRecordIsVerified ? sourceSecurityCheck : this.buildSecurityCheckProperties();
+		const id = this.createId();
+
+		const copyFileRecordParams = {
+			id,
+			size,
+			name,
+			mimeType,
+			parentType,
+			parentId,
+			creatorId: userId,
+			schoolId,
+			securityCheck,
+		};
+
+		const copyFileRecord = this.build(copyFileRecordParams);
+
+		return copyFileRecord;
 	}
 }
 

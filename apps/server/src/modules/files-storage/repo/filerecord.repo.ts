@@ -62,23 +62,6 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 		await this.dbm.remove(entities);
 	}
 
-	// required that the entity must be loaded before...if not it is override
-	/*
-	private async persist2(fileRecords: FileRecord[]): Promise<void> {
-		fileRecords.forEach((domainObject) => {
-			const existing = this.dbm.em.getUnitOfWork().getById<FileRecordEntity>(FileRecordEntity.name, domainObject.id);
-			if (existing) {
-				this.dbm.em.assign(existing, domainObject);
-			} else {
-				const entity = fileRecordDOMapper.createEntity(domainObject);
-				this.dbm.em.persist(entity);
-			}
-		});
-
-		await this.dbm.em.flush();
-	}
-	*/
-
 	public async persist(fileRecords: FileRecord[]): Promise<void> {
 		const foundEntities = await this.find(fileRecords);
 		const entities = fileRecordDOMapper.createOrMergeintoEntities(fileRecords, foundEntities);
@@ -86,9 +69,6 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 	}
 
 	// ---------------------------------------------------------------
-	// findById and findByIds | findByDomainObject | findByDomainObjects can be possible to move to DataBaseManager
-	// delete can also be moved, also this do not need the mapper
-	// it is possible to add mapper to over params
 	private async find(fileRecords: FileRecord[]): Promise<FileRecordEntity[]> {
 		const scope = new FileRecordScope().byIds(fileRecords);
 		const fileRecordEntities = await this.dbm.find(FileRecordEntity, scope.query);
@@ -120,28 +100,4 @@ export class FileRecordRepo extends BaseRepo2<FileRecord> implements FilesStorag
 
 		return [fileRecords, count];
 	}
-
-	/* solution for delete over PK
-	public async delete(fileRecords: FileRecord[]): Promise<void> {
-		const entities = this.getEntitiesReferenceFromDOs(fileRecords);
-		await this.em.removeAndFlush(entities);
-	}
-
-	// TODO: move to utils make private
-	private getEntitiesReferenceFromDOs(fileRecords: FileRecord[]): FileRecordEntity[] {
-		const entities = fileRecords.map((item) => this.getEntityReferenceFromDO(item));
-
-		return entities;
-	}
-
-	// TODO private
-	public getEntityReferenceFromDO(fileRecord: FileRecord): FileRecordEntity {
-		// TODO: check why this method is only in changlog and not documentated, it include also a bug that it is fixed later
-		// https://gist.github.com/B4nan/3fb771464e4c4499c26c9f4e684692a4#file-create-reference-ts-L8
-		// https://mikro-orm.io/api/core/changelog#563-2022-12-28
-		const fileRecordEntity = Reference.createFromPK(FileRecordEntity, fileRecord.id);
-
-		return fileRecordEntity;
-	}
-*/
 }
