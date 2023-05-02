@@ -1,14 +1,25 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalTool, Course, Permission, Role, RoleName, SchoolExternalTool, User } from '@shared/domain';
 import {
+	ContextExternalTool,
+	ContextExternalToolType,
+	Course,
+	Permission,
+	Role,
+	RoleName,
+	School,
+	SchoolExternalTool,
+	User,
+} from '@shared/domain';
+import {
+	contextExternalToolFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	userFactory,
 	schoolExternalToolFactory,
-	courseFactory,
-	contextExternalToolFactory,
+	schoolFactory,
+	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
@@ -55,6 +66,7 @@ describe('ToolContextController (API)', () => {
 
 	afterEach(async () => {
 		await orm.getSchemaGenerator().clearDatabase();
+		jest.clearAllMocks();
 	});
 
 	describe('[POST] tools/context', () => {
@@ -64,32 +76,30 @@ describe('ToolContextController (API)', () => {
 					name: RoleName.TEACHER,
 					permissions: [Permission.CONTEXT_TOOL_ADMIN],
 				});
+				const school: School = schoolFactory.buildWithId();
 
-				const teacherUser: User = userFactory.buildWithId({ roles: [teacherRole] });
+				const paramEntry = { name: 'name', value: 'value' };
+
+				const teacher: User = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const userWithMissingPermission: User = userFactory.buildWithId();
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser, userWithMissingPermission] });
+				const course: Course = courseFactory.buildWithId({ teachers: [teacher, userWithMissingPermission] });
 
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
-					schoolParameters: [],
+					school,
+					schoolParameters: [paramEntry],
 					toolVersion: 1,
 				});
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalTool,
 					contextId: course.id,
-					parameters: [],
+					contextType: ContextExternalToolType.COURSE,
+					parameters: [paramEntry],
 					toolVersion: 1,
 				});
 
-				em.persist([
-					teacherRole,
-					course,
-					teacherUser,
-					userWithMissingPermission,
-					schoolExternalTool,
-					contextExternalTool,
-				]);
+				em.persist([teacherRole, course, school, teacher, userWithMissingPermission, schoolExternalTool]);
 				await em.flush();
 				em.clear();
 
@@ -97,20 +107,20 @@ describe('ToolContextController (API)', () => {
 					schoolExternalTool,
 					contextExternalTool,
 					course,
-					teacherUser,
+					teacher,
 					userWithMissingPermission,
+					paramEntry,
 				};
 			};
 
 			it('should create an contextExternalTool', async () => {
-				const { schoolExternalTool, course, teacherUser } = await setup();
-				currentUser = mapUserToCurrentUser(teacherUser);
-
+				const { paramEntry, schoolExternalTool, course, teacher } = await setup();
+				currentUser = mapUserToCurrentUser(teacher);
 				const postParams: ContextExternalToolPostParams = {
 					schoolToolId: schoolExternalTool.id,
 					contextId: course.id,
 					contextType: ToolContextType.COURSE,
-					parameters: [],
+					parameters: [paramEntry],
 					toolVersion: 1,
 				};
 
@@ -124,8 +134,8 @@ describe('ToolContextController (API)', () => {
 								id: expect.any(String),
 								schoolToolId: postParams.schoolToolId,
 								contextId: postParams.contextId,
-								contextType: 'course',
-								parameters: [],
+								contextType: postParams.contextType,
+								parameters: postParams.parameters,
 								toolVersion: postParams.toolVersion,
 							})
 						);
@@ -144,7 +154,7 @@ describe('ToolContextController (API)', () => {
 			const setup = async () => {
 				const teacherRole: Role = roleFactory.build({
 					name: RoleName.TEACHER,
-					permissions: [Permission.CONTEXT_TOOL_ADMIN],
+					permissions: [],
 				});
 
 				const teacherUser: User = userFactory.buildWithId({ roles: [teacherRole] });
