@@ -18,6 +18,7 @@ import { FileRecordListResponse, FileRecordResponse } from '@src/modules/files-s
 import { Request } from 'express';
 import request from 'supertest';
 import { FileRecordParentType } from '../../entity';
+import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/list';
 
@@ -115,9 +116,7 @@ describe(`${baseRouteName} (api)`, () => {
 			const response = await api.get(`/${validId}/cookies/${validId}`);
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: [
-						'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
-					],
+					errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 					field: ['parentType'],
 				},
 			]);

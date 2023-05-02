@@ -1,5 +1,17 @@
-import { Course, CourseGroup, Lesson, Submission, Task, Team, User, SchoolExternalToolDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import {
+	AnyBoardDo,
+	BaseDO,
+	Course,
+	CourseGroup,
+	EntityId,
+	Lesson,
+	SchoolDO,
+	SchoolExternalToolDO,
+	Submission,
+	Task,
+	Team,
+	User,
+} from '@shared/domain';
 
 export enum AllowedAuthorizationEntityType {
 	'User' = 'users',
@@ -11,6 +23,7 @@ export enum AllowedAuthorizationEntityType {
 	'Team' = 'teams',
 	'Submission' = 'submissions',
 	'SchoolExternalTool' = 'school_external_tools',
+	'BoardNode' = 'boardnodes',
 }
 
 export type AllowedEntity =
@@ -22,4 +35,9 @@ export type AllowedEntity =
 	| Lesson
 	| Team
 	| Submission
-	| SchoolExternalToolDO;
+	| SchoolExternalToolDO
+	| AnyBoardDo;
+
+export interface AuthorizationLoaderService {
+	findById(id: EntityId): Promise<BaseDO>;
+}

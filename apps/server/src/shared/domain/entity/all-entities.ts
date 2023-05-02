@@ -2,6 +2,9 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
+import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode } from './boardnode';
+import { BoardNode } from './boardnode/boardnode.entity';
+import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { CourseGroup } from './coursegroup.entity';
@@ -19,13 +22,11 @@ import { SchoolYear } from './schoolyear.entity';
 import { StorageProvider } from './storageprovider.entity';
 import { Submission } from './submission.entity';
 import { System } from './system.entity';
-import { Task } from './task.entity';
 import { TaskCard } from './task-card.entity';
+import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
-import { CardElement, RichTextCardElement } from './card-element.entity';
-import { BoardNode, CardNode, ColumnBoardNode, ColumnNode, TextElementNode } from './boardnode';
 
 export const ALL_ENTITIES = [
 	Account,
@@ -35,6 +36,7 @@ export const ALL_ENTITIES = [
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	FileElementNode,
 	TextElementNode,
 	Course,
 	ContextExternalTool,
