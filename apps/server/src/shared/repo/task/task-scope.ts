@@ -7,16 +7,26 @@ export class TaskScope extends Scope<Task> {
 	byFinished(userId: EntityId, value: boolean): TaskScope {
 		if (value === true) {
 			this.addQuery({ finished: userId });
-		} else if (value === false) {
+		} else {
 			this.addQuery({ finished: { $ne: userId } });
 		}
 
 		return this;
 	}
 
-	byOnlyCreatorId(teacherId: EntityId): TaskScope {
+	byAssignedUser(assignedUserId: EntityId): TaskScope {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		this.addQuery({
-			$and: [{ creator: teacherId }, { course: null }, { lesson: null }],
+			$or: [{ users: { $exists: false } }, { users: { $eq: [] } }, { users: { $in: [assignedUserId] } }],
+		});
+
+		return this;
+	}
+
+	byOnlyCreatorId(creatorId: EntityId): TaskScope {
+		this.addQuery({
+			$and: [{ creator: creatorId }, { course: null }, { lesson: null }],
 		});
 
 		return this;

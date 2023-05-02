@@ -27,6 +27,7 @@ import { Request } from 'express';
 import request from 'supertest';
 import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecordParentType } from '../../entity';
+import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/copy';
 
@@ -168,9 +169,7 @@ describe(`${baseRouteName} (api)`, () => {
 				const response = await api.copy(`/${validId}/cookies/${validId}`, copyFilesParams);
 				expect(response.error.validationErrors).toEqual([
 					{
-						errors: [
-							'parentType must be one of the following values: users, schools, courses, tasks, lessons, submissions',
-						],
+						errors: [`parentType must be one of the following values: ${availableParentTypes}`],
 						field: ['parentType'],
 					},
 				]);

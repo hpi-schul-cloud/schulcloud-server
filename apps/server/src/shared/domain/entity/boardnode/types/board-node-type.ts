@@ -3,4 +3,5 @@ export enum BoardNodeType {
 	COLUMN = 'column',
 	CARD = 'card',
 	TEXT_ELEMENT = 'text-element',
+	FILE_ELEMENT = 'file-element',
 }
