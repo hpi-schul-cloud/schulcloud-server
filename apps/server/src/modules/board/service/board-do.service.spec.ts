@@ -46,10 +46,10 @@ describe(BoardDoService.name, () => {
 	describe('move', () => {
 		describe('when moving a card', () => {
 			const setup = () => {
-				const cards = cardFactory.buildListWithId(3);
-				const sourceColumn = columnFactory.buildWithId({ children: cards });
-				const targetCards = cardFactory.buildListWithId(2);
-				const targetColumn = columnFactory.buildWithId({ children: targetCards });
+				const cards = cardFactory.buildList(3);
+				const sourceColumn = columnFactory.build({ children: cards });
+				const targetCards = cardFactory.buildList(2);
+				const targetColumn = columnFactory.build({ children: targetCards });
 
 				boardDoRepo.findParentOfId.mockResolvedValue(sourceColumn);
 				boardDoRepo.findById.mockResolvedValue(targetColumn);
@@ -104,8 +104,8 @@ describe(BoardDoService.name, () => {
 
 		describe('when card has no parent', () => {
 			const setup = () => {
-				const card = cardFactory.buildWithId();
-				const targetColumn = columnFactory.buildWithId();
+				const card = cardFactory.build();
+				const targetColumn = columnFactory.build();
 
 				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
 				boardDoRepo.findById.mockResolvedValue(targetColumn);
@@ -126,7 +126,7 @@ describe(BoardDoService.name, () => {
 	describe('deleteWithDescendants', () => {
 		describe('when deleting an object', () => {
 			const setup = () => {
-				const elements = textElementFactory.buildListWithId(3);
+				const elements = textElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
 				const cardId = card.id;
 

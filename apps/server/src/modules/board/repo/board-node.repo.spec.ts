@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNode, CardNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardNodeFactory,
@@ -31,52 +30,6 @@ describe('BoardNodeRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-	});
-
-	describe('findById', () => {
-		const setup = async () => {
-			const columnBoardNode = columnBoardNodeFactory.buildWithId();
-			await em.persistAndFlush(columnBoardNode);
-			const columnNodes = columnNodeFactory.buildList(2, { parent: columnBoardNode });
-			await em.persistAndFlush(columnNodes);
-			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
-			await em.persistAndFlush(cardNodes);
-			em.clear();
-
-			return { columnBoardNode, columnNodes, cardNodes };
-		};
-
-		it('should return the correct board node for the id', async () => {
-			const { cardNodes } = await setup();
-			const foundNode = await repo.findById(BoardNode, cardNodes[0].id);
-
-			expect(foundNode.id).toBe(cardNodes[0].id);
-			expect(foundNode.pathOfChildren).toBe(cardNodes[0].pathOfChildren);
-		});
-	});
-
-	describe('findByIds', () => {
-		const setup = async () => {
-			const columnBoardNode = columnBoardNodeFactory.buildWithId();
-			await em.persistAndFlush(columnBoardNode);
-			const columnNodes = columnNodeFactory.buildList(2, { parent: columnBoardNode });
-			await em.persistAndFlush(columnNodes);
-			const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
-			await em.persistAndFlush(cardNodes);
-			em.clear();
-
-			return { columnBoardNode, columnNodes, cardNodes };
-		};
-
-		it('should return the correct board node for the id', async () => {
-			const { cardNodes } = await setup();
-			const cardNodeIds = cardNodes.map((node) => node.id);
-			const foundNodes = await repo.findByIds(BoardNode, cardNodeIds);
-			const foundNodeIds = foundNodes.map((node) => node.id);
-
-			expect(foundNodeIds).toContain(cardNodeIds[0]);
-			expect(foundNodeIds).toContain(cardNodeIds[1]);
-		});
 	});
 
 	describe('findDescendants', () => {
@@ -248,44 +201,6 @@ describe('BoardNodeRepo', () => {
 
 				expect(returnedDescendants).toHaveLength(0);
 			});
-		});
-	});
-
-	describe('save', () => {
-		it('should create new board nodes', async () => {
-			const nodes = cardNodeFactory.buildListWithId(3);
-
-			await repo.save(nodes);
-			em.clear();
-
-			const result = await em.find(CardNode, {});
-			expect(result).toEqual(nodes);
-		});
-
-		it('should update existing board nodes', async () => {
-			const node = cardNodeFactory.buildWithId({ title: 'before' });
-			await em.persistAndFlush(node);
-			node.title = 'after';
-
-			await repo.save(node);
-			em.clear();
-
-			const result = await em.findOneOrFail(CardNode, node.id);
-			expect(result.title).toEqual('after');
-		});
-
-		it('should be able to do both - create and update', async () => {
-			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
-			await em.persistAndFlush(node1);
-			em.clear();
-			const node2 = cardNodeFactory.buildWithId({ title: 'created' });
-			node1.title = 'after';
-
-			await repo.save([node1, node2]);
-			em.clear();
-
-			const result = await em.find(CardNode, {});
-			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
 		});
 	});
 });
