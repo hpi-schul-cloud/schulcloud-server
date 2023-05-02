@@ -11,8 +11,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { CourseGroupRule, CourseRule } from '.';
-import { AuthorizationHelper } from '../authorization.helper';
-import { Action } from '../types';
+import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
+import { Action } from '../../../modules/authorization/types';
 import { LessonRule } from './lesson.rule';
 
 describe('LessonRule', () => {

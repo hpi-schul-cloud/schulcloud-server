@@ -11,7 +11,7 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
-} from './rules';
+} from '../../shared/domain/rules';
 import { AuthorizableObject, AuthorizationContext, Rule } from './types';
 
 @Injectable()

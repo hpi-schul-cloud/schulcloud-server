@@ -15,7 +15,7 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
-} from './rules';
+} from '../../shared/domain/rules';
 
 describe('RuleManager', () => {
 	let service: RuleManager;

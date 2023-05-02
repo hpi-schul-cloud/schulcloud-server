@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../authorization.helper';
-import { Action } from '../types';
+import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
+import { Action } from '../../../modules/authorization/types';
 import { CourseRule } from './course.rule';
 
 describe('CourseRule', () => {

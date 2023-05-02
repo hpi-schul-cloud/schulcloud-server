@@ -19,7 +19,7 @@ import { AuthorizationService } from './authorization.service';
 import { FeathersAuthProvider, FeathersAuthorizationService } from './feathers';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { ALL_RULES } from './rules';
+import { ALL_RULES } from '../../shared/domain/rules';
 
 @Module({
 	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],

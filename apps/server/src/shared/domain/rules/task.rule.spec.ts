@@ -4,8 +4,8 @@ import { Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
-import { AuthorizationHelper } from '../authorization.helper';
-import { Action } from '../types';
+import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
+import { Action } from '../../../modules/authorization/types';
 
 describe('TaskRule', () => {
 	let service: TaskRule;

@@ -10,8 +10,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, SubmissionRule, TaskRule } from '.';
-import { AuthorizationHelper } from '../authorization.helper';
-import { Action } from '../types';
+import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
+import { Action } from '../../../modules/authorization/types';
 
 const buildUserWithPermission = (permission) => {
 	const role = roleFactory.buildWithId({ permissions: [permission] });
