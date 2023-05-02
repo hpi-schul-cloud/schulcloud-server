@@ -54,11 +54,6 @@ jobs:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
-      - name: Cache Jest cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/jest_rt
-          key: ${{ hashFiles('**/package-lock.json') }}
       - name: nest:test:cov - test all with coverage
         timeout-minutes: 25
         run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov:ci
