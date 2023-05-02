@@ -1,18 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '../../../types/content-elements.enum';
+import { ContentElementType } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class TextElementContent {
-	constructor({ text }: TextElementContent) {
-		this.text = text;
+export class FileElementContent {
+	constructor({ caption }: FileElementContent) {
+		this.caption = caption;
 	}
 
 	@ApiProperty()
-	text: string;
+	caption: string;
 }
 
-export class TextElementResponse {
-	constructor({ id, content, timestamps, type }: TextElementResponse) {
+export class FileElementResponse {
+	constructor({ id, content, timestamps, type }: FileElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;
@@ -28,7 +28,7 @@ export class TextElementResponse {
 	type: ContentElementType;
 
 	@ApiProperty()
-	content: TextElementContent;
+	content: FileElementContent;
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;
