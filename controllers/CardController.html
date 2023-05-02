@@ -135,7 +135,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>createElement(urlParams: <a href="../classes/CardUrlParams.html" target="_self">CardUrlParams</a>, bodyParams: <a href="../classes/CreateContentElementBody.html" target="_self">CreateContentElementBody</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -143,14 +143,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(TextElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(TextElementResponse, FileElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:108</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:110</a></div>
                 </td>
             </tr>
 
@@ -174,6 +174,18 @@
                                     <td>urlParams</td>
                                     <td>
                                                 <code><a href="../classes/CardUrlParams.html" target="_self" >CardUrlParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>bodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/CreateContentElementBody.html" target="_self" >CreateContentElementBody</a></code>
                                     </td>
 
                                     <td>
@@ -239,8 +251,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:94</a></div>
                 </td>
             </tr>
 
@@ -329,8 +341,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:43</a></div>
                 </td>
             </tr>
 
@@ -419,8 +431,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:64</a></div>
                 </td>
             </tr>
 
@@ -521,8 +533,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/board/controller/card.controller.ts:79</a></div>
                 </td>
             </tr>
 
@@ -612,20 +624,22 @@
 	Query,
 } from &#x27;@nestjs/common&#x27;;
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
+import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { BoardUc, CardUc } from &#x27;../uc&#x27;;
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
+	CreateContentElementBody,
+	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	TextElementResponse,
 } from &#x27;./dto&#x27;;
-import { CardResponseMapper, TextElementResponseMapper } from &#x27;./mapper&#x27;;
+import { CardResponseMapper, ContentElementResponseFactory } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Card&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -694,11 +708,11 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: &#x27;Create a new element on a card.&#x27; })
-	@ApiExtraModels(TextElementResponse)
+	@ApiExtraModels(TextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -707,11 +721,12 @@ export class CardController {
 	@Post(&#x27;:cardId/elements&#x27;)
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Body() bodyParams: CreateContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;AnyContentElementResponse&gt; {
-		const element &#x3D; await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
-
-		const response &#x3D; TextElementResponseMapper.mapToResponse(element);
+		const { type } &#x3D; bodyParams;
+		const element &#x3D; await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const response &#x3D; ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
 	}

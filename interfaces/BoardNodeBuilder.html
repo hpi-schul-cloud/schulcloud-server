@@ -102,6 +102,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="#buildFileElementNode" 
+>
+                                        buildFileElementNode
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#buildTextElementNode" 
 >
                                         buildTextElementNode
@@ -139,8 +145,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:11</a></div>
                 </td>
             </tr>
 
@@ -220,8 +226,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:9</a></div>
                 </td>
             </tr>
 
@@ -301,8 +307,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:10</a></div>
                 </td>
             </tr>
 
@@ -366,6 +372,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="buildFileElementNode"></a>
+                    <span class="name">
+                        <span ><b>buildFileElementNode</b></span>
+                        <a href="#buildFileElementNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>buildFileElementNode(fileElement: <a href="../classes/FileElement.html" target="_self">FileElement</a>, parent?: <a href="../entitys/Board.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:13</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fileElement</td>
+                                    <td>
+                                                <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>parent</td>
+                                    <td>
+                                                <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="buildTextElementNode"></a>
                     <span class="name">
                         <span ><b>buildTextElementNode</b></span>
@@ -382,8 +469,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-node-builder.ts:12</a></div>
                 </td>
             </tr>
 
@@ -452,6 +539,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card } from &#x27;../card.do&#x27;;
 import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
+import type { FileElement } from &#x27;../file-element.do&#x27;;
 import type { TextElement } from &#x27;../text-element.do&#x27;;
 import type { AnyBoardDo } from &#x27;./any-board-do&#x27;;
 
@@ -460,6 +548,7 @@ export interface BoardNodeBuilder {
 	buildColumnNode(column: Column, parent?: AnyBoardDo): void;
 	buildCardNode(card: Card, parent?: AnyBoardDo): void;
 	buildTextElementNode(textElement: TextElement, parent?: AnyBoardDo): void;
+	buildFileElementNode(fileElement: FileElement, parent?: AnyBoardDo): void;
 }
 </code></pre>
     </div>

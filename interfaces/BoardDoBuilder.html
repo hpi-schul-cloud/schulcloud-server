@@ -102,6 +102,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="#buildFileElement" 
+>
+                                        buildFileElement
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="#buildTextElement" 
 >
                                         buildTextElement
@@ -139,8 +145,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:11</a></div>
                 </td>
             </tr>
 
@@ -208,8 +214,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:10</a></div>
                 </td>
             </tr>
 
@@ -277,8 +283,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:9</a></div>
                 </td>
             </tr>
 
@@ -330,6 +336,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="buildFileElement"></a>
+                    <span class="name">
+                        <span ><b>buildFileElement</b></span>
+                        <a href="#buildFileElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>buildFileElement(boardNode: <a href="../entitys/FileElementNode.html" target="_self">FileElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:13</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>boardNode</td>
+                                    <td>
+                                                <code><a href="../entitys/FileElementNode.html" target="_self" >FileElementNode</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="buildTextElement"></a>
                     <span class="name">
                         <span ><b>buildTextElement</b></span>
@@ -346,8 +421,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/types/board-do.builder.ts:12</a></div>
                 </td>
             </tr>
 
@@ -401,10 +476,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card, Column, ColumnBoard, TextElement } from &#x27;../../../domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card, Column, ColumnBoard, FileElement, TextElement } from &#x27;../../../domainobject&#x27;;
 import type { CardNode } from &#x27;../card-node.entity&#x27;;
 import type { ColumnBoardNode } from &#x27;../column-board-node.entity&#x27;;
 import type { ColumnNode } from &#x27;../column-node.entity&#x27;;
+import type { FileElementNode } from &#x27;../file-element-node.entity&#x27;;
 import type { TextElementNode } from &#x27;../text-element-node.entity&#x27;;
 
 export interface BoardDoBuilder {
@@ -412,6 +488,7 @@ export interface BoardDoBuilder {
 	buildColumn(boardNode: ColumnNode): Column;
 	buildCard(boardNode: CardNode): Card;
 	buildTextElement(boardNode: TextElementNode): TextElement;
+	buildFileElement(boardNode: FileElementNode): FileElement;
 }
 </code></pre>
     </div>

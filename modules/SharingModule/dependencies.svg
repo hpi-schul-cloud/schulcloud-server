@@ -14,10 +14,6 @@
 <title>cluster_SharingModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-230.8 1195,-230.8 1195,-32.8 8,-32.8"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SharingModule_exports</title>
-<polygon fill="none" stroke="black" points="587,-170.8 587,-222.8 733,-222.8 733,-170.8 587,-170.8"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_SharingModule_imports</title>
 <polygon fill="none" stroke="black" points="554,-40.8 554,-92.8 1187,-92.8 1187,-40.8 554,-40.8"/>
@@ -25,6 +21,10 @@
 <g id="clust6" class="cluster">
 <title>cluster_SharingModule_providers</title>
 <polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 546,-92.8 546,-40.8 16,-40.8"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SharingModule_exports</title>
+<polygon fill="none" stroke="black" points="587,-170.8 587,-222.8 733,-222.8 733,-170.8 587,-170.8"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">

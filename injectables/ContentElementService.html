@@ -112,12 +112,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>, contentElementFactory: <a href="../injectables/ContentElementFactory.html" target="_self">ContentElementFactory</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -158,6 +158,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>contentElementFactory</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementFactory.html" target="_self" >ContentElementFactory</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -187,15 +199,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/Card.html" target="_self">Card</a>)</code>
+                    <code>create(parent: <a href="../classes/Card.html" target="_self">Card</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -227,13 +239,25 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >Promise&lt;TextElement&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >Promise&lt;AnyContentElementDo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -258,15 +282,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>)</code>
+                    <code>delete(element: <a href="../undefineds/AnyContentElementDo.html" target="_self">AnyContentElementDo</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:40</a></div>
                 </td>
             </tr>
 
@@ -289,7 +313,7 @@
                                 <tr>
                                     <td>element</td>
                                     <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >AnyContentElementDo</a></code>
                                     </td>
 
                                     <td>
@@ -336,8 +360,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:21</a></div>
                 </td>
             </tr>
 
@@ -375,7 +399,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >Promise&lt;TextElement&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >Promise&lt;AnyContentElementDo&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -400,15 +424,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>move(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>, targetCard: <a href="../classes/Card.html" target="_self">Card</a>, targetPosition: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>move(element: <a href="../undefineds/AnyContentElementDo.html" target="_self">AnyContentElementDo</a>, targetCard: <a href="../classes/Card.html" target="_self">Card</a>, targetPosition: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:44</a></div>
                 </td>
             </tr>
 
@@ -431,7 +455,7 @@
                                 <tr>
                                     <td>element</td>
                                     <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >AnyContentElementDo</a></code>
                                     </td>
 
                                     <td>
@@ -486,25 +510,38 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Card, EntityId, TextElement } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import {
+	AnyContentElementDo,
+	Card,
+	ContentElementFactory,
+	ContentElementType,
+	EntityId,
+	isAnyContentElement,
+} from &#x27;@shared/domain&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		private readonly contentElementFactory: ContentElementFactory
+	) {}
 
-	async findById(elementId: EntityId): Promise&lt;TextElement&gt; {
-		const column &#x3D; await this.boardDoRepo.findByClassAndId(TextElement, elementId);
-		return column;
+	async findById(elementId: EntityId): Promise&lt;AnyContentElementDo&gt; {
+		const element &#x3D; await this.boardDoRepo.findById(elementId);
+
+		if (!isAnyContentElement(element)) {
+			throw new NotFoundException(&#x60;There is no &#x27;${element.constructor.name}&#x27; with this id&#x60;);
+		}
+
+		return element;
 	}
 
-	async create(parent: Card): Promise&lt;TextElement&gt; {
-		const element &#x3D; new TextElement({
-			text: &#x60;&#x60;,
-		});
-
+	async create(parent: Card, type: ContentElementType): Promise&lt;AnyContentElementDo&gt; {
+		const element &#x3D; this.contentElementFactory.build(type);
 		parent.addChild(element);
 
 		await this.boardDoRepo.save(parent.children, parent);
@@ -512,11 +549,11 @@ export class ContentElementService {
 		return element;
 	}
 
-	async delete(element: TextElement): Promise&lt;void&gt; {
+	async delete(element: AnyContentElementDo): Promise&lt;void&gt; {
 		await this.boardDoService.deleteWithDescendants(element);
 	}
 
-	async move(element: TextElement, targetCard: Card, targetPosition: number): Promise&lt;void&gt; {
+	async move(element: AnyContentElementDo, targetCard: Card, targetPosition: number): Promise&lt;void&gt; {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 }

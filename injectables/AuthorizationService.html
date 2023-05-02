@@ -185,12 +185,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, loader: <a href="../injectables/ReferenceLoader.html" target="_self">ReferenceLoader</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, loader: <a href="../injectables/ReferenceLoader.html" target="_self">ReferenceLoader</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardNodeRule: <a href="../injectables/BoardNodeRule.html" target="_self">BoardNodeRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -339,6 +339,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>boardNodeRule</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeRule.html" target="_self" >BoardNodeRule</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -373,8 +385,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:54</a></div>
                 </td>
             </tr>
 
@@ -468,8 +480,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:79</a></div>
                 </td>
             </tr>
 
@@ -575,8 +587,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:90</a></div>
                 </td>
             </tr>
 
@@ -646,8 +658,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:60</a></div>
                 </td>
             </tr>
 
@@ -2176,17 +2188,18 @@ Please make sure you populate them before calling this method.</p>
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	BasePermissionManager,
+	BoardNodeRule,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
 	LessonRule,
+	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskRule,
 	TaskCardRule,
+	TaskRule,
 	User,
 	UserRule,
-	SchoolExternalToolRule,
 } from &#x27;@shared/domain&#x27;;
 import { IPermissionContext, PermissionTypes } from &#x27;@shared/domain/interface&#x27;;
 import { TeamRule } from &#x27;@shared/domain/rules/team.rule&#x27;;
@@ -2206,7 +2219,8 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly loader: ReferenceLoader,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule
+		private readonly schoolExternalToolRule: SchoolExternalToolRule,
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		super();
 		this.registerPermissions([
@@ -2220,6 +2234,7 @@ export class AuthorizationService extends BasePermissionManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
+			this.boardNodeRule,
 		]);
 	}
 

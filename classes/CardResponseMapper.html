@@ -187,9 +187,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Card, TextElement } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Card } from &#x27;@shared/domain&#x27;;
 import { CardResponse, TimestampsResponse, VisibilitySettingsResponse } from &#x27;../dto&#x27;;
-import { TextElementResponseMapper } from &#x27;./text-element-response.mapper&#x27;;
+import { ContentElementResponseFactory } from &#x27;./content-element-response.factory&#x27;;
 
 export class CardResponseMapper {
 	static mapToResponse(card: Card): CardResponse {
@@ -197,13 +197,7 @@ export class CardResponseMapper {
 			id: card.id,
 			title: card.title,
 			height: card.height,
-			elements: card.children.map((element) &#x3D;&gt; {
-				/* istanbul ignore next */
-				if (!(element instanceof TextElement)) {
-					throw new Error(&#x60;unsupported child type: ${element.constructor.name}&#x60;);
-				}
-				return TextElementResponseMapper.mapToResponse(element);
-			}),
+			elements: card.children.map((element) &#x3D;&gt; ContentElementResponseFactory.mapToResponse(element)),
 			visibilitySettings: new VisibilitySettingsResponse({}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: card.updatedAt, createdAt: card.createdAt }),
 		});

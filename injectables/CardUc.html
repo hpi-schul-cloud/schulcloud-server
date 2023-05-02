@@ -199,7 +199,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>createElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, type: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType</a>)</code>
                 </td>
             </tr>
 
@@ -251,13 +251,25 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >Promise&lt;TextElement&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/File.html" target="_self" >Promise&lt;TextElement | FileElement&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -289,8 +301,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:41</a></div>
                 </td>
             </tr>
 
@@ -455,8 +467,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/board/uc/card.uc.ts:51</a></div>
                 </td>
             </tr>
 
@@ -547,7 +559,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Card, EntityId, TextElement } from &#x27;@shared/domain&#x27;;
+import { Card, ContentElementType, EntityId, FileElement, TextElement } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { CardService, ContentElementService } from &#x27;../service&#x27;;
 
@@ -571,13 +583,17 @@ export class CardUc {
 
 	// --- elements ---
 
-	async createElement(userId: EntityId, cardId: EntityId): Promise&lt;TextElement&gt; {
-		this.logger.debug({ action: &#x27;createElement&#x27;, userId, cardId });
+	async createElement(
+		userId: EntityId,
+		cardId: EntityId,
+		type: ContentElementType
+	): Promise&lt;TextElement | FileElement&gt; {
+		this.logger.debug({ action: &#x27;createElement&#x27;, userId, cardId, type });
 
 		const card &#x3D; await this.cardService.findById(cardId);
 
 		// TODO check permissions
-		const element &#x3D; await this.elementService.create(card);
+		const element &#x3D; await this.elementService.create(card, type);
 
 		return element;
 	}
