@@ -1053,7 +1053,7 @@ describe('Task Controller (API)', () => {
 });
 
 // TODO: REMOVE after refactoring
-describe('Task Controller (API)2', () => {
+describe('Task Controller (API) 2', () => {
 	describe('As user with write permissions in courses', () => {
 		let app: INestApplication;
 		let em: EntityManager;
@@ -1090,6 +1090,7 @@ describe('Task Controller (API)2', () => {
 		});
 
 		beforeEach(async () => {
+			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 			await cleanupCollections(em);
 		});
 
