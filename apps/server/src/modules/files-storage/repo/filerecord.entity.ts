@@ -40,8 +40,6 @@ export class FileSecurityCheck {
 	}
 }
 
-// connection to the props from DO
-// important to allow id optional
 export interface IFileRecordProperties {
 	id?: EntityId;
 	size: number;
