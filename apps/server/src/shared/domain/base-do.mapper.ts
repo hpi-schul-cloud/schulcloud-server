@@ -79,19 +79,6 @@ export abstract class BaseDOMapper<
 
 		return domainObjects;
 	}
-	/*
-	protected assign(domainObject: DomainObject, entity: Entity): Entity {
-		const props = domainObject.getProps();
-		for (const key in props) {
-			if (Object.prototype.hasOwnProperty.call(entity, key)) {
-				entity[key] =
-			}
-		}
-	}
-	*/
-
-	// how to handle array -> collection
-	// additional orm things
 
 	public createOrMergeintoEntities(domainObjects: DomainObject[], entities: Entity[]): Entity[] {
 		domainObjects.forEach((domainObject) => {
