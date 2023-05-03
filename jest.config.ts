@@ -2,7 +2,7 @@
 import type { Config } from '@jest/types';
 
 // Sync object
-const config: Config.InitialOptions = {
+let config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
 	preset: 'ts-jest',
@@ -15,15 +15,6 @@ const config: Config.InitialOptions = {
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
 	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
-	coverageThreshold: {
-		global: {
-			branches: 95,
-			functions: 95,
-			lines: 95,
-			statements: -3,
-		},
-		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
-	},
 	testEnvironment: 'node',
 	// detectOpenHandles: true,
 	// detectLeaks: true,
@@ -37,4 +28,20 @@ const config: Config.InitialOptions = {
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action
 };
+
+if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {
+	config = {
+		...config,
+		coverageThreshold: {
+			global: {
+				branches: 95,
+				functions: 95,
+				lines: 95,
+				statements: -3,
+			},
+			// add custom paths: './apps/server/path...': { branches: X, functions: ... }
+		},
+	};
+}
+
 export default config;
