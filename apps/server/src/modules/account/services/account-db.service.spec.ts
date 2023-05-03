@@ -513,5 +513,10 @@ describe('AccountDbService', () => {
 			expect(accountRepo.findMany).toHaveBeenCalledWith(1, 1);
 			expect(foundAccounts).toBeDefined();
 		});
+		it('should call repo', async () => {
+			const foundAccounts = await accountService.findMany();
+			expect(accountRepo.findMany).toHaveBeenCalledWith(0, 100);
+			expect(foundAccounts).toBeDefined();
+		});
 	});
 });

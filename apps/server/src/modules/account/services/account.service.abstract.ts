@@ -36,5 +36,5 @@ export abstract class AbstractAccountService {
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	abstract findMany(offset: number, limit: number): Promise<AccountDto[]>;
+	abstract findMany(offset?: number, limit?: number): Promise<AccountDto[]>;
 }
