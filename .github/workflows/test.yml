@@ -61,7 +61,7 @@ jobs:
         timeout-minutes: 25
         run: export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
       - name: save-coverage
-        run: mv coverage/coverage-final.json coverage/${{matrix.shard}}.json
+        run: mv coverage/lcov.info coverage/${{matrix.shard}}.info
       - name: "upload-artifacts"
         uses: actions/upload-artifact@v3
         with:
@@ -80,7 +80,9 @@ jobs:
           name: coverage-artifacts
           path: coverage
       - name: Merge Code Coverage
-        run: npx nyc merge coverage/ merged-output/merged-coverage.json
+        run: >
+          apt-get install -y lcov
+          find coverage -name *.info -exec echo -a {} \; | xargs lcov -o merged-lcov.info
       - name: SonarCloud upload coverage
         uses: SonarSource/sonarcloud-github-action@v1.9
         env:
@@ -93,7 +95,7 @@ jobs:
             -Dsonar.projectKey=hpi-schul-cloud_schulcloud-server
             -Dsonar.exclusions=**/*.js
             -Dsonar.cpd.exclusions=**/controller/dto/*.ts,**/*.spec.ts
-            -Dsonar.javascript.lcov.reportPaths=./merged-output/merged-coverage.json  
+            -Dsonar.javascript.lcov.reportPaths=merged-lcov.info
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
