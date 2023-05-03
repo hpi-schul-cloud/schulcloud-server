@@ -2126,15 +2126,6 @@ This allows adding console commands to execute provider methods.</p>
 	collectCoverageFrom: [&#x27;apps/**/*.(t|j)s&#x27;],
 	coverageDirectory: &#x27;./coverage&#x27;,
 	coveragePathIgnorePatterns: [&#x27;.module.ts$&#x27;, &#x27;index.ts$&#x27;, &#x27;spec.ts$&#x27;],
-	coverageThreshold: {
-		global: {
-			branches: 95,
-			functions: 95,
-			lines: 95,
-			statements: -3,
-		},
-		// add custom paths: &#x27;./apps/server/path...&#x27;: { branches: X, functions: ... }
-	},
 	testEnvironment: &#x27;node&#x27;,
 	// detectOpenHandles: true,
 	// detectLeaks: true,
