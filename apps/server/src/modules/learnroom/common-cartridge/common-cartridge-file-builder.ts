@@ -17,6 +17,7 @@ import {
 	ICommonCartridgeResourceProps,
 	CommonCartridgeResourceItemElement,
 } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
 
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;
@@ -76,18 +77,14 @@ export class CommonCartridgeFileBuilder {
 
 	/**
 	 * This method creates organization xml-items in the exported xml file.
-	 * @param props An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.
+	 * @param organizations An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.
 	 * @returns The CommonCartridgeFileBuilder object.
 	 */
-	addOrganizationItems(props: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
-		props.forEach((prop) => {
-			this.organizations.push(new CommonCartridgeOrganizationItemElement(prop));
-			prop.contents?.forEach((contentProps) => {
-				const resourceProps: ICommonCartridgeResourceProps = {
-					identifier: contentProps.identifier,
-					type: 'webcontent',
-					href: `${prop.identifier}/${contentProps.identifier}_content.html`,
-				};
+	addOrganizationItems(organizations: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
+		organizations.forEach((organizationProps) => {
+			this.organizations.push(new CommonCartridgeOrganizationItemElement(organizationProps));
+			organizationProps.contents?.forEach((contentProps) => {
+				const resourceProps = this.mapOrganizationAndContentPropsToResourceProps(organizationProps, contentProps);
 				this.zipBuilder.addFile(
 					resourceProps.href,
 					Buffer.from(`<h1>${contentProps.title}</h1><p>${contentProps.content}</p>`)
@@ -100,29 +97,60 @@ export class CommonCartridgeFileBuilder {
 
 	/**
 	 * This method creates resources xml-items in the exported xml file.
-	 * @param props - An Array of ICommonCartridgeResourceProps objects that contain the resource properties.
+	 * @param resources - An Array of ICommonCartridgeResourceProps objects that contain the resource properties.
 	 * @returns The CommonCartridgeFileBuilder object.
 	 */
-	addResourceItems(props: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
-		props.forEach((prop) => this.resources.push(new CommonCartridgeResourceItemElement(prop)));
+	addResourceItems(resources: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
+		resources.forEach((resourceProps) => this.resources.push(new CommonCartridgeResourceItemElement(resourceProps)));
 		return this;
 	}
 
 	/**
 	 * This method adds assignments xml-items in the exported xml file.
-	 * @param props - An array of objects that contains the properties of each assignment.
+	 * @param assignments - An array of objects that contains the properties of each assignment.
 	 * @returns The CommonCartridgeFileBuilder object.
 	 */
-	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
-		props.forEach((prop) => {
-			const resourceProps: ICommonCartridgeAssignmentResourceItemProps = {
-				identifier: prop.identifier,
-				type: 'webcontent',
-				href: `${prop.identifier}/assignment.html`,
-			};
-			this.zipBuilder.addFile(resourceProps.href, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
+	addAssignments(assignments: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
+		assignments.forEach((assignmentProps) => {
+			const resourceProps = this.mapAssignmentPropsToResourceProps(assignmentProps);
+			this.zipBuilder.addFile(
+				resourceProps.href,
+				Buffer.from(`<h1>${assignmentProps.title}</h1>${assignmentProps.description}`)
+			);
 			this.resources.push(new CommonCartridgeAssignmentResourceItemElement(resourceProps));
 		});
 		return this;
+	}
+
+	/**
+	 * This private method maps ICommonCartridgeOrganizationProps and ICommonCartridgeLessonContentProps to ICommonCartridgeResourceProps.
+	 * @param organizationProps - ICommonCartridgeOrganizationProps
+	 * @param contentProps - ICommonCartridgeLessonContentProps
+	 * @returns ICommonCartridgeResourceProps
+	 */
+	private mapOrganizationAndContentPropsToResourceProps(
+		organizationProps: ICommonCartridgeOrganizationProps,
+		contentProps: ICommonCartridgeLessonContentProps
+	): ICommonCartridgeResourceProps {
+		return {
+			identifier: contentProps.identifier,
+			type: 'webcontent',
+			href: `${organizationProps.identifier}/${contentProps.identifier}_content.html`,
+		};
+	}
+
+	/**
+	 * This private method maps ICommonCartridgeAssignmentProps to ICommonCartridgeAssignmentResourceItemProps.
+	 * @param assignmentProps - ICommonCartridgeAssignmentProps
+	 * @returns ICommonCartridgeAssignmentResourceItemProps
+	 */
+	private mapAssignmentPropsToResourceProps(
+		assignmentProps: ICommonCartridgeAssignmentProps
+	): ICommonCartridgeAssignmentResourceItemProps {
+		return {
+			identifier: assignmentProps.identifier,
+			type: 'webcontent',
+			href: `${assignmentProps.identifier}/assignment.html`,
+		};
 	}
 }
