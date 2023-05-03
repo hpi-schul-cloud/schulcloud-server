@@ -93,7 +93,7 @@ jobs:
             -Dsonar.projectKey=hpi-schul-cloud_schulcloud-server
             -Dsonar.exclusions=**/*.js
             -Dsonar.cpd.exclusions=**/controller/dto/*.ts,**/*.spec.ts
-            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info  
+            -Dsonar.javascript.lcov.reportPaths=./merged-output/merged-coverage.json  
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
