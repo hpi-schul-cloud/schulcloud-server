@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
@@ -40,52 +40,90 @@ describe('Course Controller (API)', () => {
 		await app.close();
 	});
 
-	const setup = () => {
-		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
-		const user = userFactory.build({ roles });
+	describe('[GET] /courses/', () => {
+		const setup = () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
+			const user = userFactory.build({ roles });
 
-		return user;
-	};
+			return { user };
+		};
+		it('should find courses', async () => {
+			const { user: student } = setup();
+			const course = courseFactory.build({ name: 'course #1', students: [student] });
+			await em.persistAndFlush(course);
+			em.clear();
 
-	it('[FIND] courses', async () => {
-		const student = setup();
-		const course = courseFactory.build({ name: 'course #1', students: [student] });
-		await em.persistAndFlush(course);
-		em.clear();
+			currentUser = mapUserToCurrentUser(student);
 
-		currentUser = mapUserToCurrentUser(student);
+			const response = await request(app.getHttpServer()).get('/courses');
 
-		const response = await request(app.getHttpServer()).get('/courses');
-
-		expect(response.status).toEqual(200);
-		const body = response.body as CourseMetadataListResponse;
-		expect(typeof body.data[0].title).toBe('string');
+			expect(response.status).toEqual(200);
+			const body = response.body as CourseMetadataListResponse;
+			expect(typeof body.data[0].title).toBe('string');
+		});
 	});
 
-	it('[GET] course export', async () => {
-		if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
-		const user = setup();
-		const course = courseFactory.build({ name: 'course #1', students: [user] });
-		await em.persistAndFlush(course);
-		em.clear();
-		currentUser = mapUserToCurrentUser(user);
+	describe('[GET] /courses/:id', () => {
+		const setup = () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
+			const user = userFactory.build({ roles });
+			const course = courseFactory.build({ name: 'course #1', teachers: [user] });
+			return { user, course, roles };
+		};
+		it('should find course for teacher', async () => {
+			const { user, course } = setup();
 
-		const response = await request(app.getHttpServer()).get(`/courses/${course.id}/export`);
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(user);
 
-		expect(response.status).toEqual(200);
-		expect(response.body).toBeDefined();
+			const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
+
+			expect(response.status).toEqual(200);
+			expect(response.body).toBeDefined();
+		});
+		it('should throw if user is not teacher', async () => {
+			const { user, roles } = setup();
+			const unknownTeacher = userFactory.build({ roles });
+			const course = courseFactory.build({ name: 'course #1', teachers: [unknownTeacher] });
+
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer()).get(`/courses/${course.id}`).set('Accept', 'application/json').expect(500);
+		});
+		it('should throw if course is not found', async () => {
+			const { user, course } = setup();
+			const unknownId = new ObjectId().toHexString();
+
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(user);
+
+			await request(app.getHttpServer()).get(`/courses/${unknownId}`).set('Accept', 'application/json').expect(404);
+		});
 	});
 
-	it('[GET] course for teacher', async () => {
-		const user = setup();
-		const course = courseFactory.build({ name: 'course #1', teachers: [user] });
-		await em.persistAndFlush(course);
-		em.clear();
-		currentUser = mapUserToCurrentUser(user);
+	describe('[GET] /courses/:id/export', () => {
+		const setup = () => {
+			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
+			const user = userFactory.build({ roles });
 
-		const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
+			return { user };
+		};
+		it('should find course export', async () => {
+			if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
+			const { user } = setup();
+			const course = courseFactory.build({ name: 'course #1', students: [user] });
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(user);
 
-		expect(response.status).toEqual(200);
-		expect(response.body).toBeDefined();
+			const response = await request(app.getHttpServer()).get(`/courses/${course.id}/export`);
+
+			expect(response.status).toEqual(200);
+			expect(response.body).toBeDefined();
+		});
 	});
 });
