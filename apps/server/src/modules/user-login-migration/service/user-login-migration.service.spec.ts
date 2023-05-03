@@ -279,7 +279,7 @@ describe('UserLoginMigrationService', () => {
 			describe('when the school has no features yet', () => {
 				const setup = () => {
 					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+					const school: SchoolDO = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
 
 					const targetSystemId: EntityId = new ObjectId().toHexString();
 					const system: SystemDto = new SystemDto({
@@ -401,7 +401,7 @@ describe('UserLoginMigrationService', () => {
 				});
 				userLoginMigrationRepo.save.mockResolvedValue(expected);
 
-				const result: UserLoginMigrationDO = await service.setMigration(schoolId, true);
+				const result: UserLoginMigrationDO = await service.setMigration(schoolId, true, undefined, false);
 
 				expect(result).toEqual(expected);
 			});
