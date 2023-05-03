@@ -1,16 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission, User } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationEntityType } from './types';
+import { AllowedAuthorizationEntityType, AuthorizableObject, AuthorizationContext, Rule } from './types';
 
 describe('AuthorizationService', () => {
+	class TestRule implements Rule {
+		constructor(private returnValueOfIsAuthorized: boolean) {}
+
+		isApplicable(user: User, object: AuthorizableObject): boolean {
+			return true;
+		}
+
+		isAuthorized(user: User, object: AuthorizableObject, context: AuthorizationContext): boolean {
+			return this.returnValueOfIsAuthorized;
+		}
+	}
+
 	let service: AuthorizationService;
 	let ruleManager: DeepMocked<RuleManager>;
 	let loader: DeepMocked<ReferenceLoader>;
@@ -54,15 +66,18 @@ describe('AuthorizationService', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.isAuthorized.mockReturnValueOnce(false);
 
-				return { context, user };
+				const spy = jest.spyOn(service, 'isAuthorized').mockReturnValueOnce(false);
+
+				return { context, user, spy };
 			};
 
 			it('should throw ForbiddenException', () => {
-				const { context, user } = setup();
+				const { context, user, spy } = setup();
 
 				expect(() => service.checkAuthorization(user, user, context)).toThrow(ForbiddenException);
+
+				spy.mockRestore();
 			});
 		});
 
@@ -70,25 +85,30 @@ describe('AuthorizationService', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.isAuthorized.mockReturnValueOnce(true);
 
-				return { context, user };
+				const spy = jest.spyOn(service, 'isAuthorized').mockReturnValueOnce(true);
+
+				return { context, user, spy };
 			};
 
 			it('should not throw', () => {
-				const { context, user } = setup();
+				const { context, user, spy } = setup();
 
 				expect(() => service.checkAuthorization(user, user, context)).not.toThrow();
+
+				spy.mockRestore();
 			});
 		});
 	});
 
 	describe('isAuthorized', () => {
-		describe('when the delegated authorization request returns false', () => {
+		describe('when the selected rule returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.isAuthorized.mockReturnValueOnce(false);
+				const testRule = new TestRule(false);
+
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
 
 				return { context, user };
 			};
@@ -102,11 +122,13 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when the delegated authorization request returns true', () => {
+		describe('when the selected rule returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				ruleManager.isAuthorized.mockReturnValueOnce(true);
+				const testRule = new TestRule(true);
+
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
 
 				return { context, user };
 			};
@@ -191,14 +213,15 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when the delegated authorization request returns true', () => {
+		describe('when the selected rule returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
 				const entityName = AllowedAuthorizationEntityType.Course;
+				const testRule = new TestRule(true);
 
-				ruleManager.isAuthorized.mockReturnValueOnce(true);
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
 
 				return { context, userId, entityId, entityName };
 			};
@@ -212,14 +235,15 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when the delegated authorization request returns false', () => {
+		describe('when the selected rule returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
 				const entityName = AllowedAuthorizationEntityType.Course;
+				const testRule = new TestRule(false);
 
-				ruleManager.isAuthorized.mockReturnValueOnce(false);
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
 
 				return { context, userId, entityId, entityName };
 			};

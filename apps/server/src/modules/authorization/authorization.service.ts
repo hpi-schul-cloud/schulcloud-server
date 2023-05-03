@@ -20,7 +20,10 @@ export class AuthorizationService {
 	}
 
 	public isAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext): boolean {
-		return this.ruleManager.isAuthorized(user, entity, context);
+		const rule = this.ruleManager.selectRule(user, entity, context);
+		const isAuthorized = rule.isAuthorized(user, entity, context);
+
+		return isAuthorized;
 	}
 
 	public async checkAuthorizationByReferences(
@@ -46,7 +49,8 @@ export class AuthorizationService {
 				this.getUserWithPermissions(userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const isAuthorized = this.ruleManager.isAuthorized(user, entity, context);
+			const rule = this.ruleManager.selectRule(user, entity, context);
+			const isAuthorized = rule.isAuthorized(user, entity, context);
 
 			return isAuthorized;
 		} catch (err) {

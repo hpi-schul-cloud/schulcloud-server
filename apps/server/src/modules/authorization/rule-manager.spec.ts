@@ -2,8 +2,6 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder } from './authorization-context.builder';
-import { RuleManager } from './rule-manager';
 import {
 	BoardNodeRule,
 	CourseGroupRule,
@@ -17,6 +15,8 @@ import {
 	TeamRule,
 	UserRule,
 } from '../../shared/domain/rules';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { RuleManager } from './rule-manager';
 
 describe('RuleManager', () => {
 	let service: RuleManager;
@@ -74,9 +74,9 @@ describe('RuleManager', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('isAuthorized', () => {
-		// We only test for one rule here, because every rule behaves the same.
-		describe('when courseRule is applicable', () => {
+	describe('selectRule', () => {
+		// We only test for one rule here, because all rules behave the same.
+		describe('when CourseRule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const object = courseFactory.build();
@@ -100,7 +100,7 @@ describe('RuleManager', () => {
 			it('should call isApplicable on all rules', () => {
 				const { user, object, context } = setup();
 
-				service.isAuthorized(user, object, context);
+				service.selectRule(user, object, context);
 
 				expect(courseRule.isApplicable).toBeCalled();
 				expect(courseGroupRule.isApplicable).toBeCalled();
@@ -115,22 +115,12 @@ describe('RuleManager', () => {
 				expect(boardNodeRule.isApplicable).toBeCalled();
 			});
 
-			it('should call isAuthorized only on CourseRule', () => {
+			it('should return CourseRule', () => {
 				const { user, object, context } = setup();
 
-				service.isAuthorized(user, object, context);
+				const result = service.selectRule(user, object, context);
 
-				expect(courseRule.isAuthorized).toBeCalledWith(user, object, context);
-				expect(courseGroupRule.isAuthorized).not.toBeCalled();
-				expect(lessonRule.isAuthorized).not.toBeCalled();
-				expect(schoolRule.isAuthorized).not.toBeCalled();
-				expect(userRule.isAuthorized).not.toBeCalled();
-				expect(taskRule.isAuthorized).not.toBeCalled();
-				expect(taskCardRule.isAuthorized).not.toBeCalled();
-				expect(teamRule.isAuthorized).not.toBeCalled();
-				expect(submissionRule.isAuthorized).not.toBeCalled();
-				expect(schoolExternalToolRule.isAuthorized).not.toBeCalled();
-				expect(boardNodeRule.isAuthorized).not.toBeCalled();
+				expect(result).toBe(courseRule);
 			});
 		});
 
@@ -158,7 +148,7 @@ describe('RuleManager', () => {
 			it('should throw NotImplementedException', () => {
 				const { user, object, context } = setup();
 
-				expect(() => service.isAuthorized(user, object, context)).toThrow(NotImplementedException);
+				expect(() => service.selectRule(user, object, context)).toThrow(NotImplementedException);
 			});
 		});
 
@@ -186,7 +176,7 @@ describe('RuleManager', () => {
 			it('should throw InternalServerErrorException', () => {
 				const { user, object, context } = setup();
 
-				expect(() => service.isAuthorized(user, object, context)).toThrow(InternalServerErrorException);
+				expect(() => service.selectRule(user, object, context)).toThrow(InternalServerErrorException);
 			});
 		});
 	});

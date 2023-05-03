@@ -47,11 +47,11 @@ export class RuleManager {
 		];
 	}
 
-	public isAuthorized(user: User, object: AuthorizableObject, context: AuthorizationContext) {
+	public selectRule(user: User, object: AuthorizableObject, context: AuthorizationContext): Rule {
 		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 
-		return rule.isAuthorized(user, object, context);
+		return rule;
 	}
 
 	private matchSingleRule(rules: Rule[]) {
