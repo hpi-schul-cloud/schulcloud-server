@@ -156,8 +156,8 @@
                                 <a href="#updateUsername" >updateUsername</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#encryptPassword" >encryptPassword</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#validatePassword" >validatePassword</a>
                             </li>
                         </ul>
                     </td>
@@ -177,12 +177,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(identityManager: <a href="../classes/IdentityManagementService.html" target="_self">IdentityManagementService</a>)</code>
+<code>constructor(identityManager: <a href="../classes/IdentityManagementService.html" target="_self">IdentityManagementService</a>, accountIdmToDtoMapper: <a href="../injectables/AccountIdmToDtoMapper.html" target="_self">AccountIdmToDtoMapper</a>, accountLookupService: <a href="../injectables/AccountLookupService.html" target="_self">AccountLookupService</a>, idmOauthService: <a href="../classes/IdentityManagementOauthService.html" target="_self">IdentityManagementOauthService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -204,6 +204,42 @@
                                                   
                                                         <td>
                                                                         <code><a href="../classes/IdentityManagementService.html" target="_self" >IdentityManagementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accountIdmToDtoMapper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountIdmToDtoMapper.html" target="_self" >AccountIdmToDtoMapper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accountLookupService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountLookupService.html" target="_self" >AccountLookupService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>idmOauthService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/IdentityManagementOauthService.html" target="_self" >IdentityManagementOauthService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -248,8 +284,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:99</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:122</a></div>
                 </td>
             </tr>
 
@@ -337,7 +373,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:118</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:146</a></code>
 </div>
                 </td>
             </tr>
@@ -414,7 +450,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:123</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:151</a></code>
 </div>
                 </td>
             </tr>
@@ -491,7 +527,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:17</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:22</a></code>
 </div>
                 </td>
             </tr>
@@ -568,7 +604,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:27</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:42</a></code>
 </div>
                 </td>
             </tr>
@@ -645,7 +681,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:32</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:51</a></code>
 </div>
                 </td>
             </tr>
@@ -722,7 +758,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:37</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:60</a></code>
 </div>
                 </td>
             </tr>
@@ -811,7 +847,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:129</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:157</a></code>
 </div>
                 </td>
             </tr>
@@ -900,7 +936,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:22</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:28</a></code>
 </div>
                 </td>
             </tr>
@@ -965,15 +1001,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getIdmAccountId(schoolCloudId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getIdmAccountId(accountId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="133"
-                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:133</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="161"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:161</a></div>
                 </td>
             </tr>
 
@@ -994,7 +1030,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>schoolCloudId</td>
+                                    <td>accountId</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1011,7 +1047,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>unknown</code>
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1049,7 +1085,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:63</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:86</a></code>
 </div>
                 </td>
             </tr>
@@ -1126,7 +1162,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:54</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:72</a></code>
 </div>
                 </td>
             </tr>
@@ -1165,7 +1201,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1203,7 +1239,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:42</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:66</a></code>
 </div>
                 </td>
             </tr>
@@ -1266,7 +1302,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1299,8 +1335,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-idm.service.ts:114</a></div>
                 </td>
             </tr>
 
@@ -1400,7 +1436,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:59</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:78</a></code>
 </div>
                 </td>
             </tr>
@@ -1489,7 +1525,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:111</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:134</a></code>
 </div>
                 </td>
             </tr>
@@ -1578,7 +1614,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:104</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:127</a></code>
 </div>
                 </td>
             </tr>
@@ -1643,18 +1679,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="encryptPassword"></a>
+                    <a name="validatePassword"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span ><b>encryptPassword</b></span>
-                        <a href="#encryptPassword"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Async</span>
+                        <span ><b>validatePassword</b></span>
+                        <a href="#validatePassword"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>encryptPassword(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>validatePassword(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, comparePassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1667,7 +1703,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:45</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:141</a></code>
 </div>
                 </td>
             </tr>
@@ -1689,7 +1725,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>password</td>
+                                    <td>account</td>
+                                    <td>
+                                                <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>comparePassword</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1706,7 +1754,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1724,64 +1772,87 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-
-import { EntityId, IAccountUpdate } from &#x27;@shared/domain&#x27;;
-import { IdentityManagementService } from &#x27;@shared/infra/identity-management/identity-management.service&#x27;;
-import { AccountIdmToDtoMapper } from &#x27;../mapper/account-idm-to-dto.mapper&#x27;;
+import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
+import { Counted, EntityId, IAccount, IAccountUpdate } from &#x27;@shared/domain&#x27;;
+import { IdentityManagementService, IdentityManagementOauthService } from &#x27;@shared/infra/identity-management&#x27;;
+import { AccountIdmToDtoMapper } from &#x27;../mapper&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
 import { AccountDto, AccountSaveDto } from &#x27;./dto&#x27;;
+import { AccountLookupService } from &#x27;./account-lookup.service&#x27;;
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
-	constructor(private readonly identityManager: IdentityManagementService) {
+	constructor(
+		private readonly identityManager: IdentityManagementService,
+		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
+		private readonly accountLookupService: AccountLookupService,
+		private readonly idmOauthService: IdentityManagementOauthService
+	) {
 		super();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findById(id: EntityId): Promise&lt;AccountDto&gt; {
-		throw new NotImplementedException();
+		const result &#x3D; await this.identityManager.findAccountById(id);
+		const account &#x3D; this.accountIdmToDtoMapper.mapToDto(result);
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMultipleByUserId(userIds: EntityId[]): Promise&lt;AccountDto[]&gt; {
-		throw new NotImplementedException();
+		const results &#x3D; new Array&lt;IAccount&gt;();
+		for (const userId of userIds) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				results.push(await this.identityManager.findAccountByFctIntId(userId));
+			} catch {
+				// ignore entry
+			}
+		}
+		const accounts &#x3D; results.map((result) &#x3D;&gt; this.accountIdmToDtoMapper.mapToDto(result));
+		return accounts;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserId(userId: EntityId): Promise&lt;AccountDto | null&gt; {
-		throw new NotImplementedException();
+		try {
+			const result &#x3D; await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
+			return null;
+		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserIdOrFail(userId: EntityId): Promise&lt;AccountDto&gt; {
-		throw new NotImplementedException();
+		try {
+			const result &#x3D; await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
+			throw new EntityNotFoundError(&#x60;Account with userId ${userId} not found&#x60;);
+		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise&lt;AccountDto | null&gt; {
-		throw new NotImplementedException();
+		const [accounts] &#x3D; await this.searchByUsernameExactMatch(username);
+		const account &#x3D; accounts.find((tempAccount) &#x3D;&gt; tempAccount.systemId &#x3D;&#x3D;&#x3D; systemId) || null;
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async searchByUsernamePartialMatch(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		userName: string,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		skip: number,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		limit: number
-	): Promise&lt;{ accounts: AccountDto[]; total: number }&gt; {
-		throw new NotImplementedException();
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
+		const [results, total] &#x3D; await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
+		const accounts &#x3D; results.map((result) &#x3D;&gt; this.accountIdmToDtoMapper.mapToDto(result));
+		return [accounts, total];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	async searchByUsernameExactMatch(userName: string): Promise&lt;{ accounts: AccountDto[]; total: number }&gt; {
-		throw new NotImplementedException();
+	async searchByUsernameExactMatch(userName: string): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
+		const [results, total] &#x3D; await this.identityManager.findAccountsByUsername(userName, { exact: true });
+		const accounts &#x3D; results.map((result) &#x3D;&gt; this.accountIdmToDtoMapper.mapToDto(result));
+		return [accounts, total];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise&lt;AccountDto&gt; {
-		throw new NotImplementedException();
+		const attributeName &#x3D; &#x27;lastTriedFailedLogin&#x27;;
+		const id &#x3D; await this.getIdmAccountId(accountId);
+		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
+		const updatedAccount &#x3D; await this.identityManager.findAccountById(id);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise&lt;AccountDto&gt; {
@@ -1809,7 +1880,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 
 		const updatedAccount &#x3D; await this.identityManager.findAccountById(accountId);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise&lt;string&gt; {
@@ -1829,14 +1900,19 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id &#x3D; await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount &#x3D; await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise&lt;AccountDto&gt; {
 		const id &#x3D; await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount &#x3D; await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+	}
+
+	async validatePassword(account: AccountDto, comparePassword: string): Promise&lt;boolean&gt; {
+		const jwt &#x3D; await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
+		return jwt !&#x3D;&#x3D; undefined;
 	}
 
 	async delete(accountRefId: EntityId): Promise&lt;void&gt; {
@@ -1854,9 +1930,12 @@ export class AccountServiceIdm extends AbstractAccountService {
 		throw new NotImplementedException();
 	}
 
-	private async getIdmAccountId(schoolCloudId: string) {
-		const idmAccount &#x3D; await this.identityManager.findAccountByTecRefId(schoolCloudId);
-		return idmAccount.id;
+	private async getIdmAccountId(accountId: string): Promise&lt;string&gt; {
+		const externalId &#x3D; await this.accountLookupService.getExternalId(accountId);
+		if (!externalId) {
+			throw new EntityNotFoundError(&#x60;Account with id ${accountId} not found&#x60;);
+		}
+		return externalId;
 	}
 }
 </code></pre>

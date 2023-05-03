@@ -742,8 +742,8 @@ export class AuthenticationService {
 		if (systemId) {
 			account &#x3D; await this.accountService.findByUsernameAndSystemId(username, systemId);
 		} else {
-			const foundAccounts &#x3D; await this.accountService.searchByUsernameExactMatch(username);
-			account &#x3D; foundAccounts.accounts.find((foundAccount) &#x3D;&gt; foundAccount.systemId &#x3D;&#x3D; null);
+			const [accounts] &#x3D; await this.accountService.searchByUsernameExactMatch(username);
+			account &#x3D; accounts.find((foundAccount) &#x3D;&gt; foundAccount.systemId &#x3D;&#x3D; null);
 		}
 
 		if (!account) {

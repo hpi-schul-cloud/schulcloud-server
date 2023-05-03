@@ -488,12 +488,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	async validate(username?: string, password?: string): Promise&lt;ICurrentUser&gt; {
 		({ username, password } &#x3D; this.cleanupInput(username, password));
 		const account &#x3D; await this.authenticationService.loadAccount(username);
-		const accountPassword &#x3D; GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 
 		if (this.configService.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;)) {
 			const jwt &#x3D; await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
 		} else {
+			const accountPassword &#x3D; GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 			await this.checkCredentials(password, accountPassword, account);
 		}
 

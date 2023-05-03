@@ -458,13 +458,13 @@ export class AccountValidationService {
 	constructor(private accountRepo: AccountRepo, private userRepo: UserRepo) {}
 
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise&lt;boolean&gt; {
-		const [foundUsers, { accounts: foundAccounts }] &#x3D; await Promise.all([
+		const [foundUsers, [accounts]] &#x3D; await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
 			this.userRepo.findByEmail(email),
 			AccountEntityToDtoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
 		]);
 
-		const filteredAccounts &#x3D; foundAccounts.filter((foundAccount) &#x3D;&gt; foundAccount.systemId &#x3D;&#x3D;&#x3D; systemId);
+		const filteredAccounts &#x3D; accounts.filter((foundAccount) &#x3D;&gt; foundAccount.systemId &#x3D;&#x3D;&#x3D; systemId);
 
 		return !(
 			foundUsers.length &gt; 1 ||

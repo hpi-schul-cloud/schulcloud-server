@@ -246,7 +246,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>{ accounts: {}; total: number; }</code>
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Counted&lt;AccountDto[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -337,7 +337,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, Counted } from &#x27;@shared/domain&#x27;;
 import { AccountDto } from &#x27;../services/dto/account.dto&#x27;;
 
 export class AccountEntityToDtoMapper {
@@ -358,10 +358,10 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
-	static mapSearchResult(accountEntities: [Account[], number]) {
+	static mapSearchResult(accountEntities: [Account[], number]): Counted&lt;AccountDto[]&gt; {
 		const foundAccounts &#x3D; accountEntities[0];
 		const accountDtos: AccountDto[] &#x3D; AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
-		return { accounts: accountDtos, total: accountEntities[1] };
+		return [accountDtos, accountEntities[1]];
 	}
 
 	static mapAccountsToDto(accounts: Account[]): AccountDto[] {

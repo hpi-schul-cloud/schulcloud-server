@@ -105,11 +105,19 @@
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
-                                <a href="#findAccountByUsername" >findAccountByUsername</a>
+                                <a href="#findAccountsByUsername" >findAccountsByUsername</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
                                 <a href="#getAllAccounts" >getAllAccounts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#getUserAttribute" >getUserAttribute</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#setUserAttribute" >setUserAttribute</a>
                             </li>
                             <li>
                                     <span class="modifier">Abstract</span>
@@ -160,8 +168,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -255,8 +263,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:81</a></div>
                 </td>
             </tr>
 
@@ -334,8 +342,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -408,8 +416,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:43</a></div>
                 </td>
             </tr>
 
@@ -487,8 +495,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -548,26 +556,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findAccountByUsername"></a>
+                    <a name="findAccountsByUsername"></a>
                     <span class="name">
                         <span class="modifier">Abstract</span>
-                        <span ><b>findAccountByUsername</b></span>
-                        <a href="#findAccountByUsername"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findAccountsByUsername</b></span>
+                        <a href="#findAccountsByUsername"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAccountByUsername(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>findAccountsByUsername(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options?: <a href="../interfaces/Options.html" target="_self">SearchOptions</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:67</a></div>
                 </td>
             </tr>
 
@@ -606,17 +614,33 @@
 
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../interfaces/Options.html" target="_self" >SearchOptions</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                    <td>
+                                        <p>the search options to be applied.</p>
+
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;IAccount | undefined&gt;</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/Account.html" target="_self" >Promise&lt;Counted&lt;IAccount[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
-                        <p>the account if exists otherwise undefined</p>
+                        <p>the found accounts (might be empty).</p>
 
                     </div>
                 </td>
@@ -645,8 +669,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="67"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:67</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:74</a></div>
                 </td>
             </tr>
 
@@ -674,6 +698,227 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getUserAttribute"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>getUserAttribute</b></span>
+                        <a href="#getUserAttribute"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserAttribute(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attributeName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:89</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Type parameters :</b>
+                    <ul class="type-parameters">
+                        <li>TValue</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Gets an attribute value of a specific user.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the id of the user to get an attribute value.</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>attributeName</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the name of the attribute to get.</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;TValue | null&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>the attribute value if exists, null otherwise.</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setUserAttribute"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>setUserAttribute</b></span>
+                        <a href="#setUserAttribute"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setUserAttribute(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attributeName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, attributeValue: TValue)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:100</a></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Type parameters :</b>
+                    <ul class="type-parameters">
+                        <li>TValue</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Sets an attribute value of a specific user.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the id of the user to set an attribute value.</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>attributeName</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the name of the attribute to set.</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>attributeValue</td>
+                                    <td>
+                                            <code>TValue</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the value of the attribute to set.</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateAccount"></a>
                     <span class="name">
                         <span class="modifier">Abstract</span>
@@ -692,8 +937,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -787,8 +1032,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/shared/infra/identity-management/identity-management.service.ts:35</a></div>
                 </td>
             </tr>
 
@@ -870,7 +1115,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IAccount, IAccountUpdate } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Counted, IAccount, IAccountUpdate } from &#x27;@shared/domain&#x27;;
+
+export type SearchOptions &#x3D; {
+	exact?: boolean;
+	skip?: number;
+	limit?: number;
+};
 
 export abstract class IdentityManagementService {
 	/**
@@ -927,9 +1178,10 @@ export abstract class IdentityManagementService {
 	/**
 	 * Loads the account with the specific username.
 	 * @param username of the account to be loaded.
-	 * @returns the account if exists otherwise undefined
+	 * @param options the search options to be applied.
+	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountByUsername(username: string): Promise&lt;IAccount | undefined&gt;;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise&lt;Counted&lt;IAccount[]&gt;&gt;;
 
 	/**
 	 * Load all accounts.
@@ -944,6 +1196,29 @@ export abstract class IdentityManagementService {
 	 * @returns the accounts id if deleted successfully
 	 */
 	abstract deleteAccountById(accountId: string): Promise&lt;string&gt;;
+
+	/**
+	 * Gets an attribute value of a specific user.
+	 * @param userId the id of the user to get an attribute value.
+	 * @param attributeName the name of the attribute to get.
+	 * @returns the attribute value if exists, null otherwise.
+	 */
+	abstract getUserAttribute&lt;TValue extends boolean | number | string&gt;(
+		userId: string,
+		attributeName: string
+	): Promise&lt;TValue | null&gt;;
+
+	/**
+	 * Sets an attribute value of a specific user.
+	 * @param userId the id of the user to set an attribute value.
+	 * @param attributeName the name of the attribute to set.
+	 * @param attributeValue the value of the attribute to set.
+	 */
+	abstract setUserAttribute&lt;TValue extends boolean | number | string&gt;(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise&lt;void&gt;;
 }
 </code></pre>
     </div>

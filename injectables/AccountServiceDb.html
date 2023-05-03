@@ -93,6 +93,10 @@
                                 <a href="#deleteByUserId" >deleteByUserId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#encryptPassword" >encryptPassword</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
@@ -115,6 +119,11 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findMultipleByUserId" >findMultipleByUserId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getInternalId" >getInternalId</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -141,8 +150,7 @@
                                 <a href="#updateUsername" >updateUsername</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
-                                <a href="#encryptPassword" >encryptPassword</a>
+                                <a href="#validatePassword" >validatePassword</a>
                             </li>
                         </ul>
                     </td>
@@ -162,12 +170,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>)</code>
+<code>constructor(accountRepo: <a href="../injectables/AccountRepo.html" target="_self">AccountRepo</a>, accountLookupService: <a href="../injectables/AccountLookupService.html" target="_self">AccountLookupService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/account/services/account-db.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/account/services/account-db.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -189,6 +197,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/AccountRepo.html" target="_self" >AccountRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>accountLookupService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountLookupService.html" target="_self" >AccountLookupService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -238,7 +258,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:101</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:108</a></code>
 </div>
                 </td>
             </tr>
@@ -315,7 +335,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:105</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:113</a></code>
 </div>
                 </td>
             </tr>
@@ -368,6 +388,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="encryptPassword"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>encryptPassword</b></span>
+                        <a href="#encryptPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>encryptPassword(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-db.service.ts:142</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>password</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -392,7 +483,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:16</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:18</a></code>
 </div>
                 </td>
             </tr>
@@ -469,7 +560,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:26</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:29</a></code>
 </div>
                 </td>
             </tr>
@@ -546,7 +637,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:31</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:34</a></code>
 </div>
                 </td>
             </tr>
@@ -623,7 +714,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:39</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:42</a></code>
 </div>
                 </td>
             </tr>
@@ -712,7 +803,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:123</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:146</a></code>
 </div>
                 </td>
             </tr>
@@ -808,7 +899,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:21</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:24</a></code>
 </div>
                 </td>
             </tr>
@@ -861,6 +952,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getInternalId"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getInternalId</b></span>
+                        <a href="#getInternalId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getInternalId(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | ObjectId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">apps/server/src/modules/account/services/account-db.service.ts:134</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | ObjectId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ObjectId&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -885,7 +1048,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:44</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:47</a></code>
 </div>
                 </td>
             </tr>
@@ -962,7 +1125,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:118</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:122</a></code>
 </div>
                 </td>
             </tr>
@@ -1001,7 +1164,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1039,7 +1202,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:109</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:117</a></code>
 </div>
                 </td>
             </tr>
@@ -1102,7 +1265,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+                        <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;Counted&lt;AccountDto[]&gt;&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1140,7 +1303,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:86</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:91</a></code>
 </div>
                 </td>
             </tr>
@@ -1229,7 +1392,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:93</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:99</a></code>
 </div>
                 </td>
             </tr>
@@ -1318,7 +1481,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:79</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:83</a></code>
 </div>
                 </td>
             </tr>
@@ -1383,18 +1546,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="encryptPassword"></a>
+                    <a name="validatePassword"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span ><b>encryptPassword</b></span>
-                        <a href="#encryptPassword"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>validatePassword</b></span>
+                        <a href="#validatePassword"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>encryptPassword(password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>validatePassword(account: <a href="../classes/AccountDto.html" target="_self">AccountDto</a>, comparePassword: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1407,7 +1568,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:45</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/AccountService.html#source" target="_self" >AbstractAccountService:127</a></code>
 </div>
                 </td>
             </tr>
@@ -1429,7 +1590,19 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>password</td>
+                                    <td>account</td>
+                                    <td>
+                                                <code><a href="../classes/AccountDto.html" target="_self" >AccountDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>comparePassword</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
@@ -1446,7 +1619,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1464,21 +1637,24 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import bcrypt from &#x27;bcryptjs&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
-import { Account, EntityId } from &#x27;@shared/domain&#x27;;
+import { Account, Counted, EntityId } from &#x27;@shared/domain&#x27;;
 import { AccountRepo } from &#x27;../repo/account.repo&#x27;;
 import { AccountEntityToDtoMapper } from &#x27;../mapper&#x27;;
 import { AccountDto, AccountSaveDto } from &#x27;./dto&#x27;;
 import { AbstractAccountService } from &#x27;./account.service.abstract&#x27;;
+import { AccountLookupService } from &#x27;./account-lookup.service&#x27;;
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
-	constructor(private readonly accountRepo: AccountRepo) {
+	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
 		super();
 	}
 
 	async findById(id: EntityId): Promise&lt;AccountDto&gt; {
-		const accountEntity &#x3D; await this.accountRepo.findById(id);
+		const internalId &#x3D; await this.getInternalId(id);
+		const accountEntity &#x3D; await this.accountRepo.findById(internalId);
 		return AccountEntityToDtoMapper.mapToDto(accountEntity);
 	}
 
@@ -1508,7 +1684,8 @@ export class AccountServiceDb extends AbstractAccountService {
 	async save(accountDto: AccountSaveDto): Promise&lt;AccountDto&gt; {
 		let account: Account;
 		if (accountDto.id) {
-			account &#x3D; await this.accountRepo.findById(accountDto.id);
+			const internalId &#x3D; await this.getInternalId(accountDto.id);
+			account &#x3D; await this.accountRepo.findById(internalId);
 			account.userId &#x3D; new ObjectId(accountDto.userId);
 			account.systemId &#x3D; accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
 			account.username &#x3D; accountDto.username;
@@ -1541,21 +1718,24 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async updateUsername(accountId: EntityId, username: string): Promise&lt;AccountDto&gt; {
-		const account &#x3D; await this.accountRepo.findById(accountId);
+		const internalId &#x3D; await this.getInternalId(accountId);
+		const account &#x3D; await this.accountRepo.findById(internalId);
 		account.username &#x3D; username;
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise&lt;AccountDto&gt; {
-		const account &#x3D; await this.accountRepo.findById(accountId);
+		const internalId &#x3D; await this.getInternalId(accountId);
+		const account &#x3D; await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin &#x3D; lastTriedFailedLogin;
 		await this.accountRepo.save(account);
 		return AccountEntityToDtoMapper.mapToDto(account);
 	}
 
 	async updatePassword(accountId: EntityId, password: string): Promise&lt;AccountDto&gt; {
-		const account &#x3D; await this.accountRepo.findById(accountId);
+		const internalId &#x3D; await this.getInternalId(accountId);
+		const account &#x3D; await this.accountRepo.findById(internalId);
 		account.password &#x3D; await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
@@ -1563,25 +1743,41 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async delete(id: EntityId): Promise&lt;void&gt; {
-		return this.accountRepo.deleteById(id);
+		const internalId &#x3D; await this.getInternalId(id);
+		return this.accountRepo.deleteById(internalId);
 	}
 
 	async deleteByUserId(userId: EntityId): Promise&lt;void&gt; {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 
-	async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise&lt;{ accounts: AccountDto[]; total: number }&gt; {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
 		const accountEntities &#x3D; await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise&lt;{ accounts: AccountDto[]; total: number }&gt; {
+	async searchByUsernameExactMatch(userName: string): Promise&lt;Counted&lt;AccountDto[]&gt;&gt; {
 		const accountEntities &#x3D; await this.accountRepo.searchByUsernameExactMatch(userName);
 		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+	}
+
+	validatePassword(account: AccountDto, comparePassword: string): Promise&lt;boolean&gt; {
+		if (!account.password) {
+			return Promise.resolve(false);
+		}
+		return bcrypt.compare(comparePassword, account.password);
+	}
+
+	private async getInternalId(id: EntityId | ObjectId): Promise&lt;ObjectId&gt; {
+		const internalId &#x3D; await this.accountLookupService.getInternalId(id);
+		if (!internalId) {
+			throw new EntityNotFoundError(&#x60;Account with id ${id.toString()} not found&#x60;);
+		}
+		return internalId;
+	}
+
+	private encryptPassword(password: string): Promise&lt;string&gt; {
+		return bcrypt.hash(password, 10);
 	}
 
 	async findMany(offset &#x3D; 0, limit &#x3D; 100): Promise&lt;AccountDto[]&gt; {

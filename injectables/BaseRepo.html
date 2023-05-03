@@ -138,7 +138,7 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -201,8 +201,8 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:18</a></div>
                 </td>
             </tr>
 
@@ -272,8 +272,8 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:26</a></div>
                 </td>
             </tr>
 
@@ -336,15 +336,15 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | ObjectId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:30</a></div>
                 </td>
             </tr>
 
@@ -367,7 +367,7 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
                                 <tr>
                                     <td>id</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | ObjectId</a></code>
                                     </td>
 
                                     <td>
@@ -414,8 +414,8 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:22</a></div>
                 </td>
             </tr>
 
@@ -485,7 +485,7 @@ An example for a possible implementation is the <a href="../injectables/BaseDORe
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/repo/base.repo.ts:16</a></div>
                                 </td>
                             </tr>
 
@@ -501,6 +501,7 @@ import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BaseEntity } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 
 /**
  * This repo will be replaced in the future by a more domain driven repo, which is currently discussed in the arc chapter.
@@ -524,7 +525,7 @@ export abstract class BaseRepo&lt;T extends BaseEntity&gt; {
 		await this._em.removeAndFlush(entities);
 	}
 
-	async findById(id: EntityId): Promise&lt;T&gt; {
+	async findById(id: EntityId | ObjectId): Promise&lt;T&gt; {
 		const promise: Promise&lt;T&gt; &#x3D; this._em.findOneOrFail(this.entityName, id as FilterQuery&lt;T&gt;);
 		return promise;
 	}

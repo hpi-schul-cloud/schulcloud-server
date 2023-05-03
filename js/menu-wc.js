@@ -166,13 +166,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/AccountModule.html" data-type="entity-link" >AccountModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-AccountModule-40e6265cf43e5cfb31eaaa176b6064f17f6f34666ee2028ffc6821f746d79ab261297a7c0ec32831df338c7221eb55b374679c6db21bed83835cd8251c4c3882"' : 'data-target="#xs-injectables-links-module-AccountModule-40e6265cf43e5cfb31eaaa176b6064f17f6f34666ee2028ffc6821f746d79ab261297a7c0ec32831df338c7221eb55b374679c6db21bed83835cd8251c4c3882"' }>
+                                        'data-target="#injectables-links-module-AccountModule-2e5ab3f4440f932a86dd3bf52ac06f99e23f0bbba249ea7c56b970005ffe0946a23b430c4adc87ed181d75f4b43a6b907da5ad4fa90285eac2e53805fc41b00c"' : 'data-target="#xs-injectables-links-module-AccountModule-2e5ab3f4440f932a86dd3bf52ac06f99e23f0bbba249ea7c56b970005ffe0946a23b430c4adc87ed181d75f4b43a6b907da5ad4fa90285eac2e53805fc41b00c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AccountModule-40e6265cf43e5cfb31eaaa176b6064f17f6f34666ee2028ffc6821f746d79ab261297a7c0ec32831df338c7221eb55b374679c6db21bed83835cd8251c4c3882"' :
-                                        'id="xs-injectables-links-module-AccountModule-40e6265cf43e5cfb31eaaa176b6064f17f6f34666ee2028ffc6821f746d79ab261297a7c0ec32831df338c7221eb55b374679c6db21bed83835cd8251c4c3882"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-AccountModule-2e5ab3f4440f932a86dd3bf52ac06f99e23f0bbba249ea7c56b970005ffe0946a23b430c4adc87ed181d75f4b43a6b907da5ad4fa90285eac2e53805fc41b00c"' :
+                                        'id="xs-injectables-links-module-AccountModule-2e5ab3f4440f932a86dd3bf52ac06f99e23f0bbba249ea7c56b970005ffe0946a23b430c4adc87ed181d75f4b43a6b907da5ad4fa90285eac2e53805fc41b00c"' }>
+                                        <li class="link">
+                                            <a href="injectables/AccountLookupService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AccountLookupService</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/AccountRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >AccountRepo</a>
                                         </li>
@@ -2302,7 +2305,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AccountFactory.html" data-type="entity-link" >AccountFactory</a>
                             </li>
                             <li class="link">
-                                <a href="classes/AccountIdmToDtoMapper.html" data-type="entity-link" >AccountIdmToDtoMapper</a>
+                                <a href="classes/AccountIdmToDtoMapperDb.html" data-type="entity-link" >AccountIdmToDtoMapperDb</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/AccountIdmToDtoMapperIdm.html" data-type="entity-link" >AccountIdmToDtoMapperIdm</a>
                             </li>
                             <li class="link">
                                 <a href="classes/AccountResponse.html" data-type="entity-link" >AccountResponse</a>
@@ -3640,6 +3646,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <span class="icon ion-ios-arrow-down"></span>
                             </div>
                             <ul class="links collapse " ${ isNormalMode ? 'id="injectables-links"' : 'id="xs-injectables-links"' }>
+                                <li class="link">
+                                    <a href="injectables/AccountIdmToDtoMapper.html" data-type="entity-link" >AccountIdmToDtoMapper</a>
+                                </li>
                                 <li class="link">
                                     <a href="injectables/AntivirusService.html" data-type="entity-link" >AntivirusService</a>
                                 </li>
