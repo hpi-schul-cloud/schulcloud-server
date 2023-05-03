@@ -1,4 +1,10 @@
-import { IAccount, IAccountUpdate } from '@shared/domain';
+import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
+
+export type SearchOptions = {
+	exact?: boolean;
+	skip?: number;
+	limit?: number;
+};
 
 export abstract class IdentityManagementService {
 	/**
@@ -55,9 +61,10 @@ export abstract class IdentityManagementService {
 	/**
 	 * Loads the account with the specific username.
 	 * @param username of the account to be loaded.
-	 * @returns the account if exists otherwise undefined
+	 * @param options the search options to be applied.
+	 * @returns the found accounts (might be empty).
 	 */
-	abstract findAccountByUsername(username: string): Promise<IAccount | undefined>;
+	abstract findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>>;
 
 	/**
 	 * Load all accounts.
@@ -72,4 +79,27 @@ export abstract class IdentityManagementService {
 	 * @returns the accounts id if deleted successfully
 	 */
 	abstract deleteAccountById(accountId: string): Promise<string>;
+
+	/**
+	 * Gets an attribute value of a specific user.
+	 * @param userId the id of the user to get an attribute value.
+	 * @param attributeName the name of the attribute to get.
+	 * @returns the attribute value if exists, null otherwise.
+	 */
+	abstract getUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string
+	): Promise<TValue | null>;
+
+	/**
+	 * Sets an attribute value of a specific user.
+	 * @param userId the id of the user to set an attribute value.
+	 * @param attributeName the name of the attribute to set.
+	 * @param attributeValue the value of the attribute to set.
+	 */
+	abstract setUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise<void>;
 }

@@ -53,8 +53,10 @@ jobs:
       contents: write
     steps:
       - name: create sbom
-        uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
+        uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2
         with:
+          scan-type: 'image'
+          format: 'cyclonedx'
           image-ref: 'docker.io/schulcloud/schulcloud-server:${{ github.ref_name }}'
           output: 'dependency-results.sbom.json'
       - name: create release

@@ -22,7 +22,7 @@ export class BoardNodeRepo {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
 		const descendants = await this.em.find(BoardNode, {
-			path: { $re: `^${node.path}` },
+			path: { $re: `^${node.pathOfChildren}` },
 			level: levelQuery,
 		});
 
@@ -65,14 +65,16 @@ export class BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		// fill identity map with existing board nodes
-		const boardNodeIds = boardNodes.map((bn) => bn.id);
-		const existingNodes = await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
-		const nodeCache = new Map<EntityId, BoardNode>(existingNodes.map((node) => [node.id, node]));
+		// const boardNodeIds = boardNodes.map((bn) => bn.id);
+		// await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
+		// => should not be be necessary because existing board nodes should
+		//    already be part of the unit of work
 
 		boardNodes.forEach((node) => {
-			const existing = nodeCache.get(node.id);
+			const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, node.id);
 			if (existing) {
-				this.em.assign(existing, node);
+				const { createdAt, updatedAt } = existing;
+				this.em.assign(existing, { ...node, createdAt, updatedAt });
 			} else {
 				this.em.create(BoardNode, node, { managed: true, persist: true });
 			}

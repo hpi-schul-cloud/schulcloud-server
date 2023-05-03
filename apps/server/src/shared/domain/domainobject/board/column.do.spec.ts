@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
 import { Column } from './column.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardNodeBuilder } from './types';
@@ -9,14 +9,13 @@ describe(Column.name, () => {
 			const column = columnFactory.build();
 			const card = cardFactory.build();
 			const board = columnBoardFactory.build();
-			const builder = createMock<BoardNodeBuilder>();
+			const builder: DeepMocked<BoardNodeBuilder> = createMock<BoardNodeBuilder>();
 
 			return { column, card, builder, board };
 		};
 
 		it('should call the specific builder method', () => {
 			const { column, builder, board } = setup();
-			jest.spyOn(builder, 'buildColumnNode');
 
 			column.useBoardNodeBuilder(builder, board);
 
