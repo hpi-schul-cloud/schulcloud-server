@@ -10,11 +10,10 @@ import { Account, EntityId, Permission, PermissionService, Role, RoleName, Schoo
 import { UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import bcrypt from 'bcryptjs';
 
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ObjectId } from 'bson';
 import { ICurrentUser } from '@src/modules/authentication';
+import { ObjectId } from 'bson';
 import { IAccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
@@ -60,9 +59,7 @@ export class AccountUc {
 			if (!(await this.isSuperhero(currentUser))) {
 				throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
 			}
-			// eslint-disable-next-line no-case-declarations
-			const { accounts, total } = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
-			// eslint-disable-next-line no-case-declarations
+			const [accounts, total] = await this.accountService.searchByUsernamePartialMatch(query.value, skip, limit);
 			const accountList = accounts.map((tempAccount) => AccountResponseMapper.mapToResponse(tempAccount));
 			return new AccountSearchListResponse(accountList, total, skip, limit);
 		}
@@ -199,7 +196,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!params.passwordOld || !account.password || !(await this.checkPassword(params.passwordOld, account.password))) {
+		if (!params.passwordOld || !(await this.accountService.validatePassword(account, params.passwordOld))) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
@@ -285,9 +282,7 @@ export class AccountUc {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!account.password) {
-			throw new Error('The account does not have a password to compare against.');
-		} else if (await this.checkPassword(password, account.password)) {
+		if (await this.accountService.validatePassword(account, password)) {
 			throw new ForbiddenOperationError('New password can not be same as old password.');
 		}
 
@@ -436,9 +431,5 @@ export class AccountUc {
 		}
 
 		return roles;
-	}
-
-	private async checkPassword(enteredPassword: string, hashedAccountPassword: string) {
-		return bcrypt.compare(enteredPassword, hashedAccountPassword);
 	}
 }
