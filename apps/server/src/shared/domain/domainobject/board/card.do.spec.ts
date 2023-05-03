@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { cardFactory, columnBoardFactory, columnFactory, textElementFactory } from '@shared/testing';
 import { Card } from './card.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardNodeBuilder } from './types';
 
 describe(Card.name, () => {
 	describe('useBoardNodeBuilder', () => {
@@ -52,6 +52,28 @@ describe(Card.name, () => {
 			card.addChild(element, 1);
 
 			expect(card.children[1]).toEqual(element);
+		});
+	});
+
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const card = cardFactory.build();
+
+			card.accept(visitor);
+
+			expect(visitor.visitCard).toHaveBeenCalledWith(card);
+		});
+	});
+
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const card = cardFactory.build();
+
+			await card.acceptAsync(visitor);
+
+			expect(visitor.visitCardAsync).toHaveBeenCalledWith(card);
 		});
 	});
 });

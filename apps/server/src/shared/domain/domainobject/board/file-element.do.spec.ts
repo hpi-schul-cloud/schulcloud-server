@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { cardFactory, fileElementFactory } from '@shared/testing';
 import { FileElement } from './file-element.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardNodeBuilder } from './types';
 
 describe(FileElement.name, () => {
 	describe('useBoardNodeBuilder', () => {
@@ -36,6 +36,28 @@ describe(FileElement.name, () => {
 
 				expect(() => element.addChild(fileElementChild)).toThrow();
 			});
+		});
+	});
+
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const fileElement = fileElementFactory.build();
+
+			fileElement.accept(visitor);
+
+			expect(visitor.visitFileElement).toHaveBeenCalledWith(fileElement);
+		});
+	});
+
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const fileElement = fileElementFactory.build();
+
+			await fileElement.acceptAsync(visitor);
+
+			expect(visitor.visitFileElementAsync).toHaveBeenCalledWith(fileElement);
 		});
 	});
 });
