@@ -75,4 +75,17 @@ describe('Course Controller (API)', () => {
 		expect(response.status).toEqual(200);
 		expect(response.body).toBeDefined();
 	});
+
+	it('[GET] course for teacher', async () => {
+		const user = setup();
+		const course = courseFactory.build({ name: 'course #1', teachers: [user] });
+		await em.persistAndFlush(course);
+		em.clear();
+		currentUser = mapUserToCurrentUser(user);
+
+		const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
+
+		expect(response.status).toEqual(200);
+		expect(response.body).toBeDefined();
+	});
 });
