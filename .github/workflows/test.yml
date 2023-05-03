@@ -81,7 +81,7 @@ jobs:
           path: coverage
       - name: Merge Code Coverage
         run: |
-          apt-get install -y lcov
+          sudo apt-get install -y lcov
           find coverage -name *.info -exec echo -a {} \; | xargs lcov -o merged-lcov.info
       - name: SonarCloud upload coverage
         uses: SonarSource/sonarcloud-github-action@v1.9
