@@ -15,8 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';

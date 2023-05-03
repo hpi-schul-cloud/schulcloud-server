@@ -17,8 +17,13 @@ import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { ICurrentUser } from '@src/modules/authentication';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
@@ -39,11 +44,10 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import {
-	defaultVideoConferenceOptions,
 	VideoConferenceOptions,
+	defaultVideoConferenceOptions,
 } from '@src/modules/video-conference/interface/vc-options.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { ICurrentUser } from '@src/modules/authentication';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
