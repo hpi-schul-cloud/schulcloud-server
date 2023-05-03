@@ -14,13 +14,13 @@
 <title>cluster_LoggerModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-230.8 124,-230.8 124,-32.8 8,-32.8"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LoggerModule_providers</title>
-<polygon fill="none" stroke="black" points="19,-40.8 19,-92.8 113,-92.8 113,-40.8 19,-40.8"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_LoggerModule_exports</title>
 <polygon fill="none" stroke="black" points="28,-170.8 28,-222.8 104,-222.8 104,-170.8 28,-170.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LoggerModule_providers</title>
+<polygon fill="none" stroke="black" points="19,-40.8 19,-92.8 113,-92.8 113,-40.8 19,-40.8"/>
 </g>
 <!-- Logger  -->
 <g id="node1" class="node">

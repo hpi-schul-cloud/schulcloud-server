@@ -147,7 +147,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { TextElement } from &#x27;./text-element.do&#x27;;
-import type { AnyBoardDo } from &#x27;./types&#x27;;
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
 import type { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
 
@@ -167,6 +167,14 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
 		builder.buildCardNode(this, parent);
+	}
+
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitCard(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
+		await visitor.visitCardAsync(this);
 	}
 }
 

@@ -111,6 +111,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#accept" >accept</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Abstract</span>
+                                <a href="#acceptAsync" >acceptAsync</a>
+                            </li>
+                            <li>
                                 <a href="#addChild" >addChild</a>
                             </li>
                             <li>
@@ -327,6 +335,148 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="accept"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>accept</b></span>
+                        <a href="#accept"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>accept(visitor: <a href="../interfaces/BoardCompositeVisitor.html" target="_self">BoardCompositeVisitor</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>visitor</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardCompositeVisitor.html" target="_self" >BoardCompositeVisitor</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="acceptAsync"></a>
+                    <span class="name">
+                        <span class="modifier">Abstract</span>
+                        <span ><b>acceptAsync</b></span>
+                        <a href="#acceptAsync"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>acceptAsync(visitor: <a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self">BoardCompositeVisitorAsync</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/board-composite.do.ts:56</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>visitor</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self" >BoardCompositeVisitorAsync</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -630,7 +780,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import type { AnyBoardDo } from &#x27;./types&#x27;;
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export abstract class BoardComposite {
 	id: EntityId;
@@ -679,6 +829,10 @@ export abstract class BoardComposite {
 		this.children &#x3D; this.children.filter((ch) &#x3D;&gt; ch.id !&#x3D;&#x3D; childId);
 		return removedChild;
 	}
+
+	abstract accept(visitor: BoardCompositeVisitor): void;
+
+	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt;;
 }
 
 export interface BoardCompositeProps {

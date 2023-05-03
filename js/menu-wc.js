@@ -417,13 +417,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardModule.html" data-type="entity-link" >BoardModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-BoardModule-52eb1c415b08d5c4e09e326b8273b10fe58bece14a1b74aef87fc025c4e12618c90a019f4dfe545e076a838b31d23e1f8da88fe4574574e68b2bd432b6401e01"' : 'data-target="#xs-injectables-links-module-BoardModule-52eb1c415b08d5c4e09e326b8273b10fe58bece14a1b74aef87fc025c4e12618c90a019f4dfe545e076a838b31d23e1f8da88fe4574574e68b2bd432b6401e01"' }>
+                                        'data-target="#injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' : 'data-target="#xs-injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-52eb1c415b08d5c4e09e326b8273b10fe58bece14a1b74aef87fc025c4e12618c90a019f4dfe545e076a838b31d23e1f8da88fe4574574e68b2bd432b6401e01"' :
-                                        'id="xs-injectables-links-module-BoardModule-52eb1c415b08d5c4e09e326b8273b10fe58bece14a1b74aef87fc025c4e12618c90a019f4dfe545e076a838b31d23e1f8da88fe4574574e68b2bd432b6401e01"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' :
+                                        'id="xs-injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' }>
                                         <li class="link">
                                             <a href="injectables/BoardDoRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardDoRepo</a>
                                         </li>
@@ -453,6 +453,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/ContentElementService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContentElementService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/RecursiveDeleteVisitor.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RecursiveDeleteVisitor</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3680,6 +3683,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/BoardNodeRule.html" data-type="entity-link" >BoardNodeRule</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/BoardNodeService.html" data-type="entity-link" >BoardNodeService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/BoardRepo.html" data-type="entity-link" >BoardRepo</a>
                                 </li>
                                 <li class="link">
@@ -3879,6 +3885,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/PseudonymsRepo.html" data-type="entity-link" >PseudonymsRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/RecursiveDeleteVisitor.html" data-type="entity-link" >RecursiveDeleteVisitor</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/RequestLoggingInterceptor.html" data-type="entity-link" >RequestLoggingInterceptor</a>
@@ -4096,6 +4105,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/BoardCompositeProps.html" data-type="entity-link" >BoardCompositeProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/BoardCompositeVisitor.html" data-type="entity-link" >BoardCompositeVisitor</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/BoardCompositeVisitorAsync.html" data-type="entity-link" >BoardCompositeVisitorAsync</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/BoardDoBuilder.html" data-type="entity-link" >BoardDoBuilder</a>

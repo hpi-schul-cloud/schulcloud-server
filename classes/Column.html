@@ -123,6 +123,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#accept" >accept</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#acceptAsync" >acceptAsync</a>
+                            </li>
+                            <li>
                                 <a href="#isAllowedAsChild" >isAllowedAsChild</a>
                             </li>
                             <li>
@@ -332,6 +339,158 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="accept"></a>
+                    <span class="name">
+                        <span ><b>accept</b></span>
+                        <a href="#accept"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>accept(visitor: <a href="../interfaces/BoardCompositeVisitor.html" target="_self">BoardCompositeVisitor</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:21</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>visitor</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardCompositeVisitor.html" target="_self" >BoardCompositeVisitor</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="acceptAsync"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>acceptAsync</b></span>
+                        <a href="#acceptAsync"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>acceptAsync(visitor: <a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self">BoardCompositeVisitorAsync</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/BoardComposite.html" target="_self" >BoardComposite</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:25</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>visitor</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardCompositeVisitorAsync.html" target="_self" >BoardCompositeVisitorAsync</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isAllowedAsChild"></a>
                     <span class="name">
                         <span ><b>isAllowedAsChild</b></span>
@@ -354,7 +513,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:6</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:12</a></code>
 </div>
                 </td>
             </tr>
@@ -423,8 +582,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column.do.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column.do.ts:17</a></div>
                 </td>
             </tr>
 
@@ -733,7 +892,13 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite } from &#x27;./board-composite.do&#x27;;
 import { Card } from &#x27;./card.do&#x27;;
-import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from &#x27;./types&#x27;;
+import type {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync,
+	BoardNodeBuildable,
+	BoardNodeBuilder,
+} from &#x27;./types&#x27;;
 
 export class Column extends BoardComposite implements BoardNodeBuildable {
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
@@ -743,6 +908,14 @@ export class Column extends BoardComposite implements BoardNodeBuildable {
 
 	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
 		builder.buildColumnNode(this, parent);
+	}
+
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitColumn(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt; {
+		await visitor.visitColumnAsync(this);
 	}
 }
 </code></pre>
