@@ -2,8 +2,7 @@
  * Unified message format
  */
 class Message {
-	// eslint-disable-next-line camelcase
-	constructor(title, text, timestamp, page, messageId, url, status, created_at) {
+	constructor(title, text, timestamp, page, messageId, url, status, createdAt) {
 		this.mTitle = title || '';
 		this.mText = text || '';
 		this.mTimestamp = timestamp || '1970-01-01 00:00:00';
@@ -12,8 +11,10 @@ class Message {
 		this.mMessageId = messageId || '-1';
 		this.mUrl = url || '';
 		// eslint-disable-next-line camelcase
-		this.mCreated_at = created_at === undefined ? '' : created_at;
+		this.mCreated_at = createdAt === undefined ? '' : createdAt;
 		this.mStatus = status || '';
+		// eslint-disable-next-line camelcase
+		this.mCreatedAt = createdAt === undefined ? '' : createdAt;
 	}
 
 	get getMessage() {
@@ -28,7 +29,7 @@ class Message {
 			},
 			timestamp: this.mTimestamp,
 			url: this.mUrl,
-			created_at: this.mCreated_at,
+			createdAt: this.mCreatedAt,
 		};
 		return message;
 	}
@@ -85,8 +86,8 @@ class Message {
 	/**
 	 * Set Created_at of message
 	 */
-	set created_at(value) {
-		this.mCreated_at = value;
+	set createdAt(value) {
+		this.mCreatedAt = value;
 	}
 }
 

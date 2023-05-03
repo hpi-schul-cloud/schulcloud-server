@@ -40,8 +40,8 @@ async function getInstance(instance, componentId) {
 function compare(a, b) {
 	const dateA = new Date(a.updated_at);
 	const dateB = new Date(b.updated_at);
-	const createdAtA = new Date(a.created_at);
-	const createdAtB = new Date(b.created_at);
+	const createdAtA = new Date(a.createdAt);
+	const createdAtB = new Date(b.createdAt);
 
 	// sort by status; danger first
 	if (a.status > b.status) return 1;
