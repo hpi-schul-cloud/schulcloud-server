@@ -5,14 +5,13 @@ import { setupEntities } from '@shared/testing';
 import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
-import { BoardDoService } from './board-do.service';
 import { RecursiveDeleteVisitor } from '../repo/recursive-delete.vistor';
+import { BoardDoService } from './board-do.service';
 
 describe(BoardDoService.name, () => {
 	let module: TestingModule;
 	let service: BoardDoService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let recursiveDeleteVisitor: DeepMocked<RecursiveDeleteVisitor>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,7 +34,6 @@ describe(BoardDoService.name, () => {
 
 		service = module.get(BoardDoService);
 		boardDoRepo = module.get(BoardDoRepo);
-		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
 		await setupEntities();
 	});
 
