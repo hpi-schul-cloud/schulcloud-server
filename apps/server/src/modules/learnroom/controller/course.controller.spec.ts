@@ -79,11 +79,11 @@ describe('CourseController', () => {
 
 	describe('exportCourse', () => {
 		const setup = () => {
-			configServiceMock.get.mockReturnValueOnce(true);
 			const courseUrlParams: CourseUrlParams = { courseId: 'courseId' };
 			return { courseUrlParams };
 		};
 		it('should return an imscc file', async () => {
+			configServiceMock.get.mockReturnValueOnce(true);
 			const { courseUrlParams } = setup();
 			courseExportUcMock.exportCourse.mockResolvedValueOnce({} as Buffer);
 
@@ -95,6 +95,7 @@ describe('CourseController', () => {
 		});
 		it('should return not found if feature is disabled', async () => {
 			const { courseUrlParams } = setup();
+			configServiceMock.get.mockReturnValueOnce(false);
 			await expect(
 				controller.exportCourse({ userId: 'userId' } as ICurrentUser, courseUrlParams, {
 					set: () => {},
