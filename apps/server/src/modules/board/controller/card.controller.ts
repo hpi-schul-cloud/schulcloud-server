@@ -12,20 +12,22 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ApiValidationError } from '@shared/common';
 import { BoardUc, CardUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
+	CreateContentElementBody,
+	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
 	TextElementResponse,
 } from './dto';
-import { CardResponseMapper, TextElementResponseMapper } from './mapper';
+import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
 @Authenticate('jwt')
@@ -94,11 +96,11 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(TextElementResponse)
+	@ApiExtraModels(TextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -107,11 +109,12 @@ export class CardController {
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Body() bodyParams: CreateContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
-
-		const response = TextElementResponseMapper.mapToResponse(element);
+		const { type } = bodyParams;
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
 	}

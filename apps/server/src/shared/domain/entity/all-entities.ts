@@ -2,7 +2,8 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
-import { BoardNode, CardNode, ColumnBoardNode, ColumnNode, TextElementNode } from './boardnode';
+import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode } from './boardnode';
+import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -36,6 +37,7 @@ export const ALL_ENTITIES = [
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	FileElementNode,
 	TextElementNode,
 	Course,
 	CourseExternalTool,

@@ -1,18 +1,20 @@
 import { NotFoundException } from '@nestjs/common';
 import {
-	EntityId,
 	AnyBoardDo,
+	BoardNode,
 	BoardNodeBuilder,
+	BoardNodeType,
 	Card,
+	CardNode,
 	Column,
 	ColumnBoard,
-	TextElement,
-	BoardNode,
-	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	EntityId,
+	FileElement,
+	FileElementNode,
+	TextElement,
 	TextElementNode,
-	BoardNodeType,
 } from '@shared/domain';
 
 export class BoardNodeBuilderImpl implements BoardNodeBuilder {
@@ -87,6 +89,19 @@ export class BoardNodeBuilderImpl implements BoardNodeBuilder {
 			position: this.getChildPosition(textElement, parent),
 		});
 		this.registerNode(textElementNode);
+	}
+
+	buildFileElementNode(fileElement: FileElement, parent?: AnyBoardDo): void {
+		const parentNode = this.getParentNode(parent?.id);
+		this.ensureBoardNodeType(parentNode, BoardNodeType.CARD);
+
+		const fileElementNode = new FileElementNode({
+			id: fileElement.id,
+			caption: fileElement.caption,
+			parent: parentNode,
+			position: this.getChildPosition(fileElement, parent),
+		});
+		this.registerNode(fileElementNode);
 	}
 
 	registerNode(boardNode: BoardNode) {
