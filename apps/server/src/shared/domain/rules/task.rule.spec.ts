@@ -1,11 +1,12 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
 import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
 import { Action } from '../../../modules/authorization/types';
+import type { Role } from '../entity';
+import { Task, User } from '../entity';
 
 describe('TaskRule', () => {
 	let service: TaskRule;
@@ -104,8 +105,9 @@ describe('TaskRule', () => {
 
 	describe('User [STUDENT]', () => {
 		let student: User;
+		let role: Role;
 		beforeEach(() => {
-			const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+			role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
 			student = userFactory.build({ roles: [role] });
 		});
 		it('should return "true" if user is creator', () => {
@@ -147,6 +149,21 @@ describe('TaskRule', () => {
 			entity = taskFactory.build();
 			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
+		});
+
+		it('should return "false" if task has Assignees and user is not assigned ', () => {
+			const otherStudent: User = userFactory.build({ roles: [role] });
+			const course = courseFactory.build();
+			entity = taskFactory.build({ course, users: [otherStudent] });
+			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			expect(res).toBe(false);
+		});
+
+		it('should return "true" if task has Assignees and user is assigned ', () => {
+			const course = courseFactory.build();
+			entity = taskFactory.build({ course, users: [student] });
+			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			expect(res).toBe(true);
 		});
 	});
 });

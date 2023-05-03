@@ -28,6 +28,7 @@ const homeworkSchema = new Schema({
 	teamSubmissions: { type: Boolean },
 	maxTeamMembers: { type: Number, default: null, min: 1 },
 	archived: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+	userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 });
 
 /*

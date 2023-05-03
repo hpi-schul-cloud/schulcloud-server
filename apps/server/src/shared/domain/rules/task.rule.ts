@@ -29,15 +29,16 @@ export class TaskRule implements Rule {
 
 		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
 		const isAssigned = this.authorizationHelper.hasAccessToEntity(user, entity, ['users']);
-
-		if (entity.isDraft()) {
+		const hasAssignees = entity.users.length > 0;
+		// task has assignees but user is not creator and not assigned -> user must have write access to parent (aka for teacher, substituteTeacher)
+		if (entity.isDraft() || hasAssignees) {
 			action = Action.write;
 		}
 
 		const hasParentPermission = this.hasParentPermission(user, entity, action);
 
-		// TODO why parent permission is with OR cond?
-		const result = hasRequiredPermission && (isCreator || isAssigned || hasParentPermission);
+		// TODO why parent permission has OR cond?
+		const result = isCreator || isAssigned || hasParentPermission;
 
 		return result;
 	}

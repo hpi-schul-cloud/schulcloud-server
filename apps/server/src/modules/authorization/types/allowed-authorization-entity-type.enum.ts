@@ -8,4 +8,5 @@ export enum AllowedAuthorizationEntityType {
 	'Team' = 'teams',
 	'Submission' = 'submissions',
 	'SchoolExternalTool' = 'school_external_tools',
+	'BoardNode' = 'boardnodes',
 }
