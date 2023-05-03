@@ -218,15 +218,6 @@ export class FilesStorageUC {
 		return response[0];
 	}
 
-	/**
-	 * throwError
-	 */
-	public throwError() {
-		// TODO: remove that
-		console.log('TEst');
-		throw new NotFoundException('TEST_ALL_TEST');
-	}
-
 	// update
 	public async patchFilename(userId: EntityId, params: SingleFileParams, data: RenameFileParams): Promise<FileRecord> {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
