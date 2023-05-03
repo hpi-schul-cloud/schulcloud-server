@@ -1,4 +1,4 @@
-import { ToolConfigType } from '@shared/domain';
+import { ToolConfigType } from '@shared/domain/entity';
 import { TokenEndpointAuthMethod } from '@src/modules/tool/interface/token-endpoint-auth-method.enum';
 import { ExternalToolConfigDO } from './external-tool-config.do';
 

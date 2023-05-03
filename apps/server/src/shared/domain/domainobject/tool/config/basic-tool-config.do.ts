@@ -1,4 +1,4 @@
-import { ToolConfigType } from '@shared/domain';
+import { ToolConfigType } from '@shared/domain/entity';
 import { ExternalToolConfigDO } from './external-tool-config.do';
 
 export class BasicToolConfigDO extends ExternalToolConfigDO {
