@@ -68,7 +68,7 @@ jobs:
           name: coverage-artifacts
           path: coverage/
   sonarcloud:
-      name: SonarCloud
+      name: SonarCloud coverage
       runs-on: ubuntu-latest
       needs: [nest_tests_cov]
       steps:
