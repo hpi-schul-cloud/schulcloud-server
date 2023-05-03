@@ -12,7 +12,7 @@ export class CourseUc {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 
-	public async getCourseForTeacher(userId: EntityId, courseId: EntityId) {
+	public async getCourse(userId: EntityId, courseId: EntityId) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const course = await this.courseRepo.findOneForTeacherOrSubstituteTeacher(userId, courseId);
 

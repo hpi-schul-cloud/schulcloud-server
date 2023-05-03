@@ -78,7 +78,7 @@ describe('CourseUc', () => {
 
 			courseRepo.findOneForTeacherOrSubstituteTeacher.mockResolvedValueOnce(course);
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-			const result: Course = await uc.getCourseForTeacher(user.id, course.id);
+			const result: Course = await uc.getCourse(user.id, course.id);
 			expect(result).toEqual(course);
 		});
 		it('should check for permission to edit course', async () => {
@@ -86,7 +86,7 @@ describe('CourseUc', () => {
 
 			courseRepo.findOneForTeacherOrSubstituteTeacher.mockResolvedValueOnce(course);
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-			await uc.getCourseForTeacher(user.id, course.id);
+			await uc.getCourse(user.id, course.id);
 			expect(authorizationService.checkPermission).toBeCalledWith(
 				user,
 				course,
@@ -102,7 +102,7 @@ describe('CourseUc', () => {
 				throw new ForbiddenException();
 			});
 			await expect(async () => {
-				await uc.getCourseForTeacher(user.id, course.id);
+				await uc.getCourse(user.id, course.id);
 			}).rejects.toThrow(ForbiddenException);
 		});
 	});

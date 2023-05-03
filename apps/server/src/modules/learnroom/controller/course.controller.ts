@@ -49,8 +49,8 @@ export class CourseController {
 	}
 
 	@Get(':courseId')
-	async getCourseForTeacher(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: CourseUrlParams) {
-		const course = await this.courseUc.getCourseForTeacher(currentUser.userId, urlParams.courseId);
+	async getCourse(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: CourseUrlParams) {
+		const course = await this.courseUc.getCourse(currentUser.userId, urlParams.courseId);
 		const response = CourseMapper.mapToCourseResponse(course);
 
 		return response;
