@@ -1,24 +1,24 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, User } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationEntityType, AuthorizableObject, AuthorizationContext, Rule } from './types';
+import { AllowedAuthorizationEntityType, Rule } from './types';
 
 describe('AuthorizationService', () => {
 	class TestRule implements Rule {
 		constructor(private returnValueOfIsAuthorized: boolean) {}
 
-		isApplicable(user: User, object: AuthorizableObject): boolean {
+		isApplicable(): boolean {
 			return true;
 		}
 
-		isAuthorized(user: User, object: AuthorizableObject, context: AuthorizationContext): boolean {
+		isAuthorized(): boolean {
 			return this.returnValueOfIsAuthorized;
 		}
 	}
