@@ -55,10 +55,15 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
-		if (query.schoolToolId) {
+
+		if (query.contextId && query.schoolToolId) {
+			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolId);
+		} else if (query.schoolToolId) {
 			scope.bySchoolToolId(query.schoolToolId);
 		}
+
 		scope.allowEmptyQuery(true);
+
 		return scope;
 	}
 

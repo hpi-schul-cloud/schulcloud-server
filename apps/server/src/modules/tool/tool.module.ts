@@ -13,6 +13,7 @@ import { EncryptionModule } from '@shared/infra/encryption';
 import {
 	CommonToolValidationService,
 	ContextExternalToolService,
+	ContextExternalToolValidationService,
 	ExternalToolService,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
@@ -40,6 +41,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		ContextExternalToolService,
 		CommonToolValidationService,
 		SchoolExternalToolValidationService,
+		ContextExternalToolValidationService,
 	],
 	exports: [
 		Lti11Service,
@@ -50,6 +52,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		ExternalToolRepoMapper,
 		CommonToolValidationService,
 		SchoolExternalToolValidationService,
+		ContextExternalToolValidationService,
 	],
 })
 export class ToolModule {}

@@ -8,4 +8,11 @@ export class ContextExternalToolScope extends Scope<ContextExternalTool> {
 		}
 		return this;
 	}
+
+	byContextIdAndSchoolToolId(contextId: EntityId | undefined, schoolToolId: EntityId): ContextExternalToolScope {
+		if (schoolToolId !== undefined && contextId !== undefined) {
+			this.addQuery({ schoolTool: schoolToolId, contextId });
+		}
+		return this;
+	}
 }

@@ -2,4 +2,4 @@ import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-
 
 export type ContextExternalTool = ContextExternalToolDO;
 
-export type ContextExternalToolQuery = Partial<Pick<ContextExternalTool, 'schoolToolId'>>;
+export type ContextExternalToolQuery = Partial<Pick<ContextExternalTool, 'schoolToolId' | 'contextId'>>;
