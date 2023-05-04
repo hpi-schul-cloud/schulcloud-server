@@ -41,7 +41,7 @@ describe('TaskRule', () => {
 				expect(res).toBe(false);
 			});
 		});
-		describe('when user is task creator with permission A,B but not C', () => {
+		describe('when user is task creator with some permission granted', () => {
 			const setup = () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.build({ roles: [role] });
@@ -64,13 +64,13 @@ describe('TaskRule', () => {
 				expect(spy).toBeCalledWith(user, task, ['creator']);
 			});
 
-			it('should return "true" if user is creator', () => {
+			it('should return "true" if user has all required permissions', () => {
 				const { task, user } = setup();
 				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
-			it('should return "false" if user has no permission for C', () => {
+			it('should return "false" when user does not have all required permissions', () => {
 				const { user, task } = setup();
 				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
