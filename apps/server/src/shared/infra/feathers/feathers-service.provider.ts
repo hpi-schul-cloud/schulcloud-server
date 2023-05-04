@@ -39,7 +39,6 @@ export class FeathersServiceProvider {
 	constructor(@Inject(REQUEST) private request: Request) {}
 
 	getService(path: string): FeathersService {
-		console.log(this);
 		const feathersApp = this.request.app.get('feathersApp') as Application;
 		if (feathersApp == null) {
 			// missing a feathers instance defined in module definition
