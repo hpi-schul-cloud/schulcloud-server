@@ -1,7 +1,7 @@
-import { Injectable, Scope, Inject, ImATeapotException } from '@nestjs/common';
+import { Application } from '@feathersjs/express';
+import { ImATeapotException, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { Application } from '@feathersjs/express';
 
 export interface FeathersService {
 	/**
@@ -39,6 +39,7 @@ export class FeathersServiceProvider {
 	constructor(@Inject(REQUEST) private request: Request) {}
 
 	getService(path: string): FeathersService {
+		console.log(this);
 		const feathersApp = this.request.app.get('feathersApp') as Application;
 		if (feathersApp == null) {
 			// missing a feathers instance defined in module definition
