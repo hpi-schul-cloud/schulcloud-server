@@ -21,6 +21,18 @@ module.exports = {
 
 		await Roles.updateOne(
 			{
+				name: 'teamadministrator'
+			},
+			{
+				$addToSet: {
+					permissions: {
+						$each: ['LEAVE_TEAM']
+					}
+				},
+			}
+		).exec();
+		await Roles.updateOne(
+			{
 				name: 'teammember'
 			},
 			{
@@ -48,6 +60,18 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
+		await Roles.updateOne(
+			{
+				name: 'teamadministrator'
+			},
+			{
+				$pull: {
+					permissions: {
+						$in: ['LEAVE_TEAM']
+					}
+				},
+			}
+		).exec();
 		await Roles.updateOne(
 			{
 				name: 'teammember'

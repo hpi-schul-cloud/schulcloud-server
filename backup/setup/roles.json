@@ -388,7 +388,8 @@
 			"INVITE_EXPERTS",
 			"NEWS_EDIT",
 			"REMOVE_MEMBERS",
-			"RENAME_TEAM"
+			"RENAME_TEAM",
+			"LEAVE_TEAM"
 		],
 		"__v": 0
 	},
