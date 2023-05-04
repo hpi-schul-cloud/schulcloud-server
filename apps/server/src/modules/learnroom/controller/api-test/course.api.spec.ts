@@ -6,7 +6,7 @@ import { Permission } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { cleanupCollections, courseFactory, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import { CourseMetadataListResponse, CourseResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
@@ -67,10 +67,11 @@ describe('Course Controller (API)', () => {
 		const setup = () => {
 			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
 			const user = userFactory.build({ roles });
-			const course = courseFactory.build({ name: 'course #1', teachers: [user] });
+			const students = userFactory.buildList(2);
+			const course = courseFactory.build({ name: 'course #1', teachers: [user], students });
 			return { user, course, roles };
 		};
-		it('should find course for teacher', async () => {
+		it('should find course', async () => {
 			const { user, course } = setup();
 
 			await em.persistAndFlush(course);
@@ -78,9 +79,12 @@ describe('Course Controller (API)', () => {
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
+			const courseResponse = response.body as CourseResponse;
 
 			expect(response.status).toEqual(200);
-			expect(response.body).toBeDefined();
+			expect(courseResponse).toBeDefined();
+			expect(courseResponse.id).toEqual(course.id);
+			expect(courseResponse.students?.length).toEqual(2);
 		});
 		it('should throw if user is not teacher', async () => {
 			const { user, roles } = setup();

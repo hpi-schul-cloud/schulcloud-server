@@ -214,6 +214,22 @@ describe('CourseEntity', () => {
 		});
 	});
 
+	describe('getStudentList', () => {
+		const setup = () => {
+			const students = userFactory.buildList(3);
+			const course = courseFactory.build({ students });
+			return { course, students };
+		};
+		it('should return the students of the course', () => {
+			const { course, students } = setup();
+
+			const result = course.getStudentsList();
+
+			expect(result.length).toEqual(3);
+			expect(result[0]).toEqual(students[0]);
+		});
+	});
+
 	describe('isUserSubstitutionTeacher is called', () => {
 		describe('when user is a subsitution teacher', () => {
 			const setup = () => {
