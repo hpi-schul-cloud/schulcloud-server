@@ -10,7 +10,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 	key: string;
 
 	@Property()
-	secret: string;
+	secret?: string;
 
 	@Property({ nullable: true })
 	resource_link_id?: string;

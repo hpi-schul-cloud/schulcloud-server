@@ -1,7 +1,8 @@
-import { IAccount, IAccountUpdate } from '@shared/domain';
-import { Injectable } from '@nestjs/common';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { IdentityManagementService } from '../../identity-management.service';
+import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common';
+import { Counted, IAccount, IAccountUpdate } from '@shared/domain';
+import { IdentityManagementService, SearchOptions } from '../../identity-management.service';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()
@@ -109,12 +110,17 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 		return this.extractAccount(keycloakUsers[0]);
 	}
 
-	async findAccountByUsername(username: string): Promise<IAccount | undefined> {
-		const [keycloakUser] = await (await this.kcAdminClient.callKcAdminClient()).users.find({ username });
-		if (keycloakUser) {
-			return this.extractAccount(keycloakUser);
-		}
-		return undefined;
+	async findAccountsByUsername(username: string, options?: SearchOptions): Promise<Counted<IAccount[]>> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const total = await kc.users.count({ username, exact: options?.exact });
+		const results = await kc.users.find({
+			username,
+			exact: options?.exact,
+			first: options?.skip,
+			max: options?.limit,
+		});
+		const accounts = results.map((account) => this.extractAccount(account));
+		return [accounts, total];
 	}
 
 	async getAllAccounts(): Promise<IAccount[]> {
@@ -125,6 +131,40 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async deleteAccountById(id: string): Promise<string> {
 		await (await this.kcAdminClient.callKcAdminClient()).users.del({ id });
 		return id;
+	}
+
+	async getUserAttribute<TValue extends boolean | number | string | unknown = unknown>(
+		userId: string,
+		attributeName: string
+	): Promise<TValue | null> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const user = await kc.users.findOne({ id: userId });
+		if (!user) {
+			throw new EntityNotFoundError(`User '${userId}' not found`);
+		}
+		if (user.attributes && user.attributes[attributeName] && Array.isArray(user.attributes[attributeName])) {
+			const [value] = (user.attributes[attributeName] as TValue[]) || null;
+			return value;
+		}
+		return null;
+	}
+
+	async setUserAttribute<TValue extends boolean | number | string>(
+		userId: string,
+		attributeName: string,
+		attributeValue: TValue
+	): Promise<void> {
+		const kc = await this.kcAdminClient.callKcAdminClient();
+		const user = await kc.users.findOne({ id: userId });
+		if (!user) {
+			throw new EntityNotFoundError(`User '${userId}' not found`);
+		}
+		if (user.attributes) {
+			user.attributes[attributeName] = attributeValue;
+		} else {
+			user.attributes = { [attributeName]: attributeValue };
+		}
+		await kc.users.update({ id: userId }, user);
 	}
 
 	private extractAccount(user: UserRepresentation): IAccount {

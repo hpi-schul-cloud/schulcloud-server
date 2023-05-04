@@ -1,7 +1,6 @@
-import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardNode } from '@shared/domain';
 
 @Injectable()
 export class BoardNodeRepo {
@@ -11,7 +10,7 @@ export class BoardNodeRepo {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
 
 		const descendants = await this.em.find(BoardNode, {
-			path: { $re: `^${node.path}` },
+			path: { $re: `^${node.pathOfChildren}` },
 			level: levelQuery,
 		});
 

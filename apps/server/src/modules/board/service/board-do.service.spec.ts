@@ -1,157 +1,137 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { cleanupCollections } from '@shared/testing';
 import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
-import { BoardDoRepo } from '../repo';
-import { BoardDoService } from './board-do.service';
+import { BoardDoRepo, BoardNodeRepo } from '../repo';
 import { RecursiveDeleteVisitor } from '../repo/recursive-delete.vistor';
+import { BoardDoService } from './board-do.service';
 
 describe(BoardDoService.name, () => {
 	let module: TestingModule;
 	let service: BoardDoService;
-	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let recursiveDeleteVisitor: DeepMocked<RecursiveDeleteVisitor>;
+	let boardDoRepo: BoardDoRepo;
+	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				BoardDoService,
-				{
-					provide: BoardDoRepo,
-					useValue: createMock<BoardDoRepo>(),
-				},
-				{
-					provide: RecursiveDeleteVisitor,
-					useValue: createMock<RecursiveDeleteVisitor>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
+			providers: [BoardDoService, BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor],
 		}).compile();
 
 		service = module.get(BoardDoService);
 		boardDoRepo = module.get(BoardDoRepo);
-		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
-		await setupEntities();
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	describe('move', () => {
 		describe('when moving a card', () => {
-			const setup = () => {
+			const setup = async () => {
 				const cards = cardFactory.buildList(3);
 				const sourceColumn = columnFactory.build({ children: cards });
+				await boardDoRepo.save(sourceColumn);
+
 				const targetCards = cardFactory.buildList(2);
 				const targetColumn = columnFactory.build({ children: targetCards });
+				await boardDoRepo.save(targetColumn);
 
-				boardDoRepo.findParentOfId.mockResolvedValue(sourceColumn);
-				boardDoRepo.findById.mockResolvedValue(targetColumn);
-
-				return { cards, targetCards, sourceColumn, targetColumn };
+				return { sourceColumn, targetColumn, cards, targetCards };
 			};
 
 			it('should place it in the target column', async () => {
-				const { cards, targetColumn } = setup();
+				const { targetColumn, cards } = await setup();
 
 				await service.move(cards[0], targetColumn, 0);
-				const targetColumnCardIds = targetColumn.children.map((card) => card.id);
-				expect(targetColumnCardIds).toContain(cards[0].id);
-			});
 
-			it('should place it at the right position in the target column', async () => {
-				const { cards, targetCards, targetColumn } = setup();
-				const expectedChildren = [targetCards[0], cards[0], targetCards[1]];
-
-				await service.move(cards[0], targetColumn, 1);
-
-				expect(targetColumn.children).toEqual(expectedChildren);
+				expect(targetColumn.hasChild(cards[0])).toEqual(true);
 			});
 
 			it('should remove it from the source column', async () => {
-				const { cards, sourceColumn, targetColumn } = setup();
+				const { cards, sourceColumn, targetColumn } = await setup();
 
 				await service.move(cards[0], targetColumn, 0);
-				const sourceColumnCardIds = sourceColumn.children.map((card) => card.id);
-				expect(sourceColumnCardIds).not.toContain(cards[0].id);
+
+				const resultColumn = await boardDoRepo.findById(sourceColumn.id);
+				expect(resultColumn.hasChild(cards[0])).toBe(false);
 			});
 
-			it('should persist source- and targetColumn', async () => {
-				const { cards, sourceColumn, targetColumn } = setup();
+			it('should add it to the target column', async () => {
+				const { cards, targetCards, targetColumn } = await setup();
+				const expectedIds = [targetCards[0].id, cards[0].id, targetCards[1].id];
 
-				await service.move(cards[0], targetColumn, 0);
+				await service.move(cards[0], targetColumn, 1);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(sourceColumn.children, sourceColumn);
-				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn);
+				const resultColumn = await boardDoRepo.findById(targetColumn.id);
+				expect(resultColumn.children.map((c) => c.id)).toEqual(expectedIds);
 			});
 
 			describe('when moving within the same parent', () => {
 				it('should just change the position', async () => {
-					const { cards, sourceColumn } = setup();
+					const { cards, sourceColumn } = await setup();
+					const expectedIds = [cards[1].id, cards[0].id, cards[2].id];
 
 					await service.move(cards[0], sourceColumn, 1);
 
-					expect(boardDoRepo.save).toHaveBeenCalledWith([cards[1], cards[0], cards[2]], sourceColumn);
+					const resultColumn = await boardDoRepo.findById(sourceColumn.id);
+					expect(resultColumn.children.map((c) => c.id)).toEqual(expectedIds);
 				});
 			});
 		});
 
 		describe('when card has no parent', () => {
-			const setup = () => {
+			const setup = async () => {
 				const card = cardFactory.build();
+				await boardDoRepo.save(card);
 				const targetColumn = columnFactory.build();
-
-				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
-				boardDoRepo.findById.mockResolvedValue(targetColumn);
+				await boardDoRepo.save(targetColumn);
 
 				return { card, targetColumn };
 			};
 
-			it('should throw an exception', async () => {
-				const { card, targetColumn } = setup();
+			it('should move it to the column', async () => {
+				const { card, targetColumn } = await setup();
 
-				const fut = () => service.move(card, targetColumn, 0);
+				await service.move(card, targetColumn, 0);
 
-				await expect(fut).rejects.toThrow(BadRequestException);
+				const resultColumn = await boardDoRepo.findById(targetColumn.id);
+				expect(resultColumn.children.map((c) => c.id)).toEqual([card.id]);
 			});
 		});
 	});
 
 	describe('deleteWithDescendants', () => {
 		describe('when deleting an object', () => {
-			const setup = () => {
+			const setup = async () => {
 				const elements = textElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
-				const cardId = card.id;
+				await boardDoRepo.save(card);
 
-				return { card, elements, cardId };
+				return { card, elements };
 			};
 
 			it('should delete the object', async () => {
-				const { card, elements } = setup();
-
-				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+				const { elements } = await setup();
 
 				await service.deleteWithDescendants(elements[0]);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card);
-				expect(boardDoRepo.delete).toHaveBeenCalledWith(elements[0]);
+				await expect(boardDoRepo.findById(elements[0].id)).rejects.toThrow();
 			});
 
 			it('should update the siblings', async () => {
-				const { card, elements } = setup();
-
-				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+				const { card, elements } = await setup();
 
 				await service.deleteWithDescendants(elements[0]);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card);
+				const resultCard = await boardDoRepo.findById(card.id);
+				expect(resultCard.children.map((c) => c.id)).toEqual([elements[1].id, elements[2].id]);
 			});
 		});
 	});

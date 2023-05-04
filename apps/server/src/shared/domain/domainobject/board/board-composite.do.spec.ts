@@ -32,13 +32,6 @@ describe(`${BoardComposite.name}`, () => {
 		return { parent, children: parent.children };
 	};
 
-	describe('getChild', () => {
-		it('should throw an error if child is not found', () => {
-			const { parent } = setup();
-			expect(() => parent.getChild('59a3c657a2049554a93fec3a')).toThrow();
-		});
-	});
-
 	describe('removeChild', () => {
 		it('should remove the child', () => {
 			const { parent, children } = setup();

@@ -11,6 +11,8 @@ import {
 	ColumnBoardNode,
 	ColumnNode,
 	EntityId,
+	FileElement,
+	FileElementNode,
 	TextElement,
 	TextElementNode,
 } from '@shared/domain';
@@ -94,6 +96,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 
 		this.createOrUpdateBoardNode(boardNode);
 		this.visitChildren(textElement, boardNode);
+	}
+
+	visitFileElement(fileElement: FileElement): void {
+		const parentData = this.parentsMap.get(fileElement.id);
+
+		const boardNode = new FileElementNode({
+			id: fileElement.id,
+			caption: fileElement.caption,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(fileElement, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

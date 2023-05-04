@@ -1,6 +1,14 @@
 import { NotImplementedException } from '@nestjs/common';
-import type { BoardNode, CardNode, ColumnBoardNode, ColumnNode, BoardDoBuilder, TextElementNode } from '@shared/domain';
-import { AnyBoardDo, Card, Column, ColumnBoard, TextElement, BoardNodeType } from '@shared/domain';
+import type {
+	BoardDoBuilder,
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	FileElementNode,
+	TextElementNode,
+} from '@shared/domain';
+import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, TextElement } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -48,7 +56,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildCard(boardNode: CardNode): Card {
-		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.TEXT_ELEMENT);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.TEXT_ELEMENT, BoardNodeType.FILE_ELEMENT]);
 
 		const elements = this.buildChildren<TextElement>(boardNode);
 
@@ -69,6 +77,20 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new TextElement({
 			id: boardNode.id,
 			text: boardNode.text,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildFileElement(boardNode: FileElementNode): FileElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new FileElement({
+			id: boardNode.id,
+			caption: boardNode.caption,
+			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});

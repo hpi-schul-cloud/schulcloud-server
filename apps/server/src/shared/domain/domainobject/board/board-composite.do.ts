@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -37,34 +37,22 @@ export abstract class BoardComposite<T extends BoardCompositeProps> {
 
 	addChild(child: AnyBoardDo, position?: number): void {
 		if (!this.isAllowedAsChild(child)) {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
 		position = position ?? this.children.length;
 		if (position < 0 || position > this.children.length) {
-			throw new Error(`Invalid child position '${position}'`);
+			throw new BadRequestException(`Invalid child position '${position}'`);
 		}
 		if (this.hasChild(child)) {
-			throw new Error(`Cannot add existing child id='${child.id}'`);
+			throw new BadRequestException(`Cannot add existing child id='${child.id}'`);
 		}
 		this.children.splice(position, 0, child);
 	}
 
 	abstract isAllowedAsChild(domainObject: AnyBoardDo): boolean;
 
-	getChild(childId: EntityId): AnyBoardDo {
-		const foundChild = this.children.find((child) => child.id === childId);
-		if (foundChild === undefined) {
-			throw new NotFoundException('child is not child of this parent');
-		}
-
-		return foundChild;
-	}
-
-	removeChild(childId: EntityId): AnyBoardDo {
-		const removedChild = this.getChild(childId);
-
-		this.props.children = this.children.filter((ch) => ch.id !== childId);
-		return removedChild;
+	removeChild(child: AnyBoardDo): void {
+		this.props.children = this.children.filter((ch) => ch.id !== child.id);
 	}
 
 	hasChild(child: AnyBoardDo): boolean {

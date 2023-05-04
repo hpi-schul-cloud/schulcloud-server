@@ -26,8 +26,8 @@ export class AuthenticationService {
 		if (systemId) {
 			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
 		} else {
-			const foundAccounts = await this.accountService.searchByUsernameExactMatch(username);
-			account = foundAccounts.accounts.find((foundAccount) => foundAccount.systemId == null);
+			const [accounts] = await this.accountService.searchByUsernameExactMatch(username);
+			account = accounts.find((foundAccount) => foundAccount.systemId == null);
 		}
 
 		if (!account) {

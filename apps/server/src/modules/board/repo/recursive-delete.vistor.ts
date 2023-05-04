@@ -7,6 +7,7 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	FileElement,
 	TextElement,
 } from '@shared/domain';
 
@@ -34,11 +35,13 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(textElement);
 	}
 
+	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
+		this.deleteNode(fileElement);
+		await this.visitChildrenAsync(fileElement);
+	}
+
 	deleteNode(domainObject: AnyBoardDo): void {
-		const boardNode = this.em.getUnitOfWork().getById(BoardNode.name, domainObject.id);
-		if (boardNode) {
-			this.em.remove(boardNode);
-		}
+		this.em.remove(this.em.getReference(BoardNode, domainObject.id));
 	}
 
 	async visitChildrenAsync(domainObject: AnyBoardDo): Promise<void> {

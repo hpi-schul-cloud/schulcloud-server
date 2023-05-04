@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 
@@ -10,7 +10,7 @@ export class BoardDoService {
 		const parent = await this.boardDoRepo.findParentOfId(domainObject.id);
 
 		if (parent) {
-			parent.removeChild(domainObject.id);
+			parent.removeChild(domainObject);
 			await this.boardDoRepo.save(parent.children, parent);
 		}
 
@@ -18,33 +18,16 @@ export class BoardDoService {
 	}
 
 	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
-		if (targetParent.children.some((c) => c.id === child.id)) {
-			await this.movePosition(child, targetParent, targetPosition);
+		if (targetParent.hasChild(child)) {
+			targetParent.removeChild(child);
 		} else {
-			await this.moveBetweenParents(child, targetParent, targetPosition);
+			const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
+			if (sourceParent) {
+				sourceParent.removeChild(child);
+				await this.boardDoRepo.save(sourceParent.children, sourceParent);
+			}
 		}
-	}
-
-	private async movePosition(child: AnyBoardDo, parent: AnyBoardDo, targetPosition?: number): Promise<void> {
-		const existingChild = parent.removeChild(child.id);
-		parent.addChild(existingChild, targetPosition);
-		await this.boardDoRepo.save(parent.children, parent);
-	}
-
-	private async moveBetweenParents(
-		child: AnyBoardDo,
-		targetParent: AnyBoardDo,
-		targetPosition?: number
-	): Promise<void> {
-		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
-
-		if (sourceParent == null) {
-			throw new BadRequestException('Cannot move nodes without a parent');
-		}
-
-		const existingChild = sourceParent.removeChild(child.id);
-		targetParent.addChild(existingChild, targetPosition);
-		await this.boardDoRepo.save(sourceParent.children, sourceParent);
+		targetParent.addChild(child, targetPosition);
 		await this.boardDoRepo.save(targetParent.children, targetParent);
 	}
 }

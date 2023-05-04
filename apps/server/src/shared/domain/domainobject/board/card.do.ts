@@ -1,4 +1,5 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
+import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
@@ -8,7 +9,7 @@ export class Card extends BoardComposite<CardProps> {
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed = domainObject instanceof TextElement;
+		const allowed = domainObject instanceof TextElement || domainObject instanceof FileElement;
 		return allowed;
 	}
 

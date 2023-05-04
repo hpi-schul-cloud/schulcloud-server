@@ -24,7 +24,7 @@ export class CardService {
 	async create(parent: Column): Promise<Card> {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
-			title: ``,
+			title: '',
 			height: 150,
 			children: [],
 			createdAt: new Date(),

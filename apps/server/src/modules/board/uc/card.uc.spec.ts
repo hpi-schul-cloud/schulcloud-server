@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
@@ -76,24 +77,36 @@ describe(CardUc.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const card = cardFactory.build();
-				return { user, card };
+				const element = textElementFactory.build();
+
+				cardService.findById.mockResolvedValueOnce(card);
+				elementService.create.mockResolvedValueOnce(element);
+
+				return { user, card, element };
 			};
 
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
 				expect(cardService.findById).toHaveBeenCalledWith(card.id);
 			});
 
 			it('should call the service to create the content element', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
-				expect(elementService.create).toHaveBeenCalledWith(card);
+				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.TEXT);
+			});
+
+			it('should return new content element', async () => {
+				const { user, card, element } = setup();
+
+				const result = await uc.createElement(user.id, card.id, ContentElementType.TEXT);
+
+				expect(result).toEqual(element);
 			});
 		});
 	});

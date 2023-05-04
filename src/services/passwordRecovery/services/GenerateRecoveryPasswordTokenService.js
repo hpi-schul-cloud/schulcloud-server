@@ -29,7 +29,7 @@ class GenerateRecoveryPasswordTokenService {
 		if (data && data.username) {
 			const { username } = data;
 			const accountsResult = await this.app.service('nest-account-service').searchByUsernameExactMatch(username);
-			const { accounts, total } = accountsResult;
+			const [accounts, total] = accountsResult;
 
 			if (total !== 0 && Array.isArray(accounts) && accounts[0].id) {
 				data.account = accounts[0].id;

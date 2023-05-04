@@ -1,27 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { Card, EntityId, TextElement } from '@shared/domain';
-import { ObjectId } from 'bson';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	AnyContentElementDo,
+	Card,
+	ContentElementFactory,
+	ContentElementType,
+	EntityId,
+	isAnyContentElement,
+} from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ContentElementService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		private readonly contentElementFactory: ContentElementFactory
+	) {}
 
-	async findById(elementId: EntityId): Promise<TextElement> {
-		const column = await this.boardDoRepo.findByClassAndId(TextElement, elementId);
-		return column;
+	async findById(elementId: EntityId): Promise<AnyContentElementDo> {
+		const element = await this.boardDoRepo.findById(elementId);
+
+		if (!isAnyContentElement(element)) {
+			throw new NotFoundException(`There is no '${element.constructor.name}' with this id`);
+		}
+
+		return element;
 	}
 
-	async create(parent: Card): Promise<TextElement> {
-		const element = new TextElement({
-			id: new ObjectId().toHexString(),
-			text: ``,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
+	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {
+		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
 
 		await this.boardDoRepo.save(parent.children, parent);
@@ -29,11 +37,11 @@ export class ContentElementService {
 		return element;
 	}
 
-	async delete(element: TextElement): Promise<void> {
+	async delete(element: AnyContentElementDo): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(element);
 	}
 
-	async move(element: TextElement, targetCard: Card, targetPosition: number): Promise<void> {
+	async move(element: AnyContentElementDo, targetCard: Card, targetPosition: number): Promise<void> {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 }

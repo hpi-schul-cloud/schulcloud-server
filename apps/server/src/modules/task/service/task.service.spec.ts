@@ -19,7 +19,6 @@ import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
-let user!: User;
 let userRepo: DeepMocked<UserRepo>;
 let courseRepo: DeepMocked<CourseRepo>;
 let lessonRepo: DeepMocked<LessonRepo>;
@@ -79,13 +78,36 @@ describe('TaskService', () => {
 	});
 
 	describe('findBySingleParent', () => {
-		it('should call findBySingleParent from task repo', async () => {
+		const setup = () => {
 			const courseId = 'courseId';
-			const userId = 'user-id';
-			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
+			const creatorId = 'user-id';
+			const user = userFactory.buildWithId();
 
-			await expect(taskService.findBySingleParent(userId, courseId)).resolves.toEqual([[], 0]);
-			expect(taskRepo.findBySingleParent).toBeCalledWith(userId, courseId, undefined, undefined);
+			return { courseId, creatorId, user };
+		};
+
+		it('should call authorization service', async () => {
+			const { creatorId, courseId, user } = setup();
+			await taskService.findBySingleParent(creatorId, courseId);
+			expect(authorizationService.hasAllPermissions).toBeCalledWith(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3]);
+		});
+		describe(' when user has TASK_DASHBOARD_TEACHER_VIEW_V3 permission', () => {
+			it('should call repo without filter for userId', async () => {
+				const { creatorId, courseId } = setup();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				await taskService.findBySingleParent(creatorId, courseId);
+				expect(taskRepo.findBySingleParent).toBeCalledWith(creatorId, courseId, {}, undefined);
+			});
+		});
+		describe('when user has no TASK_DASHBOARD_TEACHER_VIEW_V3 permission', () => {
+			it('should call repo with filter for userId ', async () => {
+				const { courseId, user } = setup();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				await taskService.findBySingleParent(user.id, courseId);
+				expect(taskRepo.findBySingleParent).toBeCalledWith(user.id, courseId, { userId: user.id }, undefined);
+			});
 		});
 	});
 
@@ -146,19 +168,20 @@ describe('TaskService', () => {
 
 		describe('create task', () => {
 			let course: Course;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
-				userRepo.findById.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				course = courseFactory.buildWithId({ teachers: [user] });
 				courseRepo.findById.mockResolvedValue(course);
 				taskRepo.save.mockResolvedValue();
 				authorizationService.hasAllPermissions.mockReturnValue(true);
 			});
 			afterEach(() => {
-				userRepo.findById.mockRestore();
 				courseRepo.findById.mockRestore();
 				taskRepo.save.mockRestore();
 				authorizationService.hasOneOfPermissions.mockRestore();
+				authorizationService.getUserWithPermissions.mockRestore();
 			});
 
 			it('should throw if availableDate is not before dueDate', async () => {
@@ -279,12 +302,13 @@ describe('TaskService', () => {
 		describe('update task', () => {
 			let course: Course;
 			let task: Task;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				course = courseFactory.buildWithId({ teachers: [user] });
 
 				task = taskFactory.build({ course });
-				userRepo.findById.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				courseRepo.findById.mockResolvedValue(course);
 
 				taskRepo.findById.mockResolvedValue(task);
@@ -292,10 +316,10 @@ describe('TaskService', () => {
 			});
 
 			afterEach(() => {
-				userRepo.findById.mockRestore();
 				courseRepo.findById.mockRestore();
 				taskRepo.save.mockRestore();
 				taskRepo.findById.mockRestore();
+				authorizationService.getUserWithPermissions.mockRestore();
 			});
 			it('should throw if availableDate is not before dueDate', async () => {
 				const availableDate = new Date('2023-01-12T00:00:00');
@@ -467,11 +491,16 @@ describe('TaskService', () => {
 		});
 		describe('find task', () => {
 			let task: Task;
+			let user: User;
 			beforeEach(() => {
 				user = userFactory.buildWithId();
 				task = taskFactory.build();
-				userRepo.findById.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				taskRepo.findById.mockResolvedValue(task);
+			});
+			afterEach(() => {
+				authorizationService.getUserWithPermissions.mockRestore();
+				taskRepo.findById.mockRestore();
 			});
 			it('should check for permission to view the task', async () => {
 				await taskService.find(user.id, task.id);
