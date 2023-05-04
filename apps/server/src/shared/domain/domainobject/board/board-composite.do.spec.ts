@@ -37,7 +37,7 @@ describe(`${BoardComposite.name}`, () => {
 			const { parent, children } = setup();
 			const expectedChildren = [children[0], children[2]];
 
-			parent.removeChild(children[1].id);
+			parent.removeChild(children[1]);
 
 			expect(parent.children).toEqual(expectedChildren);
 		});
@@ -75,6 +75,15 @@ describe(`${BoardComposite.name}`, () => {
 				parent.addChild(extraChild, 0);
 
 				expect(children).toEqual(expectedChildren);
+			});
+		});
+
+		describe('when position < 0', () => {
+			it('should throw an error', () => {
+				const { parent } = setup();
+				const extraChild = buildBoardObject();
+
+				expect(() => parent.addChild(extraChild, -1)).toThrow();
 			});
 		});
 
