@@ -51,8 +51,8 @@
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",
 		"nest:build:all": "npm run nest:build",
-		"nest:docs:serve": "npx @compodoc/compodoc -p tsconfig.json -s -w -a apps/assets --includes apps/server/doc -d docs",
-		"nest:docs:build": "npx @compodoc/compodoc -p tsconfig.json -w -a apps/assets --includes apps/server/doc -d docs",
+		"nest:docs:serve": "npx --yes @compodoc/compodoc -p tsconfig.json -s -w -a apps/assets --includes apps/server/doc -d docs",
+		"nest:docs:build": "npx --yes @compodoc/compodoc -p tsconfig.json -w -a apps/assets --includes apps/server/doc -d docs",
 		"nest:start": "nest start server",
 		"nest:start:dev": "nest start server --watch",
 		"nest:start:debug": "nest start server --debug --watch",
@@ -84,8 +84,7 @@
 		"syncIndexes": "node ./scripts/syncIndexes.js",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
-		"schoolImport": "node ./scripts/schoolImport.js",
-		"generate-client:filestorage": "node scripts/generate-open-api-client.js -- -u http://localhost:4444/api/v3/docs-json/ -p apps/server/src/modules/files-storage-client/filesStorageApi/v3"
+		"schoolImport": "node ./scripts/schoolImport.js"
 	},
 	"dependencies": {
 		"@aws-sdk/lib-storage": "^3.100.0",
@@ -210,13 +209,11 @@
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.44.0",
-		"@compodoc/compodoc": "^1.1.16",
 		"@golevelup/ts-jest": "^0.3.4",
 		"@jest-mock/express": "^1.4.5",
 		"@nestjs/cli": "^9.3.0",
 		"@nestjs/schematics": "^9.0.3",
 		"@nestjs/testing": "^9.2.1",
-		"@openapitools/openapi-generator-cli": "^2.5.1",
 		"@types/adm-zip": "^0.5.0",
 		"@types/bcryptjs": "^2.4.2",
 		"@types/busboy": "^1.5.0",
