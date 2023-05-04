@@ -23,7 +23,6 @@ import { ContextExternalTool } from '../uc/dto';
 export class ToolContextController {
 	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: Logger) {}
 
-	// TODO: testme
 	@Post()
 	@ApiCreatedResponse({
 		description: 'The ContextExternalTool has been successfully created.',

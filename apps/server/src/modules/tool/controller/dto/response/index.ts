@@ -1,6 +1,5 @@
 export * from './custom-parameter.response';
 export * from './external-tool.response';
-export * from './config/external-tool-config.response';
 export * from './external-tool-search-list.response';
 export * from './lti11-launch.response';
 export * from './tool-configuration-entry.response';

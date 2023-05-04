@@ -3,10 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@src/modules/tool/service';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolUc } from '@src/modules/tool/uc/context-external-tool.uc';
-import { Actions, ContextExternalToolDO, EntityId, IPermissionContext, Permission } from '@shared/domain';
+import { Actions, ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
 import { ToolContextType } from '@src/modules/tool/interface';
-import { CONTEXT } from '@nestjs/microservices';
 
 describe('ContextExternalTool', () => {
 	let module: TestingModule;
