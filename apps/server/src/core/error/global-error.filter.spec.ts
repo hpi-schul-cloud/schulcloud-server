@@ -7,8 +7,8 @@ import { BusinessError } from '@shared/common';
 import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { Response } from 'express';
 import util from 'util';
-import { ErrorResponse } from '../dto';
-import { ErrorLoggable } from '../loggable/error.loggable';
+import { ErrorResponse } from './dto';
+import { ErrorLoggable } from './loggable/error.loggable';
 import { GlobalErrorFilter } from './global-error.filter';
 
 class SampleBusinessError extends BusinessError {
