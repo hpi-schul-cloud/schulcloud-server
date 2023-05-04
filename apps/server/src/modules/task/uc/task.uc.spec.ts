@@ -98,7 +98,7 @@ describe('TaskUC', () => {
 					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.isAuthorized.mockReturnValueOnce(false);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
 					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
 					return { user, task };
@@ -218,7 +218,7 @@ describe('TaskUC', () => {
 					courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.isAuthorized.mockReturnValueOnce(false);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
 					taskRepo.findAllFinishedByParentIds.mockResolvedValue([[task], 1]);
 
 					return { user, task, lesson };
@@ -255,7 +255,7 @@ describe('TaskUC', () => {
 					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.isAuthorized.mockReturnValueOnce(false);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
 					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
 					return { user, task, course };
@@ -294,7 +294,7 @@ describe('TaskUC', () => {
 					courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.isAuthorized.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
 					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 
 					return { user };
@@ -321,8 +321,8 @@ describe('TaskUC', () => {
 					courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 					lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
-					authorizationService.isAuthorized.mockReturnValueOnce(true);
-					authorizationService.isAuthorized.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(true);
 					taskRepo.findAllFinishedByParentIds.mockResolvedValueOnce([[task], 1]);
 					const spy = jest.spyOn(task, 'createTeacherStatusForUser');
 
@@ -405,7 +405,7 @@ describe('TaskUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
-				authorizationService.isAuthorized.mockReturnValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task1, task2, task3], 3]);
@@ -519,7 +519,7 @@ describe('TaskUC', () => {
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
-				authorizationService.isAuthorized.mockReturnValueOnce(true);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task], 1]);
@@ -554,7 +554,7 @@ describe('TaskUC', () => {
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
-				authorizationService.isAuthorized.mockReturnValueOnce(true);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
 				taskRepo.findAllByParentIds.mockResolvedValueOnce([[task1, task2, task3], 3]);
@@ -649,7 +649,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkAuthorization.mockImplementationOnce(() => {
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -691,7 +691,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -824,7 +824,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkAuthorization.mockImplementationOnce(() => {
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -838,7 +838,7 @@ describe('TaskUC', () => {
 					await service.revertPublished(user.id, task.id);
 				}).rejects.toThrow(ForbiddenException);
 
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -914,7 +914,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				authorizationService.checkAuthorization.mockImplementationOnce(() => {
+				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
 
@@ -961,12 +961,12 @@ describe('TaskUC', () => {
 				return { user, task };
 			};
 
-			it('should call authorizationService.isAuthorized() with User Task Aktion.write', async () => {
+			it('should call authorizationService.hasPermission() with User Task Aktion.write', async () => {
 				const { user, task } = setup();
 
 				await service.delete(user.id, task.id);
 
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});

@@ -52,7 +52,7 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
-		return this.authorizationService.checkAuthorizationByReferences(
+		return this.authorizationService.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.School,
 			schoolId,

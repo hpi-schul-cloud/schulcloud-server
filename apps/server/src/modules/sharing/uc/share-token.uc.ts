@@ -177,7 +177,7 @@ export class ShareTokenUC {
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 		}
 
-		await this.authorizationService.checkAuthorizationByReferences(userId, allowedParentType, payload.parentId, {
+		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
 			action: Action.write,
 			requiredPermissions,
 		});
@@ -185,7 +185,7 @@ export class ShareTokenUC {
 
 	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
 		const allowedContextType = ShareTokenContextTypeMapper.mapToAllowedAuthorizationEntityType(context.contextType);
-		await this.authorizationService.checkAuthorizationByReferences(userId, allowedContextType, context.contextId, {
+		await this.authorizationService.checkPermissionByReferences(userId, allowedContextType, context.contextId, {
 			action: Action.read,
 			requiredPermissions: [],
 		});

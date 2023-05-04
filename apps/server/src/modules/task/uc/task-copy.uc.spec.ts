@@ -101,7 +101,7 @@ describe('task copy uc', () => {
 			lessonRepo.findById.mockResolvedValue(lesson);
 			taskRepo.findBySingleParent.mockResolvedValue([allTasks, allTasks.length]);
 			courseRepo.findById.mockResolvedValue(course);
-			authorisation.isAuthorized.mockReturnValue(true);
+			authorisation.hasPermission.mockReturnValue(true);
 			const copyName = 'name of the copy';
 			copyHelperService.deriveCopyName.mockReturnValue(copyName);
 			const copy = taskFactory.buildWithId({ creator: user, course });
@@ -208,7 +208,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
 
-				expect(authorisation.isAuthorized).toBeCalledWith(user, task, {
+				expect(authorisation.hasPermission).toBeCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -218,7 +218,7 @@ describe('task copy uc', () => {
 				const { course, user, task, userId } = setup();
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
-				expect(authorisation.checkAuthorizationByReferences).toBeCalledWith(
+				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -234,7 +234,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { userId });
 
-				expect(authorisation.isAuthorized).not.toBeCalledWith(user, course, {
+				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -245,7 +245,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
 
-				expect(authorisation.isAuthorized).toBeCalledWith(user, lesson, {
+				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -256,7 +256,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { userId });
 
-				expect(authorisation.isAuthorized).not.toBeCalledWith(user, lesson, {
+				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -270,7 +270,7 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.isAuthorized.mockImplementation((u: User, e: AuthorizableObject) => e !== task);
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== task);
 					return { user, course, lesson, task };
 				};
 
@@ -297,8 +297,8 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.isAuthorized.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
-					authorisation.checkAuthorizationByReferences.mockImplementation(() => {
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
+					authorisation.checkPermissionByReferences.mockImplementation(() => {
 						throw new ForbiddenException();
 					});
 					return { user, course, task };
@@ -365,7 +365,7 @@ describe('task copy uc', () => {
 				taskRepo.findById.mockResolvedValue(task);
 				courseRepo.findById.mockResolvedValue(course);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.isAuthorized.mockImplementation((u: User, e: AuthorizableObject) => {
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => {
 					if (e === lesson) return false;
 					return true;
 				});

@@ -97,22 +97,22 @@ describe('TaskCardUc', () => {
 			taskCard = taskCardFactory.buildWithId();
 			userRepo.findById.mockResolvedValue(user);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
-			authorizationService.isAuthorized.mockReturnValue(true);
+			authorizationService.hasPermission.mockReturnValue(true);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
-			authorizationService.isAuthorized.mockRestore();
+			authorizationService.hasPermission.mockRestore();
 		});
 		it('should check for permission to view the TaskCard', async () => {
 			await uc.findOne(user.id, taskCard.id);
-			expect(authorizationService.isAuthorized).toBeCalledWith(user, taskCard, {
+			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
 				action: Action.read,
 				requiredPermissions: [Permission.TASK_CARD_VIEW],
 			});
 		});
 		it('should throw if user has no permission', async () => {
-			authorizationService.isAuthorized.mockReturnValue(false);
+			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.findOne(user.id, taskCard.id);
 			}).rejects.toThrow(ForbiddenException);
@@ -139,22 +139,22 @@ describe('TaskCardUc', () => {
 
 			userRepo.findById.mockResolvedValue(user);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
-			authorizationService.isAuthorized.mockReturnValue(true);
+			authorizationService.hasPermission.mockReturnValue(true);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
-			authorizationService.isAuthorized.mockRestore();
+			authorizationService.hasPermission.mockRestore();
 		});
 		it('should check for permission to delete (i.e. edit) the TaskCard', async () => {
 			await uc.delete(user.id, taskCard.id);
-			expect(authorizationService.isAuthorized).toBeCalledWith(user, taskCard, {
+			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
 				action: Action.write,
 				requiredPermissions: [Permission.TASK_CARD_EDIT],
 			});
 		});
 		it('should throw if user has no permission', async () => {
-			authorizationService.isAuthorized.mockReturnValue(false);
+			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.delete(user.id, taskCard.id);
 			}).rejects.toThrow(ForbiddenException);
@@ -216,7 +216,7 @@ describe('TaskCardUc', () => {
 		});
 		it('should check for course permission to create the task related to the taskCard in a course', async () => {
 			await uc.create(user.id, taskCardCreateParams);
-			expect(authorizationService.checkAuthorization).toBeCalledWith(user, course, {
+			expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 				action: Action.write,
 				requiredPermissions: [],
 			});
@@ -419,26 +419,26 @@ describe('TaskCardUc', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findById.mockResolvedValue(course);
 			taskCardRepo.findById.mockResolvedValue(taskCard);
-			authorizationService.isAuthorized.mockReturnValue(true);
+			authorizationService.hasPermission.mockReturnValue(true);
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
 		});
 		afterEach(() => {
 			userRepo.findById.mockRestore();
 			courseRepo.findById.mockRestore();
 			taskCardRepo.findById.mockRestore();
-			authorizationService.isAuthorized.mockRestore();
+			authorizationService.hasPermission.mockRestore();
 			authorizationService.getUserWithPermissions.mockRestore();
 			taskService.update.mockRestore();
 		});
 		it('should check for permission to edit the TaskCard', async () => {
 			await uc.update(user.id, taskCard.id, taskCardUpdateParams);
-			expect(authorizationService.isAuthorized).toBeCalledWith(user, taskCard, {
+			expect(authorizationService.hasPermission).toBeCalledWith(user, taskCard, {
 				action: Action.write,
 				requiredPermissions: [Permission.TASK_CARD_EDIT],
 			});
 		});
 		it('should throw if user has no permission', async () => {
-			authorizationService.isAuthorized.mockReturnValue(false);
+			authorizationService.hasPermission.mockReturnValue(false);
 			await expect(async () => {
 				await uc.update(user.id, taskCard.id, taskCardUpdateParams);
 			}).rejects.toThrow(ForbiddenException);

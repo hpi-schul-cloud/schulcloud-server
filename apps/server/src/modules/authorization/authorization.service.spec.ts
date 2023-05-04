@@ -12,14 +12,14 @@ import { AllowedAuthorizationEntityType, Rule } from './types';
 
 describe('AuthorizationService', () => {
 	class TestRule implements Rule {
-		constructor(private returnValueOfIsAuthorized: boolean) {}
+		constructor(private returnValueOfhasPermission: boolean) {}
 
 		isApplicable(): boolean {
 			return true;
 		}
 
-		isAuthorized(): boolean {
-			return this.returnValueOfIsAuthorized;
+		hasPermission(): boolean {
+			return this.returnValueOfhasPermission;
 		}
 	}
 
@@ -61,13 +61,13 @@ describe('AuthorizationService', () => {
 		jest.resetAllMocks();
 	});
 
-	describe('checkAuthorization', () => {
-		describe('when isAuthorized returns false', () => {
+	describe('checkPermission', () => {
+		describe('when hasPermission returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
 
-				const spy = jest.spyOn(service, 'isAuthorized').mockReturnValueOnce(false);
+				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(false);
 
 				return { context, user, spy };
 			};
@@ -75,18 +75,18 @@ describe('AuthorizationService', () => {
 			it('should throw ForbiddenException', () => {
 				const { context, user, spy } = setup();
 
-				expect(() => service.checkAuthorization(user, user, context)).toThrow(ForbiddenException);
+				expect(() => service.checkPermission(user, user, context)).toThrow(ForbiddenException);
 
 				spy.mockRestore();
 			});
 		});
 
-		describe('when isAuthorized returns true', () => {
+		describe('when hasPermission returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
 
-				const spy = jest.spyOn(service, 'isAuthorized').mockReturnValueOnce(true);
+				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(true);
 
 				return { context, user, spy };
 			};
@@ -94,14 +94,14 @@ describe('AuthorizationService', () => {
 			it('should not throw', () => {
 				const { context, user, spy } = setup();
 
-				expect(() => service.checkAuthorization(user, user, context)).not.toThrow();
+				expect(() => service.checkPermission(user, user, context)).not.toThrow();
 
 				spy.mockRestore();
 			});
 		});
 	});
 
-	describe('isAuthorized', () => {
+	describe('hasPermission', () => {
 		describe('when the selected rule returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
@@ -116,7 +116,7 @@ describe('AuthorizationService', () => {
 			it('should return false', () => {
 				const { context, user } = setup();
 
-				const result = service.isAuthorized(user, user, context);
+				const result = service.hasPermission(user, user, context);
 
 				expect(result).toBe(false);
 			});
@@ -136,22 +136,22 @@ describe('AuthorizationService', () => {
 			it('should return true', () => {
 				const { context, user } = setup();
 
-				const result = service.isAuthorized(user, user, context);
+				const result = service.hasPermission(user, user, context);
 
 				expect(result).toBe(true);
 			});
 		});
 	});
 
-	describe('checkAuthorizationByReferences', () => {
-		describe('when isAuthorizedByReferences returns false', () => {
+	describe('checkPermissionByReferences', () => {
+		describe('when hasPermissionByReferences returns false', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
 				const entityName = AllowedAuthorizationEntityType.Course;
 
-				const spy = jest.spyOn(service, 'isAuthorizedByReferences').mockResolvedValueOnce(false);
+				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(false);
 
 				return { context, userId, entityId, entityName, spy };
 			};
@@ -159,7 +159,7 @@ describe('AuthorizationService', () => {
 			it('should reject with ForbiddenException', async () => {
 				const { context, userId, entityId, entityName, spy } = setup();
 
-				await expect(service.checkAuthorizationByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+				await expect(service.checkPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
 					ForbiddenException
 				);
 
@@ -167,14 +167,14 @@ describe('AuthorizationService', () => {
 			});
 		});
 
-		describe('when isAuthorizedByReferences returns true', () => {
+		describe('when hasPermissionByReferences returns true', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
 				const entityName = AllowedAuthorizationEntityType.Course;
 
-				const spy = jest.spyOn(service, 'isAuthorizedByReferences').mockResolvedValueOnce(true);
+				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(true);
 
 				return { context, userId, entityId, entityName, spy };
 			};
@@ -182,16 +182,14 @@ describe('AuthorizationService', () => {
 			it('should resolve', async () => {
 				const { context, userId, entityId, entityName, spy } = setup();
 
-				await expect(
-					service.checkAuthorizationByReferences(userId, entityName, entityId, context)
-				).resolves.not.toThrow();
+				await expect(service.checkPermissionByReferences(userId, entityName, entityId, context)).resolves.not.toThrow();
 
 				spy.mockRestore();
 			});
 		});
 	});
 
-	describe('isAuthorizedByReferences', () => {
+	describe('hasPermissionByReferences', () => {
 		describe('when loader throws an error', () => {
 			const setup = () => {
 				const context = AuthorizationContextBuilder.read([]);
@@ -207,7 +205,7 @@ describe('AuthorizationService', () => {
 			it('should reject with ForbiddenException', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				await expect(service.isAuthorizedByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
 					ForbiddenException
 				);
 			});
@@ -229,7 +227,7 @@ describe('AuthorizationService', () => {
 			it('should resolve to true', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				const result = await service.isAuthorizedByReferences(userId, entityName, entityId, context);
+				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
 
 				expect(result).toBe(true);
 			});
@@ -251,7 +249,7 @@ describe('AuthorizationService', () => {
 			it('should resolve to false', async () => {
 				const { context, userId, entityId, entityName } = setup();
 
-				const result = await service.isAuthorizedByReferences(userId, entityName, entityId, context);
+				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
 
 				expect(result).toBe(false);
 			});

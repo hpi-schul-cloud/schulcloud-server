@@ -34,39 +34,39 @@ describe('CourseRule', () => {
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = courseFactory.build({ teachers: [user] });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should call hasAccessToEntity on AuthorizationHelper if action = "read"', () => {
 		entity = courseFactory.build({ teachers: [user] });
 		const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers', 'students']);
 	});
 
 	it('should call hasAccessToEntity on AuthorizationHelper if action = "write"', () => {
 		entity = courseFactory.build({ teachers: [user] });
 		const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-		service.isAuthorized(user, entity, { action: Action.write, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers']);
 	});
 
 	it('should return "true" if user in scope', () => {
 		entity = courseFactory.build({ teachers: [user] });
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
 		entity = courseFactory.build({ teachers: [user] });
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 
 	it('should return "false" if user has not access to entity', () => {
 		entity = courseFactory.build();
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 });

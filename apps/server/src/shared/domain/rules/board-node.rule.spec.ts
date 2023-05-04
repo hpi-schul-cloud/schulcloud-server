@@ -68,7 +68,7 @@ describe(BoardNodeRule.name, () => {
 				const { user, entity } = setup();
 
 				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-				service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(spy).toBeCalledWith(user, []);
 			});
@@ -76,7 +76,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "true"', () => {
 				const { user, entity } = setup();
 
-				const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(res).toBe(true);
 			});

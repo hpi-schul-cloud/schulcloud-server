@@ -129,7 +129,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -148,7 +148,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Course,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledTimes(1);
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -190,7 +190,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Lesson,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Lesson,
 					lesson.id,
@@ -209,7 +209,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Lesson,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledTimes(1);
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -251,7 +251,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Task,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Task,
 					task.id,
@@ -270,7 +270,7 @@ describe('ShareTokenUC', () => {
 					parentType: ShareTokenParentType.Task,
 				});
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledTimes(1);
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the service', async () => {
@@ -309,7 +309,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.Course,
 					course.id,
@@ -337,7 +337,7 @@ describe('ShareTokenUC', () => {
 					}
 				);
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					school.id,
@@ -574,7 +574,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					school.id,
@@ -601,7 +601,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(authorization.checkAuthorizationByReferences).not.toHaveBeenCalled();
+				expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -686,7 +686,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AllowedAuthorizationEntityType.School,
 						school.id,
@@ -706,7 +706,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).not.toHaveBeenCalled();
+					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -803,7 +803,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AllowedAuthorizationEntityType.School,
 						school.id,
@@ -823,7 +823,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).not.toHaveBeenCalled();
+					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -919,7 +919,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).toHaveBeenCalledWith(
+					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
 						AllowedAuthorizationEntityType.School,
 						school.id,
@@ -939,7 +939,7 @@ describe('ShareTokenUC', () => {
 
 					await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-					expect(authorization.checkAuthorizationByReferences).not.toHaveBeenCalled();
+					expect(authorization.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
 			});
 		});

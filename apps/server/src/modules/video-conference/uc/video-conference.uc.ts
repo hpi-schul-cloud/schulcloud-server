@@ -423,7 +423,7 @@ export class VideoConferenceUc {
 		permissions.forEach((perm) => {
 			const context =
 				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
-			const ret = this.authorizationService.isAuthorizedByReferences(userId, entityName, entityId, context);
+			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
 		return returnMap;

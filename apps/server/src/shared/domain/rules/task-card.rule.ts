@@ -15,7 +15,7 @@ export class TaskCardRule implements Rule {
 		return isMatched;
 	}
 
-	public isAuthorized(user: User, entity: TaskCard, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: TaskCard, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
@@ -23,12 +23,12 @@ export class TaskCardRule implements Rule {
 		let hasTaskPermission = false;
 
 		if (action === Action.read) {
-			hasTaskPermission = this.taskRule.isAuthorized(user, entity.task, {
+			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
 				action,
 				requiredPermissions: [Permission.HOMEWORK_VIEW],
 			});
 		} else if (action === Action.write) {
-			hasTaskPermission = this.taskRule.isAuthorized(user, entity.task, {
+			hasTaskPermission = this.taskRule.hasPermission(user, entity.task, {
 				action,
 				requiredPermissions: [Permission.HOMEWORK_EDIT],
 			});

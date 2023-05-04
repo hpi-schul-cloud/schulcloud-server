@@ -25,7 +25,7 @@ export class TaskCardUc {
 		}
 
 		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkAuthorization(user, course, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 
 		this.validateDueDate({ params, course, user });
 
@@ -68,7 +68,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.isAuthorized(user, card, AuthorizationContextBuilder.read([Permission.TASK_CARD_VIEW]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.read([Permission.TASK_CARD_VIEW])
+			)
 		) {
 			throw new ForbiddenException();
 		}
@@ -83,7 +87,7 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.isAuthorized(
+			!this.authorizationService.hasPermission(
 				user,
 				card,
 				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
@@ -102,7 +106,7 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.isAuthorized(
+			!this.authorizationService.hasPermission(
 				user,
 				card,
 				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
@@ -112,7 +116,7 @@ export class TaskCardUc {
 		}
 
 		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkAuthorization(user, course, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 
 		this.validateDueDate({ params, course, user });
 

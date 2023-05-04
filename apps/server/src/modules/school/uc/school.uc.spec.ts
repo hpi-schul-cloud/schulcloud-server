@@ -61,7 +61,7 @@ describe('SchoolUc', () => {
 				enableMigrationStart: true,
 			});
 			schoolService.setMigration.mockResolvedValue(migrationResponse);
-			authService.checkAuthorizationByReferences.mockImplementation(() => Promise.resolve());
+			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 			schoolService.getSchoolById.mockResolvedValue(
 				schoolDOFactory.buildWithId({
 					name: 'mockName',
@@ -135,7 +135,7 @@ describe('SchoolUc', () => {
 		describe('when schoolId and UserId are given', () => {
 			it('should call the service', async () => {
 				schoolService.getMigration.mockResolvedValue(migrationResponse);
-				authService.checkAuthorizationByReferences.mockImplementation(() => Promise.resolve());
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 
 				await schoolUc.getMigration(mockId, mockId);
 

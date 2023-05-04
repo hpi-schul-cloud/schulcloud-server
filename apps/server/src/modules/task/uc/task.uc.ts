@@ -62,7 +62,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.isAuthorized(user, task, AuthorizationContextBuilder.write([]))) {
+			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				status = task.createStudentStatusForUser(user);
@@ -94,7 +94,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.read([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([]));
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -119,7 +119,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
 
 		task.unpublish();
 		await this.taskRepo.save(task);
@@ -204,7 +204,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.isAuthorized(user, c, AuthorizationContextBuilder.write([]))
+			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
@@ -234,7 +234,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkAuthorization(user, task, AuthorizationContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
 
 		await this.taskService.delete(task);
 

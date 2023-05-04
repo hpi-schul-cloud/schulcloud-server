@@ -205,7 +205,7 @@ describe('TaskService', () => {
 			});
 			it('should check for course permission to create the task in a course', async () => {
 				await taskService.create(user.id, { name: 'test', courseId: course.id });
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, course, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -214,7 +214,7 @@ describe('TaskService', () => {
 				const lesson = lessonFactory.buildWithId({ course });
 				lessonRepo.findById.mockResolvedValue(lesson);
 				await taskService.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, lesson, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, lesson, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -293,7 +293,7 @@ describe('TaskService', () => {
 					creator: user,
 					course,
 				};
-				authorizationService.isAuthorized.mockReturnValue(true);
+				authorizationService.hasPermission.mockReturnValue(true);
 				const result = await taskService.create(user.id, { name: 'test', courseId: course.id });
 				expect(result.task).toEqual(expect.objectContaining(taskMock));
 				expect(result.status.isDraft).toEqual(true);
@@ -334,7 +334,7 @@ describe('TaskService', () => {
 					name: 'test',
 				};
 				await taskService.update(user.id, task.id, params);
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [Permission.HOMEWORK_EDIT],
 				});
@@ -345,7 +345,7 @@ describe('TaskService', () => {
 					courseId: course.id,
 				};
 				await taskService.update(user.id, task.id, params);
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, course, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -504,7 +504,7 @@ describe('TaskService', () => {
 			});
 			it('should check for permission to view the task', async () => {
 				await taskService.find(user.id, task.id);
-				expect(authorizationService.checkAuthorization).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [Permission.HOMEWORK_VIEW],
 				});

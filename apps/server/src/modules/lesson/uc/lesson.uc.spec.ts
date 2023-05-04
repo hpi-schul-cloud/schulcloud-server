@@ -58,7 +58,7 @@ describe('LessonUC', () => {
 		expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 		expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
 
-		expect(authorizationService.checkAuthorization).toHaveBeenCalledWith(
+		expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 			expect.objectContaining({ ...user }),
 			expect.objectContaining({ ...lesson }),
 			AuthorizationContextBuilder.write([Permission.TOPIC_VIEW])

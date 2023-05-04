@@ -126,9 +126,9 @@ When calling other internal micro service for already authorized operations plea
 ### Example 1 - Execute a Single Operation
 
 ```javascript
-   this.authorizationService.checkAuthorization(user, course, AuthorizationContextBuilder.write([])
+   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
    // or
-   this.authorizationService.isAuthorized(user, course, AuthorizationContextBuilder.write([])
+   this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps
 ```
 
@@ -136,9 +136,9 @@ When calling other internal micro service for already authorized operations plea
 
 ```javascript
 // If you don't have an entity but an entity type and id, you can check permission by reference
-await this.authorizationService.checkAuthorizationByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
+await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // or
-await this.authorizationService.isAuthorizedByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
+await this.authorizationService.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // next orchestration steps
 ```
 
@@ -146,7 +146,7 @@ await this.authorizationService.isAuthorizedByReferences(userId, AllowedEntity.c
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
-await this.authorizationService.isAuthorized(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
+await this.authorizationService.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps
 ```
 
@@ -162,7 +162,7 @@ export const FileStorageAuthorizationContext = {
 };
 
 /** UC **/
-this.authorizationService.isAuthorized(userId, course, PermissionContexts.create);
+this.authorizationService.hasPermission(userId, course, PermissionContexts.create);
 // do other orchestration steps
 ```
 
@@ -193,7 +193,7 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
 
     const user = this.authorizationService.getUserWithPermissions(userId);
 
-   await this.authorizationService.checkAuthorizationByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+   await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
 
     const newUser = new User(params)
 
@@ -234,7 +234,7 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
    const user = this.authorizationService.getUserWithPermissions(userId);
    const school = this.schoolService.getSchool(params.schoolId);
 
-        this.authorizationService.checkAuthorization(user, school
+        this.authorizationService.checkPermission(user, school
             {
                 action: Actions.write,
                 requiredPermissions: [Permission.COURSE_CREATE],
@@ -258,7 +258,7 @@ async createLesson(userId: EntityId, params: { courseId: EntityId }) {
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
          // check authorization for user and course
-        this.authorizationService.checkAuthorization(user, course
+        this.authorizationService.checkPermission(user, course
             {
                 action: Actions.write,
                 requiredPermissions: [Permission.COURSE_EDIT],
@@ -294,7 +294,7 @@ export class NewsRule extends BasePermission<News> {
       return isMatched;
    }
 
-   public isAuthorized(user: User, entity: News, context: AuthorizationContext): boolean {
+   public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
       const { action, requiredPermissions } = context;
 
       // check required permissions passed by UC
@@ -320,9 +320,9 @@ export class NewsRule extends BasePermission<News> {
       // e.g. school is offline
       // or courseRule has complex permissions-resolves
       if (entity.targetModel === NewsTargetModel.School) {
-         hasParentPermission = this.schoolRule.isAuthorized(user, entity.target, { action, requiredPermissions: [] });
+         hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
       } else if (entity.targetModel === NewsTargetModel.Course) {
-         hasParentPermission = this.courseRule.isAuthorized(user, entity.target, { action, requiredPermissions: [] });
+         hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
       }
 
       return hasParentPermission;
@@ -406,7 +406,7 @@ They follow our general target.
    Remove populate logic in reference loader.
    Solve eager loading in coursegroups.
 2. Introduce RabbitMQ. Splitting Service(logic) from UC, that we can call services over the consumer for internal communication between micro services of already authorized operations.
-   Think about: Move isAuthorized checks from rules to a more generic place.
+   Think about: Move hasPermission checks from rules to a more generic place.
    Remove jwt decorator and cleanup copy logic.
    Move authorization-context.builder to authorization module.
 3. Remove inheritance from roles, because we want to write it explicitly into the collection documents.

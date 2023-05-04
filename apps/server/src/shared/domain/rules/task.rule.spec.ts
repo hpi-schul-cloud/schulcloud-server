@@ -40,45 +40,45 @@ describe('TaskRule', () => {
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
 		entity = taskFactory.build({ creator: user });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should call hasAccessToEntity on AuthorizationHelper', () => {
 		entity = taskFactory.build({ creator: user });
 		const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, entity, ['creator']);
 	});
 
-	it('should call courseRule.isAuthorized', () => {
+	it('should call courseRule.hasPermission', () => {
 		const course = courseFactory.build({ teachers: [user] });
 		entity = taskFactory.build({ course });
-		const spy = jest.spyOn(courseRule, 'isAuthorized');
-		service.isAuthorized(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
+		const spy = jest.spyOn(courseRule, 'hasPermission');
+		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
 		expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
 	});
 
-	it('should call lessonRule.isAuthorized', () => {
+	it('should call lessonRule.hasPermission', () => {
 		const course = courseFactory.build({ teachers: [user] });
 		const lesson = lessonFactory.build({ course, hidden: true });
 		entity = taskFactory.build({ course, lesson });
-		const spy = jest.spyOn(lessonRule, 'isAuthorized');
-		service.isAuthorized(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
+		const spy = jest.spyOn(lessonRule, 'hasPermission');
+		service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
 		expect(spy).toBeCalledWith(user, entity.lesson, { action: Action.write, requiredPermissions: [] });
 	});
 
 	describe('User [TEACHER]', () => {
 		it('should return "true" if user is creator', () => {
 			entity = taskFactory.build({ creator: user });
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "true" if user in scope', () => {
 			const course = courseFactory.build({ teachers: [user] });
 			entity = taskFactory.build({ course });
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
@@ -86,19 +86,19 @@ describe('TaskRule', () => {
 			const course = courseFactory.build({ teachers: [user] });
 			const lesson = lessonFactory.build({ course, hidden: true });
 			entity = taskFactory.build({ course, lesson });
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
 			entity = taskFactory.build({ creator: user });
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not access to entity', () => {
 			entity = taskFactory.build();
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 	});
@@ -112,14 +112,14 @@ describe('TaskRule', () => {
 		});
 		it('should return "true" if user is creator', () => {
 			entity = taskFactory.build({ creator: user });
-			const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "true" if user in scope', () => {
 			const course = courseFactory.build({ students: [student] });
 			entity = taskFactory.build({ course });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
@@ -127,7 +127,7 @@ describe('TaskRule', () => {
 			const course = courseFactory.build({ students: [student] });
 			const lesson = lessonFactory.build({ course, hidden: true });
 			entity = taskFactory.build({ course, lesson });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(false);
 		});
 
@@ -135,19 +135,19 @@ describe('TaskRule', () => {
 			const course = courseFactory.build({ students: [student] });
 			const lesson = lessonFactory.build({ course });
 			entity = taskFactory.build({ course, lesson, private: true });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not permission', () => {
 			entity = taskFactory.build({ creator: student });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not access to entity', () => {
 			entity = taskFactory.build();
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
@@ -155,14 +155,14 @@ describe('TaskRule', () => {
 			const otherStudent: User = userFactory.build({ roles: [role] });
 			const course = courseFactory.build();
 			entity = taskFactory.build({ course, users: [otherStudent] });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "true" if task has Assignees and user is assigned ', () => {
 			const course = courseFactory.build();
 			entity = taskFactory.build({ course, users: [student] });
-			const res = service.isAuthorized(student, entity, { action: Action.read, requiredPermissions: [] });
+			const res = service.hasPermission(student, entity, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 	});

@@ -35,15 +35,15 @@ describe('CourseExportUc', () => {
 
 	describe('exportCourse', () => {
 		it('should check for permissions', async () => {
-			authorizationServiceMock.checkAuthorizationByReferences.mockResolvedValueOnce();
+			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 
 			await expect(courseExportUc.exportCourse('', '')).resolves.not.toThrow();
-			expect(authorizationServiceMock.checkAuthorizationByReferences).toBeCalledTimes(1);
+			expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 		});
 
 		it('should return a binary file as buffer', async () => {
 			courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
-			authorizationServiceMock.checkAuthorizationByReferences.mockResolvedValueOnce();
+			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 
 			await expect(courseExportUc.exportCourse('', '')).resolves.toBeInstanceOf(Buffer);
 		});

@@ -94,7 +94,7 @@ describe('FilesStorageUC', () => {
 				const fileResponse = createMock<IGetFileResponse>();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkAuthorizationByReferences.mockResolvedValue();
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				filesStorageService.download.mockResolvedValueOnce(fileResponse);
 
 				return { fileDownloadParams, userId, fileRecord, fileResponse };
@@ -110,13 +110,13 @@ describe('FilesStorageUC', () => {
 				});
 			});
 
-			it('should call checkAuthorizationByReferences with correct params', async () => {
+			it('should call checkPermissionByReferences with correct params', async () => {
 				const { fileDownloadParams, userId, fileRecord } = setup();
 
 				await filesStorageUC.download(userId, fileDownloadParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
-				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					fileRecord.parentId,
@@ -166,7 +166,7 @@ describe('FilesStorageUC', () => {
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkAuthorizationByReferences.mockRejectedValueOnce(error);
+				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, fileRecord };
 			};
@@ -185,7 +185,7 @@ describe('FilesStorageUC', () => {
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
-				authorizationService.checkAuthorizationByReferences.mockResolvedValue();
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				filesStorageService.download.mockRejectedValueOnce(error);
 
 				return { fileDownloadParams, userId, error };

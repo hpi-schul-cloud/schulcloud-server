@@ -13,31 +13,31 @@ export class AuthorizationService {
 		private readonly authorizationHelper: AuthorizationHelper
 	) {}
 
-	public checkAuthorization(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
-		if (!this.isAuthorized(user, entity, context)) {
+	public checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
+		if (!this.hasPermission(user, entity, context)) {
 			throw new ForbiddenException();
 		}
 	}
 
-	public isAuthorized(user: User, entity: AuthorizableObject, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext): boolean {
 		const rule = this.ruleManager.selectRule(user, entity, context);
-		const isAuthorized = rule.isAuthorized(user, entity, context);
+		const hasPermission = rule.hasPermission(user, entity, context);
 
-		return isAuthorized;
+		return hasPermission;
 	}
 
-	public async checkAuthorizationByReferences(
+	public async checkPermissionByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<void> {
-		if (!(await this.isAuthorizedByReferences(userId, entityName, entityId, context))) {
+		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
 			throw new ForbiddenException();
 		}
 	}
 
-	public async isAuthorizedByReferences(
+	public async hasPermissionByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
@@ -50,9 +50,9 @@ export class AuthorizationService {
 				this.loader.loadEntity(entityName, entityId),
 			]);
 			const rule = this.ruleManager.selectRule(user, entity, context);
-			const isAuthorized = rule.isAuthorized(user, entity, context);
+			const hasPermission = rule.hasPermission(user, entity, context);
 
-			return isAuthorized;
+			return hasPermission;
 		} catch (err) {
 			throw new ForbiddenException(err);
 		}

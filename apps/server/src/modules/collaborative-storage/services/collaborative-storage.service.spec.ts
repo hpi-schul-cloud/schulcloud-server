@@ -107,7 +107,7 @@ describe('Collaborative Storage Service', () => {
 		});
 
 		it('should throw a forbidden exception', async () => {
-			authService.checkAuthorization.mockImplementation(() => {
+			authService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});
 			await expect(

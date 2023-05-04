@@ -37,28 +37,28 @@ describe('SchoolRule', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-		service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should return "true" if user in scope', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
 		entity = schoolFactory.build();
 		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});
 
 	it('should return "false" if user has not some school', () => {
 		entity = new SchoolDO({ name: 'testschool', id: 'invalidId' });
 		user = userFactory.build({ roles: [role] });
-		const res = service.isAuthorized(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
+		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(false);
 	});
 });

@@ -19,7 +19,7 @@ export class LessonRule implements Rule {
 		return isMatched;
 	}
 
-	public isAuthorized(user: User, entity: Lesson, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: Lesson, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
@@ -67,13 +67,13 @@ export class LessonRule implements Rule {
 	}
 
 	private coursePermission(user: User, entity: Course, action: Action): boolean {
-		const result = this.courseRule.isAuthorized(user, entity, { action, requiredPermissions: [] });
+		const result = this.courseRule.hasPermission(user, entity, { action, requiredPermissions: [] });
 
 		return result;
 	}
 
 	private courseGroupPermission(user: User, entity: CourseGroup, action: Action): boolean {
-		const result = this.courseGroupRule.isAuthorized(user, entity, {
+		const result = this.courseGroupRule.hasPermission(user, entity, {
 			action,
 			requiredPermissions: [],
 		});

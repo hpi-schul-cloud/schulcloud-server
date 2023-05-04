@@ -89,7 +89,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getExternalToolForSchool(currentUser.userId, externalToolId, 'schoolId');
 
-				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					'schoolId',
@@ -118,7 +118,7 @@ describe('ExternalToolConfigurationUc', () => {
 				const { currentUser } = setupAuthorization();
 				const { externalToolId } = setupForSchool();
 
-				authorizationService.checkAuthorizationByReferences.mockImplementation(() => {
+				authorizationService.checkPermissionByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 
@@ -165,7 +165,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				await uc.getAvailableToolsForSchool(user.id, 'schoolId');
 
-				expect(authorizationService.checkAuthorizationByReferences).toHaveBeenCalledWith(
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
 					AllowedAuthorizationEntityType.School,
 					schoolId,
@@ -179,7 +179,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should fail when authorizationService throws ForbiddenException', async () => {
 				setupAuthorization();
 
-				authorizationService.checkAuthorizationByReferences.mockImplementation(() => {
+				authorizationService.checkPermissionByReferences.mockImplementation(() => {
 					throw new ForbiddenException();
 				});
 

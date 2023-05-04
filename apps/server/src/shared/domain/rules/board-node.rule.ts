@@ -14,11 +14,11 @@ export class BoardNodeRule implements Rule {
 		return isMatched;
 	}
 
-	public isAuthorized(user: User, domainObject: AnyBoardDo, context: AuthorizationContext): boolean {
-		const isAuthorized = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(user: User, domainObject: AnyBoardDo, context: AuthorizationContext): boolean {
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		// TODO: create really permission checks
 
-		return isAuthorized;
+		return hasPermission;
 	}
 }
