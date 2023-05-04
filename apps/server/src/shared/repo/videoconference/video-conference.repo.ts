@@ -37,6 +37,8 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 	protected mapEntityToDO(entity: VideoConference): VideoConferenceDO {
 		return new VideoConferenceDO({
 			id: entity.id,
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
 			target: entity.target,
 			targetModel: VideoConferencingScopeMapping[entity.targetModel],
 			options: {

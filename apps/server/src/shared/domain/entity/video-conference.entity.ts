@@ -1,5 +1,5 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
-import { BaseEntity, BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from './base.entity';
 
 export enum TargetModels {
 	COURSES = 'courses',
