@@ -4,7 +4,7 @@ import { ExternalToolConfigDO } from './external-tool-config.do';
 export class Lti11ToolConfigDO extends ExternalToolConfigDO {
 	key: string;
 
-	secret: string;
+	secret?: string;
 
 	resource_link_id?: string;
 
