@@ -6,10 +6,10 @@ import { LoggingUtils } from '@src/core/logger/logging.utils';
 import { Response } from 'express';
 import _ from 'lodash';
 import util from 'util';
-import { ApiValidationErrorResponse, ErrorResponse } from './dto';
-import { FeathersError } from './interface';
-import { ErrorLoggable } from './loggable/error.loggable';
-import { ErrorUtils } from './utils';
+import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
+import { FeathersError } from '../interface';
+import { ErrorLoggable } from '../loggable/error.loggable';
+import { ErrorUtils } from '../utils';
 
 @Catch()
 export class GlobalErrorFilter<T extends IError | undefined> implements ExceptionFilter<T> {
