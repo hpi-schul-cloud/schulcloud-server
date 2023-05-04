@@ -331,6 +331,18 @@
 				}
 			}
 		},
+		"H5P_EDITOR": {
+			"type": "object",
+			"description": "Properties of the H5P server microservice",
+			"properties": {
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 10000,
+					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+				}
+			}
+		},
 		"FEATURE_FWU_CONTENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
