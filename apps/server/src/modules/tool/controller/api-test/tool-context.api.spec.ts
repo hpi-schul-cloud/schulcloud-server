@@ -77,6 +77,7 @@ describe('ToolContextController (API)', () => {
 				const postParams: ContextExternalToolPostParams = {
 					schoolToolId: schoolExternalTool.id,
 					contextId: course.id,
+					contextToolName: course.name,
 					contextType: ToolContextType.COURSE,
 					parameters: [paramEntry],
 					toolVersion: 1,
@@ -109,6 +110,7 @@ describe('ToolContextController (API)', () => {
 								id: expect.any(String),
 								schoolToolId: postParams.schoolToolId,
 								contextId: postParams.contextId,
+								contextToolName: postParams.contextToolName,
 								contextType: postParams.contextType,
 								parameters: postParams.parameters,
 								toolVersion: postParams.toolVersion,
