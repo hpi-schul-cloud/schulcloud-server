@@ -348,6 +348,11 @@
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
 		},
+		"FEATURE_H5P_EDITOR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Defines if backend for the H5P editor is enabled."
+		},
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
 			"default": 20971520,
