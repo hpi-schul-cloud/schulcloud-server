@@ -5,6 +5,7 @@ import { setupEntities } from '@shared/testing';
 import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
+import { RecursiveDeleteVisitor } from '../repo/recursive-delete.vistor';
 import { BoardDoService } from './board-do.service';
 
 describe(BoardDoService.name, () => {
@@ -19,6 +20,10 @@ describe(BoardDoService.name, () => {
 				{
 					provide: BoardDoRepo,
 					useValue: createMock<BoardDoRepo>(),
+				},
+				{
+					provide: RecursiveDeleteVisitor,
+					useValue: createMock<RecursiveDeleteVisitor>(),
 				},
 				{
 					provide: Logger,
