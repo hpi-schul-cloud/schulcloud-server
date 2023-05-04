@@ -1,5 +1,8 @@
 # Schul-Cloud Server
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=coverage)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
 ## NestJS application
 
 > Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html) of this repository at GitHub pages. It contains information about

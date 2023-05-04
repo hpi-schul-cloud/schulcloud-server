@@ -21,7 +21,7 @@ const generateJWT =
 	async ({ username }) => {
 		const app = await appPromise;
 
-		const { accounts } = await app.service('nest-account-service').searchByUsernameExactMatch(username);
+		const [accounts] = await app.service('nest-account-service').searchByUsernameExactMatch(username);
 		const user = await app.service('usersModel').get({
 			_id: accounts[0].userId,
 		});
