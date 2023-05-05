@@ -10,7 +10,8 @@ const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUs
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
-const limit = pLimit(5);
+const schoolLimit = pLimit(50);
+const limit = pLimit(1000);
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
@@ -128,7 +129,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.logInfo('Done.');
 		}
 		await Promise.all(
-			schools.map((school) => limit(() => this.processSchool(school, teacherMap, studentMap, classMap)))
+			schools.map((school) => schoolLimit(() => this.processSchool(school, teacherMap, studentMap, classMap)))
 		);
 		this.logInfo('Done.');
 	}
@@ -181,7 +182,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		const classMapping = {};
 		this.logInfo('Syncing students...');
 		// create students and add them to the mapping (classUid => [User])
-		await Promise.all(schoolStudents.map((tspStudent) => this.processStudent(tspStudent, school, classMapping)));
+		await Promise.all(
+			schoolStudents.map((tspStudent) => limit(() => this.processStudent(tspStudent, school, classMapping)))
+		);
 		return classMapping;
 	}
 
@@ -216,7 +219,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		const teacherMapping = {};
 		this.logInfo('Syncing teachers...');
 		// create teachers and add them to the mapping (teacherUID => User)
-		await Promise.all(schoolTeachers.map((tspTeacher) => this.processTeacher(tspTeacher, school, teacherMapping)));
+		await Promise.all(
+			schoolTeachers.map((tspTeacher) => limit(() => this.processTeacher(tspTeacher, school, teacherMapping)))
+		);
 		return teacherMapping;
 	}
 
@@ -521,26 +526,28 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
 		return Promise.all(
-			classes.map((klass) => {
-				const sourceOptions = {};
-				sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
-				const query = {
-					source: ENTITY_SOURCE,
-					sourceOptions,
-				};
-				const teacher = teacherMapping[klass.lehrerUid];
-				const options = {
-					name: klass.klasseName,
-					schoolId: school._id,
-					year: school.currentYear,
-					teacherIds: teacher ? [teacher] : [],
-					userIds: classMapping[klass.klasseId] || [],
-					source: ENTITY_SOURCE,
-					sourceOptions,
-				};
-				const onlyAddNew = this.config.lastChange !== undefined;
-				return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
-			})
+			classes.map((klass) =>
+				limit(() => {
+					const sourceOptions = {};
+					sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
+					const query = {
+						source: ENTITY_SOURCE,
+						sourceOptions,
+					};
+					const teacher = teacherMapping[klass.lehrerUid];
+					const options = {
+						name: klass.klasseName,
+						schoolId: school._id,
+						year: school.currentYear,
+						teacherIds: teacher ? [teacher] : [],
+						userIds: classMapping[klass.klasseId] || [],
+						source: ENTITY_SOURCE,
+						sourceOptions,
+					};
+					const onlyAddNew = this.config.lastChange !== undefined;
+					return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
+				})
+			)
 		);
 	}
 }
