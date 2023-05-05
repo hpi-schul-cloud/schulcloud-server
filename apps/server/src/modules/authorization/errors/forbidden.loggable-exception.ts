@@ -4,7 +4,11 @@ import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
 export class ForbiddenLoggableException extends ForbiddenException implements Loggable {
-	constructor(private userId: EntityId, private context: IPermissionContext) {
+	constructor(
+		private readonly userId: EntityId,
+		private readonly entityName: string,
+		private readonly context: IPermissionContext
+	) {
 		super();
 	}
 
@@ -14,8 +18,7 @@ export class ForbiddenLoggableException extends ForbiddenException implements Lo
 			stack: this.stack,
 			data: {
 				userId: this.userId,
-				// TODO: This is not easily possible atm because of the PermissionTypes, where id is optional in BaseDO.
-				// entityId: this.entityId,
+				entityName: this.entityName,
 				action: this.context.action,
 				requiredPermissions: this.context.requiredPermissions.join(','),
 			},

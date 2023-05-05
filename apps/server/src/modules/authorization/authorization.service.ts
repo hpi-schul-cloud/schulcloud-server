@@ -54,7 +54,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenLoggableException(user.id, context);
+			throw new ForbiddenLoggableException(user.id, entity.constructor.name, context);
 		}
 	}
 
@@ -85,7 +85,7 @@ export class AuthorizationService extends BasePermissionManager {
 		context: IPermissionContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenLoggableException(userId, context);
+			throw new ForbiddenLoggableException(userId, entityName, context);
 		}
 	}
 
