@@ -3,7 +3,7 @@ import { Injectable, InternalServerErrorException, UnprocessableEntityException 
 import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
-import { SystemDto, SystemService } from '@src/modules/system/service';
+import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 
 @Injectable()
