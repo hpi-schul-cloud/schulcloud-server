@@ -7,6 +7,12 @@ import { EntityId } from '@shared/domain';
 export class ContextExternalToolService {
 	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
 
+	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
+		const contextExternalTool = await this.contextExternalToolRepo.findById(contextExternalToolId);
+
+		return contextExternalTool;
+	}
+
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
 		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(
 			contextExternalTool
@@ -19,5 +25,9 @@ export class ContextExternalToolService {
 			schoolToolId: schoolExternalToolId,
 		});
 		await this.contextExternalToolRepo.delete(courseExternalTools);
+	}
+
+	async deleteContextExternalToolById(contextExternalToolId: EntityId): Promise<void> {
+		await this.contextExternalToolRepo.deleteById(contextExternalToolId);
 	}
 }
