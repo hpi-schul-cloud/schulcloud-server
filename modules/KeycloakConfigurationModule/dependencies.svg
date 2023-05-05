@@ -14,13 +14,13 @@
 <title>cluster_KeycloakConfigurationModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-230.8 1679,-230.8 1679,-32.8 8,-32.8"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_KeycloakConfigurationModule_imports</title>
-<polygon fill="none" stroke="black" points="797,-40.8 797,-92.8 1671,-92.8 1671,-40.8 797,-40.8"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_KeycloakConfigurationModule_exports</title>
 <polygon fill="none" stroke="black" points="745,-170.8 745,-222.8 1252,-222.8 1252,-170.8 745,-170.8"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_KeycloakConfigurationModule_imports</title>
+<polygon fill="none" stroke="black" points="797,-40.8 797,-92.8 1671,-92.8 1671,-40.8 797,-40.8"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_KeycloakConfigurationModule_providers</title>

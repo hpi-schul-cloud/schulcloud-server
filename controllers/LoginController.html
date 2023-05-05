@@ -135,14 +135,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;ldap&#x27;)<br /></code>
+                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;ldap&#x27;)<br />@ApiOperation({summary: &#x27;Starts the login process for users which are authenticated via LDAP&#x27;})<br />@ApiResponse({status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27;})<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:30</a></div>
                 </td>
             </tr>
 
@@ -225,14 +225,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;local&#x27;)<br /></code>
+                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;local&#x27;)<br />@ApiOperation({summary: &#x27;Starts the login process for users which are locally managed.&#x27;})<br />@ApiResponse({status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27;})<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:46</a></div>
                 </td>
             </tr>
 
@@ -315,14 +315,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;oauth2&#x27;)<br /></code>
+                    <code>@UseGuards(undefined)<br />@HttpCode(HttpStatus.OK)<br />@Post(&#x27;oauth2&#x27;)<br />@ApiOperation({summary: &#x27;Starts the login process for users which are authenticated via OAuth 2.&#x27;})<br />@ApiResponse({status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27;})<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiResponse({status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/authentication/controllers/login.controller.ts:61</a></div>
                 </td>
             </tr>
 
@@ -388,7 +388,8 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from &#x27;@nestjs/common&#x27;;
 import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ForbiddenOperationError, ValidationError } from &#x27;@shared/common&#x27;;
 import { CurrentUser } from &#x27;../decorator/auth.decorator&#x27;;
 import type { ICurrentUser } from &#x27;../interface&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
@@ -409,6 +410,10 @@ export class LoginController {
 	@UseGuards(AuthGuard(&#x27;ldap&#x27;))
 	@HttpCode(HttpStatus.OK)
 	@Post(&#x27;ldap&#x27;)
+	@ApiOperation({ summary: &#x27;Starts the login process for users which are authenticated via LDAP&#x27; })
+	@ApiResponse({ status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27; })
+	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
@@ -421,6 +426,10 @@ export class LoginController {
 	@UseGuards(AuthGuard(&#x27;local&#x27;))
 	@HttpCode(HttpStatus.OK)
 	@Post(&#x27;local&#x27;)
+	@ApiOperation({ summary: &#x27;Starts the login process for users which are locally managed.&#x27; })
+	@ApiResponse({ status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27; })
+	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async loginLocal(@CurrentUser() user: ICurrentUser, @Body() _: LocalAuthorizationBodyParams): Promise&lt;LoginResponse&gt; {
 		const loginDto: LoginDto &#x3D; await this.loginUc.getLoginData(user);
@@ -433,6 +442,10 @@ export class LoginController {
 	@UseGuards(AuthGuard(&#x27;oauth2&#x27;))
 	@HttpCode(HttpStatus.OK)
 	@Post(&#x27;oauth2&#x27;)
+	@ApiOperation({ summary: &#x27;Starts the login process for users which are authenticated via OAuth 2.&#x27; })
+	@ApiResponse({ status: 200, type: LoginResponse, description: &#x27;Login was successful.&#x27; })
+	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: &#x27;Invalid user credentials.&#x27; })
 	async loginOauth2(
 		@CurrentUser() user: ICurrentUser,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
