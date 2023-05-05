@@ -58,7 +58,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 		if (query.contextId && query.schoolToolId) {
 			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolId);
-		} else if (query.schoolToolId) {
+		} else if (query.schoolToolId && !query.contextId) {
 			scope.bySchoolToolId(query.schoolToolId);
 		}
 
