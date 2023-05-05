@@ -6,13 +6,13 @@ describe('ForbiddenOperationError', () => {
 		const error = new ForbiddenOperationError();
 		expect(error).toBeDefined();
 		expect(error.message).toBeDefined();
-		expect(error.details).toStrictEqual({});
+		expect(error.details).toBeUndefined();
 	});
 
 	it('should be possible to add details', () => {
 		const details = { callStack: 'The forbidden operation error call stack.' };
 		const error = new ForbiddenOperationError(undefined, details);
-		expect(error.getDetails()).toEqual(details);
+		expect(error.details).toEqual(details);
 	});
 
 	it('should have the right code', () => {
