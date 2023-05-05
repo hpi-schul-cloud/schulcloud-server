@@ -216,7 +216,7 @@ describe('CourseEntity', () => {
 
 	describe('getStudentList', () => {
 		const setup = () => {
-			const students = userFactory.buildListWithId(2).sort();
+			const students = userFactory.buildListWithId(2);
 			const course = courseFactory.build({ students });
 			return { course, students };
 		};
@@ -224,7 +224,7 @@ describe('CourseEntity', () => {
 			const { course, students } = setup();
 			const [student1, student2] = students;
 
-			const result = course.getStudentsList().sort();
+			const result = course.getStudentsList();
 
 			expect(result.length).toEqual(2);
 			expect(result[0].id).toEqual(student1.id);
