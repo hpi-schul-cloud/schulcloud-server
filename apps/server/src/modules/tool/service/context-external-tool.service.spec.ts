@@ -58,6 +58,46 @@ describe('ContextExternalToolService', () => {
 		});
 	});
 
+	describe('getContextExternalToolById is called', () => {
+		const setup = () => {
+			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
+			return {
+				contextExternalToolId: contextExternalTool.id as string,
+			};
+		};
+
+		describe('when contextExternalToolId is given', () => {
+			it('should call getContextExternalToolById()', async () => {
+				const { contextExternalToolId } = setup();
+
+				await service.getContextExternalToolById(contextExternalToolId);
+
+				expect(contextExternalToolRepo.findById).toHaveBeenCalledWith(contextExternalToolId);
+			});
+		});
+	});
+
+	describe('deleteContextExternalToolById is called', () => {
+		const setup = () => {
+			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
+			return {
+				contextExternalToolId: contextExternalTool.id as string,
+			};
+		};
+
+		describe('when contextExternalToolId is given', () => {
+			it('should call deleteContextExternalToolById()', async () => {
+				const { contextExternalToolId } = setup();
+
+				await service.deleteContextExternalToolById(contextExternalToolId);
+
+				expect(contextExternalToolRepo.deleteById).toHaveBeenCalledWith(contextExternalToolId);
+			});
+		});
+	});
+
 	describe('createContextExternalTool is called', () => {
 		const setup = () => {
 			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();

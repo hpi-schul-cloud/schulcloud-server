@@ -90,4 +90,50 @@ describe('ContextExternalTool', () => {
 			});
 		});
 	});
+
+	describe('deleteContextExternalTool is called', () => {
+		const setup = () => {
+			const userId: EntityId = 'userId';
+
+			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+
+			const context = {
+				action: Actions.read,
+				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			};
+
+			authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+
+			return {
+				contextExternalTool,
+				contextExternalToolId: contextExternalTool.id as EntityId,
+				userId,
+				context,
+			};
+		};
+
+		describe('when contextExternalTool is given and user has permission ', () => {
+			it('should call contextExternalToolService', async () => {
+				const { contextExternalToolId, userId } = setup();
+
+				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+
+				expect(contextExternalToolService.deleteContextExternalToolById).toHaveBeenCalledWith(contextExternalToolId);
+			});
+
+			it('should call authorizationService', async () => {
+				const { contextExternalTool, contextExternalToolId, userId, context } = setup();
+
+				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AllowedAuthorizationEntityType.Course,
+					contextExternalTool.contextId,
+					context
+				);
+			});
+		});
+	});
 });
