@@ -12,9 +12,10 @@ import {
 	SortOrder,
 } from '@shared/domain';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
+import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
 import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
-import { CrudOperation, NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
+import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
