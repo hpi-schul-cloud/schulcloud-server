@@ -18,6 +18,7 @@ COPY migrations /schulcloud-server/migrations
 COPY src /schulcloud-server/src
 COPY apps /schulcloud-server/apps
 COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
+COPY scripts/ldapSync.sh /schulcloud-server/scripts
 RUN npm run build
 
 ENV NODE_ENV=production

@@ -19,5 +19,5 @@ spec:
             envFrom:
             - secretRef:
                 name: api-secret
-            command: ['/bin/sh','schulcloud-server/scripts/ldapSync.sh']
+            command: ['/bin/sh','-c','schulcloud-server/scripts/ldapSync.sh']
           restartPolicy: OnFailure
