@@ -31,6 +31,7 @@ describe('ContextExternalToolService', () => {
 			const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
 			const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
 			const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
 			return {
 				schoolExternalTool,
 				schoolExternalToolId: schoolExternalTool.id as string,
@@ -41,8 +42,10 @@ describe('ContextExternalToolService', () => {
 
 		describe('when schoolExternalToolId is given', () => {
 			it('should call find()', async () => {
-				const { schoolExternalToolId } = setup();
+				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
+
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
 
 				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({ schoolToolId: schoolExternalToolId });
 			});

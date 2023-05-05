@@ -113,7 +113,7 @@ describe('ContextExternalToolUc', () => {
 			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
 
 			const context = {
-				action: Actions.read,
+				action: Actions.write,
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			};
 
