@@ -4,6 +4,14 @@ import { TextElement } from './text-element.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class Card extends BoardComposite<CardProps> {
+	get title(): string {
+		return this.props.title;
+	}
+
+	set title(title: string) {
+		this.props.title = title;
+	}
+
 	get height(): number {
 		return this.props.height;
 	}
@@ -23,5 +31,6 @@ export class Card extends BoardComposite<CardProps> {
 }
 
 export interface CardProps extends BoardCompositeProps {
+	title: string;
 	height: number;
 }

@@ -31,7 +31,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const columnBoard = new ColumnBoard({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? '',
 			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -47,7 +47,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const column = new Column({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? '',
 			children: cards,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -62,7 +62,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const card = new Card({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? '',
 			height: boardNode.height,
 			children: elements,
 			createdAt: boardNode.createdAt,

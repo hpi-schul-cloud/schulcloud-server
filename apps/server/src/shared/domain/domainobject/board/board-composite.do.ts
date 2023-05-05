@@ -15,14 +15,6 @@ export abstract class BoardComposite<T extends BoardCompositeProps> {
 		return this.props.id;
 	}
 
-	get title(): string | undefined {
-		return this.props.title;
-	}
-
-	set title(title: string | undefined) {
-		this.props.title = title;
-	}
-
 	get children(): AnyBoardDo[] {
 		return this.props.children;
 	}
@@ -67,8 +59,6 @@ export abstract class BoardComposite<T extends BoardCompositeProps> {
 
 export interface BoardCompositeProps {
 	id: EntityId;
-
-	title?: string;
 
 	children: AnyBoardDo[];
 
