@@ -84,7 +84,7 @@ const checkUniqueAccount = (hook) => {
 	return hook.app
 		.service('nest-account-service')
 		.searchByUsernameExactMatch(email.toLowerCase())
-		.then((result) => {
+		.then(([result]) => {
 			if (result.length > 0) {
 				throw new BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`);
 			}
