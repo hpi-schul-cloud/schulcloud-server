@@ -1,12 +1,13 @@
 import { Body, Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, Put } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { IsString } from 'class-validator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, MoveContentElementBody } from './dto';
-import { AnyContentElementBody } from './dto/element/any-content-element-body';
+import { ContentElementUrlParams, FileElementContent, MoveContentElementBody, TextElementContent } from './dto';
+import { AnyContentElementBody, TextContentElementBody } from './dto/element/any-content-element-body';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -43,7 +44,7 @@ export class ElementController {
 	@Put(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: AnyContentElementBody,
+		@Body() bodyParams: AnyContentBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.content);
@@ -63,3 +64,17 @@ export class ElementController {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 }
+
+export type AnyContentBody = TextContentBody | FileContentBody;
+
+export type TextContentBody = {
+	content: {
+		text: string;
+	};
+};
+
+export type FileContentBody = {
+	content: {
+		caption: string;
+	};
+};

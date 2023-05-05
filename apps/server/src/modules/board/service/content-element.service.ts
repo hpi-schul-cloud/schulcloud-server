@@ -44,4 +44,9 @@ export class ContentElementService {
 	async move(element: AnyContentElementDo, targetCard: Card, targetPosition: number): Promise<void> {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
+
+	async update(element: AnyContentElementDo): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(element.id);
+		await this.boardDoRepo.save(element, parent);
+	}
 }
