@@ -1,9 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, SchoolFeatures, SystemTypeEnum, UserLoginMigrationDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';

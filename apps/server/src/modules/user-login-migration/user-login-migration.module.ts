@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { UserLoginMigrationRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { SchoolModule } from '@src/modules/school';

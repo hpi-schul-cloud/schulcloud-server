@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { UserLoginMigrationRepo } from '@shared/repo';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 
@@ -24,7 +24,7 @@ export class MigrationCheckService {
 
 			const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
-			if (user && userLoginMigration && user.lastLoginSystemChange && !userLoginMigration.closedAt) {
+			if (user?.lastLoginSystemChange && userLoginMigration && !userLoginMigration.closedAt) {
 				const hasMigrated: boolean = user.lastLoginSystemChange > userLoginMigration.startedAt;
 				return !hasMigrated;
 			}

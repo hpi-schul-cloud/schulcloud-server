@@ -9,12 +9,9 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { setupEntities } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
@@ -100,23 +97,15 @@ describe('UserMigrationService', () => {
 		jest.resetAllMocks();
 	});
 
-	const setup = () => {
-		const officialSchoolNumber = '3';
-		const school: SchoolDO = new SchoolDO({
-			name: 'schoolName',
-			officialSchoolNumber,
-		});
-
-		return {
-			officialSchoolNumber,
-			school,
-		};
-	};
-
 	describe('getMigrationConsentPageRedirect is called', () => {
 		describe('when finding the migration systems', () => {
-			it('should return a url to the migration endpoint', async () => {
-				const { school, officialSchoolNumber } = setup();
+			const setup = () => {
+				const officialSchoolNumber = '3';
+				const school: SchoolDO = new SchoolDO({
+					name: 'schoolName',
+					officialSchoolNumber,
+				});
+
 				const iservSystem: SystemDto = new SystemDto({
 					id: 'iservId',
 					type: '',
@@ -140,6 +129,14 @@ describe('UserMigrationService', () => {
 					})
 				);
 
+				return {
+					officialSchoolNumber,
+				};
+			};
+
+			it('should return a url to the migration endpoint', async () => {
+				const { officialSchoolNumber } = setup();
+
 				const result: string = await service.getMigrationConsentPageRedirect(officialSchoolNumber, 'iservId');
 
 				expect(result).toEqual(
@@ -149,6 +146,16 @@ describe('UserMigrationService', () => {
 		});
 
 		describe('when the school was not found', () => {
+			const setup = () => {
+				const officialSchoolNumber = '3';
+
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
+
+				return {
+					officialSchoolNumber,
+				};
+			};
+
 			it('should throw InternalServerErrorException', async () => {
 				const { officialSchoolNumber } = setup();
 				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
@@ -160,11 +167,20 @@ describe('UserMigrationService', () => {
 		});
 
 		describe('when the migration systems have invalid data', () => {
-			it('should throw InternalServerErrorException', async () => {
-				const { officialSchoolNumber } = setup();
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDOFactory.buildWithId());
+			const setup = () => {
+				const officialSchoolNumber = '3';
+
+				schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDOFactory.buildWithId({ officialSchoolNumber }));
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 				systemService.findByType.mockResolvedValue([]);
+
+				return {
+					officialSchoolNumber,
+				};
+			};
+
+			it('should throw InternalServerErrorException', async () => {
+				const { officialSchoolNumber } = setup();
 
 				const promise: Promise<string> = service.getMigrationConsentPageRedirect(
 					officialSchoolNumber,

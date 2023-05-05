@@ -1,7 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { Logger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';

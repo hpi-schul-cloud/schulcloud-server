@@ -1,5 +1,5 @@
-import { SchoolFeatures, SchoolYear } from '../entity';
-import { EntityId } from '../types';
+import { SchoolFeatures, SchoolYear } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
 export class SchoolDO extends BaseDO {

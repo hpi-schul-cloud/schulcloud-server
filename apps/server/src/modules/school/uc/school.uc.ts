@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, Permission, UserLoginMigrationDO } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Actions, Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school/service/school.service';
-import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration/service';
+import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
+import { SchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 @Injectable()
