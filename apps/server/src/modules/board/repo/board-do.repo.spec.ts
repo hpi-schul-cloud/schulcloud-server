@@ -183,54 +183,63 @@ describe(BoardDoRepo.name, () => {
 	});
 
 	describe('save', () => {
-		const setup = async () => {
-			const board = columnBoardFactory.build();
-			const cards = cardFactory.buildList(3);
-			const column = columnFactory.build({ children: cards });
+		describe('when called', () => {
+			it('should create new board nodes', async () => {
+				const cards = cardFactory.buildList(3);
 
-			const columnNode = columnNodeFactory.build({ id: column.id });
-			await em.persistAndFlush(columnNode);
+				await repo.save(cards);
+				em.clear();
 
-			return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
-		};
+				const result = await em.find(CardNode, {});
+				expect(result.map((n) => n.id).sort()).toEqual(cards.map((c) => c.id).sort());
+			});
 
-		it('should create new board nodes', async () => {
-			const cards = cardFactory.buildList(3);
+			it('should update existing board nodes', async () => {
+				const node = cardNodeFactory.buildWithId({ title: 'before' });
+				await em.persistAndFlush(node);
 
-			await repo.save(cards);
-			em.clear();
+				const card = await repo.findByClassAndId(Card, node.id);
+				card.title = 'after';
 
-			const result = await em.find(CardNode, {});
-			expect(result.map((n) => n.id).sort()).toEqual(cards.map((c) => c.id).sort());
-		});
+				await repo.save(card);
+				em.clear();
 
-		it('should update existing board nodes', async () => {
-			const node = cardNodeFactory.buildWithId({ title: 'before' });
-			await em.persistAndFlush(node);
+				const result = await em.findOneOrFail(CardNode, node.id);
+				expect(result.title).toEqual('after');
+			});
 
-			const card = await repo.findByClassAndId(Card, node.id);
-			card.title = 'after';
+			it('should be able to do both - create and update', async () => {
+				const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+				await em.persistAndFlush(node1);
+				em.clear();
+				const card1 = await repo.findByClassAndId(Card, node1.id);
+				card1.title = 'after';
+				const card2 = cardFactory.build({ title: 'created' });
 
-			await repo.save(card);
-			em.clear();
+				await repo.save([card1, card2]);
+				em.clear();
 
-			const result = await em.findOneOrFail(CardNode, node.id);
-			expect(result.title).toEqual('after');
-		});
+				const result = await em.find(CardNode, {});
+				expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
+			});
 
-		it('should be able to do both - create and update', async () => {
-			const node1 = cardNodeFactory.buildWithId({ title: 'before' });
-			await em.persistAndFlush(node1);
-			em.clear();
-			const card1 = await repo.findByClassAndId(Card, node1.id);
-			card1.title = 'after';
-			const card2 = cardFactory.build({ title: 'created' });
+			it('should use the visitor', async () => {
+				const board = columnBoardFactory.build();
+				jest.spyOn(board, 'accept');
 
-			await repo.save([card1, card2]);
-			em.clear();
+				await repo.save(board);
 
-			const result = await em.find(CardNode, {});
-			expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
+				expect(board.accept).toHaveBeenCalledWith(expect.any(RecursiveSaveVisitor));
+			});
+
+			it('should flush the changes', async () => {
+				const board = columnBoardFactory.build();
+				jest.spyOn(em, 'flush');
+
+				await repo.save(board);
+
+				expect(em.flush).toHaveBeenCalled();
+			});
 		});
 
 		describe('when parent is already persisted', () => {
@@ -269,33 +278,28 @@ describe(BoardDoRepo.name, () => {
 			});
 		});
 
-		it('should persist child order to positions', async () => {
-			const { column, card1, card2, card3 } = await setup();
+		describe('child ordering', () => {
+			const setup = async () => {
+				const board = columnBoardFactory.build();
+				const cards = cardFactory.buildList(3);
+				const column = columnFactory.build({ children: cards });
 
-			await repo.save([card1, card2, card3], column);
-			em.clear();
+				const columnNode = columnNodeFactory.build({ id: column.id });
+				await em.persistAndFlush(columnNode);
 
-			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
-			expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
-			expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
-		});
+				return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
+			};
 
-		it('should use the visitor', async () => {
-			const board = columnBoardFactory.build();
-			jest.spyOn(board, 'accept');
+			it('should persist child order to positions', async () => {
+				const { column, card1, card2, card3 } = await setup();
 
-			await repo.save(board);
+				await repo.save([card1, card2, card3], column);
+				em.clear();
 
-			expect(board.accept).toHaveBeenCalledWith(expect.any(RecursiveSaveVisitor));
-		});
-
-		it('should flush the changes', async () => {
-			const board = columnBoardFactory.build();
-			jest.spyOn(em, 'flush');
-
-			await repo.save(board);
-
-			expect(em.flush).toHaveBeenCalled();
+				expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
+				expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
+				expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
+			});
 		});
 	});
 
