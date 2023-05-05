@@ -4,15 +4,29 @@ import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-c
 import { ICommonCartridgeFileBuilderOptions, CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
 
 describe('CommonCartridgeFileBuilder', () => {
 	const builderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'Placeholder Identifier',
 		title: 'Placeholder Title',
 	};
+	const lessonContent: ICommonCartridgeLessonContentProps[] = [
+		{
+			identifier: 'lesson-content-identifier',
+			title: 'lesson-content-title',
+			content: 'lesson-content',
+		},
+		{
+			identifier: 'another-lesson-content-identifier',
+			title: 'another-lesson-content-title',
+			content: 'another-lesson-content',
+		},
+	];
 	const organizationProps: ICommonCartridgeOrganizationProps = {
 		identifier: 'organization-identifier',
 		title: 'organization-title',
+		contents: lessonContent,
 	};
 	const resourceProps: ICommonCartridgeResourceProps = {
 		identifier: 'resource-identifier',
@@ -56,10 +70,18 @@ describe('CommonCartridgeFileBuilder', () => {
 
 	describe('addOrganizations', () => {
 		it('should add an organization element to the manifest', () => {
-			builder.addOrganizationItems([organizationProps]).addOrganizationItems([organizationProps]);
+			builder.addOrganizationItems([organizationProps]);
 
 			expect(builder.manifest).toContain(builderOptions.title);
 			expect(builder.manifest).toContain(organizationProps.title);
+			expect(organizationProps.contents).toBeDefined();
+			expect(builder.manifest).toContain(organizationProps.contents?.[0]?.identifier);
+			expect(builder.manifest).toContain(organizationProps.contents?.[1]?.identifier);
+		});
+
+		it('should not throw an error if the contents of organizationProps is undefined', () => {
+			organizationProps.contents = undefined;
+			expect(() => builder.addOrganizationItems([organizationProps])).not.toThrow();
 		});
 	});
 
