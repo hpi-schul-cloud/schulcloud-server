@@ -32,8 +32,8 @@ describe('Logger', () => {
 			],
 		}).compile();
 
-		service = module.get(Logger);
-		winstonLogger = module.get(WINSTON_MODULE_PROVIDER);
+		service = await module.resolve(Logger);
+		winstonLogger = await module.get(WINSTON_MODULE_PROVIDER);
 	});
 
 	afterEach(() => {
