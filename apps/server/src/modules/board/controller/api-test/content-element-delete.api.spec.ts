@@ -18,7 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/cards';
+const baseRouteName = '/elements';
 
 class API {
 	app: INestApplication;
@@ -27,9 +27,9 @@ class API {
 		this.app = app;
 	}
 
-	async delete(cardId: string, elementId: string) {
+	async delete(elementId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/${cardId}/elements/${elementId}`)
+			.delete(`${baseRouteName}/${elementId}`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -86,29 +86,29 @@ describe(`content element delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
-			const { user, cardNode, element } = await setup();
+		it('should return status 204', async () => {
+			const { user, element } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.delete(cardNode.id, element.id);
+			const response = await api.delete(element.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete element', async () => {
-			const { user, cardNode, element } = await setup();
+			const { user, element } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id, element.id);
+			await api.delete(element.id);
 
 			await expect(em.findOneOrFail(TextElementNode, element.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
-			const { user, cardNode, element, sibling } = await setup();
+			const { user, element, sibling } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(cardNode.id, element.id);
+			await api.delete(element.id);
 
 			const siblingFromDb = await em.findOneOrFail(TextElementNode, sibling.id);
 			expect(siblingFromDb).toBeDefined();

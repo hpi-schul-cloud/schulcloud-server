@@ -4,7 +4,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat, Permission, Task } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -13,9 +12,12 @@ import {
 	roleFactory,
 	submissionFactory,
 	taskFactory,
+	TestRequest,
 	userFactory,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
@@ -1271,7 +1273,7 @@ describe('Task Controller (API)', () => {
 				type: InputFormat.RICH_TEXT_CK5,
 			});
 			expect(responseTask.availableDate).toEqual(updateTaskParams.availableDate);
-			expect(responseTask.duedate).toEqual(updateTaskParams.dueDate);
+			expect(responseTask.dueDate).toEqual(updateTaskParams.dueDate);
 			expect(responseTask.courseId).toEqual(updateTaskParams.courseId);
 			expect(responseTask.lessonName).toEqual(lesson.name);
 			expect(responseTask.users).toEqual([
@@ -1360,6 +1362,7 @@ describe('Task Controller (API)', () => {
 			});
 		});
 	});
+
 	describe('When task-card feature is not enabled', () => {
 		let app: INestApplication;
 		let em: EntityManager;
@@ -1454,6 +1457,210 @@ describe('Task Controller (API)', () => {
 				.set('Accept', 'application/json')
 				.send(params)
 				.expect(501);
+		});
+	});
+
+	describe('Find tasks with assigned users', () => {
+		let app: INestApplication;
+		let em: EntityManager;
+		let apiRequest: TestRequest;
+
+		const setup = async () => {
+			const createStudent = () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
+					Permission.TASK_CARD_VIEW,
+					Permission.TASK_DASHBOARD_VIEW_V3,
+					Permission.HOMEWORK_VIEW,
+				]);
+				return { account: studentAccount, user: studentUser };
+			};
+
+			const createTeacher = () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
+					Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
+				]);
+				return { account: teacherAccount, user: teacherUser };
+			};
+
+			const teacher = createTeacher();
+			const student1 = createStudent();
+			const student2 = createStudent();
+			const student3 = createStudent();
+
+			const course1 = courseFactory.build({
+				teachers: [teacher.user],
+				students: [student1.user, student2.user],
+			});
+			const course2 = courseFactory.build({
+				teachers: [teacher.user],
+				students: [student1.user, student2.user, student3.user],
+			});
+
+			const course1Task1 = taskFactory.build({
+				course: course1,
+				finished: [student1.user, student2.user],
+				users: [student1.user, student2.user, student3.user],
+			});
+			const course1Task2 = taskFactory.build({
+				course: course1,
+				finished: [student1.user],
+				users: [student2.user],
+			});
+			const course1Task3 = taskFactory.build({
+				course: course1,
+				users: [],
+			});
+			const course1Task4 = taskFactory.build({
+				course: course1,
+			});
+			const course2Task1 = taskFactory.build({
+				course: course2,
+				users: [student1.user, student2.user],
+			});
+			const course2Task2 = taskFactory.build({
+				course: course2,
+				users: [student2.user, student3.user],
+				finished: [student2.user],
+			});
+			const course2Task3 = taskFactory.build({
+				course: course2,
+				finished: [student2.user],
+			});
+
+			await em.persistAndFlush([
+				teacher.account,
+				teacher.user,
+				student1.account,
+				student1.user,
+				student2.account,
+				student2.user,
+				student3.account,
+				student3.user,
+				course1,
+				course2,
+				course1Task1,
+				course1Task2,
+				course1Task3,
+				course1Task4,
+				course2Task1,
+				course2Task2,
+				course2Task3,
+			]);
+			em.clear();
+
+			return {
+				teacher,
+				student1,
+				student2,
+				student3,
+				course1,
+				course2,
+				course1Task1,
+				course1Task2,
+				course1Task3,
+				course1Task4,
+				course2Task1,
+				course2Task2,
+				course2Task3,
+			};
+		};
+
+		beforeAll(async () => {
+			const module: TestingModule = await Test.createTestingModule({
+				imports: [ServerTestModule],
+			}).compile();
+
+			app = module.createNestApplication();
+			await app.init();
+			em = module.get(EntityManager);
+			apiRequest = new TestRequest(app, 'tasks');
+		});
+
+		afterAll(async () => {
+			await app.close();
+		});
+
+		beforeEach(async () => {
+			await cleanupCollections(em);
+		});
+
+		describe('when tasks have assigment', () => {
+			it('finds tasks to which student is assigned', async () => {
+				const { student1, course2Task1 } = await setup();
+
+				const response = await apiRequest.get(undefined, student1.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).toContain(course2Task1.id);
+			});
+
+			it('find finished tasks to which student is assigned ', async () => {
+				const { student2, course1Task1, course2Task2 } = await setup();
+
+				const response = await apiRequest.get('/finished', student2.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).toContain(course1Task1.id);
+				expect(taskIds).toContain(course2Task2.id);
+			});
+
+			it('student does not find tasks to which he is assigned, if he does not belong to course', async () => {
+				const { student3, course1Task1 } = await setup();
+
+				const response = await apiRequest.get(undefined, student3.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).not.toContain(course1Task1.id);
+			});
+
+			it('student does not find tasks, it task has users assigned, but himself is not assigned', async () => {
+				const { student1, course1Task2 } = await setup();
+
+				const response = await apiRequest.get(undefined, student1.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).not.toContain(course1Task2.id);
+			});
+
+			it('student does not find finished tasks, it tasks have users assigned, but himself is not assigned', async () => {
+				const { student1, course1Task2 } = await setup();
+
+				const response = await apiRequest.get('/finished', student1.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).not.toContain(course1Task2.id);
+			});
+
+			it('teacher finds all tasks (assignment does not change the result)', async () => {
+				const { teacher } = await setup();
+
+				const response = await apiRequest.get(undefined, teacher.account);
+
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(7);
+			});
+
+			it('student finds tasks, if task assignment list is empty', async () => {
+				const { student1, course1Task3 } = await setup();
+
+				const response = await apiRequest.get(undefined, student1.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				const taskIds = data.map((task) => task.id);
+				expect(taskIds).toContain(course1Task3.id);
+			});
 		});
 	});
 });

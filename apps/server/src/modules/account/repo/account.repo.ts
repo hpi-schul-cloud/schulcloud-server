@@ -55,7 +55,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	async deleteById(accountId: EntityId): Promise<void> {
+	async deleteById(accountId: EntityId | ObjectId): Promise<void> {
 		const account = await this.findById(accountId);
 		return this.delete(account);
 	}
@@ -65,6 +65,13 @@ export class AccountRepo extends BaseRepo<Account> {
 		if (account) {
 			await this._em.removeAndFlush(account);
 		}
+	}
+
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+		return this._em.find(this.entityName, {}, { offset, limit });
 	}
 
 	private async searchByUsername(

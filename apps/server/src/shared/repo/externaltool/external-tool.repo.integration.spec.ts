@@ -1,3 +1,4 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -11,12 +12,6 @@ import {
 	SortOrder,
 	ToolConfigType,
 } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, externalToolFactory } from '@shared/testing';
-import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { LegacyLogger } from '@src/core/logger';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	BasicToolConfigDO,
 	CustomParameterDO,
@@ -24,7 +19,12 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/external-tool';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
+import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { cleanupCollections, externalToolFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { Page } from '../../domain/domainobject/page';
 
 describe('ExternalToolRepo', () => {
@@ -157,10 +157,12 @@ describe('ExternalToolRepo', () => {
 					new CustomParameterDO({
 						name: 'name',
 						regex: 'regex',
+						displayName: 'displayName',
+						description: 'description',
 						type: CustomParameterType.NUMBER,
 						scope: CustomParameterScope.SCHOOL,
 						default: 'default',
-						location: CustomParameterLocation.TOKEN,
+						location: CustomParameterLocation.BODY,
 						regexComment: 'mockComment',
 						isOptional: false,
 					}),

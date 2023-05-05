@@ -1,18 +1,28 @@
-import { EntityId } from '@shared/domain/types';
 import { BoardComposite } from './board-composite.do';
 import { Card } from './card.do';
-import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from './types';
+import type {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync,
+	BoardNodeBuildable,
+	BoardNodeBuilder,
+} from './types';
 
 export class Column extends BoardComposite implements BoardNodeBuildable {
-	addChild(child: AnyBoardDo) {
-		if (child instanceof Card) {
-			this.children.push(child);
-		} else {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
-		}
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed = domainObject instanceof Card;
+		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildColumnNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildColumnNode(this, parent);
+	}
+
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitColumn(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
+		await visitor.visitColumnAsync(this);
 	}
 }

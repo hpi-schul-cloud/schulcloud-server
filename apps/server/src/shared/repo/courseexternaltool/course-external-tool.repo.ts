@@ -61,6 +61,7 @@ export class CourseExternalToolRepo extends BaseDORepo<
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
+			displayName: entity.displayName,
 			schoolToolId: entity.schoolTool.id,
 			courseId: entity.course.id,
 			toolVersion: entity.toolVersion,
@@ -70,6 +71,7 @@ export class CourseExternalToolRepo extends BaseDORepo<
 
 	mapDOToEntityProperties(entityDO: CourseExternalToolDO): ICourseExternalToolProperties {
 		return {
+			displayName: entityDO.displayName,
 			course: this._em.getReference(Course, entityDO.courseId),
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolId),
 			toolVersion: entityDO.toolVersion,

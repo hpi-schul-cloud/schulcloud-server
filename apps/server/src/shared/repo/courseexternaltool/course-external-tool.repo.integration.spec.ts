@@ -1,13 +1,13 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseExternalTool, SchoolExternalTool } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { LegacyLogger } from '@src/core/logger';
-import { createMock } from '@golevelup/ts-jest';
 import { CourseExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
+import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { courseExternalToolDOFactory } from '@shared/testing/factory/domainobject/course-external-tool.factory';
+import { LegacyLogger } from '@src/core/logger';
 import { CourseExternalToolQuery } from '@src/modules/tool/uc/dto/course-external-tool.types';
 import { CourseExternalToolRepo } from './course-external-tool.repo';
 
@@ -100,6 +100,7 @@ describe('CourseExternalToolRepo', () => {
 	describe('save', () => {
 		function setupDO() {
 			const domainObject: CourseExternalToolDO = new CourseExternalToolDO({
+				displayName: 'displayName',
 				courseId: new ObjectId().toHexString(),
 				parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 				schoolToolId: new ObjectId().toHexString(),

@@ -119,7 +119,16 @@ describe('FilesStorageService upload methods', () => {
 				}
 			});
 
-			return { params, file, fileSize, userId, fileRecord, expectedFileRecord, fileRecords, getFileRecordsOfParentSpy };
+			return {
+				params,
+				file,
+				fileSize,
+				userId,
+				fileRecord,
+				expectedFileRecord,
+				fileRecords,
+				getFileRecordsOfParentSpy,
+			};
 		};
 
 		it('should call getFileRecordsOfParent with correct params', async () => {
@@ -226,18 +235,11 @@ describe('FilesStorageService upload methods', () => {
 		});
 
 		it('should call antivirusService.send with fileRecord', async () => {
-			const { params, file, fileSize, userId, expectedFileRecord } = createUploadFileParams();
+			const { params, file, userId } = createUploadFileParams();
 
-			await service.uploadFile(userId, params, file);
+			const fileRecord = await service.uploadFile(userId, params, file);
 
-			expect(antivirusService.send).toHaveBeenCalledWith(
-				expect.objectContaining({
-					...expectedFileRecord,
-					size: fileSize,
-					createdAt: expect.any(Date),
-					updatedAt: expect.any(Date),
-				})
-			);
+			expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
 		});
 
 		describe('WHEN antivirusService throws error', () => {

@@ -66,7 +66,7 @@ module.exports = {
 		{
 			files: ['apps/**/*.ts'],
 			parser: '@typescript-eslint/parser',
-			plugins: ['@typescript-eslint'],
+			plugins: ['@typescript-eslint/eslint-plugin'],
 			extends: [
 				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
@@ -81,21 +81,9 @@ module.exports = {
 				node: true,
 				es6: true,
 			},
-			settings: {
-				'import/parsers': {
-					'@typescript-eslint/parser': ['.ts'],
-				},
-				'import/resolver': {
-					typescript: {
-						alwaysTryTypes: true,
-						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json', 'apps/server/tsconfig.app.json'],
-					},
-				},
-			},
 			rules: {
 				'import/no-unresolved': 'off', // better handled by ts resolver
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
-				'import/extensions': ['error', 'always', { ts: 'never' }],
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
 				'max-classes-per-file': 'off',
@@ -103,6 +91,7 @@ module.exports = {
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
 				'@typescript-eslint/unbound-method': 'error',
+				'@typescript-eslint/no-unused-vars': 'error',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
 					{
@@ -124,21 +113,6 @@ module.exports = {
 					},
 				},
 			],
-		},
-		{
-			// legacy test files js/ts
-			files: ['{test,src}/**/*.test.js', '{test,src}/**/*.test.ts'],
-			rules: {
-				'no-unused-expressions': 'off',
-				'global-require': 'warn',
-			},
-		},
-		{
-			// legacy typescript
-			files: ['{test,src}/**/*.ts'],
-			parser: '@typescript-eslint/parser',
-			plugins: ['@typescript-eslint'],
-			extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
 		},
 	],
 };

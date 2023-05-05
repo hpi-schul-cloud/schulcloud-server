@@ -7,7 +7,7 @@ import { ALL_ENTITIES } from '@shared/domain';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MailModule } from '@shared/infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
-import { RedisModule, REDIS_CLIENT } from '@shared/infra/redis';
+import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
@@ -25,7 +25,7 @@ import { RocketChatModule } from '@src/modules/rocketchat';
 import { RoleModule } from '@src/modules/role/role.module';
 import { SchoolApiModule } from '@src/modules/school/school-api.module';
 import { SharingApiModule } from '@src/modules/sharing/sharing.module';
-import { SystemModule } from '@src/modules/system';
+import { SystemApiModule } from '@src/modules/system/system-api.module';
 import { TaskModule } from '@src/modules/task';
 import { TaskCardModule } from '@src/modules/task-card';
 import { ToolApiModule } from '@src/modules/tool/tool-api.module';
@@ -55,7 +55,7 @@ const serverModules = [
 	ImportUserModule,
 	LearnroomModule,
 	FilesStorageClientModule,
-	SystemModule,
+	SystemApiModule,
 	MailModule.forRoot({
 		exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
 		routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,

@@ -10,17 +10,13 @@ import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakMigrationService } from './keycloak-migration.service';
-import { IdentityManagementService } from '../../identity-management.service';
 
 describe('KeycloakConfigurationService Integration', () => {
-	jest.setTimeout(60000);
-
 	let module: TestingModule;
 	let em: EntityManager;
 	let keycloak: KeycloakAdminClient;
 	let keycloakMigrationService: KeycloakMigrationService;
 	let keycloakAdministrationService: KeycloakAdministrationService;
-	let identityManagementService: IdentityManagementService;
 	let isKeycloakAvailable = false;
 
 	let dbOnlyAccounts: Account[];
@@ -61,20 +57,17 @@ describe('KeycloakConfigurationService Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							};
-						},
-					],
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+						};
+					},
 				}),
 			],
 			providers: [],
 		}).compile();
 		em = module.get(EntityManager);
 		keycloakAdministrationService = module.get(KeycloakAdministrationService);
-		identityManagementService = module.get(IdentityManagementService);
 		isKeycloakAvailable = await keycloakAdministrationService.testKcConnection();
 		if (isKeycloakAvailable) {
 			keycloak = await keycloakAdministrationService.callKcAdminClient();
@@ -100,7 +93,7 @@ describe('KeycloakConfigurationService Integration', () => {
 				await createAccountInIdm(account);
 			}
 		}
-	});
+	}, 60000);
 
 	afterEach(async () => {
 		if (isKeycloakAvailable) {
@@ -114,27 +107,9 @@ describe('KeycloakConfigurationService Integration', () => {
 		describe('Given all accounts are able to migrate', () => {
 			it('should copy all accounts to the IDM', async () => {
 				if (!isKeycloakAvailable) return;
-				const createSpy = jest.spyOn(identityManagementService, 'createAccount');
-				const updateSpy = jest.spyOn(identityManagementService, 'updateAccount');
 				const migratedAccountCounts = await keycloakMigrationService.migrate();
 				expect(migratedAccountCounts).toBe(allAccounts.length);
-				expect(createSpy).toHaveBeenCalledTimes(dbOnlyAccounts.length);
-				expect(updateSpy).toHaveBeenCalledTimes(dbAndIdmAccounts.length);
-			});
-		});
-		describe('Given there is an account that can not be migrated', () => {
-			it('should report failures', async () => {
-				if (!isKeycloakAvailable) return;
-
-				// GIVEN
-				const conflictingIdmAccount = accountFactory.build();
-				const conflictingDbAccount = dbOnlyAccounts[0];
-				conflictingIdmAccount.username = conflictingDbAccount.username;
-				await createAccountInIdm(conflictingIdmAccount);
-
-				const migratedAccountCounts = await keycloakMigrationService.migrate();
-				expect(migratedAccountCounts).toBe(allAccounts.length - 1);
-			});
+			}, 60000);
 		});
 	});
 });

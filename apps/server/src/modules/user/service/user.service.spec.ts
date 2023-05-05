@@ -186,17 +186,7 @@ describe('UserService', () => {
 					systemId,
 					schoolId: user.school.id,
 					accountId: account.id,
-					roles: [role.name],
-					user: {
-						id: user.id,
-						roles: [{ id: role.id, name: role.name }],
-						schoolId: user.school.id,
-						permissions: role.permissions,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						createdAt: user.createdAt,
-						updatedAt: user.updatedAt,
-					},
+					roles: [role.id],
 				});
 			});
 		});

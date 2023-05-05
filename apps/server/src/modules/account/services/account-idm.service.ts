@@ -1,63 +1,86 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-
-import { EntityId, IAccountUpdate } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { AccountIdmToDtoMapper } from '../mapper/account-idm-to-dto.mapper';
+import { EntityNotFoundError } from '@shared/common';
+import { Counted, EntityId, IAccount, IAccountUpdate } from '@shared/domain';
+import { IdentityManagementService, IdentityManagementOauthService } from '@shared/infra/identity-management';
+import { AccountIdmToDtoMapper } from '../mapper';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountLookupService } from './account-lookup.service';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
-	constructor(private readonly identityManager: IdentityManagementService) {
+	constructor(
+		private readonly identityManager: IdentityManagementService,
+		private readonly accountIdmToDtoMapper: AccountIdmToDtoMapper,
+		private readonly accountLookupService: AccountLookupService,
+		private readonly idmOauthService: IdentityManagementOauthService
+	) {
 		super();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findById(id: EntityId): Promise<AccountDto> {
-		throw new NotImplementedException();
+		const result = await this.identityManager.findAccountById(id);
+		const account = this.accountIdmToDtoMapper.mapToDto(result);
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		throw new NotImplementedException();
+		const results = new Array<IAccount>();
+		for (const userId of userIds) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				results.push(await this.identityManager.findAccountByFctIntId(userId));
+			} catch {
+				// ignore entry
+			}
+		}
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		return accounts;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
-		throw new NotImplementedException();
+		try {
+			const result = await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
+			return null;
+		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		throw new NotImplementedException();
+		try {
+			const result = await this.identityManager.findAccountByFctIntId(userId);
+			return this.accountIdmToDtoMapper.mapToDto(result);
+		} catch {
+			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
+		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
-		throw new NotImplementedException();
+		const [accounts] = await this.searchByUsernameExactMatch(username);
+		const account = accounts.find((tempAccount) => tempAccount.systemId === systemId) || null;
+		return account;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async searchByUsernamePartialMatch(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		userName: string,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		skip: number,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
-		throw new NotImplementedException();
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		return [accounts, total];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
-		throw new NotImplementedException();
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		return [accounts, total];
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
-		throw new NotImplementedException();
+		const attributeName = 'lastTriedFailedLogin';
+		const id = await this.getIdmAccountId(accountId);
+		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
+		const updatedAccount = await this.identityManager.findAccountById(id);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
@@ -85,7 +108,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	private async updateAccount(idmAccountId: string, idmAccount: IAccountUpdate, password?: string): Promise<string> {
@@ -105,14 +128,19 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<AccountDto> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return AccountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+	}
+
+	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+		const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(account.username, comparePassword);
+		return jwt !== undefined;
 	}
 
 	async delete(accountRefId: EntityId): Promise<void> {
@@ -125,8 +153,16 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(idmAccount.id);
 	}
 
-	private async getIdmAccountId(schoolCloudId: string) {
-		const idmAccount = await this.identityManager.findAccountByTecRefId(schoolCloudId);
-		return idmAccount.id;
+	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+	async findMany(_offset: number, _limit: number): Promise<AccountDto[]> {
+		throw new NotImplementedException();
+	}
+
+	private async getIdmAccountId(accountId: string): Promise<string> {
+		const externalId = await this.accountLookupService.getExternalId(accountId);
+		if (!externalId) {
+			throw new EntityNotFoundError(`Account with id ${accountId} not found`);
+		}
+		return externalId;
 	}
 }

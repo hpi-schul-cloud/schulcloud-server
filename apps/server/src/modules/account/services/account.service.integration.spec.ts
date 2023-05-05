@@ -1,22 +1,23 @@
 import { createMock } from '@golevelup/ts-jest';
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, IAccount } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
-import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
+import { v1 } from 'uuid';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
+import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
@@ -32,7 +33,7 @@ describe('AccountService Integration', () => {
 	let em: EntityManager;
 	let isIdmReachable = true;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1()}`;
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
@@ -72,18 +73,18 @@ describe('AccountService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
+				IdentityManagementModule,
 				MongoMemoryDatabaseModule.forRoot(),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							};
-						},
-					],
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
+						};
+					},
 				}),
 			],
 			providers: [
@@ -92,16 +93,11 @@ describe('AccountService Integration', () => {
 				AccountServiceDb,
 				AccountRepo,
 				UserRepo,
-				KeycloakAdministrationService,
 				AccountValidationService,
-				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
+				AccountLookupService,
 				{
-					provide: KeycloakAdminClient,
-					useValue: new KeycloakAdminClient(),
-				},
-				{
-					provide: KeycloakSettings,
-					useValue: KeycloakAdministration.keycloakSettings,
+					provide: AccountIdmToDtoMapper,
+					useValue: new AccountIdmToDtoMapperDb(),
 				},
 				{
 					provide: LegacyLogger,

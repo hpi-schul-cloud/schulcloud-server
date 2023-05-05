@@ -184,211 +184,38 @@ describe('FilesStorageService copy methods', () => {
 		});
 	});
 
-	describe('copyFileRecords is called', () => {
-		describe('WHEN new fileRecord is saved successfully', () => {
+	describe('copy is called', () => {
+		describe('WHEN files copied successfully and security status is VERIFIED', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-
-				return { sourceFile, userId, params };
-			};
-
-			it('should call save with file record', async () => {
-				const { userId, sourceFile, params } = setup();
-
-				await service.copyFileRecord(sourceFile, params, userId);
-
-				expect(fileRecordRepo.save).toBeCalledWith(expect.any(FileRecord));
-			});
-		});
-
-		describe('WHEN save throws error', () => {
-			const setup = () => {
-				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const error = new Error('test');
-
-				fileRecordRepo.save.mockRejectedValueOnce(error);
-
-				return { sourceFile, userId, params, error };
-			};
-
-			it('should pass error', async () => {
-				const { userId, sourceFile, params, error } = setup();
-
-				await expect(service.copyFileRecord(sourceFile, params, userId)).rejects.toThrow(error);
-			});
-		});
-	});
-
-	describe('copyFilesWithRollbackOnError is called', () => {
-		describe('WHEN storage client copies file successfully', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
-
-				return { sourceFile, targetFile };
-			};
-
-			it('should call copy with correct params', async () => {
-				const { sourceFile, targetFile } = setup();
-
-				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
-
-				const expectedParams = createICopyFiles(sourceFile, targetFile);
-
-				expect(storageClient.copy).toBeCalledWith([expectedParams]);
-			});
-
-			it('should return file response', async () => {
-				const { sourceFile, targetFile } = setup();
-
-				const result = await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
-
-				const expectedFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
-
-				expect(result).toEqual(expectedFileResponse);
-			});
-		});
-
-		describe('WHEN storage client throws error', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
-				const error = new Error('test');
-
-				storageClient.copy.mockRejectedValueOnce(error);
-
-				return { sourceFile, targetFile, error };
-			};
-
-			it('should pass error and delete file record', async () => {
-				const { sourceFile, targetFile, error } = setup();
-
-				await expect(service.copyFilesWithRollbackOnError(sourceFile, targetFile)).rejects.toThrow(error);
-
-				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
-			});
-		});
-
-		describe('WHEN source files security status is pending', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
-				const targetFile = fileRecords[1];
-
-				return { sourceFile, targetFile };
-			};
-
-			it('should call copy with correct params', async () => {
-				const { sourceFile, targetFile } = setup();
-
-				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
-
-				expect(antivirusService.send).toBeCalledWith(sourceFile);
-			});
-		});
-
-		describe('WHEN source files security status is VERIFIED', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
 				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
-				const targetFile = fileRecords[1];
-
-				return { sourceFile, targetFile };
-			};
-
-			it('should call copy with correct params', async () => {
-				const { sourceFile, targetFile } = setup();
-
-				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
-
-				expect(antivirusService.send).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN source files security status is BLOCKED', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.BLOCKED;
-				const targetFile = fileRecords[1];
-
-				return { sourceFile, targetFile };
-			};
-
-			it('should call copy with correct params', async () => {
-				const { sourceFile, targetFile } = setup();
-
-				await service.copyFilesWithRollbackOnError(sourceFile, targetFile);
-
-				expect(antivirusService.send).toBeCalledTimes(0);
-			});
-		});
-
-		describe('WHEN anti virus service throws error', () => {
-			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
-				const error = new Error('test');
-
-				antivirusService.send.mockImplementation(() => {
-					throw error;
-				});
-
-				return { sourceFile, targetFile, error };
-			};
-
-			it('should delete file record', async () => {
-				const { sourceFile, targetFile, error } = setup();
-
-				await expect(service.copyFilesWithRollbackOnError(sourceFile, targetFile)).rejects.toThrow(error);
-
-				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
-			});
-		});
-	});
-
-	describe('copy is called', () => {
-		describe('WHEN file records and files copied successfully', () => {
-			let spy: jest.SpyInstance;
-
-			afterEach(() => {
-				spy.mockRestore();
-			});
-
-			const setup = () => {
-				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
-				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
-
-				spy = jest.spyOn(service, 'copyFileRecord').mockResolvedValueOnce(targetFile);
+				const targetFile = sourceFile.copy(userId, params);
+				targetFile._id = new ObjectId();
 
 				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
-				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValueOnce(fileResponse);
+
+				jest.spyOn(sourceFile, 'copy').mockImplementationOnce(() => targetFile);
 
 				return { sourceFile, targetFile, userId, params, fileResponse };
 			};
 
-			it('should call copyFileRecord with correct params', async () => {
-				const { sourceFile, params, userId } = setup();
-
-				await service.copy(userId, [sourceFile], params);
-
-				expect(service.copyFileRecord).toHaveBeenCalledWith(sourceFile, params, userId);
-			});
-
-			it('should call copyFilesWithRollbackOnError with correct params', async () => {
+			it('should call save with file record', async () => {
 				const { sourceFile, targetFile, params, userId } = setup();
 
 				await service.copy(userId, [sourceFile], params);
 
-				expect(service.copyFilesWithRollbackOnError).toHaveBeenCalledWith(sourceFile, targetFile);
+				expect(fileRecordRepo.save).toBeCalledWith(targetFile);
+			});
+
+			it('should call copy with correct params', async () => {
+				const { sourceFile, targetFile, params, userId } = setup();
+
+				await service.copy(userId, [sourceFile], params);
+
+				const expectedParams = createICopyFiles(sourceFile, targetFile);
+
+				expect(storageClient.copy).toBeCalledWith([expectedParams]);
 			});
 
 			it('should return file response array', async () => {
@@ -397,6 +224,36 @@ describe('FilesStorageService copy methods', () => {
 				const result = await service.copy(userId, [sourceFile], params);
 
 				expect(result).toEqual([fileResponse]);
+			});
+
+			it('should not send request token of copied file to antivirus service', async () => {
+				const { sourceFile, params, userId } = setup();
+
+				await service.copy(userId, [sourceFile], params);
+
+				expect(antivirusService.send).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('WHEN source files scan status is PENDING', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
+				const targetFile = sourceFile.copy(userId, params);
+				targetFile._id = new ObjectId();
+
+				jest.spyOn(sourceFile, 'copy').mockImplementationOnce(() => targetFile);
+
+				return { sourceFile, userId, params };
+			};
+
+			it('should send request token of copied file to antivirus service', async () => {
+				const { sourceFile, params, userId } = setup();
+
+				await service.copy(userId, [sourceFile], params);
+
+				expect(antivirusService.send).toBeCalledTimes(1);
 			});
 		});
 
@@ -438,26 +295,21 @@ describe('FilesStorageService copy methods', () => {
 			});
 		});
 
-		describe('WHEN copying two files and one file record throws error', () => {
-			let spy: jest.SpyInstance;
-
-			afterEach(() => {
-				spy.mockRestore();
-			});
-
+		describe('WHEN copying two files and one file record save throws error', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile1 = fileRecords[0];
-				const targetFile1 = fileRecords[1];
+				const targetFile1 = sourceFile1.copy(userId, params);
+				targetFile1._id = new ObjectId();
 				const sourceFile2 = fileRecords[2];
 				const error = new Error('test');
 
-				spy = jest.spyOn(service, 'copyFileRecord');
-				spy.mockResolvedValueOnce(targetFile1).mockRejectedValueOnce(error);
+				fileRecordRepo.save.mockResolvedValueOnce();
+				jest.spyOn(sourceFile1, 'copy').mockImplementationOnce(() => targetFile1);
+				fileRecordRepo.save.mockRejectedValueOnce(error);
 
 				const fileResponse1 = CopyFileResponseBuilder.build(targetFile1.id, sourceFile1.id, sourceFile1.name);
 				const fileResponse2 = { sourceId: sourceFile2.id, name: sourceFile2.name };
-				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError').mockResolvedValue(fileResponse1);
 
 				return { sourceFile1, targetFile1, sourceFile2, userId, params, fileResponse1, fileResponse2 };
 			};
@@ -472,35 +324,61 @@ describe('FilesStorageService copy methods', () => {
 			});
 		});
 
-		describe('WHEN one file is copied and throws an error', () => {
-			let spy: jest.SpyInstance;
-
-			afterEach(() => {
-				spy.mockRestore();
-			});
-
+		describe('WHEN storage client throws error', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				const targetFile = fileRecords[1];
+				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+				const targetFile = sourceFile.copy(userId, params);
+				targetFile._id = new ObjectId();
+
+				jest.spyOn(sourceFile, 'copy').mockImplementationOnce(() => targetFile);
+
+				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
 				const error = new Error('test');
 
-				spy = jest.spyOn(service, 'copyFileRecord');
-				spy.mockResolvedValue(targetFile);
+				storageClient.copy.mockRejectedValueOnce(error);
 
-				const fileResponse = { sourceId: sourceFile.id, name: sourceFile.name };
-				spy = jest.spyOn(service, 'copyFilesWithRollbackOnError');
-				spy.mockRejectedValueOnce(error).mockResolvedValue(fileResponse);
-
-				return { sourceFile, targetFile, userId, params, fileResponse };
+				return { sourceFile, targetFile, userId, params, error, expectedResponse };
 			};
 
-			it('should only return one failed file response', async () => {
-				const { sourceFile, params, userId, fileResponse } = setup();
+			it('should delete target file record', async () => {
+				const { sourceFile, targetFile, params, userId, expectedResponse } = setup();
 
 				const result = await service.copy(userId, [sourceFile], params);
 
-				expect(result).toEqual([fileResponse]);
+				expect(result).toEqual(expectedResponse);
+				expect(fileRecordRepo.delete).toBeCalledWith([targetFile]);
+			});
+		});
+
+		describe('WHEN anti virus service throws error', () => {
+			const setup = () => {
+				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
+				const sourceFile = fileRecords[0];
+				sourceFile.securityCheck.status = ScanStatus.PENDING;
+				const targetFile = sourceFile.copy(userId, params);
+				targetFile._id = new ObjectId();
+
+				jest.spyOn(sourceFile, 'copy').mockImplementationOnce(() => targetFile);
+
+				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
+				const error = new Error('test');
+
+				antivirusService.send.mockImplementation(() => {
+					throw error;
+				});
+
+				return { sourceFile, targetFile, userId, params, error, expectedResponse };
+			};
+
+			it('should delete file record', async () => {
+				const { sourceFile, targetFile, params, userId, expectedResponse } = setup();
+
+				const result = await service.copy(userId, [sourceFile], params);
+
+				expect(result).toEqual(expectedResponse);
+				expect(fileRecordRepo.delete).toHaveBeenCalledWith([targetFile]);
 			});
 		});
 	});

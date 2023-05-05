@@ -286,6 +286,56 @@
 				}
 			}
 		},
+		"FWU_CONTENT": {
+			"type": "object",
+			"description": "Properties of the S3 storage containing FWU content",
+			"required": [
+				"S3_ENDPOINT",
+				"S3_REGION",
+				"S3_BUCKET",
+				"S3_ACCESS_KEY",
+				"S3_SECRET_KEY"
+			],
+			"properties": {
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4568",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "de",
+					"description": "Region name of bucket"
+				},
+				"S3_BUCKET": {
+					"type": "string",
+					"default": "",
+					"description": "Bucket name"
+				},
+				"S3_ACCESS_KEY": {
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3"
+				},
+				"S3_SECRET_KEY": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3"
+				},
+				"INCOMING_REQUEST_TIMEOUT_MS": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "Timeout for incoming requests to the fwu-learning-contents in milliseconds."
+				}
+			}
+		},
+		"FEATURE_FWU_CONTENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
+		},
 		"WOPI_MAX_FILE_SIZE": {
 			"type": "integer",
 			"default": 20971520,

@@ -18,7 +18,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 
-const baseRouteName = '/boards';
+const baseRouteName = '/cards';
 
 class API {
 	app: INestApplication;
@@ -27,9 +27,9 @@ class API {
 		this.app = app;
 	}
 
-	async delete(boardId: string, columnId: string, cardId: string) {
+	async delete(cardId: string) {
 		const response = await request(this.app.getHttpServer())
-			.delete(`${baseRouteName}/${boardId}/columns/${columnId}/cards/${cardId}`)
+			.delete(`${baseRouteName}/${cardId}`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -86,41 +86,53 @@ describe(`card delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
-			const { user, columnBoardNode, columnNode, cardNode } = await setup();
+		it('should return status 204', async () => {
+			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
+			const response = await api.delete(cardNode.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete card', async () => {
-			const { user, columnBoardNode, columnNode, cardNode } = await setup();
+			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
+			await api.delete(cardNode.id);
 
 			await expect(em.findOneOrFail(CardNode, cardNode.id)).rejects.toThrow();
 		});
 
 		it('should actually delete elements of the card', async () => {
-			const { user, columnBoardNode, columnNode, cardNode, textElementNode } = await setup();
+			const { user, cardNode, textElementNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
+			await api.delete(cardNode.id);
 
 			await expect(em.findOneOrFail(TextElementNode, textElementNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
-			const { user, columnBoardNode, columnNode, cardNode, siblingCardNode } = await setup();
+			const { user, cardNode, siblingCardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.delete(columnBoardNode.id, columnNode.id, cardNode.id);
+			await api.delete(cardNode.id);
 
 			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
 			expect(siblingFromDb).toBeDefined();
+		});
+
+		it('should update position of the siblings', async () => {
+			const { user, cardNode, siblingCardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+			cardNode.position = 0;
+			siblingCardNode.position = 1;
+
+			await api.delete(cardNode.id);
+
+			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			expect(siblingFromDb.position).toEqual(0);
 		});
 	});
 

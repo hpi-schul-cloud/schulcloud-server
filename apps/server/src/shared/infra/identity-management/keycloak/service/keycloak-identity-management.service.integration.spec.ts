@@ -1,4 +1,4 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpModule } from '@nestjs/axios';
@@ -7,6 +7,7 @@ import { IAccount, IAccountUpdate } from '@shared/domain';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
 import { ServerModule } from '@src/modules/server';
+import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
@@ -17,7 +18,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	let keycloak: KeycloakAdminClient;
 	let isKeycloakReachable: boolean;
 
-	const testRealm = 'test-realm';
+	const testRealm = `test-realm-${v1().toString()}`;
 	const testAccount: IAccount = {
 		id: new ObjectId().toString(),
 		email: 'john.doe@mail.tld',
@@ -26,7 +27,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 		lastName: 'Doe',
 		attRefTechnicalId: new ObjectId().toString(),
 	};
-	const createAccount = async (): Promise<string> => {
+	const createAccount = async (attributeName?: string, attributeValue?: unknown): Promise<string> => {
 		const { id } = await keycloak.users.create({
 			username: testAccount.username,
 			firstName: testAccount.firstName,
@@ -35,6 +36,7 @@ describe('KeycloakIdentityManagementService Integration', () => {
 				refTechnicalId: testAccount.attRefTechnicalId,
 				refFunctionalIntId: undefined,
 				refFunctionalExtId: undefined,
+				attributeName: attributeValue,
 			},
 		});
 		return id;
@@ -150,14 +152,16 @@ describe('KeycloakIdentityManagementService Integration', () => {
 	it('should find an account by username', async () => {
 		if (!isKeycloakReachable) return;
 		await createAccount();
-		const account = await idmService.findAccountByUsername(testAccount.username as string);
+		const [account] = await idmService.findAccountsByUsername(testAccount.username as string);
 
 		expect(account).toEqual(
-			expect.objectContaining<Omit<IAccount, 'id'>>({
-				username: testAccount.username,
-				firstName: testAccount.firstName,
-				lastName: testAccount.lastName,
-			})
+			expect.arrayContaining([
+				expect.objectContaining<Omit<IAccount, 'id'>>({
+					username: testAccount.username,
+					firstName: testAccount.firstName,
+					lastName: testAccount.lastName,
+				}),
+			])
 		);
 	});
 
@@ -177,5 +181,44 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 		expect(result).toEqual(idmId);
 		expect(accounts).toHaveLength(0);
+	});
+
+	describe('getUserAttributes', () => {
+		describe('when keycloak is reachable and user exists', () => {
+			const setup = async () => {
+				const attributeName = 'attributeName';
+				const attributeValue = 'attributeValue';
+				const idmId = await createAccount(attributeName, attributeValue);
+				return { idmId, attributeName, attributeValue };
+			};
+
+			it('should return the attribute value', async () => {
+				if (!isKeycloakReachable) return;
+				const { idmId, attributeName, attributeValue } = await setup();
+				const result = await idmService.getUserAttribute(idmId, attributeName);
+
+				expect(result).toEqual(attributeValue);
+			});
+		});
+	});
+
+	describe('setUserAttribute', () => {
+		describe('when keycloak is reachable and user exists', () => {
+			const setup = async () => {
+				const attributeName = 'attributeName';
+				const attributeValue = 'attributeValue';
+				const idmId = await createAccount();
+				return { idmId, attributeName, attributeValue };
+			};
+
+			it('should set the attribute value', async () => {
+				if (!isKeycloakReachable) return;
+				const { idmId, attributeName, attributeValue } = await setup();
+				await idmService.setUserAttribute(idmId, attributeName, attributeValue);
+				const result = await idmService.getUserAttribute(idmId, attributeName);
+
+				expect(result).toEqual(attributeValue);
+			});
+		});
 	});
 });

@@ -31,7 +31,7 @@ describe('LocalStrategy', () => {
 		configServiceMock = createMock<ConfigService<IServerConfig, true>>();
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
-		mockUser = userFactory.withRole(RoleName.STUDENT).buildWithId();
+		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = AccountEntityToDtoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
@@ -70,7 +70,7 @@ describe('LocalStrategy', () => {
 				const user = await strategy.validate('mockUsername', mockPassword);
 				expect(user).toMatchObject({
 					userId: mockUser.id,
-					roles: ['student'],
+					roles: [mockUser.roles[0].id],
 					schoolId: mockUser.school.id,
 					accountId: mockAccount.id,
 				});

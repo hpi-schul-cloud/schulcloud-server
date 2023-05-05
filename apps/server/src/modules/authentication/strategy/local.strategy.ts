@@ -25,12 +25,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	async validate(username?: string, password?: string): Promise<ICurrentUser> {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
-		const accountPassword = GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')) {
 			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			GuardAgainst.nullOrUndefined(jwt, new UnauthorizedException());
 		} else {
+			const accountPassword = GuardAgainst.nullOrUndefined(account.password, new UnauthorizedException());
 			await this.checkCredentials(password, accountPassword, account);
 		}
 
@@ -38,7 +38,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 			account.userId,
 			new Error(`login failing, because account ${account.id} has no userId`)
 		);
-		const user = await this.userRepo.findById(accountUserId);
+		const user = await this.userRepo.findById(accountUserId, true);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user);
 		return currentUser;
 	}

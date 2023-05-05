@@ -1,7 +1,7 @@
-import type { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
+import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
-import type { AnyBoardDo } from './types';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 import type { BoardNodeBuildable } from './types/board-node-buildable';
 import type { BoardNodeBuilder } from './types/board-node-builder';
 
@@ -14,16 +14,21 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		this.height = props.height;
 	}
 
-	addChild(child: AnyBoardDo) {
-		if (child instanceof TextElement) {
-			this.children.push(child);
-		} else {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
-		}
+	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
+		const allowed = domainObject instanceof TextElement || domainObject instanceof FileElement;
+		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildCardNode(this, parentId, position);
+	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
+		builder.buildCardNode(this, parent);
+	}
+
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitCard(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
+		await visitor.visitCardAsync(this);
 	}
 }
 

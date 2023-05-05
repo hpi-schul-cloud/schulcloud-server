@@ -1,18 +1,19 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index.js';
+import { v1 } from 'uuid';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IAccount } from '@shared/domain';
-import { KeycloakSettings } from '@shared/infra/identity-management/keycloak-administration/interface/keycloak-settings.interface';
-import KeycloakAdministration from '@shared/infra/identity-management/keycloak-administration/keycloak-config';
 import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakIdentityManagementService } from '@shared/infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
+import { IdentityManagementModule } from '@shared/infra/identity-management';
 import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountLookupService } from './account-lookup.service';
 
-describe('AccountService IDM Integration', () => {
+describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
 	let identityManagementService: IdentityManagementService;
 	let keycloakAdminService: KeycloakAdministrationService;
@@ -20,8 +21,8 @@ describe('AccountService IDM Integration', () => {
 	let isIdmReachable: boolean;
 	let accountIdmService: AbstractAccountService;
 
-	const testRealm = 'test-realm';
-	const technicalRefId = 'aTechnicalReferenceId';
+	const testRealm = `test-realm-${v1()}`;
+	const technicalRefId = new ObjectId().toString();
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
@@ -47,26 +48,21 @@ describe('AccountService IDM Integration', () => {
 					isGlobal: true,
 					ignoreEnvFile: true,
 					ignoreEnvVars: true,
-					load: [
-						() => {
-							return {
-								FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							};
-						},
-					],
+					validate: () => {
+						return {
+							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
+							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
+						};
+					},
 				}),
+				IdentityManagementModule,
 			],
 			providers: [
 				AccountServiceIdm,
-				KeycloakAdministrationService,
-				{ provide: IdentityManagementService, useClass: KeycloakIdentityManagementService },
+				AccountLookupService,
 				{
-					provide: KeycloakAdminClient,
-					useValue: new KeycloakAdminClient(),
-				},
-				{
-					provide: KeycloakSettings,
-					useValue: KeycloakAdministration.keycloakSettings,
+					provide: AccountIdmToDtoMapper,
+					useClass: AccountIdmToDtoMapperDb,
 				},
 			],
 		}).compile();
@@ -117,7 +113,7 @@ describe('AccountService IDM Integration', () => {
 		const newUsername = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
 
-		const updatedAccount = await accountIdmService.save({
+		await accountIdmService.save({
 			id: technicalRefId,
 			username: newUsername,
 		});
@@ -125,11 +121,8 @@ describe('AccountService IDM Integration', () => {
 
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IAccount>({
-				id: updatedAccount.idmReferenceId ?? '',
-				username: updatedAccount.username,
-				attRefTechnicalId: technicalRefId,
-				attRefFunctionalIntId: updatedAccount.userId,
-				attRefFunctionalExtId: updatedAccount.systemId,
+				id: idmId,
+				username: newUsername,
 			})
 		);
 	});

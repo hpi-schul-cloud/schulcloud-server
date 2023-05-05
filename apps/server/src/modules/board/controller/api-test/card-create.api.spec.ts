@@ -16,7 +16,7 @@ import { Request } from 'express';
 import request from 'supertest';
 import { CardResponse } from '../dto';
 
-const baseRouteName = '/boards';
+const baseRouteName = '/columns';
 
 class API {
 	app: INestApplication;
@@ -25,9 +25,9 @@ class API {
 		this.app = app;
 	}
 
-	async post(boardId: string, columnId: string) {
+	async post(columnId: string) {
 		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}/${boardId}/columns/${columnId}/cards`)
+			.post(`${baseRouteName}/${columnId}/cards`)
 			.set('Accept', 'application/json');
 
 		return {
@@ -83,19 +83,19 @@ describe(`card create (api)`, () => {
 
 	describe('with valid user', () => {
 		it('should return status 201', async () => {
-			const { user, columnBoardNode, columnNode } = await setup();
+			const { user, columnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(columnBoardNode.id, columnNode.id);
+			const response = await api.post(columnNode.id);
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return the created card', async () => {
-			const { user, columnBoardNode, columnNode } = await setup();
+			const { user, columnNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { result } = await api.post(columnBoardNode.id, columnNode.id);
+			const { result } = await api.post(columnNode.id);
 
 			expect(result.id).toBeDefined();
 		});

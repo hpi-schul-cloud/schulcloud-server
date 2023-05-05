@@ -121,7 +121,7 @@ export class FilesStorageService {
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
 			await this.fileRecordRepo.save(fileRecord);
 
-			this.antivirusService.send(fileRecord);
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		} catch (error) {
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
@@ -305,7 +305,7 @@ export class FilesStorageService {
 		return [response, count];
 	}
 
-	public async copyFileRecord(
+	private async copyFileRecord(
 		sourceFile: FileRecord,
 		targetParams: FileRecordParams,
 		userId: EntityId
@@ -316,18 +316,21 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private sendToAntiVirusService(sourceFile: FileRecord) {
-		if (sourceFile.isPending()) {
-			this.antivirusService.send(sourceFile);
+	private sendToAntiVirusService(fileRecord: FileRecord) {
+		if (fileRecord.isPending()) {
+			this.antivirusService.send(fileRecord.getSecurityToken());
 		}
 	}
 
-	public async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResponse> {
+	private async copyFilesWithRollbackOnError(
+		sourceFile: FileRecord,
+		targetFile: FileRecord
+	): Promise<CopyFileResponse> {
 		try {
 			const paths = createICopyFiles(sourceFile, targetFile);
 
 			await this.storageClient.copy([paths]);
-			this.sendToAntiVirusService(sourceFile);
+			this.sendToAntiVirusService(targetFile);
 			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 			return copyFileResponse;
@@ -354,6 +357,7 @@ export class FilesStorageService {
 				return fileResponse;
 			} catch (error) {
 				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
+
 				return {
 					sourceId: sourceFile.id,
 					name: sourceFile.getName(),
