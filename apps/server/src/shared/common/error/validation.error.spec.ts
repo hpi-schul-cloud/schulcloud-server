@@ -11,7 +11,7 @@ describe('Validation Error', () => {
 	it('should possible to add details', () => {
 		const details = { userId: 123 };
 		const error = new ValidationError('message', details);
-		expect(error.getDetails()).toEqual(details);
+		expect(error.details).toEqual(details);
 	});
 
 	it('should have the right code', () => {
