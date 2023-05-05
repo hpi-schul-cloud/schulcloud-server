@@ -10,8 +10,8 @@ const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUs
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
-const schoolLimit = pLimit(50);
-const limit = pLimit(1000);
+const schoolLimit = pLimit(10);
+const limit = pLimit(100);
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
