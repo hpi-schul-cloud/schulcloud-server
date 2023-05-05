@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common';
+import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Page } from '@shared/domain/domainobject/page';
 import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { ValidationError } from '@shared/common';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 
 @Injectable()
@@ -51,6 +51,12 @@ export class SchoolMigrationService {
 			);
 		}
 
+		const userDO: UserDO | null = await this.userService.findById(currentUserId);
+		if (userDO) {
+			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
+			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
+		}
+
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!existingSchool) {
@@ -58,12 +64,6 @@ export class SchoolMigrationService {
 				'Could not find school by official school number from target migration system',
 				'ext_official_school_missing'
 			);
-		}
-
-		const userDO: UserDO | null = await this.userService.findById(currentUserId);
-		if (userDO) {
-			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
-			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 		}
 
 		const schoolMigrated: boolean = this.hasSchoolMigrated(externalId, existingSchool.externalId);
