@@ -210,12 +210,12 @@
 	},
 	{
 		"_id": {
-			"$oid": "642c1905ec49d9a2cce193f0"
+			"$oid": "6454b29f38736e2494917e54"
 		},
 		"state": "up",
 		"name": "remove-leave-team-permission-from-user",
 		"createdAt": {
-			"$date": "2023-04-04T12:25:50.707Z"
+			"$date": "2023-05-05T07:26:34.051Z"
 		},
 		"__v": 0
 	}

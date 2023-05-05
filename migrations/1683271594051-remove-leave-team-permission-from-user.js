@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { connect, close } = require('../src/utils/database');
 
 const Roles = mongoose.model(
-	'role_202304221410',
+	'role_202305050910',
 	new mongoose.Schema(
 		{
 			name: { type: String, required: true },
