@@ -3,11 +3,14 @@ import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swag
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { IsString } from 'class-validator';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
-import { ContentElementUrlParams, FileElementContent, MoveContentElementBody, TextElementContent } from './dto';
-import { AnyContentElementBody, TextContentElementBody } from './dto/element/any-content-element-body';
+import { ContentElementUrlParams, MoveContentElementBody } from './dto';
+import {
+	ElementContentUpdateBodyParams,
+	FileElementContentBody,
+	TextElementContentBody,
+} from './dto/element/element-content-update.body.params';
 
 @ApiTags('Board Element')
 @Authenticate('jwt')
@@ -36,6 +39,7 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
+	@ApiExtraModels(TextElementContentBody, FileElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
@@ -44,10 +48,10 @@ export class ElementController {
 	@Put(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: AnyContentBody,
+		@Body() bodyParams: ElementContentUpdateBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.content);
+		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
 	}
 
 	@ApiOperation({ summary: 'Delete a single content element.' })
@@ -64,17 +68,3 @@ export class ElementController {
 		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
 }
-
-export type AnyContentBody = TextContentBody | FileContentBody;
-
-export type TextContentBody = {
-	content: {
-		text: string;
-	};
-};
-
-export type FileContentBody = {
-	content: {
-		caption: string;
-	};
-};
