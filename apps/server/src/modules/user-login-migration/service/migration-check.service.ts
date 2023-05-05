@@ -17,9 +17,9 @@ export class MigrationCheckService {
 	async shouldUserMigrate(externalUserId: string, systemId: EntityId, officialSchoolNumber: string): Promise<boolean> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
-		if (school) {
+		if (school && school.id) {
 			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
-				school.id as string
+				school.id
 			);
 
 			const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);

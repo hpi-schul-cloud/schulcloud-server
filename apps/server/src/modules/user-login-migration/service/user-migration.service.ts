@@ -51,13 +51,11 @@ export class UserMigrationService {
 	async getMigrationConsentPageRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
-		if (!school) {
+		if (!school || !school.id) {
 			throw new NotFoundException(`School with offical school number ${officialSchoolNumber} does not exist.`);
 		}
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
-			school.id as string
-		);
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(school.id);
 
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
