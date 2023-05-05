@@ -1,69 +1,68 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export abstract class BoardComposite {
-	id: EntityId;
+export abstract class BoardComposite<T extends BoardCompositeProps> {
+	protected props: T;
 
-	title?: string;
+	constructor(props: T) {
+		this.props = {
+			...props,
+		};
+	}
 
-	children: AnyBoardDo[];
+	get id(): EntityId {
+		return this.props.id;
+	}
 
-	createdAt: Date;
+	get children(): AnyBoardDo[] {
+		return this.props.children;
+	}
 
-	updatedAt: Date;
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
 
-	constructor(props: BoardCompositeProps) {
-		this.id = props.id ?? new ObjectId().toHexString();
-		this.title = props.title;
-		this.children = props.children;
-		this.createdAt = props.createdAt ?? new Date();
-		this.updatedAt = props.updatedAt ?? new Date();
+	get updatedAt(): Date {
+		return this.props.updatedAt;
 	}
 
 	addChild(child: AnyBoardDo, position?: number): void {
 		if (!this.isAllowedAsChild(child)) {
 			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
-		if (position === undefined || position >= this.children.length) {
-			this.children.push(child);
-		} else {
-			this.children.splice(position, 0, child);
+		position = position ?? this.children.length;
+		if (position < 0 || position > this.children.length) {
+			throw new BadRequestException(`Invalid child position '${position}'`);
 		}
+		if (this.hasChild(child)) {
+			throw new BadRequestException(`Cannot add existing child id='${child.id}'`);
+		}
+		this.children.splice(position, 0, child);
 	}
 
 	abstract isAllowedAsChild(domainObject: AnyBoardDo): boolean;
 
-	getChild(childId: EntityId): AnyBoardDo {
-		const foundChild = this.children.find((child) => child.id === childId);
-		if (foundChild === undefined) {
-			throw new NotFoundException('child is not child of this parent');
-		}
-
-		return foundChild;
+	removeChild(child: AnyBoardDo): void {
+		this.props.children = this.children.filter((ch) => ch.id !== child.id);
 	}
 
-	removeChild(childId: EntityId): AnyBoardDo {
-		const removedChild = this.getChild(childId);
-
-		this.children = this.children.filter((ch) => ch.id !== childId);
-		return removedChild;
+	hasChild(child: AnyBoardDo): boolean {
+		// TODO check by object identity instead of id
+		const exists = this.children.some((obj) => obj.id === child.id);
+		return exists;
 	}
-
 	abstract accept(visitor: BoardCompositeVisitor): void;
 
 	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
 }
 
 export interface BoardCompositeProps {
-	id?: EntityId;
-
-	title?: string;
+	id: EntityId;
 
 	children: AnyBoardDo[];
 
-	createdAt?: Date;
+	createdAt: Date;
 
-	updatedAt?: Date;
+	updatedAt: Date;
 }
