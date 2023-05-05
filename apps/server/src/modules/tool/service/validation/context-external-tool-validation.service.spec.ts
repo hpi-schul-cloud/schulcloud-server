@@ -45,7 +45,7 @@ describe('ContextExternalToolValidationService', () => {
 				};
 			};
 
-			it('should not throw UnprocessableEntityException', async () => {
+			it('should not throw UnprocessableEntityException', () => {
 				const { contextExternalTool } = setup();
 
 				const result = async () => {
