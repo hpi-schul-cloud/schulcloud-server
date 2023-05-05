@@ -46,7 +46,7 @@ describe(CardUc.name, () => {
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
@@ -75,7 +75,7 @@ describe(CardUc.name, () => {
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const card = cardFactory.build();
 				const element = textElementFactory.build();
 
@@ -114,7 +114,7 @@ describe(CardUc.name, () => {
 	describe('deleteElement', () => {
 		describe('when deleting a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
@@ -143,8 +143,8 @@ describe(CardUc.name, () => {
 	describe('moveElement', () => {
 		describe('when moving an element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const element = textElementFactory.buildWithId();
+				const user = userFactory.build();
+				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
 				return { user, card, element };

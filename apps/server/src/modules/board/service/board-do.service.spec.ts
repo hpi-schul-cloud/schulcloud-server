@@ -1,9 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BadRequestException } from '@nestjs/common';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
 import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -20,131 +17,171 @@ describe(BoardDoService.name, () => {
 					provide: BoardDoRepo,
 					useValue: createMock<BoardDoRepo>(),
 				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(BoardDoService);
 		boardDoRepo = module.get(BoardDoRepo);
-		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('move', () => {
-		describe('when moving a card', () => {
+		describe('when moving a card from one column to another', () => {
 			const setup = () => {
-				const cards = cardFactory.buildListWithId(3);
-				const sourceColumn = columnFactory.buildWithId({ children: cards });
-				const targetCards = cardFactory.buildListWithId(2);
-				const targetColumn = columnFactory.buildWithId({ children: targetCards });
+				const sourceCards = cardFactory.buildList(3);
+				const sourceColumn = columnFactory.build({ children: sourceCards });
 
-				boardDoRepo.findParentOfId.mockResolvedValue(sourceColumn);
-				boardDoRepo.findById.mockResolvedValue(targetColumn);
+				const targetCards = cardFactory.buildList(2);
+				const targetColumn = columnFactory.build({ children: targetCards });
 
-				return { cards, targetCards, sourceColumn, targetColumn };
+				return { sourceColumn, targetColumn, sourceCards, targetCards };
 			};
 
-			it('should place it in the target column', async () => {
-				const { cards, targetColumn } = setup();
-
-				await service.move(cards[0], targetColumn, 0);
-				const targetColumnCardIds = targetColumn.children.map((card) => card.id);
-				expect(targetColumnCardIds).toContain(cards[0].id);
-			});
-
-			it('should place it at the right position in the target column', async () => {
-				const { cards, targetCards, targetColumn } = setup();
-				const expectedChildren = [targetCards[0], cards[0], targetCards[1]];
-
-				await service.move(cards[0], targetColumn, 1);
-
-				expect(targetColumn.children).toEqual(expectedChildren);
-			});
-
 			it('should remove it from the source column', async () => {
-				const { cards, sourceColumn, targetColumn } = setup();
+				const { sourceCards, sourceColumn, targetColumn } = setup();
+				const card = sourceCards[0];
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(sourceColumn);
+				jest.spyOn(sourceColumn, 'removeChild');
 
-				await service.move(cards[0], targetColumn, 0);
-				const sourceColumnCardIds = sourceColumn.children.map((card) => card.id);
-				expect(sourceColumnCardIds).not.toContain(cards[0].id);
+				await service.move(card, targetColumn, 0);
+
+				expect(sourceColumn.removeChild).toBeCalledWith(card);
 			});
 
-			it('should persist source- and targetColumn', async () => {
-				const { cards, sourceColumn, targetColumn } = setup();
+			it('should add it to the target column at specified position', async () => {
+				const { sourceCards, sourceColumn, targetColumn } = setup();
+				const card = sourceCards[0];
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(sourceColumn);
+				jest.spyOn(targetColumn, 'addChild');
 
-				await service.move(cards[0], targetColumn, 0);
+				await service.move(card, targetColumn, 1);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(sourceColumn.children, sourceColumn);
-				expect(boardDoRepo.save).toHaveBeenCalledWith(targetColumn.children, targetColumn);
+				expect(targetColumn.addChild).toBeCalledWith(card, 1);
+			});
+		});
+
+		describe('when moving a card within the same column', () => {
+			const setup = () => {
+				const cards = cardFactory.buildList(3);
+				const column = columnFactory.build({ children: cards });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(column);
+
+				return { column, cards };
+			};
+
+			it('should remove it from the column', async () => {
+				const { cards, column } = setup();
+				const card = cards[0];
+				jest.spyOn(column, 'removeChild');
+
+				await service.move(card, column, 2);
+
+				expect(column.removeChild).toBeCalledWith(card);
 			});
 
-			describe('when moving within the same parent', () => {
-				it('should just change the position', async () => {
-					const { cards, sourceColumn } = setup();
+			it('should add it to the column at specified position', async () => {
+				const { cards, column } = setup();
+				const card = cards[0];
+				jest.spyOn(column, 'addChild');
 
-					await service.move(cards[0], sourceColumn, 1);
+				await service.move(card, column, 1);
 
-					expect(boardDoRepo.save).toHaveBeenCalledWith([cards[1], cards[0], cards[2]], sourceColumn);
+				expect(column.addChild).toBeCalledWith(card, 1);
+			});
+		});
+
+		describe('when repo does not return the same DO instance', () => {
+			describe('when moving a card within the same column', () => {
+				// Note: We don not have (yet) an identity map for our domain objects.
+				// That's why each call to the repo finders yields a new instance!
+				// This test is for that situation and can be removed later.
+				const setup = () => {
+					const cards = cardFactory.buildList(3);
+					const column = columnFactory.build({ children: cards });
+					const columnClone = columnFactory.build({ id: column.id, children: column.children });
+					boardDoRepo.findParentOfId.mockResolvedValueOnce(columnClone);
+
+					return { column, cards, columnClone };
+				};
+
+				it('should remove it from the column', async () => {
+					const { cards, column } = setup();
+					const card = cards[0];
+					jest.spyOn(column, 'removeChild');
+
+					await service.move(card, column, 2);
+
+					expect(column.removeChild).toBeCalledWith(card);
+				});
+
+				it('should add it to the column at specified position', async () => {
+					const { cards, column } = setup();
+					const card = cards[0];
+					jest.spyOn(column, 'addChild');
+
+					await service.move(card, column, 1);
+
+					expect(column.addChild).toBeCalledWith(card, 1);
 				});
 			});
 		});
 
-		describe('when card has no parent', () => {
+		describe('when moving a root card to a column', () => {
 			const setup = () => {
-				const card = cardFactory.buildWithId();
-				const targetColumn = columnFactory.buildWithId();
-
-				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
-				boardDoRepo.findById.mockResolvedValue(targetColumn);
+				const card = cardFactory.build();
+				const targetColumn = columnFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(undefined);
 
 				return { card, targetColumn };
 			};
 
-			it('should throw an exception', async () => {
+			it('should add it to the column at specified position', async () => {
 				const { card, targetColumn } = setup();
+				jest.spyOn(targetColumn, 'addChild');
 
-				const fut = () => service.move(card, targetColumn, 0);
+				await service.move(card, targetColumn, 0);
 
-				await expect(fut).rejects.toThrow(BadRequestException);
+				expect(targetColumn.addChild).toBeCalledWith(card, 0);
 			});
 		});
 	});
 
 	describe('deleteWithDescendants', () => {
-		describe('when deleting an object', () => {
+		describe('when deleting an element', () => {
 			const setup = () => {
-				const elements = textElementFactory.buildListWithId(3);
+				const elements = textElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
-				const cardId = card.id;
-
-				return { card, elements, cardId };
-			};
-
-			it('should delete the object', async () => {
-				const { card, elements } = setup();
-
 				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
 
-				await service.deleteWithDescendants(elements[0]);
+				return { card, elements };
+			};
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(card.children, card);
-				expect(boardDoRepo.delete).toHaveBeenCalledWith(elements[0]);
+			it('should remove the element from the parent', async () => {
+				const { elements, card } = setup();
+				const element = elements[0];
+				jest.spyOn(card, 'removeChild');
+
+				await service.deleteWithDescendants(element);
+
+				expect(card.removeChild).toHaveBeenCalledWith(element);
 			});
 
 			it('should update the siblings', async () => {
-				const { card, elements } = setup();
+				const { elements, card } = setup();
+				const element = elements[0];
+				jest.spyOn(card, 'removeChild');
+				const expectedElements = [elements[1], elements[2]];
 
-				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+				await service.deleteWithDescendants(element);
 
-				await service.deleteWithDescendants(elements[0]);
-
-				expect(boardDoRepo.save).toHaveBeenCalledWith([elements[1], elements[2]], card);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(expectedElements, card);
 			});
 		});
 	});

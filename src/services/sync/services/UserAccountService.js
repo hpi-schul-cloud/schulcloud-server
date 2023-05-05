@@ -1,4 +1,5 @@
 const { RequestContext } = require('@mikro-orm/core');
+const { Semaphore } = require('async-mutex');
 const { UserRepo } = require('../repo');
 
 class UserAccountService {
@@ -8,6 +9,7 @@ class UserAccountService {
 
 	async setup(app) {
 		this.app = app;
+		this.lock = new Semaphore(5);
 	}
 
 	async createUserAndAccount(inputUser, inputAccount, school) {
@@ -30,25 +32,29 @@ class UserAccountService {
 	}
 
 	async createAccount(account) {
-		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
-			const newAccountData = {
-				userId: account.userId,
-				username: account.username.toLowerCase(),
-				systemId: account.systemId,
-				activated: true,
-			};
-			return this.app.service('nest-account-service').save(newAccountData);
-		});
+		return this.lock.runExclusive(async () =>
+			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+				const newAccountData = {
+					userId: account.userId,
+					username: account.username.toLowerCase(),
+					systemId: account.systemId,
+					activated: true,
+				};
+				return this.app.service('nest-account-service').save(newAccountData);
+			})
+		);
 	}
 
 	async updateAccount(userId, account) {
-		return RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
-			const nestAccountService = this.app.service('nest-account-service');
-			const createdAccount = await nestAccountService.findByUserId(userId);
-			createdAccount.username = account.username.toLowerCase();
-			createdAccount.activated = true;
-			return this.app.service('nest-account-service').save(createdAccount);
-		});
+		return this.lock.runExclusive(async () =>
+			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+				const nestAccountService = this.app.service('nest-account-service');
+				const createdAccount = await nestAccountService.findByUserId(userId);
+				createdAccount.username = account.username.toLowerCase();
+				createdAccount.activated = true;
+				return this.app.service('nest-account-service').save(createdAccount);
+			})
+		);
 	}
 }
 

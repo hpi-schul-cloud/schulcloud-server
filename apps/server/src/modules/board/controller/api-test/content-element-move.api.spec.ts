@@ -92,7 +92,7 @@ describe(`content element move (api)`, () => {
 			const { user, element, targetCard } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.move(element.id, targetCard.id, 5);
+			const response = await api.move(element.id, targetCard.id, 4);
 
 			expect(response.status).toEqual(204);
 		});

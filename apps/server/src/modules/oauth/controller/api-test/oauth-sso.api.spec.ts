@@ -22,6 +22,7 @@ import { UUID } from 'bson';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
@@ -68,6 +69,15 @@ describe('OAuth SSO Controller (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		const kcAdminService = app.get(KeycloakAdministrationService);
+
+		axiosMock.onGet(kcAdminService.getWellKnownUrl()).reply(200, {
+			issuer: 'issuer',
+			token_endpoint: 'token_endpoint',
+			authorization_endpoint: 'authorization_endpoint',
+			end_session_endpoint: 'end_session_endpoint',
+			jwks_uri: 'jwks_uri',
+		});
 	});
 
 	afterAll(async () => {

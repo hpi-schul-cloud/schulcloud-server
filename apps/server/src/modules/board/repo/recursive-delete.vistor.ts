@@ -1,0 +1,50 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import {
+	AnyBoardDo,
+	BoardCompositeVisitorAsync,
+	BoardNode,
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	TextElement,
+} from '@shared/domain';
+
+@Injectable()
+export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
+	constructor(private readonly em: EntityManager) {}
+
+	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
+		this.deleteNode(columnBoard);
+		await this.visitChildrenAsync(columnBoard);
+	}
+
+	async visitColumnAsync(column: Column): Promise<void> {
+		this.deleteNode(column);
+		await this.visitChildrenAsync(column);
+	}
+
+	async visitCardAsync(card: Card): Promise<void> {
+		this.deleteNode(card);
+		await this.visitChildrenAsync(card);
+	}
+
+	async visitTextElementAsync(textElement: TextElement): Promise<void> {
+		this.deleteNode(textElement);
+		await this.visitChildrenAsync(textElement);
+	}
+
+	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
+		this.deleteNode(fileElement);
+		await this.visitChildrenAsync(fileElement);
+	}
+
+	deleteNode(domainObject: AnyBoardDo): void {
+		this.em.remove(this.em.getReference(BoardNode, domainObject.id));
+	}
+
+	async visitChildrenAsync(domainObject: AnyBoardDo): Promise<void> {
+		await Promise.all(domainObject.children.map(async (child) => child.acceptAsync(this)));
+	}
+}
