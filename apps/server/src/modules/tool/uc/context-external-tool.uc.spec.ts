@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalToolService } from '@src/modules/tool/service';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '@src/modules/tool/service';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolUc } from '@src/modules/tool/uc/context-external-tool.uc';
 import { Actions, ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
 import { ToolContextType } from '@src/modules/tool/interface';
 
-describe('ContextExternalTool', () => {
+describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
 	let uc: ContextExternalToolUc;
 
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let contextExternalToolValidationService: DeepMocked<ContextExternalToolValidationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
@@ -27,12 +28,17 @@ describe('ContextExternalTool', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: ContextExternalToolValidationService,
+					useValue: createMock<ContextExternalToolValidationService>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(ContextExternalToolUc);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		authorizationService = module.get(AuthorizationService);
+		contextExternalToolValidationService = module.get(ContextExternalToolValidationService);
 	});
 
 	afterAll(async () => {
@@ -54,11 +60,12 @@ describe('ContextExternalTool', () => {
 			});
 
 			const context = {
-				action: Actions.read,
+				action: Actions.write,
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			};
 
 			authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+			contextExternalToolValidationService.validate.mockResolvedValue(Promise.resolve());
 
 			return {
 				contextExternalTool,
@@ -87,6 +94,14 @@ describe('ContextExternalTool', () => {
 					contextExternalTool.contextId,
 					context
 				);
+			});
+
+			it('should call contextExternalToolValidationService', async () => {
+				const { contextExternalTool, userId } = setup();
+
+				await uc.createContextExternalTool(userId, contextExternalTool);
+
+				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
 			});
 		});
 	});

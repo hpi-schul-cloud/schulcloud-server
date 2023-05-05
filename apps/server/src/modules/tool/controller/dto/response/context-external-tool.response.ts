@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ToolContextType } from '../../../interface';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
 
@@ -7,22 +7,22 @@ export class ContextExternalToolResponse {
 	id: string;
 
 	@ApiProperty()
-	schoolToolId!: string;
+	schoolToolId: string;
 
 	@ApiProperty()
-	contextId!: string;
+	contextId: string;
 
 	@ApiProperty({ enum: ToolContextType })
-	contextType!: ToolContextType;
+	contextType: ToolContextType;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	contextToolName?: string;
 
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[] = [];
 
 	@ApiProperty()
-	toolVersion!: number;
+	toolVersion: number;
 
 	constructor(response: ContextExternalToolResponse) {
 		this.id = response.id;

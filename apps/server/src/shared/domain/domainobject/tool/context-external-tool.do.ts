@@ -1,6 +1,6 @@
+import { ToolContextType } from '@src/modules/tool/interface';
 import { BaseDO } from '../base.do';
 import { CustomParameterEntryDO } from './custom-parameter-entry.do';
-import { ToolContextType } from '../../../../modules/tool/interface';
 
 export class ContextExternalToolDO extends BaseDO {
 	schoolToolId: string;

@@ -49,7 +49,7 @@ export class ContextExternalToolUc {
 			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextType),
 			contextId,
 			{
-				action: Actions.read,
+				action: Actions.write,
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			}
 		);

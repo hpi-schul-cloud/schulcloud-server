@@ -17,7 +17,7 @@ export const contextExternalToolFactory = BaseFactory.define<ContextExternalTool
 			contextToolName: 'My Course Tool 1',
 			schoolTool: schoolExternalToolFactory.buildWithId(),
 			parameters: [new CustomParameterEntry({ name: 'mockParamater', value: 'mockValue' })],
-			toolVersion: 0,
+			toolVersion: 1,
 		};
 	}
 );
