@@ -94,6 +94,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Readonly</span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#details" >details</a>
                             </li>
                             <li>
@@ -121,9 +122,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#getDetails" >getDetails</a>
-                            </li>
-                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#getResponse" >getResponse</a>
                             </li>
                         </ul>
@@ -242,6 +241,7 @@
                     <a name="details"></a>
                     <span class="name">
                             <span class="modifier">Readonly</span>
+                            <span class="modifier">Optional</span>
                         <span ><b>details</b></span>
                         <a href="#details"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -258,7 +258,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The error details.&#x27;})<br />
+                            @ApiPropertyOptional({description: &#x27;The error details.&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -418,51 +418,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getDetails"></a>
-                    <span class="name">
-                        <span ><b>getDetails</b></span>
-                        <a href="#getDetails"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getDetails()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BusinessError.html" target="_self" >BusinessError</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BusinessError.html#source" target="_self" >BusinessError:40</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Record&lt;string, &gt;</code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getResponse"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span ><b>getResponse</b></span>
                         <a href="#getResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -470,7 +428,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getResponse()</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getResponse()</code>
                 </td>
             </tr>
 
@@ -483,7 +442,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BusinessError.html#source" target="_self" >BusinessError:44</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BusinessError.html#source" target="_self" >BusinessError:47</a></code>
 </div>
                 </td>
             </tr>

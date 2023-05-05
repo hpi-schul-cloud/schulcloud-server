@@ -959,13 +959,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { ValidationError } from &#x27;@shared/common&#x27;;
+import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
-import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { ValidationError } from &#x27;@shared/common&#x27;;
 import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration/error/oauth-migration.error&#x27;;
 
 @Injectable()
@@ -1011,6 +1011,12 @@ export class SchoolMigrationService {
 			);
 		}
 
+		const userDO: UserDO | null &#x3D; await this.userService.findById(currentUserId);
+		if (userDO) {
+			const schoolDO: SchoolDO &#x3D; await this.schoolService.getSchoolById(userDO.schoolId);
+			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
+		}
+
 		const existingSchool: SchoolDO | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!existingSchool) {
@@ -1018,12 +1024,6 @@ export class SchoolMigrationService {
 				&#x27;Could not find school by official school number from target migration system&#x27;,
 				&#x27;ext_official_school_missing&#x27;
 			);
-		}
-
-		const userDO: UserDO | null &#x3D; await this.userService.findById(currentUserId);
-		if (userDO) {
-			const schoolDO: SchoolDO &#x3D; await this.schoolService.getSchoolById(userDO.schoolId);
-			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 		}
 
 		const schoolMigrated: boolean &#x3D; this.hasSchoolMigrated(externalId, existingSchool.externalId);

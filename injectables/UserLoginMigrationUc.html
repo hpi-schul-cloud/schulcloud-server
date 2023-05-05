@@ -117,7 +117,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:41</a></div>
                 </td>
             </tr>
 
@@ -349,8 +349,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:31</a></div>
                 </td>
             </tr>
 
@@ -563,8 +563,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:55</a></div>
                 </td>
             </tr>
 
@@ -676,6 +676,7 @@ import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
 import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
 import { ProvisioningService } from &#x27;@src/modules/provisioning&#x27;;
 import { OauthDataDto } from &#x27;@src/modules/provisioning/dto&#x27;;
+import { OAuthMigrationError } from &#x27;../error/oauth-migration.error&#x27;;
 import { SchoolMigrationError } from &#x27;../error/school-migration.error&#x27;;
 import { UserLoginMigrationError } from &#x27;../error/user-login-migration.error&#x27;;
 import { PageTypes } from &#x27;../interface/page-types.enum&#x27;;
@@ -740,7 +741,7 @@ export class UserLoginMigrationUc {
 
 		if (data.externalSchool) {
 			let schoolToMigrate: SchoolDO | null;
-			// TODO: N21-820 after implementation of new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
+			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate &#x3D; await this.schoolMigrationService.schoolToMigrate(
 					currentUserId,
@@ -751,10 +752,9 @@ export class UserLoginMigrationUc {
 				let details: Record&lt;string, unknown&gt; | undefined;
 
 				if (
-					error &amp;&amp;
-					typeof error &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp;
-					&#x27;officialSchoolNumberFromSource&#x27; in error &amp;&amp;
-					&#x27;officialSchoolNumberFromTarget&#x27; in error
+					error instanceof OAuthMigrationError &amp;&amp;
+					error.officialSchoolNumberFromSource &amp;&amp;
+					error.officialSchoolNumberFromTarget
 				) {
 					details &#x3D; {
 						sourceSchoolNumber: error.officialSchoolNumberFromSource,
@@ -762,7 +762,7 @@ export class UserLoginMigrationUc {
 					};
 				}
 
-				throw new SchoolMigrationError(details);
+				throw new SchoolMigrationError(details, error);
 			}
 
 			this.logMigrationInformation(

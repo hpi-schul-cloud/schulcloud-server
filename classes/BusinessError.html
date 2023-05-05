@@ -71,7 +71,7 @@
             </p>
             <p class="comment">
                 <p>Abstract base class for business errors, errors that are handled
-within of a client or inside of the application.</p>
+within a client or inside the application.</p>
 
             </p>
 
@@ -102,6 +102,7 @@ within of a client or inside of the application.</p>
                             </li>
                             <li>
                                     <span class="modifier">Readonly</span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#details" >details</a>
                             </li>
                             <li>
@@ -129,9 +130,7 @@ within of a client or inside of the application.</p>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#getDetails" >getDetails</a>
-                            </li>
-                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#getResponse" >getResponse</a>
                             </li>
                         </ul>
@@ -152,7 +151,8 @@ within of a client or inside of the application.</p>
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(undefined: <a href="../interfaces/IErrorType.html" target="_self">IErrorType</a>, code: HttpStatus, details?: Record<string | >)</code>
+                                <span class="modifier">Protected</span>
+                        <code>constructor(undefined: <a href="../interfaces/IErrorType.html" target="_self">IErrorType</a>, code: HttpStatus, details?: Record<string | >, cause?)</code>
                     </td>
                 </tr>
                         <tr>
@@ -202,6 +202,17 @@ within of a client or inside of the application.</p>
                                                   
                                                         <td>
                                                                     <code>Record&lt;string | &gt;</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            Yes
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cause</td>
+                                                  
+                                                        <td>
                                                         </td>
                                                   
                                                     <td>
@@ -266,6 +277,7 @@ within of a client or inside of the application.</p>
                     <a name="details"></a>
                     <span class="name">
                             <span class="modifier">Readonly</span>
+                            <span class="modifier">Optional</span>
                         <span ><b>details</b></span>
                         <a href="#details"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -282,7 +294,7 @@ within of a client or inside of the application.</p>
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The error details.&#x27;})<br />
+                            @ApiPropertyOptional({description: &#x27;The error details.&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -414,45 +426,9 @@ within of a client or inside of the application.</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getDetails"></a>
-                    <span class="name">
-                        <span ><b>getDetails</b></span>
-                        <a href="#getDetails"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>getDetails()</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/shared/common/error/business.error.ts:40</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Record&lt;string, &gt;</code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getResponse"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span ><b>getResponse</b></span>
                         <a href="#getResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -460,15 +436,16 @@ within of a client or inside of the application.</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getResponse()</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getResponse()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">apps/server/src/shared/common/error/business.error.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/shared/common/error/business.error.ts:47</a></div>
                 </td>
             </tr>
 
@@ -495,13 +472,13 @@ within of a client or inside of the application.</p>
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpException, HttpStatus } from &#x27;@nestjs/common&#x27;;
+import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { ErrorResponse } from &#x27;@src/core/error/dto/error.response&#x27;;
 import { IErrorType } from &#x27;@src/core/error/interface&#x27;;
-import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
 /**
  * Abstract base class for business errors, errors that are handled
- * within of a client or inside of the application.
+ * within a client or inside the application.
  */
 export abstract class BusinessError extends HttpException {
 	@ApiProperty({ description: &#x27;The response status code.&#x27; })
@@ -516,29 +493,40 @@ export abstract class BusinessError extends HttpException {
 	@ApiProperty({ description: &#x27;The error message.&#x27; })
 	readonly message: string;
 
-	@ApiProperty({ description: &#x27;The error details.&#x27; })
+	@ApiPropertyOptional({ description: &#x27;The error details.&#x27; })
 	// Is not matched by type validation because HttpException is already declared
-	readonly details: Record&lt;string, unknown&gt;;
+	readonly details?: Record&lt;string, unknown&gt;;
 
-	constructor(
+	protected constructor(
 		{ type, title, defaultMessage }: IErrorType,
 		code: HttpStatus &#x3D; HttpStatus.CONFLICT,
-		details?: Record&lt;string, unknown&gt;
+		details?: Record&lt;string, unknown&gt;,
+		cause?: unknown
 	) {
 		super({ code, type, title, message: defaultMessage }, code);
 		this.code &#x3D; code;
 		this.type &#x3D; type;
 		this.title &#x3D; title;
 		this.message &#x3D; defaultMessage;
-		this.details &#x3D; details || {};
+		this.details &#x3D; details;
+
+		if (cause instanceof Error) {
+			this.cause &#x3D; cause;
+		} else if (cause !&#x3D;&#x3D; undefined) {
+			this.cause &#x3D; typeof cause &#x3D;&#x3D;&#x3D; &#x27;object&#x27; ? new Error(JSON.stringify(cause)) : new Error(String(cause));
+		}
 	}
 
-	getDetails(): Record&lt;string, unknown&gt; {
-		return this.details;
-	}
+	override getResponse(): ErrorResponse {
+		const errorResponse: ErrorResponse &#x3D; new ErrorResponse(
+			this.type,
+			this.title,
+			this.message,
+			this.code,
+			this.details
+		);
 
-	getResponse(): ErrorResponse {
-		return new ErrorResponse(this.type, this.title, this.message, this.code);
+		return errorResponse;
 	}
 }
 </code></pre>
