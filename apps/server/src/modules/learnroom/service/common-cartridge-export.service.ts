@@ -63,8 +63,8 @@ export class CommonCartridgeExportService {
 			}
 
 			return {
-				identifier: `i${content._id || ''}`,
-				title: content.title || '',
+				identifier: `i${content._id as string}`,
+				title: content.title as string,
 				content: mappedContent,
 			};
 		});
