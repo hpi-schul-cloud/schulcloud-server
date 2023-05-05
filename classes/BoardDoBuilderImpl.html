@@ -336,8 +336,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="98"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:98</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:100</a></div>
                 </td>
             </tr>
 
@@ -636,8 +636,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:87</a></div>
                 </td>
             </tr>
 
@@ -776,8 +776,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="114"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:114</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="116"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:116</a></div>
                 </td>
             </tr>
 
@@ -857,8 +857,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:111</a></div>
                 </td>
             </tr>
 
@@ -926,8 +926,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:103</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:105</a></div>
                 </td>
             </tr>
 
@@ -1018,7 +1018,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const columnBoard &#x3D; new ColumnBoard({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? &#x27;&#x27;,
 			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -1034,7 +1034,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const column &#x3D; new Column({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? &#x27;&#x27;,
 			children: cards,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -1049,7 +1049,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 
 		const card &#x3D; new Card({
 			id: boardNode.id,
-			title: boardNode.title,
+			title: boardNode.title ?? &#x27;&#x27;,
 			height: boardNode.height,
 			children: elements,
 			createdAt: boardNode.createdAt,
@@ -1064,6 +1064,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element &#x3D; new TextElement({
 			id: boardNode.id,
 			text: boardNode.text,
+			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
@@ -1076,6 +1077,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element &#x3D; new FileElement({
 			id: boardNode.id,
 			caption: boardNode.caption,
+			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});

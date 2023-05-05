@@ -95,6 +95,12 @@
                                             height
                                         </a>
                                 </li>
+                                <li>
+                                        <a href="#title" 
+>
+                                            title
+                                        </a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -139,6 +145,39 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="title"></a>
+                                        <span class="name "><b>title</b>
+                                            <a href="#title">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>title:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
@@ -148,25 +187,23 @@
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { TextElement } from &#x27;./text-element.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
-import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
-import type { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
 
-export class Card extends BoardComposite implements CardProps, BoardNodeBuildable {
-	height: number;
+export class Card extends BoardComposite&lt;CardProps&gt; {
+	get title(): string {
+		return this.props.title;
+	}
 
-	constructor(props: CardProps) {
-		super(props);
-		this.title &#x3D; props.title;
-		this.height &#x3D; props.height;
+	set title(title: string) {
+		this.props.title &#x3D; title;
+	}
+
+	get height(): number {
+		return this.props.height;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed &#x3D; domainObject instanceof TextElement || domainObject instanceof FileElement;
 		return allowed;
-	}
-
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
-		builder.buildCardNode(this, parent);
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {
@@ -179,6 +216,7 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 }
 
 export interface CardProps extends BoardCompositeProps {
+	title: string;
 	height: number;
 }
 </code></pre>

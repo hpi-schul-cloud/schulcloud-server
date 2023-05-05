@@ -145,24 +145,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
-import type { BoardNodeBuildable } from &#x27;./types/board-node-buildable&#x27;;
-import type { BoardNodeBuilder } from &#x27;./types/board-node-builder&#x27;;
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
-export class TextElement extends BoardComposite implements TextElementProps, BoardNodeBuildable {
-	text: string;
-
-	constructor(props: Omit&lt;TextElementProps, &#x27;children&#x27;&gt;) {
-		super({ ...props, children: [] });
-		this.text &#x3D; props.text;
+export class TextElement extends BoardComposite&lt;TextElementProps&gt; {
+	get text(): string {
+		return this.props.text;
 	}
 
 	isAllowedAsChild(): boolean {
 		return false;
-	}
-
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
-		builder.buildTextElementNode(this, parent);
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {

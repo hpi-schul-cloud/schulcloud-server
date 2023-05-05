@@ -125,7 +125,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -214,8 +214,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:65</a></div>
                 </td>
             </tr>
 
@@ -285,8 +285,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:25</a></div>
                 </td>
             </tr>
 
@@ -389,8 +389,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:17</a></div>
                 </td>
             </tr>
 
@@ -472,8 +472,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:38</a></div>
                 </td>
             </tr>
 
@@ -543,8 +543,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:52</a></div>
                 </td>
             </tr>
 
@@ -614,8 +614,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:59</a></div>
                 </td>
             </tr>
 
@@ -681,14 +681,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
-import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { AnyBoardDo, BoardNode, EntityId } from &#x27;@shared/domain&#x27;;
 import { BoardDoBuilderImpl } from &#x27;./board-do.builder-impl&#x27;;
-import { BoardNodeBuilderImpl } from &#x27;./board-node.builder-impl&#x27;;
 import { BoardNodeRepo } from &#x27;./board-node.repo&#x27;;
 import { RecursiveDeleteVisitor } from &#x27;./recursive-delete.vistor&#x27;;
+import { RecursiveSaveVisitor } from &#x27;./recursive-save.visitor&#x27;;
 
 @Injectable()
 export class BoardDoRepo {
@@ -741,11 +740,9 @@ export class BoardDoRepo {
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise&lt;void&gt; {
-		const domainObjects &#x3D; Utils.asArray(domainObject);
-		const parentNode &#x3D; parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
-		const builder &#x3D; new BoardNodeBuilderImpl(parentNode);
-		const boardNodes &#x3D; builder.buildBoardNodes(domainObjects, parent);
-		await this.boardNodeRepo.save(boardNodes);
+		const saveVisitor &#x3D; new RecursiveSaveVisitor(this.em);
+		await saveVisitor.save(domainObject, parent);
+		await this.em.flush();
 	}
 
 	async delete(domainObject: AnyBoardDo): Promise&lt;void&gt; {

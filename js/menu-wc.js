@@ -414,13 +414,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardModule.html" data-type="entity-link" >BoardModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' : 'data-target="#xs-injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' }>
+                                        'data-target="#injectables-links-module-BoardModule-c3c15f6368a377513f653702dd6ef8a81bef2d80c45627c0e5fc21f95f79176026d04a0613559b7ea97c9bbadb76e7620f7fea57a7f89634d3a0dacc21da7b44"' : 'data-target="#xs-injectables-links-module-BoardModule-c3c15f6368a377513f653702dd6ef8a81bef2d80c45627c0e5fc21f95f79176026d04a0613559b7ea97c9bbadb76e7620f7fea57a7f89634d3a0dacc21da7b44"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' :
-                                        'id="xs-injectables-links-module-BoardModule-affd496ef8ea9913b9f08a76c904e40647f9466e1a09021a6781ccfae6e3c86c495c27043f27f8978f4de116ebae1c089b12726e61406d0f8f3a2fa8d520f56a"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-c3c15f6368a377513f653702dd6ef8a81bef2d80c45627c0e5fc21f95f79176026d04a0613559b7ea97c9bbadb76e7620f7fea57a7f89634d3a0dacc21da7b44"' :
+                                        'id="xs-injectables-links-module-BoardModule-c3c15f6368a377513f653702dd6ef8a81bef2d80c45627c0e5fc21f95f79176026d04a0613559b7ea97c9bbadb76e7620f7fea57a7f89634d3a0dacc21da7b44"' }>
                                         <li class="link">
                                             <a href="injectables/BoardDoRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardDoRepo</a>
                                         </li>
@@ -2407,9 +2407,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/BoardManagementConsole.html" data-type="entity-link" >BoardManagementConsole</a>
                             </li>
                             <li class="link">
-                                <a href="classes/BoardNodeBuilderImpl.html" data-type="entity-link" >BoardNodeBuilderImpl</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/BoardResponse.html" data-type="entity-link" >BoardResponse</a>
                             </li>
                             <li class="link">
@@ -3143,6 +3140,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/PublicSystemResponse.html" data-type="entity-link" >PublicSystemResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RecursiveSaveVisitor.html" data-type="entity-link" >RecursiveSaveVisitor</a>
                             </li>
                             <li class="link">
                                 <a href="classes/RedirectResponse.html" data-type="entity-link" >RedirectResponse</a>
@@ -3884,9 +3884,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/PseudonymsRepo.html" data-type="entity-link" >PseudonymsRepo</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/RecursiveDeleteVisitor.html" data-type="entity-link" >RecursiveDeleteVisitor</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/RequestLoggingInterceptor.html" data-type="entity-link" >RequestLoggingInterceptor</a>
                                 </li>
                                 <li class="link">
@@ -4113,12 +4110,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/BoardDoBuilder.html" data-type="entity-link" >BoardDoBuilder</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/BoardNodeBuildable.html" data-type="entity-link" >BoardNodeBuildable</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/BoardNodeBuilder.html" data-type="entity-link" >BoardNodeBuilder</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/BoardNodeProps.html" data-type="entity-link" >BoardNodeProps</a>
                             </li>
                             <li class="link">
@@ -4126,6 +4117,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/CardProps.html" data-type="entity-link" >CardProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ColumnBoardProps.html" data-type="entity-link" >ColumnBoardProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ColumnProps.html" data-type="entity-link" >ColumnProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CreateJwtParams.html" data-type="entity-link" >CreateJwtParams</a>
