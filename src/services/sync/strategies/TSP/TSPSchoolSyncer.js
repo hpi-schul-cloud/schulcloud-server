@@ -1,4 +1,5 @@
 const { mix } = require('mixwith');
+const pLimit = require('p-limit');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
@@ -9,6 +10,7 @@ const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUs
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
+const limit = pLimit(50);
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
@@ -125,7 +127,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			);
 			this.logInfo('Done.');
 		}
-		await Promise.all(schools.map((school) => this.processSchool(school, teacherMap, studentMap, classMap)));
+		await Promise.all(
+			schools.map((school) => limit(() => this.processSchool(school, teacherMap, studentMap, classMap)))
+		);
 		this.logInfo('Done.');
 	}
 
