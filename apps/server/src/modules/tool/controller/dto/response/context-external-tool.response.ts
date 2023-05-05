@@ -16,7 +16,7 @@ export class ContextExternalToolResponse {
 	contextType: ToolContextType;
 
 	@ApiPropertyOptional()
-	contextToolName: string;
+	contextToolName?: string;
 
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
 	parameters: CustomParameterEntryResponse[] = [];
