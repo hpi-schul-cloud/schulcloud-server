@@ -216,17 +216,26 @@ describe('CourseEntity', () => {
 
 	describe('getStudentList', () => {
 		const setup = () => {
-			const students = userFactory.buildList(3);
+			const students = userFactory.buildListWithId(2).sort();
 			const course = courseFactory.build({ students });
 			return { course, students };
 		};
 		it('should return the students of the course', () => {
 			const { course, students } = setup();
+			const [student1, student2] = students;
+
+			const result = course.getStudentsList().sort();
+
+			expect(result.length).toEqual(2);
+			expect(result[0].id).toEqual(student1.id);
+			expect(result[1].id).toEqual(student2.id);
+		});
+		it('should return an empty array if no students are in the course', () => {
+			const course = courseFactory.build({ students: [] });
 
 			const result = course.getStudentsList();
 
-			expect(result.length).toEqual(3);
-			expect(result[0]).toEqual(students[0]);
+			expect(result.length).toEqual(0);
 		});
 	});
 
