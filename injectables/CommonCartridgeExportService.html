@@ -84,6 +84,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#mapContentsToLesson" >mapContentsToLesson</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#mapLessonsToOrganizationItems" >mapLessonsToOrganizationItems</a>
                             </li>
                             <li>
@@ -113,7 +117,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -202,8 +206,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:19</a></div>
                 </td>
             </tr>
 
@@ -267,6 +271,80 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapContentsToLesson"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>mapContentsToLesson</b></span>
+                        <a href="#mapContentsToLesson"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapContentsToLesson(contents: <a href="../interfaces/IComponentProperties.html" target="_self">IComponentProperties[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:57</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contents</td>
+                                    <td>
+                                                <code><a href="../interfaces/IComponentProperties.html" target="_self" >IComponentProperties[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >ICommonCartridgeLessonContentProps[]</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>ICommonCartridgeLessonContentProps</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapLessonsToOrganizationItems"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -285,8 +363,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:32</a></div>
                 </td>
             </tr>
 
@@ -356,8 +434,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:42</a></div>
                 </td>
             </tr>
 
@@ -416,6 +494,8 @@ import { EntityId, Lesson, Task } from &#x27;@shared/domain&#x27;;
 import { LessonService } from &#x27;@src/modules/lesson/service&#x27;;
 import { TaskService } from &#x27;@src/modules/task/service/task.service&#x27;;
 import { ICommonCartridgeAssignmentProps } from &#x27;@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element&#x27;;
+import { ICommonCartridgeLessonContentProps } from &#x27;@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element&#x27;;
+import { IComponentProperties, IComponentTextProperties } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
 import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from &#x27;../common-cartridge&#x27;;
 
@@ -445,6 +525,7 @@ export class CommonCartridgeExportService {
 			return {
 				identifier: &#x60;i${lesson.id}&#x60;,
 				title: lesson.name,
+				contents: this.mapContentsToLesson(lesson.contents),
 			};
 		});
 	}
@@ -455,6 +536,27 @@ export class CommonCartridgeExportService {
 				identifier: &#x60;i${task.id}&#x60;,
 				title: task.name,
 				description: task.description,
+			};
+		});
+	}
+
+	/**
+	 * This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.
+	 * @param IComponentProperties
+	 * @return ICommonCartridgeLessonContentProps
+	 * */
+	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
+		return contents.map((content) &#x3D;&gt; {
+			let mappedContent &#x3D; &#x27;&#x27;;
+
+			if (content.content &amp;&amp; (content.content as IComponentTextProperties).text) {
+				mappedContent &#x3D; (content.content as IComponentTextProperties).text;
+			}
+
+			return {
+				identifier: &#x60;i${content._id as string}&#x60;,
+				title: content.title as string,
+				content: mappedContent,
 			};
 		});
 	}
