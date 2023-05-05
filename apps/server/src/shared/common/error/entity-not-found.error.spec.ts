@@ -10,7 +10,7 @@ describe('Entity Not Found Error', () => {
 	it('should be possible to add details', () => {
 		const details = { entityId: 1234 };
 		const error = new EntityNotFoundError('entityName', details);
-		expect(error.getDetails()).toEqual(details);
+		expect(error.details).toEqual(details);
 	});
 
 	it('should have the right code', () => {
