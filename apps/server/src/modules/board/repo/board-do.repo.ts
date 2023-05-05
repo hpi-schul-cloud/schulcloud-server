@@ -5,10 +5,15 @@ import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
+import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 @Injectable()
 export class BoardDoRepo {
-	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(
+		private readonly em: EntityManager,
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly deleteVisitor: RecursiveDeleteVisitor
+	) {}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
 		const boardNode = await this.em.findOneOrFail(BoardNode, id);
@@ -61,7 +66,7 @@ export class BoardDoRepo {
 	}
 
 	async delete(domainObject: AnyBoardDo): Promise<void> {
-		const boardNode = await this.boardNodeRepo.findById(BoardNode, domainObject.id);
-		await this.boardNodeRepo.deleteWithDescendants(boardNode);
+		await domainObject.acceptAsync(this.deleteVisitor);
+		await this.em.flush();
 	}
 }

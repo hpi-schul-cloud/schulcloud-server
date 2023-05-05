@@ -3,9 +3,15 @@ import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
 import { BoardManagementConsole } from './console';
-import { BoardDoRepo, BoardNodeRepo } from './repo';
-import { BoardDoService, CardService, ColumnBoardService, ColumnService, ContentElementService } from './service';
-import { BoardNodeService } from './service/board-node.service';
+import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
+import {
+	BoardDoService,
+	BoardNodeService,
+	CardService,
+	ColumnBoardService,
+	ColumnService,
+	ContentElementService,
+} from './service';
 import { BoardManagementUc } from './uc';
 
 @Module({
@@ -20,6 +26,7 @@ import { BoardManagementUc } from './uc';
 		ColumnBoardService,
 		ColumnService,
 		ContentElementService,
+		RecursiveDeleteVisitor,
 		ContentElementFactory,
 		BoardNodeService,
 	],
