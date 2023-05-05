@@ -1,20 +1,27 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ErrorResponse } from '@src/core/error/dto/error.response';
 import { IErrorType } from '@src/core/error/interface';
 
 /**
  * Abstract base class for business errors, errors that are handled
- * within of a client or inside of the application.
+ * within a client or inside the application.
  */
 export abstract class BusinessError extends HttpException {
+	@ApiProperty({ description: 'The response status code.' })
 	readonly code: number;
 
+	@ApiProperty({ description: 'The error type.' })
 	readonly type: string;
 
+	@ApiProperty({ description: 'The error title.' })
 	readonly title: string;
 
+	@ApiProperty({ description: 'The error message.' })
 	readonly message: string;
 
+	@ApiPropertyOptional({ description: 'The error details.' })
+	// Is not matched by type validation because HttpException is already declared
 	readonly details?: Record<string, unknown>;
 
 	protected constructor(
