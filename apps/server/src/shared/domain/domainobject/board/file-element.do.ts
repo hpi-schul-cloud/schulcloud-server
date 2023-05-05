@@ -1,22 +1,13 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
-import type { BoardNodeBuildable } from './types/board-node-buildable';
-import type { BoardNodeBuilder } from './types/board-node-builder';
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export class FileElement extends BoardComposite implements FileElementProps, BoardNodeBuildable {
-	caption: string;
-
-	constructor(props: Omit<FileElementProps, 'children'>) {
-		super({ ...props, children: [] });
-		this.caption = props.caption;
+export class FileElement extends BoardComposite<FileElementProps> {
+	get caption(): string {
+		return this.props.caption;
 	}
 
 	isAllowedAsChild(): boolean {
 		return false;
-	}
-
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
-		builder.buildFileElementNode(this, parent);
 	}
 
 	accept(visitor: BoardCompositeVisitor): void {

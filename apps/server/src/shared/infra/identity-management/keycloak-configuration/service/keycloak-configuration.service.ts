@@ -108,8 +108,7 @@ export class KeycloakConfigurationService {
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
 		const scDomain = this.configService.get<string>('SC_DOMAIN');
-		const redirectUri =
-			scDomain === 'localhost' ? 'http://localhost:3030/api/v3/sso/oauth/' : `https://${scDomain}/api/v3/sso/oauth/`;
+		const redirectUri = scDomain === 'localhost' ? 'http://localhost:3030/' : `https://${scDomain}/`;
 		const cr: ClientRepresentation = {
 			clientId: this.kcAdmin.getClientId(),
 			enabled: true,
