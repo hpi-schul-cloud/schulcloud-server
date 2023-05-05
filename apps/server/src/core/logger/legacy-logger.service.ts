@@ -23,27 +23,27 @@ export class LegacyLogger implements ILegacyLogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(message: unknown, context?: string | undefined): void {
+	log(message: unknown, context?: string): void {
 		this.logger.log('info', this.createMessage(message, context));
 	}
 
-	warn(message: unknown, context?: string | undefined): void {
+	warn(message: unknown, context?: string): void {
 		this.logger.warning(this.createMessage(message, context));
 	}
 
-	debug(message: unknown, context?: string | undefined): void {
+	debug(message: unknown, context?: string): void {
 		this.logger.debug(this.createMessage(message, context));
 	}
 
-	verbose(message: unknown, context?: string | undefined): void {
+	verbose(message: unknown, context?: string): void {
 		this.logger.verbose(this.createMessage(message, context));
 	}
 
-	http(message: RequestLoggingBody, context?: string | undefined): void {
+	http(message: RequestLoggingBody, context?: string): void {
 		this.logger.notice(this.createMessage(message, context));
 	}
 
-	error(message: unknown, trace?: unknown, context?: string | undefined): void {
+	error(message: unknown, trace?: unknown, context?: string): void {
 		const result = {
 			message,
 			trace,
