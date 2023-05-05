@@ -155,7 +155,7 @@ describe(BoardDoService.name, () => {
 
 	describe('deleteWithDescendants', () => {
 		describe('when deleting an element', () => {
-			const setup = async () => {
+			const setup = () => {
 				const elements = textElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
 				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
@@ -164,7 +164,7 @@ describe(BoardDoService.name, () => {
 			};
 
 			it('should remove the element from the parent', async () => {
-				const { elements, card } = await setup();
+				const { elements, card } = setup();
 				const element = elements[0];
 				jest.spyOn(card, 'removeChild');
 
@@ -174,7 +174,7 @@ describe(BoardDoService.name, () => {
 			});
 
 			it('should update the siblings', async () => {
-				const { elements, card } = await setup();
+				const { elements, card } = setup();
 				const element = elements[0];
 				jest.spyOn(card, 'removeChild');
 				const expectedElements = [elements[1], elements[2]];
