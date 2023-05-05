@@ -11,7 +11,7 @@ class Message {
 		this.mMessageId = messageId || '-1';
 		this.mUrl = url || '';
 		this.mStatus = status || '';
-		this.mCreatedAt = createdAt === undefined ? '' : createdAt;
+		this.mCreatedAt = createdAt || '';
 	}
 
 	get getMessage() {
