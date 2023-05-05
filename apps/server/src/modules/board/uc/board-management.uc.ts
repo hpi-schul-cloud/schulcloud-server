@@ -1,14 +1,14 @@
 /* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode } from '@shared/domain';
+import { BoardNode, EntityId } from '@shared/domain';
 import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
 	constructor(private em: EntityManager) {}
 
-	async createBoards(): Promise<void> {
+	async createBoards(): Promise<EntityId> {
 		const board = columnBoardNodeFactory.build();
 		await this.em.persistAndFlush(board);
 
@@ -22,6 +22,8 @@ export class BoardManagementUc {
 		const elementsPerCard = cards.map((card) => this.createElements(this.random(2, 5), card));
 		const elements = elementsPerCard.flat();
 		await this.em.persistAndFlush(elements);
+
+		return board.id;
 	}
 
 	private createColumns(amount: number, parent: BoardNode): BoardNode[] {
@@ -49,7 +51,7 @@ export class BoardManagementUc {
 		return this.generateArray(amount, (i) =>
 			textElementNodeFactory.build({
 				parent,
-				text: `<p>text ${i + 1}</p>`,
+				text: `Text ${i + 1}`,
 				position: i,
 			})
 		);

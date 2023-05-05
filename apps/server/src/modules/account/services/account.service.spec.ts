@@ -1,20 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { IServerConfig } from '@src/modules/server';
 import { Logger } from '../../../core/logger';
-import { AccountService } from './account.service';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
-import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
+import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
+import { AccountDto, AccountSaveDto } from './dto';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
-	let accountServiceIdm: DeepMocked<AbstractAccountService>;
-	let accountServiceDb: DeepMocked<AbstractAccountService>;
+	let accountServiceIdm: DeepMocked<AccountServiceIdm>;
+	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
@@ -230,6 +229,24 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('validatePassword', () => {
+		const setup = () => {
+			configService.get.mockReturnValue(true);
+			return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+		};
+		it('should call validatePassword in accountServiceDb', async () => {
+			await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
+		});
+		it('should call validatePassword in accountServiceIdm if feature is enabled', async () => {
+			const service = setup();
+			await expect(service.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+			expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(0);
+			expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('delete', () => {
 		it('should call delete in accountServiceDb', async () => {
 			await expect(accountService.delete('accountId')).resolves.not.toThrow();
@@ -269,6 +286,13 @@ describe('AccountService', () => {
 
 			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 			expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('findMany', () => {
+		it('should call findMany in accountServiceDb', async () => {
+			await expect(accountService.findMany()).resolves.not.toThrow();
+			expect(accountServiceDb.findMany).toHaveBeenCalledTimes(1);
 		});
 	});
 
@@ -315,6 +339,127 @@ describe('AccountService', () => {
 
 			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 			expect(spyLogger).toHaveBeenCalledWith('a non error object');
+		});
+	});
+
+	describe('when identity management is primary', () => {
+		const setup = () => {
+			configService.get.mockReturnValue(true);
+			return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+		};
+
+		describe('findById', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.findById('accountId')).resolves.not.toThrow();
+				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('findMultipleByUserId', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.findMultipleByUserId(['userId'])).resolves.not.toThrow();
+				expect(accountServiceIdm.findMultipleByUserId).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('findByUserId', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.findByUserId('userId')).resolves.not.toThrow();
+				expect(accountServiceIdm.findByUserId).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('findByUserIdOrFail', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.findByUserIdOrFail('userId')).resolves.not.toThrow();
+				expect(accountServiceIdm.findByUserIdOrFail).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('findByUsernameAndSystemId', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.findByUsernameAndSystemId('username', 'systemId')).resolves.not.toThrow();
+				expect(accountServiceIdm.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('searchByUsernamePartialMatch', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.searchByUsernamePartialMatch('username', 0, 1)).resolves.not.toThrow();
+				expect(accountServiceIdm.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('searchByUsernameExactMatch', () => {
+			it('should call idm implementation', async () => {
+				const service = setup();
+				await expect(service.searchByUsernameExactMatch('username')).resolves.not.toThrow();
+				expect(accountServiceIdm.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('save', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.save({ username: 'username' })).resolves.not.toThrow();
+				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('saveWithValidation', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(
+					accountService.saveWithValidation({ username: 'username@mail.tld', password: 'password' })
+				).resolves.not.toThrow();
+				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('updateUsername', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
+				expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('updateLastTriedFailedLogin', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.updateLastTriedFailedLogin('accountId', new Date())).resolves.not.toThrow();
+				expect(accountServiceIdm.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('updatePassword', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
+				expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('delete', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.delete('accountId')).resolves.not.toThrow();
+				expect(accountServiceIdm.delete).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('deleteByUserId', () => {
+			it('should call idm implementation', async () => {
+				setup();
+				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
+				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 });

@@ -1,6 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import type { AnyBoardDo } from './types';
+import { ObjectId } from 'bson';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export abstract class BoardComposite {
 	id: EntityId;
@@ -14,16 +15,16 @@ export abstract class BoardComposite {
 	updatedAt: Date;
 
 	constructor(props: BoardCompositeProps) {
-		this.id = props.id;
+		this.id = props.id ?? new ObjectId().toHexString();
 		this.title = props.title;
 		this.children = props.children;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
+		this.createdAt = props.createdAt ?? new Date();
+		this.updatedAt = props.updatedAt ?? new Date();
 	}
 
 	addChild(child: AnyBoardDo, position?: number): void {
 		if (!this.isAllowedAsChild(child)) {
-			throw new Error(`Cannot add child of type '${child.constructor.name}'`);
+			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
 		if (position === undefined || position >= this.children.length) {
 			this.children.push(child);
@@ -49,16 +50,20 @@ export abstract class BoardComposite {
 		this.children = this.children.filter((ch) => ch.id !== childId);
 		return removedChild;
 	}
+
+	abstract accept(visitor: BoardCompositeVisitor): void;
+
+	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
 }
 
 export interface BoardCompositeProps {
-	id: EntityId;
+	id?: EntityId;
 
 	title?: string;
 
 	children: AnyBoardDo[];
 
-	createdAt: Date;
+	createdAt?: Date;
 
-	updatedAt: Date;
+	updatedAt?: Date;
 }

@@ -9,6 +9,7 @@ import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { CreateJwtPayload } from '../interface/jwt-payload';
+import { LoginDto } from '../uc/dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -25,8 +26,8 @@ export class AuthenticationService {
 		if (systemId) {
 			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
 		} else {
-			const foundAccounts = await this.accountService.searchByUsernameExactMatch(username);
-			account = foundAccounts.accounts.find((foundAccount) => foundAccount.systemId == null);
+			const [accounts] = await this.accountService.searchByUsernameExactMatch(username);
+			account = accounts.find((foundAccount) => foundAccount.systemId == null);
 		}
 
 		if (!account) {
@@ -36,15 +37,15 @@ export class AuthenticationService {
 		return account;
 	}
 
-	async generateJwt(user: CreateJwtPayload): Promise<{ accessToken: string }> {
+	async generateJwt(user: CreateJwtPayload): Promise<LoginDto> {
 		const jti = randomUUID();
 
-		const result = {
+		const result: LoginDto = new LoginDto({
 			accessToken: this.jwtService.sign(user, {
 				subject: user.accountId,
 				jwtid: jti,
 			}),
-		};
+		});
 
 		await this.jwtValidationAdapter.addToWhitelist(user.accountId, jti);
 

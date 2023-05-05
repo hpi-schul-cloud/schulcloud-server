@@ -12,24 +12,28 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
+	fileElementFactory,
 	textElementFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
+import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(BoardDoRepo.name, () => {
 	let module: TestingModule;
 	let repo: BoardDoRepo;
 	let em: EntityManager;
+	let recursiveDeleteVisitor: RecursiveDeleteVisitor;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [BoardDoRepo, BoardNodeRepo],
+			providers: [BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor],
 		}).compile();
 		repo = module.get(BoardDoRepo);
 		em = module.get(EntityManager);
+		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
 	});
 
 	afterAll(async () => {
@@ -215,13 +219,19 @@ describe(BoardDoRepo.name, () => {
 	describe('delete', () => {
 		describe('when deleting a domainObject and its descendants', () => {
 			const setup = async () => {
-				const elements = textElementFactory.buildList(3);
+				const elements = [...textElementFactory.buildList(3), ...fileElementFactory.buildList(2)];
 				const card = cardFactory.build({ children: elements });
 				await repo.save(card);
 				await repo.save(elements, card);
+				const siblingCardElements = textElementFactory.buildList(3);
+				const siblingCard = cardFactory.build({ children: siblingCardElements });
+				await repo.save(siblingCard);
+				await repo.save(siblingCardElements, siblingCard);
+				const column = columnFactory.build({ children: [card, siblingCard] });
+				await repo.save(column);
 				em.clear();
 
-				return { card, elements };
+				return { card, elements, siblingCard, siblingCardElements };
 			};
 
 			it('should delete a domain object', async () => {
@@ -242,6 +252,28 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[3].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[4].id)).rejects.toThrow();
+			});
+
+			it('should not delete descendants of siblings', async () => {
+				const { card, siblingCardElements } = await setup();
+
+				await repo.delete(card);
+				em.clear();
+
+				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[0].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[1].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[2].id)).resolves.toBeDefined();
+			});
+
+			it('should use the visitor', async () => {
+				const { card } = await setup();
+				card.acceptAsync = jest.fn();
+
+				await repo.delete(card);
+
+				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
 			});
 		});
 	});

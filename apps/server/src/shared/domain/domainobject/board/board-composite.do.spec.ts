@@ -6,22 +6,28 @@ class BoardObject extends BoardComposite {
 	isAllowedAsChild(): boolean {
 		return true;
 	}
+
+	accept(): void {}
+
+	async acceptAsync(): Promise<void> {
+		await Promise.resolve();
+	}
 }
 
-const buildBoardObject = () =>
+const buildBoardObject = (): AnyBoardDo =>
 	new BoardObject({
 		id: new ObjectId().toHexString(),
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-	});
+	}) as unknown as AnyBoardDo;
 
 describe(`${BoardComposite.name}`, () => {
 	const setup = () => {
 		const parent = buildBoardObject();
-		parent.addChild(buildBoardObject() as AnyBoardDo);
-		parent.addChild(buildBoardObject() as AnyBoardDo);
-		parent.addChild(buildBoardObject() as AnyBoardDo);
+		parent.addChild(buildBoardObject());
+		parent.addChild(buildBoardObject());
+		parent.addChild(buildBoardObject());
 
 		return { parent, children: parent.children };
 	};
@@ -50,7 +56,7 @@ describe(`${BoardComposite.name}`, () => {
 			const extraChild = buildBoardObject();
 			const expectedChildren = [children[0], extraChild, children[1], children[2]];
 
-			parent.addChild(extraChild as AnyBoardDo, 1);
+			parent.addChild(extraChild, 1);
 
 			expect(children).toEqual(expectedChildren);
 		});
@@ -61,7 +67,7 @@ describe(`${BoardComposite.name}`, () => {
 				const extraChild = buildBoardObject();
 				const expectedChildren = [...children, extraChild];
 
-				parent.addChild(extraChild as AnyBoardDo);
+				parent.addChild(extraChild);
 
 				expect(children).toEqual(expectedChildren);
 			});
@@ -73,7 +79,7 @@ describe(`${BoardComposite.name}`, () => {
 				const extraChild = buildBoardObject();
 				const expectedChildren = [extraChild, ...children];
 
-				parent.addChild(extraChild as AnyBoardDo, 0);
+				parent.addChild(extraChild, 0);
 
 				expect(children).toEqual(expectedChildren);
 			});
@@ -85,7 +91,7 @@ describe(`${BoardComposite.name}`, () => {
 				const extraChild = buildBoardObject();
 				const expectedChildren = [...children, extraChild];
 
-				parent.addChild(extraChild as AnyBoardDo, 42);
+				parent.addChild(extraChild, 42);
 
 				expect(children).toEqual(expectedChildren);
 			});
@@ -97,7 +103,7 @@ describe(`${BoardComposite.name}`, () => {
 
 			jest.spyOn(parent, 'isAllowedAsChild').mockReturnValue(false);
 
-			expect(() => parent.addChild(extraChild as AnyBoardDo, 1)).toThrow();
+			expect(() => parent.addChild(extraChild, 1)).toThrow();
 		});
 	});
 });
