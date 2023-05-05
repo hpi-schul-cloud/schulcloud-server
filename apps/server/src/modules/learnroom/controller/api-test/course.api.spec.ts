@@ -65,18 +65,18 @@ describe('Course Controller (API)', () => {
 
 	describe('[GET] /courses/:id', () => {
 		const setup = () => {
-			const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
-			const user = userFactory.build({ roles });
+			const role = roleFactory.build({ permissions: [Permission.COURSE_EDIT] });
+			const teacher = userFactory.build({ roles: [role] });
 			const students = userFactory.buildList(2);
-			const course = courseFactory.build({ name: 'course #1', teachers: [user], students });
-			return { user, course, roles };
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacher], students });
+			return { teacher, course };
 		};
 		it('should find course', async () => {
-			const { user, course } = setup();
+			const { teacher, course } = setup();
 
 			await em.persistAndFlush(course);
 			em.clear();
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
 			const courseResponse = response.body as CourseResponse;
@@ -87,23 +87,23 @@ describe('Course Controller (API)', () => {
 			expect(courseResponse.students?.length).toEqual(2);
 		});
 		it('should throw if user is not teacher', async () => {
-			const { user, roles } = setup();
-			const unknownTeacher = userFactory.build({ roles });
+			const { teacher } = setup();
+			const unknownTeacher = userFactory.build({ teacher });
 			const course = courseFactory.build({ name: 'course #1', teachers: [unknownTeacher] });
 
 			await em.persistAndFlush(course);
 			em.clear();
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(teacher);
 
 			await request(app.getHttpServer()).get(`/courses/${course.id}`).set('Accept', 'application/json').expect(500);
 		});
 		it('should throw if course is not found', async () => {
-			const { user, course } = setup();
+			const { teacher, course } = setup();
 			const unknownId = new ObjectId().toHexString();
 
 			await em.persistAndFlush(course);
 			em.clear();
-			currentUser = mapUserToCurrentUser(user);
+			currentUser = mapUserToCurrentUser(teacher);
 
 			await request(app.getHttpServer()).get(`/courses/${unknownId}`).set('Accept', 'application/json').expect(404);
 		});

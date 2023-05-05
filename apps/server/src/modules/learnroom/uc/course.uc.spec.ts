@@ -67,7 +67,7 @@ describe('CourseUc', () => {
 			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
 		});
 	});
-	describe('getCourseForTeacher', () => {
+	describe('getCourse', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course = courseFactory.build();
