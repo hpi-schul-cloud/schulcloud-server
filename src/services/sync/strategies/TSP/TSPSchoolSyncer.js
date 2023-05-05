@@ -11,7 +11,7 @@ const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
 const schoolLimit = pLimit(10);
-const limit = pLimit(100);
+const limit = pLimit(500);
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
