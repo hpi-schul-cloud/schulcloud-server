@@ -2,7 +2,7 @@ import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
 export type ICommonCartridgeResourceProps = {
 	identifier: string;
-	type: string;
+	type: 'webcontent' | 'text';
 	href: string;
 };
 
