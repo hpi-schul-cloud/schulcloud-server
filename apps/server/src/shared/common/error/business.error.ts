@@ -40,7 +40,7 @@ export abstract class BusinessError extends HttpException {
 		if (cause instanceof Error) {
 			this.cause = cause;
 		} else if (cause !== undefined) {
-			this.cause = new Error(String(cause));
+			this.cause = typeof cause === 'object' ? new Error(JSON.stringify(cause)) : new Error(String(cause));
 		}
 	}
 

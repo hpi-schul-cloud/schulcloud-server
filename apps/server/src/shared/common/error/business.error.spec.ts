@@ -31,7 +31,7 @@ describe('BusinessError', () => {
 	});
 	describe('when a business error is extended', () => {
 		class BusinessErrorImpl extends BusinessError {
-			constructor(message?: string, code?: number, details?: Record<string, unknown>) {
+			constructor(message?: string, code?: number, details?: Record<string, unknown>, cause?: unknown) {
 				super(
 					{
 						type: 'SAMPLE_ERROR',
@@ -39,7 +39,8 @@ describe('BusinessError', () => {
 						defaultMessage: message || 'default sample error message',
 					},
 					code,
-					details
+					details,
+					cause
 				);
 			}
 		}
@@ -68,6 +69,28 @@ describe('BusinessError', () => {
 			const error = new BusinessErrorImpl('custom message', 123, details);
 			const result = error.details;
 			expect(result).toEqual(details);
+		});
+
+		it('should set the cause from an error', () => {
+			const cause = new Error('Cause');
+			const error = new BusinessErrorImpl('custom message', 123, undefined, cause);
+			const result = error.cause;
+			expect(result).toEqual(cause);
+		});
+
+		it('should set the cause from a string', () => {
+			const cause = 'Cause';
+			const error = new BusinessErrorImpl('custom message', 123, undefined, cause);
+			const result = error.cause;
+			expect(result).toEqual(new Error(cause));
+		});
+
+		it('should set the cause from an object', () => {
+			const cause = { error: 'Cause' };
+			const error = new BusinessErrorImpl('custom message', 123, undefined, cause);
+			const result = error.cause;
+			console.log(new Error(String(cause)));
+			expect(result).toEqual(new Error(JSON.stringify(cause)));
 		});
 	});
 });
