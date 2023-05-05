@@ -26,6 +26,7 @@ export class ContextExternalToolUc {
 		const createdTool: ContextExternalToolDO = await this.contextExternalToolService.createContextExternalTool(
 			contextExternalTool
 		);
+
 		return createdTool;
 	}
 
@@ -39,7 +40,7 @@ export class ContextExternalToolUc {
 			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextType),
 			contextId,
 			{
-				action: Actions.read,
+				action: Actions.write,
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			}
 		);

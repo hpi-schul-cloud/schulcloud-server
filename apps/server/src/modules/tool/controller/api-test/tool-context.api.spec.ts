@@ -83,8 +83,7 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				};
 
-				em.persist([teacherRole, course, teacher, schoolExternalTool]);
-				await em.flush();
+				await em.persistAndFlush([teacherRole, course, teacher, schoolExternalTool]);
 				em.clear();
 
 				return {
@@ -139,8 +138,7 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				});
 
-				em.persist([course, userWithMissingPermission, schoolExternalTool]);
-				await em.flush();
+				await em.persistAndFlush([course, userWithMissingPermission, schoolExternalTool]);
 				em.clear();
 
 				return {

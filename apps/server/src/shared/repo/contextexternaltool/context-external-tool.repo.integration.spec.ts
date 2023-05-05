@@ -18,10 +18,10 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
+import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
-import { ToolContextType } from '../../../modules/tool/interface';
 
-describe('CourseExternalToolRepo', () => {
+describe('ContextExternalToolRepo', () => {
 	let module: TestingModule;
 	let repo: ContextExternalToolRepo;
 	let em: EntityManager;
@@ -54,35 +54,35 @@ describe('CourseExternalToolRepo', () => {
 	const setup = async () => {
 		const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 		const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-		const courseExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
-		const courseExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool2,
 		});
-		const courseExternalTool3: ContextExternalTool = contextExternalToolFactory.buildWithId({
+		const contextExternalTool3: ContextExternalTool = contextExternalToolFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
 
 		await em.persistAndFlush([
 			schoolExternalTool1,
 			schoolExternalTool2,
-			courseExternalTool1,
-			courseExternalTool2,
-			courseExternalTool3,
+			contextExternalTool1,
+			contextExternalTool2,
+			contextExternalTool3,
 		]);
 		em.clear();
 
 		return { schoolExternalTool1, schoolExternalTool2 };
 	};
 
-	it('getEntityName should return CourseExternalTool', () => {
+	it('getEntityName should return ContextExternalTool', () => {
 		const { entityName } = repo;
 		expect(entityName).toEqual(ContextExternalTool);
 	});
 
 	describe('deleteBySchoolExternalToolIds', () => {
-		it('should delete all CourseExternalTools with reference to one given SchoolExternalTool', async () => {
+		it('should delete all ContextExternalTools with reference to one given SchoolExternalTool', async () => {
 			const { schoolExternalTool1 } = await setup();
 
 			const result: number = await repo.deleteBySchoolExternalToolIds([schoolExternalTool1.id]);
@@ -90,7 +90,7 @@ describe('CourseExternalToolRepo', () => {
 			expect(result).toEqual(2);
 		});
 
-		it('should delete all CourseExternalTools with reference to multiple given SchoolExternalTool', async () => {
+		it('should delete all ContextExternalTools with reference to multiple given SchoolExternalTool', async () => {
 			const { schoolExternalTool1, schoolExternalTool2 } = await setup();
 
 			const result: number = await repo.deleteBySchoolExternalToolIds([schoolExternalTool1.id, schoolExternalTool2.id]);
@@ -98,7 +98,7 @@ describe('CourseExternalToolRepo', () => {
 			expect(result).toEqual(3);
 		});
 
-		it('should not delete any CourseExternalTools when no SchoolExternalTools are given', async () => {
+		it('should not delete any ContextExternalTools when no SchoolExternalTools are given', async () => {
 			await setup();
 
 			const result: number = await repo.deleteBySchoolExternalToolIds([]);
