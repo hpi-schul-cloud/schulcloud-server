@@ -8,12 +8,7 @@
 		},
 		"NODE_ENV": {
 			"type": "string",
-			"enum": [
-				"development",
-				"test",
-				"production",
-				"migration"
-			],
+			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
 		"REQUEST_OPTION": {
@@ -77,10 +72,7 @@
 				"DEFAULT_LANGUAGE": {
 					"type": "string",
 					"default": "de",
-					"enum": [
-						"de",
-						"en"
-					],
+					"enum": ["de", "en"],
 					"description": "Value for the default language"
 				},
 				"DEFAULT_TIMEZONE": {
@@ -108,23 +100,13 @@
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "disabled",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
 		"STUDENT_TEAM_CREATION": {
 			"type": "string",
 			"default": "opt-out",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
@@ -231,13 +213,7 @@
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET",
-				"S3_ACCESS_KEY_ID",
-				"S3_SECRET_ACCESS_KEY"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
 			"properties": {
 				"SERVICE_BASE_URL": {
 					"type": "string",
@@ -289,13 +265,7 @@
 		"FWU_CONTENT": {
 			"type": "object",
 			"description": "Properties of the S3 storage containing FWU content",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET",
-				"S3_ACCESS_KEY",
-				"S3_SECRET_KEY"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"],
 			"properties": {
 				"S3_ENDPOINT": {
 					"type": "string",
@@ -359,14 +329,7 @@
 		"IDENTITY_MANAGEMENT": {
 			"type": "object",
 			"description": "Identity management server properties.",
-			"required": [
-				"URI",
-				"TENANT",
-				"CLIENTID",
-				"ADMIN_CLIENTID",
-				"ADMIN_USER",
-				"ADMIN_PASSWORD"
-			],
+			"required": ["URI", "TENANT", "CLIENTID", "ADMIN_CLIENTID", "ADMIN_USER", "ADMIN_PASSWORD"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -677,9 +640,7 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": [
-				"PAD_URI"
-			],
+			"required": ["PAD_URI"],
 			"properties": {
 				"PAD_URI": {
 					"type": "string",
@@ -831,9 +792,7 @@
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [
-				".*/courses/[0-9a-f]{24}($|/$)"
-			]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
 		},
 		"FEATURE_PROMETHEUS_ENABLED": {
 			"type": "boolean",
@@ -861,29 +820,11 @@
 						"type": "number",
 						"minimum": 0
 					},
-					"default": [
-						0.01,
-						0.05,
-						0.1,
-						0.2,
-						0.5,
-						0.75,
-						1,
-						3,
-						5,
-						8,
-						15,
-						30,
-						60,
-						120
-					],
+					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120],
 					"description": "Times to define buckets by seconds which contain all requests with max. the given amount of time. Must be in ascending order. "
 				}
 			},
-			"required": [
-				"METRICS_PATH",
-				"DURATION_BUCKETS_SECONDS"
-			]
+			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
 		"INCOMING_REQUEST_TIMEOUT_API": {
 			"type": "integer",
@@ -928,42 +869,19 @@
 			"type": "string",
 			"default": "error",
 			"description": "Log level for api.",
-			"enum": [
-				"emerg",
-				"alert",
-				"crit",
-				"error",
-				"warning",
-				"notice",
-				"info",
-				"debug"
-			]
+			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
 		"NEST_LOG_LEVEL": {
 			"type": "string",
 			"default": "notice",
 			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
-			"enum": [
-				"emerg",
-				"alert",
-				"crit",
-				"error",
-				"warning",
-				"notice",
-				"info",
-				"debug"
-			]
+			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
 			"description": "Special logs.",
-			"enum": [
-				"requestError",
-				"systemLogs",
-				"request",
-				"sendRequests"
-			]
+			"enum": ["requestError", "systemLogs", "request", "sendRequests"]
 		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
@@ -1094,11 +1012,7 @@
 				"SAME_SITE": {
 					"type": "string",
 					"default": "none",
-					"enum": [
-						"none",
-						"lax",
-						"strict"
-					],
+					"enum": ["none", "lax", "strict"],
 					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
 				},
 				"HTTP_ONLY": {
@@ -1122,13 +1036,7 @@
 					"description": "Expiration in seconds from now"
 				}
 			},
-			"required": [
-				"SAME_SITE",
-				"HTTP_ONLY",
-				"HOST_ONLY",
-				"SECURE",
-				"EXPIRES_SECONDS"
-			],
+			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
 				{
 					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
@@ -1146,10 +1054,7 @@
 					"then": {
 						"properties": {
 							"SAME_SITE": {
-								"enum": [
-									"lax",
-									"strict"
-								]
+								"enum": ["lax", "strict"]
 							}
 						}
 					}
@@ -1163,11 +1068,7 @@
 				"SAME_SITE": {
 					"type": "string",
 					"default": "lax",
-					"enum": [
-						"none",
-						"lax",
-						"strict"
-					],
+					"enum": ["none", "lax", "strict"],
 					"description": "Value for session cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
 				},
 				"SECURE": {
@@ -1200,12 +1101,7 @@
 					"description": "This is the secret used to sign the session cookie."
 				}
 			},
-			"required": [
-				"SAME_SITE",
-				"HTTP_ONLY",
-				"SECURE",
-				"EXPIRES_SECONDS"
-			],
+			"required": ["SAME_SITE", "HTTP_ONLY", "SECURE", "EXPIRES_SECONDS"],
 			"allOf": [
 				{
 					"$ref": "#/properties/SESSION/definitions/SAME_SITE_SECURE_VALID"
@@ -1223,10 +1119,7 @@
 					"then": {
 						"properties": {
 							"SAME_SITE": {
-								"enum": [
-									"lax",
-									"strict"
-								]
+								"enum": ["lax", "strict"]
 							}
 						}
 					}
@@ -1240,7 +1133,7 @@
 		},
 		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
@@ -1274,9 +1167,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"PROMETHEUS"
-				]
+				"required": ["PROMETHEUS"]
 			}
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
@@ -1288,9 +1179,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"FEATURE_USER_MIGRATION_SYSTEM_ID"
-				]
+				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
 			}
 		},
 		"ANTIVIRUS": {
@@ -1319,10 +1208,7 @@
 				}
 			},
 			"then": {
-				"required": [
-					"ES_USER",
-					"ES_PASSWORD"
-				]
+				"required": ["ES_USER", "ES_PASSWORD"]
 			}
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
