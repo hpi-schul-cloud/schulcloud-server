@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 # Start server in the background and redirect logs to file
 nohup npm run nest:start > server.log 2>&1 &
 
