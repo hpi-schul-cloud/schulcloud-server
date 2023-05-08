@@ -3,8 +3,8 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { Role, School, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
-import { Action } from '../../../modules/authorization/types';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action } from '@src/modules/authorization/types';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {

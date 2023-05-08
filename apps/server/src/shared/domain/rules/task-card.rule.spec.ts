@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, TaskCard, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities, taskCardFactory, taskFactory, userFactory } from '@shared/testing';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action } from '@src/modules/authorization/types';
 import { CourseGroupRule, CourseRule, LessonRule, TaskCardRule, TaskRule } from '.';
-import { AuthorizationHelper } from '../../../modules/authorization/authorization.helper';
-import { Action } from '../../../modules/authorization/types';
 
 describe('TaskCardRule', () => {
 	let service: TaskCardRule;
