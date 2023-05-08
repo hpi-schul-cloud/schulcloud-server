@@ -1,7 +1,6 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	BoardNodeRule,
 	CourseGroupRule,
@@ -14,7 +13,8 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
-} from '../../shared/domain/rules';
+} from '@shared/domain/rules';
+import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { RuleManager } from './rule-manager';
 
