@@ -2,7 +2,7 @@
  * Unified message format
  */
 class Message {
-	constructor(title, text, timestamp, page, messageId, url, status) {
+	constructor(title, text, timestamp, page, messageId, url, status, createdAt) {
 		this.mTitle = title || '';
 		this.mText = text || '';
 		this.mTimestamp = timestamp || '1970-01-01 00:00:00';
@@ -11,6 +11,7 @@ class Message {
 		this.mMessageId = messageId || '-1';
 		this.mUrl = url || '';
 		this.mStatus = status || '';
+		this.mCreatedAt = createdAt || '';
 	}
 
 	get getMessage() {
@@ -25,6 +26,7 @@ class Message {
 			},
 			timestamp: this.mTimestamp,
 			url: this.mUrl,
+			createdAt: this.mCreatedAt,
 		};
 		return message;
 	}
@@ -76,6 +78,13 @@ class Message {
 	 */
 	set status(value) {
 		this.mStatus = value;
+	}
+
+	/**
+	 * Set Status of message
+	 */
+	set createdAt(value) {
+		this.mCreatedAt = value;
 	}
 }
 

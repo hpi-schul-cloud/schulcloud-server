@@ -1,17 +1,19 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
-import type { AnyBoardDo } from './types';
-import type { BoardNodeBuildable } from './types/board-node-buildable';
-import type { BoardNodeBuilder } from './types/board-node-builder';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export class Card extends BoardComposite implements CardProps, BoardNodeBuildable {
-	height: number;
+export class Card extends BoardComposite<CardProps> {
+	get title(): string {
+		return this.props.title;
+	}
 
-	constructor(props: CardProps) {
-		super(props);
-		this.title = props.title;
-		this.height = props.height;
+	set title(title: string) {
+		this.props.title = title;
+	}
+
+	get height(): number {
+		return this.props.height;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
@@ -19,11 +21,16 @@ export class Card extends BoardComposite implements CardProps, BoardNodeBuildabl
 		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
-		builder.buildCardNode(this, parent);
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitCard(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
+		await visitor.visitCardAsync(this);
 	}
 }
 
 export interface CardProps extends BoardCompositeProps {
+	title: string;
 	height: number;
 }

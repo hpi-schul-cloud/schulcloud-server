@@ -51,6 +51,12 @@ export class SchoolMigrationService {
 			);
 		}
 
+		const userDO: UserDO | null = await this.userService.findById(currentUserId);
+		if (userDO) {
+			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
+			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
+		}
+
 		const existingSchool: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!existingSchool) {
@@ -58,12 +64,6 @@ export class SchoolMigrationService {
 				'Could not find school by official school number from target migration system',
 				'ext_official_school_missing'
 			);
-		}
-
-		const userDO: UserDO | null = await this.userService.findById(currentUserId);
-		if (userDO) {
-			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
-			this.checkOfficialSchoolNumbersMatch(schoolDO, officialSchoolNumber);
 		}
 
 		const schoolMigrated: boolean = this.hasSchoolMigrated(externalId, existingSchool.externalId);

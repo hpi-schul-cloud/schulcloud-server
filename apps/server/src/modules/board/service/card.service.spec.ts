@@ -47,7 +47,7 @@ describe(CardService.name, () => {
 	describe('findById', () => {
 		describe('when finding one specific card', () => {
 			const setup = () => {
-				const card = cardFactory.buildWithId();
+				const card = cardFactory.build();
 				return { card, cardId: card.id };
 			};
 
