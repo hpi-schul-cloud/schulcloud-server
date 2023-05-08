@@ -71,7 +71,7 @@ describe(ElementUc.name, () => {
 			});
 		});
 
-		describe('update text element', () => {
+		describe('update file element', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const fileElement = fileElementFactory.build();
