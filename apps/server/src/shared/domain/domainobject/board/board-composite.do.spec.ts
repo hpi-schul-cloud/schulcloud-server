@@ -1,8 +1,8 @@
 import { ObjectId } from 'bson';
-import { BoardComposite } from './board-composite.do';
+import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { AnyBoardDo } from './types';
 
-class BoardObject extends BoardComposite {
+class BoardObject extends BoardComposite<BoardCompositeProps> {
 	isAllowedAsChild(): boolean {
 		return true;
 	}
@@ -32,19 +32,12 @@ describe(`${BoardComposite.name}`, () => {
 		return { parent, children: parent.children };
 	};
 
-	describe('getChild', () => {
-		it('should throw an error if child is not found', () => {
-			const { parent } = setup();
-			expect(() => parent.getChild('59a3c657a2049554a93fec3a')).toThrow();
-		});
-	});
-
 	describe('removeChild', () => {
 		it('should remove the child', () => {
 			const { parent, children } = setup();
 			const expectedChildren = [children[0], children[2]];
 
-			parent.removeChild(children[1].id);
+			parent.removeChild(children[1]);
 
 			expect(parent.children).toEqual(expectedChildren);
 		});
@@ -85,25 +78,41 @@ describe(`${BoardComposite.name}`, () => {
 			});
 		});
 
-		describe('when position is too large', () => {
-			it('should append the child', () => {
-				const { parent, children } = setup();
+		describe('when position < 0', () => {
+			it('should throw an error', () => {
+				const { parent } = setup();
 				const extraChild = buildBoardObject();
-				const expectedChildren = [...children, extraChild];
 
-				parent.addChild(extraChild, 42);
-
-				expect(children).toEqual(expectedChildren);
+				expect(() => parent.addChild(extraChild, -1)).toThrow();
 			});
 		});
 
-		it('should throw if the object is not allowed as a child', () => {
-			const { parent } = setup();
-			const extraChild = buildBoardObject();
+		describe('when position is too large', () => {
+			it('should throw an error', () => {
+				const { parent } = setup();
+				const extraChild = buildBoardObject();
 
-			jest.spyOn(parent, 'isAllowedAsChild').mockReturnValue(false);
+				expect(() => parent.addChild(extraChild, 42)).toThrow();
+			});
+		});
 
-			expect(() => parent.addChild(extraChild, 1)).toThrow();
+		describe('when the object is not allowed as a child', () => {
+			it('should throw an error', () => {
+				const { parent } = setup();
+				const extraChild = buildBoardObject();
+
+				jest.spyOn(parent, 'isAllowedAsChild').mockReturnValue(false);
+
+				expect(() => parent.addChild(extraChild, 1)).toThrow();
+			});
+		});
+
+		describe('when the object is already a child', () => {
+			it('should throw an error', () => {
+				const { parent, children } = setup();
+
+				expect(() => parent.addChild(children[0])).toThrow();
+			});
 		});
 	});
 });

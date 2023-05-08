@@ -41,7 +41,7 @@ describe(ColumnService.name, () => {
 	describe('findById', () => {
 		describe('when finding a column', () => {
 			const setup = () => {
-				const column = columnFactory.buildWithId();
+				const column = columnFactory.build();
 				return { column, columnId: column.id };
 			};
 

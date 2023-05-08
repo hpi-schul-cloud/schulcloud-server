@@ -3,6 +3,8 @@ import { EntityId, Lesson, Task } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
+import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
+import { IComponentProperties, IComponentTextProperties } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
 import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from '../common-cartridge';
 
@@ -32,6 +34,7 @@ export class CommonCartridgeExportService {
 			return {
 				identifier: `i${lesson.id}`,
 				title: lesson.name,
+				contents: this.mapContentsToLesson(lesson.contents),
 			};
 		});
 	}
@@ -42,6 +45,27 @@ export class CommonCartridgeExportService {
 				identifier: `i${task.id}`,
 				title: task.name,
 				description: task.description,
+			};
+		});
+	}
+
+	/**
+	 * This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.
+	 * @param IComponentProperties
+	 * @return ICommonCartridgeLessonContentProps
+	 * */
+	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
+		return contents.map((content) => {
+			let mappedContent = '';
+
+			if (content.content && (content.content as IComponentTextProperties).text) {
+				mappedContent = (content.content as IComponentTextProperties).text;
+			}
+
+			return {
+				identifier: `i${content._id as string}`,
+				title: content.title as string,
+				content: mappedContent,
 			};
 		});
 	}
