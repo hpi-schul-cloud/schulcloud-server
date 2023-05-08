@@ -64,7 +64,7 @@ export class AuthorizationService extends BasePermissionManager {
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise<boolean> {
-		// TODO: I think this try-catch is unnecessary and wrong because there can be different reasons why the entity cannot be loaded and they should bubble up.
+		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
 			const [user, entity] = await Promise.all([
 				this.getUserWithPermissions(userId),
