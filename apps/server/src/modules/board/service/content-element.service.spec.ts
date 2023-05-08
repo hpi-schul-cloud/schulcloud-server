@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementFactory, ContentElementType, FileElement, TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -27,10 +26,6 @@ describe(ContentElementService.name, () => {
 				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ContentElementFactory,

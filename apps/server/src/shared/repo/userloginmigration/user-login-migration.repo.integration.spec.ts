@@ -5,7 +5,7 @@ import { School, System, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 
@@ -20,8 +20,8 @@ describe('UserLoginMigrationRepo', () => {
 			providers: [
 				UserLoginMigrationRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

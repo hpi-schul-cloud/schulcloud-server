@@ -10,7 +10,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
@@ -40,8 +40,8 @@ describe('SchoolMigrationService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,

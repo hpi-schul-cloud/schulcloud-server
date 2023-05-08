@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthSSOError } from '../error/oauth-sso.error';
@@ -50,8 +50,8 @@ describe('OauthAdapterServive', () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

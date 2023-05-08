@@ -8,7 +8,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { Page } from '@shared/domain/domainobject/page';
 
@@ -23,8 +23,8 @@ describe('UserRepo', () => {
 			providers: [
 				UserDORepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

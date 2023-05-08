@@ -3,12 +3,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { FilesRepo } from '@shared/repo';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private logger: Logger) {
+	constructor(private filesRepo: FilesRepo, private logger: LegacyLogger) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 

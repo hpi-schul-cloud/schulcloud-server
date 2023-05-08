@@ -9,7 +9,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolRepo } from '..';
 
 describe('SchoolRepo', () => {
@@ -23,8 +23,8 @@ describe('SchoolRepo', () => {
 			providers: [
 				SchoolRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

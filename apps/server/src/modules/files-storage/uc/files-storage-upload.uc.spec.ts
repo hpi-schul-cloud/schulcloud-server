@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Actions, Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Request } from 'express';
@@ -106,8 +106,8 @@ describe('FilesStorageUC upload methods', () => {
 					useValue: createMock<AntivirusService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: AuthorizationService,
