@@ -13,6 +13,16 @@ describe(FileElement.name, () => {
 		});
 	});
 
+	describe('update caption', () => {
+		it('should be able to update caption', () => {
+			const fileElement = fileElementFactory.build();
+			const text = 'this is the titanic movie from 1997 in Blue-Ray Quality';
+			fileElement.caption = text;
+
+			expect(fileElement.caption).toEqual(text);
+		});
+	});
+
 	describe('accept', () => {
 		it('should call the right visitor method', () => {
 			const visitor = createMock<BoardCompositeVisitor>();
