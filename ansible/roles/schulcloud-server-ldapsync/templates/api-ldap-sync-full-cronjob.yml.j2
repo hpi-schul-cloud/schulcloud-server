@@ -15,9 +15,11 @@ spec:
         spec:
           containers:
           - name: api-ldapsync-cronjob
-            image: schulcloud/infra-tools:latest
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
+            - configMapRef:
+                name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['/bin/sh','-c','schulcloud-server/scripts/ldapSync.sh']
+            command: ['/schulcloud-server/scripts/ldapSync.sh']
           restartPolicy: OnFailure
