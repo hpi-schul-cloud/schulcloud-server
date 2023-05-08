@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolDOFactory, systemFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
@@ -29,7 +29,7 @@ describe('UserLoginMigrationUc', () => {
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let authenticationService: DeepMocked<AuthenticationService>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -60,8 +60,8 @@ describe('UserLoginMigrationUc', () => {
 					useValue: createMock<AuthenticationService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -74,7 +74,7 @@ describe('UserLoginMigrationUc', () => {
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userMigrationService = module.get(UserMigrationService);
 		authenticationService = module.get(AuthenticationService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {

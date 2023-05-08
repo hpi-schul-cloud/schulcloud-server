@@ -10,7 +10,7 @@ import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { IServerConfig } from '@src/modules/server';
 import bcrypt from 'bcryptjs';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -112,8 +112,8 @@ describe('AccountDbService', () => {
 					},
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ConfigService,

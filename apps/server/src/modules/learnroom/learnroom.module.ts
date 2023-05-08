@@ -9,7 +9,7 @@ import {
 	TaskRepo,
 	UserRepo,
 } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { CopyHelperModule } from '@src/modules/copy-helper';
 import { FilesStorageClientModule } from '@src/modules/files-storage-client';
@@ -59,7 +59,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseCopyUC,
 		RoomsService,
 		FeathersServiceProvider,
-		Logger,
+		LegacyLogger,
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,

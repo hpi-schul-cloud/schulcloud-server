@@ -3,12 +3,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, School, System, UserLoginMigrationDO } from '@shared/domain';
 import { IUserLoginMigration, UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
 export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigration, IUserLoginMigration> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 

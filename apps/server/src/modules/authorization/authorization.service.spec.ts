@@ -16,6 +16,7 @@ import {
 } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { AuthorizationService } from './authorization.service';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -190,10 +191,10 @@ describe('AuthorizationService', () => {
 				return { context, user, spyHasPermission };
 			};
 
-			it('should throw ForbiddenException', () => {
+			it('should throw ForbiddenLoggableException', () => {
 				const { context, user, spyHasPermission } = setup();
 
-				expect(() => service.checkPermission(user, user, context)).toThrowError(ForbiddenException);
+				expect(() => service.checkPermission(user, user, context)).toThrowError(ForbiddenLoggableException);
 
 				spyHasPermission.mockRestore();
 			});
@@ -295,12 +296,12 @@ describe('AuthorizationService', () => {
 				return { context, userId, entityName, entityId, spyHasPermissionByReferences };
 			};
 
-			it('should throw ForbiddenException', async () => {
+			it('should throw ForbiddenLoggableException', async () => {
 				const { context, userId, entityName, entityId, spyHasPermissionByReferences } = setup();
 
 				await expect(() =>
 					service.checkPermissionByReferences(userId, entityName, entityId, context)
-				).rejects.toThrowError(ForbiddenException);
+				).rejects.toThrowError(ForbiddenLoggableException);
 
 				spyHasPermissionByReferences.mockRestore();
 			});

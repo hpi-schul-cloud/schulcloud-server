@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IServerConfig } from '@src/modules/server';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -16,7 +16,7 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	afterAll(async () => {
 		await module.close();
@@ -35,8 +35,8 @@ describe('AccountService', () => {
 					useValue: createMock<AccountServiceIdm>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ConfigService,
@@ -55,7 +55,7 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 	});
 
 	beforeEach(() => {

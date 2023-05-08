@@ -1,5 +1,5 @@
 import { ConsoleWriterService } from '@shared/infra/console';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
@@ -20,7 +20,7 @@ export class KeycloakConsole {
 	constructor(
 		private readonly console: ConsoleWriterService,
 		private readonly keycloakConfigurationUc: KeycloakConfigurationUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(KeycloakConsole.name);
 	}

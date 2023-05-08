@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Card, ContentElementType, EntityId, FileElement, TextElement } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService, ContentElementService } from '../service';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
 	}
