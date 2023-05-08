@@ -27,7 +27,7 @@ export class ContextExternalToolService {
 		await this.contextExternalToolRepo.delete(courseExternalTools);
 	}
 
-	async deleteContextExternalToolById(contextExternalToolId: EntityId): Promise<void> {
-		await this.contextExternalToolRepo.deleteById(contextExternalToolId);
+	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<void> {
+		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 }

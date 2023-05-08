@@ -130,11 +130,11 @@ describe('ContextExternalToolUc', () => {
 
 		describe('when contextExternalTool is given and user has permission ', () => {
 			it('should call contextExternalToolService', async () => {
-				const { contextExternalToolId, userId } = setup();
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
 
 				await uc.deleteContextExternalTool(userId, contextExternalToolId);
 
-				expect(contextExternalToolService.deleteContextExternalToolById).toHaveBeenCalledWith(contextExternalToolId);
+				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
 			});
 
 			it('should call authorizationService', async () => {
