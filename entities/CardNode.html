@@ -123,7 +123,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/card-node.entity.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/card-node.entity.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -138,8 +138,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
 import { Card } from &#x27;@shared/domain/domainobject&#x27;;
 import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
-import { BoardDoBuilder } from &#x27;./types&#x27;;
-import { BoardNodeType } from &#x27;./types/board-node-type&#x27;;
+import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
 
 @Entity({ discriminatorValue: BoardNodeType.CARD })
 export class CardNode extends BoardNode {

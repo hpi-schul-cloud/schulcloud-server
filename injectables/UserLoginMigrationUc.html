@@ -117,7 +117,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -247,15 +247,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getMigrations(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/UserLoginMigrationQuery.html" target="_self">UserLoginMigrationQuery</a>, options: <a href="../entitys/User.html" target="_self">IFindOptions&lt;UserLoginMigrationDO&gt;</a>)</code>
+                    <code>getMigrations(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/UserLoginMigrationQuery.html" target="_self">UserLoginMigrationQuery</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:39</a></div>
                 </td>
             </tr>
 
@@ -291,18 +291,6 @@
                                     <td>query</td>
                                     <td>
                                                 <code><a href="../interfaces/UserLoginMigrationQuery.html" target="_self" >UserLoginMigrationQuery</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>options</td>
-                                    <td>
-                                                <code><a href="../entitys/User.html" target="_self" >IFindOptions&lt;UserLoginMigrationDO&gt;</a></code>
                                     </td>
 
                                     <td>
@@ -349,8 +337,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:29</a></div>
                 </td>
             </tr>
 
@@ -444,8 +432,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="132"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:132</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="136"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:136</a></div>
                 </td>
             </tr>
 
@@ -563,8 +551,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/uc/user-login-migration.uc.ts:59</a></div>
                 </td>
             </tr>
 
@@ -667,9 +655,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, IFindOptions, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
 import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
@@ -706,18 +692,24 @@ export class UserLoginMigrationUc {
 		return content;
 	}
 
-	async getMigrations(
-		userId: EntityId,
-		query: UserLoginMigrationQuery,
-		options: IFindOptions&lt;UserLoginMigrationDO&gt;
-	): Promise&lt;Page&lt;UserLoginMigrationDO&gt;&gt; {
-		if (userId !&#x3D;&#x3D; query.userId) {
-			throw new ForbiddenException(&#x27;Accessing migration status of another user is forbidden.&#x27;);
+	async getMigrations(userId: EntityId, query: UserLoginMigrationQuery): Promise&lt;Page&lt;UserLoginMigrationDO&gt;&gt; {
+		let page &#x3D; new Page&lt;UserLoginMigrationDO&gt;([], 0);
+
+		if (query.userId) {
+			if (userId !&#x3D;&#x3D; query.userId) {
+				throw new ForbiddenException(&#x27;Accessing migration status of another user is forbidden.&#x27;);
+			}
+
+			const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationByUser(
+				query.userId
+			);
+
+			if (userLoginMigration) {
+				page &#x3D; new Page&lt;UserLoginMigrationDO&gt;([userLoginMigration], 1);
+			}
 		}
 
-		const userLoginMigrations: Page&lt;UserLoginMigrationDO&gt; &#x3D;
-			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
-		return userLoginMigrations;
+		return page;
 	}
 
 	async migrate(
