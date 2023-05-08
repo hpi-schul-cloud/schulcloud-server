@@ -1,25 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { System, UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { systemFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { schoolDOFactory, systemFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { UserMigrationService } from '@src/modules/user-login-migration/service/user-migration.service';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
+import { OAuthMigrationError } from '../error';
 import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { PageTypes } from '../interface/page-types.enum';
-import { SchoolMigrationService, UserLoginMigrationService } from '../service';
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
@@ -122,9 +118,13 @@ describe('UserLoginMigrationUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 
-				const migrations: Page<UserLoginMigrationDO> = new Page<UserLoginMigrationDO>([], 0);
+				const migrations: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+				});
 
-				userLoginMigrationService.findUserLoginMigrations.mockResolvedValue(migrations);
+				userLoginMigrationService.findMigrationByUser.mockResolvedValue(migrations);
 
 				return { userId, migrations };
 			};
@@ -132,9 +132,33 @@ describe('UserLoginMigrationUc', () => {
 			it('should return a response', async () => {
 				const { userId, migrations } = setup();
 
-				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId }, {});
+				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
 
-				expect(result).toEqual(migrations);
+				expect(result).toEqual<Page<UserLoginMigrationDO>>({
+					data: [migrations],
+					total: 1,
+				});
+			});
+		});
+
+		describe('when a user has no migration available', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				userLoginMigrationService.findMigrationByUser.mockResolvedValue(null);
+
+				return { userId };
+			};
+
+			it('should return a response', async () => {
+				const { userId } = setup();
+
+				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
+
+				expect(result).toEqual<Page<UserLoginMigrationDO>>({
+					data: [],
+					total: 0,
+				});
 			});
 		});
 
@@ -148,7 +172,7 @@ describe('UserLoginMigrationUc', () => {
 			it('should return a response', async () => {
 				const { userId } = setup();
 
-				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' }, {});
+				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' });
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenException('Accessing migration status of another user is forbidden.')
