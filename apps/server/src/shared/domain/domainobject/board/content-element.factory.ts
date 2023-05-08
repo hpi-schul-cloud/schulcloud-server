@@ -1,4 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
+import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
 import { TextElement } from './text-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
@@ -29,7 +30,11 @@ export class ContentElementFactory {
 
 	private buildText() {
 		const element = new TextElement({
-			text: ``,
+			id: new ObjectId().toHexString(),
+			text: '',
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		});
 
 		return element;
@@ -37,7 +42,11 @@ export class ContentElementFactory {
 
 	private buildFile() {
 		const element = new FileElement({
-			caption: ``,
+			id: new ObjectId().toHexString(),
+			caption: '',
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		});
 
 		return element;
