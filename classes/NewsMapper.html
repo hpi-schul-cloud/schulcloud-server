@@ -93,6 +93,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#mapToLogMessageData" >mapToLogMessageData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapToResponse" >mapToResponse</a>
                             </li>
                             <li>
@@ -140,8 +144,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="52"
+                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:52</a></div>
                 </td>
             </tr>
 
@@ -211,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:38</a></div>
                 </td>
             </tr>
 
@@ -264,6 +268,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="mapToLogMessageData"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>mapToLogMessageData</b></span>
+                        <a href="#mapToLogMessageData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToLogMessageData(news: <a href="../classes/News.html" target="_self">News</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="74"
+                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:74</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>news</td>
+                                    <td>
+                                                <code><a href="../classes/News.html" target="_self" >News</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#LogMessageData" target="_self" >LogMessageData</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapToResponse"></a>
                     <span class="name">
                         <span class="modifier">Static</span>
@@ -282,8 +357,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:9</a></div>
                 </td>
             </tr>
 
@@ -353,8 +428,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:65</a></div>
                 </td>
             </tr>
 
@@ -413,6 +488,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from &#x27;@shared/domain&#x27;;
+import { LogMessageData } from &#x27;@src/core/logger&#x27;;
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from &#x27;../controller/dto&#x27;;
 import { SchoolInfoMapper } from &#x27;./school-info.mapper&#x27;;
 import { TargetInfoMapper } from &#x27;./target-info.mapper&#x27;;
@@ -482,6 +558,17 @@ export class NewsMapper {
 			displayAt: params.displayAt,
 		};
 		return dto;
+	}
+
+	static mapToLogMessageData(news: News): LogMessageData {
+		const data &#x3D; {
+			entityType: &#x27;News&#x27;,
+			id: news.id,
+			targetModel: news.targetModel,
+			targetId: news.target.id,
+		};
+
+		return data;
 	}
 }
 </code></pre>

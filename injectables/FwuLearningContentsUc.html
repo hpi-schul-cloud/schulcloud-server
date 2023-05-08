@@ -100,7 +100,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -126,7 +126,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -250,12 +250,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { S3ClientAdapter } from &#x27;../../files-storage/client/s3-client.adapter&#x27;;
 
 @Injectable()
 export class FwuLearningContentsUc {
-	constructor(private logger: Logger, private readonly storageClient: S3ClientAdapter) {
+	constructor(private logger: LegacyLogger, private readonly storageClient: S3ClientAdapter) {
 		this.logger.setContext(FwuLearningContentsUc.name);
 	}
 

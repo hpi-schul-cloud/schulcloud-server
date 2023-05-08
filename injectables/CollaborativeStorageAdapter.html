@@ -133,7 +133,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(strategy: <a href="../interfaces/ICollaborativeStorageStrategy.html" target="_self">ICollaborativeStorageStrategy</a>, mapper: <a href="../injectables/CollaborativeStorageAdapterMapper.html" target="_self">CollaborativeStorageAdapterMapper</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(strategy: <a href="../interfaces/ICollaborativeStorageStrategy.html" target="_self">ICollaborativeStorageStrategy</a>, mapper: <a href="../injectables/CollaborativeStorageAdapterMapper.html" target="_self">CollaborativeStorageAdapterMapper</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -183,7 +183,7 @@ It loads an appropriate strategy and applies that to the given data.</p>
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -660,7 +660,7 @@ import { TeamDto } from &#x27;@src/modules/collaborative-storage/services/dto/te
 import { ICollaborativeStorageStrategy } from &#x27;@shared/infra/collaborative-storage/strategy/base.interface.strategy&#x27;;
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { CollaborativeStorageAdapterMapper } from &#x27;@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { RoleDto } from &#x27;@src/modules/role/service/dto/role.dto&#x27;;
 
 /**
@@ -674,7 +674,7 @@ export class CollaborativeStorageAdapter {
 	constructor(
 		@Inject(&#x27;ICollaborativeStorageStrategy&#x27;) strategy: ICollaborativeStorageStrategy,
 		private mapper: CollaborativeStorageAdapterMapper,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageAdapter.name);
 		this.strategy &#x3D; strategy;

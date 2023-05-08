@@ -127,7 +127,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -153,7 +153,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -804,7 +804,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from &#x27;@shared/domain&#x27;;
 import { BoardRepo } from &#x27;@shared/repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { CopyElementType, CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
 import { getResolvedValues } from &#x27;@src/modules/files-storage/helper&#x27;;
 import { LessonCopyService } from &#x27;@src/modules/lesson/service&#x27;;
@@ -820,7 +820,7 @@ type BoardCopyParams &#x3D; {
 @Injectable()
 export class BoardCopyService {
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,

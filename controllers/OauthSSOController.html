@@ -980,7 +980,7 @@ import {
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOkResponse, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ISession } from &#x27;@shared/domain/types/session&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { UserMigrationResponse } from &#x27;@src/modules/oauth/controller/dto/user-migration.response&#x27;;
@@ -1006,7 +1006,7 @@ export class OauthSSOController {
 	constructor(
 		private readonly oauthUc: OauthUc,
 		private readonly hydraUc: HydraOauthUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthSSOController.name);
 		this.clientUrl &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;

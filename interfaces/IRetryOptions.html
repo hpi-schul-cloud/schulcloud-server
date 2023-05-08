@@ -190,7 +190,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConsoleWriterService } from &#x27;@shared/infra/console&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Command, CommandOption, Console } from &#x27;nestjs-console&#x27;;
 import { KeycloakConfigurationUc } from &#x27;../uc/keycloak-configuration.uc&#x27;;
 
@@ -211,7 +211,7 @@ export class KeycloakConsole {
 	constructor(
 		private readonly console: ConsoleWriterService,
 		private readonly keycloakConfigurationUc: KeycloakConfigurationUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(KeycloakConsole.name);
 	}

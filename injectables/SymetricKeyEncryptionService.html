@@ -104,7 +104,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, key?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, key?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -130,7 +130,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -315,12 +315,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import CryptoJs from &#x27;crypto-js&#x27;;
 
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { IEncryptionService } from &#x27;./encryption.interface&#x27;;
 
 @Injectable()
 export class SymetricKeyEncryptionService implements IEncryptionService {
-	constructor(private logger: Logger, private key?: string) {
+	constructor(private logger: LegacyLogger, private key?: string) {
 		if (!this.key) {
 			this.logger.warn(&#x27;No AES key defined. Encryption will no work&#x27;);
 		}

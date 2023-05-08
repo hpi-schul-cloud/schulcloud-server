@@ -164,12 +164,12 @@ Used by auto-deployment for develop environment (job_init_idm.yml.j2) via cURL</
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Post, ServiceUnavailableException } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { KeycloakConfigurationUc } from &#x27;../uc/keycloak-configuration.uc&#x27;;
 
 @Controller(&#x27;management/idm&#x27;)
 export class KeycloakManagementController {
-	constructor(private readonly keycloakManagementUc: KeycloakConfigurationUc, private readonly logger: Logger) {
+	constructor(private readonly keycloakManagementUc: KeycloakConfigurationUc, private readonly logger: LegacyLogger) {
 		this.logger.setContext(KeycloakManagementController.name);
 	}
 

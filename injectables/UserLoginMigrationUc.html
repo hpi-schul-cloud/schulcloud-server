@@ -112,7 +112,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(userMigrationService: <a href="../injectables/UserMigrationService.html" target="_self">UserMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, provisioningService: <a href="../injectables/ProvisioningService.html" target="_self">ProvisioningService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -210,7 +210,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -656,7 +656,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthenticationService } from &#x27;@src/modules/authentication/services/authentication.service&#x27;;
 import { OAuthTokenDto } from &#x27;@src/modules/oauth&#x27;;
 import { OAuthService } from &#x27;@src/modules/oauth/service/oauth.service&#x27;;
@@ -679,7 +679,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise&lt;PageContentDto&gt; {

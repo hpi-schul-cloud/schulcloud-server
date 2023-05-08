@@ -105,7 +105,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(kcAdmin: <a href="../injectables/KeycloakAdministrationService.html" target="_self">KeycloakAdministrationService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -155,7 +155,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -344,11 +344,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger/logger.service&#x27;;
-import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import UserRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/userRepresentation&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
-import UserRepresentation from &#x27;@keycloak/keycloak-admin-client/lib/defs/userRepresentation&#x27;;
+import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
 import { KeycloakAdministrationService } from &#x27;../../keycloak-administration/service/keycloak-administration.service&#x27;;
 
 @Injectable()
@@ -356,7 +356,7 @@ export class KeycloakMigrationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}

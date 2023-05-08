@@ -105,7 +105,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(deleteFilesUc: <a href="../injectables/DeleteFilesUc.html" target="_self">DeleteFilesUc</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(deleteFilesUc: <a href="../injectables/DeleteFilesUc.html" target="_self">DeleteFilesUc</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -143,7 +143,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -254,13 +254,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Logger } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Command, Console } from &#x27;nestjs-console&#x27;;
 import { DeleteFilesUc } from &#x27;../uc&#x27;;
 
 @Console({ command: &#x27;files&#x27;, description: &#x27;file deletion console&#x27; })
 export class DeleteFilesConsole {
-	constructor(private deleteFilesUc: DeleteFilesUc, private logger: Logger) {
+	constructor(private deleteFilesUc: DeleteFilesUc, private logger: LegacyLogger) {
 		this.logger.setContext(DeleteFilesConsole.name);
 	}
 

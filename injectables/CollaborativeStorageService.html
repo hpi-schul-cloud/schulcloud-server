@@ -113,7 +113,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(adapter: <a href="../injectables/CollaborativeStorageAdapter.html" target="_self">CollaborativeStorageAdapter</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, teamsMapper: <a href="../injectables/TeamMapper.html" target="_self">TeamMapper</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(adapter: <a href="../injectables/CollaborativeStorageAdapter.html" target="_self">CollaborativeStorageAdapter</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, teamsMapper: <a href="../injectables/TeamMapper.html" target="_self">TeamMapper</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -199,7 +199,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -664,7 +664,7 @@
 import { EntityId, Permission, PermissionContextBuilder } from &#x27;@shared/domain&#x27;;
 import { CollaborativeStorageAdapter } from &#x27;@shared/infra/collaborative-storage&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { RoleService } from &#x27;@src/modules/role/service/role.service&#x27;;
 import { TeamMapper } from &#x27;../mapper/team.mapper&#x27;;
@@ -679,7 +679,7 @@ export class CollaborativeStorageService {
 		private teamsMapper: TeamMapper,
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageService.name);
 	}

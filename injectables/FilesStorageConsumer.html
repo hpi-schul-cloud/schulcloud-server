@@ -111,7 +111,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, orm: MikroORM)</code>
+<code>constructor(filesStorageService: <a href="../injectables/FilesStorageService.html" target="_self">FilesStorageService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, orm: MikroORM)</code>
                     </td>
                 </tr>
                         <tr>
@@ -149,7 +149,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -430,7 +430,7 @@
 import { MikroORM, UseRequestContext } from &#x27;@mikro-orm/core&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { RpcMessage } from &#x27;@shared/infra/rabbitmq/rpc-message&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from &#x27;@src/shared/infra/rabbitmq&#x27;;
 import { FilesStorageMapper } from &#x27;../mapper&#x27;;
 import { FilesStorageService } from &#x27;../service/files-storage.service&#x27;;
@@ -440,7 +440,7 @@ import { CopyFilesOfParentPayload, FileRecordParams } from &#x27;./dto&#x27;;
 export class FilesStorageConsumer {
 	constructor(
 		private readonly filesStorageService: FilesStorageService,
-		private logger: Logger,
+		private logger: LegacyLogger,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		private readonly orm: MikroORM // don&#x27;t remove it, we need it for @UseRequestContext
 	) {

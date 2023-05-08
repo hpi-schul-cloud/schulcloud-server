@@ -134,7 +134,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, hydraSsoService: <a href="../injectables/HydraSsoService.html" target="_self">HydraSsoService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, hydraSsoService: <a href="../injectables/HydraSsoService.html" target="_self">HydraSsoService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -184,7 +184,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -587,7 +587,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { OauthConfig } from &#x27;@shared/domain&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { HydraRedirectDto } from &#x27;@src/modules/oauth/service/dto/hydra.redirect.dto&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { AuthorizationParams } from &#x27;../controller/dto&#x27;;
@@ -601,7 +601,7 @@ export class HydraOauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly hydraSsoService: HydraSsoService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(HydraOauthUc.name);
 	}

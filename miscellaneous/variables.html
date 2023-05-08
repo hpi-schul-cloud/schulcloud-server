@@ -166,12 +166,6 @@
                             <a href="#createConfigModuleOptions" title="apps/server/src/config/config-module-options.ts" ><b>createConfigModuleOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../config-module-options.ts)</a>
                         </li>
                         <li>
-                            <a href="#createErrorResponse" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>createErrorResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#createErrorResponseForHttpException" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>createErrorResponseForHttpException</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
                             <a href="#createMikroOrmModule" title="apps/server/src/shared/infra/database/mongo-memory-database/mongo-memory-database.module.ts" ><b>createMikroOrmModule</b>&nbsp;&nbsp;&nbsp;(apps/.../mongo-memory-database.module.ts)</a>
                         </li>
                         <li>
@@ -299,15 +293,6 @@
                         </li>
                         <li>
                             <a href="#isAtLeastPartialSuccessfull" title="apps/server/src/modules/copy-helper/service/copy-helper.service.ts" ><b>isAtLeastPartialSuccessfull</b>&nbsp;&nbsp;&nbsp;(apps/.../copy-helper.service.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#isBusinessError" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>isBusinessError</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#isFeathersError" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>isFeathersError</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#isTechnicalError" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>isTechnicalError</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
                         </li>
                         <li>
                             <a href="#isValidationError" title="apps/server/src/modules/files-storage-client/mapper/error.mapper.ts" ><b>isValidationError</b>&nbsp;&nbsp;&nbsp;(apps/.../error.mapper.ts)</a>
@@ -577,21 +562,6 @@
                             <a href="#" title="apps/server/src/modules/authentication/constants.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../constants.ts)</a>
                         </li>
                         <li>
-                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#VideoConferencingScopeMapping" title="apps/server/src/shared/repo/videoconference/video-conference.repo.ts" ><b>VideoConferencingScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.repo.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#writeErrorLog" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>writeErrorLog</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#writeValidationErrors" title="apps/server/src/core/error/filter/global-error.filter.ts" ><b>writeValidationErrors</b>&nbsp;&nbsp;&nbsp;(apps/.../global-error.filter.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
-                        </li>
-                        <li>
                             <a href="#userDoFactory" title="apps/server/src/shared/testing/factory/user.do.factory.ts" ><b>userDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.do.factory.ts)</a>
                         </li>
                         <li>
@@ -601,7 +571,16 @@
                             <a href="#userLoginMigrationFactory" title="apps/server/src/shared/testing/factory/user-login-migration.factory.ts" ><b>userLoginMigrationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#userPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>userPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#" title="apps/server/src/shared/infra/file-system/file-system.adapter.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../file-system.adapter.ts)</a>
+                        </li>
+                        <li>
                             <a href="#videoConferenceFactory" title="apps/server/src/shared/testing/factory/video-conference.factory.ts" ><b>videoConferenceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#VideoConferencingScopeMapping" title="apps/server/src/shared/repo/videoconference/video-conference.repo.ts" ><b>VideoConferencingScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.repo.ts)</a>
                         </li>
                         <li>
                             <a href="#yesterday" title="apps/server/src/shared/testing/factory/filerecord.factory.ts" ><b>yesterday</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.factory.ts)</a>
@@ -2989,218 +2968,6 @@ must use @ApiProperty</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/core/error/filter/global-error.filter.ts</h3>
-    <section>
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createErrorResponse"></a>
-                    <span class="name">
-                        <span ><b>createErrorResponse</b></span>
-                        <a href="#createErrorResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: unknown, logger: ILogger): ErrorResponse &#x3D;&gt; {
-	try {
-		if (error instanceof Error) {
-			if (isFeathersError(error)) {
-				// handles feathers errors only when calling feathers services from nest app
-				return createErrorResponseForFeathersError(error);
-			}
-			if (isBusinessError(error)) {
-				// create response from business error using 409/conflict
-				return createErrorResponseForBusinessError(error);
-			}
-			if (isTechnicalError(error)) {
-				// create response from technical error
-				return createErrorResponseForHttpException(error);
-			}
-		}
-		// create default response for all unknown errors
-		return createErrorResponseForUnknownError();
-	} catch (exception) {
-		const stack &#x3D; exception instanceof Error ? exception.stack : undefined;
-		logger.error(exception, stack, &#x27;Response Error&#x27;);
-		return createErrorResponseForUnknownError();
-	}
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createErrorResponseForHttpException"></a>
-                    <span class="name">
-                        <span ><b>createErrorResponseForHttpException</b></span>
-                        <a href="#createErrorResponseForHttpException"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(exception: HttpException): ErrorResponse &#x3D;&gt; {
-	const code &#x3D; exception.getStatus();
-	const msg &#x3D; exception.message || &#x27;Some error occurred&#x27;;
-	const exceptionName &#x3D; exception.constructor.name.replace(&#x27;Exception&#x27;, &#x27;&#x27;);
-	const type &#x3D; _.snakeCase(exceptionName).toUpperCase();
-	const title &#x3D; _.startCase(exceptionName);
-	return new ErrorResponse(type, title, msg, code);
-}</code>
-                    </td>
-                </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>Creates ErrorResponse from NestJS build in technical exceptions</p>
-</div>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isBusinessError"></a>
-                    <span class="name">
-                        <span ><b>isBusinessError</b></span>
-                        <a href="#isBusinessError"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: Error): error is BusinessError &#x3D;&gt; error instanceof BusinessError</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isFeathersError"></a>
-                    <span class="name">
-                        <span ><b>isFeathersError</b></span>
-                        <a href="#isFeathersError"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: Error): error is FeathersError &#x3D;&gt; {
-	if (!(error &amp;&amp; &#x27;type&#x27; in error)) return false;
-	return (error as FeathersError)?.type &#x3D;&#x3D;&#x3D; &#x27;FeathersError&#x27;;
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="isTechnicalError"></a>
-                    <span class="name">
-                        <span ><b>isTechnicalError</b></span>
-                        <a href="#isTechnicalError"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: Error): error is HttpException &#x3D;&gt; error instanceof HttpException</code>
-                    </td>
-                </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>Compare helper to detect an error is a build in NestJS http exception.</p>
-</div>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="writeErrorLog"></a>
-                    <span class="name">
-                        <span ><b>writeErrorLog</b></span>
-                        <a href="#writeErrorLog"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: unknown, logger: ILogger): void &#x3D;&gt; {
-	if (error instanceof Error) {
-		if (isFeathersError(error)) {
-			logger.error(error, error.stack, &#x27;Feathers Error&#x27;);
-		} else if (isBusinessError(error)) {
-			if (error instanceof ApiValidationError) {
-				writeValidationErrors(error, logger);
-			} else {
-				logger.error(error, error.stack, &#x27;Business Error&#x27;);
-			}
-		} else if (isTechnicalError(error)) {
-			logger.error(error, error.stack, &#x27;Technical Error&#x27;);
-		} else {
-			logger.error(error, error.stack, &#x27;Unhandled Error&#x27;);
-		}
-	} else {
-		logger.error(error, &#x27;Unknown error&#x27;);
-	}
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="writeValidationErrors"></a>
-                    <span class="name">
-                        <span ><b>writeValidationErrors</b></span>
-                        <a href="#writeValidationErrors"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(error: ApiValidationError, logger: ILogger) &#x3D;&gt; {
-	const errorMsg &#x3D; error.validationErrors.map(
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		(e) &#x3D;&gt; &#x60;Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}&#x60;
-	);
-	logger.error(errorMsg, error.stack, &#x27;API Validation Error&#x27;);
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/infra/database/mongo-memory-database/mongo-memory-database.module.ts</h3>
     <section>
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -3556,7 +3323,6 @@ must use @ApiProperty</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-	Logger,
 	{
 		provide: &#x27;S3_Client&#x27;,
 		scope: Scope.REQUEST,
@@ -3728,7 +3494,7 @@ must use @ApiProperty</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>(consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: Logger) &#x3D;&gt; {
+                        <i>Default value : </i><code>(consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) &#x3D;&gt; {
 	const sessionDuration: number &#x3D; Configuration.get(&#x27;SESSION__EXPIRES_SECONDS&#x27;) as number;
 
 	let store: connectRedis.RedisStore | undefined;
@@ -6568,29 +6334,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
-    <section>
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name=""></a>
-                    <span class="name">
-                        <span ><b></b></span>
-                        <a href="#"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>fsp</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/user.do.factory.ts</h3>
     <section>
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6678,6 +6421,29 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		};
 	}
 )</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/infra/file-system/file-system.adapter.ts</h3>
+    <section>
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name=""></a>
+                    <span class="name">
+                        <span ><b></b></span>
+                        <a href="#"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>fsp</code>
                     </td>
                 </tr>
 

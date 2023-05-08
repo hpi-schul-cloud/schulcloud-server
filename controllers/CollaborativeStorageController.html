@@ -232,7 +232,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { Body, Controller, Param, Patch } from &#x27;@nestjs/common&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;../../authentication/interface/user&#x27;;
 import { CollaborativeStorageUc } from &#x27;../uc/collaborative-storage.uc&#x27;;
 import { TeamPermissionsBody } from &#x27;./dto/team-permissions.body.params&#x27;;
@@ -246,7 +246,7 @@ import { TeamRoleDto } from &#x27;./dto/team-role.params&#x27;;
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;collaborative-storage&#x27;)
 export class CollaborativeStorageController {
-	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: Logger) {
+	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: LegacyLogger) {
 		this.logger.setContext(CollaborativeStorageController.name);
 	}
 

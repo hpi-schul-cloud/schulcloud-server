@@ -93,7 +93,32 @@
                                 <a href="#catch" >catch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createErrorLoggable" >createErrorLoggable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#createErrorResponse" >createErrorResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createErrorResponseForBusinessError" >createErrorResponseForBusinessError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createErrorResponseForFeathersError" >createErrorResponseForFeathersError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createErrorResponseForNestHttpException" >createErrorResponseForNestHttpException</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createErrorResponseForUnknownError" >createErrorResponseForUnknownError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#sendHttpResponse" >sendHttpResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -113,12 +138,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(logger: <a href="../injectables/ErrorLogger.html" target="_self">ErrorLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="114" class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:114</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -139,7 +164,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/ErrorLogger.html" target="_self" >ErrorLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -182,8 +207,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="120"
-                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:120</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:19</a></div>
                 </td>
             </tr>
 
@@ -247,8 +272,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createErrorLoggable"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createErrorLoggable</b></span>
+                        <a href="#createErrorLoggable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorLoggable(error)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:32</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>error</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="createErrorResponse"></a>
                     <span class="name">
+                        <span class="modifier">Private</span>
                         <span ><b>createErrorResponse</b></span>
                         <a href="#createErrorResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -256,15 +349,363 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createErrorResponse(error: T)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorResponse(error)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="133"
-                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:133</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>error</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createErrorResponseForBusinessError"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createErrorResponseForBusinessError</b></span>
+                        <a href="#createErrorResponseForBusinessError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorResponseForBusinessError(error: <a href="../classes/BusinessError.html" target="_self">BusinessError</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>error</td>
+                                    <td>
+                                                <code><a href="../classes/BusinessError.html" target="_self" >BusinessError</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createErrorResponseForFeathersError"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createErrorResponseForFeathersError</b></span>
+                        <a href="#createErrorResponseForFeathersError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorResponseForFeathersError(error: <a href="../interfaces/FeathersError.html" target="_self">FeathersError</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>error</td>
+                                    <td>
+                                                <code><a href="../interfaces/FeathersError.html" target="_self" >FeathersError</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createErrorResponseForNestHttpException"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createErrorResponseForNestHttpException</b></span>
+                        <a href="#createErrorResponseForNestHttpException"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorResponseForNestHttpException(exception: HttpException)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:90</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>exception</td>
+                                    <td>
+                                            <code>HttpException</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createErrorResponseForUnknownError"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>createErrorResponseForUnknownError</b></span>
+                        <a href="#createErrorResponseForUnknownError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createErrorResponseForUnknownError(error?)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:100</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>error</td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendHttpResponse"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>sendHttpResponse</b></span>
+                        <a href="#sendHttpResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sendHttpResponse(error: T, host: ArgumentsHost)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/core/error/filter/global-error.filter.ts:47</a></div>
                 </td>
             </tr>
 
@@ -296,13 +737,25 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>host</td>
+                                    <td>
+                                            <code>ArgumentsHost</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ErrorResponse.html" target="_self" >ErrorResponse</a></code>
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                     </div>
                     <div class="io-description">
@@ -325,137 +778,107 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ApiValidationError, BusinessError } from &#x27;@shared/common&#x27;;
 import { IError, RpcMessage } from &#x27;@shared/infra/rabbitmq/rpc-message&#x27;;
-import { ILogger, Logger } from &#x27;@src/core/logger&#x27;;
+import { ErrorLogger, Loggable } from &#x27;@src/core/logger&#x27;;
+import { LoggingUtils } from &#x27;@src/core/logger/logging.utils&#x27;;
 import { Response } from &#x27;express&#x27;;
 import _ from &#x27;lodash&#x27;;
+import util from &#x27;util&#x27;;
 import { ApiValidationErrorResponse, ErrorResponse } from &#x27;../dto&#x27;;
 import { FeathersError } from &#x27;../interface&#x27;;
-
-const isFeathersError &#x3D; (error: Error): error is FeathersError &#x3D;&gt; {
-	if (!(error &amp;&amp; &#x27;type&#x27; in error)) return false;
-	return (error as FeathersError)?.type &#x3D;&#x3D;&#x3D; &#x27;FeathersError&#x27;;
-};
-
-const isBusinessError &#x3D; (error: Error): error is BusinessError &#x3D;&gt; error instanceof BusinessError;
-
-/**
- * Compare helper to detect an error is a build in NestJS http exception.
- * @param error
- * @returns
- */
-const isTechnicalError &#x3D; (error: Error): error is HttpException &#x3D;&gt; error instanceof HttpException;
-
-/**
- * Creates ErrorResponse from NestJS build in technical exceptions
- * @param exception
- * @returns {ErrorResponse}
- */
-const createErrorResponseForHttpException &#x3D; (exception: HttpException): ErrorResponse &#x3D;&gt; {
-	const code &#x3D; exception.getStatus();
-	const msg &#x3D; exception.message || &#x27;Some error occurred&#x27;;
-	const exceptionName &#x3D; exception.constructor.name.replace(&#x27;Exception&#x27;, &#x27;&#x27;);
-	const type &#x3D; _.snakeCase(exceptionName).toUpperCase();
-	const title &#x3D; _.startCase(exceptionName);
-	return new ErrorResponse(type, title, msg, code);
-};
-
-function createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
-	if (error instanceof ApiValidationError) {
-		const response &#x3D; new ApiValidationErrorResponse(error);
-		return response;
-	}
-	const response &#x3D; error.getResponse();
-	return response;
-}
-
-function createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
-	const unknownError &#x3D; new InternalServerErrorException(error);
-	const response &#x3D; createErrorResponseForHttpException(unknownError);
-	return response;
-}
-
-function createErrorResponseForFeathersError(error: FeathersError) {
-	const { code, className: type, name: title, message } &#x3D; error;
-	const snakeType &#x3D; _.snakeCase(type).toUpperCase();
-	const startTitle &#x3D; _.startCase(title);
-	return new ErrorResponse(snakeType, startTitle, message, code);
-}
-
-const createErrorResponse &#x3D; (error: unknown, logger: ILogger): ErrorResponse &#x3D;&gt; {
-	try {
-		if (error instanceof Error) {
-			if (isFeathersError(error)) {
-				// handles feathers errors only when calling feathers services from nest app
-				return createErrorResponseForFeathersError(error);
-			}
-			if (isBusinessError(error)) {
-				// create response from business error using 409/conflict
-				return createErrorResponseForBusinessError(error);
-			}
-			if (isTechnicalError(error)) {
-				// create response from technical error
-				return createErrorResponseForHttpException(error);
-			}
-		}
-		// create default response for all unknown errors
-		return createErrorResponseForUnknownError();
-	} catch (exception) {
-		const stack &#x3D; exception instanceof Error ? exception.stack : undefined;
-		logger.error(exception, stack, &#x27;Response Error&#x27;);
-		return createErrorResponseForUnknownError();
-	}
-};
-
-const writeValidationErrors &#x3D; (error: ApiValidationError, logger: ILogger) &#x3D;&gt; {
-	const errorMsg &#x3D; error.validationErrors.map(
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		(e) &#x3D;&gt; &#x60;Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}&#x60;
-	);
-	logger.error(errorMsg, error.stack, &#x27;API Validation Error&#x27;);
-};
-
-const writeErrorLog &#x3D; (error: unknown, logger: ILogger): void &#x3D;&gt; {
-	if (error instanceof Error) {
-		if (isFeathersError(error)) {
-			logger.error(error, error.stack, &#x27;Feathers Error&#x27;);
-		} else if (isBusinessError(error)) {
-			if (error instanceof ApiValidationError) {
-				writeValidationErrors(error, logger);
-			} else {
-				logger.error(error, error.stack, &#x27;Business Error&#x27;);
-			}
-		} else if (isTechnicalError(error)) {
-			logger.error(error, error.stack, &#x27;Technical Error&#x27;);
-		} else {
-			logger.error(error, error.stack, &#x27;Unhandled Error&#x27;);
-		}
-	} else {
-		logger.error(error, &#x27;Unknown error&#x27;);
-	}
-};
+import { ErrorLoggable } from &#x27;../loggable/error.loggable&#x27;;
+import { ErrorUtils } from &#x27;../utils&#x27;;
 
 @Catch()
 export class GlobalErrorFilter&lt;T extends IError | undefined&gt; implements ExceptionFilter&lt;T&gt; {
-	constructor(private logger: Logger) {
-		this.logger.setContext(&#x27;Error&#x27;);
-	}
+	constructor(private readonly logger: ErrorLogger) {}
 
 	// eslint-disable-next-line consistent-return
 	catch(error: T, host: ArgumentsHost): void | RpcMessage&lt;unknown&gt; {
+		const loggable &#x3D; this.createErrorLoggable(error);
+		this.logger.error(loggable);
+
 		const contextType &#x3D; host.getType&lt;&#x27;http&#x27; | &#x27;rmq&#x27;&gt;();
-		writeErrorLog(error, this.logger);
-		const errorResponse: ErrorResponse &#x3D; this.createErrorResponse(error);
+
 		if (contextType &#x3D;&#x3D;&#x3D; &#x27;http&#x27;) {
-			const ctx &#x3D; host.switchToHttp();
-			const response &#x3D; ctx.getResponse&lt;Response&gt;();
-			response.status(errorResponse.code).json(errorResponse);
+			this.sendHttpResponse(error, host);
 		} else if (contextType &#x3D;&#x3D;&#x3D; &#x27;rmq&#x27;) {
 			return { message: undefined, error };
 		}
 	}
 
-	createErrorResponse(error: T): ErrorResponse {
-		return createErrorResponse(error, this.logger);
+	private createErrorLoggable(error: unknown): Loggable {
+		let loggable: Loggable;
+
+		if (LoggingUtils.isInstanceOfLoggable(error)) {
+			loggable &#x3D; error;
+		} else if (error instanceof Error) {
+			loggable &#x3D; new ErrorLoggable(error);
+		} else {
+			const unknownError &#x3D; new Error(util.inspect(error));
+			loggable &#x3D; new ErrorLoggable(unknownError);
+		}
+
+		return loggable;
+	}
+
+	private sendHttpResponse(error: T, host: ArgumentsHost): void {
+		const errorResponse &#x3D; this.createErrorResponse(error);
+		const httpArgumentHost &#x3D; host.switchToHttp();
+		const response &#x3D; httpArgumentHost.getResponse&lt;Response&gt;();
+		response.status(errorResponse.code).json(errorResponse);
+	}
+
+	private createErrorResponse(error: unknown): ErrorResponse {
+		let response: ErrorResponse;
+
+		if (ErrorUtils.isFeathersError(error)) {
+			response &#x3D; this.createErrorResponseForFeathersError(error);
+		} else if (ErrorUtils.isBusinessError(error)) {
+			response &#x3D; this.createErrorResponseForBusinessError(error);
+		} else if (ErrorUtils.isNestHttpException(error)) {
+			response &#x3D; this.createErrorResponseForNestHttpException(error);
+		} else {
+			response &#x3D; this.createErrorResponseForUnknownError();
+		}
+
+		return response;
+	}
+
+	private createErrorResponseForFeathersError(error: FeathersError) {
+		const { code, className, name, message } &#x3D; error;
+		const type &#x3D; _.snakeCase(className).toUpperCase();
+		const title &#x3D; _.startCase(name);
+
+		return new ErrorResponse(type, title, message, code);
+	}
+
+	private createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
+		let response: ErrorResponse;
+
+		if (error instanceof ApiValidationError) {
+			response &#x3D; new ApiValidationErrorResponse(error);
+		} else {
+			response &#x3D; error.getResponse();
+		}
+
+		return response;
+	}
+
+	private createErrorResponseForNestHttpException(exception: HttpException): ErrorResponse {
+		const code &#x3D; exception.getStatus();
+		const msg &#x3D; exception.message || &#x27;Some error occurred&#x27;;
+		const exceptionName &#x3D; exception.constructor.name.replace(&#x27;Loggable&#x27;, &#x27;&#x27;).replace(&#x27;Exception&#x27;, &#x27;&#x27;);
+		const type &#x3D; _.snakeCase(exceptionName).toUpperCase();
+		const title &#x3D; _.startCase(exceptionName);
+
+		return new ErrorResponse(type, title, msg, code);
+	}
+
+	private createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
+		const unknownError &#x3D; new InternalServerErrorException(error);
+		const response &#x3D; this.createErrorResponseForNestHttpException(unknownError);
+
+		return response;
 	}
 }
 </code></pre>

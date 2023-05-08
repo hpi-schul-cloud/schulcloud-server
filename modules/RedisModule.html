@@ -136,7 +136,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
-import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { createClient, RedisClient } from &#x27;redis&#x27;;
 import { REDIS_CLIENT } from &#x27;./interface/redis.constants&#x27;;
 
@@ -145,7 +145,7 @@ import { REDIS_CLIENT } from &#x27;./interface/redis.constants&#x27;;
 	providers: [
 		{
 			provide: REDIS_CLIENT,
-			useFactory: (logger: Logger) &#x3D;&gt; {
+			useFactory: (logger: LegacyLogger) &#x3D;&gt; {
 				logger.setContext(RedisModule.name);
 
 				if (Configuration.has(&#x27;REDIS_URI&#x27;)) {
@@ -160,7 +160,7 @@ import { REDIS_CLIENT } from &#x27;./interface/redis.constants&#x27;;
 
 				return undefined;
 			},
-			inject: [Logger],
+			inject: [LegacyLogger],
 		},
 	],
 	exports: [REDIS_CLIENT],

@@ -133,7 +133,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -171,7 +171,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -962,7 +962,7 @@
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
 import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration&#x27;;
@@ -971,7 +971,7 @@ import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration&#x27
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}

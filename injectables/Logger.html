@@ -58,7 +58,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/core/logger/logger.service.ts</code>
+            <code>apps/server/src/core/logger/logger.ts</code>
         </p>
 
 
@@ -94,32 +94,23 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#createMessage" >createMessage</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#debug" >debug</a>
                             </li>
                             <li>
-                                <a href="#error" >error</a>
-                            </li>
-                            <li>
-                                <a href="#http" >http</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#log" >log</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#setContext" >setContext</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#stringifiedMessage" >stringifiedMessage</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#verbose" >verbose</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#warn" >warn</a>
                             </li>
                         </ul>
@@ -145,7 +136,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/core/logger/logger.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/core/logger/logger.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -192,90 +183,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createMessage"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>createMessage</b></span>
-                        <a href="#createMessage"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createMessage(message, context?: string | undefined)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:57</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>message</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>{ message: any; context: string; }</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="debug"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>debug</b></span>
                         <a href="#debug"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -283,95 +193,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>debug(message, context?: string | undefined)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>debug(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:33</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>message</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="error"></a>
-                    <span class="name">
-                        <span ><b>error</b></span>
-                        <a href="#error"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>error(message, trace?, context?: string | undefined)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:23</a></div>
                 </td>
             </tr>
 
@@ -392,116 +223,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>message</td>
+                                    <td>loggable</td>
                                     <td>
+                                                <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>trace</td>
-                                    <td>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="http"></a>
-                    <span class="name">
-                        <span ><b>http</b></span>
-                        <a href="#http"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>http(message: <a href="../undefineds/RequestLoggingBody.html" target="_self">RequestLoggingBody</a>, context?: string | undefined)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:41</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>message</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#RequestLoggingBody" target="_self" >RequestLoggingBody</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -528,6 +256,7 @@
                 <td class="col-md-4">
                     <a name="log"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>log</b></span>
                         <a href="#log"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -535,15 +264,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>log(message, context?: string | undefined)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>log(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:13</a></div>
                 </td>
             </tr>
 
@@ -564,24 +294,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>message</td>
+                                    <td>loggable</td>
                                     <td>
+                                                <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -608,6 +327,7 @@
                 <td class="col-md-4">
                     <a name="setContext"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>setContext</b></span>
                         <a href="#setContext"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -615,15 +335,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>setContext(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setContext(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:33</a></div>
                 </td>
             </tr>
 
@@ -675,75 +396,9 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="stringifiedMessage"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>stringifiedMessage</b></span>
-                        <a href="#stringifiedMessage"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>stringifiedMessage(message)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:61</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>message</td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="verbose"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>verbose</b></span>
                         <a href="#verbose"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -751,15 +406,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>verbose(message, context?: string | undefined)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>verbose(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:28</a></div>
                 </td>
             </tr>
 
@@ -780,24 +436,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>message</td>
+                                    <td>loggable</td>
                                     <td>
+                                                <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -824,6 +469,7 @@
                 <td class="col-md-4">
                     <a name="warn"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>warn</b></span>
                         <a href="#warn"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -831,15 +477,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>warn(message, context?: string | undefined)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>warn(loggable: <a href="../interfaces/Loggable.html" target="_self">Loggable</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/core/logger/logger.service.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/core/logger/logger.ts:18</a></div>
                 </td>
             </tr>
 
@@ -860,24 +507,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>message</td>
+                                    <td>loggable</td>
                                     <td>
+                                                <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
                                     </td>
 
                                     <td>
                                         No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>context</td>
-                                    <td>
-                                            <code>string | undefined</code>
-                                    </td>
-
-                                    <td>
-                                        Yes
                                     </td>
 
 
@@ -929,19 +565,10 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/core/logger/logger.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/core/logger/logger.ts:9</a></div>
                         </td>
                     </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>This Logger Service can be injected into every Class,
-use setContext() with CustomProviderClass.name that will be added to every log.
-It implements @ILogger which provides the logger methods.
-CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES</p>
-</div>
-                </td>
-            </tr>
 
         </tbody>
     </table>
@@ -953,67 +580,38 @@ CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES</p>
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, Scope } from &#x27;@nestjs/common&#x27;;
 import { WINSTON_MODULE_PROVIDER } from &#x27;nest-winston&#x27;;
-import util from &#x27;util&#x27;;
 import { Logger as WinstonLogger } from &#x27;winston&#x27;;
-import { RequestLoggingBody } from &#x27;./interfaces&#x27;;
-import { ILogger } from &#x27;./interfaces/logger.interface&#x27;;
+import { Loggable } from &#x27;./interfaces&#x27;;
+import { LoggingUtils } from &#x27;./logging.utils&#x27;;
 
 @Injectable({ scope: Scope.TRANSIENT })
-/**
- * Default logger for server application.
- * Must implement ILogger but must not extend ConsoleLogger (this can be changed).
- * Transient injection: Wherever injected, a separate instance will be created, that can be provided with a custom context.
- */
-export class Logger implements ILogger {
-	/**
-	 * This Logger Service can be injected into every Class,
-	 * use setContext() with CustomProviderClass.name that will be added to every log.
-	 * It implements @ILogger which provides the logger methods.
-	 * CAUTION: PREPARE STRINGS AS LOG DATA, DO NOT LOG COMPLEX DATA STRUCTURES
-	 */
+export class Logger {
 	private context &#x3D; &#x27;&#x27;;
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(message: unknown, context?: string | undefined): void {
-		this.logger.log(&#x27;info&#x27;, this.createMessage(message, context));
+	public log(loggable: Loggable): void {
+		const message &#x3D; LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.info(message);
 	}
 
-	warn(message: unknown, context?: string | undefined): void {
-		this.logger.warning(this.createMessage(message, context));
+	public warn(loggable: Loggable): void {
+		const message &#x3D; LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.warn(message);
 	}
 
-	debug(message: unknown, context?: string | undefined): void {
-		this.logger.debug(this.createMessage(message, context));
+	public debug(loggable: Loggable): void {
+		const message &#x3D; LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.debug(message);
 	}
 
-	verbose(message: unknown, context?: string | undefined): void {
-		this.logger.verbose(this.createMessage(message, context));
+	public verbose(loggable: Loggable): void {
+		const message &#x3D; LoggingUtils.createMessageWithContext(loggable, this.context);
+		this.logger.verbose(message);
 	}
 
-	http(message: RequestLoggingBody, context?: string | undefined): void {
-		this.logger.notice(this.createMessage(message, context));
-	}
-
-	error(message: unknown, trace?: unknown, context?: string | undefined): void {
-		const result &#x3D; {
-			message,
-			trace,
-		};
-		this.logger.error(this.createMessage(result, context));
-	}
-
-	setContext(name: string) {
+	public setContext(name: string) {
 		this.context &#x3D; name;
-	}
-
-	private createMessage(message: unknown, context?: string | undefined) {
-		return { message: this.stringifiedMessage(message), context: context || this.context };
-	}
-
-	private stringifiedMessage(message: unknown) {
-		const stringifiedMessage &#x3D; util.inspect(message).replace(/\n/g, &#x27;&#x27;).replace(/\\n/g, &#x27;&#x27;);
-		return stringifiedMessage;
 	}
 }
 </code></pre>

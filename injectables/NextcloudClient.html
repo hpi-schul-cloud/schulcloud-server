@@ -202,7 +202,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, httpService: HttpService, oidcInternalName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, httpService: HttpService, oidcInternalName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -228,7 +228,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -2170,7 +2170,7 @@
 import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { parseInt } from &#x27;lodash&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import {
@@ -2190,7 +2190,7 @@ export class NextcloudClient {
 	config: AxiosRequestConfig;
 
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
 		@Inject(&#x27;oidcInternalName&#x27;) readonly oidcInternalName: string
 	) {

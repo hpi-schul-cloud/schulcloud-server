@@ -129,7 +129,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(pseudonymsRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, ltiToolRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(pseudonymsRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, ltiToolRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -203,7 +203,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -551,7 +551,7 @@ import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
 import { UserService } from &#x27;@src/modules/user/service/user.service&#x27;;
 import { UserDto } from &#x27;@src/modules/user/uc/dto/user.dto&#x27;;
 import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 
 @Injectable()
 export class IdTokenService {
@@ -564,7 +564,7 @@ export class IdTokenService {
 		private readonly ltiToolRepo: LtiToolRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.host &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
 		this.iFrameProperties &#x3D; &#x27;title&#x3D;&quot;username&quot; style&#x3D;&quot;height: 26px; width: 180px; border: none;&quot;&#x27;;

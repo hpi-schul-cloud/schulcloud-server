@@ -732,7 +732,7 @@ import { PaginationParams } from &#x27;@shared/controller&#x27;;
 import { IFindOptions, RoleName } from &#x27;@shared/domain&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
@@ -761,7 +761,7 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	@Get(&#x27;lti11/:toolId/launch&#x27;)

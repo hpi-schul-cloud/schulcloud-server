@@ -187,7 +187,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/IServerConfig.html" target="_self">ConfigService&lt;IServerConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(accountDb: <a href="../injectables/AccountServiceDb.html" target="_self">AccountServiceDb</a>, accountIdm: <a href="../injectables/AccountServiceIdm.html" target="_self">AccountServiceIdm</a>, configService: <a href="../interfaces/IServerConfig.html" target="_self">ConfigService&lt;IServerConfig | &gt;</a>, accountValidationService: <a href="../injectables/AccountValidationService.html" target="_self">AccountValidationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -261,7 +261,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1743,7 +1743,7 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { Counted } from &#x27;@shared/domain&#x27;;
 import { isEmail, validateOrReject } from &#x27;class-validator&#x27;;
-import { Logger } from &#x27;../../../core/logger&#x27;;
+import { LegacyLogger } from &#x27;../../../core/logger&#x27;;
 import { IServerConfig } from &#x27;../../server/server.config&#x27;;
 import { AccountServiceDb } from &#x27;./account-db.service&#x27;;
 import { AccountServiceIdm } from &#x27;./account-idm.service&#x27;;
@@ -1760,7 +1760,7 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService&lt;IServerConfig, true&gt;,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(AccountService.name);

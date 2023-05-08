@@ -104,7 +104,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -130,7 +130,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -351,12 +351,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { System } from &#x27;@shared/domain&#x27;;
 import { Client, createClient } from &#x27;ldapjs&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { LdapConnectionError } from &#x27;../errors/ldap-connection.error&#x27;;
 
 @Injectable()
 export class LdapService {
-	constructor(private readonly logger: Logger) {
+	constructor(private readonly logger: LegacyLogger) {
 		this.logger.setContext(LdapService.name);
 	}
 

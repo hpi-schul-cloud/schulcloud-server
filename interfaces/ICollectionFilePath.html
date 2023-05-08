@@ -185,7 +185,7 @@ import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
 
 export interface ICollectionFilePath {
@@ -210,7 +210,7 @@ export class DatabaseManagementUc {
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {

@@ -46,8 +46,9 @@
 <ol class="breadcrumb">
   <li>Interfaces</li>
   <li
+        class="deprecated-name"
   >
-  ILogger</li>
+  ILegacyLogger</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -65,9 +66,15 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/core/logger/interfaces/logger.interface.ts</code>
+            <code>apps/server/src/core/logger/interfaces/legacy-logger.interface.ts</code>
         </p>
 
+            <p class="comment">
+                <h3 class="deprecated">Deprecated</h3>
+            </p>
+            <p class="comment">
+                The new logger for loggables should be used.
+            </p>
 
 
 
@@ -152,8 +159,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:15</a></div>
                 </td>
             </tr>
 
@@ -232,8 +239,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:13</a></div>
                 </td>
             </tr>
 
@@ -324,8 +331,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="7"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:7</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:11</a></div>
                 </td>
             </tr>
 
@@ -405,8 +412,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:12</a></div>
                 </td>
             </tr>
 
@@ -486,8 +493,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:16</a></div>
                 </td>
             </tr>
 
@@ -566,8 +573,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/core/logger/interfaces/logger.interface.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/core/logger/interfaces/legacy-logger.interface.ts:14</a></div>
                 </td>
             </tr>
 
@@ -637,7 +644,11 @@
 	request: { url: string; method: string; params: unknown; query: unknown };
 	error: unknown | undefined;
 };
-export interface ILogger {
+
+/**
+ * @deprecated The new logger for loggables should be used.
+ */
+export interface ILegacyLogger {
 	http(message: RequestLoggingBody, context?: string): void;
 	log(message: unknown, context?: string): void;
 	error(message: unknown, trace?: string, context?: string): void;
@@ -682,7 +693,7 @@ export interface ILogger {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'ILogger.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ILegacyLogger.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

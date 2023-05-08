@@ -240,7 +240,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileRecordRepo: <a href="../injectables/FileRecordRepo.html" target="_self">FileRecordRepo</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>, antivirusService: <a href="../injectables/AntivirusService.html" target="_self">AntivirusService</a>, configService: <a href="../interfaces/IFileStorageConfig.html" target="_self">ConfigService&lt;IFileStorageConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(fileRecordRepo: <a href="../injectables/FileRecordRepo.html" target="_self">FileRecordRepo</a>, storageClient: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>, antivirusService: <a href="../injectables/AntivirusService.html" target="_self">AntivirusService</a>, configService: <a href="../interfaces/IFileStorageConfig.html" target="_self">ConfigService&lt;IFileStorageConfig | &gt;</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -314,7 +314,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -2771,7 +2771,7 @@
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Counted, EntityId } from &#x27;@shared/domain&#x27;;
 import { AntivirusService } from &#x27;@shared/infra/antivirus/antivirus.service&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { S3ClientAdapter } from &#x27;../client/s3-client.adapter&#x27;;
 import {
 	CopyFileResponse,
@@ -2806,7 +2806,7 @@ export class FilesStorageService {
 		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private readonly configService: ConfigService&lt;IFileStorageConfig, true&gt;,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(FilesStorageService.name);
 	}

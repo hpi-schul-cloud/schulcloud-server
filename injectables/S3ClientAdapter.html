@@ -150,7 +150,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(client: S3Client, config: <a href="../interfaces/S3Config.html" target="_self">S3Config</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(client: S3Client, config: <a href="../interfaces/S3Config.html" target="_self">S3Config</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -200,7 +200,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -856,7 +856,7 @@
 } from &#x27;@aws-sdk/client-s3&#x27;;
 import { Upload } from &#x27;@aws-sdk/lib-storage&#x27;;
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Readable } from &#x27;stream&#x27;;
 import { FileDto } from &#x27;../dto&#x27;;
 import { ICopyFiles, IGetFileResponse, IStorageClient, S3Config } from &#x27;../interface&#x27;;
@@ -868,7 +868,7 @@ export class S3ClientAdapter implements IStorageClient {
 	constructor(
 		@Inject(&#x27;S3_Client&#x27;) readonly client: S3Client,
 		@Inject(&#x27;S3_Config&#x27;) readonly config: S3Config,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
 	}

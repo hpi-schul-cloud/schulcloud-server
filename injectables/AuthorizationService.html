@@ -190,7 +190,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -385,8 +385,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:55</a></div>
                 </td>
             </tr>
 
@@ -480,8 +480,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:79</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:81</a></div>
                 </td>
             </tr>
 
@@ -587,8 +587,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="90"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:90</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="92"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:92</a></div>
                 </td>
             </tr>
 
@@ -658,8 +658,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:61</a></div>
                 </td>
             </tr>
 
@@ -2203,6 +2203,7 @@ import {
 } from &#x27;@shared/domain&#x27;;
 import { IPermissionContext, PermissionTypes } from &#x27;@shared/domain/interface&#x27;;
 import { TeamRule } from &#x27;@shared/domain/rules/team.rule&#x27;;
+import { ForbiddenLoggableException } from &#x27;./errors/forbidden.loggable-exception&#x27;;
 import { AllowedAuthorizationEntityType } from &#x27;./interfaces&#x27;;
 import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
 
@@ -2240,7 +2241,7 @@ export class AuthorizationService extends BasePermissionManager {
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(user.id, entity.constructor.name, context);
 		}
 	}
 
@@ -2250,6 +2251,7 @@ export class AuthorizationService extends BasePermissionManager {
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise&lt;boolean&gt; {
+		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
 			const [user, entity] &#x3D; await Promise.all([
 				this.getUserWithPermissions(userId),
@@ -2270,7 +2272,7 @@ export class AuthorizationService extends BasePermissionManager {
 		context: IPermissionContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(userId, entityName, context);
 		}
 	}
 

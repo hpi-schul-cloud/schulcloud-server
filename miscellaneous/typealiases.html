@@ -130,6 +130,9 @@
                             <a href="#EntityWithEmbeddedFiles" title="apps/server/src/modules/files-storage-client/interfaces/types.ts" ><b>EntityWithEmbeddedFiles</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
                         </li>
                         <li>
+                            <a href="#ErrorLogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>ErrorLogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
                             <a href="#ExternalTool" title="apps/server/src/modules/tool/uc/dto/external-tool.types.ts" ><b>ExternalTool</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
                         </li>
                         <li>
@@ -241,6 +244,18 @@
                             <a href="#LessonMetaData" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>LessonMetaData</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
                         </li>
                         <li>
+                            <a href="#LogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageData" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageData</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageDataObject" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageDataObject</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageWithContext" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageWithContext</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
                             <a href="#Lti11ToolConfig" title="apps/server/src/modules/tool/uc/dto/external-tool.types.ts" ><b>Lti11ToolConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
                         </li>
                         <li>
@@ -271,7 +286,7 @@
                             <a href="#RepoType" title="apps/server/src/modules/authorization/reference.loader.ts" ><b>RepoType</b>&nbsp;&nbsp;&nbsp;(apps/.../reference.loader.ts)</a>
                         </li>
                         <li>
-                            <a href="#RequestLoggingBody" title="apps/server/src/core/logger/interfaces/logger.interface.ts" ><b>RequestLoggingBody</b>&nbsp;&nbsp;&nbsp;(apps/.../logger.interface.ts)</a>
+                            <a href="#RequestLoggingBody" title="apps/server/src/core/logger/interfaces/legacy-logger.interface.ts" ><b>RequestLoggingBody</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-logger.interface.ts)</a>
                         </li>
                         <li>
                             <a href="#Role" title="apps/server/src/modules/user/controller/dto/resolved-user.response.ts" ><b>Role</b>&nbsp;&nbsp;&nbsp;(apps/.../resolved-user.response.ts)</a>
@@ -338,6 +353,9 @@
                         </li>
                         <li>
                             <a href="#UserQuery" title="apps/server/src/modules/user/service/user-query.type.ts" ><b>UserQuery</b>&nbsp;&nbsp;&nbsp;(apps/.../user-query.type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ValidationErrorLogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>ValidationErrorLogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
                         </li>
                         <li>
                             <a href="#ValueOf" title="apps/server/src/shared/domain/types/value-of.ts" ><b>ValueOf</b>&nbsp;&nbsp;&nbsp;(apps/.../value-of.ts)</a>
@@ -932,6 +950,104 @@
             <tr>
                 <td class="col-md-4">
                     <code>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/core/logger/types/logging.types.ts</h3>
+    <section>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ErrorLogMessage"></a>
+                    <span class="name "><b>ErrorLogMessage</b><a href="#ErrorLogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessage"></a>
+                    <span class="name "><b>LogMessage</b><a href="#LogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageData"></a>
+                    <span class="name "><b>LogMessageData</b><a href="#LogMessageData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>LogMessageDataObject | string | number | undefined</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageDataObject"></a>
+                    <span class="name "><b>LogMessageDataObject</b><a href="#LogMessageDataObject"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageWithContext"></a>
+                    <span class="name "><b>LogMessageWithContext</b><a href="#LogMessageWithContext"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValidationErrorLogMessage"></a>
+                    <span class="name "><b>ValidationErrorLogMessage</b><a href="#ValidationErrorLogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
 </code>
                 </td>
             </tr>
@@ -1677,7 +1793,7 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>apps/server/src/core/logger/interfaces/logger.interface.ts</h3>
+</section>    <h3>apps/server/src/core/logger/interfaces/legacy-logger.interface.ts</h3>
     <section>
     <table class="table table-sm table-bordered">
         <tbody>

@@ -162,7 +162,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { CacheModule, Module } from &#x27;@nestjs/common&#x27;;
 import { CacheModuleOptions } from &#x27;@nestjs/common/cache/interfaces/cache-module.interface&#x27;;
-import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { create } from &#x27;cache-manager-redis-store&#x27;;
 import { RedisClient } from &#x27;redis&#x27;;
 import { CacheStoreType } from &#x27;./interface&#x27;;
@@ -171,7 +171,7 @@ import { CacheService } from &#x27;./service/cache.service&#x27;;
 @Module({
 	imports: [
 		CacheModule.registerAsync({
-			useFactory: (cacheService: CacheService, logger: Logger): CacheModuleOptions &#x3D;&gt; {
+			useFactory: (cacheService: CacheService, logger: LegacyLogger): CacheModuleOptions &#x3D;&gt; {
 				if (cacheService.getStoreType() &#x3D;&#x3D;&#x3D; CacheStoreType.REDIS) {
 					const redisUrl: string &#x3D; Configuration.get(&#x27;REDIS_URI&#x27;) as string;
 					const store &#x3D; create({ url: redisUrl });
@@ -184,7 +184,7 @@ import { CacheService } from &#x27;./service/cache.service&#x27;;
 				}
 				return {};
 			},
-			inject: [CacheService, Logger],
+			inject: [CacheService, LegacyLogger],
 			imports: [LoggerModule, CacheWrapperModule],
 		}),
 	],

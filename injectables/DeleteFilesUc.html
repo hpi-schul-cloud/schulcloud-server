@@ -100,7 +100,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(filesRepo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(filesRepo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -138,7 +138,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -240,12 +240,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger/logger.service&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger/legacy-logger.service&#x27;;
 import { FilesRepo } from &#x27;@shared/repo&#x27;;
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private logger: Logger) {
+	constructor(private filesRepo: FilesRepo, private logger: LegacyLogger) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 

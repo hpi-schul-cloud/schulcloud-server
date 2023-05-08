@@ -100,7 +100,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(feathersServiceProvider: <a href="../injectables/FeathersServiceProvider.html" target="_self">FeathersServiceProvider</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(feathersServiceProvider: <a href="../injectables/FeathersServiceProvider.html" target="_self">FeathersServiceProvider</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -138,7 +138,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -264,13 +264,13 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { FeathersServiceProvider } from &#x27;@shared/infra/feathers/feathers-service.provider&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 
 export type PadResponse &#x3D; { data: { padID: string } };
 
 @Injectable()
 export class EtherpadService {
-	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: Logger) {}
+	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: LegacyLogger) {}
 
 	async createEtherpad(userId: EntityId, courseId: string, title: string): Promise&lt;string | false&gt; {
 		const data &#x3D; {

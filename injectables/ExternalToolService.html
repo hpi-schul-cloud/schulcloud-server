@@ -147,7 +147,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, courseExternalToolRepo: <a href="../injectables/CourseExternalToolRepo.html" target="_self">CourseExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
+<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, courseExternalToolRepo: <a href="../injectables/CourseExternalToolRepo.html" target="_self">CourseExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -245,7 +245,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1279,7 +1279,7 @@ import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolExternalToolRepo } from &#x27;@shared/repo/schoolexternaltool/school-external-tool.repo&#x27;;
 import { TokenEndpointAuthMethod, ToolConfigType } from &#x27;../interface&#x27;;
 import { ExternalToolServiceMapper } from &#x27;./mapper&#x27;;
@@ -1294,7 +1294,7 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly courseExternalToolRepo: CourseExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService
 	) {}
 

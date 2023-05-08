@@ -182,7 +182,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepoMapper: <a href="../injectables/ExternalToolRepoMapper.html" target="_self">ExternalToolRepoMapper</a>, _em: EntityManager, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, sortingMapper: <a href="../injectables/ExternalToolSortingMapper.html" target="_self">ExternalToolSortingMapper</a>)</code>
+<code>constructor(externalToolRepoMapper: <a href="../injectables/ExternalToolRepoMapper.html" target="_self">ExternalToolRepoMapper</a>, _em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, sortingMapper: <a href="../injectables/ExternalToolSortingMapper.html" target="_self">ExternalToolSortingMapper</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -232,7 +232,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1611,7 +1611,7 @@ import {
 } from &#x27;@shared/domain&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
 import { BaseDORepo, Scope } from &#x27;@shared/repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Page } from &#x27;../../domain/domainobject/page&#x27;;
 import { ExternalToolSortingMapper } from &#x27;./external-tool-sorting.mapper&#x27;;
 import { ExternalToolRepoMapper } from &#x27;./external-tool.repo.mapper&#x27;;
@@ -1622,7 +1622,7 @@ export class ExternalToolRepo extends BaseDORepo&lt;ExternalToolDO, ExternalTool
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger,
+		protected readonly logger: LegacyLogger,
 		protected readonly sortingMapper: ExternalToolSortingMapper
 	) {
 		super(_em, logger);

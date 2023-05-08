@@ -719,7 +719,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from &#x27;@shared/i
 import { REDIS_CLIENT, RedisModule } from &#x27;@shared/infra/redis&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
-import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AccountApiModule } from &#x27;@src/modules/account/account-api.module&#x27;;
 import { AuthenticationApiModule } from &#x27;@src/modules/authentication/authentication-api.module&#x27;;
 import { CollaborativeStorageModule } from &#x27;@src/modules/collaborative-storage&#x27;;
@@ -794,7 +794,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {
 		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
 };
 
-const setupSessions &#x3D; (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: Logger) &#x3D;&gt; {
+const setupSessions &#x3D; (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) &#x3D;&gt; {
 	const sessionDuration: number &#x3D; Configuration.get(&#x27;SESSION__EXPIRES_SECONDS&#x27;) as number;
 
 	let store: connectRedis.RedisStore | undefined;
@@ -856,7 +856,7 @@ const setupSessions &#x3D; (consumer: MiddlewareConsumer, redisClient: RedisClie
 export class ServerModule implements NestModule {
 	constructor(
 		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerModule.name);
 	}
@@ -887,7 +887,7 @@ export class ServerModule implements NestModule {
 export class ServerTestModule implements NestModule {
 	constructor(
 		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerTestModule.name);
 	}

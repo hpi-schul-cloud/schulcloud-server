@@ -108,7 +108,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -134,7 +134,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -388,7 +388,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { CopyFileDto, FileDto } from &#x27;../dto&#x27;;
 import { IFileRequestInfo } from &#x27;../interfaces&#x27;;
 import { ICopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
@@ -397,7 +397,7 @@ import { FilesStorageProducer } from &#x27;./files-storage.producer&#x27;;
 
 @Injectable()
 export class FilesStorageClientAdapterService {
-	constructor(private logger: Logger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 

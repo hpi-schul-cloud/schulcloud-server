@@ -193,7 +193,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, defaultEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, ldapEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>)</code>
+<code>constructor(fileSystemAdapter: <a href="../injectables/FileSystemAdapter.html" target="_self">FileSystemAdapter</a>, databaseManagementService: <a href="../injectables/DatabaseManagementService.html" target="_self">DatabaseManagementService</a>, bsonConverter: <a href="../injectables/BsonConverter.html" target="_self">BsonConverter</a>, configService: ConfigService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, defaultEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, ldapEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -267,7 +267,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1552,7 +1552,7 @@ import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { StorageProvider, System } from &#x27;@shared/domain&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
 
 export interface ICollectionFilePath {
@@ -1577,7 +1577,7 @@ export class DatabaseManagementUc {
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {

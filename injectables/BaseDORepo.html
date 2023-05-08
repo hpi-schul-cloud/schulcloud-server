@@ -165,7 +165,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(_em: EntityManager, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(_em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -203,7 +203,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1195,11 +1195,11 @@
 import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BaseDO, BaseEntity, baseEntityProperties, EntityId } from &#x27;@shared/domain&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 
 @Injectable()
 export abstract class BaseDORepo&lt;DO extends BaseDO, E extends BaseEntity, P&gt; {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {}
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {}
 
 	abstract get entityName(): EntityName&lt;E&gt;;
 

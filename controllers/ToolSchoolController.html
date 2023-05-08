@@ -600,7 +600,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from &#x27;@nestjs/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import {
@@ -623,7 +623,7 @@ export class ToolSchoolController {
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
 		private readonly responseMapper: SchoolExternalToolResponseMapper,
 		private readonly requestMapper: SchoolExternalToolRequestMapper,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	@Get()

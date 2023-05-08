@@ -186,7 +186,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepoMapper: <a href="../injectables/ExternalToolRepoMapper.html" target="_self">ExternalToolRepoMapper</a>, _em: EntityManager, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(externalToolRepoMapper: <a href="../injectables/ExternalToolRepoMapper.html" target="_self">ExternalToolRepoMapper</a>, _em: EntityManager, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -236,7 +236,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1655,7 +1655,7 @@ import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decor
 import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from &#x27;@shared/domain&#x27;;
 import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolExternalToolQuery } from &#x27;@src/modules/tool/uc/dto/school-external-tool.types&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool/external-tool.repo.mapper&#x27;;
 import { SchoolExternalToolScope } from &#x27;./school-external-tool.scope&#x27;;
@@ -1669,7 +1669,7 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger
+		protected readonly logger: LegacyLogger
 	) {
 		super(_em, logger);
 	}

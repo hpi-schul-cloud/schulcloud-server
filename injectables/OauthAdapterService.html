@@ -109,7 +109,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(httpService: HttpService, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(httpService: HttpService, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -147,7 +147,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -403,7 +403,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AxiosResponse } from &#x27;axios&#x27;;
 import JwksRsa from &#x27;jwks-rsa&#x27;;
 import QueryString from &#x27;qs&#x27;;
@@ -413,7 +413,7 @@ import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from &#x27;./
 
 @Injectable()
 export class OauthAdapterService {
-	constructor(private readonly httpService: HttpService, private readonly logger: Logger) {
+	constructor(private readonly httpService: HttpService, private readonly logger: LegacyLogger) {
 		this.logger.setContext(OauthAdapterService.name);
 	}
 

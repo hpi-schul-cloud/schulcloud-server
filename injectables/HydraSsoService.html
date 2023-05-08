@@ -132,7 +132,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(ltiRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, httpService: HttpService, oAuthEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(ltiRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, httpService: HttpService, oAuthEncryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -194,7 +194,7 @@
                                                         <td>logger</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -667,7 +667,7 @@ import { firstValueFrom, Observable } from &#x27;rxjs&#x27;;
 import { HydraRedirectDto } from &#x27;@src/modules/oauth/service/dto/hydra.redirect.dto&#x27;;
 import { CookiesDto } from &#x27;@src/modules/oauth/service/dto/cookies.dto&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
-import { Logger } from &#x27;@src/core/logger&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 
 @Injectable()
 export class HydraSsoService {
@@ -675,7 +675,7 @@ export class HydraSsoService {
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	private readonly HOST: string &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
