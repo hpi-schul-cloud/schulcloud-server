@@ -101,10 +101,7 @@ describe('UserMigrationService', () => {
 		describe('when finding the migration systems', () => {
 			const setup = () => {
 				const officialSchoolNumber = '3';
-				const school: SchoolDO = new SchoolDO({
-					name: 'schoolName',
-					officialSchoolNumber,
-				});
+				const school: SchoolDO = schoolDOFactory.buildWithId({ name: 'schoolName', officialSchoolNumber });
 
 				const iservSystem: SystemDto = new SystemDto({
 					id: 'iservId',
