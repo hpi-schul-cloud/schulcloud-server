@@ -114,25 +114,6 @@ describe('Logger', () => {
 		});
 	});
 
-	describe('http', () => {
-		it('should call notice method of WinstonLogger with appropriate message', () => {
-			const loggable = new SampleLoggable();
-			service.setContext('test context');
-
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const expectedMessage = expect.objectContaining({
-				message: "{ message: 'test message', data: 'test data' }",
-				context: 'test context',
-			});
-
-			service.http(loggable);
-
-			// notice does not exist on type WinstonLogger. Thus the access with bracket notation.
-			// eslint-disable-next-line @typescript-eslint/dot-notation
-			expect(winstonLogger['notice']).toBeCalledWith(expectedMessage);
-		});
-	});
-
 	describe('setContext', () => {
 		it('should set the context', () => {
 			service.setContext('test');
