@@ -8,6 +8,7 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { PageTypes } from '../interface/page-types.enum';
@@ -72,7 +73,7 @@ export class UserLoginMigrationUc {
 
 		if (data.externalSchool) {
 			let schoolToMigrate: SchoolDO | null;
-			// TODO: N21-820 after implementation of new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
+			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
 					currentUserId,
@@ -83,10 +84,9 @@ export class UserLoginMigrationUc {
 				let details: Record<string, unknown> | undefined;
 
 				if (
-					error &&
-					typeof error === 'object' &&
-					'officialSchoolNumberFromSource' in error &&
-					'officialSchoolNumberFromTarget' in error
+					error instanceof OAuthMigrationError &&
+					error.officialSchoolNumberFromSource &&
+					error.officialSchoolNumberFromTarget
 				) {
 					details = {
 						sourceSchoolNumber: error.officialSchoolNumberFromSource,
@@ -94,7 +94,7 @@ export class UserLoginMigrationUc {
 					};
 				}
 
-				throw new SchoolMigrationError(details);
+				throw new SchoolMigrationError(details, error);
 			}
 
 			this.logMigrationInformation(

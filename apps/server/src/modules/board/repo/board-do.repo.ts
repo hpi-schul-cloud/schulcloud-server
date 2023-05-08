@@ -1,14 +1,18 @@
-import { Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
-import { BoardNodeBuilderImpl } from './board-node.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
+import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
+import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
 @Injectable()
 export class BoardDoRepo {
-	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(
+		private readonly em: EntityManager,
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly deleteVisitor: RecursiveDeleteVisitor
+	) {}
 
 	async findById(id: EntityId, depth?: number): Promise<AnyBoardDo> {
 		const boardNode = await this.em.findOneOrFail(BoardNode, id);
@@ -53,15 +57,13 @@ export class BoardDoRepo {
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
-		const domainObjects = Utils.asArray(domainObject);
-		const parentNode = parent ? await this.boardNodeRepo.findById(BoardNode, parent.id) : undefined;
-		const builder = new BoardNodeBuilderImpl(parentNode);
-		const boardNodes = builder.buildBoardNodes(domainObjects, parent);
-		await this.boardNodeRepo.save(boardNodes);
+		const saveVisitor = new RecursiveSaveVisitor(this.em);
+		await saveVisitor.save(domainObject, parent);
+		await this.em.flush();
 	}
 
 	async delete(domainObject: AnyBoardDo): Promise<void> {
-		const boardNode = await this.boardNodeRepo.findById(BoardNode, domainObject.id);
-		await this.boardNodeRepo.deleteWithDescendants(boardNode);
+		await domainObject.acceptAsync(this.deleteVisitor);
+		await this.em.flush();
 	}
 }

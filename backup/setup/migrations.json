@@ -207,5 +207,16 @@
 			"$date": "2023-04-04T12:25:50.707Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6454b29f38736e2494917e54"
+		},
+		"state": "up",
+		"name": "remove-leave-team-permission-from-user",
+		"createdAt": {
+			"$date": "2023-05-05T07:26:34.051Z"
+		},
+		"__v": 0
 	}
 ]
