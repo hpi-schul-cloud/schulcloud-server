@@ -3,7 +3,10 @@ import { Builder } from 'xml2js';
 import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
 import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
 import { ICommonCartridgeAssignmentProps } from './common-cartridge-assignment-element';
-import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
+import {
+	ICommonCartridgeAssignmentResourceItemProps,
+	CommonCartridgeAssignmentResourceItemElement,
+} from './common-cartridge-assignment-resource-item-element';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeMetadataElement } from './common-cartridge-metadata-element';
 import {
@@ -14,6 +17,7 @@ import {
 	ICommonCartridgeResourceProps,
 	CommonCartridgeResourceItemElement,
 } from './common-cartridge-resource-item-element';
+import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
 
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;
@@ -71,28 +75,82 @@ export class CommonCartridgeFileBuilder {
 		return this.zipBuilder.toBufferPromise();
 	}
 
-	addOrganizationItems(props: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
-		props.map((prop) => this.organizations.push(new CommonCartridgeOrganizationItemElement(prop)));
-		return this;
-	}
-
-	addResourceItems(props: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
-		props.map((prop) => this.resources.push(new CommonCartridgeResourceItemElement(prop)));
-		return this;
-	}
-
-	addAssignments(props: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
-		props.forEach((prop) => {
-			const htmlPath = `${prop.identifier}/assignment.html`;
-			this.zipBuilder.addFile(htmlPath, Buffer.from(`<h1>${prop.title}</h1>${prop.description}`));
-			this.resources.push(
-				new CommonCartridgeAssignmentResourceItemElement({
-					identifier: prop.identifier,
-					type: 'webcontent',
-					href: htmlPath,
-				})
-			);
+	/**
+	 * This method creates organization xml-items in the exported xml file.
+	 * @param organizations An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
+	addOrganizationItems(organizations: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
+		organizations.forEach((organizationProps) => {
+			this.organizations.push(new CommonCartridgeOrganizationItemElement(organizationProps));
+			organizationProps.contents?.forEach((contentProps) => {
+				const resourceProps = this.mapOrganizationAndContentPropsToResourceProps(organizationProps, contentProps);
+				this.zipBuilder.addFile(
+					resourceProps.href,
+					Buffer.from(`<h1>${contentProps.title}</h1><p>${contentProps.content}</p>`)
+				);
+				this.resources.push(new CommonCartridgeResourceItemElement(resourceProps));
+			});
 		});
 		return this;
+	}
+
+	/**
+	 * This method creates resources xml-items in the exported xml file.
+	 * @param resources - An Array of ICommonCartridgeResourceProps objects that contain the resource properties.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
+	addResourceItems(resources: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
+		resources.forEach((resourceProps) => this.resources.push(new CommonCartridgeResourceItemElement(resourceProps)));
+		return this;
+	}
+
+	/**
+	 * This method adds assignments xml-items in the exported xml file.
+	 * @param assignments - An array of objects that contains the properties of each assignment.
+	 * @returns The CommonCartridgeFileBuilder object.
+	 */
+	addAssignments(assignments: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
+		assignments.forEach((assignmentProps) => {
+			const resourceProps = this.mapAssignmentPropsToResourceProps(assignmentProps);
+			this.zipBuilder.addFile(
+				resourceProps.href,
+				Buffer.from(`<h1>${assignmentProps.title}</h1>${assignmentProps.description}`)
+			);
+			this.resources.push(new CommonCartridgeAssignmentResourceItemElement(resourceProps));
+		});
+		return this;
+	}
+
+	/**
+	 * This private method maps ICommonCartridgeOrganizationProps and ICommonCartridgeLessonContentProps to ICommonCartridgeResourceProps.
+	 * @param organizationProps - ICommonCartridgeOrganizationProps
+	 * @param contentProps - ICommonCartridgeLessonContentProps
+	 * @returns ICommonCartridgeResourceProps
+	 */
+	private mapOrganizationAndContentPropsToResourceProps(
+		organizationProps: ICommonCartridgeOrganizationProps,
+		contentProps: ICommonCartridgeLessonContentProps
+	): ICommonCartridgeResourceProps {
+		return {
+			identifier: contentProps.identifier,
+			type: 'webcontent',
+			href: `${organizationProps.identifier}/${contentProps.identifier}_content.html`,
+		};
+	}
+
+	/**
+	 * This private method maps ICommonCartridgeAssignmentProps to ICommonCartridgeAssignmentResourceItemProps.
+	 * @param assignmentProps - ICommonCartridgeAssignmentProps
+	 * @returns ICommonCartridgeAssignmentResourceItemProps
+	 */
+	private mapAssignmentPropsToResourceProps(
+		assignmentProps: ICommonCartridgeAssignmentProps
+	): ICommonCartridgeAssignmentResourceItemProps {
+		return {
+			identifier: assignmentProps.identifier,
+			type: 'webcontent',
+			href: `${assignmentProps.identifier}/assignment.html`,
+		};
 	}
 }
