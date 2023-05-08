@@ -64,7 +64,7 @@ describe(BoardNodeRule.name, () => {
 				return { user, entity };
 			};
 
-			it('should call baseRule.hasAllPermissions', () => {
+			it('should call hasAllPermissions on AuthorizationHelper', () => {
 				const { user, entity } = setup();
 
 				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
