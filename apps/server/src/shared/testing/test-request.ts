@@ -115,12 +115,12 @@ export class TestRequest {
 	}
 
 	public async get(
-		routeName?: string,
+		subPath?: string,
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Test> {
-		const path = this.getPath(routeName);
+		const path = this.getPath(subPath);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
 		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set(header).query(query);
@@ -129,12 +129,12 @@ export class TestRequest {
 	}
 
 	public async delete(
-		routeName?: string,
+		subPath?: string,
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Test> {
-		const path = this.getPath(routeName);
+		const path = this.getPath(subPath);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
 		const testRequestInstance = supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
@@ -143,13 +143,13 @@ export class TestRequest {
 	}
 
 	public async put(
-		routeName?: string,
+		subPath?: string,
 		data = {},
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Test> {
-		const path = this.getPath(routeName);
+		const path = this.getPath(subPath);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
 		const testRequestInstance = supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
@@ -158,13 +158,13 @@ export class TestRequest {
 	}
 
 	public async patch(
-		routeName?: string,
+		subPath?: string,
 		data = {},
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Test> {
-		const path = this.getPath(routeName);
+		const path = this.getPath(subPath);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
 		const testRequestInstance = supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
@@ -173,13 +173,13 @@ export class TestRequest {
 	}
 
 	public async post(
-		routeName?: string,
+		subPath?: string,
 		data = {},
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
 	): Promise<supertest.Test> {
-		const path = this.getPath(routeName);
+		const path = this.getPath(subPath);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
 		const testRequestInstance = supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
