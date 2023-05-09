@@ -160,4 +160,60 @@ describe(ContentElementService.name, () => {
 			});
 		});
 	});
+
+	describe('update', () => {
+		describe('when element is a text element', () => {
+			const setup = () => {
+				const textElement = textElementFactory.build();
+				const content = { text: 'this has been updated' };
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { textElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { textElement, content } = setup();
+
+				await service.update(textElement, content);
+
+				expect(textElement.text).toEqual(content.text);
+			});
+
+			it('should persist the element', async () => {
+				const { textElement, content, card } = setup();
+
+				await service.update(textElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(textElement, card);
+			});
+		});
+
+		describe('when element is a file element', () => {
+			const setup = () => {
+				const fileElement = fileElementFactory.build();
+				const content = { caption: 'this has been updated' };
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { fileElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { fileElement, content } = setup();
+
+				await service.update(fileElement, content);
+
+				expect(fileElement.caption).toEqual(content.caption);
+			});
+
+			it('should persist the element', async () => {
+				const { fileElement, content, card } = setup();
+
+				await service.update(fileElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(fileElement, card);
+			});
+		});
+	});
 });

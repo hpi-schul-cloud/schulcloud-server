@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cardFactory, fileElementFactory, setupEntities, textElementFactory, userFactory } from '@shared/testing';
+import { fileElementFactory, setupEntities, textElementFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { ElementUc } from './element.uc';
@@ -54,20 +54,12 @@ describe(ElementUc.name, () => {
 				expect(elementSpy).toHaveBeenCalledWith(textElement.id);
 			});
 
-			it('should update element', async () => {
+			it('should call the service', async () => {
 				const { textElement, user, content } = setup();
 
 				await uc.updateElementContent(user.id, textElement.id, content);
 
-				expect(textElement.text).toEqual(content.text);
-			});
-
-			it('should persist element', async () => {
-				const { textElement, user, content } = setup();
-
-				await uc.updateElementContent(user.id, textElement.id, content);
-
-				expect(elementService.update).toHaveBeenCalledWith(textElement);
+				expect(elementService.update).toHaveBeenCalledWith(textElement, content);
 			});
 		});
 
@@ -90,41 +82,12 @@ describe(ElementUc.name, () => {
 				expect(elementSpy).toHaveBeenCalledWith(fileElement.id);
 			});
 
-			it('should update element', async () => {
+			it('should call the service', async () => {
 				const { fileElement, user, content } = setup();
 
 				await uc.updateElementContent(user.id, fileElement.id, content);
 
-				expect(fileElement.caption).toEqual(content.caption);
-			});
-
-			it('should persist element', async () => {
-				const { fileElement, user, content } = setup();
-
-				await uc.updateElementContent(user.id, fileElement.id, content);
-
-				expect(elementService.update).toHaveBeenCalledWith(fileElement);
-			});
-		});
-
-		describe('update unknown element', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const notAnElement = cardFactory.build();
-				const content = { text: 'this has been updated' };
-
-				// @ts-expect-error Testcase
-				const elementSpy = elementService.findById.mockResolvedValue(notAnElement);
-
-				return { notAnElement, user, content, elementSpy };
-			};
-
-			it('should throw', async () => {
-				const { notAnElement, user, content } = setup();
-
-				const call = () => uc.updateElementContent(user.id, notAnElement.id, content);
-
-				await expect(call).rejects.toThrow();
+				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
 			});
 		});
 	});

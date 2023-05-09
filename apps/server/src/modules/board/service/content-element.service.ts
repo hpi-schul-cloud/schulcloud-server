@@ -9,6 +9,8 @@ import {
 } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
+import { FileElementContent, TextElementContent } from '../controller/dto';
+import { ContentElementUpdaterVisitor } from './content-element-updater.visitor';
 
 @Injectable()
 export class ContentElementService {
@@ -45,7 +47,9 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo): Promise<void> {
+	async update(element: AnyContentElementDo, content: TextElementContent | FileElementContent): Promise<void> {
+		const updater = new ContentElementUpdaterVisitor(content);
+		element.accept(updater);
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
 		await this.boardDoRepo.save(element, parent);
 	}
