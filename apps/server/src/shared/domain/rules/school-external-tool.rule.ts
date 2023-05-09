@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolExternalTool, User } from '../entity';
-import { IPermissionContext } from '../interface';
-import { BasePermission } from './base-permission';
-import { SchoolExternalToolDO } from '../domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalTool, User } from '@shared/domain/entity';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { AuthorizationContext, Rule } from '@src/modules/authorization/types';
 
 @Injectable()
-export class SchoolExternalToolRule extends BasePermission<SchoolExternalTool | SchoolExternalToolDO> {
+export class SchoolExternalToolRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, entity: SchoolExternalTool | SchoolExternalToolDO): boolean {
 		const isMatched: boolean = entity instanceof SchoolExternalTool || entity instanceof SchoolExternalToolDO;
 
@@ -15,15 +17,17 @@ export class SchoolExternalToolRule extends BasePermission<SchoolExternalTool | 
 	public hasPermission(
 		user: User,
 		entity: SchoolExternalTool | SchoolExternalToolDO,
-		context: IPermissionContext
+		context: AuthorizationContext
 	): boolean {
 		let hasPermission: boolean;
 		if (entity instanceof SchoolExternalTool) {
 			hasPermission =
-				this.utils.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.school.id;
+				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
+				user.school.id === entity.school.id;
 		} else {
 			hasPermission =
-				this.utils.hasAllPermissions(user, context.requiredPermissions) && user.school.id === entity.schoolId;
+				this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions) &&
+				user.school.id === entity.schoolId;
 		}
 		return hasPermission;
 	}

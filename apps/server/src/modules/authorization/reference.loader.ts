@@ -12,7 +12,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { BoardNodeService } from '@src/modules/board';
-import { AllowedAuthorizationEntityType, AllowedEntity } from './interfaces';
+import { AllowedAuthorizationEntityType, AllowedEntity } from './types';
 
 type RepoType =
 	| TaskRepo

@@ -1,37 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Submission, User } from '../entity';
-import { IPermissionContext, PermissionTypes } from '../interface/permission';
-import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { Submission, User } from '@shared/domain/entity';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action, AuthorizableObject, AuthorizationContext, Rule } from '@src/modules/authorization/types';
 import { TaskRule } from './task.rule';
 
 @Injectable()
-export class SubmissionRule extends BasePermission<Submission> {
-	constructor(private readonly taskRule: TaskRule) {
-		super();
-	}
+export class SubmissionRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
-	public isApplicable(user: User, entity: PermissionTypes): boolean {
+	public isApplicable(user: User, entity: AuthorizableObject): boolean {
 		const isMatched = entity instanceof Submission;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, submission: Submission, context: IPermissionContext): boolean {
+	public hasPermission(user: User, submission: Submission, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 
 		const result =
-			this.utils.hasAllPermissions(user, requiredPermissions) && this.hasAccessToSubmission(user, submission, action);
+			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&
+			this.hasAccessToSubmission(user, submission, action);
 
 		return result;
 	}
 
-	private hasAccessToSubmission(user: User, submission: Submission, action: Actions): boolean {
+	private hasAccessToSubmission(user: User, submission: Submission, action: Action): boolean {
 		let hasAccessToSubmission = false;
 
-		if (action === Actions.write) {
+		if (action === Action.write) {
 			hasAccessToSubmission = this.hasWriteAccess(user, submission);
-		} else if (action === Actions.read) {
+		} else if (action === Action.read) {
 			hasAccessToSubmission = this.hasReadAccess(user, submission);
 		}
 
@@ -60,7 +58,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission) {
 		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.write,
+			action: Action.write,
 			requiredPermissions: [],
 		});
 
@@ -69,7 +67,7 @@ export class SubmissionRule extends BasePermission<Submission> {
 
 	private hasParentTaskReadAccess(user: User, submission: Submission) {
 		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [],
 		});
 

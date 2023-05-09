@@ -1,6 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { PermissionService } from '.';
@@ -143,23 +142,6 @@ describe('resolvePermissions', () => {
 				const user = userFactory.build({ roles: [role] });
 				const result = service.hasUserAllSchoolPermissions(user, [Permission.CALENDAR_VIEW]);
 				expect(result).toEqual(false);
-			});
-		});
-
-		describe('[checkUserHasAllSchoolPermissions]', () => {
-			it('should throw when hasUserAllSchoolPermissions is false', () => {
-				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(false);
-				expect(() => service.checkUserHasAllSchoolPermissions(user, [Permission.CALENDAR_VIEW])).toThrowError(
-					UnauthorizedException
-				);
-				spy.mockRestore();
-			});
-			it('should not throw when hasUserAllSchoolPermissions is true', () => {
-				const user = userFactory.build();
-				const spy = jest.spyOn(service, 'hasUserAllSchoolPermissions').mockReturnValue(true);
-				service.checkUserHasAllSchoolPermissions(user, [Permission.CALENDAR_VIEW]);
-				spy.mockRestore();
 			});
 		});
 	});
