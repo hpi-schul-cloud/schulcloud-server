@@ -7,9 +7,9 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from '@shared/domain';
+import { FileElementContent, TextElementContent } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
-import { FileElementContent, TextElementContent } from '../controller/dto';
 import { ContentElementUpdaterVisitor } from './content-element-updater.visitor';
 
 @Injectable()
