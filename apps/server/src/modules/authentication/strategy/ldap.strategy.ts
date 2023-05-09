@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { System } from '@shared/domain';
+import { LdapConfig, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
@@ -26,9 +26,15 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
-		const system = await this.systemRepo.findById(systemId);
-		const school = await this.schoolRepo.findById(schoolId);
-		const account = await this.loadAccount(username, systemId, school);
+		const system: System = await this.systemRepo.findById(systemId);
+
+		const school: SchoolDO = await this.schoolRepo.findById(schoolId);
+
+		if (!school.systems || !school.systems.includes(systemId)) {
+			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
+		}
+
+		const account: AccountDto = await this.loadAccount(username, system);
 		const userId = this.checkValue(account.userId);
 
 		this.authenticationService.checkBrutForce(account);
@@ -73,12 +79,13 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise<AccountDto> {
-		const externalSchoolId = this.checkValue(school.externalId);
+	private async loadAccount(username: string, system: System): Promise<AccountDto> {
+		const ldapConfig: LdapConfig = this.checkValue(system.ldapConfig);
+		const rootPath: string = this.checkValue(ldapConfig.rootPath);
 
-		const userNameWithSchool = `${externalSchoolId}/${username}`;
+		const userNameWithSchool = `${rootPath}/${username}`;
 
-		const account = await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), systemId);
+		const account = await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), system.id);
 
 		return account;
 	}
