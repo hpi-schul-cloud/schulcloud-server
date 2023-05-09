@@ -12,7 +12,7 @@ import {
 import { Test } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 import { accountFactory } from './factory';
-import { TestRequest } from './test-request';
+import { TestApiClient } from './test-api-client';
 
 @Controller('')
 class TestController {
@@ -55,7 +55,7 @@ class TestErrorController {
 	}
 }
 
-describe('test-request', () => {
+describe(TestApiClient.name, () => {
 	describe('when /authentication/local throw an error', () => {
 		let app: INestApplication;
 
@@ -74,7 +74,7 @@ describe('test-request', () => {
 		});
 
 		const setup = () => {
-			const request = new TestRequest(app, '');
+			const request = new TestApiClient(app, '');
 			const account = accountFactory.build();
 
 			return { request, account };
@@ -105,7 +105,7 @@ describe('test-request', () => {
 		});
 
 		const setup = () => {
-			const request = new TestRequest(app, '');
+			const request = new TestApiClient(app, '');
 			const account = accountFactory.build();
 			const id = new ObjectId().toHexString();
 
