@@ -3,11 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
@@ -16,7 +16,7 @@ import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { PermissionContexts } from '../files-storage.const';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FilesStorageUC } from './files-storage.uc';
@@ -183,7 +183,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
-					{ action: Actions.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
+					{ action: Action.write, requiredPermissions: [Permission.FILESTORAGE_CREATE] }
 				);
 			});
 
@@ -312,7 +312,7 @@ describe('FilesStorageUC upload methods', () => {
 					userId,
 					allowedType,
 					params.parentId,
-					PermissionContexts.create
+					FileStorageAuthorizationContext.create
 				);
 			});
 

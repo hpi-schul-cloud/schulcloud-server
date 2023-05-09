@@ -126,9 +126,9 @@ When calling other internal micro service for already authorized operations plea
 ### Example 1 - Execute a Single Operation
 
 ```javascript
-   this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([])
+   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
    // or
-   this.authorizationService.hasPermission(user, course, PermissionContextBuilder.write([])
+   this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
    // next orchestration steps
 ```
 
@@ -136,9 +136,9 @@ When calling other internal micro service for already authorized operations plea
 
 ```javascript
 // If you don't have an entity but an entity type and id, you can check permission by reference
-await this.checkPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // or
-await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, PermissionContextBuilder.read([]));
+await this.authorizationService.hasPermissionByReferences(userId, AllowedEntity.course, courseId, AuthorizationContextBuilder.read([]));
 // next orchestration steps
 ```
 
@@ -146,7 +146,7 @@ await this.hasPermissionByReferences(userId, AllowedEntity.course, courseId, Per
 
 ```javascript
 // Multiple permissions can be added. For a successful authorization, the user need all of them.
-await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissions.COURSE_VIEW]));
+await this.authorizationService.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
 // next orchestration steps
 ```
 
@@ -154,15 +154,15 @@ await this.hasPermission(userId, course, PermissionContextBuilder.read([Permissi
 
 ```javascript
 /** const **/
-export const PermissionContexts = {
-   create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-   read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-   update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-   delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+export const FileStorageAuthorizationContext = {
+   create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+   read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+   update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+   delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
 
 /** UC **/
-this.hasPermission(userId, course, PermissionContexts.create);
+this.authorizationService.hasPermission(userId, course, PermissionContexts.create);
 // do other orchestration steps
 ```
 
@@ -193,7 +193,7 @@ async createUserByAdmin(userId: EntityId, params: { email: string, firstName: st
 
     const user = this.authorizationService.getUserWithPermissions(userId);
 
-   await this.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, PermissionContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
+   await this.authorizationService.checkPermissionByReferences(userId, AllowedEntity.school, schoolId, AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]));
 
     const newUser = new User(params)
 
@@ -257,7 +257,7 @@ async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
 async createLesson(userId: EntityId, params: { courseId: EntityId }) {
     const course = this.courseService.getCourse(params.courseId);
     const user = this.authorizationService.getUserWithPermissions(userId);
-         // check permission for user and course
+         // check authorization for user and course
         this.authorizationService.checkPermission(user, course
             {
                 action: Actions.write,
@@ -282,11 +282,11 @@ So a rule must validate our scope actions. For example we have a _news_ for the 
 ```ts
 @Injectable()
 export class NewsRule extends BasePermission<News> {
-   constructor(private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
+   constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
          super();
    }
 
-   // Is used to select the matching rule in the permission manager. Therefore we keep the condition to which case the rule
+   // Is used to select the matching rule in the rule manager. Therefore we keep the condition to which case the rule
    // applies in the rule itself. In future we expect more complex conditions that could apply here.
    public isApplicable(user: User, entity: News): boolean {
       const isMatched = entity instanceof News;
@@ -294,13 +294,13 @@ export class NewsRule extends BasePermission<News> {
       return isMatched;
    }
 
-   public hasPermission(user: User, entity: News, context: IPermissionContext): boolean {
+   public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
       const { action, requiredPermissions } = context;
 
       // check required permissions passed by UC
-      const hasPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+      const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
       // check access to entity by property
-      const isCreator = this.utils.hasAccessToEntity(user, entity, ['creator']);
+      const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, ['creator']);
       let hasNewsPermission = false;
 
       if (action === Actions.read) {
@@ -351,13 +351,9 @@ They load the reference directly.
 > Please keep in mind that it can have an impact on the performance if you use it wrongly.
 > We keep it as a seperate method to avoid the usage in areas where the domain object should exist, because we see the risk that a developer could be tempted by the ease of only passing the id.
 
-### shared/domain/rules/\*
+#### authorization-context.builder
 
-The location to add new rules for entities / domain objects.
-
-#### permission-context.builder
-
-We export a permission context builder to prepare the parameter for the authorization service called "authorization context".
+We export an authorization context builder to prepare the parameter for the authorization service called "authorization context".
 This is optional and not required.
 But it enables us to easily change the structure of the authorization context without touching many different places.
 

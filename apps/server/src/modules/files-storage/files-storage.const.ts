@@ -1,4 +1,5 @@
-import { Permission, PermissionContextBuilder } from '@shared/domain';
+import { Permission } from '@shared/domain';
+import { AuthorizationContextBuilder } from '../authorization';
 
 export enum FilesStorageInternalActions {
 	downloadBySecurityToken = '/file-security/download/:token',
@@ -6,9 +7,9 @@ export enum FilesStorageInternalActions {
 }
 export const API_VERSION_PATH = '/api/v3';
 
-export const PermissionContexts = {
-	create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-	read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-	update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-	delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+export const FileStorageAuthorizationContext = {
+	create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+	read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+	update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+	delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 };
