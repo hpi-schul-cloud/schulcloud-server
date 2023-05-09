@@ -84,6 +84,6 @@ In client applications, for technical errors, evaluate the http-error-code, then
 
 For business errors we use 409/conflict as default to clearly have all business errors with one error code identified.
 
-> Sample: For API validation errors, 409/Bad Request will be extended with `validationError: ValidationError[{ field: string, error: string }]` and a custom type `API_VALIDATION_ERROR`.
+> Sample: For API validation errors, 400/Bad Request will be extended with `validationError: ValidationError[{ field: string, error: string }]` and a custom type `API_VALIDATION_ERROR`.
 
 Pipes can be used as input validation. To get errors reported in the correct format, they can define a custom exception factory when they should produce api validation error or other exceptions, handled by clients.

@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { System } from '@shared/domain';
 import { Client, createClient } from 'ldapjs';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { LdapConnectionError } from '../errors/ldap-connection.error';
 
 @Injectable()
 export class LdapService {
-	constructor(private readonly logger: Logger) {
+	constructor(private readonly logger: LegacyLogger) {
 		this.logger.setContext(LdapService.name);
 	}
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, PermissionContextBuilder } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamMapper } from '../mapper/team.mapper';
@@ -17,7 +17,7 @@ export class CollaborativeStorageService {
 		private teamsMapper: TeamMapper,
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageService.name);
 	}

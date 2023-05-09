@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class BoardUc {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(BoardUc.name);
 	}

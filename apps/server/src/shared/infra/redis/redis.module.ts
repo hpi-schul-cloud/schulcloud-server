@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { createClient, RedisClient } from 'redis';
 import { REDIS_CLIENT } from './interface/redis.constants';
 
@@ -9,7 +9,7 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 	providers: [
 		{
 			provide: REDIS_CLIENT,
-			useFactory: (logger: Logger) => {
+			useFactory: (logger: LegacyLogger) => {
 				logger.setContext(RedisModule.name);
 
 				if (Configuration.has('REDIS_URI')) {
@@ -24,7 +24,7 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 
 				return undefined;
 			},
-			inject: [Logger],
+			inject: [LegacyLogger],
 		},
 	],
 	exports: [REDIS_CLIENT],
