@@ -7,11 +7,6 @@ interface AuthenticationResponse {
 	accessToken: string;
 }
 
-interface TestRequestResponse {
-	body: unknown;
-	statusCode: number;
-}
-
 const headerConst = {
 	accept: 'accept',
 	json: 'application/json',
@@ -124,13 +119,13 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<TestRequestResponse> {
+	): Promise<supertest.Test> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = supertest(this.app.getHttpServer()).get(path).set(header).query(query);
+		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set(header).query(query);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async delete(
@@ -138,13 +133,13 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<TestRequestResponse> {
+	): Promise<supertest.Test> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
+		const testRequestInstance = supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async put(
@@ -153,13 +148,13 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<TestRequestResponse> {
+	): Promise<supertest.Test> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
+		const testRequestInstance = supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async patch(
@@ -168,13 +163,13 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<TestRequestResponse> {
+	): Promise<supertest.Test> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
+		const testRequestInstance = supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async post(
@@ -183,12 +178,12 @@ export class TestRequest {
 		account?: Account,
 		query: string | Record<string, string> = {},
 		additionalHeader: Record<string, string> = {}
-	): Promise<TestRequestResponse> {
+	): Promise<supertest.Test> {
 		const path = this.getPath(routeName);
 		const formatedJwt = await this.getJwt(account);
 		const header = this.getHeader(formatedJwt, additionalHeader);
-		const response = supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
+		const testRequestInstance = supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 }
