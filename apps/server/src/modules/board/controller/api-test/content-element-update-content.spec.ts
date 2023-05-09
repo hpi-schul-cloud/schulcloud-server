@@ -7,7 +7,7 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	TestRequest,
+	TestApiClient,
 	textElementNodeFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -16,7 +16,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let request: TestRequest;
+	let request: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +26,7 @@ describe(`content element update content (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		request = new TestRequest(app, 'elements');
+		request = new TestApiClient(app, 'elements');
 	});
 
 	afterAll(async () => {
