@@ -3464,10 +3464,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TeamUserFactory.html" data-type="entity-link" >TeamUserFactory</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TestBootstrapConsole.html" data-type="entity-link" >TestBootstrapConsole</a>
+                                <a href="classes/TestApiClient.html" data-type="entity-link" >TestApiClient</a>
                             </li>
                             <li class="link">
-                                <a href="classes/TestRequest.html" data-type="entity-link" >TestRequest</a>
+                                <a href="classes/TestBootstrapConsole.html" data-type="entity-link" >TestBootstrapConsole</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TextElement.html" data-type="entity-link" >TextElement</a>
@@ -4550,9 +4550,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TestRequestResponse.html" data-type="entity-link" >TestRequestResponse</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TextElementNodeProps.html" data-type="entity-link" >TextElementNodeProps</a>

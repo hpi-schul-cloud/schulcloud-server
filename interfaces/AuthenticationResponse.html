@@ -65,7 +65,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/test-request.ts</code>
+            <code>apps/server/src/shared/testing/test-api-client.ts</code>
         </p>
 
 
@@ -147,11 +147,6 @@ interface AuthenticationResponse {
 	accessToken: string;
 }
 
-interface TestRequestResponse {
-	body: unknown;
-	statusCode: number;
-}
-
 const headerConst &#x3D; {
 	accept: &#x27;accept&#x27;,
 	json: &#x27;application/json&#x27;,
@@ -162,13 +157,13 @@ const testReqestConst &#x3D; {
 	prefix: &#x27;Bearer&#x27;,
 	loginPath: &#x27;/authentication/local&#x27;,
 	accessToken: &#x27;accessToken&#x27;,
-	errorMessage: &#x27;TestRequest: Can not cast to local AutenticationResponse:&#x27;,
+	errorMessage: &#x27;TestApiClient: Can not cast to local AutenticationResponse:&#x27;,
 };
 
 /**
  * Note res.cookie is not supported atm, feel free to add this
  */
-export class TestRequest {
+export class TestApiClient {
 	private readonly app: INestApplication;
 
 	private readonly baseRoute: string;
@@ -229,6 +224,16 @@ export class TestRequest {
 		return formatedJwt;
 	}
 
+	private getHeader(formatedJwt: string, additionalHeader: Record&lt;string, string&gt; &#x3D; {}) {
+		const baseHeader &#x3D; {
+			authorization: formatedJwt,
+			accept: headerConst.json,
+		};
+		const header &#x3D; Object.assign(baseHeader, additionalHeader);
+
+		return header;
+	}
+
 	public async getJwt(accountWithPassword?: Account): Promise&lt;string&gt; {
 		let formatedJwt: string &#x3D; testReqestConst.invalid;
 
@@ -249,87 +254,77 @@ export class TestRequest {
 		return formatedJwt;
 	}
 
-	private getHeader(formatedJwt: string, additionalHeader: Record&lt;string, string&gt; &#x3D; {}) {
-		const baseHeader &#x3D; {
-			authorization: formatedJwt,
-			accept: headerConst.json,
-		};
-		const header &#x3D; Object.assign(baseHeader, additionalHeader);
-
-		return header;
-	}
-
 	public async get(
-		routeName?: string,
+		subPath?: string,
 		account?: Account,
 		query: string | Record&lt;string, string&gt; &#x3D; {},
 		additionalHeader: Record&lt;string, string&gt; &#x3D; {}
-	): Promise&lt;TestRequestResponse&gt; {
-		const path &#x3D; this.getPath(routeName);
+	): Promise&lt;supertest.Test&gt; {
+		const path &#x3D; this.getPath(subPath);
 		const formatedJwt &#x3D; await this.getJwt(account);
 		const header &#x3D; this.getHeader(formatedJwt, additionalHeader);
-		const response &#x3D; supertest(this.app.getHttpServer()).get(path).set(header).query(query);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).get(path).set(header).query(query);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async delete(
-		routeName?: string,
+		subPath?: string,
 		account?: Account,
 		query: string | Record&lt;string, string&gt; &#x3D; {},
 		additionalHeader: Record&lt;string, string&gt; &#x3D; {}
-	): Promise&lt;TestRequestResponse&gt; {
-		const path &#x3D; this.getPath(routeName);
+	): Promise&lt;supertest.Test&gt; {
+		const path &#x3D; this.getPath(subPath);
 		const formatedJwt &#x3D; await this.getJwt(account);
 		const header &#x3D; this.getHeader(formatedJwt, additionalHeader);
-		const response &#x3D; supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async put(
-		routeName?: string,
+		subPath?: string,
 		data &#x3D; {},
 		account?: Account,
 		query: string | Record&lt;string, string&gt; &#x3D; {},
 		additionalHeader: Record&lt;string, string&gt; &#x3D; {}
-	): Promise&lt;TestRequestResponse&gt; {
-		const path &#x3D; this.getPath(routeName);
+	): Promise&lt;supertest.Test&gt; {
+		const path &#x3D; this.getPath(subPath);
 		const formatedJwt &#x3D; await this.getJwt(account);
 		const header &#x3D; this.getHeader(formatedJwt, additionalHeader);
-		const response &#x3D; supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async patch(
-		routeName?: string,
+		subPath?: string,
 		data &#x3D; {},
 		account?: Account,
 		query: string | Record&lt;string, string&gt; &#x3D; {},
 		additionalHeader: Record&lt;string, string&gt; &#x3D; {}
-	): Promise&lt;TestRequestResponse&gt; {
-		const path &#x3D; this.getPath(routeName);
+	): Promise&lt;supertest.Test&gt; {
+		const path &#x3D; this.getPath(subPath);
 		const formatedJwt &#x3D; await this.getJwt(account);
 		const header &#x3D; this.getHeader(formatedJwt, additionalHeader);
-		const response &#x3D; supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 
 	public async post(
-		routeName?: string,
+		subPath?: string,
 		data &#x3D; {},
 		account?: Account,
 		query: string | Record&lt;string, string&gt; &#x3D; {},
 		additionalHeader: Record&lt;string, string&gt; &#x3D; {}
-	): Promise&lt;TestRequestResponse&gt; {
-		const path &#x3D; this.getPath(routeName);
+	): Promise&lt;supertest.Test&gt; {
+		const path &#x3D; this.getPath(subPath);
 		const formatedJwt &#x3D; await this.getJwt(account);
 		const header &#x3D; this.getHeader(formatedJwt, additionalHeader);
-		const response &#x3D; supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
 
-		return response;
+		return testRequestInstance;
 	}
 }
 </code></pre>
