@@ -52,10 +52,6 @@ describe('NewsUc', () => {
 		},
 	];
 
-	afterAll(async () => {
-		await module.close();
-	});
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -110,6 +106,10 @@ describe('NewsUc', () => {
 
 		service = module.get(NewsUc);
 		repo = module.get(NewsRepo);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

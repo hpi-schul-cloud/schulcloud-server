@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Action, AuthorizationService } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
@@ -29,7 +29,7 @@ export class ShareTokenUC {
 		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
 
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
 	}

@@ -2,7 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration';
@@ -11,7 +11,7 @@ import { OAuthMigrationError } from '@src/modules/user-login-migration';
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}

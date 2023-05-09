@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
@@ -69,8 +69,8 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<TaskCopyService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

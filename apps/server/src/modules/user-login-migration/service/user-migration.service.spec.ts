@@ -12,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
@@ -28,7 +28,7 @@ describe('UserMigrationService', () => {
 	let module: TestingModule;
 	let service: UserMigrationService;
 	let configBefore: IConfig;
-	let logger: Logger;
+	let logger: LegacyLogger;
 
 	let schoolService: DeepMocked<SchoolService>;
 	let systemService: DeepMocked<SystemService>;
@@ -66,8 +66,8 @@ describe('UserMigrationService', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,
@@ -81,7 +81,7 @@ describe('UserMigrationService', () => {
 		systemService = module.get(SystemService);
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 
 		await setupEntities();

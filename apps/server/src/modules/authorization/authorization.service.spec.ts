@@ -6,6 +6,7 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 import { AllowedAuthorizationEntityType, Rule } from './types';
@@ -72,10 +73,10 @@ describe('AuthorizationService', () => {
 				return { context, user, spy };
 			};
 
-			it('should throw ForbiddenException', () => {
+			it('should throw ForbiddenLoggableException', () => {
 				const { context, user, spy } = setup();
 
-				expect(() => service.checkPermission(user, user, context)).toThrow(ForbiddenException);
+				expect(() => service.checkPermission(user, user, context)).toThrow(ForbiddenLoggableException);
 
 				spy.mockRestore();
 			});
@@ -156,11 +157,11 @@ describe('AuthorizationService', () => {
 				return { context, userId, entityId, entityName, spy };
 			};
 
-			it('should reject with ForbiddenException', async () => {
+			it('should reject with ForbiddenLoggableException', async () => {
 				const { context, userId, entityId, entityName, spy } = setup();
 
 				await expect(service.checkPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
-					ForbiddenException
+					ForbiddenLoggableException
 				);
 
 				spy.mockRestore();

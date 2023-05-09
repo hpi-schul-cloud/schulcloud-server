@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, User } from '@shared/domain';
 import { AuthorizationHelper } from './authorization.helper';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 import { AllowedAuthorizationEntityType, AuthorizableObject, AuthorizationContext } from './types';
@@ -15,7 +16,7 @@ export class AuthorizationService {
 
 	public checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(user.id, entity.constructor.name, context);
 		}
 	}
 
@@ -33,7 +34,7 @@ export class AuthorizationService {
 		context: AuthorizationContext
 	): Promise<void> {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(userId, entityName, context);
 		}
 	}
 
@@ -43,7 +44,7 @@ export class AuthorizationService {
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {
-		// TODO: I think this try-catch is unnecessary and wrong because there can be different reasons why the entity cannot be loaded and they should bubble up.
+		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
 			const [user, entity] = await Promise.all([
 				this.getUserWithPermissions(userId),

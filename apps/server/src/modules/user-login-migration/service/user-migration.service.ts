@@ -10,7 +10,7 @@ import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
@@ -40,7 +40,7 @@ export class UserMigrationService {
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {
