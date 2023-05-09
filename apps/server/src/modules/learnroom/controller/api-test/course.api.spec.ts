@@ -72,11 +72,10 @@ describe('Course Controller (API)', () => {
 			return { teacher, course };
 		};
 		it('should find course', async () => {
-			const { teacher, course } = setup();
+			const { course } = setup();
 
 			await em.persistAndFlush(course);
 			em.clear();
-			currentUser = mapUserToCurrentUser(teacher);
 
 			const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
 			const courseResponse = response.body as CourseResponse;
