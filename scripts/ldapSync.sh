@@ -7,8 +7,8 @@ value_time_out=${SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT:-$default_time_out}
 default_api_key="example"
 value_api_key="${SYNC_API_KEY:-$default_api_key}"
 
-default_sync_svc="api-ldapsync-svc"
-value_sync_svc="${API_LDAP_SYNC_SVC:-$default_sync_svc}" #api-svc?
+default_sync_svc="api-svc"
+value_sync_svc="${API_LDAP_SYNC_SVC:-$default_sync_svc}"
 
 # Start server in the background and redirect logs to file
 nohup npm run nest:start > server.log 2>&1 &
