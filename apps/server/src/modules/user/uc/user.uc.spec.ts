@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, PermissionService, User } from '@shared/domain';
+import { LanguageType, Permission, User } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserUc } from './user.uc';
 
@@ -12,7 +12,6 @@ describe('UserUc', () => {
 	let module: TestingModule;
 	let userUc: UserUc;
 	let userRepo: DeepMocked<UserRepo>;
-	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 
 	afterAll(async () => {
@@ -32,10 +31,6 @@ describe('UserUc', () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
-				},
-				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
@@ -44,7 +39,6 @@ describe('UserUc', () => {
 
 		userUc = module.get(UserUc);
 		userRepo = module.get(UserRepo);
-		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		await setupEntities();
 	});
@@ -54,23 +48,20 @@ describe('UserUc', () => {
 	});
 
 	describe('me', () => {
-		let user: User;
-
-		beforeEach(() => {
-			user = userFactory.buildWithId({ roles: [] });
+		it('should return an array with the user and its permissions', async () => {
+			const permission = Permission.ACCOUNT_CREATE;
+			const role = roleFactory.build({ permissions: [permission] });
+			const user = userFactory.buildWithId({ roles: [role] });
 			userRepo.findById.mockResolvedValue(user);
-		});
+			const userSpy = jest.spyOn(user, 'resolvePermissions').mockReturnValueOnce([permission]);
 
-		afterEach(() => {
+			const result = await userUc.me(user.id);
+
+			expect(result[0]).toEqual(user);
+			expect(result[1]).toEqual([permission]);
+
 			userRepo.findById.mockRestore();
-			permissionService.resolvePermissions.mockRestore();
-		});
-
-		it('should provide information about the passed userId', async () => {
-			await userUc.me(user.id);
-
-			expect(userRepo.findById).toHaveBeenCalled();
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
+			userSpy.mockRestore();
 		});
 	});
 
