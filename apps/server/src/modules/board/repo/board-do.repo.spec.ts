@@ -2,7 +2,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, BoardNode, CardNode, Column, ColumnBoard, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, Card, CardNode, Column, ColumnBoard, TextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -12,24 +12,29 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
+	fileElementFactory,
 	textElementFactory,
 	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
+import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
+import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
 describe(BoardDoRepo.name, () => {
 	let module: TestingModule;
 	let repo: BoardDoRepo;
 	let em: EntityManager;
+	let recursiveDeleteVisitor: RecursiveDeleteVisitor;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [BoardDoRepo, BoardNodeRepo],
+			providers: [BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor],
 		}).compile();
 		repo = module.get(BoardDoRepo);
 		em = module.get(EntityManager);
+		recursiveDeleteVisitor = module.get(RecursiveDeleteVisitor);
 	});
 
 	afterAll(async () => {
@@ -178,44 +183,130 @@ describe(BoardDoRepo.name, () => {
 	});
 
 	describe('save', () => {
-		const setup = async () => {
-			const board = columnBoardFactory.build();
-			const cards = cardFactory.buildList(3);
-			const column = columnFactory.build({ children: cards });
+		describe('when called', () => {
+			it('should create new board nodes', async () => {
+				const cards = cardFactory.buildList(3);
 
-			const columnNode = columnNodeFactory.build({ id: column.id });
-			await em.persistAndFlush(columnNode);
+				await repo.save(cards);
+				em.clear();
 
-			return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
-		};
+				const result = await em.find(CardNode, {});
+				expect(result.map((n) => n.id).sort()).toEqual(cards.map((c) => c.id).sort());
+			});
 
-		it('should save the object', async () => {
-			const { board } = await setup();
+			it('should update existing board nodes', async () => {
+				const node = cardNodeFactory.buildWithId({ title: 'before' });
+				await em.persistAndFlush(node);
 
-			await repo.save(board);
-			em.clear();
+				const card = await repo.findByClassAndId(Card, node.id);
+				card.title = 'after';
 
-			const result = await em.findOneOrFail(BoardNode, board.id);
+				await repo.save(card);
+				em.clear();
 
-			expect(result.id).toEqual(board.id);
+				const result = await em.findOneOrFail(CardNode, node.id);
+				expect(result.title).toEqual('after');
+			});
+
+			it('should be able to do both - create and update', async () => {
+				const node1 = cardNodeFactory.buildWithId({ title: 'before' });
+				await em.persistAndFlush(node1);
+				em.clear();
+				const card1 = await repo.findByClassAndId(Card, node1.id);
+				card1.title = 'after';
+				const card2 = cardFactory.build({ title: 'created' });
+
+				await repo.save([card1, card2]);
+				em.clear();
+
+				const result = await em.find(CardNode, {});
+				expect(result.map((n) => n.title).sort()).toEqual(['after', 'created']);
+			});
+
+			it('should use the visitor', async () => {
+				const board = columnBoardFactory.build();
+				jest.spyOn(board, 'accept');
+
+				await repo.save(board);
+
+				expect(board.accept).toHaveBeenCalledWith(expect.any(RecursiveSaveVisitor));
+			});
+
+			it('should flush the changes', async () => {
+				const board = columnBoardFactory.build();
+				jest.spyOn(em, 'flush');
+
+				await repo.save(board);
+
+				expect(em.flush).toHaveBeenCalled();
+			});
 		});
 
-		it('should persist order to positions', async () => {
-			const { column, card1, card2, card3 } = await setup();
+		describe('when parent is already persisted', () => {
+			it('should create child nodes', async () => {
+				const column = columnFactory.build();
+				await repo.save(column);
 
-			await repo.save([card1, card2, card3], column);
-			em.clear();
+				const cards = cardFactory.buildList(2);
+				cards.forEach((card) => column.addChild(card));
+				await repo.save(cards, column);
 
-			expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
-			expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
-			expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
+				const result = await em.find(CardNode, {});
+				expect(result.map((n) => n.parentId)).toEqual([column.id, column.id]);
+			});
+		});
+
+		describe('when parent is newly built (not yet persisted)', () => {
+			it('should throw an error', async () => {
+				const card = cardFactory.build();
+				const column = columnFactory.build({ children: [card] });
+
+				await expect(repo.save(card, column)).rejects.toThrow();
+			});
+		});
+
+		describe('when objects have different parents', () => {
+			it('should throw an error', async () => {
+				const card1 = cardFactory.build();
+				const card2 = cardFactory.build();
+
+				const column1 = columnFactory.build({ children: [card1] });
+				const column2 = columnFactory.build({ children: [card2] });
+				await repo.save([column1, column2]);
+
+				await expect(repo.save([card1, card2], column1)).rejects.toThrow();
+			});
+		});
+
+		describe('child ordering', () => {
+			const setup = async () => {
+				const board = columnBoardFactory.build();
+				const cards = cardFactory.buildList(3);
+				const column = columnFactory.build({ children: cards });
+
+				const columnNode = columnNodeFactory.build({ id: column.id });
+				await em.persistAndFlush(columnNode);
+
+				return { board, column, card1: cards[0], card2: cards[1], card3: cards[2] };
+			};
+
+			it('should persist child order to positions', async () => {
+				const { column, card1, card2, card3 } = await setup();
+
+				await repo.save([card1, card2, card3], column);
+				em.clear();
+
+				expect((await em.findOne(CardNode, card1.id))?.position).toEqual(0);
+				expect((await em.findOne(CardNode, card2.id))?.position).toEqual(1);
+				expect((await em.findOne(CardNode, card3.id))?.position).toEqual(2);
+			});
 		});
 	});
 
 	describe('delete', () => {
 		describe('when deleting a domainObject and its descendants', () => {
 			const setup = async () => {
-				const elements = textElementFactory.buildList(3);
+				const elements = [...textElementFactory.buildList(3), ...fileElementFactory.buildList(2)];
 				const card = cardFactory.build({ children: elements });
 				await repo.save(card);
 				await repo.save(elements, card);
@@ -248,6 +339,8 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
 				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[3].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(TextElementNode, elements[4].id)).rejects.toThrow();
 			});
 
 			it('should not delete descendants of siblings', async () => {
@@ -259,6 +352,24 @@ describe(BoardDoRepo.name, () => {
 				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[0].id)).resolves.toBeDefined();
 				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[1].id)).resolves.toBeDefined();
 				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[2].id)).resolves.toBeDefined();
+			});
+
+			it('should use the visitor', async () => {
+				const { card } = await setup();
+				card.acceptAsync = jest.fn();
+
+				await repo.delete(card);
+
+				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
+			});
+
+			it('should use the visitor', async () => {
+				const { card } = await setup();
+				card.acceptAsync = jest.fn();
+
+				await repo.delete(card);
+
+				expect(card.acceptAsync).toHaveBeenCalledWith(recursiveDeleteVisitor);
 			});
 		});
 	});

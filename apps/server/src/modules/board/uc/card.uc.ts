@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Card, EntityId, TextElement } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { Card, ContentElementType, EntityId, FileElement, TextElement } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService, ContentElementService } from '../service';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class CardUc {
 	constructor(
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CardUc.name);
 	}
@@ -23,13 +23,17 @@ export class CardUc {
 
 	// --- elements ---
 
-	async createElement(userId: EntityId, cardId: EntityId): Promise<TextElement> {
-		this.logger.debug({ action: 'createElement', userId, cardId });
+	async createElement(
+		userId: EntityId,
+		cardId: EntityId,
+		type: ContentElementType
+	): Promise<TextElement | FileElement> {
+		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
 
 		// TODO check permissions
-		const element = await this.elementService.create(card);
+		const element = await this.elementService.create(card, type);
 
 		return element;
 	}

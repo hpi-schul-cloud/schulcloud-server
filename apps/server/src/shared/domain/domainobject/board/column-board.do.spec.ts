@@ -1,56 +1,36 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing';
+import { columnBoardFactory, columnFactory } from '@shared/testing';
 import { ColumnBoard } from './column-board.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(ColumnBoard.name, () => {
-	describe('useBoardNodeBuilder', () => {
-		const setup = () => {
-			const board = columnBoardFactory.build();
-			const builder = createMock<BoardNodeBuilder>();
-
-			return { board, builder };
-		};
-
-		it('should call the specific builder method', () => {
-			const { board, builder } = setup();
-			jest.spyOn(builder, 'buildColumnBoardNode');
-
-			board.useBoardNodeBuilder(builder);
-
-			expect(builder.buildColumnBoardNode).toHaveBeenCalledWith(board, undefined);
+	describe('isAllowedAsChild', () => {
+		it('should allow column objects', () => {
+			const columnBoard = columnBoardFactory.build();
+			const column = columnFactory.build();
+			expect(columnBoard.isAllowedAsChild(column)).toBe(true);
 		});
 	});
 
-	describe('addChild', () => {
-		const setup = () => {
-			const children = columnFactory.buildListWithId(3);
-			const board = columnBoardFactory.build({ children });
-			const column = columnFactory.build();
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const columnBoard = columnBoardFactory.build();
 
-			return { board, column };
-		};
+			columnBoard.accept(visitor);
 
-		it('should throw error on unsupported child type', () => {
-			const { board } = setup();
-			const card = cardFactory.build();
-			expect(() => board.addChild(card)).toThrowError();
+			expect(visitor.visitColumnBoard).toHaveBeenCalledWith(columnBoard);
 		});
+	});
 
-		it('should be able to add children', () => {
-			const { board, column } = setup();
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const columnBoard = columnBoardFactory.build();
 
-			board.addChild(column);
+			await columnBoard.acceptAsync(visitor);
 
-			expect(board.children[board.children.length - 1]).toEqual(column);
-		});
-
-		it('should add child to correct position', () => {
-			const { column, board } = setup();
-
-			board.addChild(column, 1);
-
-			expect(board.children[1]).toEqual(column);
+			expect(visitor.visitColumnBoardAsync).toHaveBeenCalledWith(columnBoard);
 		});
 	});
 });

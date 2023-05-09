@@ -1,59 +1,63 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
+import { Counted } from '@shared/domain';
 import { isEmail, validateOrReject } from 'class-validator';
+import { LegacyLogger } from '../../../core/logger';
+import { IServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
-import { IServerConfig } from '../../server/server.config';
-import { Logger } from '../../../core/logger';
 import { AccountValidationService } from './account.validation.service';
+import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
+	private readonly accountImpl: AbstractAccountService;
+
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
+		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+			this.accountImpl = accountIdm;
+		} else {
+			this.accountImpl = accountDb;
+		}
 	}
 
 	async findById(id: string): Promise<AccountDto> {
-		return this.accountDb.findById(id);
+		return this.accountImpl.findById(id);
 	}
 
 	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
-		return this.accountDb.findMultipleByUserId(userIds);
+		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
 	async findByUserId(userId: string): Promise<AccountDto | null> {
-		return this.accountDb.findByUserId(userId);
+		return this.accountImpl.findByUserId(userId);
 	}
 
 	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
-		return this.accountDb.findByUserIdOrFail(userId);
+		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
-		return this.accountDb.findByUsernameAndSystemId(username, systemId);
+		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }> {
-		return this.accountDb.searchByUsernamePartialMatch(userName, skip, limit);
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }> {
-		return this.accountDb.searchByUsernameExactMatch(userName);
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
@@ -110,13 +114,20 @@ export class AccountService extends AbstractAccountService {
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-		return ret;
+		const idmAccount = await this.executeIdmMethod(async () =>
+			this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin)
+		);
+		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+	}
+
+	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 
 	async delete(accountId: string): Promise<void> {
@@ -137,7 +148,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>) {
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED')) {
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			try {
 				return await idmCallback();
 			} catch (error) {

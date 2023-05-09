@@ -10,7 +10,7 @@ import {
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -21,7 +21,7 @@ describe('DatabaseManagementService', () => {
 	let fileSystemAdapter: DeepMocked<FileSystemAdapter>;
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
@@ -176,7 +176,7 @@ describe('DatabaseManagementService', () => {
 				BsonConverter,
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
-				{ provide: Logger, useValue: createMock<Logger>() },
+				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -249,7 +249,7 @@ describe('DatabaseManagementService', () => {
 		dbService = module.get(DatabaseManagementService);
 		bsonConverter = module.get(BsonConverter);
 		configService = module.get(ConfigService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 	});

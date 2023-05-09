@@ -1140,6 +1140,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Makes the new school administration page the default page"
+		},
+		"FEATURE_CLIENT_USER_LOGIN_MIGRATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Changes the schulcloud client to use new login endpoints"
 		}
 	},
 	"required": [

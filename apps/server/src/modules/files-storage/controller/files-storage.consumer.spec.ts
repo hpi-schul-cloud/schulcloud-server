@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ALL_ENTITIES, EntityId } from '@shared/domain';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FilesStorageService } from '../service/files-storage.service';
 import { FileRecordResponse } from './dto';
@@ -34,8 +34,8 @@ describe('FilesStorageConsumer', () => {
 					useValue: createMock<FilesStorageService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: MikroORM,

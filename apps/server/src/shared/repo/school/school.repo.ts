@@ -3,12 +3,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -45,11 +45,6 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
 			name: entity.name,
-			oauthMigrationStart: entity.oauthMigrationStart,
-			oauthMigrationMandatory: entity.oauthMigrationMandatory,
-			oauthMigrationPossible: entity.oauthMigrationPossible,
-			oauthMigrationFinished: entity.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entity.oauthMigrationFinalFinish,
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
@@ -64,11 +59,6 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entityDO.inMaintenanceSince,
 			inUserMigration: entityDO.inUserMigration,
 			name: entityDO.name,
-			oauthMigrationStart: entityDO.oauthMigrationStart,
-			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
-			oauthMigrationPossible: entityDO.oauthMigrationPossible,
-			oauthMigrationFinished: entityDO.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entityDO.oauthMigrationFinalFinish,
 			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,

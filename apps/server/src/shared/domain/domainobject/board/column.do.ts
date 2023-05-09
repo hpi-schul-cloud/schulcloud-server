@@ -1,14 +1,30 @@
-import { BoardComposite } from './board-composite.do';
+import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { Card } from './card.do';
-import type { AnyBoardDo, BoardNodeBuildable, BoardNodeBuilder } from './types';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export class Column extends BoardComposite implements BoardNodeBuildable {
+export class Column extends BoardComposite<ColumnProps> {
+	get title(): string {
+		return this.props.title;
+	}
+
+	set title(title: string) {
+		this.props.title = title;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed = domainObject instanceof Card;
 		return allowed;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parent?: AnyBoardDo): void {
-		builder.buildColumnNode(this, parent);
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitColumn(this);
 	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
+		await visitor.visitColumnAsync(this);
+	}
+}
+
+export interface ColumnProps extends BoardCompositeProps {
+	title: string;
 }
