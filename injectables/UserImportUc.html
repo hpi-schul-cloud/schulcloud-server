@@ -165,7 +165,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -212,10 +212,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>permissionService</td>
+                                                        <td>authorizationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/PermissionService.html" target="_self" >PermissionService</a></code>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1579,18 +1579,18 @@ import {
 	INameMatch,
 	MatchCreator,
 	MatchCreatorScope,
-	PermissionService,
+	Permission,
 	SchoolFeatures,
 	System,
 	User,
-	Permission,
 } from &#x27;@shared/domain&#x27;;
 
-import { ImportUserRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { ImportUserRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto/account.dto&#x27;;
-import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { SchoolService } from &#x27;../../school&#x27;;
 import {
 	LdapAlreadyPersistedException,
@@ -1608,7 +1608,7 @@ export class UserImportUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
-		private readonly permissionService: PermissionService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo
@@ -1792,7 +1792,7 @@ export class UserImportUc {
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise&lt;User&gt; {
 		const currentUser &#x3D; await this.userRepo.findById(currentUserId, true);
-		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, [permission]);
+		this.authorizationService.checkAllPermissions(currentUser, [permission]);
 
 		return currentUser;
 	}

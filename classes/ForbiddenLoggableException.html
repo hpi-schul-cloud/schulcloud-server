@@ -116,12 +116,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, context: <a href="../interfaces/IPermissionContext.html" target="_self">IPermissionContext</a>)</code>
+<code>constructor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -166,7 +166,7 @@
                                                         <td>context</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IPermissionContext.html" target="_self" >IPermissionContext</a></code>
+                                                                        <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -209,8 +209,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/authorization/errors/forbidden.loggable-exception.ts:16</a></div>
                 </td>
             </tr>
 
@@ -237,15 +237,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, IPermissionContext } from &#x27;@shared/domain&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Loggable } from &#x27;@src/core/logger/interfaces&#x27;;
 import { ErrorLogMessage } from &#x27;@src/core/logger/types&#x27;;
+import { AuthorizationContext } from &#x27;../types&#x27;;
 
 export class ForbiddenLoggableException extends ForbiddenException implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
 		private readonly entityName: string,
-		private readonly context: IPermissionContext
+		private readonly context: AuthorizationContext
 	) {
 		super();
 	}

@@ -397,8 +397,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Actions, Permission, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { AllowedAuthorizationEntityType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { Permission, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { SchoolMigrationService, UserLoginMigrationService } from &#x27;@src/modules/user-login-migration&#x27;;
 import { SchoolService } from &#x27;../service&#x27;;
 import { OauthMigrationDto } from &#x27;./dto/oauth-migration.dto&#x27;;
@@ -421,7 +421,7 @@ export class SchoolUc {
 		userId: string
 	): Promise&lt;OauthMigrationDto&gt; {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 
@@ -460,7 +460,7 @@ export class SchoolUc {
 
 	async getMigration(schoolId: string, userId: string): Promise&lt;OauthMigrationDto&gt; {
 		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.School, schoolId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
 

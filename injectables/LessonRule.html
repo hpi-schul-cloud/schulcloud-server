@@ -63,33 +63,12 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-            </p>
 
 
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#utils" >utils</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -145,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>)</code>
+<code>constructor(authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>, courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -167,6 +146,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>authorizationHelper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>courseRule</td>
                                                   
@@ -220,15 +211,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>courseGroupPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/CourseGroup.html" target="_self">CourseGroup</a>, action: <a href="../undefineds/Actions.html" target="_self">Actions</a>)</code>
+                    <code>courseGroupPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/CourseGroup.html" target="_self">CourseGroup</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:75</a></div>
                 </td>
             </tr>
 
@@ -275,7 +266,7 @@
                                 <tr>
                                     <td>action</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Actions" target="_self" >Actions</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
                                     </td>
 
                                     <td>
@@ -315,15 +306,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>coursePermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Course.html" target="_self">Course</a>, action: <a href="../undefineds/Actions.html" target="_self">Actions</a>)</code>
+                    <code>coursePermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Course.html" target="_self">Course</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:69</a></div>
                 </td>
             </tr>
 
@@ -370,7 +361,7 @@
                                 <tr>
                                     <td>action</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Actions" target="_self" >Actions</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
                                     </td>
 
                                     <td>
@@ -410,21 +401,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, context: <a href="../interfaces/IPermissionContext.html" target="_self">IPermissionContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:21</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:22</a></div>
                 </td>
             </tr>
 
@@ -471,7 +456,7 @@
                                 <tr>
                                     <td>context</td>
                                     <td>
-                                                <code><a href="../interfaces/IPermissionContext.html" target="_self" >IPermissionContext</a></code>
+                                                <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
                                     </td>
 
                                     <td>
@@ -518,14 +503,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:15</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:16</a></div>
                 </td>
             </tr>
 
@@ -607,8 +586,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="37"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:37</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:38</a></div>
                 </td>
             </tr>
 
@@ -690,8 +669,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:51</a></div>
                 </td>
             </tr>
 
@@ -766,15 +745,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>parentPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, action: <a href="../undefineds/Actions.html" target="_self">Actions</a>)</code>
+                    <code>parentPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/lesson.rule.ts:57</a></div>
                 </td>
             </tr>
 
@@ -821,7 +800,7 @@
                                 <tr>
                                     <td>action</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Actions" target="_self" >Actions</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
                                     </td>
 
                                     <td>
@@ -847,63 +826,25 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="utils"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>utils</b></span>
-                        <a href="#utils"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new AuthorisationUtils()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:6</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, CourseGroup, Lesson, User } from &#x27;../entity&#x27;;
-import { IPermissionContext } from &#x27;../interface/permission&#x27;;
-import { Actions } from &#x27;./actions.enum&#x27;;
-import { BasePermission } from &#x27;./base-permission&#x27;;
+import { Course, CourseGroup, Lesson, User } from &#x27;@shared/domain/entity&#x27;;
+import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 import { CourseGroupRule } from &#x27;./course-group.rule&#x27;;
 import { CourseRule } from &#x27;./course.rule&#x27;;
 
 @Injectable()
-export class LessonRule extends BasePermission&lt;Lesson&gt; {
-	constructor(private readonly courseRule: CourseRule, private readonly courseGroupRule: CourseGroupRule) {
-		super();
-	}
+export class LessonRule implements Rule {
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly courseRule: CourseRule,
+		private readonly courseGroupRule: CourseGroupRule
+	) {}
 
 	public isApplicable(user: User, entity: Lesson): boolean {
 		const isMatched &#x3D; entity instanceof Lesson;
@@ -911,17 +852,17 @@ export class LessonRule extends BasePermission&lt;Lesson&gt; {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Lesson, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Lesson, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } &#x3D; context;
 		let hasLessonPermission &#x3D; false;
 
-		if (action &#x3D;&#x3D;&#x3D; Actions.read) {
+		if (action &#x3D;&#x3D;&#x3D; Action.read) {
 			hasLessonPermission &#x3D; this.lessonReadPermission(user, entity);
-		} else if (action &#x3D;&#x3D;&#x3D; Actions.write) {
+		} else if (action &#x3D;&#x3D;&#x3D; Action.write) {
 			hasLessonPermission &#x3D; this.lessonWritePermission(user, entity);
 		}
 
-		const hasUserPermission &#x3D; this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasUserPermission &#x3D; this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const result &#x3D; hasUserPermission &amp;&amp; hasLessonPermission;
 
 		return result;
@@ -932,21 +873,21 @@ export class LessonRule extends BasePermission&lt;Lesson&gt; {
 		let hasParentReadPermission &#x3D; false;
 
 		if (isVisible) {
-			hasParentReadPermission &#x3D; this.parentPermission(user, entity, Actions.read);
+			hasParentReadPermission &#x3D; this.parentPermission(user, entity, Action.read);
 		} else {
-			hasParentReadPermission &#x3D; this.parentPermission(user, entity, Actions.write);
+			hasParentReadPermission &#x3D; this.parentPermission(user, entity, Action.write);
 		}
 
 		return hasParentReadPermission;
 	}
 
 	private lessonWritePermission(user: User, entity: Lesson): boolean {
-		const hasParentWritePermission &#x3D; this.parentPermission(user, entity, Actions.write);
+		const hasParentWritePermission &#x3D; this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Lesson, action: Actions): boolean {
+	private parentPermission(user: User, entity: Lesson, action: Action): boolean {
 		let result &#x3D; false;
 
 		if (entity.courseGroup) {
@@ -958,13 +899,13 @@ export class LessonRule extends BasePermission&lt;Lesson&gt; {
 		return result;
 	}
 
-	private coursePermission(user: User, entity: Course, action: Actions): boolean {
+	private coursePermission(user: User, entity: Course, action: Action): boolean {
 		const result &#x3D; this.courseRule.hasPermission(user, entity, { action, requiredPermissions: [] });
 
 		return result;
 	}
 
-	private courseGroupPermission(user: User, entity: CourseGroup, action: Actions): boolean {
+	private courseGroupPermission(user: User, entity: CourseGroup, action: Action): boolean {
 		const result &#x3D; this.courseGroupRule.hasPermission(user, entity, {
 			action,
 			requiredPermissions: [],

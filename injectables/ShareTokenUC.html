@@ -1265,9 +1265,9 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { Actions, EntityId, Permission } from &#x27;@shared/domain&#x27;;
+import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { Action, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
 import { CourseCopyService } from &#x27;@src/modules/learnroom&#x27;;
 import { CourseService } from &#x27;@src/modules/learnroom/service/course.service&#x27;;
@@ -1443,7 +1443,7 @@ export class ShareTokenUC {
 		}
 
 		await this.authorizationService.checkPermissionByReferences(userId, allowedParentType, payload.parentId, {
-			action: Actions.write,
+			action: Action.write,
 			requiredPermissions,
 		});
 	}
@@ -1451,7 +1451,7 @@ export class ShareTokenUC {
 	private async checkContextReadPermission(userId: EntityId, context: ShareTokenContext) {
 		const allowedContextType &#x3D; ShareTokenContextTypeMapper.mapToAllowedAuthorizationEntityType(context.contextType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedContextType, context.contextId, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [],
 		});
 	}

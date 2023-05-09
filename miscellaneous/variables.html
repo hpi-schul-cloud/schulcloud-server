@@ -250,6 +250,9 @@
                             <a href="#FilesStorageExchange" title="apps/server/src/shared/infra/rabbitmq/exchange/files-storage.ts" ><b>FilesStorageExchange</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.ts)</a>
                         </li>
                         <li>
+                            <a href="#FileStorageAuthorizationContext" title="apps/server/src/modules/files-storage/files-storage.const.ts" ><b>FileStorageAuthorizationContext</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.const.ts)</a>
+                        </li>
+                        <li>
                             <a href="#fileStorageConfig" title="apps/server/src/modules/files-storage/files-storage.config.ts" ><b>fileStorageConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.config.ts)</a>
                         </li>
                         <li>
@@ -365,9 +368,6 @@
                         </li>
                         <li>
                             <a href="#PATH_SEPARATOR" title="apps/server/src/shared/domain/entity/boardnode/boardnode.entity.ts" ><b>PATH_SEPARATOR</b>&nbsp;&nbsp;&nbsp;(apps/.../boardnode.entity.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#PermissionContexts" title="apps/server/src/modules/files-storage/files-storage.const.ts" ><b>PermissionContexts</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.const.ts)</a>
                         </li>
                         <li>
                             <a href="#PermissionMapping" title="apps/server/src/modules/video-conference/uc/video-conference.uc.ts" ><b>PermissionMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.uc.ts)</a>
@@ -1320,10 +1320,10 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="PermissionContexts"></a>
+                    <a name="FileStorageAuthorizationContext"></a>
                     <span class="name">
-                        <span ><b>PermissionContexts</b></span>
-                        <a href="#PermissionContexts"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>FileStorageAuthorizationContext</b></span>
+                        <a href="#FileStorageAuthorizationContext"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -1336,10 +1336,10 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
-	create: PermissionContextBuilder.write([Permission.FILESTORAGE_CREATE]),
-	read: PermissionContextBuilder.read([Permission.FILESTORAGE_VIEW]),
-	update: PermissionContextBuilder.write([Permission.FILESTORAGE_EDIT]),
-	delete: PermissionContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+	create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+	read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+	update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+	delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
 }</code>
                     </td>
                 </tr>

@@ -134,7 +134,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -271,8 +271,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:62</a></div>
                 </td>
             </tr>
 
@@ -354,8 +354,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="46"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:46</a></div>
                 </td>
             </tr>
 
@@ -426,8 +426,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:55</a></div>
                 </td>
             </tr>
 
@@ -651,8 +651,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:31</a></div>
                 </td>
             </tr>
 
@@ -758,8 +758,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="188"
-                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:188</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="192"
+                            class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:192</a></div>
                 </td>
             </tr>
 
@@ -951,12 +951,11 @@ import {
 	ITaskProperties,
 	ITaskUpdate,
 	Permission,
-	PermissionContextBuilder,
 	Task,
 	TaskWithStatusVo,
 } from &#x27;@shared/domain&#x27;;
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from &#x27;@shared/repo&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { FileParamBuilder, FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
 import { SubmissionService } from &#x27;./submission.service&#x27;;
 
@@ -1014,12 +1013,13 @@ export class TaskService {
 		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
 
 		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
+			// TODO: Should be ForbiddenException
 			throw new UnauthorizedException();
 		}
 
 		if (params.courseId) {
 			const course &#x3D; await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			taskParams.course &#x3D; course;
 
 			if (params.usersIds) {
@@ -1038,7 +1038,7 @@ export class TaskService {
 			if (!taskParams.course || lesson.course.id !&#x3D;&#x3D; taskParams.course.id) {
 				throw new ForbiddenException(&#x27;Lesson does not belong to Course&#x27;);
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			taskParams.lesson &#x3D; lesson;
 		}
 
@@ -1056,7 +1056,7 @@ export class TaskService {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const task &#x3D; await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([Permission.HOMEWORK_VIEW]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
 
 		const status &#x3D; this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
 			? task.createTeacherStatusForUser(user)
@@ -1075,7 +1075,11 @@ export class TaskService {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const task &#x3D; await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([Permission.HOMEWORK_EDIT]));
+		this.authorizationService.checkPermission(
+			user,
+			task,
+			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
+		);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
@@ -1087,7 +1091,7 @@ export class TaskService {
 
 		if (params.courseId) {
 			const course &#x3D; await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 			task.course &#x3D; course;
 
 			if (params.usersIds) {
@@ -1112,7 +1116,7 @@ export class TaskService {
 			if (!task.course || lesson.course.id !&#x3D;&#x3D; task.course.id) {
 				throw new ForbiddenException(&#x27;Lesson does not belong to Course&#x27;);
 			}
-			this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([]));
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
 			task.lesson &#x3D; lesson;
 		} else if (remove) {
 			task.lesson &#x3D; undefined;

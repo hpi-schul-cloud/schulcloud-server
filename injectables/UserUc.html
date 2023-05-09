@@ -108,12 +108,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;IUserConfig | &gt;</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
+<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, configService: <a href="../classes/User.html" target="_self">ConfigService&lt;IUserConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -143,34 +143,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>permissionService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/PermissionService.html" target="_self" >PermissionService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
                                                         <td>configService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../classes/User.html" target="_self" >ConfigService&lt;IUserConfig | &gt;</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>userService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -214,8 +190,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:19</a></div>
                 </td>
             </tr>
 
@@ -285,8 +261,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:12</a></div>
                 </td>
             </tr>
 
@@ -356,8 +332,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/user/uc/user.uc.ts:25</a></div>
                 </td>
             </tr>
 
@@ -425,24 +401,18 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { EntityId, LanguageType, PermissionService, User } from &#x27;@shared/domain&#x27;;
+import { EntityId, LanguageType, User } from &#x27;@shared/domain&#x27;;
 import { UserRepo } from &#x27;@shared/repo&#x27;;
-import { UserService } from &#x27;@src/modules/user/service/user.service&#x27;;
 import { ChangeLanguageParams } from &#x27;../controller/dto&#x27;;
 import { IUserConfig } from &#x27;../interfaces&#x27;;
 
 @Injectable()
 export class UserUc {
-	constructor(
-		private readonly userRepo: UserRepo,
-		private readonly permissionService: PermissionService,
-		private readonly configService: ConfigService&lt;IUserConfig, true&gt;,
-		private readonly userService: UserService
-	) {}
+	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService&lt;IUserConfig, true&gt;) {}
 
 	async me(userId: EntityId): Promise&lt;[User, string[]]&gt; {
 		const user &#x3D; await this.userRepo.findById(userId, true);
-		const permissions &#x3D; this.permissionService.resolvePermissions(user);
+		const permissions &#x3D; user.resolvePermissions();
 
 		return [user, permissions];
 	}

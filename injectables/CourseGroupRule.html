@@ -63,33 +63,12 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-            </p>
 
 
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#utils" >utils</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -125,12 +104,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>)</code>
+<code>constructor(authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>, courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/rules/course-group.rule.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/rules/course-group.rule.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -147,6 +126,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>authorizationHelper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>courseRule</td>
                                                   
@@ -188,21 +179,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/CourseGroup.html" target="_self">CourseGroup</a>, context: <a href="../interfaces/IPermissionContext.html" target="_self">IPermissionContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/CourseGroup.html" target="_self">CourseGroup</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:20</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/course-group.rule.ts:17</a></div>
                 </td>
             </tr>
 
@@ -249,7 +234,7 @@
                                 <tr>
                                     <td>context</td>
                                     <td>
-                                                <code><a href="../interfaces/IPermissionContext.html" target="_self" >IPermissionContext</a></code>
+                                                <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
                                     </td>
 
                                     <td>
@@ -296,14 +281,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:14</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/course-group.rule.ts:11</a></div>
                 </td>
             </tr>
 
@@ -364,62 +343,20 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="utils"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>utils</b></span>
-                        <a href="#utils"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new AuthorisationUtils()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:6</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { CourseGroup, User } from &#x27;../entity&#x27;;
-import { IPermissionContext } from &#x27;../interface/permission&#x27;;
-import { Actions } from &#x27;./actions.enum&#x27;;
-import { BasePermission } from &#x27;./base-permission&#x27;;
+import { CourseGroup, User } from &#x27;@shared/domain/entity&#x27;;
+import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 import { CourseRule } from &#x27;./course.rule&#x27;;
 
 @Injectable()
-export class CourseGroupRule extends BasePermission&lt;CourseGroup&gt; {
-	constructor(private readonly courseRule: CourseRule) {
-		super();
-	}
+export class CourseGroupRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly courseRule: CourseRule) {}
 
 	public isApplicable(user: User, entity: CourseGroup): boolean {
 		const isMatched &#x3D; entity instanceof CourseGroup;
@@ -427,13 +364,13 @@ export class CourseGroupRule extends BasePermission&lt;CourseGroup&gt; {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: CourseGroup, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: CourseGroup, context: AuthorizationContext): boolean {
 		const { requiredPermissions } &#x3D; context;
 
-		const hasAllPermissions &#x3D; this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasAllPermissions &#x3D; this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const hasPermission &#x3D;
-			this.utils.hasAccessToEntity(user, entity, [&#x27;students&#x27;]) ||
-			this.courseRule.hasPermission(user, entity.course, { action: Actions.write, requiredPermissions: [] });
+			this.authorizationHelper.hasAccessToEntity(user, entity, [&#x27;students&#x27;]) ||
+			this.courseRule.hasPermission(user, entity.course, { action: Action.write, requiredPermissions: [] });
 
 		return hasAllPermissions &amp;&amp; hasPermission;
 	}

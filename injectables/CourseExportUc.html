@@ -105,7 +105,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -182,8 +182,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:13</a></div>
                 </td>
             </tr>
 
@@ -250,9 +250,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Actions, EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization/interfaces&#x27;;
+import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
+import { Action, AuthorizationService, AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
 import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-export.service&#x27;;
 
 @Injectable()
@@ -268,7 +267,7 @@ export class CourseExportUc {
 			AllowedAuthorizationEntityType.Course,
 			courseId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.COURSE_EDIT],
 			}
 		);

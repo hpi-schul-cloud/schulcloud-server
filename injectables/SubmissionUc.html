@@ -424,8 +424,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Permission, PermissionContextBuilder, Submission, User } from &#x27;@shared/domain&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { EntityId, Permission, Submission, User } from &#x27;@shared/domain&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { SubmissionService } from &#x27;../service/submission.service&#x27;;
 
 @Injectable()
@@ -453,7 +453,7 @@ export class SubmissionUc {
 		this.authorizationService.checkPermission(
 			user,
 			submission,
-			PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
+			AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])
 		);
 
 		await this.submissionService.delete(submission);
@@ -462,7 +462,7 @@ export class SubmissionUc {
 	}
 
 	private filterSubmissionsByPermission(submissions: Submission[], user: User): Submission[] {
-		const permissionContext &#x3D; PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
+		const permissionContext &#x3D; AuthorizationContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
 		const permittedSubmissions &#x3D; submissions.filter((submission) &#x3D;&gt; {
 			const hasPermission &#x3D; this.authorizationService.hasPermission(user, submission, permissionContext);

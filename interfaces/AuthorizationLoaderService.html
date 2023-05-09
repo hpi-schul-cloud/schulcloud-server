@@ -65,7 +65,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/authorization/interfaces/index.ts</code>
+            <code>apps/server/src/modules/authorization/types/allowed-entity.type.ts</code>
         </p>
 
 
@@ -121,8 +121,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/authorization/interfaces/index.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/authorization/types/allowed-entity.type.ts:29</a></div>
                 </td>
             </tr>
 
@@ -190,19 +190,6 @@
 } from &#x27;@shared/domain&#x27;;
 import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
-
-export enum AllowedAuthorizationEntityType {
-	&#x27;User&#x27; &#x3D; &#x27;users&#x27;,
-	&#x27;School&#x27; &#x3D; &#x27;schools&#x27;,
-	&#x27;Course&#x27; &#x3D; &#x27;courses&#x27;,
-	&#x27;CourseGroup&#x27; &#x3D; &#x27;coursegroups&#x27;,
-	&#x27;Task&#x27; &#x3D; &#x27;tasks&#x27;,
-	&#x27;Lesson&#x27; &#x3D; &#x27;lessons&#x27;,
-	&#x27;Team&#x27; &#x3D; &#x27;teams&#x27;,
-	&#x27;Submission&#x27; &#x3D; &#x27;submissions&#x27;,
-	&#x27;SchoolExternalTool&#x27; &#x3D; &#x27;school_external_tools&#x27;,
-	&#x27;BoardNode&#x27; &#x3D; &#x27;boardnodes&#x27;,
-}
 
 export type AllowedEntity &#x3D;
 	| Task

@@ -63,33 +63,12 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-            </p>
 
 
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#utils" >utils</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -119,6 +98,54 @@
     </table>
 </section>
 
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/rules/team.rule.ts:7</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>authorizationHelper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
             <section>
     
@@ -140,21 +167,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Team.html" target="_self">Team</a>, context: <a href="../interfaces/IPermissionContext.html" target="_self">IPermissionContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../entitys/Team.html" target="_self">Team</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:12</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/team.rule.ts:14</a></div>
                 </td>
             </tr>
 
@@ -201,7 +222,7 @@
                                 <tr>
                                     <td>context</td>
                                     <td>
-                                                <code><a href="../interfaces/IPermissionContext.html" target="_self" >IPermissionContext</a></code>
+                                                <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
                                     </td>
 
                                     <td>
@@ -248,14 +269,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:8</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/team.rule.ts:10</a></div>
                 </td>
             </tr>
 
@@ -316,45 +331,6 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="utils"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>utils</b></span>
-                        <a href="#utils"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new AuthorisationUtils()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:6</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
     </div>
 
@@ -362,20 +338,22 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Team, TeamUser, User } from &#x27;@shared/domain/entity&#x27;;
-import { IPermissionContext } from &#x27;@shared/domain/interface&#x27;;
-import { BasePermission } from &#x27;@shared/domain/rules/base-permission&#x27;;
+import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
+import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 
 @Injectable()
-export class TeamRule extends BasePermission&lt;Team&gt; {
+export class TeamRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, entity: Team): boolean {
 		return entity instanceof Team;
 	}
 
-	public hasPermission(user: User, entity: Team, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Team, context: AuthorizationContext): boolean {
 		let hasPermission &#x3D; false;
 		const isTeamUser &#x3D; entity.teamUsers.find((teamUser: TeamUser) &#x3D;&gt; teamUser.user.id &#x3D;&#x3D;&#x3D; user.id);
 		if (isTeamUser) {
-			hasPermission &#x3D; this.utils.hasAllPermissionsByRole(isTeamUser.role, context.requiredPermissions);
+			hasPermission &#x3D; this.authorizationHelper.hasAllPermissionsByRole(isTeamUser.role, context.requiredPermissions);
 		}
 		return hasPermission;
 	}

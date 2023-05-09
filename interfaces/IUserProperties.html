@@ -814,6 +814,24 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.outdatedSince &#x3D; props.outdatedSince;
 		this.previousExternalId &#x3D; props.previousExternalId;
 	}
+
+	public resolvePermissions(): string[] {
+		if (!this.roles.isInitialized(true)) {
+			throw new Error(&#x27;Roles items are not loaded.&#x27;);
+		}
+
+		let permissions: string[] &#x3D; [];
+
+		const roles &#x3D; this.roles.getItems();
+		roles.forEach((role) &#x3D;&gt; {
+			const rolePermissions &#x3D; role.resolvePermissions();
+			permissions &#x3D; [...permissions, ...rolePermissions];
+		});
+
+		const uniquePermissions &#x3D; [...new Set(permissions)];
+
+		return uniquePermissions;
+	}
 }
 </code></pre>
     </div>

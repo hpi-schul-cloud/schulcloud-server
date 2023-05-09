@@ -250,8 +250,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Permission, PermissionContextBuilder } from &#x27;@shared/domain&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
+import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { LessonService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -269,7 +269,7 @@ export class LessonUC {
 
 		// Check by Permission.TOPIC_VIEW because the student doesn&#x27;t have Permission.TOPIC_EDIT
 		// is required for CourseGroup lessons
-		this.authorizationService.checkPermission(user, lesson, PermissionContextBuilder.write([Permission.TOPIC_VIEW]));
+		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([Permission.TOPIC_VIEW]));
 
 		await this.lessonService.deleteLesson(lesson);
 

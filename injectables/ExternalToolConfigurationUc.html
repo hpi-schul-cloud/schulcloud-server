@@ -114,7 +114,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -204,8 +204,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:54</a></div>
                 </td>
             </tr>
 
@@ -287,8 +287,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:18</a></div>
                 </td>
             </tr>
 
@@ -370,8 +370,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool-configuration.uc.ts:35</a></div>
                 </td>
             </tr>
 
@@ -450,11 +450,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Actions, CustomParameterScope, EntityId, Permission } from &#x27;@shared/domain&#x27;;
+import { CustomParameterScope, EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
 import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
-import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization/interfaces&#x27;;
+import { Action, AuthorizationService, AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
 import { ExternalToolService, SchoolExternalToolService } from &#x27;../service&#x27;;
@@ -509,7 +508,7 @@ export class ExternalToolConfigurationUc {
 			AllowedAuthorizationEntityType.School,
 			schoolId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);

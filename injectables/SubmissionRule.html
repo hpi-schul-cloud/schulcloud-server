@@ -63,33 +63,12 @@
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-            </p>
 
 
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#utils" >utils</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -145,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>)</code>
+<code>constructor(authorizationHelper: <a href="../injectables/AuthorizationHelper.html" target="_self">AuthorizationHelper</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -167,6 +146,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>authorizationHelper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationHelper.html" target="_self" >AuthorizationHelper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>taskRule</td>
                                                   
@@ -208,15 +199,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasAccessToSubmission(user: <a href="../interfaces/User.html" target="_self">User</a>, submission: <a href="../classes/Submission.html" target="_self">Submission</a>, action: <a href="../undefineds/Actions.html" target="_self">Actions</a>)</code>
+                    <code>hasAccessToSubmission(user: <a href="../interfaces/User.html" target="_self">User</a>, submission: <a href="../classes/Submission.html" target="_self">Submission</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:27</a></div>
                 </td>
             </tr>
 
@@ -263,7 +254,7 @@
                                 <tr>
                                     <td>action</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#Actions" target="_self" >Actions</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
                                     </td>
 
                                     <td>
@@ -310,8 +301,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:68</a></div>
                 </td>
             </tr>
 
@@ -393,8 +384,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="61"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:61</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:59</a></div>
                 </td>
             </tr>
 
@@ -469,21 +460,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, submission: <a href="../classes/Submission.html" target="_self">Submission</a>, context: <a href="../interfaces/IPermissionContext.html" target="_self">IPermissionContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, submission: <a href="../classes/Submission.html" target="_self">Submission</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:20</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:17</a></div>
                 </td>
             </tr>
 
@@ -530,7 +515,7 @@
                                 <tr>
                                     <td>context</td>
                                     <td>
-                                                <code><a href="../interfaces/IPermissionContext.html" target="_self" >IPermissionContext</a></code>
+                                                <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
                                     </td>
 
                                     <td>
@@ -577,8 +562,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:45</a></div>
                 </td>
             </tr>
 
@@ -660,8 +645,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:39</a></div>
                 </td>
             </tr>
 
@@ -736,21 +721,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../undefineds/PermissionTypes.html" target="_self">PermissionTypes</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../undefineds/AuthorizableObject.html" target="_self">AuthorizableObject</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:14</a></code>
-</div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/rules/submission.rule.ts:11</a></div>
                 </td>
             </tr>
 
@@ -785,7 +764,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#PermissionTypes" target="_self" >PermissionTypes</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#AuthorizableObject" target="_self" >AuthorizableObject</a></code>
                                     </td>
 
                                     <td>
@@ -811,84 +790,43 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="utils"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>utils</b></span>
-                        <a href="#utils"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new AuthorisationUtils()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/BasePermission.html" target="_self" >BasePermission</a></code>
-</div>
-                            </td>
-                        </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BasePermission.html#source" target="_self" >BasePermission:6</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Submission, User } from &#x27;../entity&#x27;;
-import { IPermissionContext, PermissionTypes } from &#x27;../interface/permission&#x27;;
-import { Actions } from &#x27;./actions.enum&#x27;;
-import { BasePermission } from &#x27;./base-permission&#x27;;
+import { Submission, User } from &#x27;@shared/domain/entity&#x27;;
+import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
+import { Action, AuthorizableObject, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 import { TaskRule } from &#x27;./task.rule&#x27;;
 
 @Injectable()
-export class SubmissionRule extends BasePermission&lt;Submission&gt; {
-	constructor(private readonly taskRule: TaskRule) {
-		super();
-	}
+export class SubmissionRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
-	public isApplicable(user: User, entity: PermissionTypes): boolean {
+	public isApplicable(user: User, entity: AuthorizableObject): boolean {
 		const isMatched &#x3D; entity instanceof Submission;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, submission: Submission, context: IPermissionContext): boolean {
+	public hasPermission(user: User, submission: Submission, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } &#x3D; context;
 
 		const result &#x3D;
-			this.utils.hasAllPermissions(user, requiredPermissions) &amp;&amp; this.hasAccessToSubmission(user, submission, action);
+			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &amp;&amp;
+			this.hasAccessToSubmission(user, submission, action);
 
 		return result;
 	}
 
-	private hasAccessToSubmission(user: User, submission: Submission, action: Actions): boolean {
+	private hasAccessToSubmission(user: User, submission: Submission, action: Action): boolean {
 		let hasAccessToSubmission &#x3D; false;
 
-		if (action &#x3D;&#x3D;&#x3D; Actions.write) {
+		if (action &#x3D;&#x3D;&#x3D; Action.write) {
 			hasAccessToSubmission &#x3D; this.hasWriteAccess(user, submission);
-		} else if (action &#x3D;&#x3D;&#x3D; Actions.read) {
+		} else if (action &#x3D;&#x3D;&#x3D; Action.read) {
 			hasAccessToSubmission &#x3D; this.hasReadAccess(user, submission);
 		}
 
@@ -917,7 +855,7 @@ export class SubmissionRule extends BasePermission&lt;Submission&gt; {
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission) {
 		const hasParentTaskWriteAccess &#x3D; this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.write,
+			action: Action.write,
 			requiredPermissions: [],
 		});
 
@@ -926,7 +864,7 @@ export class SubmissionRule extends BasePermission&lt;Submission&gt; {
 
 	private hasParentTaskReadAccess(user: User, submission: Submission) {
 		const hasParentTaskReadAccess &#x3D; this.taskRule.hasPermission(user, submission.task, {
-			action: Actions.read,
+			action: Action.read,
 			requiredPermissions: [],
 		});
 
