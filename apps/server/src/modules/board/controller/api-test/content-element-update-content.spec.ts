@@ -54,7 +54,7 @@ describe(`content element update content (api)`, () => {
 
 			const response = await request.put(
 				`${element.id}/content`,
-				{ content: { text: 'hello world' }, type: 'text' },
+				{ data: { content: { text: 'hello world' }, type: 'text' } },
 				studentAccount
 			);
 
@@ -64,7 +64,11 @@ describe(`content element update content (api)`, () => {
 		it('should actually change content of the element', async () => {
 			const { studentAccount, element } = await setup();
 
-			await request.put(`${element.id}/content`, { content: { text: 'hello world' }, type: 'text' }, studentAccount);
+			await request.put(
+				`${element.id}/content`,
+				{ data: { content: { text: 'hello world' }, type: 'text' } },
+				studentAccount
+			);
 			const result = await em.findOneOrFail(TextElementNode, element.id);
 
 			expect(result.text).toEqual('hello world');
