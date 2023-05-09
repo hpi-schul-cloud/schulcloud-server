@@ -1,20 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileElementFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { Action } from '@src/modules';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Permission } from '../interface';
-import { Actions } from './actions.enum';
 import { BoardNodeRule } from './board-node.rule';
 
 describe(BoardNodeRule.name, () => {
 	let service: BoardNodeRule;
+	let authorizationHelper: AuthorizationHelper;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule],
+			providers: [BoardNodeRule, AuthorizationHelper],
 		}).compile();
 
 		service = await module.get(BoardNodeRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	describe('isApplicable', () => {
@@ -61,11 +64,11 @@ describe(BoardNodeRule.name, () => {
 				return { user, entity };
 			};
 
-			it('should call baseRule.hasAllPermissions', () => {
+			it('should call hasAllPermissions on AuthorizationHelper', () => {
 				const { user, entity } = setup();
 
-				const spy = jest.spyOn(service.utils, 'hasAllPermissions');
-				service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(spy).toBeCalledWith(user, []);
 			});
@@ -73,7 +76,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "true"', () => {
 				const { user, entity } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(res).toBe(true);
 			});

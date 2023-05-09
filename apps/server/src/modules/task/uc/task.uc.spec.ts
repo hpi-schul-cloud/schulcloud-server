@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { Actions, ITaskStatus, Permission, SortOrder } from '@shared/domain';
+import { ITaskStatus, Permission, SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -13,7 +13,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
@@ -692,7 +692,7 @@ describe('TaskUC', () => {
 				await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [],
 				});
 
@@ -839,7 +839,7 @@ describe('TaskUC', () => {
 				}).rejects.toThrow(ForbiddenException);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -967,7 +967,7 @@ describe('TaskUC', () => {
 				await service.delete(user.id, task.id);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
