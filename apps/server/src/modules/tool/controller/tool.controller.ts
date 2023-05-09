@@ -12,8 +12,6 @@ import {
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, RoleName, ExternalToolDO, Page } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Page } from '@shared/domain/domainobject/page';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';

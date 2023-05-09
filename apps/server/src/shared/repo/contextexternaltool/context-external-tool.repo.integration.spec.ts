@@ -16,7 +16,7 @@ import {
 	contextExternalToolFactory,
 	schoolExternalToolFactory,
 } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
@@ -33,8 +33,8 @@ describe('ContextExternalToolRepo', () => {
 				ContextExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
