@@ -17,7 +17,7 @@ import { ObjectId } from 'bson';
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let request: TestApiClient;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -30,7 +30,7 @@ describe('Lesson Controller (API) - delete', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		request = new TestApiClient(app, 'lessons');
+		testApiClient = new TestApiClient(app, 'lessons');
 	});
 
 	afterAll(async () => {
@@ -58,7 +58,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should response with unauthorized exception', async () => {
 				const { lessonId } = await setup();
 
-				const response = await request.delete(lessonId);
+				const response = await testApiClient.delete(lessonId);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -72,7 +72,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should NOT delete the lesson', async () => {
 				const { lessonId } = await setup();
 
-				await request.delete(lessonId);
+				await testApiClient.delete(lessonId);
 
 				const result = await em.findOne(Lesson, { id: lessonId });
 				expect(result).toBeInstanceOf(Lesson);
@@ -92,7 +92,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should response with route not found', async () => {
 				const { account } = await setup();
 
-				const response = await request.delete('', account);
+				const response = await testApiClient.delete('', account);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual({
@@ -106,7 +106,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should response with api validation error', async () => {
 				const { account } = await setup();
 
-				const response = await request.delete('123', account);
+				const response = await testApiClient.delete('123', account);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -122,7 +122,7 @@ describe('Lesson Controller (API) - delete', () => {
 				const { account } = await setup();
 				const notExistingId = new ObjectId().toHexString();
 
-				const response = await request.delete(notExistingId, account);
+				const response = await testApiClient.delete(notExistingId, account);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual({
@@ -152,7 +152,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					const response = await request.delete(lessonId, studentAccount);
+					const response = await testApiClient.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
@@ -161,7 +161,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should NOT delete the lesson', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					await request.delete(lessonId, studentAccount);
+					await testApiClient.delete(lessonId, studentAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -183,7 +183,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					const response = await request.delete(lessonId, studentAccount);
+					const response = await testApiClient.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
@@ -192,7 +192,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should NOT delete the lesson', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					await request.delete(lessonId, studentAccount);
+					await testApiClient.delete(lessonId, studentAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -214,7 +214,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with an empty result and status code 200', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					const response = await request.delete(lessonId, studentAccount);
+					const response = await testApiClient.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -223,7 +223,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should delete the lesson', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					await request.delete(lessonId, studentAccount);
+					await testApiClient.delete(lessonId, studentAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -245,7 +245,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with forbidden', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					const response = await request.delete(lessonId, studentAccount);
+					const response = await testApiClient.delete(lessonId, studentAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
@@ -254,7 +254,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should NOT delete the lesson', async () => {
 					const { lessonId, studentAccount } = await setup();
 
-					await request.delete(lessonId, studentAccount);
+					await testApiClient.delete(lessonId, studentAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -280,7 +280,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with an empty result and status code 200', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					const response = await request.delete(lessonId, teacherAccount);
+					const response = await testApiClient.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -289,7 +289,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should delete the lesson', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					await request.delete(lessonId, teacherAccount);
+					await testApiClient.delete(lessonId, teacherAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -311,7 +311,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with forbidden', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					const response = await request.delete(lessonId, teacherAccount);
+					const response = await testApiClient.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
@@ -320,7 +320,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should NOT delete the lesson', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					await request.delete(lessonId, teacherAccount);
+					await testApiClient.delete(lessonId, teacherAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -343,7 +343,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with an empty result and status code 200', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					const response = await request.delete(lessonId, teacherAccount);
+					const response = await testApiClient.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -352,7 +352,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should delete the lesson', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					await request.delete(lessonId, teacherAccount);
+					await testApiClient.delete(lessonId, teacherAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -375,7 +375,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with an empty result and status code 200', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					const response = await request.delete(lessonId, teacherAccount);
+					const response = await testApiClient.delete(lessonId, teacherAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -384,7 +384,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should delete the lesson', async () => {
 					const { lessonId, teacherAccount } = await setup();
 
-					await request.delete(lessonId, teacherAccount);
+					await testApiClient.delete(lessonId, teacherAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -410,7 +410,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with an empty result and status code 200', async () => {
 					const { lessonId, adminAccount } = await setup();
 
-					const response = await request.delete(lessonId, adminAccount);
+					const response = await testApiClient.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
@@ -419,7 +419,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should delete the lesson', async () => {
 					const { lessonId, adminAccount } = await setup();
 
-					await request.delete(lessonId, adminAccount);
+					await testApiClient.delete(lessonId, adminAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -441,7 +441,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should response with forbidden', async () => {
 					const { lessonId, adminAccount } = await setup();
 
-					const response = await request.delete(lessonId, adminAccount);
+					const response = await testApiClient.delete(lessonId, adminAccount);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
@@ -450,7 +450,7 @@ describe('Lesson Controller (API) - delete', () => {
 				it('should NOT delete the lesson', async () => {
 					const { lessonId, adminAccount } = await setup();
 
-					await request.delete(lessonId, adminAccount);
+					await testApiClient.delete(lessonId, adminAccount);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
