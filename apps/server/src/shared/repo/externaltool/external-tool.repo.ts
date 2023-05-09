@@ -12,7 +12,7 @@ import {
 } from '@shared/domain';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';
@@ -22,7 +22,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalToolDO, ExternalTool, I
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger,
+		protected readonly logger: LegacyLogger,
 		protected readonly sortingMapper: ExternalToolSortingMapper
 	) {
 		super(_em, logger);

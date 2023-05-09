@@ -12,7 +12,9 @@ import {
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { IFindOptions, RoleName, ExternalToolDO, Page } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { Page } from '@shared/domain/domainobject/page';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Authorization } from 'oauth-1.0a';
@@ -41,7 +43,7 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	@Get('lti11/:toolId/launch')

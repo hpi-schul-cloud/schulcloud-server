@@ -21,7 +21,7 @@ import {
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolSortingMapper, ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -37,8 +37,8 @@ describe('ExternalToolRepo', () => {
 				ExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ExternalToolSortingMapper,

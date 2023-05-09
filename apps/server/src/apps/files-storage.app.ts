@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { API_VERSION_PATH, FilesStorageApiModule } from '@src/modules/files-storage';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
@@ -23,7 +23,7 @@ async function bootstrap() {
 	const nestApp = await NestFactory.create(FilesStorageApiModule, nestExpressAdapter);
 
 	// WinstonLogger
-	nestApp.useLogger(await nestApp.resolve(Logger));
+	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });

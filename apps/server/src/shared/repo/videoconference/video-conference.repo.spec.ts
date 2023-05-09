@@ -15,7 +15,7 @@ import { videoConferenceFactory } from '@shared/testing/factory/video-conference
 import { NotFoundError } from '@mikro-orm/core';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {
 	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {
@@ -38,8 +38,8 @@ describe('Video Conference Repo', () => {
 			providers: [
 				VideoConferenceRepoSpec,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
