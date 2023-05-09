@@ -152,6 +152,10 @@ export class FileElement extends BoardComposite&lt;FileElementProps&gt; {
 		return this.props.caption;
 	}
 
+	set caption(value: string) {
+		this.props.caption &#x3D; value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}

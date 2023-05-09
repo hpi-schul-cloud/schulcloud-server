@@ -28,16 +28,19 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content controller">
+               <div class="content injectable">
                    <div class="content-data">
 
 
 
 
 
+
+
+
 <ol class="breadcrumb">
-  <li>Controllers</li>
-  <li >ElementController</li>
+  <li>Injectables</li>
+  <li >ElementUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -55,16 +58,8 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/controller/element.controller.ts</code>
+            <code>apps/server/src/modules/board/uc/element.uc.ts</code>
         </p>
-
-            <p class="comment">
-                <h3>Prefix</h3>
-            </p>
-            <p class="comment">
-                <code>elements</code>
-            </p>
-
 
 
 
@@ -85,15 +80,13 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteElement" >deleteElement</a>
+                                <a href="#updateElementContent" >updateElementContent</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#moveElement" >moveElement</a>
+                                <a href="#updateFileElement" >updateFileElement</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateElement" >updateElement</a>
+                                <a href="#updateTextElement" >updateTextElement</a>
                             </li>
                         </ul>
                     </td>
@@ -108,6 +101,67 @@
 </section>
 
             <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(elementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:8</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>elementService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
     
     <h3 id="methods">
         Methods
@@ -116,33 +170,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteElement"></a>
+                    <a name="updateElementContent"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>deleteElement</b></span>
-                        <a href="#deleteElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateElementContent</b></span>
+                        <a href="#updateElementContent"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../entitys/File.html" target="_self">TextElementContent | FileElementContent</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@ApiOperation({summary: &#x27;Delete a single content element.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Delete(&#x27;:contentElementId&#x27;)<br /></code>
-                </td>
-            </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:13</a></div>
                 </td>
             </tr>
 
@@ -163,9 +210,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>urlParams</td>
+                                    <td>userId</td>
                                     <td>
-                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -175,9 +222,21 @@
 
                                 </tr>
                                 <tr>
-                                    <td>currentUser</td>
+                                    <td>elementId</td>
                                     <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>content</td>
+                                    <td>
+                                                <code><a href="../entitys/File.html" target="_self" >TextElementContent | FileElementContent</a></code>
                                     </td>
 
                                     <td>
@@ -192,7 +251,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                     </div>
                     <div class="io-description">
@@ -206,33 +265,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="moveElement"></a>
+                    <a name="updateFileElement"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>moveElement</b></span>
-                        <a href="#moveElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateFileElement</b></span>
+                        <a href="#updateFileElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>moveElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/MoveContentElementBody.html" target="_self">MoveContentElementBody</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+<code>updateFileElement(element: <a href="../classes/FileElement.html" target="_self">FileElement</a>, content: <a href="../classes/FileElementContent.html" target="_self">FileElementContent</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@ApiOperation({summary: &#x27;Move a single content element.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:contentElementId/position&#x27;)<br /></code>
-                </td>
-            </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:30</a></div>
                 </td>
             </tr>
 
@@ -253,9 +303,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>urlParams</td>
+                                    <td>element</td>
                                     <td>
-                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                                <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
                                     </td>
 
                                     <td>
@@ -265,21 +315,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>bodyParams</td>
+                                    <td>content</td>
                                     <td>
-                                                <code><a href="../classes/MoveContentElementBody.html" target="_self" >MoveContentElementBody</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                                <code><a href="../classes/FileElementContent.html" target="_self" >FileElementContent</a></code>
                                     </td>
 
                                     <td>
@@ -294,7 +332,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -308,33 +346,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateElement"></a>
+                    <a name="updateTextElement"></a>
                     <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>updateElement</b></span>
-                        <a href="#updateElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateTextElement</b></span>
+                        <a href="#updateTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElement(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, bodyParams: <a href="../classes/ElementContentUpdateBodyParams.html" target="_self">ElementContentUpdateBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+<code>updateTextElement(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>, content: <a href="../classes/TextElementContent.html" target="_self">TextElementContent</a>)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(TextElementContentBody, FileElementContentBody)<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:contentElementId/content&#x27;)<br /></code>
-                </td>
-            </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:25</a></div>
                 </td>
             </tr>
 
@@ -355,9 +384,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>urlParams</td>
+                                    <td>element</td>
                                     <td>
-                                                <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
                                     </td>
 
                                     <td>
@@ -367,21 +396,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>bodyParams</td>
+                                    <td>content</td>
                                     <td>
-                                                <code><a href="../classes/ElementContentUpdateBodyParams.html" target="_self" >ElementContentUpdateBodyParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                                <code><a href="../classes/TextElementContent.html" target="_self" >TextElementContent</a></code>
                                     </td>
 
                                     <td>
@@ -396,7 +413,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -406,86 +423,50 @@
             </tr>
         </tbody>
     </table>
-</section>    </div>
+</section>
+
+    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, Put } from &#x27;@nestjs/common&#x27;;
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { ApiValidationError } from &#x27;@shared/common&#x27;;
-import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { CardUc } from &#x27;../uc&#x27;;
-import { ElementUc } from &#x27;../uc/element.uc&#x27;;
-import { ContentElementUrlParams, MoveContentElementBody } from &#x27;./dto&#x27;;
-import {
-	ElementContentUpdateBodyParams,
-	FileElementContentBody,
-	TextElementContentBody,
-} from &#x27;./dto/element/element-content-update.body.params&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId, FileElement, TextElement } from &#x27;@shared/domain&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { FileElementContent, TextElementContent } from &#x27;../controller/dto&#x27;;
+import { ContentElementService } from &#x27;../service&#x27;;
 
-@ApiTags(&#x27;Board Element&#x27;)
-@Authenticate(&#x27;jwt&#x27;)
-@Controller(&#x27;elements&#x27;)
-export class ElementController {
-	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
-
-	@ApiOperation({ summary: &#x27;Move a single content element.&#x27; })
-	@ApiResponse({ status: 204 })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
-	@Put(&#x27;:contentElementId/position&#x27;)
-	async moveElement(
-		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: MoveContentElementBody,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;void&gt; {
-		await this.cardUc.moveElement(
-			currentUser.userId,
-			urlParams.contentElementId,
-			bodyParams.toCardId,
-			bodyParams.toPosition
-		);
+@Injectable()
+export class ElementUc {
+	constructor(private readonly elementService: ContentElementService, private readonly logger: Logger) {
+		this.logger.setContext(ElementUc.name);
 	}
 
-	@ApiOperation({ summary: &#x27;Update a single content element.&#x27; })
-	@ApiExtraModels(TextElementContentBody, FileElementContentBody)
-	@ApiResponse({ status: 204 })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
-	@Put(&#x27;:contentElementId/content&#x27;)
-	async updateElement(
-		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: ElementContentUpdateBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;void&gt; {
-		await this.elementUc.updateElementContent(currentUser.userId, urlParams.contentElementId, bodyParams.data.content);
+	async updateElementContent(userId: EntityId, elementId: EntityId, content: TextElementContent | FileElementContent) {
+		let element &#x3D; await this.elementService.findById(elementId);
+		if (element instanceof TextElement) {
+			element &#x3D; this.updateTextElement(element, content as TextElementContent);
+		} else if (element instanceof FileElement) {
+			element &#x3D; this.updateFileElement(element, content as FileElementContent);
+		} else {
+			throw new Error(&#x60;unknown element type for update&#x60;);
+		}
+		await this.elementService.update(element);
 	}
 
-	@ApiOperation({ summary: &#x27;Delete a single content element.&#x27; })
-	@ApiResponse({ status: 204 })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
-	@Delete(&#x27;:contentElementId&#x27;)
-	async deleteElement(
-		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise&lt;void&gt; {
-		await this.cardUc.deleteElement(currentUser.userId, urlParams.contentElementId);
+	updateTextElement(element: TextElement, content: TextElementContent) {
+		element.text &#x3D; content.text;
+		return element;
+	}
+
+	updateFileElement(element: FileElement, content: FileElementContent) {
+		element.caption &#x3D; content.caption;
+		return element;
 	}
 }
 </code></pre>
     </div>
+
 </div>
-
-
-
 
 
 
@@ -524,8 +505,8 @@ export class ElementController {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'controller';
-            var COMPODOC_CURRENT_PAGE_URL = 'ElementController.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'ElementUc.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
