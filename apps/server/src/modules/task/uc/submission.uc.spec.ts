@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Counted, Permission, PermissionContextBuilder, Submission } from '@shared/domain';
+import { Counted, Permission, Submission } from '@shared/domain';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { SubmissionService } from '../service/submission.service';
 import { SubmissionUc } from './submission.uc';
 
@@ -89,7 +89,7 @@ describe('Submission Uc', () => {
 
 			it('should call hasPermission', async () => {
 				const { user, taskId, submissions } = setup();
-				const permissionContext = PermissionContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
+				const permissionContext = AuthorizationContextBuilder.read([Permission.SUBMISSIONS_VIEW]);
 
 				await submissionUc.findAllByTask(user.id, taskId);
 
@@ -187,7 +187,7 @@ describe('Submission Uc', () => {
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
 					submission,
-					PermissionContextBuilder.write([Permission.SUBMISSIONS_EDIT])
+					AuthorizationContextBuilder.write([Permission.SUBMISSIONS_EDIT])
 				);
 				expect(submissionService.delete).toHaveBeenCalledWith(submission);
 				expect(result).toBe(true);

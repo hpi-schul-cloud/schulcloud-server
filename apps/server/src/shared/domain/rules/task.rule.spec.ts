@@ -1,12 +1,14 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
-import { Permission, RoleName } from '../interface';
-import { Actions } from './actions.enum';
+import { Action } from '../../../modules/authorization/types/action.enum';
 
 describe('TaskRule', () => {
 	let service: TaskRule;
+	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let lessonRule: DeepPartial<LessonRule>;
 	const permissionA = 'a' as Permission;
@@ -17,10 +19,11 @@ describe('TaskRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [AuthorizationHelper, TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(TaskRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		lessonRule = await module.get(LessonRule);
 	});
@@ -37,7 +40,7 @@ describe('TaskRule', () => {
 
 			it('should return "false" if user has not access to task', () => {
 				const { user, task } = setup();
-				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [permissionC] });
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
 			});
 		});
@@ -50,29 +53,29 @@ describe('TaskRule', () => {
 				return { role, user, task };
 			};
 
-			it('should call baseRule.hasAllPermissions', () => {
+			it('should call baseRule.hasAllPermissions on AuthorizationHelper', () => {
 				const { user, task } = setup();
-				const spy = jest.spyOn(service.utils, 'hasAllPermissions');
-				service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
+				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(spy).toBeCalledWith(user, []);
 			});
 
-			it('should call baseRule.hasAccessToEntity', () => {
+			it('should call baseRule.hasAccessToEntity on AuthorizationHelper', () => {
 				const { user, task } = setup();
-				const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
-				service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
+				const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
+				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(spy).toBeCalledWith(user, task, ['creator']);
 			});
 
 			it('should return "true" if user has all required permissions', () => {
 				const { task, user } = setup();
-				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
 			it('should return "false" when user does not have all required permissions', () => {
 				const { user, task } = setup();
-				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [permissionC] });
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
 			});
 		});
@@ -90,13 +93,13 @@ describe('TaskRule', () => {
 			it('should call courseRule.hasPermission', () => {
 				const { user, task } = setup();
 				const spy = jest.spyOn(courseRule, 'hasPermission');
-				service.hasPermission(user, task, { action: Actions.write, requiredPermissions: [permissionA] });
-				expect(spy).toBeCalledWith(user, task.course, { action: Actions.write, requiredPermissions: [] });
+				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
+				expect(spy).toBeCalledWith(user, task.course, { action: Action.write, requiredPermissions: [] });
 			});
 
 			it('should return "true" if user in scope', () => {
 				const { user, task } = setup();
-				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 		});
@@ -115,13 +118,13 @@ describe('TaskRule', () => {
 			it('should call lessonRule.hasPermission', () => {
 				const { task, user } = setup();
 				const spy = jest.spyOn(lessonRule, 'hasPermission');
-				service.hasPermission(user, task, { action: Actions.write, requiredPermissions: [permissionA] });
-				expect(spy).toBeCalledWith(user, task.lesson, { action: Actions.write, requiredPermissions: [] });
+				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
+				expect(spy).toBeCalledWith(user, task.lesson, { action: Action.write, requiredPermissions: [] });
 			});
 
 			it('should return "true" if user is in scope and lesson hidden', () => {
 				const { task, user } = setup();
-				const res = service.hasPermission(user, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 		});
@@ -137,13 +140,13 @@ describe('TaskRule', () => {
 
 			it('should return "true" if user is creator', () => {
 				const { student, task } = setup();
-				const res = service.hasPermission(student, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 
 			it('should return "false" if user has not permission for C', () => {
 				const { student, task } = setup();
-				const res = service.hasPermission(student, task, { action: Actions.read, requiredPermissions: [permissionC] });
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
 			});
 		});
@@ -160,7 +163,7 @@ describe('TaskRule', () => {
 
 			it('should return "true" if user is in scope', () => {
 				const { student, task } = setup();
-				const res = service.hasPermission(student, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 		});
@@ -178,7 +181,7 @@ describe('TaskRule', () => {
 
 			it('should return "false" if user in scope and lesson hidden', () => {
 				const { student, task } = setup();
-				const res = service.hasPermission(student, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(false);
 			});
 		});
@@ -196,7 +199,7 @@ describe('TaskRule', () => {
 
 			it('should return "false" if user in scope and task private', () => {
 				const { student, task } = setup();
-				const res = service.hasPermission(student, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(false);
 			});
 		});
@@ -215,7 +218,7 @@ describe('TaskRule', () => {
 			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
 				const { notAssignedStudent, task } = setup();
 				const res = service.hasPermission(notAssignedStudent, task, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [permissionA, permissionB, permissionC],
 				});
 				expect(res).toBe(false);
@@ -223,7 +226,7 @@ describe('TaskRule', () => {
 
 			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
 				const { assignedStudent, task } = setup();
-				const res = service.hasPermission(assignedStudent, task, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(assignedStudent, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
 		});
