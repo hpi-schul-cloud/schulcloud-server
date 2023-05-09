@@ -7,7 +7,7 @@ import {
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
-	TestRequest,
+	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -17,7 +17,7 @@ import { ObjectId } from 'bson';
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let request: TestRequest;
+	let request: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -30,7 +30,7 @@ describe('Lesson Controller (API) - delete', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		request = new TestRequest(app, 'lessons');
+		request = new TestApiClient(app, 'lessons');
 	});
 
 	afterAll(async () => {

@@ -17,13 +17,13 @@ const testReqestConst = {
 	prefix: 'Bearer',
 	loginPath: '/authentication/local',
 	accessToken: 'accessToken',
-	errorMessage: 'TestRequest: Can not cast to local AutenticationResponse:',
+	errorMessage: 'TestApiClient: Can not cast to local AutenticationResponse:',
 };
 
 /**
  * Note res.cookie is not supported atm, feel free to add this
  */
-export class TestRequest {
+export class TestApiClient {
 	private readonly app: INestApplication;
 
 	private readonly baseRoute: string;
@@ -84,6 +84,16 @@ export class TestRequest {
 		return formatedJwt;
 	}
 
+	private getHeader(formatedJwt: string, additionalHeader: Record<string, string> = {}) {
+		const baseHeader = {
+			authorization: formatedJwt,
+			accept: headerConst.json,
+		};
+		const header = Object.assign(baseHeader, additionalHeader);
+
+		return header;
+	}
+
 	public async getJwt(accountWithPassword?: Account): Promise<string> {
 		let formatedJwt: string = testReqestConst.invalid;
 
@@ -102,16 +112,6 @@ export class TestRequest {
 		}
 
 		return formatedJwt;
-	}
-
-	private getHeader(formatedJwt: string, additionalHeader: Record<string, string> = {}) {
-		const baseHeader = {
-			authorization: formatedJwt,
-			accept: headerConst.json,
-		};
-		const header = Object.assign(baseHeader, additionalHeader);
-
-		return header;
 	}
 
 	public async get(
