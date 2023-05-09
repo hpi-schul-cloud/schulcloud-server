@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Lesson, Task } from '@shared/domain';
+import { ComponentType, Course, IComponentProperties, IComponentTextProperties, Lesson, Task } from '@shared/domain';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { CommonCartridgeExportService } from '@src/modules/learnroom/service/common-cartridge-export.service';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
@@ -55,6 +55,17 @@ describe('CommonCartridgeExportService', () => {
 		let archive: AdmZip;
 
 		beforeAll(async () => {
+			const [lesson] = lessons;
+			const textContent = { text: 'Some random text' } as IComponentTextProperties;
+			const lessonContent: IComponentProperties = {
+				_id: 'random_id',
+				title: 'A random title',
+				hidden: false,
+				component: ComponentType.TEXT,
+				content: textContent,
+			};
+			lesson.contents = [lessonContent];
+			lessonServiceMock.findById.mockResolvedValueOnce(lesson);
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
 			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
@@ -74,6 +85,11 @@ describe('CommonCartridgeExportService', () => {
 			lessons.forEach((lesson) => {
 				expect(manifest).toContain(lesson.name);
 			});
+		});
+
+		it('should add lesson text content to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(lessons[0].contents[0].title);
 		});
 
 		it('should add tasks as assignments', () => {

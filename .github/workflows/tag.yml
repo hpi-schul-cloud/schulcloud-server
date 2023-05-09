@@ -20,22 +20,26 @@ jobs:
         id: docker_meta_img_hub
         uses: docker/metadata-action@v4
         with:
-          images: schulcloud/schulcloud-server
+          images: docker.io/schulcloud/schulcloud-server, quay.io/schulcloudverbund/schulcloud-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      - name: Log into registry
+      - name: Log into docker registry
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Log into quay registry
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push ${{ github.repository }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
@@ -53,8 +57,10 @@ jobs:
       contents: write
     steps:
       - name: create sbom
-        uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
+        uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2
         with:
+          scan-type: 'image'
+          format: 'cyclonedx'
           image-ref: 'docker.io/schulcloud/schulcloud-server:${{ github.ref_name }}'
           output: 'dependency-results.sbom.json'
       - name: create release

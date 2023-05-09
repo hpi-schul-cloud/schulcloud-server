@@ -1,76 +1,36 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, columnBoardFactory, columnBoardNodeFactory, columnFactory } from '@shared/testing';
+import { cardFactory, columnFactory } from '@shared/testing';
 import { Column } from './column.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(Column.name, () => {
-	describe('useBoardNodeBuilder', () => {
-		const setup = () => {
+	describe('isAllowedAsChild', () => {
+		it('should allow card objects', () => {
 			const column = columnFactory.build();
 			const card = cardFactory.build();
-			const boardNode = columnBoardNodeFactory.buildWithId();
-			const builder = createMock<BoardNodeBuilder>();
-
-			return { column, card, builder, parentId: boardNode.id };
-		};
-
-		it('should call the specific builder method', () => {
-			const { column, builder, parentId } = setup();
-			jest.spyOn(builder, 'buildColumnNode');
-
-			column.useBoardNodeBuilder(builder, parentId);
-
-			expect(builder.buildColumnNode).toHaveBeenCalledWith(column, parentId, undefined);
+			expect(column.isAllowedAsChild(card)).toBe(true);
 		});
 	});
 
-	describe('addChild', () => {
-		const setup = () => {
-			const children = cardFactory.buildListWithId(3);
-			const column = columnFactory.build({ children });
-			const card = cardFactory.build();
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const column = columnFactory.build();
 
-			return { column, card };
-		};
+			column.accept(visitor);
 
-		describe('when adding a child', () => {
-			it('should throw error on unsupported child type', () => {
-				const { column } = setup();
-				const board = columnBoardFactory.build();
-				expect(() => column.addChild(board)).toThrowError();
-			});
-
-			it('should be able to add children', () => {
-				const { column, card } = setup();
-
-				column.addChild(card);
-
-				expect(column.children[column.children.length - 1]).toEqual(card);
-			});
-
-			it('should add child to correct position', () => {
-				const { column, card } = setup();
-
-				column.addChild(card, 1);
-
-				expect(column.children[1]).toEqual(card);
-			});
+			expect(visitor.visitColumn).toHaveBeenCalledWith(column);
 		});
+	});
 
-		it('should be able to add children', () => {
-			const { column, card } = setup();
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const column = columnFactory.build();
 
-			column.addChild(card);
+			await column.acceptAsync(visitor);
 
-			expect(column.children[column.children.length - 1]).toEqual(card);
-		});
-
-		it('should add child to correct position', () => {
-			const { column, card } = setup();
-
-			column.addChild(card, 1);
-
-			expect(column.children[1]).toEqual(card);
+			expect(visitor.visitColumnAsync).toHaveBeenCalledWith(column);
 		});
 	});
 });

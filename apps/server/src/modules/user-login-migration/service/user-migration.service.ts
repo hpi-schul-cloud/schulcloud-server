@@ -3,22 +3,28 @@ import {
 	BadRequestException,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
+import { UserLoginMigrationDO } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Logger } from '@src/core/logger';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
 import { SystemDto, SystemService } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
 import { EntityId, SystemTypeEnum } from '@src/shared/domain/types';
-import { MigrationDto } from './dto/migration.dto';
 import { PageTypes } from '../interface/page-types.enum';
+import { MigrationDto } from './dto/migration.dto';
 import { PageContentDto } from './dto/page-content.dto';
 
 @Injectable()
+/**
+ * @deprecated
+ */
 export class UserMigrationService {
 	private readonly hostUrl: string;
 
@@ -34,8 +40,9 @@ export class UserMigrationService {
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
-		private readonly logger: Logger,
-		private readonly accountService: AccountService
+		private readonly logger: LegacyLogger,
+		private readonly accountService: AccountService,
+		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;
 		this.publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
@@ -43,6 +50,13 @@ export class UserMigrationService {
 
 	async getMigrationConsentPageRedirect(officialSchoolNumber: string, originSystemId: string): Promise<string> {
 		const school: SchoolDO | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+
+		if (!school || !school.id) {
+			throw new NotFoundException(`School with offical school number ${officialSchoolNumber} does not exist.`);
+		}
+
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(school.id);
+
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(
 			(system: SystemDto): boolean => system.alias === 'SANIS'
@@ -61,7 +75,7 @@ export class UserMigrationService {
 		url.searchParams.append('sourceSystem', iservSystem.id);
 		url.searchParams.append('targetSystem', sanisSystem.id);
 		url.searchParams.append('origin', originSystemId);
-		url.searchParams.append('mandatory', (!!school?.oauthMigrationMandatory).toString());
+		url.searchParams.append('mandatory', (!!userLoginMigration?.mandatorySince).toString());
 		return url.toString();
 	}
 

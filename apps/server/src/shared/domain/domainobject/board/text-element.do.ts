@@ -1,23 +1,21 @@
-import { EntityId } from '../../types';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
-import type { AnyBoardDo } from './types';
-import type { BoardNodeBuildable } from './types/board-node-buildable';
-import type { BoardNodeBuilder } from './types/board-node-builder';
+import type { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export class TextElement extends BoardComposite implements TextElementProps, BoardNodeBuildable {
-	text: string;
-
-	constructor(props: Omit<TextElementProps, 'children'>) {
-		super({ ...props, children: [] });
-		this.text = props.text;
+export class TextElement extends BoardComposite<TextElementProps> {
+	get text(): string {
+		return this.props.text;
 	}
 
-	addChild(child: AnyBoardDo) {
-		throw new Error(`Cannot add children to TextElement. Object of type '${child.constructor.name}' given`);
+	isAllowedAsChild(): boolean {
+		return false;
 	}
 
-	useBoardNodeBuilder(builder: BoardNodeBuilder, parentId?: EntityId, position?: number): void {
-		builder.buildTextElementNode(this, parentId, position);
+	accept(visitor: BoardCompositeVisitor): void {
+		visitor.visitTextElement(this);
+	}
+
+	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
+		await visitor.visitTextElementAsync(this);
 	}
 }
 

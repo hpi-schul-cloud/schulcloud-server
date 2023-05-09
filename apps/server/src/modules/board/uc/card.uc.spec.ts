@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -26,8 +27,8 @@ describe(CardUc.name, () => {
 					useValue: createMock<ContentElementService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -45,7 +46,7 @@ describe(CardUc.name, () => {
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
@@ -74,26 +75,38 @@ describe(CardUc.name, () => {
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const card = cardFactory.build();
-				return { user, card };
+				const element = textElementFactory.build();
+
+				cardService.findById.mockResolvedValueOnce(card);
+				elementService.create.mockResolvedValueOnce(element);
+
+				return { user, card, element };
 			};
 
 			it('should call the service to find the card', async () => {
 				const { user, card } = setup();
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
 				expect(cardService.findById).toHaveBeenCalledWith(card.id);
 			});
 
 			it('should call the service to create the content element', async () => {
 				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
 
-				await uc.createElement(user.id, card.id);
+				await uc.createElement(user.id, card.id, ContentElementType.TEXT);
 
-				expect(elementService.create).toHaveBeenCalledWith(card);
+				expect(elementService.create).toHaveBeenCalledWith(card, ContentElementType.TEXT);
+			});
+
+			it('should return new content element', async () => {
+				const { user, card, element } = setup();
+
+				const result = await uc.createElement(user.id, card.id, ContentElementType.TEXT);
+
+				expect(result).toEqual(element);
 			});
 		});
 	});
@@ -101,7 +114,7 @@ describe(CardUc.name, () => {
 	describe('deleteElement', () => {
 		describe('when deleting a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
@@ -130,8 +143,8 @@ describe(CardUc.name, () => {
 	describe('moveElement', () => {
 		describe('when moving an element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const element = textElementFactory.buildWithId();
+				const user = userFactory.build();
+				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
 				return { user, card, element };

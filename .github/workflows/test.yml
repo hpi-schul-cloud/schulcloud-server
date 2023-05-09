@@ -11,7 +11,7 @@ permissions:
 
 env:
   MONGODB_VERSION: 4.4
-  NODE_VERSION: '16'
+  NODE_VERSION: '18'
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest
@@ -36,6 +36,9 @@ jobs:
         run: npm run feathers:test
   nest_tests_cov:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -55,8 +58,44 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        timeout-minutes: 18
-        run: export NODE_OPTIONS='--max_old_space_size=4096' && npm run nest:test:cov:ci
+        timeout-minutes: 25
+        run: export RUN_WITHOUT_JEST_COVERAGE='true' && export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
+      - name: save-coverage
+        run: mv coverage/lcov.info coverage/${{matrix.shard}}.info
+      - name: "upload-artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-artifacts
+          path: coverage/
+  sonarcloud:
+      name: SonarCloud coverage
+      runs-on: ubuntu-latest
+      needs: [nest_tests_cov]
+      steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage-artifacts
+          path: coverage
+      - name: Merge Code Coverage
+        run: |
+          sudo apt-get install -y lcov
+          find coverage -name *.info -exec echo -a {} \; | xargs lcov -o merged-lcov.info
+      - name: SonarCloud upload coverage
+        uses: SonarSource/sonarcloud-github-action@v1.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        with:
+          args: >
+            -Dsonar.sources=.
+            -Dsonar.organization=schulcloud-verbund
+            -Dsonar.projectKey=hpi-schul-cloud_schulcloud-server
+            -Dsonar.exclusions=**/*.js
+            -Dsonar.cpd.exclusions=**/controller/dto/*.ts,**/*.spec.ts
+            -Dsonar.javascript.lcov.reportPaths=merged-lcov.info
   nest_lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5

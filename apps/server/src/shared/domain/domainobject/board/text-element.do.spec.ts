@@ -1,32 +1,37 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardNodeFactory, textElementFactory } from '@shared/testing';
+import { textElementFactory } from '@shared/testing';
 import { TextElement } from './text-element.do';
-import { BoardNodeBuilder } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(TextElement.name, () => {
-	const setup = () => {
-		const element = textElementFactory.build();
-		const cardNode = cardNodeFactory.buildWithId();
-		const builder = createMock<BoardNodeBuilder>();
-
-		return { element, builder, parentId: cardNode.id };
-	};
-
-	it('should call the specific builder method', () => {
-		const { element, builder, parentId } = setup();
-		jest.spyOn(builder, 'buildTextElementNode');
-
-		element.useBoardNodeBuilder(builder, parentId);
-
-		expect(builder.buildTextElementNode).toHaveBeenCalledWith(element, parentId, undefined);
-	});
-
 	describe('when trying to add a child to a text element', () => {
 		it('should throw an error ', () => {
 			const textElement = textElementFactory.build();
 			const textElementChild = textElementFactory.build();
 
 			expect(() => textElement.addChild(textElementChild)).toThrow();
+		});
+	});
+
+	describe('accept', () => {
+		it('should call the right visitor method', () => {
+			const visitor = createMock<BoardCompositeVisitor>();
+			const textElement = textElementFactory.build();
+
+			textElement.accept(visitor);
+
+			expect(visitor.visitTextElement).toHaveBeenCalledWith(textElement);
+		});
+	});
+
+	describe('acceptAsync', () => {
+		it('should call the right async visitor method', async () => {
+			const visitor = createMock<BoardCompositeVisitorAsync>();
+			const textElement = textElementFactory.build();
+
+			await textElement.acceptAsync(visitor);
+
+			expect(visitor.visitTextElementAsync).toHaveBeenCalledWith(textElement);
 		});
 	});
 });

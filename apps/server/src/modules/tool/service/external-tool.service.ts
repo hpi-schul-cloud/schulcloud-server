@@ -14,7 +14,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../interface';
 import { ExternalToolServiceMapper } from './mapper';
@@ -29,12 +29,12 @@ export class ExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly courseExternalToolRepo: CourseExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService
 	) {}
 
 	async createExternalTool(externalToolDO: ExternalToolDO): Promise<ExternalToolDO> {
-		if (this.isLti11Config(externalToolDO.config)) {
+		if (this.isLti11Config(externalToolDO.config) && externalToolDO.config.secret) {
 			externalToolDO.config.secret = this.encryptionService.encrypt(externalToolDO.config.secret);
 		} else if (this.isOauth2Config(externalToolDO.config)) {
 			const oauthClient: ProviderOauthClient = this.mapper.mapDoToProviderOauthClient(

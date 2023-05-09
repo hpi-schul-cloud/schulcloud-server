@@ -75,35 +75,68 @@ describe(`card move (api)`, () => {
 
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
 		const parentColumn = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: parentColumn });
+		const cardNode1 = cardNodeFactory.buildWithId({ parent: parentColumn });
+		const cardNode2 = cardNodeFactory.buildWithId({ parent: parentColumn });
 		const targetColumn = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const targetColumnCards = cardNodeFactory.buildListWithId(4, { parent: targetColumn });
 
-		await em.persistAndFlush([user, cardNode, parentColumn, targetColumn, columnBoardNode, ...targetColumnCards]);
+		await em.persistAndFlush([
+			user,
+			cardNode1,
+			cardNode2,
+			parentColumn,
+			targetColumn,
+			columnBoardNode,
+			...targetColumnCards,
+		]);
 		em.clear();
 
-		return { user, cardNode, parentColumn, targetColumn, columnBoardNode, targetColumnCards };
+		return { user, cardNode1, cardNode2, parentColumn, targetColumn, columnBoardNode, targetColumnCards };
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
-			const { user, cardNode, targetColumn } = await setup();
+		it('should return status 204', async () => {
+			const { user, cardNode1, targetColumn } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.move(cardNode.id, targetColumn.id, 3);
+			const response = await api.move(cardNode1.id, targetColumn.id, 3);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually move the card', async () => {
-			const { user, cardNode, targetColumn } = await setup();
+			const { user, cardNode1, targetColumn } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			await api.move(cardNode.id, targetColumn.id, 3);
-			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			await api.move(cardNode1.id, targetColumn.id, 3);
+			const result = await em.findOneOrFail(CardNode, cardNode1.id);
 
 			expect(result.parentId).toEqual(targetColumn.id);
 			expect(result.position).toEqual(3);
+		});
+
+		describe('when moving a card within the same column', () => {
+			it('should keep the card parent', async () => {
+				const { user, cardNode2, parentColumn } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				await api.move(cardNode2.id, parentColumn.id, 0);
+
+				const result = await em.findOneOrFail(CardNode, cardNode2.id);
+				expect(result.parentId).toEqual(parentColumn.id);
+			});
+
+			it('should update the card positions', async () => {
+				const { user, cardNode1, cardNode2, parentColumn } = await setup();
+				currentUser = mapUserToCurrentUser(user);
+
+				await api.move(cardNode2.id, parentColumn.id, 0);
+
+				const result1 = await em.findOneOrFail(CardNode, cardNode1.id);
+				const result2 = await em.findOneOrFail(CardNode, cardNode2.id);
+				expect(result1.position).toEqual(1);
+				expect(result2.position).toEqual(0);
+			});
 		});
 	});
 

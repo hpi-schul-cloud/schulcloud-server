@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, EntityId, School, System, User } from '@shared/domain';
+import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -11,25 +12,22 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
+import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import { Request } from 'express';
-import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
 import { UUID } from 'bson';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning/strategy/sanis/sanis.response';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
+import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
+import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import { SSOAuthenticationError } from '../../interface/sso-authentication-error.enum';
 import { OauthTokenResponse } from '../../service/dto';
 import { AuthorizationParams, SSOLoginQuery } from '../dto';
-
-const keyPair: KeyPairKeyObjectResult = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
-const publicKey: string | Buffer = keyPair.publicKey.export({ type: 'pkcs1', format: 'pem' });
-const privateKey: string | Buffer = keyPair.privateKey.export({ type: 'pkcs1', format: 'pem' });
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -37,8 +35,8 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKey: jest.fn().mockResolvedValue({
 			kid: 'kid',
 			alg: 'RS256',
-			getPublicKey: jest.fn().mockReturnValue(publicKey),
-			rsaPublicKey: publicKey,
+			getPublicKey: jest.fn().mockReturnValue(JwtTestFactory.getPublicKey()),
+			rsaPublicKey: JwtTestFactory.getPublicKey(),
 		}),
 		getSigningKeys: jest.fn(),
 	};
@@ -51,21 +49,9 @@ describe('OAuth SSO Controller (API)', () => {
 	let axiosMock: MockAdapter;
 
 	const sessionCookieName: string = Configuration.get('SESSION__NAME') as string;
-
 	beforeAll(async () => {
 		Configuration.set('PUBLIC_BACKEND_URL', 'http://localhost:3030/api');
-
-		const schulcloudJwt: string = jwt.sign(
-			{
-				sub: 'testUser',
-				accountId: 'accountId',
-				jti: 'jti',
-			},
-			privateKey,
-			{
-				algorithm: 'RS256',
-			}
-		);
+		const schulcloudJwt: string = JwtTestFactory.createJwt();
 
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -85,6 +71,15 @@ describe('OAuth SSO Controller (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		const kcAdminService = app.get(KeycloakAdministrationService);
+
+		axiosMock.onGet(kcAdminService.getWellKnownUrl()).reply(200, {
+			issuer: 'issuer',
+			token_endpoint: 'token_endpoint',
+			authorization_endpoint: 'authorization_endpoint',
+			end_session_endpoint: 'end_session_endpoint',
+			jwks_uri: 'jwks_uri',
+		});
 	});
 
 	afterAll(async () => {
@@ -201,20 +196,13 @@ describe('OAuth SSO Controller (API)', () => {
 				query.code = 'code';
 				query.state = state;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser',
-						iss: system.oauthConfig?.issuer,
-						aud: system.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						external_sub: externalUserId,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'testUser',
+					iss: system.oauthConfig?.issuer,
+					aud: system.oauthConfig?.clientId,
+					// For OIDC provisioning strategy
+					external_sub: externalUserId,
+				});
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
@@ -273,7 +261,7 @@ describe('OAuth SSO Controller (API)', () => {
 		const mockPostOauthTokenEndpoint = (
 			idToken: string,
 			targetSystem: System,
-			targetUser: User,
+			targetUserId: string,
 			schoolExternalId: string,
 			officialSchoolNumber: string
 		) => {
@@ -286,7 +274,7 @@ describe('OAuth SSO Controller (API)', () => {
 				})
 				.onGet(targetSystem.provisioningUrl)
 				.replyOnce<SanisResponse>(200, {
-					pid: targetUser.id,
+					pid: targetUserId,
 					person: {
 						name: {
 							familienname: 'familienName',
@@ -332,45 +320,29 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber: '11111',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString()
-				);
+				const sourceSchool: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '11111',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				});
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school: sourceSchool,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date('2022-12-17T03:24:00'),
+				});
 
-				const schoolMatch: School = schoolFactory.buildWithId(
-					{
-						systems: [targetSystem],
-						officialSchoolNumber: '11111',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e714',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString()
-				);
+				const targetSchoolExternalId = 'aef1f4fd-c323-466e-962b-a84354c0e714';
 
-				const sourceUser: User = userFactory.buildWithId(
-					{ externalId: externalUserId, school: sourceSchool },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const sourceUser: User = userFactory.buildWithId({ externalId: externalUserId, school: sourceSchool });
 
-				const userMatch: User = userFactory.buildWithId(
-					{ externalId: externalUserId, school: schoolMatch },
-					new ObjectId().toHexString(),
-					{}
-				);
-
-				const accountMatch: Account = accountFactory.buildWithId({
+				const sourceUserAccount: Account = accountFactory.buildWithId({
 					userId: sourceUser.id,
 					systemId: sourceSystem.id,
 					username: sourceUser.email,
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, schoolMatch, userMatch, accountMatch]);
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, sourceUserAccount, userLoginMigration]);
 
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				query.code = 'code';
@@ -378,44 +350,29 @@ describe('OAuth SSO Controller (API)', () => {
 
 				return {
 					targetSystem,
+					targetSchoolExternalId,
 					sourceSystem,
 					sourceUser,
-					userMatch,
 					externalUserId,
 					query,
 					cookies,
-					schoolMatch,
 				};
 			};
 
 			it('should redirect to the success page', async () => {
-				const { query, sourceUser, targetSystem, externalUserId, cookies, sourceSystem, schoolMatch, userMatch } =
+				const { query, sourceUser, targetSystem, externalUserId, cookies, sourceSystem, targetSchoolExternalId } =
 					await setupMigration();
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'testUser',
-						iss: targetSystem.oauthConfig?.issuer,
-						aud: targetSystem.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						external_sub: externalUserId,
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'testUser',
+					iss: targetSystem.oauthConfig?.issuer,
+					aud: targetSystem.oauthConfig?.clientId,
+					external_sub: externalUserId,
+				});
 
-				mockPostOauthTokenEndpoint(
-					idToken,
-					targetSystem,
-					userMatch,
-					schoolMatch.externalId ? schoolMatch.externalId : '',
-					'NI_11111'
-				);
+				mockPostOauthTokenEndpoint(idToken, targetSystem, currentUser.userId, targetSchoolExternalId, 'NI_11111');
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth/migration`)
@@ -442,23 +399,22 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber: '11111',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString()
-				);
+				const sourceSchool: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '11110',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				});
 
-				const sourceUser: User = userFactory.buildWithId(
-					{ externalId: externalUserId, school: sourceSchool },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school: sourceSchool,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date('2022-12-17T03:24:00'),
+				});
 
-				await em.persistAndFlush([targetSystem, sourceUser]);
+				const sourceUser: User = userFactory.buildWithId({ externalId: externalUserId, school: sourceSchool });
+
+				await em.persistAndFlush([targetSystem, sourceUser, userLoginMigration]);
 
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				query.code = 'code';
@@ -491,23 +447,22 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber: '11111',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString()
-				);
+				const sourceSchool: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '11111',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				});
 
-				const sourceUser: User = userFactory.buildWithId(
-					{ externalId: externalUserId, school: sourceSchool },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school: sourceSchool,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date('2022-12-17T03:24:00'),
+				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, sourceUser]);
+				const sourceUser: User = userFactory.buildWithId({ externalId: externalUserId, school: sourceSchool });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceSchool, sourceUser, userLoginMigration]);
 
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				query.code = 'code';
@@ -551,38 +506,33 @@ describe('OAuth SSO Controller (API)', () => {
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.ISERV }, new ObjectId().toHexString(), {});
 
-				const sourceSchool: School = schoolFactory.buildWithId(
-					{
-						systems: [sourceSystem],
-						officialSchoolNumber: '11111',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-						oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
-					},
-					new ObjectId().toHexString()
-				);
+				const sourceSchool: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '11111',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				});
 
-				const targetSchool: School = schoolFactory.buildWithId(
-					{
-						systems: [targetSystem],
-						officialSchoolNumber: '22222',
-						externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
-					},
-					new ObjectId().toHexString(),
-					{}
-				);
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school: sourceSchool,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date('2022-12-17T03:24:00'),
+				});
 
-				const sourceUser: User = userFactory.buildWithId(
-					{ externalId: externalUserId, school: sourceSchool },
-					new ObjectId().toHexString(),
-					{}
-				);
+				const targetSchool: School = schoolFactory.buildWithId({
+					systems: [targetSystem],
+					officialSchoolNumber: '22222',
+					externalId: 'aef1f4fd-c323-466e-962b-a84354c0e713',
+				});
+
+				const sourceUser: User = userFactory.buildWithId({ externalId: externalUserId, school: sourceSchool });
 
 				const targetUser: User = userFactory.buildWithId({
 					externalId: 'differentExternalUserId',
 					school: targetSchool,
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, targetUser]);
+				await em.persistAndFlush([sourceSystem, targetSystem, sourceUser, targetUser, userLoginMigration]);
 
 				const { state, cookies } = await setupSessionState(targetSystem.id, true);
 				query.code = 'code';
@@ -605,21 +555,14 @@ describe('OAuth SSO Controller (API)', () => {
 				currentUser = mapUserToCurrentUser(sourceUser, undefined, sourceSystem.id);
 				const baseUrl: string = Configuration.get('HOST') as string;
 
-				const idToken: string = jwt.sign(
-					{
-						sub: 'differentExternalUserId',
-						iss: targetSystem.oauthConfig?.issuer,
-						aud: targetSystem.oauthConfig?.clientId,
-						iat: Date.now(),
-						exp: Date.now() + 100000,
-						external_sub: 'differentExternalUserId',
-					},
-					privateKey,
-					{
-						algorithm: 'RS256',
-					}
-				);
-				mockPostOauthTokenEndpoint(idToken, targetSystem, targetUser, targetSchoolExternalId, 'NI_22222');
+				const idToken: string = JwtTestFactory.createJwt({
+					sub: 'differentExternalUserId',
+					iss: targetSystem.oauthConfig?.issuer,
+					aud: targetSystem.oauthConfig?.clientId,
+					external_sub: 'differentExternalUserId',
+				});
+
+				mockPostOauthTokenEndpoint(idToken, targetSystem, targetUser.id, targetSchoolExternalId, 'NI_22222');
 
 				await request(app.getHttpServer())
 					.get(`/sso/oauth/migration`)

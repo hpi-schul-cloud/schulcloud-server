@@ -25,8 +25,8 @@ export class KeycloakConfigurationUc {
 		return this.keycloakSeedService.seed();
 	}
 
-	public async migrate(skip?: number, query?: string, verbose?: boolean): Promise<number> {
-		return this.keycloakMigrationService.migrate(skip, query, verbose);
+	public async migrate(skip?: number, verbose?: boolean): Promise<number> {
+		return this.keycloakMigrationService.migrate(skip, verbose);
 	}
 
 	async configure(): Promise<number> {

@@ -1,5 +1,5 @@
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
-import { UserMigrationResponse } from '../controller/dto/user-migration.response';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { UserMigrationResponse } from '../controller/dto';
 
 export class UserMigrationMapper {
 	static mapDtoToResponse(dto: MigrationDto): UserMigrationResponse {

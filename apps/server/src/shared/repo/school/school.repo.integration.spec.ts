@@ -1,14 +1,15 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ISchoolProperties, School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
-import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { Logger } from '@src/core/logger';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolRepo } from '..';
 
 describe('SchoolRepo', () => {
@@ -22,8 +23,8 @@ describe('SchoolRepo', () => {
 			providers: [
 				SchoolRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -137,6 +138,30 @@ describe('SchoolRepo', () => {
 
 			expect(result).toBeNull();
 		});
+
+		describe('when there is more than school with the same officialSchoolNumber', () => {
+			const setup = async () => {
+				const officialSchoolNumber = '12345';
+				const schoolEntity: School = schoolFactory.build({ officialSchoolNumber });
+				const schoolEntity2: School = schoolFactory.build({ officialSchoolNumber });
+
+				await em.persistAndFlush([schoolEntity, schoolEntity2]);
+
+				return {
+					officialSchoolNumber,
+				};
+			};
+
+			it('should throw an internal server error', async () => {
+				const { officialSchoolNumber } = await setup();
+
+				const func = () => repo.findBySchoolNumber(officialSchoolNumber);
+
+				await expect(func()).rejects.toThrow(
+					new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`)
+				);
+			});
+		});
 	});
 
 	describe('mapEntityToDO is called', () => {
@@ -156,11 +181,6 @@ describe('SchoolRepo', () => {
 					features: [],
 					inMaintenanceSince: schoolEntity.inMaintenanceSince,
 					inUserMigration: schoolEntity.inUserMigration,
-					oauthMigrationStart: schoolEntity.oauthMigrationStart,
-					oauthMigrationMandatory: schoolEntity.oauthMigrationMandatory,
-					oauthMigrationPossible: schoolEntity.oauthMigrationPossible,
-					oauthMigrationFinished: schoolEntity.oauthMigrationFinished,
-					oauthMigrationFinalFinish: schoolEntity.oauthMigrationFinalFinish,
 					previousExternalId: schoolEntity.previousExternalId,
 					officialSchoolNumber: schoolEntity.officialSchoolNumber,
 					schoolYear,
@@ -192,11 +212,6 @@ describe('SchoolRepo', () => {
 			expect(result.inMaintenanceSince).toEqual(entityDO.inMaintenanceSince);
 			expect(result.inUserMigration).toEqual(entityDO.inUserMigration);
 			expect(result.name).toEqual(entityDO.name);
-			expect(result.oauthMigrationStart).toEqual(entityDO.oauthMigrationStart);
-			expect(result.oauthMigrationMandatory).toEqual(entityDO.oauthMigrationMandatory);
-			expect(result.oauthMigrationPossible).toEqual(entityDO.oauthMigrationPossible);
-			expect(result.oauthMigrationFinished).toEqual(entityDO.oauthMigrationFinished);
-			expect(result.oauthMigrationFinalFinish).toEqual(entityDO.oauthMigrationFinalFinish);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
 			expect(result.schoolYear).toEqual(entityDO.schoolYear);

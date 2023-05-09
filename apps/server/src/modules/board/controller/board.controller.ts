@@ -1,17 +1,34 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Post,
+	Put,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse } from './dto';
+import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
-@ApiTags('Boards')
+@ApiTags('Board')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
 
+	@ApiOperation({ summary: 'Get the skeleton of a a single board.' })
+	@ApiResponse({ status: 200, type: BoardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
@@ -24,6 +41,10 @@ export class BoardController {
 		return response;
 	}
 
+	@ApiOperation({ summary: 'Create a new board.' })
+	@ApiResponse({ status: 201, type: BoardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post()
 	async createBoard(@CurrentUser() currentUser: ICurrentUser): Promise<BoardResponse> {
 		const board = await this.boardUc.createBoard(currentUser.userId);
@@ -33,22 +54,37 @@ export class BoardController {
 		return response;
 	}
 
-	// @Put('/:boardId/title')
-	// renameBoard(
-	// 	@Param() urlParams: BoardUrlParams,
-	// 	@Body() bodyParams: RenameBodyParams,
-	// 	@CurrentUser() currentUser: ICurrentUser
-	// ): Promise<void> {
-	// 	throw new NotImplementedException();
-	// }
-
-	@Delete(':boardId')
-	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
-		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
-
-		return true;
+	@ApiOperation({ summary: 'Update the title of a single board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Put(':boardId/title')
+	async updateBoardTitle(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
 
+	@ApiOperation({ summary: 'Delete a single board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Delete(':boardId')
+	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
+	}
+
+	@ApiOperation({ summary: 'Create a new column on a board.' })
+	@ApiResponse({ status: 201, type: ColumnResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,

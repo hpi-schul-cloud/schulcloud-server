@@ -1,5 +1,5 @@
 import { ConsoleWriterService } from '@shared/infra/console';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Command, CommandOption, Console } from 'nestjs-console';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
@@ -20,7 +20,7 @@ export class KeycloakConsole {
 	constructor(
 		private readonly console: ConsoleWriterService,
 		private readonly keycloakConfigurationUc: KeycloakConfigurationUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(KeycloakConsole.name);
 	}
@@ -128,12 +128,6 @@ export class KeycloakConsole {
 		options: [
 			...KeycloakConsole.retryFlags,
 			{
-				flags: '-q, --query',
-				description: 'Limit migration to accounts with username partially matching the query string.',
-				required: false,
-				defaultValue: undefined,
-			},
-			{
 				flags: '-s, --skip',
 				description: 'Skip the first "s" accounts during migration. Default 0.',
 				required: false,
@@ -151,7 +145,10 @@ export class KeycloakConsole {
 		await this.repeatCommand(
 			'migrate',
 			async () => {
-				const count = await this.keycloakConfigurationUc.migrate(options.skip, options.query, options.verbose);
+				const count = await this.keycloakConfigurationUc.migrate(
+					options.skip ? Number(options.skip) : undefined,
+					options.verbose ? Boolean(options.verbose) : false
+				);
 				this.console.info(`Migrated ${count} users into IDM`);
 				return count;
 			},

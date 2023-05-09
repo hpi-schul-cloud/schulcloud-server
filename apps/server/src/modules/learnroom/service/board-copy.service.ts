@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
 import { getResolvedValues } from '@src/modules/files-storage/helper';
 import { LessonCopyService } from '@src/modules/lesson/service';
@@ -17,7 +17,7 @@ type BoardCopyParams = {
 @Injectable()
 export class BoardCopyService {
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly boardRepo: BoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,

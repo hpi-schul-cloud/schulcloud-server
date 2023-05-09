@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
-import bcrypt from 'bcryptjs';
+import { Counted, EntityId } from '@shared/domain';
 import { AccountDto, AccountSaveDto } from './dto';
 
 export abstract class AbstractAccountService {
@@ -29,15 +28,13 @@ export abstract class AbstractAccountService {
 
 	abstract deleteByUserId(userId: EntityId): Promise<void>;
 
-	abstract searchByUsernamePartialMatch(
-		userName: string,
-		skip: number,
-		limit: number
-	): Promise<{ accounts: AccountDto[]; total: number }>;
+	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>>;
 
-	abstract searchByUsernameExactMatch(userName: string): Promise<{ accounts: AccountDto[]; total: number }>;
+	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>>;
 
-	protected encryptPassword(password: string): Promise<string> {
-		return bcrypt.hash(password, 10);
-	}
+	abstract validatePassword(account: AccountDto, comparePassword: string): Promise<boolean>;
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	abstract findMany(offset?: number, limit?: number): Promise<AccountDto[]>;
 }

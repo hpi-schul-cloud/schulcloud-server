@@ -86,13 +86,13 @@ describe(`card delete (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 204', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.delete(cardNode.id);
 
-			expect(response.status).toEqual(200);
+			expect(response.status).toEqual(204);
 		});
 
 		it('should actually delete card', async () => {
@@ -121,6 +121,18 @@ describe(`card delete (api)`, () => {
 
 			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
 			expect(siblingFromDb).toBeDefined();
+		});
+
+		it('should update position of the siblings', async () => {
+			const { user, cardNode, siblingCardNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+			cardNode.position = 0;
+			siblingCardNode.position = 1;
+
+			await api.delete(cardNode.id);
+
+			const siblingFromDb = await em.findOneOrFail(CardNode, siblingCardNode.id);
+			expect(siblingFromDb.position).toEqual(0);
 		});
 	});
 

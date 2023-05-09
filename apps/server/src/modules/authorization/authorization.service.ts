@@ -1,20 +1,22 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
 	BasePermissionManager,
+	BoardNodeRule,
 	CourseGroupRule,
 	CourseRule,
 	EntityId,
 	LessonRule,
+	SchoolExternalToolRule,
 	SchoolRule,
 	SubmissionRule,
-	TaskRule,
 	TaskCardRule,
+	TaskRule,
 	User,
 	UserRule,
-	SchoolExternalToolRule,
 } from '@shared/domain';
 import { IPermissionContext, PermissionTypes } from '@shared/domain/interface';
 import { TeamRule } from '@shared/domain/rules/team.rule';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { AllowedAuthorizationEntityType } from './interfaces';
 import { ReferenceLoader } from './reference.loader';
 
@@ -31,7 +33,8 @@ export class AuthorizationService extends BasePermissionManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly loader: ReferenceLoader,
-		private readonly schoolExternalToolRule: SchoolExternalToolRule
+		private readonly schoolExternalToolRule: SchoolExternalToolRule,
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		super();
 		this.registerPermissions([
@@ -45,12 +48,13 @@ export class AuthorizationService extends BasePermissionManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
+			this.boardNodeRule,
 		]);
 	}
 
 	checkPermission(user: User, entity: PermissionTypes, context: IPermissionContext) {
 		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(user.id, entity.constructor.name, context);
 		}
 	}
 
@@ -60,6 +64,7 @@ export class AuthorizationService extends BasePermissionManager {
 		entityId: EntityId,
 		context: IPermissionContext
 	): Promise<boolean> {
+		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
 			const [user, entity] = await Promise.all([
 				this.getUserWithPermissions(userId),
@@ -80,7 +85,7 @@ export class AuthorizationService extends BasePermissionManager {
 		context: IPermissionContext
 	) {
 		if (!(await this.hasPermissionByReferences(userId, entityName, entityId, context))) {
-			throw new ForbiddenException();
+			throw new ForbiddenLoggableException(userId, entityName, context);
 		}
 	}
 

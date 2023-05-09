@@ -1,14 +1,14 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
 export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: Logger) {
+	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
@@ -24,9 +24,12 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 	}
 
 	async findBySchoolNumber(officialSchoolNumber: string): Promise<SchoolDO | null> {
-		const school: School | null = await this._em.findOne(School, { officialSchoolNumber });
+		const [schools, count] = await this._em.findAndCount(School, { officialSchoolNumber });
+		if (count > 1) {
+			throw new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`);
+		}
 
-		const schoolDo: SchoolDO | null = school ? this.mapEntityToDO(school) : null;
+		const schoolDo: SchoolDO | null = schools[0] ? this.mapEntityToDO(schools[0]) : null;
 		return schoolDo;
 	}
 
@@ -42,11 +45,6 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
 			name: entity.name,
-			oauthMigrationStart: entity.oauthMigrationStart,
-			oauthMigrationMandatory: entity.oauthMigrationMandatory,
-			oauthMigrationPossible: entity.oauthMigrationPossible,
-			oauthMigrationFinished: entity.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entity.oauthMigrationFinalFinish,
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
@@ -61,11 +59,6 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			inMaintenanceSince: entityDO.inMaintenanceSince,
 			inUserMigration: entityDO.inUserMigration,
 			name: entityDO.name,
-			oauthMigrationStart: entityDO.oauthMigrationStart,
-			oauthMigrationMandatory: entityDO.oauthMigrationMandatory,
-			oauthMigrationPossible: entityDO.oauthMigrationPossible,
-			oauthMigrationFinished: entityDO.oauthMigrationFinished,
-			oauthMigrationFinalFinish: entityDO.oauthMigrationFinalFinish,
 			previousExternalId: entityDO.previousExternalId,
 			officialSchoolNumber: entityDO.officialSchoolNumber,
 			schoolYear: entityDO.schoolYear,

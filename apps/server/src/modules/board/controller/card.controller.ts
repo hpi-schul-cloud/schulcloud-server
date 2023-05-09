@@ -1,5 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Post,
+	Put,
+	Query,
+} from '@nestjs/common';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { BoardUc, CardUc } from '../uc';
@@ -8,17 +21,24 @@ import {
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
+	CreateContentElementBody,
+	FileElementResponse,
 	MoveCardBodyParams,
+	RenameBodyParams,
 	TextElementResponse,
 } from './dto';
-import { CardResponseMapper, TextElementResponseMapper } from './mapper';
+import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
-@ApiTags('Cards')
+@ApiTags('Board Card')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
 	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
 
+	@ApiOperation({ summary: 'Get a list of cards by their ids.' })
+	@ApiResponse({ status: 200, type: CardListResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get()
 	async getCards(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -34,39 +54,67 @@ export class CardController {
 		return result;
 	}
 
+	@ApiOperation({ summary: 'Move a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
 	@Put(':cardId/position')
 	async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<boolean> {
+	): Promise<void> {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
-
-		return true;
 	}
 
+	@ApiOperation({ summary: 'Update the title of a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Put(':cardId/title')
+	async updateCardTitle(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: RenameBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
+	}
+
+	@ApiOperation({ summary: 'Delete a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
 	@Delete(':cardId')
-	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
-
-		return true;
 	}
 
-	@ApiExtraModels(TextElementResponse)
+	@ApiOperation({ summary: 'Create a new element on a card.' })
+	@ApiExtraModels(TextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
 		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Body() bodyParams: CreateContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId);
-
-		const response = TextElementResponseMapper.mapToResponse(element);
+		const { type } = bodyParams;
+		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type);
+		const response = ContentElementResponseFactory.mapToResponse(element);
 
 		return response;
 	}

@@ -6,7 +6,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
@@ -73,8 +73,8 @@ describe('IdTokenService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

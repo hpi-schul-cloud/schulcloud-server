@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AnyBoardDo } from '@shared/domain';
 import { BoardDoRepo } from '../repo';
 
@@ -11,23 +11,23 @@ export class BoardDoService {
 
 		if (parent) {
 			parent.removeChild(domainObject);
-			await this.boardDoRepo.save(parent.children, parent.id);
+			await this.boardDoRepo.save(parent.children, parent);
 		}
 
 		await this.boardDoRepo.delete(domainObject);
 	}
 
 	async move(child: AnyBoardDo, targetParent: AnyBoardDo, targetPosition?: number): Promise<void> {
-		const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
-
-		if (sourceParent == null) {
-			throw new BadRequestException('Cannot move nodes without a parent');
+		if (targetParent.hasChild(child)) {
+			targetParent.removeChild(child);
+		} else {
+			const sourceParent = await this.boardDoRepo.findParentOfId(child.id);
+			if (sourceParent) {
+				sourceParent.removeChild(child);
+				await this.boardDoRepo.save(sourceParent.children, sourceParent);
+			}
 		}
-
-		sourceParent.removeChild(child);
 		targetParent.addChild(child, targetPosition);
-
-		await this.boardDoRepo.save(sourceParent.children, sourceParent.id);
-		await this.boardDoRepo.save(targetParent.children, targetParent.id);
+		await this.boardDoRepo.save(targetParent.children, targetParent);
 	}
 }

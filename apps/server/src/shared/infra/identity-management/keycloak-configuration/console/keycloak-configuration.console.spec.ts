@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakConsole } from './keycloak-configuration.console';
 
@@ -10,7 +10,7 @@ describe('KeycloakConsole', () => {
 	let console: KeycloakConsole;
 	let writer: DeepMocked<ConsoleWriterService>;
 	let uc: DeepMocked<KeycloakConfigurationUc>;
-	let logger: DeepMocked<Logger>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,15 +24,15 @@ describe('KeycloakConsole', () => {
 					useValue: createMock<KeycloakConfigurationUc>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 
 		writer = module.get(ConsoleWriterService);
 		uc = module.get(KeycloakConfigurationUc);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		console = new KeycloakConsole(writer, uc, logger);
 	});
 
@@ -93,15 +93,7 @@ describe('KeycloakConsole', () => {
 			migrateSpy.mockResolvedValue(1);
 			const skipValue = 10;
 			await console.migrate({ skip: skipValue });
-			expect(migrateSpy).toHaveBeenCalledWith(skipValue, undefined, undefined);
-		});
-		it('should forward the query option', async () => {
-			const migrateSpy = jest.spyOn(uc, 'migrate');
-			migrateSpy.mockClear();
-			migrateSpy.mockResolvedValue(1);
-			const queryValue = 'test';
-			await console.migrate({ query: queryValue });
-			expect(migrateSpy).toHaveBeenCalledWith(undefined, queryValue, undefined);
+			expect(migrateSpy).toHaveBeenCalledWith(skipValue, expect.anything());
 		});
 		it('should forward the verbose option', async () => {
 			const migrateSpy = jest.spyOn(uc, 'migrate');
@@ -109,7 +101,7 @@ describe('KeycloakConsole', () => {
 			migrateSpy.mockResolvedValue(1);
 			const verboseValue = true;
 			await console.migrate({ verbose: verboseValue });
-			expect(migrateSpy).toHaveBeenCalledWith(undefined, undefined, verboseValue);
+			expect(migrateSpy).toHaveBeenCalledWith(undefined, verboseValue);
 		});
 		it('should throw on error', async () => {
 			jest.spyOn(uc, 'migrate').mockRejectedValue(new Error());

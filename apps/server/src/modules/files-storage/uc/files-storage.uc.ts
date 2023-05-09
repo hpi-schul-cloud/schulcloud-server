@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId, IPermissionContext } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
@@ -29,7 +29,7 @@ import { FilesStorageService } from '../service/files-storage.service';
 @Injectable()
 export class FilesStorageUC {
 	constructor(
-		private logger: Logger,
+		private logger: LegacyLogger,
 		private readonly authorizationService: AuthorizationService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService
