@@ -1,9 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -13,14 +12,14 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CourseMetadataListResponse } from '@src/modules/learnroom/controller/dto';
+import {
+	CourseMetadataListResponse,
+	CourseMetadataResponse,
+	CourseResponse,
+} from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
 import request from 'supertest';
 
-// const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
-// const user = userFactory.build({ roles });
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
 	return { account: studentAccount, user: studentUser };
@@ -36,26 +35,16 @@ const createTeacher = () => {
 describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
 	let apiRequest: TestRequest;
 
 	beforeAll(async () => {
-		const moduleFixture: TestingModule = await Test.createTestingModule({
+		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
-		app = moduleFixture.createNestApplication();
+		app = module.createNestApplication();
 		await app.init();
-		em = app.get(EntityManager);
+		em = module.get(EntityManager);
 		apiRequest = new TestRequest(app, 'courses');
 	});
 
@@ -65,16 +54,17 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/', () => {
-		const setup = async () => {
+		const setup = () => {
 			const student = createStudent();
 			const teacher = createTeacher();
 			const course = courseFactory.build({ name: 'course #1', teachers: [teacher.user], students: [student.user] });
-			await em.persistAndFlush([student.account, student.user, teacher.user, teacher.account, course]);
-			em.clear();
+
 			return { student, course, teacher };
 		};
-		it('should find courses', async () => {
-			const { teacher, student } = await setup();
+		it('should find courses as student', async () => {
+			const { student, course } = setup();
+			await em.persistAndFlush([student.account, student.user, course]);
+			em.clear();
 
 			const response = await apiRequest.get(undefined, student.account);
 
@@ -82,52 +72,63 @@ describe('Course Controller (API)', () => {
 			expect(response.statusCode).toBe(200);
 			expect(typeof data[0].title).toBe('string');
 		});
+		it('should find courses as teacher', async () => {
+			const { teacher, course } = setup();
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
+			const response = await apiRequest.get(undefined, teacher.account);
+
+			const { data } = response.body as CourseMetadataListResponse;
+			expect(response.statusCode).toBe(200);
+			expect(typeof data[0].title).toBe('string');
+		});
 	});
 
-	// describe('[GET] /courses/:id', () => {
-	// 	const setup = () => {
-	// 		const role = roleFactory.build({ permissions: [Permission.COURSE_EDIT] });
-	// 		const teacher = userFactory.build({ roles: [role] });
-	// 		const students = userFactory.buildList(2);
-	// 		const course = courseFactory.build({ name: 'course #1', teachers: [teacher], students });
-	// 		return { teacher, course };
-	// 	};
-	// 	it('should find course', async () => {
-	// 		const { course } = setup();
+	describe('[GET] /courses/:id', () => {
+		const setup = () => {
+			const student = createStudent();
+			const teacher = createTeacher();
+			const course = courseFactory.build({ name: 'course #1', teachers: [teacher.user], students: [student.user] });
 
-	// 		await em.persistAndFlush(course);
-	// 		em.clear();
+			return { student, course, teacher };
+		};
+		it('should find course', async () => {
+			const { course, teacher } = setup();
+			await em.persistAndFlush([teacher.user, teacher.account, course]);
 
-	// 		const response = await request(app.getHttpServer()).get(`/courses/${course.id}`);
-	// 		const courseResponse = response.body as CourseResponse;
+			em.clear();
 
-	// 		expect(response.status).toEqual(200);
-	// 		expect(courseResponse).toBeDefined();
-	// 		expect(courseResponse.id).toEqual(course.id);
-	// 		expect(courseResponse.students?.length).toEqual(2);
-	// 	});
-	// 	it('should throw if user is not teacher', async () => {
-	// 		const { teacher } = setup();
-	// 		const unknownTeacher = userFactory.build({ teacher });
-	// 		const course = courseFactory.build({ name: 'course #1', teachers: [unknownTeacher] });
+			const response = await apiRequest.get(undefined, teacher.account);
+			const { data } = response.body as CourseMetadataResponse;
 
-	// 		await em.persistAndFlush(course);
-	// 		em.clear();
-	// 		currentUser = mapUserToCurrentUser(teacher);
+			expect(response.statusCode).toEqual(200);
+			expect(data).toBeDefined();
+			expect(courseResponse.id).toEqual(course.id);
+			expect(courseResponse.students?.length).toEqual(2);
+		});
+		it('should throw if user is not teacher', async () => {
+			const { teacher } = setup();
+			const unknownTeacher = userFactory.build({ teacher });
+			const course = courseFactory.build({ name: 'course #1', teachers: [unknownTeacher] });
 
-	// 		await request(app.getHttpServer()).get(`/courses/${course.id}`).set('Accept', 'application/json').expect(500);
-	// 	});
-	// 	it('should throw if course is not found', async () => {
-	// 		const { teacher, course } = setup();
-	// 		const unknownId = new ObjectId().toHexString();
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(teacher);
 
-	// 		await em.persistAndFlush(course);
-	// 		em.clear();
-	// 		currentUser = mapUserToCurrentUser(teacher);
+			await request(app.getHttpServer()).get(`/courses/${course.id}`).set('Accept', 'application/json').expect(500);
+		});
+		it('should throw if course is not found', async () => {
+			const { teacher, course } = setup();
+			const unknownId = new ObjectId().toHexString();
 
-	// 		await request(app.getHttpServer()).get(`/courses/${unknownId}`).set('Accept', 'application/json').expect(404);
-	// 	});
-	// });
+			await em.persistAndFlush(course);
+			em.clear();
+			currentUser = mapUserToCurrentUser(teacher);
+
+			await request(app.getHttpServer()).get(`/courses/${unknownId}`).set('Accept', 'application/json').expect(404);
+		});
+	});
 
 	describe('[GET] /courses/:id/export', () => {
 		const setup = () => {
