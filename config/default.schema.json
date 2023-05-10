@@ -1133,7 +1133,7 @@
 		},
 		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
 		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
