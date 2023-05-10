@@ -27,19 +27,19 @@ describe('ContextExternalToolService', () => {
 	});
 
 	describe('deleteBySchoolExternalToolId is called', () => {
-		const setup = () => {
-			const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-			const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
-			const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
-			return {
-				schoolExternalTool,
-				schoolExternalToolId: schoolExternalTool.id as string,
-				contextExternalTool1,
-				contextExternalTool2,
-			};
-		};
-
 		describe('when schoolExternalToolId is given', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+				const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				return {
+					schoolExternalTool,
+					schoolExternalToolId: schoolExternalTool.id as string,
+					contextExternalTool1,
+					contextExternalTool2,
+				};
+			};
+
 			it('should call find()', async () => {
 				const { schoolExternalToolId } = setup();
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
@@ -59,15 +59,15 @@ describe('ContextExternalToolService', () => {
 	});
 
 	describe('createContextExternalTool is called', () => {
-		const setup = () => {
-			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
-
-			return {
-				contextExternalTool,
-			};
-		};
-
 		describe('when contextExternalTool is given', () => {
+			const setup = () => {
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+
+				return {
+					contextExternalTool,
+				};
+			};
+
 			it('should call contextExternalToolRepo ', async () => {
 				const { contextExternalTool } = setup();
 
