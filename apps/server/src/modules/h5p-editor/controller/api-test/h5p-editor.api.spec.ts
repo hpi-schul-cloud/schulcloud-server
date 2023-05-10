@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestRequest, UserAndAccountTestFactory } from '@shared/testing';
-import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { H5PEditorTestModule } from '@src/modules/h5p-editor';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let request: TestRequest;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -17,7 +17,7 @@ describe('H5PEditor Controller (api)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		request = new TestRequest(app, 'h5p-editor');
+		testApiClient = new TestApiClient(app, 'h5p-editor');
 	});
 
 	afterAll(async () => {
@@ -27,7 +27,7 @@ describe('H5PEditor Controller (api)', () => {
 	describe('get player', () => {
 		describe('when user not exists', () => {
 			it('should respond with unauthorized exception', async () => {
-				const response = await request.get('dummyID/play');
+				const response = await testApiClient.get('dummyID/play');
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -54,9 +54,10 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return the player', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await request.get('dummyID/play', studentAccount);
+				const response = await testApiClient.get('dummyID/play', studentAccount);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.text).toContain('<h1>H5P Player Dummy</h1>');
 			});
 		});
 	});
@@ -64,7 +65,7 @@ describe('H5PEditor Controller (api)', () => {
 	describe('get editor', () => {
 		describe('when user not exists', () => {
 			it('should respond with unauthorized exception', async () => {
-				const response = await request.get('dummyID/edit');
+				const response = await testApiClient.get('dummyID/edit');
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -91,9 +92,10 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return the editor', async () => {
 				const { studentAccount } = await setup();
 
-				const response = await request.get('dummyID/edit', studentAccount);
+				const response = await testApiClient.get('dummyID/edit', studentAccount);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.text).toContain('<h1>H5P Editor Dummy</h1>');
 			});
 		});
 	});
