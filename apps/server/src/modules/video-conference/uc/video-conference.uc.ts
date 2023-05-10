@@ -1,11 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import {
-	Actions,
 	Course,
 	EntityId,
 	Permission,
-	PermissionContextBuilder,
 	RoleName,
 	SchoolFeatures,
 	Team,
@@ -19,8 +17,13 @@ import { CalendarService } from '@shared/infra/calendar';
 import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
 import { CourseRepo, TeamsRepo, UserRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { ICurrentUser } from '@src/modules/authentication';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { BBBCreateConfigBuilder } from '@src/modules/video-conference/builder/bbb-create-config.builder';
 import { BBBJoinConfigBuilder } from '@src/modules/video-conference/builder/bbb-join-config.builder';
@@ -41,11 +44,10 @@ import {
 	BBBResponse,
 } from '@src/modules/video-conference/interface/bbb-response.interface';
 import {
-	defaultVideoConferenceOptions,
 	VideoConferenceOptions,
+	defaultVideoConferenceOptions,
 } from '@src/modules/video-conference/interface/vc-options.interface';
 import { BBBService } from '@src/modules/video-conference/service/bbb.service';
-import { ICurrentUser } from '@src/modules/authentication';
 
 export interface IScopeInfo {
 	scopeId: EntityId;
@@ -398,7 +400,7 @@ export class VideoConferenceUc {
 			PermissionScopeMapping[conferenceScope],
 			entityId,
 			[Permission.START_MEETING, Permission.JOIN_MEETING],
-			Actions.read
+			Action.read
 		);
 
 		if (await permissionMap.get(Permission.START_MEETING)) {
@@ -415,12 +417,12 @@ export class VideoConferenceUc {
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId,
 		permissions: Permission[],
-		action: Actions
+		action: Action
 	): Map<Permission, Promise<boolean>> {
 		const returnMap: Map<Permission, Promise<boolean>> = new Map();
 		permissions.forEach((perm) => {
 			const context =
-				action === Actions.read ? PermissionContextBuilder.read([perm]) : PermissionContextBuilder.write([perm]);
+				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
 			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
