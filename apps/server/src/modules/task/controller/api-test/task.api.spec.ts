@@ -101,6 +101,46 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when user is substitution teacher in course with task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ substitutionTeachers: [user] });
+				const task = taskFactory.build({ course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+			it('should retun a status flag in task if the teacher is only a substitution teacher.', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
+			});
+		});
+
+		describe('when user is teacher with draft task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.draft().build({ creator: user, course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+
+			it('should return private tasks created by the user', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+				expect(result.data[0].status.isDraft).toEqual(true);
+			});
+		});
+
 		describe('when user is teacher with write permission in course', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
@@ -144,32 +184,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should retun a status flag in task if the teacher is only a substitution teacher.', async () => {
-				const { account: teacherAccount, teacher } = await setup();
-				const course = courseFactory.build({ substitutionTeachers: [teacher] });
-				const task = taskFactory.build({ course });
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
-			});
-
-			it('should return private tasks created by the user', async () => {
-				const { account: teacherAccount, teacher, course } = await setup();
-				const task = taskFactory.draft().build({ creator: teacher, course });
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(1);
-				expect(result.data[0].status.isDraft).toEqual(true);
 			});
 
 			it('should not return private tasks created by other users', async () => {
