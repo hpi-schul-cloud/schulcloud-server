@@ -11,20 +11,23 @@ import {
 import { SchoolExternalToolDO } from '../domainobject';
 import { Role, SchoolExternalTool, User } from '../entity';
 import { Permission } from '../interface';
-import { Actions } from './actions.enum';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action } from '@src/modules/authorization/types';
 
 describe('SchoolExternalToolRule', () => {
 	let service: SchoolExternalToolRule;
+	let authorizationHelper: AuthorizationHelper;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [SchoolExternalToolRule],
+			providers: [AuthorizationHelper, SchoolExternalToolRule],
 		}).compile();
 
 		service = await module.get(SchoolExternalToolRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	beforeEach(() => {});
@@ -53,11 +56,11 @@ describe('SchoolExternalToolRule', () => {
 
 	describe('hasPermission is called', () => {
 		describe('when user has permission', () => {
-			it('should call baseRule.hasAllPermissions', () => {
+			it('should call hasAllPermissions on AuthorizationHelper', () => {
 				const { user, entity } = setup();
-				const spy = jest.spyOn(service.utils, 'hasAllPermissions');
+				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
-				service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(spy).toBeCalledWith(user, []);
 			});
@@ -65,7 +68,7 @@ describe('SchoolExternalToolRule', () => {
 			it('should return "true" if user in scope', () => {
 				const { user, entity } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
 				expect(res).toBe(true);
 			});
@@ -75,7 +78,7 @@ describe('SchoolExternalToolRule', () => {
 			it('should return "false" if user has not permission', () => {
 				const { user, entity, permissionC } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 
 				expect(res).toBe(false);
 			});
@@ -85,7 +88,7 @@ describe('SchoolExternalToolRule', () => {
 				const entity: SchoolExternalTool | SchoolExternalToolDO = schoolExternalToolDOFactory.build();
 				const user: User = userFactory.build({ roles: [role] });
 
-				const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionA] });
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 
 				expect(res).toBe(false);
 			});

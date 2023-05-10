@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, EntityId, Permission, User, SchoolExternalToolDO } from '@shared/domain';
+import {  EntityId, Permission, User, SchoolExternalToolDO } from '@shared/domain';
 import { setupEntities, userFactory, schoolExternalToolDOFactory } from '@shared/testing';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
@@ -80,7 +80,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -141,7 +141,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -179,7 +179,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -217,7 +217,7 @@ describe('SchoolExternalToolUc', () => {
 					AllowedAuthorizationEntityType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -259,7 +259,7 @@ describe('SchoolExternalToolUc', () => {
 				AllowedAuthorizationEntityType.SchoolExternalTool,
 				schoolExternalToolId,
 				{
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 				}
 			);
