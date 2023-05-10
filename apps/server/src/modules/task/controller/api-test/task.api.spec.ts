@@ -64,7 +64,7 @@ describe('Task Controller (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('[GET] /tasks ', () => {
+	describe('[GET] /tasks', () => {
 		describe('when no authorization is provided', () => {
 			it('should return 401', async () => {
 				const { statusCode } = await apiRequest.get();

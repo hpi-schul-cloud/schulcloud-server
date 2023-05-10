@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { sanitizeRichText } from '@shared/controller';
 import { CardElementType, InputFormat, Permission } from '@shared/domain';
 import {
-	TestRequest,
+	TestApiClient,
 	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
@@ -29,7 +29,7 @@ const inThreeDays = new Date(Date.now() + 259200000);
 describe('Task-Card Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiRequest: TestRequest;
+	let apiRequest: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -39,7 +39,7 @@ describe('Task-Card Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		apiRequest = new TestRequest(app, 'cards/task');
+		apiRequest = new TestApiClient(app, 'cards/task');
 	});
 
 	afterAll(async () => {
@@ -86,8 +86,9 @@ describe('Task-Card Controller (API)', () => {
 					dueDate: inTwoDays,
 				};
 
-				const { body, statusCode } = await apiRequest.post(undefined, taskCardParams, account);
-				const responseTaskCard = body as TaskCardResponse;
+				const response = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = response;
+				const responseTaskCard = response.body as TaskCardResponse;
 
 				expect(statusCode).toEqual(201);
 				expect(responseTaskCard.cardElements?.length).toEqual(2);
@@ -123,8 +124,9 @@ describe('Task-Card Controller (API)', () => {
 
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-				const { body, statusCode } = await apiRequest.post(undefined, taskCardParams, account);
-				const responseTaskCard = body as TaskCardResponse;
+				const response = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = response;
+				const responseTaskCard = response.body as TaskCardResponse;
 				expect(statusCode).toEqual(201);
 				const richTextElement = responseTaskCard.cardElements?.filter(
 					(element) => element.cardElementType === CardElementType.RichText
@@ -239,8 +241,9 @@ describe('Task-Card Controller (API)', () => {
 			it('should return existing task-card', async () => {
 				const { account, taskCard } = await setup();
 
-				const { body, statusCode } = await apiRequest.get(`${taskCard.id}`, account);
-				const responseTaskCard = body as TaskCardResponse;
+				const response = await apiRequest.get(`${taskCard.id}`, account);
+				const { statusCode } = response;
+				const responseTaskCard = response.body as TaskCardResponse;
 
 				expect(statusCode).toBe(200);
 				expect(responseTaskCard.id).toEqual(taskCard.id);
@@ -298,8 +301,9 @@ describe('Task-Card Controller (API)', () => {
 					courseId: course.id,
 				};
 
-				const { body, statusCode } = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
-				const responseTaskCard = body as TaskCardResponse;
+				const response = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
+				const { statusCode } = response;
+				const responseTaskCard = response.body as TaskCardResponse;
 
 				expect(statusCode).toBe(200);
 				expect(responseTaskCard.id).toEqual(taskCard.id);
@@ -330,8 +334,9 @@ describe('Task-Card Controller (API)', () => {
 					dueDate: inTwoDays,
 				};
 
-				const { body, statusCode } = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
-				const responseTaskCard = body as TaskCardResponse;
+				const response = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
+				const { statusCode } = response;
+				const responseTaskCard = response.body as TaskCardResponse;
 
 				expect(statusCode).toBe(200);
 				const richTextElement = responseTaskCard.cardElements?.filter(
