@@ -8,12 +8,12 @@ import {
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
 
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action } from '@src/modules/authorization/types';
 import { SchoolExternalToolDO } from '../domainobject';
 import { Role, SchoolExternalTool, User } from '../entity';
 import { Permission } from '../interface';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
-import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action } from '@src/modules/authorization/types';
 
 describe('SchoolExternalToolRule', () => {
 	let service: SchoolExternalToolRule;
