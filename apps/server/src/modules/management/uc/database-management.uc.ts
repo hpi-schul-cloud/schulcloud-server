@@ -1,14 +1,14 @@
 /* eslint-disable no-await-in-loop */
 
-import { Inject, Injectable } from '@nestjs/common';
-import { orderBy } from 'lodash';
-import { FileSystemAdapter } from '@shared/infra/file-system';
-import { DatabaseManagementService } from '@shared/infra/database';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { StorageProvider, System } from '@shared/domain';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { StorageProvider, System } from '@shared/domain';
+import { DatabaseManagementService } from '@shared/infra/database';
+import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
+import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
+import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 
 export interface ICollectionFilePath {
@@ -159,6 +159,8 @@ export class DatabaseManagementUc {
 			setupPath,
 			collections
 		);
+
+		console.log(collectionsToSeed);
 
 		const seededCollectionsWithAmount: string[] = [];
 
