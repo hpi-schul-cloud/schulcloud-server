@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Course, CourseGroup, Lesson, User } from '../entity';
-import { IPermissionContext } from '../interface/permission';
-import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { Course, CourseGroup, Lesson, User } from '@shared/domain/entity';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class LessonRule extends BasePermission<Lesson> {
-	constructor(private readonly courseRule: CourseRule, private readonly courseGroupRule: CourseGroupRule) {
-		super();
-	}
+export class LessonRule implements Rule {
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		private readonly courseRule: CourseRule,
+		private readonly courseGroupRule: CourseGroupRule
+	) {}
 
 	public isApplicable(user: User, entity: Lesson): boolean {
 		const isMatched = entity instanceof Lesson;
@@ -18,17 +19,17 @@ export class LessonRule extends BasePermission<Lesson> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Lesson, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Lesson, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		let hasLessonPermission = false;
 
-		if (action === Actions.read) {
+		if (action === Action.read) {
 			hasLessonPermission = this.lessonReadPermission(user, entity);
-		} else if (action === Actions.write) {
+		} else if (action === Action.write) {
 			hasLessonPermission = this.lessonWritePermission(user, entity);
 		}
 
-		const hasUserPermission = this.utils.hasAllPermissions(user, requiredPermissions);
+		const hasUserPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
 		const result = hasUserPermission && hasLessonPermission;
 
 		return result;
@@ -39,21 +40,21 @@ export class LessonRule extends BasePermission<Lesson> {
 		let hasParentReadPermission = false;
 
 		if (isVisible) {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.read);
+			hasParentReadPermission = this.parentPermission(user, entity, Action.read);
 		} else {
-			hasParentReadPermission = this.parentPermission(user, entity, Actions.write);
+			hasParentReadPermission = this.parentPermission(user, entity, Action.write);
 		}
 
 		return hasParentReadPermission;
 	}
 
 	private lessonWritePermission(user: User, entity: Lesson): boolean {
-		const hasParentWritePermission = this.parentPermission(user, entity, Actions.write);
+		const hasParentWritePermission = this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;
 	}
 
-	private parentPermission(user: User, entity: Lesson, action: Actions): boolean {
+	private parentPermission(user: User, entity: Lesson, action: Action): boolean {
 		let result = false;
 
 		if (entity.courseGroup) {
@@ -65,13 +66,13 @@ export class LessonRule extends BasePermission<Lesson> {
 		return result;
 	}
 
-	private coursePermission(user: User, entity: Course, action: Actions): boolean {
+	private coursePermission(user: User, entity: Course, action: Action): boolean {
 		const result = this.courseRule.hasPermission(user, entity, { action, requiredPermissions: [] });
 
 		return result;
 	}
 
-	private courseGroupPermission(user: User, entity: CourseGroup, action: Actions): boolean {
+	private courseGroupPermission(user: User, entity: CourseGroup, action: Action): boolean {
 		const result = this.courseGroupRule.hasPermission(user, entity, {
 			action,
 			requiredPermissions: [],

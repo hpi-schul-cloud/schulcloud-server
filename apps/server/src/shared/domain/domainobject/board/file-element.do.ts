@@ -6,6 +6,10 @@ export class FileElement extends BoardComposite<FileElementProps> {
 		return this.props.caption;
 	}
 
+	set caption(value: string) {
+		this.props.caption = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}

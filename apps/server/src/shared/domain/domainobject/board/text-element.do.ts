@@ -6,6 +6,10 @@ export class TextElement extends BoardComposite<TextElementProps> {
 		return this.props.text;
 	}
 
+	set text(value: string) {
+		this.props.text = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}
