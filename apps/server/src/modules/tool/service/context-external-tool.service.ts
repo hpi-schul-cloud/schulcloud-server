@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
+import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { EntityId } from '@shared/domain';
 
 @Injectable()

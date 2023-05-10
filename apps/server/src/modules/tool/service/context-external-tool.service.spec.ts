@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool/context-external-tool.repo';
+import { ContextExternalToolRepo } from '@shared/repo';
 import { contextExternalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/';
 import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolService } from './context-external-tool.service';

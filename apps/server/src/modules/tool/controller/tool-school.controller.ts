@@ -12,7 +12,7 @@ import {
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import {

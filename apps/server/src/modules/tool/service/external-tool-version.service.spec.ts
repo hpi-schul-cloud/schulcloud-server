@@ -3,7 +3,7 @@ import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/t
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
+} from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolVersionService } from './external-tool-version.service';
 
 describe('ExternalToolVersionService', () => {

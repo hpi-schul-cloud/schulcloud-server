@@ -7,7 +7,7 @@ import { ExternalToolService } from '../external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
-describe('ExternalToolValidation', () => {
+describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolValidationService;
 

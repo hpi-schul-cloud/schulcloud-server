@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SchoolExternalTool, User } from '../entity';
 import { IPermissionContext } from '../interface';
 import { BasePermission } from './base-permission';
-import { SchoolExternalToolDO } from '../domainobject/tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '../domainobject';
 
 @Injectable()
 export class SchoolExternalToolRule extends BasePermission<SchoolExternalTool | SchoolExternalToolDO> {

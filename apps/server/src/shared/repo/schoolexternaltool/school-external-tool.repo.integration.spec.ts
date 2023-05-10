@@ -18,7 +18,7 @@ import {
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {

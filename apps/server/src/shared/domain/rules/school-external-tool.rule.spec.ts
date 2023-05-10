@@ -1,7 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, schoolExternalToolFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject';
+import {
+	roleFactory,
+	schoolExternalToolFactory,
+	schoolFactory,
+	setupEntities,
+	userFactory,
+	schoolExternalToolDOFactory,
+} from '@shared/testing';
+
+import { SchoolExternalToolDO } from '../domainobject';
 import { Role, SchoolExternalTool, User } from '../entity';
 import { Permission } from '../interface';
 import { Actions } from './actions.enum';
