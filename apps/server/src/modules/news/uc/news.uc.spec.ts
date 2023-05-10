@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ICreateNews, NewsTargetModel, Permission } from '@shared/domain';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization/feathers-authorization.service';
+import { FeathersAuthorizationService } from '@src/modules/authorization';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -51,10 +51,6 @@ describe('NewsUc', () => {
 			targetIds: [teamTargetId],
 		},
 	];
-
-	afterAll(async () => {
-		await module.close();
-	});
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -110,6 +106,10 @@ describe('NewsUc', () => {
 
 		service = module.get(NewsUc);
 		repo = module.get(NewsRepo);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

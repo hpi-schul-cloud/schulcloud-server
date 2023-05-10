@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission, PermissionContextBuilder } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
 import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
 import { TeamsRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { LegacyLogger } from '@src/core/logger';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamMapper } from '../mapper/team.mapper';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
@@ -17,7 +17,7 @@ export class CollaborativeStorageService {
 		private teamsMapper: TeamMapper,
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageService.name);
 	}
@@ -48,7 +48,7 @@ export class CollaborativeStorageService {
 		this.authService.checkPermission(
 			await this.authService.getUserWithPermissions(currentUserId),
 			await this.teamsRepo.findById(teamId, true),
-			PermissionContextBuilder.write([Permission.CHANGE_TEAM_ROLES])
+			AuthorizationContextBuilder.write([Permission.CHANGE_TEAM_ROLES])
 		);
 		return this.adapter.updateTeamPermissionsForRole(
 			await this.findTeamById(teamId, true),

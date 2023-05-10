@@ -24,7 +24,7 @@ import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-to
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Page } from '../../domain/domainobject/page';
 
 describe('ExternalToolRepo', () => {
@@ -41,8 +41,8 @@ describe('ExternalToolRepo', () => {
 				ExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ExternalToolSortingMapper,

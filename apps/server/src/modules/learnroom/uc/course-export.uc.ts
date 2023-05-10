@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService, AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class CourseExportUc {
 			AllowedAuthorizationEntityType.Course,
 			courseId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.COURSE_EDIT],
 			}
 		);

@@ -13,13 +13,13 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ISession } from '@shared/domain/types/session';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
@@ -39,7 +39,7 @@ export class OauthSSOController {
 	constructor(
 		private readonly oauthUc: OauthUc,
 		private readonly hydraUc: HydraOauthUc,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthSSOController.name);
 		this.clientUrl = Configuration.get('HOST') as string;

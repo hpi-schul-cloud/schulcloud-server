@@ -10,18 +10,18 @@ import {
 	INameMatch,
 	MatchCreator,
 	MatchCreatorScope,
-	PermissionService,
+	Permission,
 	SchoolFeatures,
 	System,
 	User,
-	Permission,
 } from '@shared/domain';
 
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '../../school';
 import {
 	LdapAlreadyPersistedException,
@@ -39,7 +39,7 @@ export class UserImportUc {
 	constructor(
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
-		private readonly permissionService: PermissionService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService,
 		private readonly systemRepo: SystemRepo,
 		private readonly userRepo: UserRepo
@@ -223,7 +223,7 @@ export class UserImportUc {
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
-		this.permissionService.checkUserHasAllSchoolPermissions(currentUser, [permission]);
+		this.authorizationService.checkAllPermissions(currentUser, [permission]);
 
 		return currentUser;
 	}
