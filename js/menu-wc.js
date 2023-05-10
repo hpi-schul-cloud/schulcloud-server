@@ -2510,6 +2510,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContentElementResponseFactory.html" data-type="entity-link" >ContentElementResponseFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContentElementUpdateVisitor.html" data-type="entity-link" >ContentElementUpdateVisitor</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContentElementUrlParams.html" data-type="entity-link" >ContentElementUrlParams</a>
                             </li>
                             <li class="link">

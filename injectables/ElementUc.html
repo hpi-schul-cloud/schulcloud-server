@@ -82,12 +82,6 @@
                                     <span class="modifier">Async</span>
                                 <a href="#updateElementContent" >updateElementContent</a>
                             </li>
-                            <li>
-                                <a href="#updateFileElement" >updateFileElement</a>
-                            </li>
-                            <li>
-                                <a href="#updateTextElement" >updateTextElement</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -181,7 +175,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../entitys/File.html" target="_self">TextElementContent | FileElementContent</a>)</code>
+                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../entitys/File.html" target="_self">TextContentBody | FileContentBody</a>)</code>
                 </td>
             </tr>
 
@@ -236,7 +230,7 @@
                                 <tr>
                                     <td>content</td>
                                     <td>
-                                                <code><a href="../entitys/File.html" target="_self" >TextElementContent | FileElementContent</a></code>
+                                                <code><a href="../entitys/File.html" target="_self" >TextContentBody | FileContentBody</a></code>
                                     </td>
 
                                     <td>
@@ -261,168 +255,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateFileElement"></a>
-                    <span class="name">
-                        <span ><b>updateFileElement</b></span>
-                        <a href="#updateFileElement"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>updateFileElement(element: <a href="../classes/FileElement.html" target="_self">FileElement</a>, content: <a href="../classes/FileElementContent.html" target="_self">FileElementContent</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:30</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>element</td>
-                                    <td>
-                                                <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>content</td>
-                                    <td>
-                                                <code><a href="../classes/FileElementContent.html" target="_self" >FileElementContent</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateTextElement"></a>
-                    <span class="name">
-                        <span ><b>updateTextElement</b></span>
-                        <a href="#updateTextElement"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>updateTextElement(element: <a href="../classes/TextElement.html" target="_self">TextElement</a>, content: <a href="../classes/TextElementContent.html" target="_self">TextElementContent</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:25</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>element</td>
-                                    <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>content</td>
-                                    <td>
-                                                <code><a href="../classes/TextElementContent.html" target="_self" >TextElementContent</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
@@ -430,9 +262,9 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, FileElement, TextElement } from &#x27;@shared/domain&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { FileElementContent, TextElementContent } from &#x27;../controller/dto&#x27;;
+import { FileContentBody, TextContentBody } from &#x27;../controller/dto&#x27;;
 import { ContentElementService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -441,26 +273,9 @@ export class ElementUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(userId: EntityId, elementId: EntityId, content: TextElementContent | FileElementContent) {
-		let element &#x3D; await this.elementService.findById(elementId);
-		if (element instanceof TextElement) {
-			element &#x3D; this.updateTextElement(element, content as TextElementContent);
-		} else if (element instanceof FileElement) {
-			element &#x3D; this.updateFileElement(element, content as FileElementContent);
-		} else {
-			throw new Error(&#x60;unknown element type for update&#x60;);
-		}
-		await this.elementService.update(element);
-	}
-
-	updateTextElement(element: TextElement, content: TextElementContent) {
-		element.text &#x3D; content.text;
-		return element;
-	}
-
-	updateFileElement(element: FileElement, content: FileElementContent) {
-		element.caption &#x3D; content.caption;
-		return element;
+	async updateElementContent(userId: EntityId, elementId: EntityId, content: TextContentBody | FileContentBody) {
+		const element &#x3D; await this.elementService.findById(elementId);
+		await this.elementService.update(element, content);
 	}
 }
 </code></pre>
