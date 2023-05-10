@@ -89,10 +89,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Optional</span>
-                                <a href="#createdAt" >createdAt</a>
-                            </li>
-                            <li>
                                 <a href="#options" >options</a>
                             </li>
                             <li>
@@ -100,10 +96,6 @@
                             </li>
                             <li>
                                 <a href="#targetModel" >targetModel</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Optional</span>
-                                <a href="#updatedAt" >updatedAt</a>
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
@@ -133,7 +125,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -180,33 +172,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createdAt"></a>
-                    <span class="name">
-                            <span class="modifier">Optional</span>
-                        <span ><b>createdAt</b></span>
-                        <a href="#createdAt"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="options"></a>
                     <span class="name">
                         <span ><b>options</b></span>
@@ -222,7 +187,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -248,7 +213,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -269,33 +234,6 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Type : </i>        <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/domain/domainobject/video-conference.do.ts:25</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updatedAt"></a>
-                    <span class="name">
-                            <span class="modifier">Optional</span>
-                        <span ><b>updatedAt</b></span>
-                        <a href="#updatedAt"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
 
                     </td>
                 </tr>
@@ -372,10 +310,6 @@ export class VideoConferenceOptionsDO {
 }
 
 export class VideoConferenceDO extends BaseDO {
-	createdAt?: Date;
-
-	updatedAt?: Date;
-
 	target: string;
 
 	targetModel: VideoConferenceScope;
@@ -385,8 +319,6 @@ export class VideoConferenceDO extends BaseDO {
 	constructor(domainObject: VideoConferenceDO) {
 		super(domainObject.id);
 
-		this.createdAt &#x3D; domainObject.createdAt;
-		this.updatedAt &#x3D; domainObject.updatedAt;
 		this.target &#x3D; domainObject.target;
 		this.targetModel &#x3D; domainObject.targetModel;
 		this.options &#x3D; domainObject.options;

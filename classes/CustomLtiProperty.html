@@ -247,10 +247,6 @@ export class CustomLtiProperty {
 }
 
 export class LtiToolDO extends BaseDO {
-	createdAt?: Date;
-
-	updatedAt?: Date;
-
 	name: string;
 
 	url: string;
@@ -294,8 +290,6 @@ export class LtiToolDO extends BaseDO {
 	constructor(domainObject: LtiToolDO) {
 		super(domainObject.id);
 
-		this.createdAt &#x3D; domainObject.createdAt;
-		this.updatedAt &#x3D; domainObject.updatedAt;
 		this.name &#x3D; domainObject.name;
 		this.url &#x3D; domainObject.url;
 		this.key &#x3D; domainObject.key;

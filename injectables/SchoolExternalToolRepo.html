@@ -714,7 +714,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:87</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:85</a></code>
 </div>
                 </td>
             </tr>
@@ -1726,8 +1726,6 @@ export class SchoolExternalToolRepo extends BaseDORepo&lt;
 	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {
 		return new SchoolExternalToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			toolId: entity.tool.id,
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,

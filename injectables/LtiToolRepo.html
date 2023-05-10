@@ -508,7 +508,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:64</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:62</a></code>
 </div>
                 </td>
             </tr>
@@ -1483,8 +1483,6 @@ export class LtiToolRepo extends BaseDORepo&lt;LtiToolDO, LtiTool, ILtiToolPrope
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {
 		return new LtiToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			name: entity.name,
 			url: entity.url,
 			key: entity.key,
