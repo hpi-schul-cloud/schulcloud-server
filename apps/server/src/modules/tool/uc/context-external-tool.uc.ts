@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
+import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextTypeMapper } from './mapper';
 import { ContextExternalTool } from './dto';
@@ -40,7 +40,7 @@ export class ContextExternalToolUc {
 			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextType),
 			contextId,
 			{
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 			}
 		);
