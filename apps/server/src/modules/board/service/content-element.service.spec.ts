@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementFactory, ContentElementType, FileElement, TextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
+import { FileContentBody, TextContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -165,7 +166,8 @@ describe(ContentElementService.name, () => {
 		describe('when element is a text element', () => {
 			const setup = () => {
 				const textElement = textElementFactory.build();
-				const content = { text: 'this has been updated' };
+				const content = new TextContentBody();
+				content.text = 'this has been updated';
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 
@@ -192,7 +194,9 @@ describe(ContentElementService.name, () => {
 		describe('when element is a file element', () => {
 			const setup = () => {
 				const fileElement = fileElementFactory.build();
-				const content = { caption: 'this has been updated' };
+
+				const content = new FileContentBody();
+				content.caption = 'this has been updated';
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 

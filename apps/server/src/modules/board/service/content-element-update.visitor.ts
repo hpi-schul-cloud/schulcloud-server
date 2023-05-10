@@ -1,9 +1,9 @@
 import { AnyBoardDo, BoardCompositeVisitor, Card, Column, ColumnBoard, FileElement, TextElement } from '@shared/domain';
-import { FileElementContent, TextElementContent } from '../controller/dto';
+import { FileContentBody, TextContentBody } from '../controller/dto';
 
-type ContentType = TextElementContent | FileElementContent;
+type ContentType = TextContentBody | FileContentBody;
 
-export class ContentElementUpdaterVisitor implements BoardCompositeVisitor {
+export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
 
 	constructor(content: ContentType) {
@@ -23,14 +23,22 @@ export class ContentElementUpdaterVisitor implements BoardCompositeVisitor {
 	}
 
 	visitTextElement(textElement: TextElement): void {
-		textElement.text = (this.content as TextElementContent).text;
+		if (this.content instanceof TextContentBody) {
+			textElement.text = this.content.text;
+		} else {
+			this.throwNotHandled(textElement);
+		}
 	}
 
 	visitFileElement(fileElement: FileElement): void {
-		fileElement.caption = (this.content as FileElementContent).caption;
+		if (this.content instanceof FileContentBody) {
+			fileElement.caption = this.content.caption;
+		} else {
+			this.throwNotHandled(fileElement);
+		}
 	}
 
 	private throwNotHandled(component: AnyBoardDo) {
-		throw new Error(`Unknown element type for update: '${component.constructor.name}'`);
+		throw new Error(`Cannot update element of type: '${component.constructor.name}'`);
 	}
 }
