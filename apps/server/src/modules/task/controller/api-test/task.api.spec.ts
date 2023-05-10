@@ -141,6 +141,27 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when user is teacher with course and other unrelated teacher with draft task in the course is created', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const { account: otherTeacherAccount, user: otherTeacher } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.draft().build({ creator: otherTeacherAccount, course });
+				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
+				em.clear();
+				return { account, teacher: user, course, task, otherTeacher, otherTeacherAccount };
+			};
+
+			it('should not return private tasks created by other users', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
 		describe('when user is teacher with write permission in course', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
@@ -184,21 +205,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should not return private tasks created by other users', async () => {
-				const { account: teacherAccount, teacher } = await setup();
-				const otherUser = userFactory.build();
-				const course = courseFactory.build({ teachers: [teacher, otherUser] });
-				const task = taskFactory.draft().build({ creator: otherUser, course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
 			});
 
 			it('should return unavailable tasks created by the user', async () => {
