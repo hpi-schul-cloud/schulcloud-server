@@ -2,7 +2,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import {
 	FilesStorageEvents,
 	FilesStorageExchange,
@@ -19,7 +19,7 @@ export class FilesStorageProducer {
 	private readonly timeout = 0;
 
 	constructor(
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly amqpConnection: AmqpConnection,
 		private readonly configService: ConfigService<IFilesStorageClientConfig, true>
 	) {

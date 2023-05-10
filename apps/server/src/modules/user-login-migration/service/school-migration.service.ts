@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Logger } from '@src/core/logger';
+import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { OAuthMigrationError } from '@src/modules/user-login-migration';
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: Logger,
-		private readonly userService: UserService
+		private readonly logger: LegacyLogger,
+		private readonly userService: UserService,
+		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
-	validateGracePeriod(school: SchoolDO) {
-		if (!school.oauthMigrationFinalFinish || Date.now() >= school.oauthMigrationFinalFinish.getTime()) {
+	validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
+		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
 			throw new ValidationError('grace_period_expired: The grace period after finishing migration has expired', {
-				'school.oauthMigrationFinalFinish': school.oauthMigrationFinalFinish,
+				finishedAt: userLoginMigration.finishedAt,
 			});
 		}
 	}
@@ -75,37 +75,50 @@ export class SchoolMigrationService {
 		return existingSchool;
 	}
 
-	async completeMigration(schoolId: string, migrationStartedAt: Date | undefined): Promise<void> {
+	async markUnmigratedUsersAsOutdated(schoolId: string): Promise<void> {
 		const startTime: number = performance.now();
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
+		}
+
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeSmallerThan: migrationStartedAt,
+			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
-			user.outdatedSince = school.oauthMigrationFinished;
+			user.outdatedSince = userLoginMigration.closedAt;
 		});
+
 		await this.userService.saveAll(notMigratedUsers.data);
+
 		const endTime: number = performance.now();
 		this.logger.warn(`completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
-	async restartMigration(schoolId: string): Promise<void> {
+	async unmarkOutdatedUsers(schoolId: string): Promise<void> {
 		const startTime: number = performance.now();
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
+		}
+
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
-			outdatedSince: school.oauthMigrationFinished,
+			outdatedSince: userLoginMigration.finishedAt,
 		});
 
 		migratedUsers.data.forEach((user: UserDO) => {
 			user.outdatedSince = undefined;
 		});
-		await this.userService.saveAll(migratedUsers.data);
 
-		school.oauthMigrationMandatory = undefined;
+		await this.userService.saveAll(migratedUsers.data);
 
 		const endTime: number = performance.now();
 		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);

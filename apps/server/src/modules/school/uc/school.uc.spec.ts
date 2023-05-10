@@ -1,21 +1,23 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserLoginMigrationDO } from '@shared/domain';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { NotFoundException } from '@nestjs/common';
-import { SchoolMigrationService } from '@src/modules/user-login-migration';
-import { AuthorizationService } from '@src/modules/authorization';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { PublicSchoolResponse } from '../controller/dto/public.school.response';
-import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
+import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
 	let module: TestingModule;
 	let schoolUc: SchoolUc;
+
 	let schoolService: DeepMocked<SchoolService>;
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
+	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,12 +35,18 @@ describe('SchoolUc', () => {
 					provide: SchoolMigrationService,
 					useValue: createMock<SchoolMigrationService>(),
 				},
+				{
+					provide: UserLoginMigrationService,
+					useValue: createMock<UserLoginMigrationService>(),
+				},
 			],
 		}).compile();
+
 		schoolService = module.get(SchoolService);
 		authService = module.get(AuthorizationService);
 		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
+		userLoginMigrationService = module.get(UserLoginMigrationService);
 	});
 
 	afterAll(async () => {
@@ -50,118 +58,181 @@ describe('SchoolUc', () => {
 	});
 
 	describe('setMigration is called', () => {
-		let migrationResponse: OauthMigrationDto;
-		const mockId = 'someId';
+		describe('when first starting the migration', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+				});
 
-		const setup = () => {
-			migrationResponse = new OauthMigrationDto({
-				oauthMigrationPossible: new Date(),
-				oauthMigrationMandatory: new Date(),
-				oauthMigrationFinished: new Date(),
-				enableMigrationStart: true,
-			});
-			schoolService.setMigration.mockResolvedValue(migrationResponse);
-			authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
-			schoolService.getSchoolById.mockResolvedValue(
-				schoolDOFactory.buildWithId({
-					name: 'mockName',
-					id: mockId,
-					oauthMigrationFinished: undefined,
-					oauthMigrationStart: new Date(2023, 1, 1),
-				})
-			);
-		};
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				schoolService.getSchoolById.mockResolvedValue(school);
+				userLoginMigrationService.setMigration.mockResolvedValue(userLoginMigration);
+			};
 
-		describe('when migrationflags and schoolId and userId are given', () => {
-			it('should call the service', async () => {
+			it('should return the migration dto', async () => {
 				setup();
 
-				await schoolUc.setMigration(mockId, true, true, true, mockId);
+				const result: OauthMigrationDto = await schoolUc.setMigration('schoolId', true, false, false, 'userId');
 
-				expect(schoolService.setMigration).toHaveBeenCalledWith(mockId, true, true, true);
+				expect(result).toEqual<OauthMigrationDto>({
+					oauthMigrationPossible: new Date('2023-05-02'),
+					enableMigrationStart: true,
+				});
 			});
 		});
 
-		describe('when oauthMigrationFinished is given', () => {
-			it('should call schoolMigrationService to complete the migration when oauthMigrationFinished is true', async () => {
+		describe('when closing a migration', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+				});
+				const updatedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+					closedAt: new Date('2023-05-02'),
+					finishedAt: new Date('2023-05-02'),
+				});
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				schoolService.getSchoolById.mockResolvedValue(school);
+				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
+			};
+
+			it('should call schoolMigrationService.markUnmigratedUsersAsOutdated', async () => {
 				setup();
-				const migrationStartedAt = new Date(2023, 1, 1);
 
-				await schoolUc.setMigration(mockId, false, true, true, mockId);
+				await schoolUc.setMigration('schoolId', true, false, true, 'userId');
 
-				expect(schoolMigrationService.completeMigration).toHaveBeenCalledWith(mockId, migrationStartedAt);
-			});
-
-			it('should not call the schoolMigrationService when oauthMigrationFinished is false', async () => {
-				setup();
-
-				await schoolUc.setMigration(mockId, true, true, false, mockId);
-
-				expect(schoolMigrationService.completeMigration).not.toHaveBeenCalled();
+				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalled();
 			});
 		});
 
-		describe('after school migration has finished', () => {
-			it('should call schoolMigrationService to restart the migration', async () => {
+		describe('when restarting a migration', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+					closedAt: new Date('2023-05-02'),
+					finishedAt: new Date('2023-05-02'),
+				});
+				const updatedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+				});
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				schoolService.getSchoolById.mockResolvedValue(school);
+				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
+			};
+
+			it('should call schoolMigrationService.unmarkOutdatedUsers', async () => {
 				setup();
 
-				schoolService.getSchoolById.mockResolvedValue(
-					schoolDOFactory.buildWithId({
-						name: 'mockName',
-						id: mockId,
-						oauthMigrationFinished: new Date(),
-						oauthMigrationMandatory: new Date(),
-					})
-				);
-				await schoolUc.setMigration(mockId, true, true, false, mockId);
+				await schoolUc.setMigration('schoolId', true, false, false, 'userId');
 
-				expect(schoolMigrationService.restartMigration).toHaveBeenCalledWith(mockId);
+				expect(schoolMigrationService.unmarkOutdatedUsers).toHaveBeenCalled();
 			});
+		});
 
-			it('should not call schoolMigrationService when ', async () => {
+		describe('when trying to start a finished migration after the grace period', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+					closedAt: new Date('2023-05-02'),
+					finishedAt: new Date('2023-05-02'),
+				});
+				const updatedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+				});
+
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+				schoolService.getSchoolById.mockResolvedValue(school);
+				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
+				schoolMigrationService.validateGracePeriod.mockImplementation(() => {
+					throw new UnprocessableEntityException();
+				});
+			};
+
+			it('should throw an error', async () => {
 				setup();
 
-				await schoolUc.setMigration(mockId, true, true, false, mockId);
+				const func = async () => schoolUc.setMigration('schoolId', true, false, false, 'userId');
 
-				expect(schoolMigrationService.restartMigration).not.toHaveBeenCalled();
+				await expect(func).rejects.toThrow(UnprocessableEntityException);
 			});
 		});
 	});
 
 	describe('getMigration is called', () => {
-		let migrationResponse: OauthMigrationDto;
-		const mockId = 'someId';
+		describe('when the school has a migration', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-02'),
+					mandatorySince: new Date('2023-05-02'),
+					closedAt: new Date('2023-05-02'),
+					finishedAt: new Date('2023-05-02'),
+				});
 
-		describe('when schoolId and UserId are given', () => {
-			it('should call the service', async () => {
-				schoolService.getMigration.mockResolvedValue(migrationResponse);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+			};
 
-				await schoolUc.getMigration(mockId, mockId);
+			it('should return a migration', async () => {
+				setup();
 
-				expect(schoolService.getMigration).toHaveBeenCalledWith(mockId);
+				const result: OauthMigrationDto = await schoolUc.getMigration('schoolId', 'userId');
+
+				expect(result).toEqual<OauthMigrationDto>({
+					oauthMigrationPossible: undefined,
+					oauthMigrationMandatory: new Date('2023-05-02'),
+					oauthMigrationFinished: new Date('2023-05-02'),
+					oauthMigrationFinalFinish: new Date('2023-05-02'),
+					enableMigrationStart: true,
+				});
 			});
 		});
-	});
 
-	describe('when it calls the service to get public school data', () => {
-		let schoolDO: SchoolDO;
-		const mockSchoolnumber = '1234';
+		describe('when the school has no migration', () => {
+			const setup = () => {
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
-		it('should call the service and return an object', async () => {
-			schoolDO = schoolDOFactory.buildWithId({ name: 'mockSchool', officialSchoolNumber: '1234' });
-			schoolService.getSchoolBySchoolNumber.mockResolvedValue(schoolDO);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
+				schoolService.getSchoolById.mockResolvedValue(school);
+				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+			};
 
-			const response: PublicSchoolResponse = await schoolUc.getPublicSchoolData(mockSchoolnumber);
+			it('should return no migration information', async () => {
+				setup();
 
-			expect(schoolService.getSchoolBySchoolNumber).toHaveBeenCalledWith(mockSchoolnumber);
-			expect(response).not.toBeNull();
-		});
+				const result: OauthMigrationDto = await schoolUc.getMigration('schoolId', 'userId');
 
-		it('should call the service and throw an exception', async () => {
-			schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
-			const resp: Promise<PublicSchoolResponse> = schoolUc.getPublicSchoolData(mockSchoolnumber);
-			await expect(resp).rejects.toThrow(NotFoundException);
+				expect(result).toEqual<OauthMigrationDto>({
+					enableMigrationStart: true,
+				});
+			});
 		});
 	});
 });

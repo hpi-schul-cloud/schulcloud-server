@@ -1,2 +1,3 @@
 export * from './logger-config';
-export * from './logger.interface';
+export * from './legacy-logger.interface';
+export * from './loggable';

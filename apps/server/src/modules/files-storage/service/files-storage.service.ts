@@ -9,7 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import {
 	CopyFileResponse,
@@ -44,7 +44,7 @@ export class FilesStorageService {
 		private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private readonly configService: ConfigService<IFileStorageConfig, true>,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(FilesStorageService.name);
 	}

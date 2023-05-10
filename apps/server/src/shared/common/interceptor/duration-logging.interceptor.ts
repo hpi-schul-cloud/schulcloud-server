@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -8,7 +8,7 @@ import { tap } from 'rxjs/operators';
  */
 @Injectable()
 export class DurationLoggingInterceptor implements NestInterceptor {
-	constructor(private logger: Logger) {
+	constructor(private logger: LegacyLogger) {
 		logger.setContext(DurationLoggingInterceptor.name);
 	}
 
