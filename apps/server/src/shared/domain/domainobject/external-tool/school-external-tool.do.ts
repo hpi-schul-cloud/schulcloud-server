@@ -5,10 +5,6 @@ import { SchoolExternalToolStatus } from './school-external-tool-status';
 export class SchoolExternalToolDO extends BaseDO {
 	name?: string;
 
-	createdAt?: Date;
-
-	updatedAt?: Date;
-
 	toolId: string;
 
 	schoolId: string;
@@ -22,8 +18,6 @@ export class SchoolExternalToolDO extends BaseDO {
 	constructor(domainObject: SchoolExternalToolDO) {
 		super(domainObject.id);
 		this.name = domainObject.name;
-		this.createdAt = domainObject.createdAt;
-		this.updatedAt = domainObject.updatedAt;
 		this.toolId = domainObject.toolId;
 		this.schoolId = domainObject.schoolId;
 		this.parameters = domainObject.parameters;
