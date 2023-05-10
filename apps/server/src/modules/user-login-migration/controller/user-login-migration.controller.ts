@@ -1,5 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiOkResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -48,6 +54,19 @@ export class UserLoginMigrationController {
 		);
 
 		return response;
+	}
+
+	@Post('/start')
+	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	async migrationStart(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationResponse: UserLoginMigrationResponse = await this.userLoginMigrationUc.migrationStart(
+			currentUser.userId,
+			currentUser.schoolId,
+			currentUser.systemId
+		);
+
+		return migrationResponse;
 	}
 
 	@Post('migrate-to-oauth2')

@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, Page, Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
@@ -13,6 +13,8 @@ import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
+import { UserLoginMigrationResponse } from '../controller/dto';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '../../authorization';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -23,6 +25,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
+		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -54,6 +57,34 @@ export class UserLoginMigrationUc {
 		}
 
 		return page;
+	}
+
+	async migrationStart(userId: string, schoolId: string, systemId: string): Promise<UserLoginMigrationResponse> {
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.School,
+			schoolId,
+			{
+				action: Action.read,
+				requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+			}
+		);
+
+		const existingUserLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
+
+		if (existingUserLoginMigration) {
+			this.schoolMigrationService.validateGracePeriod(existingUserLoginMigration);
+		}
+
+		const UserLoginMigration: UserLoginMigrationResponse = await this.userMigrationService.migrationStart(
+			schoolId,
+			systemId
+		);
+
+		const UserLoginMigrationDto: UserLoginMigrationResponse = new UserLoginMigrationResponse({
+			sourceSystemId: systemId,
+		});
 	}
 
 	async migrate(
