@@ -141,6 +141,53 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when user is teacher with unavailable task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.draft().build({ creator: user, course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+
+			it('should return unavailable tasks created by the user', async () => {
+				const { account: teacherAccount, teacher, course } = await setup();
+				const task = taskFactory.build({ creator: teacher, course, availableDate: tomorrow });
+
+				await em.persistAndFlush([task]);
+				em.clear();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is teacher of course with unavailable task of other teacher in course', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const { account: otherTeacherAccount, user: otherTeacher } = createTeacher();
+
+				const course = courseFactory.build({ teachers: [user, otherTeacher] });
+				const task = taskFactory.build({ creator: otherTeacher, course, availableDate: tomorrow });
+
+				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
+				em.clear();
+				return { account, teacher: user, course, task, otherTeacher, otherTeacherAccount };
+			};
+
+			it('should not return unavailable tasks created by other users', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
 		describe('when user is teacher with course and other unrelated teacher with draft task in the course is created', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
@@ -205,34 +252,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should return unavailable tasks created by the user', async () => {
-				const { account: teacherAccount, teacher, course } = await setup();
-				const task = taskFactory.build({ creator: teacher, course, availableDate: tomorrow });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(1);
-			});
-
-			it('should not return unavailable tasks created by other users', async () => {
-				const { account: teacherAccount, teacher } = await setup();
-				const otherUser = userFactory.build();
-				const course = courseFactory.build({ teachers: [teacher, otherUser] });
-				const task = taskFactory.build({ creator: otherUser, course, availableDate: tomorrow });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
 			});
 		});
 
