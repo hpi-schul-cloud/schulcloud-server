@@ -490,6 +490,27 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when user is student of finished course with task', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const untilDate = new Date(Date.now() - 60 * 1000);
+				const course = courseFactory.build({ untilDate, students: [user] });
+				const task = taskFactory.build({ course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course, task };
+			};
+
+			it('should not return task of finished courses', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
 		describe('when user is student with read permission in course', () => {
 			const setup = async () => {
 				const { account, user } = createStudent();
@@ -541,34 +562,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should not return unavailable tasks', async () => {
-				const { account, course } = await setup();
-				const task = taskFactory.build({ course, availableDate: tomorrow });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
-			});
-
-			it('should not return task of finished courses', async () => {
-				const { account, student } = await setup();
-				const untilDate = new Date(Date.now() - 60 * 1000);
-				const course = courseFactory.build({ untilDate, students: [student] });
-				const task = taskFactory.build({ course });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
 			});
 		});
 
