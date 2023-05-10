@@ -36,8 +36,6 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 	protected mapEntityToDO(entity: LtiTool): LtiToolDO {
 		return new LtiToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			name: entity.name,
 			url: entity.url,
 			key: entity.key,
