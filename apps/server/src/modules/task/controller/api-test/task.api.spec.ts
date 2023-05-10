@@ -72,6 +72,35 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when user is teacher with course and task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.build({
+					course,
+					description: '<p>test</p>',
+					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				});
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+
+			it('should return tasks that include the appropriate information of task.', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0]).toHaveProperty('status');
+				expect(result.data[0]).toHaveProperty('displayColor');
+				expect(result.data[0]).toHaveProperty('name');
+				expect(result.data[0]).toHaveProperty('description');
+				expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
+			});
+		});
+
 		describe('when user is teacher with write permission in course', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
@@ -115,49 +144,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should return tasks that include the appropriate information of task.', async () => {
-				const { account, course } = await setup();
-				const task = taskFactory.build({
-					course,
-					description: '<p>test</p>',
-					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
-				});
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.data[0]).toBeDefined();
-				expect(result.data[0]).toHaveProperty('status');
-				expect(result.data[0]).toHaveProperty('displayColor');
-				expect(result.data[0]).toHaveProperty('name');
-				expect(result.data[0]).toHaveProperty('description');
-				expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
-			});
-
-			it('should return tasks that include the appropriate information of task with submission.', async () => {
-				const { account: teacherAccount, course } = await setup();
-				const student = userFactory.build();
-				const task = taskFactory.build({ course });
-				task.submissions.add(submissionFactory.submitted().build({ task, student }));
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.data[0]).toBeDefined();
-				expect(result.data[0].status).toEqual({
-					submitted: 1,
-					maxSubmissions: course.getStudentIds().length,
-					graded: 0,
-					isDraft: false,
-					isFinished: false,
-					isSubstitutionTeacher: false,
-				});
 			});
 
 			it('should retun a status flag in task if the teacher is only a substitution teacher.', async () => {
@@ -304,6 +290,23 @@ describe('Task Controller (API)', () => {
 				em.clear();
 				return { teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask };
 			};
+
+			it('should return tasks that include the appropriate information of task with submission.', async () => {
+				const { teacherAccount, course } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0].status).toEqual({
+					submitted: 1,
+					maxSubmissions: course.getStudentIds().length,
+					graded: 0,
+					isDraft: false,
+					isFinished: false,
+					isSubstitutionTeacher: false,
+				});
+			});
 
 			it('should not return finished tasks for student', async () => {
 				const { studentAccount } = await setup();
