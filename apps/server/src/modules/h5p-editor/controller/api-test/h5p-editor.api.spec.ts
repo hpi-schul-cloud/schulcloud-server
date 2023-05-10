@@ -1,61 +1,100 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { Request } from 'express';
-import request from 'supertest';
-import { H5PEditorModule } from '../../h5p-editor.module';
-
-class API {
-	constructor(private app: INestApplication) {}
-
-	async get(path: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/${path}`);
-	}
-}
+import { TestRequest, UserAndAccountTestFactory } from '@shared/testing';
+import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
-	let api: API;
-
-	let currentUser: ICurrentUser;
+	let em: EntityManager;
+	let request: TestRequest;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
-			imports: [H5PEditorModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+			imports: [H5PEditorTestModule],
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		api = new API(app);
+		em = app.get(EntityManager);
+		request = new TestRequest(app, 'h5p-editor');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	describe('getPlayer', () => {
-		it('should return a response', async () => {
-			const response = await api.get('dummyID/play');
+	describe('get player', () => {
+		describe('when user not exists', () => {
+			it('should respond with unauthorized exception', async () => {
+				const response = await request.get('dummyID/play');
 
-			expect(response.status).toEqual(200);
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					type: 'UNAUTHORIZED',
+					title: 'Unauthorized',
+					message: 'Unauthorized',
+					code: 401,
+				});
+			});
+		});
+
+		describe('when user is allowed to view player', () => {
+			const createStudent = () => UserAndAccountTestFactory.buildStudent();
+
+			const setup = async () => {
+				const { studentAccount, studentUser } = createStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				return { studentAccount };
+			};
+
+			it('should return the player', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await request.get('dummyID/play', studentAccount);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+			});
 		});
 	});
 
-	describe('getEditor', () => {
-		it('should return a response', async () => {
-			const response = await api.get('dummyID/edit');
+	describe('get editor', () => {
+		describe('when user not exists', () => {
+			it('should respond with unauthorized exception', async () => {
+				const response = await request.get('dummyID/edit');
 
-			expect(response.status).toEqual(200);
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					type: 'UNAUTHORIZED',
+					title: 'Unauthorized',
+					message: 'Unauthorized',
+					code: 401,
+				});
+			});
+		});
+
+		describe('when user is allowed to view editor', () => {
+			const createStudent = () => UserAndAccountTestFactory.buildStudent();
+
+			const setup = async () => {
+				const { studentAccount, studentUser } = createStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				return { studentAccount };
+			};
+
+			it('should return the editor', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await request.get('dummyID/edit', studentAccount);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+			});
 		});
 	});
 });

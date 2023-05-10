@@ -31,8 +31,6 @@
 		"S3_ACCESS_KEY": "S3RVER",
 		"S3_SECRET_KEY": "S3RVER"
 	},
-	"H5P_EDITOR": {
-	},
 	"FEATURE_IDENTITY_MANAGEMENT_ENABLED": true,
 	"IDENTITY_MANAGEMENT": {
 		"URI": "http://localhost:8080",

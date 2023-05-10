@@ -334,6 +334,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice",
+			"default": {},
 			"properties": {
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
