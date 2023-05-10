@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 
 // Dummy html response so we can test i-frame integration
@@ -23,12 +24,22 @@ const dummyResponse = (title: string) => `
 @Authenticate('jwt')
 @Controller('h5p-editor')
 export class H5PEditorController {
+	@ApiOperation({ summary: 'Return dummy HTML for testing' })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 400, type: BadRequestException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/:contentId/play')
 	async getPlayer() {
 		// Dummy Response
 		return Promise.resolve(dummyResponse('H5P Player Dummy'));
 	}
 
+	@ApiOperation({ summary: 'Return dummy HTML for testing' })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 400, type: BadRequestException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Get('/:contentId/edit')
 	async getEditor() {
 		// Dummy Response
