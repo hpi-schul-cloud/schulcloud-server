@@ -316,6 +316,30 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
+		describe('when course with student, teacher and 3 tasks are given', () => {
+			const setup = async () => {
+				const { account: teacherAccount, user: teacher } = createTeacher();
+				const { account: studentAccount, user: student } = createStudent();
+				const course = courseFactory.build({ teachers: [teacher], students: [student] });
+				const task1 = taskFactory.build({ course });
+				const task2 = taskFactory.build({ course });
+				const task3 = taskFactory.build({ course });
+
+				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course, task1, task2, task3]);
+				em.clear();
+				return { teacherAccount, studentAccount, teacher, student, course, task1, task2, task3 };
+			};
+
+			it('should return a list of tasks with additional tasks', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(3);
+			});
+		});
+
 		describe('when course with teacher, student, 1 finished task and 1 open submitted task is given', () => {
 			const setup = async () => {
 				const { account: teacherAccount, user: teacher } = createTeacher();
@@ -375,24 +399,91 @@ describe('Task Controller (API)', () => {
 				});
 			});
 
-			it('should return a list of tasks with additional tasks', async () => {
-				const { studentAccount, course } = await setup();
-				const task2 = taskFactory.build({ course });
-				const task3 = taskFactory.build({ course });
-
-				await em.persistAndFlush([task2, task3]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, studentAccount);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(3);
-			});
-
 			it('should not return finished tasks', async () => {
 				const { studentAccount } = await setup();
 
 				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is student with draft task', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ course, private: true });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should not return private tasks', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is student with unavailable task and task is not created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should not return a task of a course that has no lesson and is not published', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is student with unavailable task and task is created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should return unavailable tasks created by the student', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is student with task with dueDate and task is not created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				// @ts-expect-error expected value null in db
+				const task = taskFactory.build({ course, dueDate: null });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should return a task of a course that has no lesson and is not limited by date', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -450,60 +541,6 @@ describe('Task Controller (API)', () => {
 				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
 
 				expect(statusCode).toEqual(400);
-			});
-
-			it('should not return private tasks', async () => {
-				const { account, course } = await setup();
-				const task = taskFactory.build({ course, private: true });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
-			});
-
-			it('should not return a task of a course that has no lesson and is not published', async () => {
-				const { account, course } = await setup();
-				const task = taskFactory.build({ course, availableDate: tomorrow });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(0);
-			});
-
-			it('should return a task of a course that has no lesson and is not limited', async () => {
-				const { account, course } = await setup();
-
-				// @ts-expect-error expected value null in db
-				const task = taskFactory.build({ course, dueDate: null });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(1);
-			});
-
-			it('should return unavailable tasks created by the student', async () => {
-				const { account, course, student } = await setup();
-				const task = taskFactory.build({ creator: student, course, availableDate: tomorrow });
-
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, account);
-				const result = response.body as TaskListResponse;
-
-				expect(result.total).toEqual(1);
 			});
 
 			it('should not return unavailable tasks', async () => {
