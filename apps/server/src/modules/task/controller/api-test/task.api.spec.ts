@@ -145,20 +145,16 @@ describe('Task Controller (API)', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
 				const course = courseFactory.build({ teachers: [user] });
-				const task = taskFactory.draft().build({ creator: user, course, availableDate: tomorrow });
+				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
 				await em.persistAndFlush([account, user, course, task]);
 				em.clear();
 				return { account, teacher: user, course, task };
 			};
 
 			it('should return unavailable tasks created by the user', async () => {
-				const { account: teacherAccount, teacher, course } = await setup();
-				const task = taskFactory.build({ creator: teacher, course, availableDate: tomorrow });
+				const { account } = await setup();
 
-				await em.persistAndFlush([task]);
-				em.clear();
-
-				const response = await apiRequest.get(undefined, teacherAccount);
+				const response = await apiRequest.get(undefined, account);
 				const result = response.body as TaskListResponse;
 
 				expect(result.total).toEqual(1);
@@ -188,15 +184,15 @@ describe('Task Controller (API)', () => {
 			});
 		});
 
-		describe('when user is teacher with course and other unrelated teacher with draft task in the course is created', () => {
+		describe('when user is teacher with course and other unrelated user with draft task in the course is created', () => {
 			const setup = async () => {
 				const { account, user } = createTeacher();
-				const { account: otherTeacherAccount, user: otherTeacher } = createTeacher();
+				const { account: otherUserAccount, user: otherUser } = createStudent();
 				const course = courseFactory.build({ teachers: [user] });
-				const task = taskFactory.draft().build({ creator: otherTeacherAccount, course });
-				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
+				const task = taskFactory.draft().build({ creator: otherUser, course });
+				await em.persistAndFlush([account, user, course, task, otherUser, otherUserAccount]);
 				em.clear();
-				return { account, teacher: user, course, task, otherTeacher, otherTeacherAccount };
+				return { account, teacher: user, course, task, otherUser, otherUserAccount };
 			};
 
 			it('should not return private tasks created by other users', async () => {
