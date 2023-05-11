@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
 import { ToolConfigType } from '@shared/domain';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';

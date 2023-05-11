@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { SchoolExternalToolStatus } from '@shared/domain/domainobject/external-tool/school-external-tool-status';
-import { EntityId } from '@shared/domain';
+import { SchoolExternalToolRepo } from '@shared/repo';
+import { SchoolExternalToolDO, ExternalToolDO, SchoolExternalToolStatus, EntityId } from '@shared/domain';
 import { ExternalToolService } from './external-tool.service';
-import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolQuery } from '../uc/dto';
 
 @Injectable()
 export class SchoolExternalToolService {
