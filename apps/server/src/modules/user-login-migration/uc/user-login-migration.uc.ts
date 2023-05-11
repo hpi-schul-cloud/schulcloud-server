@@ -66,7 +66,7 @@ export class UserLoginMigrationUc {
 			AllowedAuthorizationEntityType.School,
 			schoolId,
 			{
-				action: Action.read,
+				action: Action.write,
 				requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
 			}
 		);
