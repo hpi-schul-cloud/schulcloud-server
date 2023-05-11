@@ -27,7 +27,7 @@ export class ExternalToolService {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly courseExternalToolRepo: ContextExternalToolRepo,
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService
@@ -117,7 +117,7 @@ export class ExternalToolService {
 		);
 
 		await Promise.all([
-			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
 			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);

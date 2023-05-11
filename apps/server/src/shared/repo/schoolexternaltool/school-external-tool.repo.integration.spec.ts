@@ -131,7 +131,7 @@ describe('SchoolExternalToolRepo', () => {
 			};
 		}
 
-		it('should save a CourseExternalTool', async () => {
+		it('should save a SchoolExternalTool', async () => {
 			const { domainObject } = setupDO();
 			const { id, ...expected } = domainObject;
 
