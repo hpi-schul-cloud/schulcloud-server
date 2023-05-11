@@ -10,3 +10,27 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
+
+  - name: Delete legacy ldapsync deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      resource_definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: api-ldapsync-deployment
+          namespace: "{{ NAMESPACE }}"
+
+  - name: Delete legacy ldapsync service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      resource_definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: api-ldapsync-svc
+          namespace: "{{ NAMESPACE }}"
