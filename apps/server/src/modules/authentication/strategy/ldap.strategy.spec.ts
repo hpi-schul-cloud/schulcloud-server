@@ -5,8 +5,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { schoolDOFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
-import { accountDtoFactory } from '@shared/testing/factory/account-dto.factory';
+import {
+	accountDtoFactory,
+	schoolDOFactory,
+	schoolFactory,
+	setupEntities,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
