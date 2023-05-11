@@ -82,12 +82,26 @@ export class ContentStorage implements IContentStorage {
 		await fsPromises.rm(path.join(this.getContentPath(), contentId.toString()));
 	}
 
-	deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
+		// TODO: checkFilename(filename);
+		const absolutePath = path.join(this.getContentPath(), contentId.toString(), filename);
+		const exist = fs.existsSync(absolutePath);
+		if (!exist) {
+			throw new Error('404: storage-file-implementations:delete-content-file-not-found');
+		}
+		await fsPromises.rm(absolutePath);
 	}
 
-	fileExists(contentId: string, filename: string): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public fileExists(contentId: string, filename: string): Promise<boolean> {
+		// TODO: checkFilename(filename);
+		let exist: Promise<boolean> = <Promise<boolean>>(<unknown>false);
+		if (contentId !== undefined) {
+			exist = <Promise<boolean>>(
+				(<unknown>fs.existsSync(path.join(this.getContentPath(), contentId.toString(), filename)))
+			);
+			return exist;
+		}
+		return exist;
 	}
 
 	getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
