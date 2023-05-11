@@ -6,8 +6,6 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import {
 	BasicToolConfig,
 	CustomParameter,
 	CustomParameterEntry,
@@ -16,7 +14,7 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 	ToolConfigType,
-} from '../../domain';
+} from '@shared/domain';
 
 @Injectable()
 export class ExternalToolRepoMapper {

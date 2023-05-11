@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
 import {
@@ -11,10 +11,10 @@ import {
 	ScopeParams,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
+	ExternalToolConfigurationTemplateResponse,
 } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
 import { ToolConfigurationController } from './tool-configuration.controller';
-import { ExternalToolConfigurationTemplateResponse } from './dto/response/external-tool-configuration-template.response';
 
 describe('ToolConfigurationController', () => {
 	let module: TestingModule;

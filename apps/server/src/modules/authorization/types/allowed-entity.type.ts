@@ -5,12 +5,12 @@ import {
 	CourseGroup,
 	EntityId,
 	Lesson,
+	SchoolExternalToolDO,
 	Submission,
 	Task,
 	Team,
 	User,
 } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 
 export type AllowedEntity =

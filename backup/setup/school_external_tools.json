@@ -1,0 +1,26 @@
+[
+	{
+		"_id": {
+			"$oid": "644a46e5d0a8301e6cf25d86"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T09:56:53.401Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T09:56:53.401Z"
+		},
+		"tool": {
+			"$oid": "644a4593d0a8301e6cf25d85"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [
+			{
+				"name": "param1",
+				"value": "HelloWorld"
+			}
+		],
+		"toolVersion": 1
+	}
+]
