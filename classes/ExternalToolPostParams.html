@@ -157,7 +157,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -193,7 +193,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -228,7 +228,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:62</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -264,7 +264,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:30</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -299,7 +299,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -334,7 +334,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:66</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -370,7 +370,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:58</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -406,7 +406,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/external-tool-post.params.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -429,11 +429,13 @@
 import { Type } from &#x27;class-transformer&#x27;;
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 import { ToolConfigType } from &#x27;../../../interface&#x27;;
-import { BasicToolConfigParams } from &#x27;./basic-tool-config.params&#x27;;
+import {
+	BasicToolConfigParams,
+	ExternalToolConfigCreateParams,
+	Lti11ToolConfigParams,
+	Oauth2ToolConfigParams,
+} from &#x27;./config&#x27;;
 import { CustomParameterPostParams } from &#x27;./custom-parameter.params&#x27;;
-import { ExternalToolConfigCreateParams } from &#x27;./external-tool-config.params&#x27;;
-import { Lti11ToolConfigParams } from &#x27;./lti11-tool-config.params&#x27;;
-import { Oauth2ToolConfigParams } from &#x27;./oauth2-tool-config.params&#x27;;
 
 @ApiExtraModels(Lti11ToolConfigParams, Oauth2ToolConfigParams, BasicToolConfigParams)
 export class ExternalToolPostParams {

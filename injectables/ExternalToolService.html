@@ -147,7 +147,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, courseExternalToolRepo: <a href="../injectables/CourseExternalToolRepo.html" target="_self">CourseExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
+<code>constructor(externalToolRepo: <a href="../injectables/ExternalToolRepo.html" target="_self">ExternalToolRepo</a>, oauthProviderService: <a href="../classes/OauthProviderService.html" target="_self">OauthProviderService</a>, mapper: <a href="../injectables/ExternalToolServiceMapper.html" target="_self">ExternalToolServiceMapper</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, encryptionService: <a href="../interfaces/IEncryptionService.html" target="_self">IEncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, externalToolVersionService: <a href="../injectables/ExternalToolVersionService.html" target="_self">ExternalToolVersionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -218,10 +218,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>courseExternalToolRepo</td>
+                                                        <td>contextExternalToolRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseExternalToolRepo.html" target="_self" >CourseExternalToolRepo</a></code>
+                                                                        <code><a href="../injectables/ContextExternalToolRepo.html" target="_self" >ContextExternalToolRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1270,17 +1270,17 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from &#x27;@shared/domain/domainobject/external-tool&#x27;;
-import { ExternalToolRepo } from &#x27;@shared/repo/externaltool/external-tool.repo&#x27;;
-import { CustomParameterScope, EntityId, IFindOptions } from &#x27;@shared/domain&#x27;;
-import { CourseExternalToolRepo } from &#x27;@shared/repo/courseexternaltool/course-external-tool.repo&#x27;;
-import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
-import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
+	CustomParameterScope,
+	EntityId,
+	IFindOptions,
+	SchoolExternalToolDO,
+	Page,
+} from &#x27;@shared/domain&#x27;;
 import { ProviderOauthClient } from &#x27;@shared/infra/oauth-provider/dto&#x27;;
 import { DefaultEncryptionService, IEncryptionService } from &#x27;@shared/infra/encryption&#x27;;
 import { OauthProviderService } from &#x27;@shared/infra/oauth-provider&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { SchoolExternalToolRepo } from &#x27;@shared/repo/schoolexternaltool/school-external-tool.repo&#x27;;
+import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from &#x27;@shared/repo&#x27;;
 import { TokenEndpointAuthMethod, ToolConfigType } from &#x27;../interface&#x27;;
 import { ExternalToolServiceMapper } from &#x27;./mapper&#x27;;
 import { ExternalToolVersionService } from &#x27;./external-tool-version.service&#x27;;
@@ -1292,7 +1292,7 @@ export class ExternalToolService {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly courseExternalToolRepo: CourseExternalToolRepo,
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: IEncryptionService,
 		private readonly logger: LegacyLogger,
 		private readonly externalToolVersionService: ExternalToolVersionService
@@ -1382,7 +1382,7 @@ export class ExternalToolService {
 		);
 
 		await Promise.all([
-			this.courseExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
+			this.contextExternalToolRepo.deleteBySchoolExternalToolIds(schoolExternalToolIds),
 			this.schoolExternalToolRepo.deleteByExternalToolId(toolId),
 			this.externalToolRepo.deleteById(toolId),
 		]);

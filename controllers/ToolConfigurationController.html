@@ -137,8 +137,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="22"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:22</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:27</a></div>
                 </td>
             </tr>
 
@@ -239,8 +239,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-configuration.controller.ts:44</a></div>
                 </td>
             </tr>
 
@@ -307,12 +307,17 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Param } from &#x27;@nestjs/common&#x27;;
 import { ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse, ApiFoundResponse } from &#x27;@nestjs/swagger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { ExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool&#x27;;
-import { Authenticate, CurrentUser } from &#x27;../../authentication/decorator/auth.decorator&#x27;;
+import { ExternalToolDO } from &#x27;@shared/domain&#x27;;
+import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ExternalToolConfigurationUc } from &#x27;../uc/external-tool-configuration.uc&#x27;;
-import { ToolIdParams, IdParams, ScopeParams, ToolConfigurationListResponse } from &#x27;./dto&#x27;;
+import {
+	ToolIdParams,
+	IdParams,
+	ScopeParams,
+	ToolConfigurationListResponse,
+	ExternalToolConfigurationTemplateResponse,
+} from &#x27;./dto&#x27;;
 import { ExternalToolResponseMapper } from &#x27;./mapper&#x27;;
-import { ExternalToolConfigurationTemplateResponse } from &#x27;./dto/response/external-tool-configuration-template.response&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

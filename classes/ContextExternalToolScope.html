@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li>Classes</li>
-  <li >CourseExternalToolScope</li>
+  <li >ContextExternalToolScope</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -62,7 +62,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/courseexternaltool/course-external-tool.scope.ts</code>
+            <code>apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts</code>
         </p>
 
 
@@ -112,6 +112,9 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                <a href="#byContextIdAndSchoolToolId" >byContextIdAndSchoolToolId</a>
+                            </li>
                             <li>
                                 <a href="#bySchoolToolId" >bySchoolToolId</a>
                             </li>
@@ -257,6 +260,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="byContextIdAndSchoolToolId"></a>
+                    <span class="name">
+                        <span ><b>byContextIdAndSchoolToolId</b></span>
+                        <a href="#byContextIdAndSchoolToolId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byContextIdAndSchoolToolId(contextId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:12</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contextId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>schoolToolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ContextExternalToolScope.html" target="_self" >ContextExternalToolScope</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="bySchoolToolId"></a>
                     <span class="name">
                         <span ><b>bySchoolToolId</b></span>
@@ -274,7 +358,7 @@
             <tr>
                 <td class="col-md-4">
                     <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.scope.ts:5</a></div>
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:5</a></div>
                 </td>
             </tr>
 
@@ -312,7 +396,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CourseExternalToolScope.html" target="_self" >CourseExternalToolScope</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ContextExternalToolScope.html" target="_self" >ContextExternalToolScope</a></code>
 
                     </div>
                     <div class="io-description">
@@ -483,13 +567,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Scope } from &#x27;@shared/repo&#x27;;
-import { CourseExternalTool, EntityId } from &#x27;@shared/domain&#x27;;
+import { ContextExternalTool, EntityId } from &#x27;@shared/domain&#x27;;
 
-export class CourseExternalToolScope extends Scope&lt;CourseExternalTool&gt; {
-	bySchoolToolId(schoolToolId: EntityId | undefined): CourseExternalToolScope {
+export class ContextExternalToolScope extends Scope&lt;ContextExternalTool&gt; {
+	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !&#x3D;&#x3D; undefined) {
 			this.addQuery({ schoolTool: schoolToolId });
 		}
+		return this;
+	}
+
+	byContextIdAndSchoolToolId(contextId: EntityId, schoolToolId: EntityId): ContextExternalToolScope {
+		this.addQuery({ $and: [{ contextId }, { schoolTool: schoolToolId }] });
+
 		return this;
 	}
 }
@@ -531,7 +621,7 @@ export class CourseExternalToolScope extends Scope&lt;CourseExternalTool&gt; {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CourseExternalToolScope.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolScope.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

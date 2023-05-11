@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li>Classes</li>
-  <li >CourseExternalToolDO</li>
+  <li >ContextExternalToolPostParams</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -62,17 +62,11 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts</code>
+            <code>apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                        <code><a href="../classes/BaseDO.html" target="_self" >BaseDO</a></code>
-            </p>
 
 
 
@@ -89,13 +83,17 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#courseId" >courseId</a>
+                                <a href="#contextId" >contextId</a>
                             </li>
                             <li>
                                     <span class="modifier">Optional</span>
-                                <a href="#displayName" >displayName</a>
+                                <a href="#contextToolName" >contextToolName</a>
                             </li>
                             <li>
+                                <a href="#contextType" >contextType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#parameters" >parameters</a>
                             </li>
                             <li>
@@ -103,10 +101,6 @@
                             </li>
                             <li>
                                 <a href="#toolVersion" >toolVersion</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Optional</span>
-                                <a href="#id" >id</a>
                             </li>
                         </ul>
                     </td>
@@ -121,54 +115,6 @@
     </table>
 </section>
 
-            <section>
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(domainObject: <a href="../classes/CourseExternalToolDO.html" target="_self">CourseExternalToolDO</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:13</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>domainObject</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/CourseExternalToolDO.html" target="_self" >CourseExternalToolDO</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section>
     
@@ -179,10 +125,10 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="courseId"></a>
+                    <a name="contextId"></a>
                     <span class="name">
-                        <span ><b>courseId</b></span>
-                        <a href="#courseId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>contextId</b></span>
+                        <a href="#contextId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -192,9 +138,18 @@
 
                     </td>
                 </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />@IsMongoId()<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -205,11 +160,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="displayName"></a>
+                    <a name="contextToolName"></a>
                     <span class="name">
                             <span class="modifier">Optional</span>
-                        <span ><b>displayName</b></span>
-                        <a href="#displayName"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>contextToolName</b></span>
+                        <a href="#contextToolName"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -219,9 +174,53 @@
 
                     </td>
                 </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />@IsString()<br />@IsOptional()<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:5</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="contextType"></a>
+                    <span class="name">
+                        <span ><b>contextType</b></span>
+                        <a href="#contextType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsEnum(ToolContextType)<br />@ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -234,6 +233,7 @@
                 <td class="col-md-4">
                     <a name="parameters"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>parameters</b></span>
                         <a href="#parameters"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -241,13 +241,22 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryDO[]</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#CustomParameter" target="_self" >CustomParameterEntryParam[]</a></code>
 
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ValidateNested({each: true})<br />@IsArray()<br />@IsOptional()<br />@ApiPropertyOptional({type: undefined})<br />@Type(undefined)<br />
+                        </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -271,9 +280,18 @@
 
                     </td>
                 </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />@IsMongoId()<br />
+                        </code>
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -297,43 +315,18 @@
 
                     </td>
                 </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/domain/domainobject/external-tool/course-external-tool.do.ts:13</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="id"></a>
-                    <span class="name">
-                            <span class="modifier">Optional</span>
-                        <span ><b>id</b></span>
-                        <a href="#id"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />@IsNumber()<br />
+                        </code>
                     </td>
                 </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Inherited from         <code><a href="../classes/BaseDO.html" target="_self" >BaseDO</a></code>
-</div>
-                            </td>
-                        </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseDO.html#source" target="_self" >BaseDO:2</a></code>
-</div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/tool/controller/dto/request/context-external-tool-post.params.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -352,29 +345,40 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BaseDO } from &#x27;../base.do&#x27;;
-import { CustomParameterEntryDO } from &#x27;./custom-parameter-entry.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { IsArray, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
+import { CustomParameterEntryParam } from &#x27;./custom-parameter-entry.params&#x27;;
+import { ToolContextType } from &#x27;../../../interface&#x27;;
 
-export class CourseExternalToolDO extends BaseDO {
-	displayName?: string;
+export class ContextExternalToolPostParams {
+	@ApiProperty()
+	@IsMongoId()
+	schoolToolId!: string;
 
-	schoolToolId: string;
+	@ApiProperty()
+	@IsMongoId()
+	contextId!: string;
 
-	courseId: string;
+	@IsEnum(ToolContextType)
+	@ApiProperty()
+	contextType!: ToolContextType;
 
-	parameters: CustomParameterEntryDO[];
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	contextToolName?: string;
 
-	toolVersion: number;
+	@ValidateNested({ each: true })
+	@IsArray()
+	@IsOptional()
+	@ApiPropertyOptional({ type: [CustomParameterEntryParam] })
+	@Type(() &#x3D;&gt; CustomParameterEntryParam)
+	parameters?: CustomParameterEntryParam[];
 
-	constructor(domainObject: CourseExternalToolDO) {
-		super(domainObject.id);
-
-		this.displayName &#x3D; domainObject.displayName;
-		this.schoolToolId &#x3D; domainObject.schoolToolId;
-		this.courseId &#x3D; domainObject.courseId;
-		this.parameters &#x3D; domainObject.parameters;
-		this.toolVersion &#x3D; domainObject.toolVersion;
-	}
+	@ApiProperty()
+	@IsNumber()
+	toolVersion!: number;
 }
 </code></pre>
     </div>
@@ -414,7 +418,7 @@ export class CourseExternalToolDO extends BaseDO {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CourseExternalToolDO.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolPostParams.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

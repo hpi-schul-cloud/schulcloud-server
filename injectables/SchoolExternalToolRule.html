@@ -337,10 +337,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
-import { SchoolExternalTool, User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
 import { AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
+import { SchoolExternalTool, User } from &#x27;../entity&#x27;;
+import { SchoolExternalToolDO } from &#x27;../domainobject&#x27;;
 
 @Injectable()
 export class SchoolExternalToolRule implements Rule {

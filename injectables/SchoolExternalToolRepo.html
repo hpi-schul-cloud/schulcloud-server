@@ -191,7 +191,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -280,8 +280,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:71</a></div>
                 </td>
             </tr>
 
@@ -351,8 +351,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:57</a></div>
                 </td>
             </tr>
 
@@ -426,7 +426,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:30</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:35</a></code>
 </div>
                 </td>
             </tr>
@@ -497,8 +497,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:62</a></div>
                 </td>
             </tr>
 
@@ -568,8 +568,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:39</a></div>
                 </td>
             </tr>
 
@@ -639,8 +639,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:48</a></div>
                 </td>
             </tr>
 
@@ -714,7 +714,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:85</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:90</a></code>
 </div>
                 </td>
             </tr>
@@ -789,7 +789,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:75</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:80</a></code>
 </div>
                 </td>
             </tr>
@@ -1638,7 +1638,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:26</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/shared/repo/schoolexternaltool/school-external-tool.repo.ts:31</a></div>
                                 </td>
                             </tr>
 
@@ -1652,8 +1652,13 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from &#x27;@shared/domain&#x27;;
-import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
+import {
+	ExternalTool,
+	ISchoolExternalToolProperties,
+	School,
+	SchoolExternalTool,
+	SchoolExternalToolDO,
+} from &#x27;@shared/domain&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo/base.do.repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolExternalToolQuery } from &#x27;@src/modules/tool/uc/dto/school-external-tool.types&#x27;;

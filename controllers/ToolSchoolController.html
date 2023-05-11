@@ -599,8 +599,8 @@
 } from &#x27;@nestjs/swagger&#x27;;
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from &#x27;@nestjs/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
-import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/school-external-tool.do&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { SchoolExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import {
@@ -613,7 +613,7 @@ import {
 } from &#x27;./dto&#x27;;
 import { SchoolExternalToolUc } from &#x27;../uc/school-external-tool.uc&#x27;;
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from &#x27;./mapper&#x27;;
-import { SchoolExternalTool } from &#x27;../uc/dto/school-external-tool.types&#x27;;
+import { SchoolExternalTool } from &#x27;../uc/dto&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)

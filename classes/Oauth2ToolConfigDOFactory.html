@@ -62,7 +62,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/testing/factory/domainobject/external-tool.factory.ts</code>
+            <code>apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts</code>
         </p>
 
 
@@ -228,8 +228,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/external-tool.factory.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:29</a></div>
                 </td>
             </tr>
 
@@ -1316,24 +1316,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
+import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from &#x27;@shared/domain&#x27;;
-import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from &#x27;@shared/domain/domainobject/external-tool&#x27;;
+} from &#x27;@shared/domain&#x27;;
 import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
-import { DeepPartial } from &#x27;fishery&#x27;;
-import { DoBaseFactory } from &#x27;./do-base.factory&#x27;;
+import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 export const basicToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfigDO, BasicToolConfigDO&gt;(
 	BasicToolConfigDO,

@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li>Injectables</li>
-  <li >CourseExternalToolService</li>
+  <li >ContextExternalToolValidationService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -58,7 +58,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/service/course-external-tool.service.ts</code>
+            <code>apps/server/src/modules/tool/service/validation/context-external-tool-validation.service.ts</code>
         </p>
 
 
@@ -79,8 +79,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteBySchoolExternalToolId" >deleteBySchoolExternalToolId</a>
+                                <a href="#checkDuplicateInContext" >checkDuplicateInContext</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#validate" >validate</a>
                             </li>
                         </ul>
                     </td>
@@ -100,12 +105,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseExternalToolRepo: <a href="../injectables/CourseExternalToolRepo.html" target="_self">CourseExternalToolRepo</a>)</code>
+<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/service/course-external-tool.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/service/validation/context-external-tool-validation.service.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -123,10 +128,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>courseExternalToolRepo</td>
+                                                        <td>contextExternalToolRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseExternalToolRepo.html" target="_self" >CourseExternalToolRepo</a></code>
+                                                                        <code><a href="../injectables/ContextExternalToolRepo.html" target="_self" >ContextExternalToolRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -152,26 +157,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteBySchoolExternalToolId"></a>
+                    <a name="checkDuplicateInContext"></a>
                     <span class="name">
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
-                        <span ><b>deleteBySchoolExternalToolId</b></span>
-                        <a href="#deleteBySchoolExternalToolId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>checkDuplicateInContext</b></span>
+                        <a href="#checkDuplicateInContext"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteBySchoolExternalToolId(schoolExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>checkDuplicateInContext(contextExternalTool: <a href="../entitys/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/tool/service/course-external-tool.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/context-external-tool-validation.service.ts:14</a></div>
                 </td>
             </tr>
 
@@ -192,9 +198,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>schoolExternalToolId</td>
+                                    <td>contextExternalTool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../entitys/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -219,26 +225,101 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="validate"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>validate</b></span>
+                        <a href="#validate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validate(contextExternalTool: <a href="../entitys/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/tool/service/validation/context-external-tool-validation.service.ts:10</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contextExternalTool</td>
+                                    <td>
+                                                <code><a href="../entitys/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
-import { CourseExternalToolRepo } from &#x27;@shared/repo/courseexternaltool/course-external-tool.repo&#x27;;
-import { CourseExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/course-external-tool.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
+import { ContextExternalToolDO } from &#x27;@shared/domain&#x27;;
+import { ContextExternalTool } from &#x27;../../uc/dto&#x27;;
 
 @Injectable()
-export class CourseExternalToolService {
-	constructor(private readonly courseExternalToolRepo: CourseExternalToolRepo) {}
+export class ContextExternalToolValidationService {
+	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
 
-	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
-		const courseExternalTools: CourseExternalToolDO[] &#x3D; await this.courseExternalToolRepo.find({
-			schoolToolId: schoolExternalToolId,
-		});
-		await this.courseExternalToolRepo.delete(courseExternalTools);
+	async validate(contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
+		await this.checkDuplicateInContext(contextExternalTool);
+	}
+
+	private async checkDuplicateInContext(contextExternalTool: ContextExternalTool) {
+		const duplicate: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find(contextExternalTool);
+		if (duplicate.length &gt; 0) {
+			throw new UnprocessableEntityException(&#x27;Tool is already assigned.&#x27;);
+		}
 	}
 }
 </code></pre>
@@ -284,7 +365,7 @@ export class CourseExternalToolService {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'CourseExternalToolService.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolValidationService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

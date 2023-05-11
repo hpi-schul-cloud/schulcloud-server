@@ -40,7 +40,7 @@
 
 <ol class="breadcrumb">
   <li>Injectables</li>
-  <li >CourseExternalToolRepo</li>
+  <li >ContextExternalToolRepo</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -58,7 +58,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts</code>
+            <code>apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts</code>
         </p>
 
 
@@ -98,6 +98,14 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#find" >find</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapContextTypeToDoType" >mapContextTypeToDoType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapContextTypeToEntityType" >mapContextTypeToEntityType</a>
                             </li>
                             <li>
                                 <a href="#mapDOToEntityProperties" >mapDOToEntityProperties</a>
@@ -183,7 +191,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -265,15 +273,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildScope(query: <a href="../undefineds/CourseExternalToolQuery.html" target="_self">CourseExternalToolQuery</a>)</code>
+                    <code>buildScope(query: <a href="../undefineds/ContextExternalToolQuery.html" target="_self">ContextExternalToolQuery</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:56</a></div>
                 </td>
             </tr>
 
@@ -296,7 +304,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CourseExternalToolQuery" target="_self" >CourseExternalToolQuery</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolQuery" target="_self" >ContextExternalToolQuery</a></code>
                                     </td>
 
                                     <td>
@@ -311,7 +319,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CourseExternalToolScope.html" target="_self" >CourseExternalToolScope</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ContextExternalToolScope.html" target="_self" >ContextExternalToolScope</a></code>
 
                     </div>
                     <div class="io-description">
@@ -343,8 +351,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:40</a></div>
                 </td>
             </tr>
 
@@ -405,7 +413,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>entityFactory(props: <a href="../interfaces/ICourseExternalToolProperties.html" target="_self">ICourseExternalToolProperties</a>)</code>
+<code>entityFactory(props: <a href="../interfaces/IContextExternalToolProperties.html" target="_self">IContextExternalToolProperties</a>)</code>
                 </td>
             </tr>
 
@@ -418,7 +426,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:30</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:36</a></code>
 </div>
                 </td>
             </tr>
@@ -442,7 +450,7 @@
                                 <tr>
                                     <td>props</td>
                                     <td>
-                                                <code><a href="../interfaces/ICourseExternalToolProperties.html" target="_self" >ICourseExternalToolProperties</a></code>
+                                                <code><a href="../interfaces/IContextExternalToolProperties.html" target="_self" >IContextExternalToolProperties</a></code>
                                     </td>
 
                                     <td>
@@ -457,7 +465,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/CourseExternalTool.html" target="_self" >CourseExternalTool</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
 
                     </div>
                     <div class="io-description">
@@ -482,15 +490,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>find(query: <a href="../undefineds/CourseExternalToolQuery.html" target="_self">CourseExternalToolQuery</a>)</code>
+                    <code>find(query: <a href="../undefineds/ContextExternalToolQuery.html" target="_self">ContextExternalToolQuery</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:47</a></div>
                 </td>
             </tr>
 
@@ -513,7 +521,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CourseExternalToolQuery" target="_self" >CourseExternalToolQuery</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ContextExternalToolQuery" target="_self" >ContextExternalToolQuery</a></code>
                                     </td>
 
                                     <td>
@@ -528,7 +536,149 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ExternalTool" target="_self" >Promise&lt;CourseExternalToolDO[]&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO[]&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapContextTypeToDoType"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>mapContextTypeToDoType</b></span>
+                        <a href="#mapContextTypeToDoType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapContextTypeToDoType(type: <a href="../undefineds/ContextExternalToolType.html" target="_self">ContextExternalToolType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:104</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContextExternalToolType" target="_self" >ContextExternalToolType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapContextTypeToEntityType"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>mapContextTypeToEntityType</b></span>
+                        <a href="#mapContextTypeToEntityType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapContextTypeToEntityType(type: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:95</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#ContextExternalToolType" target="_self" >ContextExternalToolType</a></code>
 
                     </div>
                     <div class="io-description">
@@ -551,7 +701,82 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapDOToEntityProperties(entityDO: <a href="../classes/CourseExternalToolDO.html" target="_self">CourseExternalToolDO</a>)</code>
+<code>mapDOToEntityProperties(entityDO: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:84</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entityDO</td>
+                                    <td>
+                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/IContextExternalToolProperties.html" target="_self" >IContextExternalToolProperties</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapEntityToDO"></a>
+                    <span class="name">
+                        <span ><b>mapEntityToDO</b></span>
+                        <a href="#mapEntityToDO"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>mapEntityToDO(entity: <a href="../entitys/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -586,84 +811,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>entityDO</td>
-                                    <td>
-                                                <code><a href="../classes/CourseExternalToolDO.html" target="_self" >CourseExternalToolDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/ICourseExternalToolProperties.html" target="_self" >ICourseExternalToolProperties</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapEntityToDO"></a>
-                    <span class="name">
-                        <span ><b>mapEntityToDO</b></span>
-                        <a href="#mapEntityToDO"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>mapEntityToDO(entity: <a href="../entitys/CourseExternalTool.html" target="_self">CourseExternalTool</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../injectables/BaseDORepo.html" target="_self" >BaseDORepo</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:59</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../entitys/CourseExternalTool.html" target="_self" >CourseExternalTool</a></code>
+                                                <code><a href="../entitys/ContextExternalTool.html" target="_self" >ContextExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -678,7 +828,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CourseExternalToolDO.html" target="_self" >CourseExternalToolDO</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1488,7 +1638,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/repo/courseexternaltool/course-external-tool.repo.ts:26</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:32</a></div>
                                 </td>
                             </tr>
 
@@ -1502,19 +1652,25 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
-import { Course, CourseExternalTool, ICourseExternalToolProperties, SchoolExternalTool } from &#x27;@shared/domain&#x27;;
-import { CourseExternalToolDO } from &#x27;@shared/domain/domainobject/external-tool/course-external-tool.do&#x27;;
+import {
+	ContextExternalTool,
+	IContextExternalToolProperties,
+	SchoolExternalTool,
+	ContextExternalToolDO,
+} from &#x27;@shared/domain&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { CourseExternalToolQuery } from &#x27;@src/modules/tool/uc/dto/course-external-tool.types&#x27;;
-import { ExternalToolRepoMapper } from &#x27;../externaltool/external-tool.repo.mapper&#x27;;
-import { CourseExternalToolScope } from &#x27;./course-external-tool.scope&#x27;;
+import { ContextExternalToolType } from &#x27;@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum&#x27;;
+import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
+import { ContextExternalToolQuery } from &#x27;@src/modules/tool/uc/dto&#x27;;
+import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
+import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;
 
 @Injectable()
-export class CourseExternalToolRepo extends BaseDORepo&lt;
-	CourseExternalToolDO,
-	CourseExternalTool,
-	ICourseExternalToolProperties
+export class ContextExternalToolRepo extends BaseDORepo&lt;
+	ContextExternalToolDO,
+	ContextExternalTool,
+	IContextExternalToolProperties
 &gt; {
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
@@ -1524,12 +1680,12 @@ export class CourseExternalToolRepo extends BaseDORepo&lt;
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName&lt;CourseExternalTool&gt; {
-		return CourseExternalTool;
+	get entityName(): EntityName&lt;ContextExternalTool&gt; {
+		return ContextExternalTool;
 	}
 
-	entityFactory(props: ICourseExternalToolProperties): CourseExternalTool {
-		return new CourseExternalTool(props);
+	entityFactory(props: IContextExternalToolProperties): ContextExternalTool {
+		return new ContextExternalTool(props);
 	}
 
 	async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise&lt;number&gt; {
@@ -1539,43 +1695,70 @@ export class CourseExternalToolRepo extends BaseDORepo&lt;
 		return count;
 	}
 
-	async find(query: CourseExternalToolQuery): Promise&lt;CourseExternalToolDO[]&gt; {
-		const scope: CourseExternalToolScope &#x3D; this.buildScope(query);
+	async find(query: ContextExternalToolQuery): Promise&lt;ContextExternalToolDO[]&gt; {
+		const scope: ContextExternalToolScope &#x3D; this.buildScope(query);
 
-		const entities: CourseExternalTool[] &#x3D; await this._em.find(this.entityName, scope.query);
+		const entities: ContextExternalTool[] &#x3D; await this._em.find(this.entityName, scope.query);
 
-		const dos: CourseExternalToolDO[] &#x3D; entities.map((entity: CourseExternalTool) &#x3D;&gt; this.mapEntityToDO(entity));
+		const dos: ContextExternalToolDO[] &#x3D; entities.map((entity: ContextExternalTool) &#x3D;&gt; this.mapEntityToDO(entity));
 		return dos;
 	}
 
-	private buildScope(query: CourseExternalToolQuery): CourseExternalToolScope {
-		const scope: CourseExternalToolScope &#x3D; new CourseExternalToolScope();
-		if (query.schoolToolId) {
+	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
+		const scope: ContextExternalToolScope &#x3D; new ContextExternalToolScope();
+
+		if (query.contextId &amp;&amp; query.schoolToolId) {
+			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolId);
+		} else if (query.schoolToolId &amp;&amp; !query.contextId) {
 			scope.bySchoolToolId(query.schoolToolId);
 		}
+
 		scope.allowEmptyQuery(true);
+
 		return scope;
 	}
 
-	mapEntityToDO(entity: CourseExternalTool): CourseExternalToolDO {
-		return new CourseExternalToolDO({
+	mapEntityToDO(entity: ContextExternalTool): ContextExternalToolDO {
+		return new ContextExternalToolDO({
 			id: entity.id,
-			displayName: entity.displayName,
 			schoolToolId: entity.schoolTool.id,
-			courseId: entity.course.id,
+			contextId: entity.contextId,
+			contextType: this.mapContextTypeToDoType(entity.contextType),
+			contextToolName: entity.contextToolName,
 			toolVersion: entity.toolVersion,
-			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.courseParameters),
+			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
+			createdAt: entity.createdAt,
+			updatedAt: entity.updatedAt,
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: CourseExternalToolDO): ICourseExternalToolProperties {
+	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
 		return {
-			displayName: entityDO.displayName,
-			course: this._em.getReference(Course, entityDO.courseId),
+			contextId: entityDO.contextId,
+			contextType: this.mapContextTypeToEntityType(entityDO.contextType),
+			contextToolName: entityDO.contextToolName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolId),
 			toolVersion: entityDO.toolVersion,
-			courseParameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};
+	}
+
+	private mapContextTypeToEntityType(type: ToolContextType): ContextExternalToolType {
+		switch (type) {
+			case ToolContextType.COURSE:
+				return ContextExternalToolType.COURSE;
+			default:
+				throw new Error(&#x27;Unknown ToolContextType&#x27;);
+		}
+	}
+
+	private mapContextTypeToDoType(type: ContextExternalToolType): ToolContextType {
+		switch (type) {
+			case ContextExternalToolType.COURSE:
+				return ToolContextType.COURSE;
+			default:
+				throw new Error(&#x27;Unknown ContextExternalToolType&#x27;);
+		}
 	}
 }
 </code></pre>
@@ -1621,7 +1804,7 @@ export class CourseExternalToolRepo extends BaseDORepo&lt;
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'CourseExternalToolRepo.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ContextExternalToolRepo.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
