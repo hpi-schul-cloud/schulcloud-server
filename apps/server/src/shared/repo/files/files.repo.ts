@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { File } from '@shared/domain';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
+import { FindCursor } from 'mongodb';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()
@@ -24,8 +25,26 @@ export class FilesRepo extends BaseRepo<File> {
 		return files;
 	}
 
+	public async findAndCountFilesForCleanup(
+		removedSince: Date,
+		batchSize: number,
+		batchCounter: number
+	): Promise<[File[], number]> {
+		const query = { deletedAt: { $lte: removedSince } };
+		const options = { limit: batchSize, offset: batchCounter * batchSize, populate: ['storageProvider'] as never[] };
+		const files = await this._em.find(File, query, options);
+
+		return [files, files.length];
+	}
+
+	// getCursor(cleanupThreshold: Date): FindCursor {
+	// 	const filesForCleanupQuery = { deletedAt: { $lte: cleanupThreshold } };
+	// 	const cursor = this._em.getCollection(File).find(filesForCleanupQuery);
+
+	// 	return cursor;
+	// }
+
 	async deleteFile(file: File): Promise<void> {
-		if (file.isDirectory === false) await this.fileStorageAdapter.deleteFile(file);
 		await this.delete(file);
 	}
 }
