@@ -6,9 +6,9 @@ import { RoleName, System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { schoolDOFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountDtoFactory } from '@shared/testing/factory/account-dto.factory';
 import { AccountDto } from '@src/modules/account/services/dto';
 import bcrypt from 'bcryptjs';
-import { ObjectId } from 'bson';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
@@ -83,14 +83,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
@@ -135,14 +131,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
@@ -187,14 +179,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: undefined }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
@@ -239,14 +227,11 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
+					userId: undefined,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
@@ -290,14 +275,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
@@ -347,14 +328,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
@@ -409,14 +386,10 @@ describe('LdapStrategy', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
-				const account: AccountDto = new AccountDto({
-					id: new ObjectId().toHexString(),
-					createdAt: new Date(),
-					updatedAt: new Date(),
+				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
 					password: bcrypt.hashSync(password),
-					activated: true,
 					userId: user.id,
 				});
 
