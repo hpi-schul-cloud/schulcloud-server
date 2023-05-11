@@ -194,6 +194,7 @@ export const teacherPermissions = [
 	'START_MEETING',
 	'TASK_CARD_VIEW',
 	'TASK_CARD_EDIT',
+	'CONTEXT_TOOL_ADMIN',
 ] as Permission[];
 
 export const adminPermissions = [
