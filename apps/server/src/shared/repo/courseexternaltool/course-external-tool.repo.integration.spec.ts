@@ -114,14 +114,12 @@ describe('CourseExternalToolRepo', () => {
 
 		it('should save a CourseExternalTool', async () => {
 			const { domainObject } = setupDO();
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: CourseExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 	});
 

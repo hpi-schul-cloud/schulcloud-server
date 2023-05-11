@@ -27,8 +27,6 @@ export class PseudonymsRepo extends BaseDORepo<PseudonymDO, Pseudonym, IPseudony
 	protected mapEntityToDO(entity: Pseudonym): PseudonymDO {
 		return new PseudonymDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			pseudonym: entity.pseudonym,
 			toolId: entity.toolId.toHexString(),
 			userId: entity.userId.toHexString(),

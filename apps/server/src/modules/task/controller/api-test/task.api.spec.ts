@@ -12,7 +12,7 @@ import {
 	roleFactory,
 	submissionFactory,
 	taskFactory,
-	TestRequest,
+	TestApiClient,
 	userFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -1463,7 +1463,7 @@ describe('Task Controller (API)', () => {
 	describe('Find tasks with assigned users', () => {
 		let app: INestApplication;
 		let em: EntityManager;
-		let apiRequest: TestRequest;
+		let apiRequest: TestApiClient;
 
 		const setup = async () => {
 			const createStudent = () => {
@@ -1573,7 +1573,7 @@ describe('Task Controller (API)', () => {
 			app = module.createNestApplication();
 			await app.init();
 			em = module.get(EntityManager);
-			apiRequest = new TestRequest(app, 'tasks');
+			apiRequest = new TestApiClient(app, 'tasks');
 		});
 
 		afterAll(async () => {

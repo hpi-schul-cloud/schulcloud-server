@@ -1,28 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import type { User } from '../entity';
-import { Course } from '../entity';
-import { IPermissionContext } from '../interface/permission';
-import { Actions } from './actions.enum';
-import { BasePermission } from './base-permission';
+import { Course, User } from '@shared/domain/entity';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
 
 @Injectable()
-export class CourseRule extends BasePermission<Course> {
+export class CourseRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, entity: Course): boolean {
 		const isMatched = entity instanceof Course;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Course, context: IPermissionContext): boolean {
+	public hasPermission(user: User, entity: Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const hasPermission =
-			this.utils.hasAllPermissions(user, requiredPermissions) &&
-			this.utils.hasAccessToEntity(
+			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &&
+			this.authorizationHelper.hasAccessToEntity(
 				user,
 				entity,
-				action === Actions.read
-					? ['teachers', 'substitutionTeachers', 'students']
-					: ['teachers', 'substitutionTeachers']
+				action === Action.read ? ['teachers', 'substitutionTeachers', 'students'] : ['teachers', 'substitutionTeachers']
 			);
 
 		return hasPermission;
