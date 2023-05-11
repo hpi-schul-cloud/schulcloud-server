@@ -61,6 +61,9 @@
                 <td class="col-md-4">
                     <ul class="index-list">
                         <li>
+                            <a href="#accountDtoFactory" title="apps/server/src/shared/testing/factory/account-dto.factory.ts" ><b>accountDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account-dto.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#accountFactory" title="apps/server/src/shared/testing/factory/account.factory.ts" ><b>accountFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../account.factory.ts)</a>
                         </li>
                         <li>
@@ -628,6 +631,40 @@
     </table>
 </section>
 
+    <h3>apps/server/src/shared/testing/factory/account-dto.factory.ts</h3>
+    <section>
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="accountDtoFactory"></a>
+                    <span class="name">
+                        <span ><b>accountDtoFactory</b></span>
+                        <a href="#accountDtoFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;AccountDto, AccountDto&gt;(AccountDto, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		systemId: new ObjectId().toHexString(),
+		username: &#x60;Username-${sequence}&#x60;,
+		password: defaultTestPasswordHash,
+		activated: true,
+		userId: new ObjectId().toHexString(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/account.factory.ts</h3>
     <section>
     <h3></h3>    <table class="table table-sm table-bordered">

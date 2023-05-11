@@ -226,7 +226,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withLdapConfig()</code>
+<code>withLdapConfig(otherParams?: <a href="../classes/LdapConfig.html" target="_self">DeepPartial&lt;LdapConfig&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -239,6 +239,40 @@
             </tr>
 
 
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>otherParams</td>
+                                    <td>
+                                                <code><a href="../classes/LdapConfig.html" target="_self" >DeepPartial&lt;LdapConfig&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table table-sm table-bordered">
@@ -289,8 +323,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/system.factory.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/system.factory.ts:40</a></div>
                 </td>
             </tr>
 
@@ -1371,13 +1405,15 @@ export class SystemFactory extends BaseFactory&lt;System, ISystemProperties&gt; 
 		return this.params(params);
 	}
 
-	withLdapConfig(): this {
+	withLdapConfig(otherParams?: DeepPartial&lt;LdapConfig&gt;): this {
 		const params: DeepPartial&lt;ISystemProperties&gt; &#x3D; {
 			ldapConfig: new LdapConfig({
 				url: &#x27;ldaps:mock.de:389&#x27;,
 				active: true,
+				...otherParams,
 			}),
 		};
+
 		return this.params(params);
 	}
 

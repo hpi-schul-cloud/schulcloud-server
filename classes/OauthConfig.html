@@ -734,7 +734,18 @@ export class OauthConfig {
 @Embeddable()
 export class LdapConfig {
 	constructor(ldapConfig: Readonly&lt;LdapConfig&gt;) {
+		this.active &#x3D; ldapConfig.active;
+		this.federalState &#x3D; ldapConfig.federalState;
+		this.lastSyncAttempt &#x3D; ldapConfig.lastSyncAttempt;
+		this.lastSuccessfulFullSync &#x3D; ldapConfig.lastSuccessfulFullSync;
+		this.lastSuccessfulPartialSync &#x3D; ldapConfig.lastSuccessfulPartialSync;
+		this.lastModifyTimestamp &#x3D; ldapConfig.lastModifyTimestamp;
 		this.url &#x3D; ldapConfig.url;
+		this.rootPath &#x3D; ldapConfig.rootPath;
+		this.searchUser &#x3D; ldapConfig.searchUser;
+		this.searchUserPassword &#x3D; ldapConfig.searchUserPassword;
+		this.provider &#x3D; ldapConfig.provider;
+		this.providerOptions &#x3D; ldapConfig.providerOptions;
 	}
 
 	@Property({ nullable: true })

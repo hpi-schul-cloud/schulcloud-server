@@ -237,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="73"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:73</a></div>
                 </td>
             </tr>
 
@@ -344,8 +344,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:66</a></div>
                 </td>
             </tr>
 
@@ -423,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:54</a></div>
                 </td>
             </tr>
 
@@ -488,15 +488,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, system: <a href="../entitys/System.html" target="_self">System</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:84</a></div>
                 </td>
             </tr>
 
@@ -529,21 +529,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>systemId</td>
+                                    <td>system</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>school</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
                                     </td>
 
                                     <td>
@@ -647,7 +635,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { System } from &#x27;@shared/domain&#x27;;
+import { LdapConfig, System, User } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { SchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
@@ -673,19 +661,27 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise&lt;ICurrentUser&gt; {
 		const { username, password, systemId, schoolId } &#x3D; this.extractParamsFromRequest(request);
 
-		const system &#x3D; await this.systemRepo.findById(systemId);
-		const school &#x3D; await this.schoolRepo.findById(schoolId);
-		const account &#x3D; await this.loadAccount(username, systemId, school);
-		const userId &#x3D; this.checkValue(account.userId);
+		const system: System &#x3D; await this.systemRepo.findById(systemId);
+
+		const school: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
+
+		if (!school.systems || !school.systems.includes(systemId)) {
+			throw new UnauthorizedException(&#x60;School ${schoolId} does not have the selected system ${systemId}&#x60;);
+		}
+
+		const account: AccountDto &#x3D; await this.loadAccount(username, system);
+
+		const userId: string &#x3D; this.checkValue(account.userId);
 
 		this.authenticationService.checkBrutForce(account);
 
-		const user &#x3D; await this.userRepo.findById(userId);
-		const ldapDn &#x3D; this.checkValue(user.ldapDn);
+		const user: User &#x3D; await this.userRepo.findById(userId);
+
+		const ldapDn: string &#x3D; this.checkValue(user.ldapDn);
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+		const currentUser: ICurrentUser &#x3D; CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
 
 		return currentUser;
 	}
@@ -720,12 +716,13 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise&lt;AccountDto&gt; {
-		const externalSchoolId &#x3D; this.checkValue(school.externalId);
+	private async loadAccount(username: string, system: System): Promise&lt;AccountDto&gt; {
+		const ldapConfig: LdapConfig &#x3D; this.checkValue(system.ldapConfig);
+		const rootPath: string &#x3D; this.checkValue(ldapConfig.rootPath);
 
-		const userNameWithSchool &#x3D; &#x60;${externalSchoolId}/${username}&#x60;;
+		const userNameWithSchool &#x3D; &#x60;${rootPath}/${username}&#x60;;
 
-		const account &#x3D; await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), systemId);
+		const account &#x3D; await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), system.id);
 
 		return account;
 	}

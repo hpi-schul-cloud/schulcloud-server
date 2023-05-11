@@ -156,7 +156,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="201" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:201</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="212" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -192,7 +192,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="204" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:204</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="215" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:215</a></div>
                         </td>
                     </tr>
 
@@ -228,7 +228,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="217" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:217</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="228" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:228</a></div>
                         </td>
                     </tr>
 
@@ -264,7 +264,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="207" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:207</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="218" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:218</a></div>
                         </td>
                     </tr>
 
@@ -300,7 +300,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="214" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:214</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="225" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -336,7 +336,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="211" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:211</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="222" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:222</a></div>
                         </td>
                     </tr>
 
@@ -372,7 +372,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="220" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:220</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="231" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:231</a></div>
                         </td>
                     </tr>
 
@@ -407,7 +407,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="195" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:195</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="206" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:206</a></div>
                         </td>
                     </tr>
 
@@ -443,7 +443,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="198" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:198</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="209" class="link-to-prism">apps/server/src/shared/domain/entity/system.entity.ts:209</a></div>
                         </td>
                     </tr>
 
@@ -532,7 +532,18 @@ export class OauthConfig {
 @Embeddable()
 export class LdapConfig {
 	constructor(ldapConfig: Readonly&lt;LdapConfig&gt;) {
+		this.active &#x3D; ldapConfig.active;
+		this.federalState &#x3D; ldapConfig.federalState;
+		this.lastSyncAttempt &#x3D; ldapConfig.lastSyncAttempt;
+		this.lastSuccessfulFullSync &#x3D; ldapConfig.lastSuccessfulFullSync;
+		this.lastSuccessfulPartialSync &#x3D; ldapConfig.lastSuccessfulPartialSync;
+		this.lastModifyTimestamp &#x3D; ldapConfig.lastModifyTimestamp;
 		this.url &#x3D; ldapConfig.url;
+		this.rootPath &#x3D; ldapConfig.rootPath;
+		this.searchUser &#x3D; ldapConfig.searchUser;
+		this.searchUserPassword &#x3D; ldapConfig.searchUserPassword;
+		this.provider &#x3D; ldapConfig.provider;
+		this.providerOptions &#x3D; ldapConfig.providerOptions;
 	}
 
 	@Property({ nullable: true })
