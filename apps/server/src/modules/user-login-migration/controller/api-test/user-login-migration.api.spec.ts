@@ -155,21 +155,11 @@ describe('UserLoginMigrationController (API)', () => {
 	describe('[POST] /start', () => {
 		describe('when current User start the migration successfully', () => {
 			const setup = async () => {
-				const date: Date = new Date(2023, 5, 4);
 				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
 				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: School = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
-				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: date,
-					mandatorySince: date,
-					closedAt: date,
-					finishedAt: date,
 				});
 
 				const adminRole = roleFactory.buildWithId({
@@ -185,7 +175,6 @@ describe('UserLoginMigrationController (API)', () => {
 
 				return {
 					user,
-					userLoginMigration,
 				};
 			};
 
