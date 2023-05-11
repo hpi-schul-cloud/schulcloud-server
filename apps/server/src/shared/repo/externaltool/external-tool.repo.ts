@@ -8,11 +8,11 @@ import {
 	IPagination,
 	SortOrder,
 	ToolConfigType,
+	Page,
 } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { BaseDORepo, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { Page } from '../../domain/domainobject/page';
 import { ExternalToolSortingMapper } from './external-tool-sorting.mapper';
 import { ExternalToolRepoMapper } from './external-tool.repo.mapper';
 import { ExternalToolScope } from './external-tool.scope';

@@ -2,13 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
-import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO, Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
 import { Page } from '@shared/domain/domainobject/page';
 import { setupEntities, userFactory } from '@shared/testing';
 import {
 	externalToolDOFactory,
 	oauth2ToolConfigDOFactory,
-} from '@shared/testing/factory/domainobject/external-tool.factory';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { AuthorizationService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
