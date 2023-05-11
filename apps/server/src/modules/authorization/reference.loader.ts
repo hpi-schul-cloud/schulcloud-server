@@ -12,7 +12,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { BoardNodeService } from '@src/modules/board';
-import { AllowedAuthorizationEntityType, AllowedEntity } from './types';
+import { AllowedAuthorizationEntityType, ConcretAuthorizableObjects } from './types';
 
 type RepoType =
 	| TaskRepo
@@ -67,10 +67,13 @@ export class ReferenceLoader {
 		throw new NotImplementedException('REPO_NOT_IMPLEMENT');
 	}
 
-	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId): Promise<AllowedEntity> {
+	async loadEntity(
+		entityName: AllowedAuthorizationEntityType,
+		entityId: EntityId
+	): Promise<ConcretAuthorizableObjects> {
 		const repoLoader: IRepoLoader = this.resolveRepo(entityName);
 
-		let entity: AllowedEntity;
+		let entity: ConcretAuthorizableObjects;
 		if (repoLoader.populate) {
 			entity = await repoLoader.repo.findById(entityId, true);
 		} else {
