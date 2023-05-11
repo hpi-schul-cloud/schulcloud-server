@@ -369,14 +369,14 @@ describe('course repo', () => {
 	});
 
 	describe('findOneForTeacherOrSubstituteTeacher', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const students = userFactory.buildListWithId(2);
-			return { user, students };
+		const setup = (countUser = 1) => {
+			const user = userFactory.buildListWithId(countUser);
+			return { user };
 		};
 		it('should find course of teacher and substitution teacher', async () => {
-			const { user: teacher, students } = setup();
-			const { user: substitutionTeacher } = setup();
+			const { user } = setup(4);
+			const [teacher, substitutionTeacher, ...students] = user;
+
 			const course = courseFactory.build({
 				teachers: [teacher],
 				substitutionTeachers: [substitutionTeacher],
@@ -392,7 +392,8 @@ describe('course repo', () => {
 			expect(result.students.length).toEqual(2);
 		});
 		it('should throw error if course is not found', async () => {
-			const { user: teacher } = setup();
+			const { user } = setup();
+			const [teacher] = user;
 			const unknownId = new ObjectId().toHexString();
 
 			await expect(async () => {
@@ -400,8 +401,8 @@ describe('course repo', () => {
 			}).rejects.toThrow();
 		});
 		it('should throw error if user is not teacher or substitution teacher', async () => {
-			const { user: teacher } = setup();
-			const { user: substitutionTeacher } = setup();
+			const { user } = setup(2);
+			const [teacher, substitutionTeacher] = user;
 			const course = courseFactory.build({
 				teachers: [teacher],
 				substitutionTeachers: [substitutionTeacher],
