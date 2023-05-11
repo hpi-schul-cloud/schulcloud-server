@@ -1,5 +1,6 @@
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ObjectId } from 'bson';
+import { defaultTestPasswordHash } from './account.factory';
 import { BaseFactory } from './base.factory';
 
 export const accountDtoFactory = BaseFactory.define<AccountDto, AccountDto>(AccountDto, ({ sequence }) => {
@@ -9,7 +10,7 @@ export const accountDtoFactory = BaseFactory.define<AccountDto, AccountDto>(Acco
 		updatedAt: new Date(),
 		systemId: new ObjectId().toHexString(),
 		username: `Username-${sequence}`,
-		password: 'password',
+		password: defaultTestPasswordHash,
 		activated: true,
 		userId: new ObjectId().toHexString(),
 	};
