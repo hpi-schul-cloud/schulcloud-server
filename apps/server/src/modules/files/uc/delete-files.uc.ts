@@ -41,7 +41,7 @@ export class DeleteFilesUc {
 		let numberOfFilesFound = 0;
 
 		do {
-			const [files, count] = await this.filesRepo.findAndCountFilesForCleanup(removedSince, batchSize, batchCounter);
+			const [files, count] = await this.filesRepo.findAndCountFilesForCleanup(removedSince, batchSize);
 
 			const promises = files.map((file) => this.deleteFile(file));
 			await Promise.all(promises);

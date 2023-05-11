@@ -25,13 +25,9 @@ export class FilesRepo extends BaseRepo<File> {
 		return files;
 	}
 
-	public async findAndCountFilesForCleanup(
-		removedSince: Date,
-		batchSize: number,
-		batchCounter: number
-	): Promise<[File[], number]> {
+	public async findAndCountFilesForCleanup(removedSince: Date, batchSize: number): Promise<[File[], number]> {
 		const query = { deletedAt: { $lte: removedSince } };
-		const options = { limit: batchSize, offset: batchCounter * batchSize, populate: ['storageProvider'] as never[] };
+		const options = { limit: batchSize, populate: ['storageProvider'] as never[] };
 		const files = await this._em.find(File, query, options);
 
 		return [files, files.length];
