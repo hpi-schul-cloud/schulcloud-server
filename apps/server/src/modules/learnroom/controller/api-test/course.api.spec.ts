@@ -1,13 +1,10 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, courseFactory, TestRequest, UserAndAccountTestFactory } from '@shared/testing';
-import {
-	CourseMetadataListResponse,
-	CourseMetadataResponse,
-	CourseResponse,
-} from '@src/modules/learnroom/controller/dto';
+import { CourseMetadataListResponse, CourseResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
 const createStudent = () => {
@@ -95,7 +92,6 @@ describe('Course Controller (API)', () => {
 
 			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
 		};
-		// TODO find course as teacher, substitute teacher and student
 		it('should find course as teacher', async () => {
 			const { course, teacher } = setup();
 			await em.persistAndFlush([teacher.user, teacher.account, course]);
@@ -124,20 +120,6 @@ describe('Course Controller (API)', () => {
 			expect(courseResponse.id).toEqual(course.id);
 			expect(courseResponse.students?.length).toEqual(2);
 		});
-		it('should find course as student', async () => {
-			const { course, student1: student } = setup();
-			await em.persistAndFlush([student.user, student.account, course]);
-
-			em.clear();
-
-			const response = await apiRequest.get(`${course.id}`, student.account);
-			const courseResponse = response.body as CourseResponse;
-
-			expect(response.statusCode).toEqual(200);
-			expect(courseResponse).toBeDefined();
-			expect(courseResponse.id).toEqual(course.id);
-			expect(courseResponse.students?.length).toEqual(2);
-		});
 		it('should not find course if the teacher is not assigned to', async () => {
 			const { teacherUnkownToCourse, course } = setup();
 
@@ -159,24 +141,32 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	// describe('[GET] /courses/:id/export', () => {
-	// 	const setup = () => {
-	// 		const roles = roleFactory.buildList(1, { permissions: [Permission.COURSE_EDIT] });
-	// 		const user = userFactory.build({ roles });
+	describe('[GET] /courses/:id/export', () => {
+		const setup = () => {
+			const student1 = createStudent();
+			const student2 = createStudent();
+			const teacher = createTeacher();
+			const substitutionTeacher = createTeacher();
+			const teacherUnkownToCourse = createTeacher();
+			const course = courseFactory.build({
+				name: 'course #1',
+				students: [student1.user, student2.user],
+			});
 
-	// 		return { user };
-	// 	};
-	// 	it('should find course export', async () => {
-	// 		if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
-	// 		const { user } = setup();
-	// 		const course = courseFactory.build({ name: 'course #1', students: [user] });
-	// 		await em.persistAndFlush(course);
-	// 		em.clear();
+			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
+		};
+		it('should find course export', async () => {
+			if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
+			const { student1, course } = setup();
 
-	// 		const response = await request(app.getHttpServer()).get(`/courses/${course.id}/export`);
+			await em.persistAndFlush(course);
+			em.clear();
 
-	// 		expect(response.status).toEqual(200);
-	// 		expect(response.body).toBeDefined();
-	// 	});
-	// });
+			const response = await apiRequest.get(`${course.id}/export`, student1.account);
+
+			expect(response.statusCode).toEqual(200);
+			const courseResponse = response.body as CourseResponse;
+			expect(courseResponse).toBeDefined();
+		});
+	});
 });
