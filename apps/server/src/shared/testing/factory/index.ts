@@ -4,7 +4,7 @@ export * from './board.factory';
 export * from './boardnode';
 export * from './boardelement.factory';
 export * from './card-element.factory';
-export * from './course-external-tool.factory';
+export * from './context-external-tool.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './external-tool.factory';

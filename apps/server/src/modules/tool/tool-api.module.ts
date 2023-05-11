@@ -11,19 +11,20 @@ import {
 	SchoolExternalToolRequestMapper,
 	SchoolExternalToolResponseMapper,
 } from './controller/mapper';
-import { ToolConfigurationController } from './controller/tool-configuration.controller';
-import { ToolController } from './controller/tool.controller';
+import { ToolConfigurationController, ToolContextController, ToolController, ToolSchoolController } from './controller';
 import { ToolModule } from './tool.module';
-import { ExternalToolUc } from './uc/external-tool.uc';
-import { Lti11Uc } from './uc/lti11.uc';
+import {
+	ContextExternalToolUc,
+	ExternalToolConfigurationUc,
+	ExternalToolUc,
+	Lti11Uc,
+	SchoolExternalToolUc,
+} from './uc';
 import { LtiRoleMapper } from './uc/mapper';
-import { ExternalToolConfigurationUc } from './uc/external-tool-configuration.uc';
-import { ToolSchoolController } from './controller/tool-school.controller';
-import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],
-	controllers: [ToolConfigurationController, ToolSchoolController, ToolController],
+	controllers: [ToolConfigurationController, ToolSchoolController, ToolContextController, ToolController],
 	providers: [
 		Lti11Uc,
 		LtiRoleMapper,
@@ -36,6 +37,7 @@ import { SchoolExternalToolUc } from './uc/school-external-tool.uc';
 		SchoolExternalToolUc,
 		SchoolExternalToolResponseMapper,
 		SchoolExternalToolRequestMapper,
+		ContextExternalToolUc,
 	],
 })
 export class ToolApiModule {}
