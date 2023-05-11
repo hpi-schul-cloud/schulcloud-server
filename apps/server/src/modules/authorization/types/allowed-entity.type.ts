@@ -26,5 +26,5 @@ export type AllowedEntity =
 	| AnyBoardDo;
 
 export interface AuthorizationLoaderService {
-	findById(id: EntityId): AuthorizableObject;
+	findById(id: EntityId): Promise<AuthorizableObject>;
 }
