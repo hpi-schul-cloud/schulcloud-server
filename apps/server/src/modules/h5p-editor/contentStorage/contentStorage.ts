@@ -56,16 +56,30 @@ export class ContentStorage implements IContentStorage {
 		return contentId;
 	}
 
-	addFile(contentId: string, filename: string, readStream: Stream, user?: IUser | undefined): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
+		// TODO: checkFilename(filename);
+		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
+			throw new Error('404: storage-file-implementations:add-file-content-not-found');
+		}
+
+		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
+		await this.existsOrCreateDir(path.dirname(fullPath));
+		const writeStream = fs.createWriteStream(fullPath);
+		stream.pipe(writeStream);
 	}
 
-	contentExists(contentId: string): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	public contentExists(contentId: string): Promise<boolean> {
+		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
+		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
+		return existPromise;
 	}
 
-	deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
+		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
+			throw new Error('404: storage-file-implementations:delete-content-not-found');
+		}
+
+		await fsPromises.rm(path.join(this.getContentPath(), contentId.toString()));
 	}
 
 	deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
