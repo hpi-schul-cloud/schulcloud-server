@@ -10,7 +10,7 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@shared/infra/
 import { REDIS_CLIENT, RedisModule } from '@shared/infra/redis';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { AccountApiModule } from '@src/modules/account/account-api.module';
 import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { CollaborativeStorageModule } from '@src/modules/collaborative-storage';
@@ -85,7 +85,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
-const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: Logger) => {
+const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) => {
 	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
 
 	let store: connectRedis.RedisStore | undefined;
@@ -147,7 +147,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 export class ServerModule implements NestModule {
 	constructor(
 		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerModule.name);
 	}
@@ -178,7 +178,7 @@ export class ServerModule implements NestModule {
 export class ServerTestModule implements NestModule {
 	constructor(
 		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerTestModule.name);
 	}

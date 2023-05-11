@@ -13,7 +13,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { CookiesDto } from '@src/modules/oauth/service/dto/cookies.dto';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 @Injectable()
 export class HydraSsoService {
@@ -21,7 +21,7 @@ export class HydraSsoService {
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	private readonly HOST: string = Configuration.get('HOST') as string;

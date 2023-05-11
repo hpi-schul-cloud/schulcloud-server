@@ -5,7 +5,7 @@ import { OauthConfig, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
@@ -27,7 +27,7 @@ export class OAuthService {
 		private readonly userService: UserService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: IEncryptionService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
 		private readonly userMigrationService: UserMigrationService,

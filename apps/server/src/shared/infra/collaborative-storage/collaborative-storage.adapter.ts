@@ -3,7 +3,7 @@ import { TeamDto } from '@src/modules/collaborative-storage/services/dto/team.dt
 import { ICollaborativeStorageStrategy } from '@shared/infra/collaborative-storage/strategy/base.interface.strategy';
 import { Inject, Injectable } from '@nestjs/common';
 import { CollaborativeStorageAdapterMapper } from '@shared/infra/collaborative-storage/mapper/collaborative-storage-adapter.mapper';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 /**
@@ -17,7 +17,7 @@ export class CollaborativeStorageAdapter {
 	constructor(
 		@Inject('ICollaborativeStorageStrategy') strategy: ICollaborativeStorageStrategy,
 		private mapper: CollaborativeStorageAdapterMapper,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageAdapter.name);
 		this.strategy = strategy;

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { Request } from 'express';
@@ -49,8 +49,8 @@ describe('OAuthController', () => {
 			controllers: [OauthSSOController],
 			providers: [
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: OauthUc,

@@ -6,8 +6,8 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+} from '@shared/domain/domainobject/tool';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeParams,

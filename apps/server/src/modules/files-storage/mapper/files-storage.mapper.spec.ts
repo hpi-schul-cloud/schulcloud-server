@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,

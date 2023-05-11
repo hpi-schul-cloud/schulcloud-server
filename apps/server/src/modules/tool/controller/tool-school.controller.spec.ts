@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@src/modules/authentication';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { Logger } from '@src/core/logger';
+import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
+import { LegacyLogger } from '@src/core/logger';
 import { ToolSchoolController } from './tool-school.controller';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
@@ -42,8 +42,8 @@ describe('ToolSchoolController', () => {
 					useValue: createMock<SchoolExternalToolRequestMapper>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

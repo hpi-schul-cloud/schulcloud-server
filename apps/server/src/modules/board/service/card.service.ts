@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, Column, EntityId } from '@shared/domain';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -22,9 +23,12 @@ export class CardService {
 
 	async create(parent: Column): Promise<Card> {
 		const card = new Card({
-			title: ``,
+			id: new ObjectId().toHexString(),
+			title: '',
 			height: 150,
 			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		});
 
 		parent.addChild(card);

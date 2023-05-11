@@ -3,7 +3,8 @@ import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
 import { BoardManagementConsole } from './console';
-import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
+import { BoardDoRepo, BoardNodeRepo } from './repo';
+import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
 	BoardDoService,
 	BoardNodeService,

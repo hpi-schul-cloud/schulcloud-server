@@ -1,13 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { Logger } from '@src/core/logger';
+import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
 import { PageTypes } from '../interface/page-types.enum';
@@ -24,7 +23,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {}
 
 	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise<PageContentDto> {
@@ -37,18 +36,24 @@ export class UserLoginMigrationUc {
 		return content;
 	}
 
-	async getMigrations(
-		userId: EntityId,
-		query: UserLoginMigrationQuery,
-		options: IFindOptions<UserLoginMigrationDO>
-	): Promise<Page<UserLoginMigrationDO>> {
-		if (userId !== query.userId) {
-			throw new ForbiddenException('Accessing migration status of another user is forbidden.');
+	async getMigrations(userId: EntityId, query: UserLoginMigrationQuery): Promise<Page<UserLoginMigrationDO>> {
+		let page = new Page<UserLoginMigrationDO>([], 0);
+
+		if (query.userId) {
+			if (userId !== query.userId) {
+				throw new ForbiddenException('Accessing migration status of another user is forbidden.');
+			}
+
+			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationByUser(
+				query.userId
+			);
+
+			if (userLoginMigration) {
+				page = new Page<UserLoginMigrationDO>([userLoginMigration], 1);
+			}
 		}
 
-		const userLoginMigrations: Page<UserLoginMigrationDO> =
-			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
-		return userLoginMigrations;
+		return page;
 	}
 
 	async migrate(
@@ -72,7 +77,7 @@ export class UserLoginMigrationUc {
 
 		if (data.externalSchool) {
 			let schoolToMigrate: SchoolDO | null;
-			// TODO: N21-820 after implementation of new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
+			// TODO: N21-820 after fully switching to the new client login flow, try/catch will be obsolete and schoolToMigrate should throw correct errors
 			try {
 				schoolToMigrate = await this.schoolMigrationService.schoolToMigrate(
 					currentUserId,
@@ -83,10 +88,9 @@ export class UserLoginMigrationUc {
 				let details: Record<string, unknown> | undefined;
 
 				if (
-					error &&
-					typeof error === 'object' &&
-					'officialSchoolNumberFromSource' in error &&
-					'officialSchoolNumberFromTarget' in error
+					error instanceof OAuthMigrationError &&
+					error.officialSchoolNumberFromSource &&
+					error.officialSchoolNumberFromTarget
 				) {
 					details = {
 						sourceSchoolNumber: error.officialSchoolNumberFromSource,
@@ -94,7 +98,7 @@ export class UserLoginMigrationUc {
 					};
 				}
 
-				throw new SchoolMigrationError(details);
+				throw new SchoolMigrationError(details, error);
 			}
 
 			this.logMigrationInformation(

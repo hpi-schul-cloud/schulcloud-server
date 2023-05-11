@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
 
 export class SchoolMigrationError extends BusinessError {
-	constructor(details?: Record<string, unknown>) {
+	constructor(details?: Record<string, unknown>, cause?: unknown) {
 		super(
 			{
 				type: 'SCHOOL_MIGRATION_FAILED',
@@ -10,7 +10,8 @@ export class SchoolMigrationError extends BusinessError {
 				defaultMessage: 'School could not migrate during user migration process.',
 			},
 			HttpStatus.INTERNAL_SERVER_ERROR,
-			details
+			details,
+			cause
 		);
 	}
 }

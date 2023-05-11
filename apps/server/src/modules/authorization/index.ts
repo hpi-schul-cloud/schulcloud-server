@@ -1,4 +1,5 @@
 export * from './authorization.module';
 export * from './authorization.service';
-export * from './feathers-jwt.provider';
-export * from './interfaces';
+export * from './authorization-context.builder';
+export * from './types';
+export * from './feathers';

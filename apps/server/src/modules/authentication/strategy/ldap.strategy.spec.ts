@@ -103,7 +103,7 @@ describe('LdapStrategy', () => {
 						systemId: 'mockSystemId',
 					},
 				};
-				userRepoMock.findById.mockResolvedValueOnce({ ...mockUser });
+				userRepoMock.findById.mockResolvedValueOnce(mockUser);
 
 				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
 			});

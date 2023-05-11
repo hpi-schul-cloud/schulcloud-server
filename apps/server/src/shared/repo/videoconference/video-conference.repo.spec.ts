@@ -15,7 +15,7 @@ import { videoConferenceFactory } from '@shared/testing/factory/video-conference
 import { NotFoundError } from '@mikro-orm/core';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {
 	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {
@@ -38,8 +38,8 @@ describe('Video Conference Repo', () => {
 			providers: [
 				VideoConferenceRepoSpec,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -126,8 +126,6 @@ describe('Video Conference Repo', () => {
 			// Assert
 			expect(videoConferenceDO.id).toEqual(testEntity.id);
 			expect(videoConferenceDO.target).toEqual(testEntity.target);
-			expect(videoConferenceDO.createdAt).toEqual(testEntity.createdAt);
-			expect(videoConferenceDO.updatedAt).toEqual(testEntity.updatedAt);
 			expect(videoConferenceDO.targetModel).toEqual(VideoConferenceScope.COURSE);
 			const { options } = videoConferenceDO;
 			expect(options.everybodyJoinsAsModerator).toEqual(testEntity.options.everybodyJoinsAsModerator);
@@ -141,8 +139,6 @@ describe('Video Conference Repo', () => {
 			// Arrange
 			const testDO: VideoConferenceDO = new VideoConferenceDO({
 				id: 'testId',
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
 				target: new ObjectId().toHexString(),
 				targetModel: VideoConferenceScope.COURSE,
 				options: new VideoConferenceOptionsDO({

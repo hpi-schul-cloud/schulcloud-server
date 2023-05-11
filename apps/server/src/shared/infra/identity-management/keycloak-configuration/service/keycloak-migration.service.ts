@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { AccountService } from '@src/modules/account/services/account.service';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { Injectable } from '@nestjs/common';
+import { LegacyLogger } from '@src/core/logger';
+import { AccountService } from '@src/modules/account/services/account.service';
+import { AccountDto } from '@src/modules/account/services/dto';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class KeycloakMigrationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(KeycloakMigrationService.name);
 	}
