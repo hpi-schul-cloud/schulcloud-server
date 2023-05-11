@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { LessonRepo } from '@shared/repo';
 
 import {
@@ -14,9 +14,8 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { LegacyLogger } from '@src/core/logger';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
@@ -70,8 +69,8 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<TaskCopyService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -135,7 +134,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Course,
 					course.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.COURSE_CREATE],
 					}
 				);
@@ -196,7 +195,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Lesson,
 					lesson.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.TOPIC_CREATE],
 					}
 				);
@@ -257,7 +256,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Task,
 					task.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.HOMEWORK_CREATE],
 					}
 				);
@@ -315,7 +314,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.Course,
 					course.id,
 					{
-						action: Actions.write,
+						action: Action.write,
 						requiredPermissions: [Permission.COURSE_CREATE],
 					}
 				);
@@ -343,7 +342,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.School,
 					school.id,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [],
 					}
 				);
@@ -580,7 +579,7 @@ describe('ShareTokenUC', () => {
 					AllowedAuthorizationEntityType.School,
 					school.id,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [],
 					}
 				);
@@ -692,7 +691,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);
@@ -809,7 +808,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);
@@ -925,7 +924,7 @@ describe('ShareTokenUC', () => {
 						AllowedAuthorizationEntityType.School,
 						school.id,
 						{
-							action: Actions.read,
+							action: Action.read,
 							requiredPermissions: [],
 						}
 					);

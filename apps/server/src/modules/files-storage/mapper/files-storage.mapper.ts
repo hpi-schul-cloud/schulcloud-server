@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
 import { plainToClass } from 'class-transformer';
 import {
 	DownloadFileParams,

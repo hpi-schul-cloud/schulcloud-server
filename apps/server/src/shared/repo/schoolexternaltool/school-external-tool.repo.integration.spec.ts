@@ -16,9 +16,9 @@ import {
 	schoolFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe('SchoolExternalToolRepo', () => {
@@ -33,8 +33,8 @@ describe('SchoolExternalToolRepo', () => {
 				SchoolExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -131,16 +131,14 @@ describe('SchoolExternalToolRepo', () => {
 			};
 		}
 
-		it('should save a CourseExternalTool', async () => {
+		it('should save a SchoolExternalTool', async () => {
 			const { domainObject } = setupDO();
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: SchoolExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 	});
 

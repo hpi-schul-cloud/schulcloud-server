@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -27,8 +27,8 @@ describe(CardUc.name, () => {
 					useValue: createMock<ContentElementService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

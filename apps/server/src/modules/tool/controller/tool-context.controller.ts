@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { Body, Controller, Post, Delete, Param } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import { ContextExternalToolDO } from '@shared/domain';
@@ -21,7 +21,7 @@ import { ContextExternalTool } from '../uc/dto';
 @Authenticate('jwt')
 @Controller('tools/context')
 export class ToolContextController {
-	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: Logger) {}
+	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
 
 	@Post()
 	@ApiCreatedResponse({

@@ -37,8 +37,6 @@ export class ExternalToolRepoMapper {
 
 		return new ExternalToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			name: entity.name,
 			url: entity.url,
 			logoUrl: entity.logoUrl,

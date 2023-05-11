@@ -1,10 +1,15 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { ExternalTool, ISchoolExternalToolProperties, School, SchoolExternalTool } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
+import {
+	ExternalTool,
+	ISchoolExternalToolProperties,
+	School,
+	SchoolExternalTool,
+	SchoolExternalToolDO,
+} from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto/school-external-tool.types';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
@@ -18,7 +23,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger
+		protected readonly logger: LegacyLogger
 	) {
 		super(_em, logger);
 	}
@@ -75,8 +80,6 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 	mapEntityToDO(entity: SchoolExternalTool): SchoolExternalToolDO {
 		return new SchoolExternalToolDO({
 			id: entity.id,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 			toolId: entity.tool.id,
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,

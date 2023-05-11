@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { AuthorizationContext, Rule } from '@src/modules';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { AnyBoardDo, BoardComposite } from '../domainobject';
 import { User } from '../entity';
-import { IPermissionContext } from '../interface/permission';
-import { BasePermission } from './base-permission';
 
 @Injectable()
-export class BoardNodeRule extends BasePermission<AnyBoardDo> {
+export class BoardNodeRule implements Rule {
+	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
+
 	public isApplicable(user: User, domainObject: AnyBoardDo): boolean {
 		const isMatched = domainObject instanceof BoardComposite;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, domainObject: AnyBoardDo, context: IPermissionContext): boolean {
-		const hasPermission = this.utils.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(user: User, domainObject: AnyBoardDo, context: AuthorizationContext): boolean {
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		// TODO: create really permission checks
 

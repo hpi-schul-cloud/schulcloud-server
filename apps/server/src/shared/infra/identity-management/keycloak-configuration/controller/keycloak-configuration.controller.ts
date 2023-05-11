@@ -1,10 +1,10 @@
 import { Controller, Post, ServiceUnavailableException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
 @Controller('management/idm')
 export class KeycloakManagementController {
-	constructor(private readonly keycloakManagementUc: KeycloakConfigurationUc, private readonly logger: Logger) {
+	constructor(private readonly keycloakManagementUc: KeycloakConfigurationUc, private readonly logger: LegacyLogger) {
 		this.logger.setContext(KeycloakManagementController.name);
 	}
 

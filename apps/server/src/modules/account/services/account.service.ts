@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted } from '@shared/domain';
 import { isEmail, validateOrReject } from 'class-validator';
-import { Logger } from '../../../core/logger';
+import { LegacyLogger } from '../../../core/logger';
 import { IServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -21,7 +21,7 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<IServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		super();
 		this.logger.setContext(AccountService.name);

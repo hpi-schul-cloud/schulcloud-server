@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
+import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { EntityId } from '@shared/domain';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class ContextExternalToolService {
 		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(
 			contextExternalTool
 		);
+
 		return createdContextExternalTool;
 	}
 
@@ -24,6 +25,7 @@ export class ContextExternalToolService {
 		const courseExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
 			schoolToolId: schoolExternalToolId,
 		});
+
 		await this.contextExternalToolRepo.delete(courseExternalTools);
 	}
 

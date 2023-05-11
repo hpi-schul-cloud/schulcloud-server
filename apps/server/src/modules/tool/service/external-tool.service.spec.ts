@@ -18,7 +18,7 @@ import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolService } from './external-tool.service';
 import { ExternalToolServiceMapper } from './mapper';
 import { ExternalToolVersionService } from './external-tool-version.service';
@@ -64,8 +64,8 @@ describe('ExternalToolService', () => {
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ExternalToolVersionService,

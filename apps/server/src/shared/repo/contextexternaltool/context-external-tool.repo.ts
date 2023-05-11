@@ -8,7 +8,7 @@ import {
 	ContextExternalToolDO,
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
@@ -24,7 +24,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	constructor(
 		private readonly externalToolRepoMapper: ExternalToolRepoMapper,
 		protected readonly _em: EntityManager,
-		protected readonly logger: Logger
+		protected readonly logger: LegacyLogger
 	) {
 		super(_em, logger);
 	}

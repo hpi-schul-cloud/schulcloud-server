@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { S3ClientAdapter } from '@src/modules/files-storage/client/s3-client.adapter';
 import { Readable } from 'stream';
 import { S3Config } from '../interface/config';
@@ -40,8 +40,8 @@ describe('FwuLearningContentsUC', () => {
 					useValue: createMock<S3Config>(config),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

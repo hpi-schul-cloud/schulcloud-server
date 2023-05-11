@@ -301,14 +301,13 @@
 		},
 		"name": "teammember",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-05-05T07:39:11.036Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"roles": [],
 		"permissions": [
-			"LEAVE_TEAM",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
 			"USE_LIBREOFFICE",
@@ -323,7 +322,7 @@
 		},
 		"name": "teamexpert",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-05-05T07:39:11.040Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -331,7 +330,6 @@
 		"roles": [],
 		"permissions": [
 			"CALENDAR_VIEW",
-			"LEAVE_TEAM",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
 			"USE_LIBREOFFICE",
@@ -375,7 +373,7 @@
 		},
 		"name": "teamadministrator",
 		"updatedAt": {
-			"$date": "2022-05-20T13:33:18.077Z"
+			"$date": "2023-05-05T07:39:11.028Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -391,7 +389,8 @@
 			"INVITE_EXPERTS",
 			"NEWS_EDIT",
 			"REMOVE_MEMBERS",
-			"RENAME_TEAM"
+			"RENAME_TEAM",
+			"LEAVE_TEAM"
 		],
 		"__v": 0
 	},

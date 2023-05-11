@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
@@ -62,8 +62,8 @@ describe('FilesStorageService get methods', () => {
 					useValue: createMock<FileRecordRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: AntivirusService,

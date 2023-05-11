@@ -10,8 +10,8 @@ import {
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool/school-external-tool.factory';
+	schoolExternalToolDOFactory,
+} from '@shared/testing/factory/domainobject/tool';
 import { ExternalToolService } from '../external-tool.service';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 

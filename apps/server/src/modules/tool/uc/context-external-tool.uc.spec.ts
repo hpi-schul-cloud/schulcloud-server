@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalToolService, ContextExternalToolValidationService } from '@src/modules/tool/service';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
-import { ContextExternalToolUc } from '@src/modules/tool/uc/context-external-tool.uc';
-import { Actions, ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
-import { ToolContextType } from '@src/modules/tool/interface';
+import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { ContextExternalToolUc } from './context-external-tool.uc';
+import { ToolContextType } from '../interface';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
@@ -50,31 +50,31 @@ describe('ContextExternalToolUc', () => {
 	});
 
 	describe('createContextExternalTool is called', () => {
-		const setup = () => {
-			const userId: EntityId = 'userId';
-
-			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
-				contextType: ToolContextType.COURSE,
-				contextToolName: 'Course',
-				contextId: 'contextId',
-			});
-
-			const context = {
-				action: Actions.write,
-				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			};
-
-			authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-			contextExternalToolValidationService.validate.mockResolvedValue(Promise.resolve());
-
-			return {
-				contextExternalTool,
-				userId,
-				context,
-			};
-		};
-
 		describe('when contextExternalTool is given and user has permission ', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+					contextType: ToolContextType.COURSE,
+					contextToolName: 'Course',
+					contextId: 'contextId',
+				});
+
+				const context = {
+					action: Action.write,
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+				};
+
+				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				contextExternalToolValidationService.validate.mockResolvedValue(Promise.resolve());
+
+				return {
+					contextExternalTool,
+					userId,
+					context,
+				};
+			};
+
 			it('should call contextExternalToolService', async () => {
 				const { contextExternalTool, userId } = setup();
 
@@ -107,28 +107,28 @@ describe('ContextExternalToolUc', () => {
 	});
 
 	describe('deleteContextExternalTool is called', () => {
-		const setup = () => {
-			const userId: EntityId = 'userId';
-
-			const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
-
-			const context = {
-				action: Actions.write,
-				requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
-			};
-
-			authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
-
-			return {
-				contextExternalTool,
-				contextExternalToolId: contextExternalTool.id as EntityId,
-				userId,
-				context,
-			};
-		};
-
 		describe('when contextExternalTool is given and user has permission ', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+
+				const context = {
+					action: Action.write,
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+				};
+
+				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+
+				return {
+					contextExternalTool,
+					contextExternalToolId: contextExternalTool.id as EntityId,
+					userId,
+					context,
+				};
+			};
+
 			it('should call contextExternalToolService', async () => {
 				const { contextExternalTool, contextExternalToolId, userId } = setup();
 

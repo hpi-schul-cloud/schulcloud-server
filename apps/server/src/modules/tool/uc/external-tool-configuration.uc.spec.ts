@@ -3,12 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission, User, ExternalToolDO, Page } from '@shared/domain';
+import { Permission, User, ExternalToolDO, Page } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -92,7 +91,7 @@ describe('ExternalToolConfigurationUc', () => {
 					AllowedAuthorizationEntityType.School,
 					'schoolId',
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -168,7 +167,7 @@ describe('ExternalToolConfigurationUc', () => {
 					AllowedAuthorizationEntityType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);

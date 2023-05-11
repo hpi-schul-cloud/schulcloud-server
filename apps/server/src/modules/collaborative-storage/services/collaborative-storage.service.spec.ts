@@ -7,7 +7,7 @@ import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
@@ -34,8 +34,8 @@ describe('Collaborative Storage Service', () => {
 				CollaborativeStorageService,
 				TeamMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: RoleService,
