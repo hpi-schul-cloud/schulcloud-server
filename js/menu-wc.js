@@ -864,6 +864,40 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/H5PEditorModule.html" data-type="entity-link" >H5PEditorModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                            'data-target="#controllers-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' : 'data-target="#xs-controllers-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' :
+                                            'id="xs-controllers-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' }>
+                                            <li class="link">
+                                                <a href="controllers/H5PEditorController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
+                                        'data-target="#injectables-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' : 'data-target="#xs-injectables-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' :
+                                        'id="xs-injectables-links-module-H5PEditorModule-7e9be83efde8a7b4d2496378e119f2c414296ab26927cec03fa07f3665fe2894f409eb1574861b7b79408ec418f6ceaa2cfc3308ceff088c07876de7308ad323"' }>
+                                        <li class="link">
+                                            <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
+                                <a href="modules/H5PEditorTestModule.html" data-type="entity-link" >H5PEditorTestModule</a>
+                            </li>
+                            <li class="link">
                                 <a href="modules/IdentityManagementModule.html" data-type="entity-link" >IdentityManagementModule</a>
                             </li>
                             <li class="link">
