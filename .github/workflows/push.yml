@@ -99,7 +99,6 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_VAULT: ${{ secrets.DEV_VAULT }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
-      TOKEN_INVENTORY: ${{ secrets.TOKEN_INVENTORY }}
 
   deploy-successful:
     needs:
