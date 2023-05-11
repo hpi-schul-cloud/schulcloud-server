@@ -368,10 +368,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Scope, Inject, ImATeapotException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Application } from &#x27;@feathersjs/express&#x27;;
+import { ImATeapotException, Inject, Injectable, Scope } from &#x27;@nestjs/common&#x27;;
 import { REQUEST } from &#x27;@nestjs/core&#x27;;
 import { Request } from &#x27;express&#x27;;
-import { Application } from &#x27;@feathersjs/express&#x27;;
 
 export interface FeathersService {
 	/**
