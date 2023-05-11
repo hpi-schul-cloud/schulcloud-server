@@ -1,7 +1,6 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { ExternalTool, LtiTool, SortOrder, SortOrderMap } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-tool-sorting.mapper';
+import { ExternalTool, LtiTool, SortOrder, SortOrderMap, ExternalToolDO } from '@shared/domain';
+import { ExternalToolSortingMapper } from '@shared/repo';
 
 describe('ExternalToolSortingMapper', () => {
 	let mapper: ExternalToolSortingMapper;

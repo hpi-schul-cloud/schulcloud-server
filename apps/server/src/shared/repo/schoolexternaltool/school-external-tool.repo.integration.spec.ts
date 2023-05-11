@@ -1,16 +1,25 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool, School, SchoolExternalTool } from '@shared/domain';
+import {
+	ExternalTool,
+	type School,
+	SchoolExternalTool,
+	SchoolExternalToolDO,
+	CustomParameterEntryDO,
+} from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { cleanupCollections, externalToolFactory, schoolExternalToolFactory, schoolFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	schoolFactory,
+	schoolExternalToolDOFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/custom-parameter-entry.do';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
-import { SchoolExternalToolQuery } from '../../../modules/tool/uc/dto/school-external-tool.types';
 
 describe('SchoolExternalToolRepo', () => {
 	let module: TestingModule;
@@ -122,7 +131,7 @@ describe('SchoolExternalToolRepo', () => {
 			};
 		}
 
-		it('should save a CourseExternalTool', async () => {
+		it('should save a SchoolExternalTool', async () => {
 			const { domainObject } = setupDO();
 			const { id, ...expected } = domainObject;
 

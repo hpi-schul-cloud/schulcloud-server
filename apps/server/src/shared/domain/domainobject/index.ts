@@ -6,3 +6,4 @@ export * from './user-login-migration.do';
 export * from './school.do';
 export * from './user.do';
 export * from './page';
+export * from './tool';
