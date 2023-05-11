@@ -7,6 +7,8 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import {
 	accountDtoFactory,
+	defaultTestPassword,
+	defaultTestPasswordHash,
 	schoolDOFactory,
 	schoolFactory,
 	setupEntities,
@@ -14,7 +16,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
-import bcrypt from 'bcryptjs';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
@@ -81,7 +82,6 @@ describe('LdapStrategy', () => {
 		describe('when user has no LDAP DN', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -92,14 +92,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -108,7 +108,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
@@ -129,7 +129,6 @@ describe('LdapStrategy', () => {
 		describe('when school does not have the system', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -140,14 +139,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -156,7 +155,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
@@ -177,7 +176,6 @@ describe('LdapStrategy', () => {
 		describe('when school has no systems', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -188,14 +186,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -204,7 +202,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
@@ -225,7 +223,6 @@ describe('LdapStrategy', () => {
 		describe('when account has no user id', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -236,14 +233,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: undefined,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -252,7 +249,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
@@ -273,7 +270,6 @@ describe('LdapStrategy', () => {
 		describe('when authentication with ldap fails', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -284,14 +280,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -300,7 +296,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
@@ -326,7 +322,6 @@ describe('LdapStrategy', () => {
 			const setup = () => {
 				const error = new Error('error');
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -337,14 +332,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -353,7 +348,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(error);
@@ -382,7 +377,6 @@ describe('LdapStrategy', () => {
 		describe('when authentication with LDAP succeeds', () => {
 			const setup = () => {
 				const username = 'mockUserName';
-				const password = 'somePassword1234$';
 
 				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
 
@@ -395,14 +389,14 @@ describe('LdapStrategy', () => {
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
 					username,
-					password: bcrypt.hashSync(password),
+					password: defaultTestPasswordHash,
 					userId: user.id,
 				});
 
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
 						username,
-						password,
+						password: defaultTestPassword,
 						schoolId: school.id as string,
 						systemId: system.id,
 					},
@@ -411,7 +405,7 @@ describe('LdapStrategy', () => {
 				systemRepo.findById.mockResolvedValue(system);
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
-				authenticationServiceMock.normalizePassword.mockReturnValue(password);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
 				userRepoMock.findById.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
