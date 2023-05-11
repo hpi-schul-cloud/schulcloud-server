@@ -198,10 +198,92 @@ describe('UserLoginMigrationController (API)', () => {
 				setup();
 
 				const response: Response = await request(app.getHttpServer())
-					.get(`/user-login-migrations`)
+					.post(`/user-login-migrations/start`)
 					.query({ userId: new ObjectId().toHexString() });
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when migration already started', () => {
+			const setup = async () => {
+				const date: Date = new Date(2023, 5, 4);
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: date,
+					mandatorySince: date,
+					closedAt: date,
+					finishedAt: date,
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return a forbidden exception ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when official school number is not set', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return a forbidden exception ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
