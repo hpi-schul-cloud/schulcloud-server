@@ -1,11 +1,11 @@
+import request from 'supertest';
 import { EntityManager } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, RoleName, School, System, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
-import { LdapAuthorizationBodyParams } from '@src/modules/authentication/controllers/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import request from 'supertest';
+import { LdapAuthorizationBodyParams } from '@src/modules/authentication/controllers/dto';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
