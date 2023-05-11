@@ -6,7 +6,8 @@ import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-c
 import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
 import { IComponentProperties, IComponentTextProperties } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
-import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from '../common-cartridge';
+import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder, ICommonCartridgeElement } from '../common-cartridge';
+import { hasShape } from '../common-cartridge/utils';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -58,8 +59,8 @@ export class CommonCartridgeExportService {
 		return contents.map((content) => {
 			let mappedContent = '';
 
-			if (content.content && (content.content as IComponentTextProperties).text) {
-				mappedContent = (content.content as IComponentTextProperties).text;
+			if (hasShape<IComponentTextProperties>(content, [['text', 'string']])) {
+				mappedContent = content.text;
 			}
 
 			return {
@@ -67,6 +68,12 @@ export class CommonCartridgeExportService {
 				title: content.title as string,
 				content: mappedContent,
 			};
+		});
+	}
+
+	private mapContentToCommonCartridgeElement(contents: IComponentProperties[]): Record<string, unknown>[] {
+		return contents.map((content) => {
+			
 		});
 	}
 }

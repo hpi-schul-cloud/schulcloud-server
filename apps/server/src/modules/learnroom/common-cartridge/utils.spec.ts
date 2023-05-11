@@ -1,0 +1,3 @@
+describe('CommonCartridgeUtils', () => {
+	describe('hasShape', () => {});
+});
