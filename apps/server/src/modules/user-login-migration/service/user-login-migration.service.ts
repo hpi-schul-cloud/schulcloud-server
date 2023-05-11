@@ -63,6 +63,17 @@ export class UserLoginMigrationService {
 		return savedMigration;
 	}
 
+	async migrationStart(schoolId: string): Promise<UserLoginMigrationDO> {
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const userLoginMigration: UserLoginMigrationDO = await this.createNewMigration(schoolId, schoolDo);
+
+		this.enableOauthMigrationFeature(schoolDo);
+		await this.schoolService.save(schoolDo);
+
+		return userLoginMigration;
+	}
+
 	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find(

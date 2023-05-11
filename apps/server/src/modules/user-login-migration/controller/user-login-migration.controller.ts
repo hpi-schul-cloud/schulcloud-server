@@ -56,15 +56,17 @@ export class UserLoginMigrationController {
 		return response;
 	}
 
-	@Post('/start')
+	@Post('start')
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	async migrationStart(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
-		const migrationResponse: UserLoginMigrationResponse = await this.userLoginMigrationUc.migrationStart(
+		const migrationDto: UserLoginMigrationDO = await this.userLoginMigrationUc.migrationStart(
 			currentUser.userId,
-			currentUser.schoolId,
-			currentUser.systemId
+			currentUser.schoolId
 		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
 
 		return migrationResponse;
 	}

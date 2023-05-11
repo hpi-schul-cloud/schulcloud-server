@@ -13,8 +13,8 @@ import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
-import { UserLoginMigrationResponse } from '../controller/dto';
 import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '../../authorization';
+import { SchoolService } from '../../school';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -24,6 +24,7 @@ export class UserLoginMigrationUc {
 		private readonly oauthService: OAuthService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
+		private readonly schoolService: SchoolService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
@@ -59,7 +60,7 @@ export class UserLoginMigrationUc {
 		return page;
 	}
 
-	async migrationStart(userId: string, schoolId: string, systemId: string): Promise<UserLoginMigrationResponse> {
+	async migrationStart(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.School,
@@ -74,17 +75,18 @@ export class UserLoginMigrationUc {
 			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (existingUserLoginMigration) {
-			this.schoolMigrationService.validateGracePeriod(existingUserLoginMigration);
+			throw new ForbiddenException(`The school with schoolId ${schoolId} already started a migration.`);
 		}
 
-		const UserLoginMigration: UserLoginMigrationResponse = await this.userMigrationService.migrationStart(
-			schoolId,
-			systemId
-		);
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		const UserLoginMigrationDto: UserLoginMigrationResponse = new UserLoginMigrationResponse({
-			sourceSystemId: systemId,
-		});
+		if (!schoolDo.officialSchoolNumber) {
+			throw new ForbiddenException(`The school with schoolId ${schoolId} has no official school number.`);
+		}
+
+		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.migrationStart(schoolId);
+
+		return userLoginMigrationDO;
 	}
 
 	async migrate(
