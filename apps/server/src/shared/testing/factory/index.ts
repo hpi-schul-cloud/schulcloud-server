@@ -1,4 +1,5 @@
 export * from './account.factory';
+export * from './account-dto.factory';
 export * from './board.factory';
 export * from './boardnode';
 export * from './boardelement.factory';
