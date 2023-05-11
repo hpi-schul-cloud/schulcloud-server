@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain';
+import { Account, Role, School, SchoolYear, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
 import { CoreModule } from '@src/core';
@@ -11,7 +11,7 @@ import { H5PEditorModule } from './h5p-editor.module';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
