@@ -3,15 +3,10 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject, Permission, User } from '@shared/domain';
+import { AuthorizableObject, BaseDO, Permission, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import {
-	Action,
-	AllowedAuthorizationEntityType,
-	LegacyAuthorizableObject,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
@@ -219,9 +214,8 @@ describe('lesson copy uc', () => {
 				const lesson = lessonFactory.buildWithId();
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation(
-					(u: User, e: AuthorizableObject | LegacyAuthorizableObject) => e !== lesson
-				);
+				// authorisation should not be mocked
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => e !== lesson);
 
 				return { user, course, lesson };
 			};

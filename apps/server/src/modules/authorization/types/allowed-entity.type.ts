@@ -1,9 +1,8 @@
 import {
 	AnyBoardDo,
+	AuthorizableObject,
 	Course,
 	CourseGroup,
-	DomainObject,
-	DomainObjectProps,
 	EntityId,
 	Lesson,
 	Submission,
@@ -26,6 +25,6 @@ export type AllowedEntity =
 	| SchoolExternalToolDO
 	| AnyBoardDo;
 
-export interface AuthorizationLoaderService<T extends DomainObjectProps> {
-	findById(id: EntityId): Promise<DomainObject<T>>;
+export interface AuthorizationLoaderService {
+	findById(id: EntityId): AuthorizableObject;
 }

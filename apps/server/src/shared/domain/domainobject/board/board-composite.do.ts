@@ -1,20 +1,13 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { DomainObjectProps, DomainObjectWithVisitor } from '@shared/domain';
 import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
-export abstract class BoardComposite<T extends BoardCompositeProps> {
-	protected props: T;
-
-	constructor(props: T) {
-		this.props = {
-			...props,
-		};
-	}
-
-	get id(): EntityId {
-		return this.props.id;
-	}
-
+export abstract class BoardComposite<T extends BoardCompositeProps> extends DomainObjectWithVisitor<
+	T,
+	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync
+> {
 	get children(): AnyBoardDo[] {
 		return this.props.children;
 	}
@@ -52,17 +45,11 @@ export abstract class BoardComposite<T extends BoardCompositeProps> {
 		const exists = this.children.some((obj) => obj.id === child.id);
 		return exists;
 	}
-	abstract accept(visitor: BoardCompositeVisitor): void;
-
-	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
 }
 
-export interface BoardCompositeProps {
+export interface BoardCompositeProps extends DomainObjectProps {
 	id: EntityId;
-
 	children: AnyBoardDo[];
-
 	createdAt: Date;
-
 	updatedAt: Date;
 }

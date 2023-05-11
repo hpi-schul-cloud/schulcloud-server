@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthorizableObject, EntityId, User } from '@shared/domain';
+import { AuthorizableObject, BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationEntityType, AuthorizationContext, LegacyAuthorizableObject } from './types';
+import { AllowedAuthorizationEntityType, AuthorizationContext } from './types';
 
 @Injectable()
 export class AuthorizationService {
@@ -14,21 +14,13 @@ export class AuthorizationService {
 		private readonly authorizationHelper: AuthorizationHelper
 	) {}
 
-	public checkPermission(
-		user: User,
-		object: AuthorizableObject | LegacyAuthorizableObject,
-		context: AuthorizationContext
-	): void {
+	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {
 		if (!this.hasPermission(user, object, context)) {
 			throw new ForbiddenLoggableException(user.id, object.constructor.name, context);
 		}
 	}
 
-	public hasPermission(
-		user: User,
-		object: AuthorizableObject | LegacyAuthorizableObject,
-		context: AuthorizationContext
-	): boolean {
+	public hasPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): boolean {
 		const rule = this.ruleManager.selectRule(user, object, context);
 		const hasPermission = rule.hasPermission(user, object, context);
 

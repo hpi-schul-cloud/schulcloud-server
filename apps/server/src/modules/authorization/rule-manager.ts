@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { AuthorizableObject, User } from '@shared/domain';
+import { AuthorizableObject, BaseDO, User } from '@shared/domain';
 import {
 	BoardNodeRule,
 	CourseGroupRule,
@@ -13,7 +13,7 @@ import {
 	TeamRule,
 	UserRule,
 } from '@shared/domain/rules';
-import { LegacyAuthorizableObject, AuthorizationContext, Rule } from './types';
+import { AuthorizationContext, Rule } from './types';
 
 @Injectable()
 export class RuleManager {
@@ -47,11 +47,7 @@ export class RuleManager {
 		];
 	}
 
-	public selectRule(
-		user: User,
-		object: AuthorizableObject | LegacyAuthorizableObject,
-		context: AuthorizationContext
-	): Rule {
+	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
 		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 
