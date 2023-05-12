@@ -104,18 +104,32 @@ export class ContentStorage implements IContentStorage {
 		return exist;
 	}
 
-	getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
-		throw new Error('Method not implemented.');
+	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
+		if (!(await this.fileExists(contentId, file))) {
+			throw new Error('404: content-file-missing');
+		}
+		const fileStats = await fsPromises.stat(path.join(this.getContentPath(), contentId.toString(), file));
+		return fileStats;
 	}
 
-	getFileStream(
+	public getFileStream(
 		contentId: string,
 		file: string,
 		user: IUser,
 		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
-		throw new Error('Method not implemented.');
+		const exist = <boolean>(<unknown>this.fileExists(contentId, file));
+		if (!exist) {
+			throw new Error('404: content-file-missing');
+		}
+		return <Promise<Readable>>(<unknown>fs.createReadStream(
+			path.join(this.getContentPath(), contentId.toString(), file),
+			{
+				start: rangeStart,
+				end: rangeEnd,
+			}
+		));
 	}
 
 	getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
