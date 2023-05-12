@@ -9,11 +9,13 @@ export class DeleteFilesConsole {
 	}
 
 	@Command({
-		command: 'cleanup-job <days> <batchSize>',
+		command: 'cleanup-job <days> [batchSize]',
 		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
 	async deleteMarkedFiles(daysSinceDeletion: number, batchSize = 1000): Promise<void> {
-		this.logger.log(`cleanup job will remove files that were marked for deletion ${daysSinceDeletion} days ago`);
+		this.logger.log(
+			`Start cleanup job: Deleting files that were marked for deletion ${daysSinceDeletion} days ago; batch size: ${batchSize}`
+		);
 		const deletedSince = new Date();
 		deletedSince.setDate(deletedSince.getDate() - daysSinceDeletion);
 
