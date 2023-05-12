@@ -167,12 +167,28 @@ export class ContentStorage implements IContentStorage {
 		return { asDependency, asMainLibrary };
 	}
 
-	getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
-		throw new Error('Method not implemented.');
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
+		const permission = <Promise<Permission[]>>(
+			(<unknown>[Permission.Delete, Permission.Download, Permission.Edit, Permission.Embed, Permission.View])
+		);
+		return permission;
 	}
 
-	listContent(user?: IUser | undefined): Promise<string[]> {
-		throw new Error('Method not implemented.');
+	public async listContent(user?: IUser | undefined): Promise<string[]> {
+		const directories = await fsPromises.readdir(this.getContentPath());
+		return (
+			await Promise.all(
+				directories.map(async (dir) => {
+					if (
+						!(await (<Promise<string[]>>(<unknown>fs.existsSync(path.join(this.getContentPath(), dir, 'h5p.json')))))
+					) {
+						return '';
+					}
+					return dir;
+				})
+			)
+		).filter((content) => content !== '');
 	}
 
 	listFiles(contentId: string, user: IUser): Promise<string[]> {
