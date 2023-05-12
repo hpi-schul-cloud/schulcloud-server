@@ -28,7 +28,11 @@ export class DeleteFilesUc {
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);
 
-			results.forEach((result) => !result.success && failingFileIds.push(result.fileId));
+			results.forEach((result) => {
+				if (!result.success) {
+					failingFileIds.push(result.fileId);
+				}
+			});
 
 			numberOfFilesInBatch = files.length;
 			numberOfProcessedFiles += files.length;
