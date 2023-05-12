@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { DomainObject } from '@shared/domain';
+// TODO: Fix import over index
+import { DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
