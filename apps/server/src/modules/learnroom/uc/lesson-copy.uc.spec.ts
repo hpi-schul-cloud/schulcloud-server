@@ -3,11 +3,15 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, PermissionTypes, User } from '@shared/domain';
-import { Permission } from '@shared/domain/interface/permission.enum';
+import { Permission, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizableObject,
+	AuthorizationService,
+} from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
@@ -150,7 +154,7 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.TOPIC_CREATE],
 			});
 		});
@@ -163,7 +167,7 @@ describe('lesson copy uc', () => {
 				AllowedAuthorizationEntityType.Course,
 				course.id,
 				{
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				}
 			);
@@ -173,7 +177,7 @@ describe('lesson copy uc', () => {
 			const { course, user, lesson, userId } = setup();
 			await uc.copyLesson(user.id, lesson.id, { userId });
 			expect(authorisation.hasPermission).not.toBeCalledWith(user, course, {
-				action: Actions.write,
+				action: Action.write,
 				requiredPermissions: [],
 			});
 		});
@@ -215,7 +219,7 @@ describe('lesson copy uc', () => {
 				const lesson = lessonFactory.buildWithId();
 				userRepo.findById.mockResolvedValue(user);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: PermissionTypes) => e !== lesson);
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== lesson);
 
 				return { user, course, lesson };
 			};

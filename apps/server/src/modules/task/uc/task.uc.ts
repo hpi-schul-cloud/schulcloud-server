@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
-	Actions,
 	Counted,
 	Course,
 	EntityId,
@@ -10,13 +9,12 @@ import {
 	ITaskUpdate,
 	Lesson,
 	Permission,
-	PermissionContextBuilder,
 	SortOrder,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -37,7 +35,7 @@ export class TaskUC {
 			Permission.TASK_DASHBOARD_VIEW_V3,
 		]);
 
-		const courses = await this.getPermittedCourses(user, Actions.read);
+		const courses = await this.getPermittedCourses(user, Action.read);
 		const lessons = await this.getPermittedLessons(user, courses);
 
 		const openCourseIds = courses.filter((c) => !c.isFinished()).map((c) => c.id);
@@ -64,7 +62,7 @@ export class TaskUC {
 
 		const taskWithStatusVos = tasks.map((task) => {
 			let status: ITaskStatus;
-			if (this.authorizationService.hasPermission(user, task, PermissionContextBuilder.write([]))) {
+			if (this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))) {
 				status = task.createTeacherStatusForUser(user);
 			} else {
 				status = task.createStudentStatusForUser(user);
@@ -96,7 +94,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.read([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([]));
 
 		if (isFinished) {
 			task.finishForUser(user);
@@ -121,7 +119,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
 
 		task.unpublish();
 		await this.taskRepo.save(task);
@@ -134,7 +132,7 @@ export class TaskUC {
 	}
 
 	private async findAllForStudent(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.getPermittedCourses(user, Actions.read);
+		const courses = await this.getPermittedCourses(user, Action.read);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);
 
@@ -163,7 +161,7 @@ export class TaskUC {
 	}
 
 	private async findAllForTeacher(user: User, pagination: IPagination): Promise<Counted<TaskWithStatusVo[]>> {
-		const courses = await this.getPermittedCourses(user, Actions.write);
+		const courses = await this.getPermittedCourses(user, Action.write);
 		const openCourses = courses.filter((c) => !c.isFinished());
 		const lessons = await this.getPermittedLessons(user, openCourses);
 
@@ -192,12 +190,12 @@ export class TaskUC {
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
-	private async getPermittedCourses(user: User, neededPermission: Actions): Promise<Course[]> {
+	private async getPermittedCourses(user: User, neededPermission: Action): Promise<Course[]> {
 		let permittedCourses: Course[] = [];
 
-		if (neededPermission === Actions.write) {
+		if (neededPermission === Action.write) {
 			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
-		} else if (neededPermission === Actions.read) {
+		} else if (neededPermission === Action.read) {
 			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
 		}
 
@@ -206,7 +204,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<Lesson[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.hasPermission(user, c, PermissionContextBuilder.write([]))
+			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 
@@ -236,7 +234,7 @@ export class TaskUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
-		this.authorizationService.checkPermission(user, task, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
 
 		await this.taskService.delete(task);
 

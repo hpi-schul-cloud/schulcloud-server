@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { FilesRepo } from '@shared/repo';
 import { File } from '@shared/domain';
 import { FileStorageAdapter } from '@shared/infra/filestorage';
@@ -10,7 +10,7 @@ export class DeleteFilesUc {
 	constructor(
 		private readonly filesRepo: FilesRepo,
 		private readonly fileStorageAdapter: FileStorageAdapter,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}

@@ -8,7 +8,7 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ManagementServerModule } from '@src/modules/management';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
@@ -22,7 +22,7 @@ async function bootstrap() {
 	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
 
 	// WinstonLogger
-	nestApp.useLogger(await nestApp.resolve(Logger));
+	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
 	// customize nest app settings
 	nestApp.enableCors();

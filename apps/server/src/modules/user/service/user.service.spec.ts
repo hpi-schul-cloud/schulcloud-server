@@ -2,25 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	IFindOptions,
-	LanguageType,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SortOrder,
-	User,
-} from '@shared/domain';
+import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { RoleRepo, UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { ICurrentUser } from '@src/modules/authentication';
 import { RoleService } from '@src/modules/role/service/role.service';
-import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user/service/user.service';
 import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
@@ -31,7 +21,6 @@ describe('UserService', () => {
 
 	let userRepo: DeepMocked<UserRepo>;
 	let userDORepo: DeepMocked<UserDORepo>;
-	let permissionService: DeepMocked<PermissionService>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
@@ -45,24 +34,12 @@ describe('UserService', () => {
 					useValue: createMock<EntityManager>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: UserDORepo,
 					useValue: createMock<UserDORepo>(),
-				},
-				{
-					provide: RoleRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
-					provide: PermissionService,
-					useValue: createMock<PermissionService>(),
 				},
 				{
 					provide: ConfigService,
@@ -82,7 +59,6 @@ describe('UserService', () => {
 
 		userRepo = module.get(UserRepo);
 		userDORepo = module.get(UserDORepo);
-		permissionService = module.get(PermissionService);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
@@ -103,18 +79,19 @@ describe('UserService', () => {
 	});
 
 	describe('me', () => {
-		let user: User;
-
-		beforeEach(() => {
-			user = userFactory.buildWithId({ roles: [] });
+		it('should return an array with the user and its permissions', async () => {
+			const permission = Permission.ACCOUNT_CREATE;
+			const role = roleFactory.build({ permissions: [permission] });
+			const user = userFactory.buildWithId({ roles: [role] });
 			userRepo.findById.mockResolvedValue(user);
-		});
+			const userSpy = jest.spyOn(user, 'resolvePermissions').mockReturnValueOnce([permission]);
 
-		it('should provide information about the passed userId', async () => {
-			await service.me(user.id);
+			const result = await service.me(user.id);
 
-			expect(userRepo.findById).toHaveBeenCalled();
-			expect(permissionService.resolvePermissions).toHaveBeenCalledWith(user);
+			expect(result[0]).toEqual(user);
+			expect(result[1]).toEqual([permission]);
+
+			userSpy.mockRestore();
 		});
 	});
 

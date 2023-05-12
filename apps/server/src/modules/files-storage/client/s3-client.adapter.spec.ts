@@ -3,7 +3,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'node:stream';
 import { FileDto } from '../dto';
 import { S3Config } from '../interface/config';
@@ -43,8 +43,8 @@ describe('S3ClientAdapter', () => {
 					useValue: createMock<S3Config>(config),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

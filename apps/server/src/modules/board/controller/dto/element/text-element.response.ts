@@ -22,10 +22,8 @@ export class TextElementResponse {
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	id: string;
 
-	@ApiProperty({
-		enum: ContentElementType,
-	})
-	type: ContentElementType;
+	@ApiProperty()
+	type: ContentElementType.TEXT;
 
 	@ApiProperty()
 	content: TextElementContent;

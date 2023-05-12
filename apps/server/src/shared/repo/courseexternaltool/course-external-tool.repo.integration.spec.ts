@@ -7,7 +7,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections, courseExternalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { courseExternalToolDOFactory } from '@shared/testing/factory/domainobject/course-external-tool.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { CourseExternalToolQuery } from '@src/modules/tool/uc/dto/course-external-tool.types';
 import { CourseExternalToolRepo } from './course-external-tool.repo';
 
@@ -23,8 +23,8 @@ describe('CourseExternalToolRepo', () => {
 				CourseExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -114,14 +114,12 @@ describe('CourseExternalToolRepo', () => {
 
 		it('should save a CourseExternalTool', async () => {
 			const { domainObject } = setupDO();
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: CourseExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 	});
 

@@ -9,7 +9,7 @@ import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionServ
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { systemFactory } from '@shared/testing/factory/system.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
@@ -77,8 +77,8 @@ describe('OAuthService', () => {
 					useValue: createMock<IEncryptionService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ProvisioningService,

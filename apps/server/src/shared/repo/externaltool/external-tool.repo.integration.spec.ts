@@ -24,7 +24,7 @@ import { ExternalToolSortingMapper } from '@shared/repo/externaltool/external-to
 import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections, externalToolFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { Page } from '../../domain/domainobject/page';
 
 describe('ExternalToolRepo', () => {
@@ -41,8 +41,8 @@ describe('ExternalToolRepo', () => {
 				ExternalToolRepo,
 				ExternalToolRepoMapper,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: ExternalToolSortingMapper,
@@ -183,14 +183,12 @@ describe('ExternalToolRepo', () => {
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 
 		it('should save an oauth2 tool correctly', async () => {
@@ -201,14 +199,12 @@ describe('ExternalToolRepo', () => {
 				skipConsent: true,
 			});
 			const { domainObject } = setupDO(config);
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 
 		it('should save an lti11 tool correctly', async () => {
@@ -222,14 +218,12 @@ describe('ExternalToolRepo', () => {
 				resource_link_id: 'resource_link_id',
 			});
 			const { domainObject } = setupDO(config);
-			const { id, updatedAt, createdAt, ...expected } = domainObject;
+			const { id, ...expected } = domainObject;
 
 			const result: ExternalToolDO = await repo.save(domainObject);
 
 			expect(result).toMatchObject(expected);
 			expect(result.id).toBeDefined();
-			expect(result.updatedAt).toBeDefined();
-			expect(result.createdAt).toBeDefined();
 		});
 	});
 
