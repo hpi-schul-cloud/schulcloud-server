@@ -82,26 +82,6 @@ describe(BoardUc.name, () => {
 		});
 	});
 
-	describe('createBoard', () => {
-		describe('when creating a board', () => {
-			it('should call the service', async () => {
-				const { user } = setup();
-
-				await uc.createBoard(user.id);
-
-				expect(columnBoardService.create).toHaveBeenCalled();
-			});
-
-			it('should return the column board object', async () => {
-				const { user, board } = setup();
-				columnBoardService.create.mockResolvedValueOnce(board);
-
-				const result = await uc.createBoard(user.id);
-				expect(result).toEqual(board);
-			});
-		});
-	});
-
 	describe('deleteBoard', () => {
 		describe('when deleting a board', () => {
 			it('should call the service to find the board', async () => {

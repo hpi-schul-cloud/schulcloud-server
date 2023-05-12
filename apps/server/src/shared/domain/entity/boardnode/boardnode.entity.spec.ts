@@ -1,3 +1,4 @@
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { cardNodeFactory, columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { BoardNode } from './boardnode.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
@@ -12,7 +13,11 @@ describe(BoardNode.name, () => {
 			const board = columnBoardNodeFactory.build();
 			expect(() => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const column = new ColumnBoardNode({ parent: board, title: 'column #1' });
+				const column = new ColumnBoardNode({
+					parent: board,
+					title: 'column #1',
+					context: { type: BoardExternalReferenceType.Course, id: 'course1' },
+				});
 			}).toThrowError();
 		});
 	});

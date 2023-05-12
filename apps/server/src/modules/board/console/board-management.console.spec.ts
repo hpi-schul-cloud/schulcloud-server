@@ -38,13 +38,15 @@ describe(BoardManagementConsole.name, () => {
 
 	describe('createBoards', () => {
 		it('should call the board use case', async () => {
-			await service.createBoards();
+			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoards(fakeEntityId);
 
 			expect(boarManagementUc.createBoards).toHaveBeenCalled();
 		});
 
 		it('should log a report to the console', async () => {
-			await service.createBoards();
+			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoards(fakeEntityId);
 			expect(consoleWriter.info).toHaveBeenCalled();
 		});
 
@@ -55,7 +57,9 @@ describe(BoardManagementConsole.name, () => {
 				report = text;
 			});
 
-			const output = await service.createBoards();
+			const fakeEntityId = new ObjectId().toHexString();
+
+			const output = await service.createBoards(fakeEntityId);
 
 			expect(output).toEqual(report);
 		});

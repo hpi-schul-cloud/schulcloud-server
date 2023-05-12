@@ -49,6 +49,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			title: columnBoard.title,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			context: columnBoard.context,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);

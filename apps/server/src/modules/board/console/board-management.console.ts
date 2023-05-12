@@ -7,12 +7,11 @@ export class BoardManagementConsole {
 	constructor(private consoleWriter: ConsoleWriterService, private boardManagementUc: BoardManagementUc) {}
 
 	@Command({
-		command: 'create-boards',
-		options: [],
-		description: 'create some boards',
+		command: 'create-board [courseId]',
+		description: 'create a multi-column-board',
 	})
-	async createBoards(): Promise<string> {
-		const boardId = await this.boardManagementUc.createBoards();
+	async createBoards(courseId: string): Promise<string> {
+		const boardId = await this.boardManagementUc.createBoards(courseId);
 		const report = `creation of boards is completed (${boardId ?? ''})`;
 		this.consoleWriter.info(report);
 		return report;

@@ -1,25 +1,28 @@
 /* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardExternalReferenceType, BoardNode, Course, EntityId } from '@shared/domain';
 import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
 	constructor(private em: EntityManager) {}
 
-	async createBoards(): Promise<EntityId> {
-		const board = columnBoardNodeFactory.build();
+	async createBoards(courseId: EntityId): Promise<EntityId> {
+		this.ensureCourseExists(courseId);
+
+		const context = { type: BoardExternalReferenceType.Course, id: courseId };
+		const board = columnBoardNodeFactory.build({ context });
 		await this.em.persistAndFlush(board);
 
 		const columns = this.createColumns(3, board);
 		await this.em.persistAndFlush(columns);
 
-		const cardsPerColumn = columns.map((column) => this.createCards(this.random(5, 10), column));
+		const cardsPerColumn = columns.map((column) => this.createCards(this.random(1, 3), column));
 		const cards = cardsPerColumn.flat();
 		await this.em.persistAndFlush(cards);
 
-		const elementsPerCard = cards.map((card) => this.createElements(this.random(2, 5), card));
+		const elementsPerCard = cards.map((card) => this.createElements(1, card));
 		const elements = elementsPerCard.flat();
 		await this.em.persistAndFlush(elements);
 
@@ -63,5 +66,9 @@ export class BoardManagementUc {
 
 	private random(min: number, max: number): number {
 		return Math.floor(Math.random() * (max + min - 1) + min);
+	}
+
+	private ensureCourseExists(courseId: EntityId) {
+		this.em.findOneOrFail(Course, courseId);
 	}
 }

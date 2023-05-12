@@ -35,6 +35,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			context: boardNode.context,
 		});
 
 		return columnBoard;

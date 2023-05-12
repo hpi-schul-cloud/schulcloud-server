@@ -1,12 +1,16 @@
 /* istanbul ignore file */
-import { BoardNodeProps, ColumnBoardNode } from '@shared/domain';
+import { BoardExternalReferenceType, ColumnBoardNode, ColumnBoardNodeProps } from '@shared/domain';
+import { ObjectId } from 'bson';
 import { BaseFactory } from '../base.factory';
 
-export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, BoardNodeProps>(
+export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, ColumnBoardNodeProps>(
 	ColumnBoardNode,
 	({ sequence }) => {
 		return {
-			title: `board #${sequence}`,
+			context: {
+				type: BoardExternalReferenceType.Course,
+				id: new ObjectId().toHexString(),
+			},
 		};
 	}
 );

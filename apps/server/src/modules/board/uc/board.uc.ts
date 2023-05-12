@@ -23,15 +23,6 @@ export class BoardUc {
 		return board;
 	}
 
-	async createBoard(userId: EntityId): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'createBoard', userId });
-
-		// TODO check permissions
-
-		const board = await this.columnBoardService.create();
-		return board;
-	}
-
 	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 

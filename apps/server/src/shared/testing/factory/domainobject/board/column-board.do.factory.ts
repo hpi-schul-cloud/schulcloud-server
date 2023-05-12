@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { ColumnBoard, ColumnBoardProps } from '@shared/domain';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardProps } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 
@@ -10,5 +10,9 @@ export const columnBoardFactory = BaseFactory.define<ColumnBoard, ColumnBoardPro
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		context: {
+			type: BoardExternalReferenceType.Course,
+			id: new ObjectId().toHexString(),
+		},
 	};
 });

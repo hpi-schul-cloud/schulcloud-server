@@ -8,7 +8,7 @@ export const textElementFactory = BaseFactory.define<TextElement, TextElementPro
 		id: new ObjectId().toHexString(),
 		title: `element #${sequence}`,
 		children: [],
-		text: `<p>text #${sequence}</p>`,
+		text: `text #${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
