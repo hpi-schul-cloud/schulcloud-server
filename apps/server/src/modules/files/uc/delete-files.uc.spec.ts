@@ -1,13 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { File, StorageProvider } from '@shared/domain/entity';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
 import { FilesRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { DeleteFilesUc } from './delete-files.uc';
 
 describe('DeleteFileUC', () => {
-	let uc: DeleteFilesUc;
-	let filesRepo: FilesRepo;
+	let service: DeleteFilesUc;
+	let filesRepo: DeepMocked<FilesRepo>;
+	let fileStorageAdapter: DeepMocked<FileStorageAdapter>;
 	let logger: DeepMocked<Logger>;
 
 	const exampleStorageProvider = new StorageProvider({
@@ -39,14 +41,11 @@ describe('DeleteFileUC', () => {
 				DeleteFilesUc,
 				{
 					provide: FilesRepo,
-					useValue: {
-						findAllFilesForCleanup() {
-							return Promise.resolve(exampleFiles);
-						},
-						deleteFile() {
-							return Promise.resolve();
-						},
-					},
+					useValue: createMock<FilesRepo>(),
+				},
+				{
+					provide: FileStorageAdapter,
+					useValue: createMock<FileStorageAdapter>(),
 				},
 				{
 					provide: Logger,
@@ -55,44 +54,83 @@ describe('DeleteFileUC', () => {
 			],
 		}).compile();
 
-		logger = module.get(Logger);
-		uc = module.get(DeleteFilesUc);
+		service = module.get(DeleteFilesUc);
 		filesRepo = module.get(FilesRepo);
+		fileStorageAdapter = module.get(FileStorageAdapter);
+		logger = module.get(Logger);
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
 	it('should be defined', () => {
-		expect(uc).toBeDefined();
+		expect(service).toBeDefined();
 	});
 
-	describe('removeDeletedFilesData', () => {
-		it('should delete all file database documents that are marked for cleanup', async () => {
-			const deleteFileSpy = jest.spyOn(filesRepo, 'deleteFile');
-			await uc.removeDeletedFilesData(new Date());
-			expect(deleteFileSpy).toHaveBeenCalledTimes(exampleFiles.length);
-			// eslint-disable-next-line no-restricted-syntax
+	describe('deleteMarkedFiles', () => {
+		it('should delete all files in storage', async () => {
+			const deletedSince = new Date();
+			const batchSize = 3;
+			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+
+			await service.deleteMarkedFiles(deletedSince, batchSize);
+
 			for (const file of exampleFiles) {
-				expect(deleteFileSpy).toHaveBeenCalledWith(file);
+				expect(fileStorageAdapter.deleteFile).toHaveBeenCalledWith(file);
 			}
 		});
 
-		it('should continue after a file could not be deleted', async () => {
-			const errorLogSpy = jest.spyOn(logger, 'error');
-			const deleteFileStorageSpy = jest.spyOn(filesRepo, 'deleteFile');
-			deleteFileStorageSpy.mockImplementationOnce(() => {
-				throw new Error();
-			});
-			await uc.removeDeletedFilesData(new Date());
-			expect(errorLogSpy).toHaveBeenCalled();
-			expect(errorLogSpy).toHaveBeenCalledWith('the following files could not be deleted:', ['failed_removal_id']);
-			expect(deleteFileStorageSpy).toHaveBeenCalledTimes(exampleFiles.length);
-			// eslint-disable-next-line no-restricted-syntax
+		it('should delete all files in database that are marked for deletion', async () => {
+			const deletedSince = new Date();
+			const batchSize = 3;
+			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+
+			await service.deleteMarkedFiles(deletedSince, batchSize);
+
 			for (const file of exampleFiles) {
-				expect(deleteFileStorageSpy).toHaveBeenCalledWith(file);
+				expect(filesRepo.delete).toHaveBeenCalledWith(file);
 			}
+		});
+
+		describe('when storage adapter throws an error', () => {
+			const setup = () => {
+				const deletedSince = new Date();
+				const batchSize = 3;
+				const error = new Error();
+
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+				fileStorageAdapter.deleteFile.mockRejectedValueOnce(error);
+
+				return { deletedSince, batchSize, error };
+			};
+
+			it('should log the error', async () => {
+				const { deletedSince, batchSize, error } = setup();
+
+				await service.deleteMarkedFiles(deletedSince, batchSize);
+
+				expect(logger.error).toHaveBeenCalledWith(error);
+			});
+
+			it('should not call delete on repo for that file', async () => {
+				const { deletedSince, batchSize } = setup();
+
+				await service.deleteMarkedFiles(deletedSince, batchSize);
+
+				expect(filesRepo.delete).toBeCalledTimes(exampleFiles.length - 1);
+			});
+
+			it('should continue with other files', async () => {
+				const { deletedSince, batchSize } = setup();
+
+				await service.deleteMarkedFiles(deletedSince, batchSize);
+
+				expect(fileStorageAdapter.deleteFile).toBeCalledTimes(exampleFiles.length);
+			});
 		});
 	});
 });

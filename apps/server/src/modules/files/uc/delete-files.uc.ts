@@ -7,7 +7,11 @@ import { FileStorageAdapter } from '@shared/infra/filestorage';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private fileStorageAdapter: FileStorageAdapter, private logger: Logger) {
+	constructor(
+		private readonly filesRepo: FilesRepo,
+		private readonly fileStorageAdapter: FileStorageAdapter,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 

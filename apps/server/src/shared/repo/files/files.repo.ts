@@ -20,8 +20,4 @@ export class FilesRepo extends BaseRepo<File> {
 
 		return files;
 	}
-
-	async deleteFile(file: File): Promise<void> {
-		await this.delete(file);
-	}
 }
