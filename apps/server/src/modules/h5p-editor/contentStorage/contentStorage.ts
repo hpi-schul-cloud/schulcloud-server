@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable, Stream } from 'stream';
@@ -22,6 +23,8 @@ import path from 'path';
 export class ContentStorage implements IContentStorage {
 	private deletedFolderName = 'trash';
 
+	private maxFileLength: number;
+
 	constructor(
 		private logger: LegacyLogger,
 		protected contentPath: string,
@@ -31,6 +34,13 @@ export class ContentStorage implements IContentStorage {
 		}
 	) {
 		this.logger.setContext(ContentStorage.name);
+		this.maxFileLength = (options?.maxPathLength ?? 255) - (contentPath.length + 1) - 23;
+
+		if (this.maxFileLength < 20) {
+			throw new Error(
+				'The path of content directory is too long to add files to it. Put the directory into a different location.'
+			);
+		}
 	}
 
 	public async addContent(
@@ -61,7 +71,7 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
-		// TODO: checkFilename(filename);
+		this.checkFilename(filename);
 		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
 			throw new Error('404: storage-file-implementations:add-file-content-not-found');
 		}
@@ -87,7 +97,7 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
-		// TODO: checkFilename(filename);
+		this.checkFilename(filename);
 		const absolutePath = path.join(this.getContentPath(), contentId.toString(), filename);
 		const exist = fs.existsSync(absolutePath);
 		if (!exist) {
@@ -97,7 +107,7 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public fileExists(contentId: string, filename: string): Promise<boolean> {
-		// TODO: checkFilename(filename);
+		this.checkFilename(filename);
 		let exist: Promise<boolean> = <Promise<boolean>>(<unknown>false);
 		if (contentId !== undefined) {
 			exist = <Promise<boolean>>(
@@ -203,7 +213,17 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public sanitizeFilename?(filename: string): string {
-		return this.generalSanitizeFilename(filename, this.maxFileLength, this.options?.invalidCharactersRegexp);
+		let sanitizedFilename = '';
+		if (this.options?.invalidCharactersRegexp) {
+			sanitizedFilename = this.generalSanitizeFilename(
+				filename,
+				this.maxFileLength,
+				this.options?.invalidCharactersRegexp
+			);
+		} else {
+			throw new Error('No invalidCharactersRegexp found to sanitize filename.');
+		}
+		return sanitizedFilename;
 	}
 
 	// own methods
@@ -260,7 +280,7 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	private generalSanitizeFilename(filename: string, invalidCharacterRegex: RegExp, maxLength: number): string {
+	private generalSanitizeFilename(filename: string, maxLength: number, invalidCharacterRegex: RegExp): string {
 		let cleanedFilename = filename.replace(invalidCharacterRegex, '');
 
 		let extension = upath.extname(cleanedFilename);
@@ -279,5 +299,12 @@ export class ContentStorage implements IContentStorage {
 
 		const finalBasenameLength = Math.max(1, basename.length - numberOfCharactersToCut);
 		return `${dirname}/${basename.substring(0, finalBasenameLength)}${extension}`;
+	}
+
+	checkFilename(filename: string): void {
+		if (/^[a-zA-Z0-9/.-_]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
+			return;
+		}
+		throw new Error(`Filename contains forbidden characters ${filename}`);
 	}
 }
