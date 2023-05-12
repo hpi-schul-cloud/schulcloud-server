@@ -4,16 +4,17 @@ import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-ca
 
 export type ICommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceType.WEB_CONTENT;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
+	title: string;
 	html: string;
 };
 
 export class CommonCartridgeWebContentResource implements ICommonCartridgeElement, ICommonCartridgeFile {
 	constructor(private readonly props: ICommonCartridgeWebContentResourceProps) {}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	canInline(version: CommonCartridgeVersion): boolean {
+	canInline(): boolean {
 		return false;
 	}
 

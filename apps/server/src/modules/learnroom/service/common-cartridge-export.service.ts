@@ -6,8 +6,13 @@ import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-c
 import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
 import { IComponentProperties, IComponentTextProperties } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
-import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder, ICommonCartridgeElement } from '../common-cartridge';
-import { hasShape } from '../common-cartridge/utils';
+import {
+	hasShape,
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
+	CommonCartridgeFileBuilder,
+	CommonCartridgeVersion,
+} from '../common-cartridge';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -17,27 +22,50 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
+	async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0
+	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		// const builder = new CommonCartridgeFileBuilder({
+		// 	identifier: `i${course.id}`,
+		// 	title: course.name,
+		// })
+		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
+		// 	.addAssignments(this.mapTasksToAssignments(tasks));
+		// return builder.build();
+
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: `i${course.id}`,
 			title: course.name,
-		})
-			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-			.addAssignments(this.mapTasksToAssignments(tasks));
+			version,
+		});
+
+		lessons.forEach((lesson) => {
+			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			lesson.contents.forEach((content) => {
+				organizationBuilder.addResourceToOrganization(this.mapContentToResource(content));
+			});
+		});
+
 		return builder.build();
 	}
 
-	private mapLessonsToOrganizationItems(lessons: Lesson[]): ICommonCartridgeOrganizationProps[] {
-		return lessons.map((lesson) => {
-			return {
-				identifier: `i${lesson.id}`,
-				title: lesson.name,
-				contents: this.mapContentsToLesson(lesson.contents),
-			};
-		});
+	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
+		return {
+			identifier: `i${lesson.id}`,
+			version,
+			title: lesson.name,
+			resources: [],
+		};
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	private mapContentToResource(content: IComponentProperties): ICommonCartridgeResourceProps {
+		throw new Error('Method not implemented.');
 	}
 
 	private mapTasksToAssignments(tasks: Task[]): ICommonCartridgeAssignmentProps[] {
@@ -68,12 +96,6 @@ export class CommonCartridgeExportService {
 				title: content.title as string,
 				content: mappedContent,
 			};
-		});
-	}
-
-	private mapContentToCommonCartridgeElement(contents: IComponentProperties[]): Record<string, unknown>[] {
-		return contents.map((content) => {
-			
 		});
 	}
 }

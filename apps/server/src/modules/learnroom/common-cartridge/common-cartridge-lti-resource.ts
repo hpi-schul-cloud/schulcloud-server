@@ -4,20 +4,17 @@ import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-ca
 
 export type ICommonCartridgeLtiResourceProps = {
 	type: CommonCartridgeResourceType.LTI;
+	version: CommonCartridgeVersion;
 	identifier: string;
 	href: string;
+	title: string;
 };
 
 export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICommonCartridgeFile {
 	constructor(private readonly props: ICommonCartridgeLtiResourceProps) {}
 
-	canInline(version: CommonCartridgeVersion): boolean {
-		switch (version) {
-			case CommonCartridgeVersion.V_1_3_0:
-				return true;
-			default:
-				return false;
-		}
+	canInline(): boolean {
+		return false;
 	}
 
 	content(): string {

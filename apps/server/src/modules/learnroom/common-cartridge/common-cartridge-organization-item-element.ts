@@ -1,11 +1,13 @@
-import { ObjectId } from 'mongodb';
-import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
+import { ObjectId } from 'bson';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
+import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 
 export type ICommonCartridgeOrganizationProps = {
 	identifier: string;
-	title?: string;
-	contents?: ICommonCartridgeLessonContentProps[];
+	title: string;
+	version: CommonCartridgeVersion;
+	resources: ICommonCartridgeResourceProps[];
 };
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
@@ -17,14 +19,13 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 				identifier: this.props.identifier,
 			},
 			title: this.props.title,
-			item: this.props.contents?.map((content) => {
+			item: this.props.resources.map((content) => {
 				const newId = new ObjectId();
 				return {
 					$: {
 						identifier: `i${newId.toString()}`,
 						identifierref: content.identifier,
 					},
-
 					title: content.title,
 				};
 			}),

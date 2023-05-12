@@ -9,7 +9,7 @@ import {
 } from './common-cartridge-web-link-resource';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeFile } from './common-cartridge-file.interface';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
+import { CommonCartridgeResourceType } from './common-cartridge-enums';
 
 export type ICommonCartridgeResourceProps =
 	| ICommonCartridgeLtiResourceProps
@@ -20,19 +20,19 @@ export class CommonCartridgeResourceItemElement implements ICommonCartridgeEleme
 	private readonly inner: ICommonCartridgeElement & ICommonCartridgeFile;
 
 	constructor(props: ICommonCartridgeResourceProps) {
-		if (props.type === 'imsbasiclti_xmlv1p0') {
+		if (props.type === CommonCartridgeResourceType.LTI) {
 			this.inner = new CommonCartridgeLtiResource(props);
-		} else if (props.type === 'webcontent') {
+		} else if (props.type === CommonCartridgeResourceType.WEB_CONTENT) {
 			this.inner = new CommonCartridgeWebContentResource(props);
-		} else if (props.type === 'imswl_xmlv1p1') {
+		} else if (props.type === CommonCartridgeResourceType.WEB_LINK) {
 			this.inner = new CommonCartridgeWebLinkResourceElement(props);
 		} else {
 			throw new Error('Resource type is unknown!');
 		}
 	}
 
-	canInline(version: CommonCartridgeVersion): boolean {
-		return this.inner.canInline(version);
+	canInline(): boolean {
+		return this.inner.canInline();
 	}
 
 	content(): string {
