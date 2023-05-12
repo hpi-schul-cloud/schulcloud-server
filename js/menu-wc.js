@@ -2646,7 +2646,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CourseMetadataResponse.html" data-type="entity-link" >CourseMetadataResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CourseResponse.html" data-type="entity-link" >CourseResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CourseScope.html" data-type="entity-link" >CourseScope</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CourseUrlParams.html" data-type="entity-link" >CourseUrlParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CreateContentElementBody.html" data-type="entity-link" >CreateContentElementBody</a>

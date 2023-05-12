@@ -873,6 +873,16 @@ export class CourseRepo extends BaseRepo&lt;Course&gt; {
 
 		return course;
 	}
+
+	async findOneForTeacherOrSubstituteTeacher(userId: EntityId, courseId: EntityId): Promise&lt;Course&gt; {
+		const scope &#x3D; new CourseScope();
+		scope.forCourseId(courseId);
+		scope.forTeacherOrSubstituteTeacher(userId);
+		const course &#x3D; await this._em.findOneOrFail(Course, scope.query);
+
+		await this._em.populate(course, [&#x27;students&#x27;]);
+		return course;
+	}
 }
 </code></pre>
     </div>

@@ -109,6 +109,10 @@
                                 <a href="#findOne" >findOne</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOneForTeacherOrSubstituteTeacher" >findOneForTeacherOrSubstituteTeacher</a>
+                            </li>
+                            <li>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
@@ -647,6 +651,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findOneForTeacherOrSubstituteTeacher"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findOneForTeacherOrSubstituteTeacher</b></span>
+                        <a href="#findOneForTeacherOrSubstituteTeacher"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOneForTeacherOrSubstituteTeacher(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="137"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:137</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>courseId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/Course.html" target="_self" >Promise&lt;Course&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                         <span ><b>create</b></span>
@@ -1038,6 +1125,16 @@ export class CourseRepo extends BaseRepo&lt;Course&gt; {
 
 		const course &#x3D; await this._em.findOneOrFail(Course, scope.query);
 
+		return course;
+	}
+
+	async findOneForTeacherOrSubstituteTeacher(userId: EntityId, courseId: EntityId): Promise&lt;Course&gt; {
+		const scope &#x3D; new CourseScope();
+		scope.forCourseId(courseId);
+		scope.forTeacherOrSubstituteTeacher(userId);
+		const course &#x3D; await this._em.findOneOrFail(Course, scope.query);
+
+		await this._em.populate(course, [&#x27;students&#x27;]);
 		return course;
 	}
 }
