@@ -34,8 +34,9 @@ describe('DeleteFileUC', () => {
 	];
 
 	beforeAll(async () => {
-		exampleFiles[0].id = 'failed_removal_id';
-		exampleFiles[1].id = 'other_id';
+		exampleFiles[0].id = '123';
+		exampleFiles[1].id = '456';
+
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				DeleteFilesUc,
@@ -69,30 +70,35 @@ describe('DeleteFileUC', () => {
 	});
 
 	describe('deleteMarkedFiles', () => {
-		it('should delete all files in storage', async () => {
-			const thresholdDate = new Date();
-			const batchSize = 3;
-			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
-			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+		describe('when flow is normal', () => {
+			const setup = () => {
+				const thresholdDate = new Date();
+				const batchSize = 3;
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
+				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
-			await service.deleteMarkedFiles(thresholdDate, batchSize);
+				return { thresholdDate, batchSize };
+			};
 
-			for (const file of exampleFiles) {
-				expect(fileStorageAdapter.deleteFile).toHaveBeenCalledWith(file);
-			}
-		});
+			it('should delete all marked files in storage', async () => {
+				const { thresholdDate, batchSize } = setup();
 
-		it('should delete all files in database that are marked for deletion', async () => {
-			const thresholdDate = new Date();
-			const batchSize = 3;
-			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
-			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-			await service.deleteMarkedFiles(thresholdDate, batchSize);
+				for (const file of exampleFiles) {
+					expect(fileStorageAdapter.deleteFile).toHaveBeenCalledWith(file);
+				}
+			});
 
-			for (const file of exampleFiles) {
-				expect(filesRepo.delete).toHaveBeenCalledWith(file);
-			}
+			it('should delete all marked files in database', async () => {
+				const { thresholdDate, batchSize } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				for (const file of exampleFiles) {
+					expect(filesRepo.delete).toHaveBeenCalledWith(file);
+				}
+			});
 		});
 
 		describe('when storage adapter throws an error', () => {
