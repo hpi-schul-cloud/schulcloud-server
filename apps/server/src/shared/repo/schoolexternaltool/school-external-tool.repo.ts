@@ -10,7 +10,7 @@ import {
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolQuery } from '../../../modules/tool/school-external-tool/uc/dto/school-external-tool.types';
+import { SchoolExternalToolQuery } from '@src/modules/tool/uc/dto/school-external-tool.types';
 import { ExternalToolRepoMapper } from '../externaltool/external-tool.repo.mapper';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
 

@@ -1,59 +1,62 @@
 import { Module } from '@nestjs/common';
 import {
-	ContextExternalToolRepo,
-	ExternalToolRepo,
-	ExternalToolRepoMapper,
-	ExternalToolSortingMapper,
 	PseudonymsRepo,
+	ExternalToolRepoMapper,
+	ExternalToolRepo,
 	SchoolExternalToolRepo,
+	ContextExternalToolRepo,
+	ExternalToolSortingMapper,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { EncryptionModule } from '@shared/infra/encryption';
 import {
 	CommonToolValidationService,
+	ContextExternalToolService,
+	ContextExternalToolValidationService,
 	ExternalToolService,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
-} from './external-tool/service';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from './school-external-tool/service';
-import { Lti11Service, ToolLaunchService } from './launch-tool/service';
-import { ContextExternalToolService, ContextExternalToolValidationService } from './context-external-tool/service';
-import { ExternalToolServiceMapper } from './external-tool/service/mapper';
-import { BasicToolLaunchStrategy } from './launch-tool/strategy';
+	Lti11Service,
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+} from './service';
+import { ExternalToolServiceMapper } from './service/mapper';
+import { ToolLaunchService } from './launch/tool-launch.service';
+import { BasicToolLaunchStrategy } from './launch/strategy';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
 	providers: [
-		BasicToolLaunchStrategy,
-		CommonToolValidationService,
-		ContextExternalToolRepo,
-		ContextExternalToolService,
-		ContextExternalToolValidationService,
-		ExternalToolRepo,
-		ExternalToolRepoMapper,
+		Lti11Service,
 		ExternalToolService,
 		ExternalToolServiceMapper,
+		PseudonymsRepo,
+		ExternalToolRepo,
+		ExternalToolRepoMapper,
 		ExternalToolSortingMapper,
+		SchoolExternalToolRepo,
+		ContextExternalToolRepo,
 		ExternalToolValidationService,
 		ExternalToolVersionService,
-		Lti11Service,
-		PseudonymsRepo,
-		SchoolExternalToolRepo,
 		SchoolExternalToolService,
+		ContextExternalToolService,
+		CommonToolValidationService,
 		SchoolExternalToolValidationService,
+		ContextExternalToolValidationService,
 		ToolLaunchService,
+		BasicToolLaunchStrategy,
 	],
 	exports: [
-		CommonToolValidationService,
-		ContextExternalToolService,
-		ContextExternalToolValidationService,
-		ExternalToolRepoMapper,
+		Lti11Service,
 		ExternalToolService,
 		ExternalToolValidationService,
-		Lti11Service,
 		SchoolExternalToolService,
+		ContextExternalToolService,
+		ExternalToolRepoMapper,
+		CommonToolValidationService,
 		SchoolExternalToolValidationService,
+		ContextExternalToolValidationService,
 		ToolLaunchService,
 	],
 })

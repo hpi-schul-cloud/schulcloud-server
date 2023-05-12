@@ -12,7 +12,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/external-tool/interface';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(

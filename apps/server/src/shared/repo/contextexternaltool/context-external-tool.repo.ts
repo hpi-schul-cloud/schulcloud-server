@@ -9,11 +9,11 @@ import {
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolType } from '@shared/domain/entity/tools/context-external-tool/context-external-tool-type.enum';
-import { ContextExternalToolQuery } from '@src/modules/tool/context-external-tool/uc/dto';
+import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
+import { ToolContextType } from '@src/modules/tool/interface';
+import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
-import { ToolContextType } from '../../../modules/tool/context-external-tool/interface';
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo<
