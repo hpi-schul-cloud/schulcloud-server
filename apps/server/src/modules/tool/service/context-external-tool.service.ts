@@ -22,11 +22,11 @@ export class ContextExternalToolService {
 	}
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
-		const courseExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
 			schoolToolId: schoolExternalToolId,
 		});
 
-		await this.contextExternalToolRepo.delete(courseExternalTools);
+		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
 	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<void> {
