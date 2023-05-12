@@ -11,32 +11,7 @@ export class DeleteFilesUc {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
-	/**
-	 * Schedules files that have been removed prior removedSince by a user to be removed.
-	 * @param removedSince
-	 */
-	async removeDeletedFilesData(removedSince: Date): Promise<void> {
-		const filesForDeletion = await this.filesRepo.findAllFilesForCleanup(removedSince);
-		const numberOfFiles = filesForDeletion.length;
-		this.logger.log(`${numberOfFiles} files will be deleted`);
-		const failingFileIds: string[] = [];
-		// eslint-disable-next-line no-restricted-syntax
-		for (const file of filesForDeletion) {
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				await this.filesRepo.deleteFile(file);
-			} catch (err) {
-				failingFileIds.push(file.id);
-				this.logger.error(err);
-			}
-		}
-		this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
-		if (failingFileIds.length > 0) {
-			this.logger.error('the following files could not be deleted:', failingFileIds);
-		}
-	}
-
-	public async deleteMarkedFiles(removedSince: Date, batchSize: number): Promise<void> {
+	public async deleteMarkedFiles(deletedSince: Date, batchSize: number): Promise<void> {
 		let batchCounter = 0;
 		let numberOfFilesInBatch = 0;
 		let numberOfProcessedFiles = 0;
@@ -44,17 +19,18 @@ export class DeleteFilesUc {
 
 		do {
 			const offset = failingFileIds.length;
-			const [files, count] = await this.filesRepo.findAndCountFilesForCleanup(removedSince, batchSize, offset);
+			const files = await this.filesRepo.findFilesForCleanup(deletedSince, batchSize, offset);
 
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);
 
 			results.forEach((result) => !result.success && failingFileIds.push(result.fileId));
 
-			numberOfFilesInBatch = count;
-			numberOfProcessedFiles += count;
+			numberOfFilesInBatch = files.length;
+			numberOfProcessedFiles += files.length;
 			batchCounter += 1;
-			this.logger.debug(`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files`);
+
+			this.logger.log(`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files`);
 		} while (numberOfFilesInBatch > 0);
 
 		this.logger.log(
