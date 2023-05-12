@@ -1,5 +1,8 @@
-import { AuthorizableObject } from './authorizable-object';
 import { EntityId } from './types';
+
+export interface AuthorizableObject {
+	get id(): EntityId;
+}
 
 export abstract class DomainObject<T extends AuthorizableObject> implements AuthorizableObject {
 	protected props: T;
