@@ -3,6 +3,8 @@ import { LegacyLogger } from '@src/core/logger';
 import { Readable, Stream } from 'stream';
 import * as fs from 'node:fs';
 import * as fsPromises from 'node:fs/promises';
+import upath from 'upath';
+import { getAllFiles } from 'get-all-files';
 import {
 	ContentId,
 	IContentMetadata,
@@ -149,8 +151,6 @@ export class ContentStorage implements IContentStorage {
 		let asMainLibrary = 0;
 
 		const contentIds = await this.listContent();
-		// We don't use Promise.all here as this would possibly overwhelm the
-		// available memory space.
 		for (const contentId of contentIds) {
 			// eslint-disable-next-line no-await-in-loop
 			const contentMetadata = await this.getMetadata(contentId);
@@ -191,12 +191,19 @@ export class ContentStorage implements IContentStorage {
 		).filter((content) => content !== '');
 	}
 
-	listFiles(contentId: string, user: IUser): Promise<string[]> {
-		throw new Error('Method not implemented.');
+	public async listFiles(contentId: string, user: IUser): Promise<string[]> {
+		const contentDirectoryPath = path.join(this.getContentPath(), contentId.toString());
+		const contentDirectoryPathLength = contentDirectoryPath.length + 1;
+		const absolutePaths = await getAllFiles(path.join(contentDirectoryPath)).toArray();
+		const contentPath = path.join(contentDirectoryPath, 'content.json');
+		const h5pPath = path.join(contentDirectoryPath, 'h5p.json');
+		return absolutePaths
+			.filter((p) => p !== contentPath && p !== h5pPath)
+			.map((p) => p.substring(contentDirectoryPathLength));
 	}
 
-	sanitizeFilename?(filename: string): string {
-		throw new Error('Method not implemented.');
+	public sanitizeFilename?(filename: string): string {
+		return this.generalSanitizeFilename(filename, this.maxFileLength, this.options?.invalidCharactersRegexp);
 	}
 
 	// own methods
@@ -251,5 +258,26 @@ export class ContentStorage implements IContentStorage {
 			return true;
 		}
 		return false;
+	}
+
+	private generalSanitizeFilename(filename: string, invalidCharacterRegex: RegExp, maxLength: number): string {
+		let cleanedFilename = filename.replace(invalidCharacterRegex, '');
+
+		let extension = upath.extname(cleanedFilename);
+		let basename = upath.basename(cleanedFilename, extension);
+		const dirname = upath.dirname(cleanedFilename);
+		if (extension === '') {
+			extension = basename;
+			basename = 'file';
+			cleanedFilename = `${dirname}/${basename}${extension}`;
+		}
+
+		const numberOfCharactersToCut = cleanedFilename.length - maxLength;
+		if (numberOfCharactersToCut < 0) {
+			return cleanedFilename;
+		}
+
+		const finalBasenameLength = Math.max(1, basename.length - numberOfCharactersToCut);
+		return `${dirname}/${basename.substring(0, finalBasenameLength)}${extension}`;
 	}
 }
