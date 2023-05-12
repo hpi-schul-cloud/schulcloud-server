@@ -7,10 +7,12 @@ import {
 	ContentId,
 	IContentMetadata,
 	IContentStorage,
+	LibraryName,
 	IFileStats,
 	ILibraryName,
 	IUser,
 	Permission,
+	streamToString,
 } from '@lumieducation/h5p-server';
 import path from 'path';
 
@@ -132,16 +134,37 @@ export class ContentStorage implements IContentStorage {
 		));
 	}
 
-	getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
-		throw new Error('Method not implemented.');
+	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return JSON.parse(await streamToString(await this.getFileStream(contentId, 'h5p.json', user)));
 	}
 
-	getParameters(contentId: string, user?: IUser | undefined): Promise<any> {
-		throw new Error('Method not implemented.');
+	public async getParameters(contentId: string, user?: IUser | undefined): Promise<any> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return JSON.parse(await streamToString(await this.getFileStream(contentId, 'content.json', user)));
 	}
 
-	getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
-		throw new Error('Method not implemented.');
+	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
+		let asDependency = 0;
+		let asMainLibrary = 0;
+
+		const contentIds = await this.listContent();
+		// We don't use Promise.all here as this would possibly overwhelm the
+		// available memory space.
+		for (const contentId of contentIds) {
+			// eslint-disable-next-line no-await-in-loop
+			const contentMetadata = await this.getMetadata(contentId);
+			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
+			if (this.hasDependencyOn(contentMetadata, library)) {
+				if (isMainLibrary) {
+					asMainLibrary += 1;
+				} else {
+					asDependency += 1;
+				}
+			}
+		}
+
+		return { asDependency, asMainLibrary };
 	}
 
 	getUserPermissions(contentId: string, user: IUser): Promise<Permission[]> {
@@ -194,5 +217,23 @@ export class ContentStorage implements IContentStorage {
 		} catch (error) {
 			await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString()));
 		}
+	}
+
+	private hasDependencyOn(
+		metadata: {
+			dynamicDependencies?: ILibraryName[];
+			editorDependencies?: ILibraryName[];
+			preloadedDependencies?: ILibraryName[];
+		},
+		library: ILibraryName
+	): boolean {
+		if (
+			metadata.preloadedDependencies?.some((dep) => LibraryName.equal(dep, library)) ||
+			metadata.editorDependencies?.some((dep) => LibraryName.equal(dep, library)) ||
+			metadata.dynamicDependencies?.some((dep) => LibraryName.equal(dep, library))
+		) {
+			return true;
+		}
+		return false;
 	}
 }
