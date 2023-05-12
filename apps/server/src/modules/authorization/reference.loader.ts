@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { EntityId, User } from '@shared/domain';
+import { AuthorizableObject, BaseDO, EntityId, User } from '@shared/domain';
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -12,7 +12,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { BoardNodeService } from '@src/modules/board';
-import { AllowedAuthorizationEntityType, ConcretAuthorizableObjects } from './types';
+import { AllowedAuthorizationEntityType } from './types';
 
 type RepoType =
 	| TaskRepo
@@ -70,10 +70,10 @@ export class ReferenceLoader {
 	async loadEntity(
 		entityName: AllowedAuthorizationEntityType,
 		entityId: EntityId
-	): Promise<ConcretAuthorizableObjects> {
+	): Promise<AuthorizableObject | BaseDO> {
 		const repoLoader: IRepoLoader = this.resolveRepo(entityName);
 
-		let entity: ConcretAuthorizableObjects;
+		let entity: AuthorizableObject | BaseDO;
 		if (repoLoader.populate) {
 			entity = await repoLoader.repo.findById(entityId, true);
 		} else {

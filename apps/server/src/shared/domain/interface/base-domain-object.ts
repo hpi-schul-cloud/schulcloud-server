@@ -1,4 +1,4 @@
-import type { AuthorizableObject } from '../domain-object';
+import { AuthorizableObject } from '../authorizable-object';
 import type { IReferenceId } from './entity';
 
 // idea support for each CRUD action like Actions.read as abstract class, to have a generall interface

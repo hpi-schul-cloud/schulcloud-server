@@ -27,6 +27,9 @@ export class AuthorizationService {
 		return hasPermission;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public async checkPermissionByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
@@ -38,6 +41,9 @@ export class AuthorizationService {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public async hasPermissionByReferences(
 		userId: EntityId,
 		entityName: AllowedAuthorizationEntityType,
@@ -46,12 +52,12 @@ export class AuthorizationService {
 	): Promise<boolean> {
 		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
-			const [user, entity] = await Promise.all([
+			const [user, object] = await Promise.all([
 				this.getUserWithPermissions(userId),
 				this.loader.loadEntity(entityName, entityId),
 			]);
-			const rule = this.ruleManager.selectRule(user, entity, context);
-			const hasPermission = rule.hasPermission(user, entity, context);
+			const rule = this.ruleManager.selectRule(user, object, context);
+			const hasPermission = rule.hasPermission(user, object, context);
 
 			return hasPermission;
 		} catch (err) {

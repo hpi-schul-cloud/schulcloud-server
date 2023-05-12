@@ -1,6 +1,6 @@
 import { PrimaryKey, Property, SerializedPrimaryKey } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import type { AuthorizableObject } from '../domain-object';
+import type { AuthorizableObject } from '../authorizable-object';
 import type { IEntity } from '../interface';
 
 export abstract class BaseEntity implements IEntity, AuthorizableObject {
@@ -20,7 +20,7 @@ export type BaseEntityReference = 'id' | '_id';
 // that can be cumbersome e.g. in tests. that's why we define it as a root class here.
 // TODO check if we can use EntitySchema to prevent code duplication (decorators don't work for defining properties btw.)
 
-export abstract class BaseEntityWithTimestamps {
+export abstract class BaseEntityWithTimestamps implements AuthorizableObject {
 	@PrimaryKey()
 	_id!: ObjectId;
 
