@@ -49,33 +49,33 @@ describe('FilesRepo', () => {
 			await em.persistAndFlush(file);
 			em.clear();
 
-			const cleanupThreshold = new Date();
+			const thresholdDate = new Date();
 
-			const result = await repo.findFilesForCleanup(cleanupThreshold, 3, 0);
+			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
 
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(file.id);
 		});
 
-		it('should not return files which are not mared for deletion', async () => {
+		it('should not return files which are not marked for deletion', async () => {
 			const file = fileFactory.build({ deletedAt: undefined });
 			await em.persistAndFlush(file);
-			const cleanupThreshold = new Date();
+			const thresholdDate = new Date();
 			em.clear();
 
-			const result = await repo.findFilesForCleanup(cleanupThreshold, 3, 0);
+			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
 			expect(result.length).toEqual(0);
 		});
 
 		it('should not return files where deletedAt is after threshold', async () => {
-			const cleanupThreshold = new Date();
-			const file = fileFactory.build({ deletedAt: new Date(cleanupThreshold.getTime() + 10) });
+			const thresholdDate = new Date();
+			const file = fileFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
 			await em.persistAndFlush(file);
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			expect(file.deletedAt!.getTime()).toBeGreaterThan(cleanupThreshold.getTime());
+			expect(file.deletedAt!.getTime()).toBeGreaterThan(thresholdDate.getTime());
 			em.clear();
 
-			const result = await repo.findFilesForCleanup(cleanupThreshold, 3, 0);
+			const result = await repo.findFilesForCleanup(thresholdDate, 3, 0);
 			expect(result.length).toEqual(0);
 		});
 	});

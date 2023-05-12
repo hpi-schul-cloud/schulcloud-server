@@ -15,7 +15,7 @@ export class DeleteFilesUc {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
-	public async deleteMarkedFiles(deletedSince: Date, batchSize: number): Promise<void> {
+	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
 		let batchCounter = 0;
 		let numberOfFilesInBatch = 0;
 		let numberOfProcessedFiles = 0;
@@ -23,7 +23,7 @@ export class DeleteFilesUc {
 
 		do {
 			const offset = failingFileIds.length;
-			const files = await this.filesRepo.findFilesForCleanup(deletedSince, batchSize, offset);
+			const files = await this.filesRepo.findFilesForCleanup(thresholdDate, batchSize, offset);
 
 			const promises = files.map((file) => this.deleteFile(file));
 			const results = await Promise.all(promises);

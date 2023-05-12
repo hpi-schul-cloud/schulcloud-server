@@ -13,8 +13,8 @@ export class FilesRepo extends BaseRepo<File> {
 		return File;
 	}
 
-	public async findFilesForCleanup(removedSince: Date, batchSize: number, offset: number): Promise<File[]> {
-		const query = { deletedAt: { $lte: removedSince } };
+	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise<File[]> {
+		const query = { deletedAt: { $lte: thresholdDate } };
 		const options = { limit: batchSize, offset, populate: ['storageProvider'] as never[] };
 		const files = await this._em.find(File, query, options);
 

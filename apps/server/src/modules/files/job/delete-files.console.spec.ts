@@ -46,15 +46,15 @@ describe('DeleteFilesConsole', () => {
 	});
 
 	describe('deleteMarkedFiles', () => {
-		it('should call UC with deletedSince date and batchSize', async () => {
+		it('should call UC with threshold date and batch size', async () => {
 			const daysSinceDeletion = 7;
 			const batchSize = 3;
-			const deletedSince = new Date();
-			deletedSince.setDate(deletedSince.getDate() - daysSinceDeletion);
+			const thresholdDate = new Date();
+			thresholdDate.setDate(thresholdDate.getDate() - daysSinceDeletion);
 
 			await console.deleteMarkedFiles(daysSinceDeletion, batchSize);
 
-			expect(deleteFilesUc.deleteMarkedFiles).toHaveBeenCalledWith(deletedSince, batchSize);
+			expect(deleteFilesUc.deleteMarkedFiles).toHaveBeenCalledWith(thresholdDate, batchSize);
 		});
 	});
 });

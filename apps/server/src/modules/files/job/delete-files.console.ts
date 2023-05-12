@@ -14,12 +14,12 @@ export class DeleteFilesConsole {
 	})
 	async deleteMarkedFiles(daysSinceDeletion: number, batchSize = 1000): Promise<void> {
 		this.logger.log(
-			`Start cleanup job: Deleting files that were marked for deletion ${daysSinceDeletion} days ago; batch size: ${batchSize}`
+			`Start cleanup job: Deleting files that were marked for deletion at least ${daysSinceDeletion} days ago; batch size: ${batchSize}`
 		);
-		const deletedSince = new Date();
-		deletedSince.setDate(deletedSince.getDate() - daysSinceDeletion);
+		const thresholdDate = new Date();
+		thresholdDate.setDate(thresholdDate.getDate() - daysSinceDeletion);
 
-		await this.deleteFilesUc.deleteMarkedFiles(deletedSince, Number(batchSize));
+		await this.deleteFilesUc.deleteMarkedFiles(thresholdDate, Number(batchSize));
 		this.logger.log('cleanup job finished');
 	}
 }

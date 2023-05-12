@@ -70,12 +70,12 @@ describe('DeleteFileUC', () => {
 
 	describe('deleteMarkedFiles', () => {
 		it('should delete all files in storage', async () => {
-			const deletedSince = new Date();
+			const thresholdDate = new Date();
 			const batchSize = 3;
 			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
 			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
-			await service.deleteMarkedFiles(deletedSince, batchSize);
+			await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 			for (const file of exampleFiles) {
 				expect(fileStorageAdapter.deleteFile).toHaveBeenCalledWith(file);
@@ -83,12 +83,12 @@ describe('DeleteFileUC', () => {
 		});
 
 		it('should delete all files in database that are marked for deletion', async () => {
-			const deletedSince = new Date();
+			const thresholdDate = new Date();
 			const batchSize = 3;
 			filesRepo.findFilesForCleanup.mockResolvedValueOnce(exampleFiles);
 			filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 
-			await service.deleteMarkedFiles(deletedSince, batchSize);
+			await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 			for (const file of exampleFiles) {
 				expect(filesRepo.delete).toHaveBeenCalledWith(file);
@@ -97,7 +97,7 @@ describe('DeleteFileUC', () => {
 
 		describe('when storage adapter throws an error', () => {
 			const setup = () => {
-				const deletedSince = new Date();
+				const thresholdDate = new Date();
 				const batchSize = 3;
 				const error = new Error();
 
@@ -105,29 +105,29 @@ describe('DeleteFileUC', () => {
 				filesRepo.findFilesForCleanup.mockResolvedValueOnce([]);
 				fileStorageAdapter.deleteFile.mockRejectedValueOnce(error);
 
-				return { deletedSince, batchSize, error };
+				return { thresholdDate, batchSize, error };
 			};
 
 			it('should log the error', async () => {
-				const { deletedSince, batchSize, error } = setup();
+				const { thresholdDate, batchSize, error } = setup();
 
-				await service.deleteMarkedFiles(deletedSince, batchSize);
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(logger.error).toHaveBeenCalledWith(error);
 			});
 
 			it('should not call delete on repo for that file', async () => {
-				const { deletedSince, batchSize } = setup();
+				const { thresholdDate, batchSize } = setup();
 
-				await service.deleteMarkedFiles(deletedSince, batchSize);
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(filesRepo.delete).toBeCalledTimes(exampleFiles.length - 1);
 			});
 
 			it('should continue with other files', async () => {
-				const { deletedSince, batchSize } = setup();
+				const { thresholdDate, batchSize } = setup();
 
-				await service.deleteMarkedFiles(deletedSince, batchSize);
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(fileStorageAdapter.deleteFile).toBeCalledTimes(exampleFiles.length);
 			});
