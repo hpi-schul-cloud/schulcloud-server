@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { cleanupCollections, courseFactory, TestRequest, UserAndAccountTestFactory } from '@shared/testing';
+import { cleanupCollections, courseFactory, UserAndAccountTestFactory, TestApiClient } from '@shared/testing';
 import { CourseMetadataListResponse, CourseResponse } from '@src/modules/learnroom/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
@@ -22,7 +22,7 @@ const createTeacher = () => {
 describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiRequest: TestRequest;
+	let apiRequest: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +32,7 @@ describe('Course Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		apiRequest = new TestRequest(app, 'courses');
+		apiRequest = new TestApiClient(app, 'courses');
 	});
 
 	afterAll(async () => {
@@ -62,6 +62,8 @@ describe('Course Controller (API)', () => {
 			const { data } = response.body as CourseMetadataListResponse;
 			expect(response.statusCode).toBe(200);
 			expect(typeof data[0].title).toBe('string');
+			expect(data[0].startDate).toBe(course.startDate);
+			expect(data[0].untilDate).toBe(course.untilDate);
 		});
 		it('should find courses as teacher', async () => {
 			const { teacher, course } = setup();
@@ -73,6 +75,8 @@ describe('Course Controller (API)', () => {
 			const { data } = response.body as CourseMetadataListResponse;
 			expect(response.statusCode).toBe(200);
 			expect(typeof data[0].title).toBe('string');
+			expect(data[0].startDate).toBe(course.startDate);
+			expect(data[0].untilDate).toBe(course.untilDate);
 		});
 	});
 
@@ -89,8 +93,16 @@ describe('Course Controller (API)', () => {
 				substitutionTeachers: [substitutionTeacher.user],
 				students: [student1.user, student2.user],
 			});
+			const courseWithoutStartAndUntilDate = courseFactory.build({
+				name: 'course #2',
+				teachers: [teacher.user],
+				substitutionTeachers: [substitutionTeacher.user],
+				students: [student1.user, student2.user],
+				startDate: undefined,
+				untilDate: undefined,
+			});
 
-			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
+			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1, courseWithoutStartAndUntilDate };
 		};
 		it('should find course as teacher', async () => {
 			const { course, teacher } = setup();
@@ -105,6 +117,7 @@ describe('Course Controller (API)', () => {
 			expect(courseResponse).toBeDefined();
 			expect(courseResponse.id).toEqual(course.id);
 			expect(courseResponse.students?.length).toEqual(2);
+			expect(courseResponse.startDate).toEqual(course.startDate);
 		});
 		it('should find course as substitution teacher', async () => {
 			const { course, substitutionTeacher } = setup();
@@ -119,6 +132,7 @@ describe('Course Controller (API)', () => {
 			expect(courseResponse).toBeDefined();
 			expect(courseResponse.id).toEqual(course.id);
 			expect(courseResponse.students?.length).toEqual(2);
+			expect(courseResponse.startDate).toEqual(course.startDate);
 		});
 		it('should not find course if the teacher is not assigned to', async () => {
 			const { teacherUnkownToCourse, course } = setup();
@@ -138,6 +152,22 @@ describe('Course Controller (API)', () => {
 
 			const response = await apiRequest.get(`${unknownId}`, teacher.account);
 			expect(response.statusCode).toEqual(404);
+		});
+		it('should find course without start and until date', async () => {
+			const { courseWithoutStartAndUntilDate, teacher } = setup();
+
+			await em.persistAndFlush([courseWithoutStartAndUntilDate, teacher.account, teacher.user]);
+			em.clear();
+
+			const response = await apiRequest.get(`${courseWithoutStartAndUntilDate.id}`, teacher.account);
+			const courseResponse = response.body as CourseResponse;
+
+			expect(response.statusCode).toEqual(200);
+			expect(courseResponse).toBeDefined();
+			expect(courseResponse.id).toEqual(courseWithoutStartAndUntilDate.id);
+			expect(courseResponse.students?.length).toEqual(2);
+			expect(courseResponse.startDate).toBeUndefined();
+			expect(courseResponse.untilDate).toBeUndefined();
 		});
 	});
 

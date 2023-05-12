@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, PermissionContextBuilder, SortOrder } from '@shared/domain';
+import { Course, Permission, SortOrder } from '@shared/domain';
 import { CourseRepo, LessonRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
+import { AuthorizationContextBuilder } from '@src/modules/authorization';
 import { CourseUc } from './course.uc';
 
 describe('CourseUc', () => {
@@ -90,7 +91,7 @@ describe('CourseUc', () => {
 			expect(authorizationService.checkPermission).toBeCalledWith(
 				user,
 				course,
-				PermissionContextBuilder.write([Permission.COURSE_EDIT])
+				AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 			);
 		});
 		it('should throw error if user has no permission to edit course', async () => {
