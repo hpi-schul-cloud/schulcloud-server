@@ -1,4 +1,4 @@
-import { ToolContextType } from '@src/modules/tool/interface';
+import { ToolContextType } from '@src/modules/tool/context-external-tool/interface';
 import { BaseDO } from '../base.do';
 import { CustomParameterEntryDO } from './custom-parameter-entry.do';
 
