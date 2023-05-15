@@ -79,8 +79,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#removeDeletedFilesData" >removeDeletedFilesData</a>
+                                <a href="#deleteFile" >deleteFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteMarkedFiles" >deleteMarkedFiles</a>
                             </li>
                         </ul>
                     </td>
@@ -100,12 +106,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(filesRepo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(filesRepo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, fileStorageAdapter: <a href="../injectables/FileStorageAdapter.html" target="_self">FileStorageAdapter</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/files/uc/delete-files.uc.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/files/uc/delete-files.uc.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -127,6 +133,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/FilesRepo.html" target="_self" >FilesRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fileStorageAdapter</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FileStorageAdapter.html" target="_self" >FileStorageAdapter</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -164,34 +182,33 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="removeDeletedFilesData"></a>
+                    <a name="deleteFile"></a>
                     <span class="name">
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
-                        <span ><b>removeDeletedFilesData</b></span>
-                        <a href="#removeDeletedFilesData"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteFile</b></span>
+                        <a href="#deleteFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeDeletedFilesData(removedSince: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                    <code>deleteFile(file: <a href="../classes/File.html" target="_self">File</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/files/uc/delete-files.uc.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/files/uc/delete-files.uc.ts:55</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>Schedules files that have been removed prior removedSince by a user to be removed.</p>
-</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -206,9 +223,93 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>removedSince</td>
+                                    <td>file</td>
+                                    <td>
+                                                <code><a href="../classes/File.html" target="_self" >File</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteMarkedFiles"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteMarkedFiles</b></span>
+                        <a href="#deleteMarkedFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteMarkedFiles(thresholdDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, batchSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/files/uc/delete-files.uc.ts:18</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>thresholdDate</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>batchSize</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
 
                                     <td>
@@ -242,35 +343,68 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger/legacy-logger.service&#x27;;
 import { FilesRepo } from &#x27;@shared/repo&#x27;;
+import { File } from &#x27;@shared/domain&#x27;;
+import { FileStorageAdapter } from &#x27;@shared/infra/filestorage&#x27;;
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private logger: LegacyLogger) {
+	constructor(
+		private readonly filesRepo: FilesRepo,
+		private readonly fileStorageAdapter: FileStorageAdapter,
+		private readonly logger: LegacyLogger
+	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
-	/**
-	 * Schedules files that have been removed prior removedSince by a user to be removed.
-	 * @param removedSince
-	 */
-	async removeDeletedFilesData(removedSince: Date): Promise&lt;void&gt; {
-		const filesForDeletion &#x3D; await this.filesRepo.findAllFilesForCleanup(removedSince);
-		const numberOfFiles &#x3D; filesForDeletion.length;
-		this.logger.log(&#x60;${numberOfFiles} files will be deleted&#x60;);
+	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise&lt;void&gt; {
+		let batchCounter &#x3D; 0;
+		let numberOfFilesInBatch &#x3D; 0;
+		let numberOfProcessedFiles &#x3D; 0;
 		const failingFileIds: string[] &#x3D; [];
-		// eslint-disable-next-line no-restricted-syntax
-		for (const file of filesForDeletion) {
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				await this.filesRepo.deleteFile(file);
-			} catch (err) {
-				failingFileIds.push(file.id);
-				this.logger.error(err);
-			}
-		}
-		this.logger.log(&#x60;${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted&#x60;);
+
+		do {
+			const offset &#x3D; failingFileIds.length;
+			const files &#x3D; await this.filesRepo.findFilesForCleanup(thresholdDate, batchSize, offset);
+
+			const promises &#x3D; files.map((file) &#x3D;&gt; this.deleteFile(file));
+			const results &#x3D; await Promise.all(promises);
+
+			results.forEach((result) &#x3D;&gt; {
+				if (!result.success) {
+					failingFileIds.push(result.fileId);
+				}
+			});
+
+			numberOfFilesInBatch &#x3D; files.length;
+			numberOfProcessedFiles +&#x3D; files.length;
+			batchCounter +&#x3D; 1;
+
+			this.logger.log(&#x60;Finished batch ${batchCounter} with ${numberOfFilesInBatch} files&#x60;);
+		} while (numberOfFilesInBatch &gt; 0);
+
+		this.logger.log(
+			&#x60;${
+				numberOfProcessedFiles - failingFileIds.length
+			} out of ${numberOfProcessedFiles} files were successfully deleted&#x60;
+		);
+
 		if (failingFileIds.length &gt; 0) {
-			this.logger.error(&#x27;the following files could not be deleted:&#x27;, failingFileIds);
+			this.logger.error(&#x60;the following files could not be deleted: ${failingFileIds.toString()}&#x60;);
+		}
+	}
+
+	private async deleteFile(file: File): Promise&lt;{ fileId: string; success: boolean }&gt; {
+		try {
+			if (!file.isDirectory) {
+				await this.fileStorageAdapter.deleteFile(file);
+			}
+			await this.filesRepo.delete(file);
+
+			return { fileId: file.id, success: true };
+		} catch (error) {
+			this.logger.error(error);
+
+			return { fileId: file.id, success: false };
 		}
 	}
 }

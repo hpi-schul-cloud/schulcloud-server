@@ -75,20 +75,6 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                <a href="#propertiesToPopulate" >propertiesToPopulate</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -99,12 +85,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteFile" >deleteFile</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findAllFilesForCleanup" >findAllFilesForCleanup</a>
+                                <a href="#findFilesForCleanup" >findFilesForCleanup</a>
                             </li>
                             <li>
                                 <a href="#create" >create</a>
@@ -153,12 +136,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(fileStorageAdapter: <a href="../injectables/FileStorageAdapter.html" target="_self">FileStorageAdapter</a>, _em: EntityManager)</code>
+<code>constructor(_em: EntityManager)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -175,18 +158,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>fileStorageAdapter</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/FileStorageAdapter.html" target="_self" >FileStorageAdapter</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>_em</td>
                                                   
@@ -217,26 +188,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteFile"></a>
+                    <a name="findFilesForCleanup"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>deleteFile</b></span>
-                        <a href="#deleteFile"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findFilesForCleanup</b></span>
+                        <a href="#findFilesForCleanup"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteFile(file: <a href="../classes/File.html" target="_self">File</a>)</code>
+                    <code>findFilesForCleanup(thresholdDate: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, batchSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, offset: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:16</a></div>
                 </td>
             </tr>
 
@@ -257,9 +229,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>file</td>
+                                    <td>thresholdDate</td>
                                     <td>
-                                                <code><a href="../classes/File.html" target="_self" >File</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
                                     </td>
 
                                     <td>
@@ -268,69 +240,22 @@
 
 
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findAllFilesForCleanup"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>findAllFilesForCleanup</b></span>
-                        <a href="#findAllFilesForCleanup"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findAllFilesForCleanup(cleanupThreshold: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:19</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
                                 <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>cleanupThreshold</td>
+                                    <td>batchSize</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>offset</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
 
                                     <td>
@@ -662,43 +587,6 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="propertiesToPopulate"></a>
-                    <span class="name">
-                        <span ><b>propertiesToPopulate</b></span>
-                        <a href="#propertiesToPopulate"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>[]</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>[&#x27;storageProvider&#x27;]</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
             <section>
     <h3 id="accessors">
@@ -720,7 +608,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:13</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/repo/files/files.repo.ts:12</a></div>
                                 </td>
                             </tr>
 
@@ -734,12 +622,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { File } from &#x27;@shared/domain&#x27;;
-import { FileStorageAdapter } from &#x27;@shared/infra/filestorage&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 
 @Injectable()
 export class FilesRepo extends BaseRepo&lt;File&gt; {
-	constructor(private fileStorageAdapter: FileStorageAdapter, protected readonly _em: EntityManager) {
+	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
 
@@ -747,19 +634,12 @@ export class FilesRepo extends BaseRepo&lt;File&gt; {
 		return File;
 	}
 
-	propertiesToPopulate &#x3D; [&#x27;storageProvider&#x27;];
+	public async findFilesForCleanup(thresholdDate: Date, batchSize: number, offset: number): Promise&lt;File[]&gt; {
+		const query &#x3D; { deletedAt: { $lte: thresholdDate } };
+		const options &#x3D; { limit: batchSize, offset, populate: [&#x27;storageProvider&#x27;] as never[] };
+		const files &#x3D; await this._em.find(File, query, options);
 
-	async findAllFilesForCleanup(cleanupThreshold: Date): Promise&lt;File[]&gt; {
-		const filesForCleanupQuery &#x3D; { deletedAt: { $lte: cleanupThreshold } };
-		const files &#x3D; await this._em.find(File, filesForCleanupQuery);
-		const regularFiles &#x3D; files.filter((file) &#x3D;&gt; file.isDirectory &#x3D;&#x3D;&#x3D; false);
-		await this._em.populate(regularFiles, this.propertiesToPopulate as never[]);
 		return files;
-	}
-
-	async deleteFile(file: File): Promise&lt;void&gt; {
-		if (file.isDirectory &#x3D;&#x3D;&#x3D; false) await this.fileStorageAdapter.deleteFile(file);
-		await this.delete(file);
 	}
 }
 </code></pre>

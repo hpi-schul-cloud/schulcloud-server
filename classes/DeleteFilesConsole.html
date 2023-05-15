@@ -85,7 +85,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#removeDeletedFilesData" >removeDeletedFilesData</a>
+                                <a href="#deleteMarkedFiles" >deleteMarkedFiles</a>
                             </li>
                         </ul>
                     </td>
@@ -170,18 +170,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="removeDeletedFilesData"></a>
+                    <a name="deleteMarkedFiles"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
-                        <span ><b>removeDeletedFilesData</b></span>
-                        <a href="#removeDeletedFilesData"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteMarkedFiles</b></span>
+                        <a href="#deleteMarkedFiles"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeDeletedFilesData(removedSinceDays: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>deleteMarkedFiles(daysSinceDeletion: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, batchSize: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -189,7 +189,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Command({command: &#x27;cleanup-job &lt;days&gt;&#x27;, description: &#x27;cleanup job to remove files that were marked for deletion &lt;days&gt; days ago&#x27;})<br /></code>
+                    <code>@Command({command: &#x27;cleanup-job &lt;days&gt; [batchSize]&#x27;, description: &#x27;cleanup job to remove files that were marked for deletion &lt;days&gt; days ago&#x27;})<br /></code>
                 </td>
             </tr>
 
@@ -213,11 +213,12 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>removedSinceDays</td>
+                                    <td>daysSinceDeletion</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -226,6 +227,23 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>batchSize</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>1000</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -265,15 +283,17 @@ export class DeleteFilesConsole {
 	}
 
 	@Command({
-		command: &#x27;cleanup-job &lt;days&gt;&#x27;,
+		command: &#x27;cleanup-job &lt;days&gt; [batchSize]&#x27;,
 		description: &#x27;cleanup job to remove files that were marked for deletion &lt;days&gt; days ago&#x27;,
 	})
-	async removeDeletedFilesData(removedSinceDays: number): Promise&lt;void&gt; {
-		this.logger.log(&#x60;cleanup job will remove files that were marked for deletion ${removedSinceDays} days ago&#x60;);
-		const removedSince &#x3D; new Date();
-		removedSince.setDate(removedSince.getDate() - removedSinceDays);
+	async deleteMarkedFiles(daysSinceDeletion: number, batchSize &#x3D; 1000): Promise&lt;void&gt; {
+		this.logger.log(
+			&#x60;Start cleanup job: Deleting files that were marked for deletion at least ${daysSinceDeletion} days ago; batch size: ${batchSize}&#x60;
+		);
+		const thresholdDate &#x3D; new Date();
+		thresholdDate.setDate(thresholdDate.getDate() - daysSinceDeletion);
 
-		await this.deleteFilesUc.removeDeletedFilesData(removedSince);
+		await this.deleteFilesUc.deleteMarkedFiles(thresholdDate, Number(batchSize));
 		this.logger.log(&#x27;cleanup job finished&#x27;);
 	}
 }
