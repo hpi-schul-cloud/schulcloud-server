@@ -1,7 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { BasicToolConfigResponse } from './basic-tool-config.response';
-import { Oauth2ToolConfigResponse } from './oauth2-tool-config.response';
-import { Lti11ToolConfigResponse } from './lti11-tool-config.response';
+import { BasicToolConfigResponse, Oauth2ToolConfigResponse, Lti11ToolConfigResponse } from './config';
 import { CustomParameterResponse } from './custom-parameter.response';
 
 export class ExternalToolResponse {

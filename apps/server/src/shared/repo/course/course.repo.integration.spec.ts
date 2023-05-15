@@ -368,6 +368,55 @@ describe('course repo', () => {
 		});
 	});
 
+	describe('findOneForTeacherOrSubstituteTeacher', () => {
+		const setup = (countUser = 1) => {
+			const user = userFactory.buildListWithId(countUser);
+			return { user };
+		};
+		it('should find course of teacher and substitution teacher', async () => {
+			const { user } = setup(4);
+			const [teacher, substitutionTeacher, ...students] = user;
+
+			const course = courseFactory.build({
+				teachers: [teacher],
+				substitutionTeachers: [substitutionTeacher],
+				students,
+			});
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			const result = await repo.findOneForTeacherOrSubstituteTeacher(teacher.id, course.id);
+			expect(result.id).toEqual(course.id);
+			expect(result.teachers[0].id).toEqual(teacher.id);
+			expect(result.substitutionTeachers[0].id).toEqual(substitutionTeacher.id);
+			expect(result.students.length).toEqual(2);
+		});
+		it('should throw error if course is not found', async () => {
+			const { user } = setup();
+			const [teacher] = user;
+			const unknownId = new ObjectId().toHexString();
+
+			await expect(async () => {
+				await repo.findOneForTeacherOrSubstituteTeacher(teacher.id, unknownId);
+			}).rejects.toThrow();
+		});
+		it('should throw error if user is not teacher or substitution teacher', async () => {
+			const { user } = setup(2);
+			const [teacher, substitutionTeacher] = user;
+			const course = courseFactory.build({
+				teachers: [teacher],
+				substitutionTeachers: [substitutionTeacher],
+			});
+			const unknownId = new ObjectId().toHexString();
+			await em.persistAndFlush([course]);
+			em.clear();
+
+			await expect(async () => {
+				await repo.findOneForTeacherOrSubstituteTeacher(unknownId, course.id);
+			}).rejects.toThrow();
+		});
+	});
+
 	describe('findById', () => {
 		it('should find a course by its id', async () => {
 			const course = courseFactory.build({ name: 'important course' });

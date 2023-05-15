@@ -1,26 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalToolRepo } from '@shared/repo/externaltool/external-tool.repo';
+import { ExternalToolRepo, ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
-import { CustomParameterScope, IFindOptions, SortOrder } from '@shared/domain';
+} from '@shared/domain/domainobject/tool';
+import { CustomParameterScope, IFindOptions, SortOrder, Page, SchoolExternalToolDO } from '@shared/domain';
 import {
 	customParameterDOFactory,
 	externalToolDOFactory,
 	lti11ToolConfigDOFactory,
 	oauth2ToolConfigDOFactory,
-} from '@shared/testing/factory/domainobject/external-tool.factory';
+} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import { DefaultEncryptionService, IEncryptionService } from '@shared/infra/encryption';
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { Page } from '@shared/domain/domainobject/page';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CourseExternalToolRepo } from '@shared/repo/courseexternaltool/course-external-tool.repo';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool/school-external-tool.repo';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolService } from './external-tool.service';
@@ -33,7 +29,7 @@ describe('ExternalToolService', () => {
 
 	let externalToolRepo: DeepMocked<ExternalToolRepo>;
 	let schoolToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let courseToolRepo: DeepMocked<CourseExternalToolRepo>;
+	let courseToolRepo: DeepMocked<ContextExternalToolRepo>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
 	let encryptionService: DeepMocked<IEncryptionService>;
@@ -64,8 +60,8 @@ describe('ExternalToolService', () => {
 					useValue: createMock<SchoolExternalToolRepo>(),
 				},
 				{
-					provide: CourseExternalToolRepo,
-					useValue: createMock<CourseExternalToolRepo>(),
+					provide: ContextExternalToolRepo,
+					useValue: createMock<ContextExternalToolRepo>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -81,7 +77,7 @@ describe('ExternalToolService', () => {
 		service = module.get(ExternalToolService);
 		externalToolRepo = module.get(ExternalToolRepo);
 		schoolToolRepo = module.get(SchoolExternalToolRepo);
-		courseToolRepo = module.get(CourseExternalToolRepo);
+		courseToolRepo = module.get(ContextExternalToolRepo);
 		oauthProviderService = module.get(OauthProviderService);
 		mapper = module.get(ExternalToolServiceMapper);
 		encryptionService = module.get(DefaultEncryptionService);
