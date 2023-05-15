@@ -42,10 +42,9 @@ describe('ContextExternalToolService', () => {
 			};
 
 			it('should call find()', async () => {
-				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
+				const { schoolExternalToolId } = setup();
 
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
-				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
 
 				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({ schoolToolId: schoolExternalToolId });
 			});
