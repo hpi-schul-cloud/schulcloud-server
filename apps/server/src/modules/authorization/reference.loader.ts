@@ -1,5 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { AuthorizableObject, BaseDO, EntityId, User } from '@shared/domain';
+import { BaseDO, EntityId, User } from '@shared/domain';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
 	CourseGroupRepo,
 	CourseRepo,

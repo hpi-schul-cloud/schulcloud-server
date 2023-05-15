@@ -3,5 +3,4 @@ export * from './entity';
 export * from './interface';
 export * from './service';
 export * from './types';
-// TODO: I do not understand why but the export over index do not work.
-export * from './domain-object';
+// export * from './domain-object'; ~ Do not work for the moment, first import exports must be cleanup.

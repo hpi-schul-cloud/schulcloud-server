@@ -11,7 +11,7 @@ export abstract class DomainObject<T extends AuthorizableObject> implements Auth
 		this.props = props;
 	}
 
-	get id(): EntityId {
+	public get id(): EntityId {
 		return this.props.id;
 	}
 
