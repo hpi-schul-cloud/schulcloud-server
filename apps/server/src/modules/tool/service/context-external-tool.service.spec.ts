@@ -86,17 +86,21 @@ describe('ContextExternalToolService', () => {
 			const setup = () => {
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
+				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
+
 				return {
-					contextExternalToolId: contextExternalTool.id as string,
+					contextExternalTool,
 				};
 			};
 
 			it('should call getContextExternalToolById()', async () => {
-				const { contextExternalToolId } = setup();
+				const { contextExternalTool } = setup();
 
-				await service.getContextExternalToolById(contextExternalToolId);
+				const result: ContextExternalToolDO = await service.getContextExternalToolById(
+					contextExternalTool.id as string
+				);
 
-				expect(contextExternalToolRepo.findById).toHaveBeenCalledWith(contextExternalToolId);
+				expect(result).toEqual(contextExternalTool);
 			});
 		});
 	});
@@ -111,7 +115,7 @@ describe('ContextExternalToolService', () => {
 				};
 			};
 
-			it('should call deleteContextExternalTool()', async () => {
+			it('should call delete on repo', async () => {
 				const { contextExternalTool } = setup();
 
 				await service.deleteContextExternalTool(contextExternalTool);

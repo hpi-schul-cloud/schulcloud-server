@@ -31,7 +31,9 @@ export class ContextExternalToolUc {
 	}
 
 	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
-		const tool = await this.contextExternalToolService.getContextExternalToolById(contextExternalToolId);
+		const tool: ContextExternalToolDO = await this.contextExternalToolService.getContextExternalToolById(
+			contextExternalToolId
+		);
 		await this.ensureContextPermission(userId, tool.contextId, tool.contextType);
 
 		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
