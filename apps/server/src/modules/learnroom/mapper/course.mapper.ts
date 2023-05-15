@@ -1,5 +1,5 @@
 import { Course } from '@shared/domain';
-import { CourseMetadataResponse } from '../controller/dto';
+import { CourseMetadataResponse, CourseResponse } from '../controller/dto';
 
 export class CourseMapper {
 	static mapToMetadataResponse(course: Course): CourseMetadataResponse {
@@ -13,6 +13,11 @@ export class CourseMapper {
 			courseMetadata.untilDate,
 			courseMetadata.copyingSince
 		);
+		return dto;
+	}
+
+	static mapToCourseResponse(course: Course): CourseResponse {
+		const dto = new CourseResponse(course);
 		return dto;
 	}
 }
