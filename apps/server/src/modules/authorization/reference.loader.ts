@@ -65,7 +65,7 @@ export class ReferenceLoader {
 		if (repo) {
 			return repo;
 		}
-		throw new NotImplementedException('REPO_NOT_IMPLEMENT');
+		throw new NotImplementedException('REPO_OR_SERVICE_NOT_IMPLEMENT');
 	}
 
 	async loadEntity(

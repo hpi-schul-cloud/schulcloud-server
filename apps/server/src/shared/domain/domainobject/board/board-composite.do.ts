@@ -1,15 +1,7 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-// TODO: Fix import over index
-import { DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { DomainObject } from '@shared/domain/domain-object'; // fix import if it is avaible
+import { EntityId } from '@shared/domain';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
-
-export interface BoardCompositeProps {
-	id: EntityId;
-	children: AnyBoardDo[];
-	createdAt: Date;
-	updatedAt: Date;
-}
 
 export abstract class BoardComposite<T extends BoardCompositeProps> extends DomainObject<T> {
 	get children(): AnyBoardDo[] {
@@ -53,4 +45,11 @@ export abstract class BoardComposite<T extends BoardCompositeProps> extends Doma
 	abstract accept(visitor: BoardCompositeVisitor): void;
 
 	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void>;
+}
+
+export interface BoardCompositeProps {
+	id: EntityId;
+	children: AnyBoardDo[];
+	createdAt: Date;
+	updatedAt: Date;
 }
