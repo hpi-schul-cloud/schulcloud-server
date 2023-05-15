@@ -20,11 +20,11 @@ import {
 	userFactory,
 } from '@shared/testing';
 import request, { Response } from 'supertest';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server';
-import { ICurrentUser } from '@src/modules/authentication';
-import { ToolLaunchParams } from '../controller/dto/tool-launch.params';
-import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
+import { JwtAuthGuard } from '../../../../authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '../../../../server';
+import { ICurrentUser } from '../../../../authentication';
+import { ToolLaunchParams } from '../dto/tool-launch.params';
+import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;
