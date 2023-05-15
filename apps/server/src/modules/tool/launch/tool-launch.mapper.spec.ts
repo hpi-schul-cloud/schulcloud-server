@@ -38,6 +38,7 @@ describe('ToolLaunchMapper', () => {
 				method: toolLaunchRequestDO.method,
 				url: toolLaunchRequestDO.url,
 				payload: toolLaunchRequestDO.payload,
+				openNewTab: toolLaunchRequestDO.openNewTab,
 			});
 		});
 	});

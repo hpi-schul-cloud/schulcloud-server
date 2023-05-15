@@ -6,5 +6,6 @@ export const toolLaunchDataFactory = BaseFactory.define<ToolLaunchDataDO, ToolLa
 		type: ToolLaunchDataType.BASIC,
 		baseUrl: 'https://www.basic-baseurl.com/',
 		properties: [],
+		openNewTab: false,
 	};
 });

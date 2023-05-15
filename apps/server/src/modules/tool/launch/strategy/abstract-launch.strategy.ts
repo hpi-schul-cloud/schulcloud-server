@@ -1,9 +1,9 @@
 import {
-	ToolLaunchRequestDO,
 	LaunchRequestMethod,
 	PropertyDataDO,
 	PropertyLocation,
 	ToolLaunchDataDO,
+	ToolLaunchRequestDO,
 } from '@shared/domain/domainobject/tool/launch';
 import {
 	ContextExternalToolDO,
@@ -13,6 +13,7 @@ import {
 	CustomParameterScope,
 	CustomParameterType,
 	ExternalToolConfigDO,
+	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
 import { IToolLaunchParams } from './tool-launch-params.interface';
@@ -21,7 +22,7 @@ import { ToolContextType } from '../../interface';
 
 export abstract class AbstractLaunchStrategy {
 	public createLaunchData(data: IToolLaunchParams): ToolLaunchDataDO {
-		const launchData: ToolLaunchDataDO = this.buildToolLaunchDataFromAbstractConfig(data.config);
+		const launchData: ToolLaunchDataDO = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
 		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
 		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.config));
 		return launchData;
@@ -40,6 +41,7 @@ export abstract class AbstractLaunchStrategy {
 			method: requestMethod,
 			url,
 			payload,
+			openNewTab: toolLaunchDataDO.openNewTab,
 		};
 	}
 
@@ -82,11 +84,12 @@ export abstract class AbstractLaunchStrategy {
 		return launchRequestMethod;
 	}
 
-	private buildToolLaunchDataFromAbstractConfig(config: ExternalToolConfigDO): ToolLaunchDataDO {
+	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchDataDO {
 		const launchData = new ToolLaunchDataDO({
-			baseUrl: config.baseUrl,
-			type: ToolLaunchMapper.mapToToolLaunchDataType(config.type),
+			baseUrl: externalToolDO.config.baseUrl,
+			type: ToolLaunchMapper.mapToToolLaunchDataType(externalToolDO.config.type),
 			properties: [],
+			openNewTab: externalToolDO.openNewTab,
 		});
 
 		return launchData;

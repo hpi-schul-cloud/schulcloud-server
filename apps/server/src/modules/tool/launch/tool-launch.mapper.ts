@@ -27,12 +27,13 @@ export class ToolLaunchMapper {
 	}
 
 	static mapToToolLaunchRequestResponse(toolLaunchRequestDO: ToolLaunchRequestDO): ToolLaunchRequestResponse {
-		const { method, url, payload } = toolLaunchRequestDO;
+		const { method, url, payload, openNewTab } = toolLaunchRequestDO;
 
 		const response = new ToolLaunchRequestResponse({
 			method,
 			url,
 			payload,
+			openNewTab,
 		});
 		return response;
 	}

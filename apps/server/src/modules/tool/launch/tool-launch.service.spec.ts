@@ -22,8 +22,7 @@ import { ToolLaunchDataDO } from '@shared/domain/domainobject/tool/launch';
 import { toolLaunchDataFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-data.factory';
 import { ToolLaunchService } from './tool-launch.service';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
-import { BasicToolLaunchStrategy } from './strategy/basic-tool-launch.strategy';
-import { IToolLaunchParams } from './strategy/tool-launch-params.interface';
+import { BasicToolLaunchStrategy, IToolLaunchParams } from './strategy';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -69,8 +68,10 @@ describe('ToolLaunchService', () => {
 	describe('getLaunchData', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					schoolToolId: schoolExternalToolDO.id,
+				});
 				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: basicToolConfigDO,
@@ -132,8 +133,10 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is LTI11', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					schoolToolId: schoolExternalToolDO.id,
+				});
 				const lti11ToolConfigDO: Lti11ToolConfigDO = lti11ToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: lti11ToolConfigDO,
@@ -194,8 +197,10 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is Oauth2', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					schoolToolId: schoolExternalToolDO.id,
+				});
 				const oauth2ToolConfigDO: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: oauth2ToolConfigDO,
@@ -256,8 +261,10 @@ describe('ToolLaunchService', () => {
 
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
+					schoolToolId: schoolExternalToolDO.id,
+				});
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
 				externalToolDO.config.type = 'unknown' as ToolConfigType;
 
@@ -280,7 +287,7 @@ describe('ToolLaunchService', () => {
 				const { launchParams } = setup();
 
 				await expect(service.getLaunchData(launchParams.contextExternalToolDO)).rejects.toThrow(
-					InternalServerErrorException
+					new InternalServerErrorException('Unknown tool config type')
 				);
 			});
 

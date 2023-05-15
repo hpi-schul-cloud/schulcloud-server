@@ -9,6 +9,7 @@ export const toolLaunchRequestFactory = BaseFactory.define<ToolLaunchRequestDO, 
 			method: LaunchRequestMethod.GET,
 			url: 'https://example.com/tool-launch',
 			payload: '{ "key": "value" }',
+			openNewTab: false,
 		};
 	}
 );

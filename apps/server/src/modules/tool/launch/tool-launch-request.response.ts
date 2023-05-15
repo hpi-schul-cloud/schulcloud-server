@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { LaunchRequestMethod } from '@shared/domain';
 
 export class ToolLaunchRequestResponse {
@@ -20,12 +20,19 @@ export class ToolLaunchRequestResponse {
 		example: '{ "key": "value" }',
 		required: false,
 	})
-	@ApiPropertyOptional()
 	payload?: string;
+
+	@ApiProperty({
+		description: 'Specifies whether the Tool should be launched in a new tab',
+		example: true,
+		required: false,
+	})
+	openNewTab?: boolean;
 
 	constructor(props: ToolLaunchRequestResponse) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
+		this.openNewTab = props.openNewTab;
 	}
 }

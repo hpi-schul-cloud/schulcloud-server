@@ -7,9 +7,12 @@ export class ToolLaunchRequestDO {
 
 	payload: string;
 
+	openNewTab: boolean;
+
 	constructor(props: ToolLaunchRequestDO) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;
+		this.openNewTab = props.openNewTab;
 	}
 }

@@ -138,6 +138,7 @@ describe('AbstractLaunchStrategy', () => {
 			expect(result).toEqual<ToolLaunchDataDO>({
 				baseUrl: launchParams.config.baseUrl,
 				type: ToolLaunchDataType.BASIC,
+				openNewTab: false,
 				properties: [
 					{
 						name: globalCustomParameter.name,
@@ -180,6 +181,7 @@ describe('AbstractLaunchStrategy', () => {
 			expect(result).toEqual<ToolLaunchDataDO>({
 				baseUrl: launchParams.config.baseUrl,
 				type: ToolLaunchDataType.BASIC,
+				openNewTab: false,
 				properties: [
 					{
 						name: concreteConfigParameter.name,
@@ -208,6 +210,7 @@ describe('AbstractLaunchStrategy', () => {
 			expect(result).toEqual<ToolLaunchDataDO>({
 				baseUrl: launchParams.config.baseUrl,
 				type: ToolLaunchDataType.BASIC,
+				openNewTab: false,
 				properties: [
 					{
 						name: globalCustomParameter.name,
@@ -247,6 +250,7 @@ describe('AbstractLaunchStrategy', () => {
 			expect(result).toEqual<ToolLaunchDataDO>({
 				baseUrl: launchParams.config.baseUrl,
 				type: ToolLaunchDataType.BASIC,
+				openNewTab: false,
 				properties: [
 					{
 						name: schoolCustomParameter.name,
@@ -286,6 +290,7 @@ describe('AbstractLaunchStrategy', () => {
 			expect(result).toEqual<ToolLaunchDataDO>({
 				baseUrl: launchParams.config.baseUrl,
 				type: ToolLaunchDataType.BASIC,
+				openNewTab: false,
 				properties: [
 					{
 						name: contextCustomParameter.name,
@@ -332,6 +337,7 @@ describe('AbstractLaunchStrategy', () => {
 				method: LaunchRequestMethod.GET,
 				url: `${toolLaunchDataDO.baseUrl}${propertyData1.value}?${propertyData2.name}=${propertyData2.value}`,
 				payload: expectedPayload,
+				openNewTab: toolLaunchDataDO.openNewTab,
 			});
 		});
 
