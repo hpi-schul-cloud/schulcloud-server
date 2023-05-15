@@ -7,6 +7,7 @@ export abstract class ElementContentBody {
 	@ApiProperty({
 		enum: ContentElementType,
 		description: 'the type of the updated element',
+		enumName: 'ContentElementType',
 	})
 	@IsEnum(ContentElementType)
 	type!: ContentElementType;
