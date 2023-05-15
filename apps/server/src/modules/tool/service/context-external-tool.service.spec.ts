@@ -93,7 +93,7 @@ describe('ContextExternalToolService', () => {
 				};
 			};
 
-			it('should call getContextExternalToolById()', async () => {
+			it('should return a contextExternalTool', async () => {
 				const { contextExternalTool } = setup();
 
 				const result: ContextExternalToolDO = await service.getContextExternalToolById(
