@@ -6,7 +6,6 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { logger } from '@mikro-orm/nestjs';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
@@ -90,7 +89,7 @@ export class UserLoginMigrationUc {
 		}
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
-		logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);
+		this.logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);
 
 		return userLoginMigrationDO;
 	}
