@@ -11,17 +11,16 @@ import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParame
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolConfigurationTemplateResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
-	ExternalToolConfigurationTemplateResponse,
 } from '../dto';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
-	[CustomParameterScope.COURSE]: CustomParameterScopeParams.COURSE,
 	[CustomParameterScope.SCHOOL]: CustomParameterScopeParams.SCHOOL,
 	[CustomParameterScope.CONTEXT]: CustomParameterScopeParams.CONTEXT,
 };

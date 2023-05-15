@@ -2,6 +2,11 @@ import { Scope } from '@shared/repo';
 import { ContextExternalTool, EntityId } from '@shared/domain';
 
 export class ContextExternalToolScope extends Scope<ContextExternalTool> {
+	byId(id: EntityId): ContextExternalToolScope {
+		this.addQuery({ id });
+		return this;
+	}
+
 	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !== undefined) {
 			this.addQuery({ schoolTool: schoolToolId });

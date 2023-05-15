@@ -30,7 +30,6 @@ import {
 const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
 	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
 	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
-	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
 	[CustomParameterScopeParams.CONTEXT]: CustomParameterScope.CONTEXT,
 };
 

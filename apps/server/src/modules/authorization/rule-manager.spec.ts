@@ -13,6 +13,7 @@ import {
 	TaskRule,
 	TeamRule,
 	UserRule,
+	ContextExternalToolRule,
 } from '@shared/domain/rules';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
@@ -31,6 +32,7 @@ describe('RuleManager', () => {
 	let submissionRule: DeepMocked<SubmissionRule>;
 	let schoolExternalToolRule: DeepMocked<SchoolExternalToolRule>;
 	let boardNodeRule: DeepMocked<BoardNodeRule>;
+	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -49,6 +51,7 @@ describe('RuleManager', () => {
 				{ provide: SubmissionRule, useValue: createMock<SubmissionRule>() },
 				{ provide: SchoolExternalToolRule, useValue: createMock<SchoolExternalToolRule>() },
 				{ provide: BoardNodeRule, useValue: createMock<BoardNodeRule>() },
+				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 			],
 		}).compile();
 
@@ -64,6 +67,7 @@ describe('RuleManager', () => {
 		submissionRule = await module.get(SubmissionRule);
 		schoolExternalToolRule = await module.get(SchoolExternalToolRule);
 		boardNodeRule = await module.get(BoardNodeRule);
+		contextExternalToolRule = await module.get(ContextExternalToolRule);
 	});
 
 	afterEach(() => {
@@ -93,6 +97,7 @@ describe('RuleManager', () => {
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -113,6 +118,7 @@ describe('RuleManager', () => {
 				expect(submissionRule.isApplicable).toBeCalled();
 				expect(schoolExternalToolRule.isApplicable).toBeCalled();
 				expect(boardNodeRule.isApplicable).toBeCalled();
+				expect(contextExternalToolRule.isApplicable).toBeCalled();
 			});
 
 			it('should return CourseRule', () => {
@@ -141,6 +147,7 @@ describe('RuleManager', () => {
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};
@@ -169,6 +176,7 @@ describe('RuleManager', () => {
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
 				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
 			};

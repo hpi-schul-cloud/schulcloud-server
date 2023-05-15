@@ -1,6 +1,7 @@
 import {
 	AnyBoardDo,
 	BaseDO,
+	ContextExternalToolDO,
 	Course,
 	CourseGroup,
 	EntityId,
@@ -23,7 +24,8 @@ export type AllowedEntity =
 	| Team
 	| Submission
 	| SchoolExternalToolDO
-	| AnyBoardDo;
+	| AnyBoardDo
+	| ContextExternalToolDO;
 
 export interface AuthorizationLoaderService {
 	findById(id: EntityId): Promise<BaseDO>;

@@ -1,15 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { contextExternalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import {
+	contextExternalToolDOFactory,
+	schoolDOFactory,
+	schoolExternalToolDOFactory,
+} from '@shared/testing/factory/domainobject/';
+import { ContextExternalToolDO, Permission, SchoolDO, SchoolExternalToolDO } from '@shared/domain';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ToolContextType } from '../interface';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
 	let service: ContextExternalToolService;
 
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,23 +26,41 @@ describe('ContextExternalToolService', () => {
 					provide: ContextExternalToolRepo,
 					useValue: createMock<ContextExternalToolRepo>(),
 				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ContextExternalToolService);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+		authorizationService = module.get(AuthorizationService);
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	beforeEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('deleteBySchoolExternalToolId is called', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
-				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const schoolExternalToolId = schoolExternalTool.id as string;
+				const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+					schoolToolRef: { schoolToolId: schoolExternalToolId },
+				});
+				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+					schoolToolRef: { schoolToolId: schoolExternalToolId },
+				});
 
 				return {
 					schoolExternalTool,
-					schoolExternalToolId: schoolExternalTool.id as string,
+					schoolExternalToolId,
 					contextExternalTool1,
 					contextExternalTool2,
 				};
@@ -46,7 +71,9 @@ describe('ContextExternalToolService', () => {
 
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
-				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({ schoolToolId: schoolExternalToolId });
+				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
+					schoolToolRef: { schoolToolId: schoolExternalToolId },
+				});
 			});
 
 			it('should call deleteBySchoolExternalToolIds()', async () => {
@@ -55,71 +82,123 @@ describe('ContextExternalToolService', () => {
 
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
-				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1.id, contextExternalTool2.id]);
+				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1, contextExternalTool2]);
 			});
 		});
-	});
 
-	describe('createContextExternalTool is called', () => {
-		describe('when contextExternalTool is given', () => {
-			const setup = () => {
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+		describe('createContextExternalTool is called', () => {
+			describe('when contextExternalTool is given', () => {
+				const setup = () => {
+					const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
-				return {
-					contextExternalTool,
+					return {
+						contextExternalTool,
+					};
 				};
-			};
 
-			it('should call contextExternalToolRepo ', async () => {
-				const { contextExternalTool } = setup();
+				it('should call contextExternalToolRepo ', async () => {
+					const { contextExternalTool } = setup();
 
-				await service.createContextExternalTool(contextExternalTool);
+					await service.createContextExternalTool(contextExternalTool);
 
-				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
+					expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
+				});
 			});
 		});
-	});
 
-	describe('getContextExternalToolById is called', () => {
-		describe('when contextExternalToolId is given', () => {
-			const setup = () => {
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+		describe('getContextExternalToolById is called', () => {
+			describe('when contextExternalToolId is given', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId();
+					const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ schoolId: school.id });
+					const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
+						.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+						.build();
 
-				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
+					contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
 
-				return {
-					contextExternalTool,
+					return {
+						contextExternalTool,
+					};
 				};
-			};
 
-			it('should return a contextExternalTool', async () => {
-				const { contextExternalTool } = setup();
+				it('should return a contextExternalTool', async () => {
+					const { contextExternalTool } = setup();
+					contextExternalToolRepo.find.mockResolvedValue([contextExternalTool]);
 
-				const result: ContextExternalToolDO = await service.getContextExternalToolById(
-					contextExternalTool.id as string
-				);
+					const result: ContextExternalToolDO = await service.getContextExternalToolById(
+						contextExternalTool.id as string
+					);
 
-				expect(result).toEqual(contextExternalTool);
+					expect(result).toEqual(contextExternalTool);
+				});
 			});
 		});
-	});
 
-	describe('deleteContextExternalTool is called', () => {
-		describe('when contextExternalToolId is given', () => {
-			const setup = () => {
-				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
+		describe('deleteContextExternalTool is called', () => {
+			describe('when contextExternalToolId is given', () => {
+				const setup = () => {
+					const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
-				return {
-					contextExternalTool,
+					return {
+						contextExternalTool,
+					};
 				};
-			};
 
-			it('should call delete on repo', async () => {
-				const { contextExternalTool } = setup();
+				it('should call delete on repo', async () => {
+					const { contextExternalTool } = setup();
 
-				await service.deleteContextExternalTool(contextExternalTool);
+					await service.deleteContextExternalTool(contextExternalTool);
 
-				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith(contextExternalTool);
+					expect(contextExternalToolRepo.delete).toHaveBeenCalledWith(contextExternalTool);
+				});
+			});
+		});
+
+		describe('ensureContextPermissions is called', () => {
+			describe('when userId and contextExternalToolDo is given', () => {
+				const setup = () => {
+					const userId = 'userId';
+					const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+
+					return {
+						userId,
+						contextExternalTool,
+					};
+				};
+
+				it('should check permission by reference for context external tool itslef', async () => {
+					const { userId, contextExternalTool } = setup();
+
+					await service.ensureContextPermissions(userId, contextExternalTool);
+
+					expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+						userId,
+						AllowedAuthorizationEntityType.ContextExternalTool,
+						contextExternalTool.id,
+						{
+							action: Action.read,
+							requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+						}
+					);
+				});
+
+				it('should check permission by reference for the dependent context of the context external tool', async () => {
+					const { userId, contextExternalTool } = setup();
+					contextExternalTool.contextType = ToolContextType.COURSE;
+
+					await service.ensureContextPermissions(userId, contextExternalTool);
+
+					expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+						userId,
+						AllowedAuthorizationEntityType.Course,
+						contextExternalTool.contextId,
+						{
+							action: Action.read,
+							requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+						}
+					);
+				});
 			});
 		});
 	});

@@ -9,6 +9,7 @@ import { TaskCardRule } from './task-card.rule';
 import { TaskRule } from './task.rule';
 import { TeamRule } from './team.rule';
 import { UserRule } from './user.rule';
+import { ContextExternalToolRule } from './context-external-tool.rule';
 
 export * from './course-group.rule';
 export * from './course.rule';
@@ -21,6 +22,7 @@ export * from './team.rule';
 export * from './user.rule';
 export * from './school-external-tool.rule';
 export * from './board-node.rule';
+export * from './context-external-tool.rule';
 
 export const ALL_RULES = [
 	LessonRule,
@@ -34,4 +36,5 @@ export const ALL_RULES = [
 	UserRule,
 	SchoolExternalToolRule,
 	BoardNodeRule,
+	ContextExternalToolRule,
 ];

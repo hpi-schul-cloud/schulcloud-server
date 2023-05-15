@@ -3,10 +3,10 @@ import {
 	BasicToolConfigDO,
 	ContextExternalToolDO,
 	ExternalToolDO,
-	ToolLaunchRequestDO,
 	SchoolExternalToolDO,
 	ToolLaunchDataDO,
 	ToolLaunchDataType,
+	ToolLaunchRequestDO,
 } from '@shared/domain';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { ToolConfigType } from '../../interface';
@@ -41,7 +41,7 @@ export class ToolLaunchService {
 	}
 
 	async getLaunchData(contextExternalToolDO: ContextExternalToolDO): Promise<ToolLaunchDataDO> {
-		const schoolExternalToolId = contextExternalToolDO.schoolToolId;
+		const schoolExternalToolId = contextExternalToolDO.schoolToolRef.schoolToolId;
 
 		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
 

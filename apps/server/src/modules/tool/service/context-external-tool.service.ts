@@ -1,16 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
-import { EntityId } from '@shared/domain';
+import { EntityId, Permission } from '@shared/domain';
+import {
+	Action,
+	AllowedAuthorizationEntityType,
+	AuthorizationLoaderService,
+	AuthorizationService,
+} from '@src/modules/authorization';
+import { ContextTypeMapper } from './mapper';
 
 @Injectable()
-export class ContextExternalToolService {
-	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+export class ContextExternalToolService implements AuthorizationLoaderService {
+	constructor(
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
+		@Inject(forwardRef(() => AuthorizationService))
+		private readonly authorizationService: AuthorizationService
+	) {}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
-		const contextExternalTool = await this.contextExternalToolRepo.findById(contextExternalToolId);
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+			id: contextExternalToolId,
+		});
 
-		return contextExternalTool;
+		return contextExternalTools[0];
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
@@ -23,7 +36,9 @@ export class ContextExternalToolService {
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
 		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
-			schoolToolId: schoolExternalToolId,
+			schoolToolRef: {
+				schoolToolId: schoolExternalToolId,
+			},
 		});
 
 		await this.contextExternalToolRepo.delete(contextExternalTools);
@@ -31,5 +46,32 @@ export class ContextExternalToolService {
 
 	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<void> {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
+	}
+
+	// TODO: add new permission CONTEXT_TOOL_USER to teacher or user role - maybe better teacher for testing first?
+	public async ensureContextPermissions(userId: EntityId, contextExternalToolDO: ContextExternalToolDO): Promise<void> {
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			AllowedAuthorizationEntityType.ContextExternalTool,
+			contextExternalToolDO.id ?? '',
+			{
+				action: Action.read,
+				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+			}
+		);
+
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextType),
+			contextExternalToolDO.contextId,
+			{
+				action: Action.read,
+				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+			}
+		);
+	}
+
+	findById(id: EntityId): Promise<ContextExternalToolDO> {
+		return this.getContextExternalToolById(id);
 	}
 }

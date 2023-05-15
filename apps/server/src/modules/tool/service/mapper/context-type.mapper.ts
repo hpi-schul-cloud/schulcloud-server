@@ -1,4 +1,4 @@
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AllowedAuthorizationEntityType } from '@src/modules/authorization/types';
 import { ToolContextType } from '../../interface';
 
 const typeMapping: Record<ToolContextType, AllowedAuthorizationEntityType> = {

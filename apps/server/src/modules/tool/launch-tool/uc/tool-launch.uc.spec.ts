@@ -11,7 +11,6 @@ describe('ToolLaunchUc', () => {
 	let uc: ToolLaunchUc;
 
 	let toolLaunchService: DeepMocked<ToolLaunchService>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 
 	beforeEach(async () => {
@@ -61,28 +60,28 @@ describe('ToolLaunchUc', () => {
 		};
 
 		it('should call service to get context external tool', async () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { userId, contextExternalToolId, contextExternalToolDO } = setup();
+			const { userId, contextExternalToolId } = setup();
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
-			// TODO: expect
+			expect(contextExternalToolService.getContextExternalToolById).toHaveBeenCalledWith(contextExternalToolId);
 		});
 
 		it('should call service to get data', async () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { userId, contextExternalToolId, contextExternalToolDO } = setup();
-			// TODO: mock service to return context external tool
+			contextExternalToolService.ensureContextPermissions.mockResolvedValue();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalToolDO);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
-			// expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(contextExternalToolDO);
+			expect(toolLaunchService.getLaunchData).toHaveBeenCalledWith(contextExternalToolDO);
 		});
 
 		it('should call service to generate launch request', async () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { userId, contextExternalToolId, contextExternalToolDO, toolLaunchDataDO } = setup();
-			// TODO: mock service to return context external tool
+			contextExternalToolService.ensureContextPermissions.mockResolvedValue();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalToolDO);
+
 			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchDataDO);
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
@@ -91,9 +90,9 @@ describe('ToolLaunchUc', () => {
 		});
 
 		it('should return launch request', async () => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { userId, contextExternalToolId, toolLaunchDataDO } = setup();
-			// TODO: mock service to return context external tool
+			const { userId, contextExternalToolId, toolLaunchDataDO, contextExternalToolDO } = setup();
+			contextExternalToolService.ensureContextPermissions.mockResolvedValue();
+			contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalToolDO);
 			toolLaunchService.getLaunchData.mockResolvedValue(toolLaunchDataDO);
 
 			const toolLaunchRequest: ToolLaunchRequestDO = await uc.getToolLaunchRequest(userId, contextExternalToolId);

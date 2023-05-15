@@ -10,13 +10,15 @@ export class ToolLaunchUc {
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	// TODO: make this work and test it
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolLaunchRequestDO> {
-		// check permission to launch. also use context type and id
-		const contextExternalToolDO: ContextExternalToolDO = {} as ContextExternalToolDO;
+		const contextExternalToolDO: ContextExternalToolDO =
+			await this.contextExternalToolService.getContextExternalToolById(contextExternalToolId);
+
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO);
+
 		const toolLaunchDataDO: ToolLaunchDataDO = await this.toolLaunchService.getLaunchData(contextExternalToolDO);
 		const launchRequestDO: ToolLaunchRequestDO = this.toolLaunchService.generateLaunchRequest(toolLaunchDataDO);
+
 		return launchRequestDO;
 	}
 }

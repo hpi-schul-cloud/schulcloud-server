@@ -10,6 +10,8 @@ describe('CourseExternalToolScope', () => {
 		scope.allowEmptyQuery(true);
 	});
 
+	// TODO test new function
+
 	describe('bySchoolToolId is called', () => {
 		describe('when schoolToolId parameter is undefined', () => {
 			it('should return scope without added schoolToolId to query', () => {
