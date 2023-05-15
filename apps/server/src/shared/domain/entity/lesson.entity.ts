@@ -64,21 +64,19 @@ export interface IComponentInternalProperties {
 	url: string;
 }
 
-export interface IComponentProperties {
+export type IComponentProperties = {
 	_id?: string;
 	title?: string;
 	hidden: boolean;
-	component: ComponentType;
 	user?: User;
-	content?:
-		| IComponentTextProperties
-		| IComponentGeogebraProperties
-		| IComponentLernstoreProperties
-		| IComponentEtherpadProperties
-		| IComponentInternalProperties
-		| IComponentNexboardProperties;
-}
-
+} & (
+	| { component: ComponentType.TEXT; content: IComponentTextProperties }
+	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
+	| { component: ComponentType.GEOGEBRA; content: IComponentGeogebraProperties }
+	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
+	| { component: ComponentType.LERNSTORE; content: IComponentLernstoreProperties }
+	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
+);
 export interface ILessonParent {
 	getStudentIds(): EntityId[];
 }

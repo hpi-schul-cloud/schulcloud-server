@@ -1,18 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson, Task } from '@shared/domain';
+import { EntityId, Lesson } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
-import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
-import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
-import {
-	IComponentEtherpadProperties,
-	IComponentGeogebraProperties,
-	IComponentProperties,
-	IComponentTextProperties,
-} from '@src/shared/domain/entity/lesson.entity';
+import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
 import {
-	hasShape,
 	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
@@ -77,77 +69,39 @@ export class CommonCartridgeExportService {
 		lessonId: string,
 		content: IComponentProperties
 	): ICommonCartridgeResourceProps | undefined {
-		if (hasShape<IComponentTextProperties>(content, [['text', 'string']])) {
+		if (content.component === ComponentType.TEXT) {
 			return {
 				version: this.defaultVersion,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id || ''}.html`,
 				title: content.title || '',
-				html: `<h1>${content.title || ''}</h1><p>${content.text}</p>`,
+				html: `<h1>${content.title || ''}</h1><p>${content.content.text}</p>`,
 			};
 		}
 
-		if (hasShape<IComponentGeogebraProperties>(content, [['materialId', 'string']])) {
-			return {
-				version: this.defaultVersion,
-				type: CommonCartridgeResourceType.WEB_LINK,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id || ''}.html`,
-				title: content.title || '',
-				url: content.materialId,
-			};
-		}
-
-		if (
-			hasShape<IComponentEtherpadProperties>(content, [
-				['title', 'string'],
-				['description', 'string'],
-				['url', 'string'],
-			])
-		) {
+		if (content.component === ComponentType.GEOGEBRA) {
 			return {
 				version: this.defaultVersion,
 				type: CommonCartridgeResourceType.LTI,
 				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id || ''}.html`,
-				title: content.title,
-				description: content.description,
-				url: content.url,
+				href: `i${lessonId}/i${content._id || ''}.xml`,
+				title: content.title || '',
+				url: content.content.materialId,
+			};
+		}
+
+		if (content.component === ComponentType.ETHERPAD) {
+			return {
+				version: this.defaultVersion,
+				type: CommonCartridgeResourceType.WEB_LINK,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id || ''}.xml`,
+				title: content.content.title,
+				url: content.content.url,
 			};
 		}
 
 		return undefined;
-	}
-
-	private mapTasksToAssignments(tasks: Task[]): ICommonCartridgeAssignmentProps[] {
-		return tasks.map((task) => {
-			return {
-				identifier: `i${task.id}`,
-				title: task.name,
-				description: task.description,
-			};
-		});
-	}
-
-	/**
-	 * This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.
-	 * @param IComponentProperties
-	 * @return ICommonCartridgeLessonContentProps
-	 * */
-	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
-		return contents.map((content) => {
-			let mappedContent = '';
-
-			if (hasShape<IComponentTextProperties>(content, [['text', 'string']])) {
-				mappedContent = content.text;
-			}
-
-			return {
-				identifier: `i${content._id as string}`,
-				title: content.title as string,
-				content: mappedContent,
-			};
-		});
 	}
 }
