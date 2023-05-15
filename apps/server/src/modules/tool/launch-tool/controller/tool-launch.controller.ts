@@ -1,8 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { LaunchRequestMethod, ToolLaunchRequestDO } from '@shared/domain';
-import { Authenticate, CurrentUser } from '../../../authentication/decorator/auth.decorator';
-import { ICurrentUser } from '../../../authentication';
+import { ToolLaunchRequestDO } from '@shared/domain';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ToolLaunchUc } from '../uc/tool-launch.uc';
 import { ToolLaunchParams } from './dto/tool-launch.params';
 import { ToolLaunchRequestResponse } from './dto/tool-launch-request.response';
@@ -23,20 +23,11 @@ export class ToolLaunchController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolLaunchParams
 	): Promise<ToolLaunchRequestResponse> {
-		/* const toolLaunchRequest: ToolLaunchRequestDO = {
-			method: LaunchRequestMethod.GET,
-			url: 'https://www.google.com',
-			payload: '',
-		}; await this.toolLaunchUc.getToolLaunchRequest(
+		const toolLaunchRequest: ToolLaunchRequestDO = await this.toolLaunchUc.getToolLaunchRequest(
 			currentUser.userId,
 			params.contextExternalToolId
-		); */
-		const toolLaunchRequest: ToolLaunchRequestDO = {
-			method: LaunchRequestMethod.GET,
-			url: 'https://www.google.com/search?q=hello+world',
-			payload: '',
-			openNewTab: true,
-		};
+		);
+
 		const response: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
 		return response;
 	}

@@ -10,7 +10,7 @@ import {
 } from '@shared/domain';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { ToolConfigType } from '../../interface';
-import { BasicToolLaunchStrategy } from '../strategy';
+import { BasicToolLaunchStrategy } from './strategy';
 
 @Injectable()
 export class ToolLaunchService {

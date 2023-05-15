@@ -17,14 +17,15 @@ import {
 	SchoolExternalToolDO,
 } from '@shared/domain';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ToolLaunchMapper } from '../mapper/tool-launch.mapper';
-import { ToolContextType } from '../../interface';
+import { ToolLaunchMapper } from '../../mapper/tool-launch.mapper';
+import { ToolContextType } from '../../../interface';
 
 export abstract class AbstractLaunchStrategy {
 	public createLaunchData(data: IToolLaunchParams): ToolLaunchDataDO {
 		const launchData: ToolLaunchDataDO = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
 		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
 		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.config));
+
 		return launchData;
 	}
 
@@ -37,12 +38,14 @@ export abstract class AbstractLaunchStrategy {
 		const url: string = this.buildUrl(toolLaunchDataDO);
 		const payload: string = this.buildToolLaunchRequestPayload(toolLaunchDataDO.properties);
 
-		return {
+		const toolLaunchRequestDO: ToolLaunchRequestDO = {
 			method: requestMethod,
 			url,
 			payload,
 			openNewTab: toolLaunchDataDO.openNewTab,
 		};
+
+		return toolLaunchRequestDO;
 	}
 
 	private buildUrl(toolLaunchDataDO: ToolLaunchDataDO): string {
@@ -69,7 +72,8 @@ export abstract class AbstractLaunchStrategy {
 			url.search += `?${queryParams}`;
 		}
 
-		return url.toString();
+		const urlString = url.toString();
+		return urlString;
 	}
 
 	private determineLaunchRequestMethod(properties: PropertyDataDO[]): LaunchRequestMethod {
@@ -125,22 +129,33 @@ export abstract class AbstractLaunchStrategy {
 				(parameter: CustomParameterDO) => parameter.scope === scope && parameterNames.includes(parameter.name)
 			);
 
-			for (const parameter of parametersToInclude) {
-				const matchingParameter: CustomParameterEntryDO | undefined = params.find(
-					(param: CustomParameterEntryDO) => param.name === parameter.name
-				);
+			this.handleParametersToInclude(
+				parametersToInclude,
+				params,
+				propertyData,
+				schoolExternalToolDO,
+				contextExternalToolDO
+			);
+		}
+	}
 
-				if (matchingParameter) {
-					const value = this.getParameterValue(
-						parameter,
-						matchingParameter,
-						schoolExternalToolDO,
-						contextExternalToolDO
-					);
+	private handleParametersToInclude(
+		parametersToInclude: CustomParameterDO[],
+		params: CustomParameterEntryDO[],
+		propertyData: PropertyDataDO[],
+		schoolExternalToolDO: SchoolExternalToolDO,
+		contextExternalToolDO: ContextExternalToolDO
+	): void {
+		for (const parameter of parametersToInclude) {
+			const matchingParameter: CustomParameterEntryDO | undefined = params.find(
+				(param: CustomParameterEntryDO) => param.name === parameter.name
+			);
 
-					if (value !== undefined) {
-						this.addProperty(propertyData, parameter.name, value, parameter.location);
-					}
+			if (matchingParameter) {
+				const value = this.getParameterValue(parameter, matchingParameter, schoolExternalToolDO, contextExternalToolDO);
+
+				if (value !== undefined) {
+					this.addProperty(propertyData, parameter.name, value, parameter.location);
 				}
 			}
 		}

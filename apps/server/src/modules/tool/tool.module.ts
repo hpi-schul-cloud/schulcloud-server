@@ -23,7 +23,7 @@ import {
 } from './service';
 import { ExternalToolServiceMapper } from './service/mapper';
 import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
-import { BasicToolLaunchStrategy } from './launch-tool/strategy';
+import { BasicToolLaunchStrategy } from './launch-tool/service/strategy';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
