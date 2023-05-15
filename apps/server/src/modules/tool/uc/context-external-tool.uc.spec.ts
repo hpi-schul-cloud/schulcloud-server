@@ -118,7 +118,7 @@ describe('ContextExternalToolUc', () => {
 					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
 				};
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
 				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
 
 				return {
