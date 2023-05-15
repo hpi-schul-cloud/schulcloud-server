@@ -63,7 +63,7 @@ export class UserLoginMigrationService {
 		return savedMigration;
 	}
 
-	async migrationStart(schoolId: string): Promise<UserLoginMigrationDO> {
+	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		const userLoginMigration: UserLoginMigrationDO = await this.createNewMigration(schoolId, schoolDo);

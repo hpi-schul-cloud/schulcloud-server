@@ -6,6 +6,7 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { logger } from '@mikro-orm/nestjs';
 import { OAuthMigrationError } from '../error/oauth-migration.error';
 import { SchoolMigrationError } from '../error/school-migration.error';
 import { UserLoginMigrationError } from '../error/user-login-migration.error';
@@ -15,6 +16,7 @@ import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
 import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '../../authorization';
 import { SchoolService } from '../../school';
+import { StartUserLoginMigrationError } from '../error/start-user-login-migration.error';
 
 @Injectable()
 export class UserLoginMigrationUc {
@@ -60,7 +62,7 @@ export class UserLoginMigrationUc {
 		return page;
 	}
 
-	async migrationStart(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
+	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
 			AllowedAuthorizationEntityType.School,
@@ -71,20 +73,24 @@ export class UserLoginMigrationUc {
 			}
 		);
 
-		const existingUserLoginMigration: UserLoginMigrationDO | null =
-			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
-
-		if (existingUserLoginMigration) {
-			throw new ForbiddenException(`The school with schoolId ${schoolId} already started a migration.`);
-		}
-
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		if (!schoolDo.officialSchoolNumber) {
-			throw new ForbiddenException(`The school with schoolId ${schoolId} has no official school number.`);
+			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`);
 		}
 
-		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.migrationStart(schoolId);
+		const existingUserLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
+
+		if (existingUserLoginMigration?.closedAt) {
+			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already finished the migration.`);
+		}
+		if (existingUserLoginMigration) {
+			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already started the migration.`);
+		}
+
+		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
+		logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);
 
 		return userLoginMigrationDO;
 	}

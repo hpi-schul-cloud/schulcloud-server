@@ -59,8 +59,8 @@ export class UserLoginMigrationController {
 	@Post('start')
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
-	async migrationStart(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
-		const migrationDto: UserLoginMigrationDO = await this.userLoginMigrationUc.migrationStart(
+	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.userLoginMigrationUc.startMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);
