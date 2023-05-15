@@ -13,4 +13,5 @@ export * from './external-tool-update.params';
 export * from './school-external-tool-post.params';
 export * from './custom-parameter-entry.params';
 export * from './context-external-tool-post.params';
+export * from './context-external-tool-id.params';
 export * from './config';
