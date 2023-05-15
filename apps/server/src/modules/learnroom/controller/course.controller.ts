@@ -7,7 +7,7 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { CourseUc } from '../uc/course.uc';
 import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseMetadataListResponse } from './dto';
+import { CourseMetadataListResponse, CourseUrlParams } from './dto';
 import { CourseMapper } from '../mapper/course.mapper';
 
 @ApiTags('Courses')
@@ -36,15 +36,23 @@ export class CourseController {
 	@Get(':courseId/export')
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param('courseId') courseId: string,
+		@Param() urlParams: CourseUrlParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseExportUc.exportCourse(courseId, currentUser.userId);
+		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId);
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);
+	}
+
+	@Get(':courseId')
+	async getCourse(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: CourseUrlParams) {
+		const course = await this.courseUc.getCourse(currentUser.userId, urlParams.courseId);
+		const response = CourseMapper.mapToCourseResponse(course);
+
+		return response;
 	}
 }
