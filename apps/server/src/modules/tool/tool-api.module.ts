@@ -21,8 +21,8 @@ import {
 	SchoolExternalToolUc,
 } from './uc';
 import { LtiRoleMapper } from './uc/mapper';
-import { ToolLaunchController } from './launch/tool-launch.controller';
-import { ToolLaunchUc } from './launch/tool-launch.uc';
+import { ToolLaunchController } from './launch-tool/controller/tool-launch.controller';
+import { ToolLaunchUc } from './launch-tool/uc/tool-launch.uc';
 
 @Module({
 	imports: [ToolModule, UserModule, AuthorizationModule, LoggerModule, SchoolModule],

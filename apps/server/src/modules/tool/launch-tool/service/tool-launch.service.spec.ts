@@ -21,8 +21,8 @@ import {
 import { ToolLaunchDataDO } from '@shared/domain/domainobject/tool/launch';
 import { toolLaunchDataFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-data.factory';
 import { ToolLaunchService } from './tool-launch.service';
-import { ExternalToolService, SchoolExternalToolService } from '../service';
-import { BasicToolLaunchStrategy, IToolLaunchParams } from './strategy';
+import { ExternalToolService, SchoolExternalToolService } from '../../service';
+import { BasicToolLaunchStrategy, IToolLaunchParams } from '../strategy';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;

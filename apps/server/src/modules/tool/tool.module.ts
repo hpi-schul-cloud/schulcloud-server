@@ -22,8 +22,8 @@ import {
 	SchoolExternalToolValidationService,
 } from './service';
 import { ExternalToolServiceMapper } from './service/mapper';
-import { ToolLaunchService } from './launch/tool-launch.service';
-import { BasicToolLaunchStrategy } from './launch/strategy';
+import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
+import { BasicToolLaunchStrategy } from './launch-tool/strategy';
 
 @Module({
 	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],

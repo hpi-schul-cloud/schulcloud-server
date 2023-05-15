@@ -1,7 +1,7 @@
 import { CustomParameterLocation, ToolConfigType, ToolLaunchRequestDO } from '@shared/domain';
 import { PropertyLocation } from '@shared/domain/domainobject/tool/launch';
 import { ToolLaunchDataType } from '@shared/domain/domainobject/tool/launch/tool-launch-data-type';
-import { ToolLaunchRequestResponse } from './tool-launch-request.response';
+import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
 
 const customToParameterLocationMapping: Record<CustomParameterLocation, PropertyLocation> = {
 	[CustomParameterLocation.PATH]: PropertyLocation.PATH,

@@ -17,7 +17,7 @@ import {
 	SchoolExternalToolDO,
 } from '@shared/domain';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ToolLaunchMapper } from '../tool-launch.mapper';
+import { ToolLaunchMapper } from '../mapper/tool-launch.mapper';
 import { ToolContextType } from '../../interface';
 
 export abstract class AbstractLaunchStrategy {
