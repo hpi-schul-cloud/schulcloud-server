@@ -65,13 +65,14 @@ export class UserLoginMigrationService {
 
 	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
 		const userLoginMigration: UserLoginMigrationDO = await this.createNewMigration(schoolId, schoolDo);
 
 		this.enableOauthMigrationFeature(schoolDo);
 		await this.schoolService.save(schoolDo);
 
-		return userLoginMigration;
+		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return savedMigration;
 	}
 
 	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
