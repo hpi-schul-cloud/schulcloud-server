@@ -6,16 +6,18 @@ import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { OAuthMigrationError } from '../error/oauth-migration.error';
-import { SchoolMigrationError } from '../error/school-migration.error';
-import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { SchoolService } from '@src/modules/school';
+import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import {
+	OAuthMigrationError,
+	SchoolMigrationError,
+	UserLoginMigrationError,
+	StartUserLoginMigrationError,
+} from '../error';
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationQuery } from './dto/user-login-migration-query';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '../../authorization';
-import { SchoolService } from '../../school';
-import { StartUserLoginMigrationError } from '../error/start-user-login-migration.error';
 
 @Injectable()
 export class UserLoginMigrationUc {
