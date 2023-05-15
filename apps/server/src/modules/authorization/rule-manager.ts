@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { AuthorizableObject, BaseDO, User } from '@shared/domain';
+import { BaseDO, User } from '@shared/domain';
+import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import {
 	BoardNodeRule,
 	CourseGroupRule,
