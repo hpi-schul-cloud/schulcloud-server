@@ -1,7 +1,7 @@
-import { Injectable, Scope, Inject, ImATeapotException } from '@nestjs/common';
+import { Application } from '@feathersjs/express';
+import { ImATeapotException, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { Application } from '@feathersjs/express';
 
 export interface FeathersService {
 	/**

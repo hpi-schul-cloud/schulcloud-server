@@ -1,7 +1,6 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ExternalTool, SortOrderMap } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalTool, SortOrderMap, ExternalToolDO } from '@shared/domain';
 
 @Injectable()
 export class ExternalToolSortingMapper {

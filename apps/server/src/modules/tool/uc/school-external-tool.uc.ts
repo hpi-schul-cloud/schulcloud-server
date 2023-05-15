@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { EntityId, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizationService, AllowedAuthorizationEntityType } from '@src/modules/authorization';
-import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly courseExternalToolService: CourseExternalToolService,
+		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
@@ -57,7 +56,7 @@ export class SchoolExternalToolUc {
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 
 		await Promise.all([
-			this.courseExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
+			this.contextExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
 			this.schoolExternalToolService.deleteSchoolExternalToolById(schoolExternalToolId),
 		]);
 	}
