@@ -1,0 +1,26 @@
+[
+	{
+		"_id": {
+			"$oid": "644a4839d0a8301e6cf25d8f"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T10:02:33.117Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T10:02:33.117Z"
+		},
+		"schoolTool": {
+			"$oid": "644a46e5d0a8301e6cf25d86"
+		},
+		"contextId": "0000dcfbfb5c7a3f00bf21ab",
+		"contextType": "course",
+		"contextToolName": "Google-Suche",
+		"parameters": [
+			{
+				"name": "q",
+				"value": "Testsuche"
+			}
+		],
+		"toolVersion": 1
+	}
+]

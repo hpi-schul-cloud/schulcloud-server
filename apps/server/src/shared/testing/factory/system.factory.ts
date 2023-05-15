@@ -25,13 +25,15 @@ export class SystemFactory extends BaseFactory<System, ISystemProperties> {
 		return this.params(params);
 	}
 
-	withLdapConfig(): this {
+	withLdapConfig(otherParams?: DeepPartial<LdapConfig>): this {
 		const params: DeepPartial<ISystemProperties> = {
 			ldapConfig: new LdapConfig({
 				url: 'ldaps:mock.de:389',
 				active: true,
+				...otherParams,
 			}),
 		};
+
 		return this.params(params);
 	}
 

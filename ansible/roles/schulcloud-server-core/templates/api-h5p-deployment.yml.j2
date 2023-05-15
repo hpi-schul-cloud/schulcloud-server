@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-h5p-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p
+spec:
+  replicas: {{ API_H5P_EDITOR_REPLICAS|default("1", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: api-h5p
+  template:
+    metadata:
+      labels:
+        app: api-h5p
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api-h5p
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4448
+          name: api-h5p
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        command: ['npm', 'run', 'nest:start:h5p:prod']
+        readinessProbe:
+          httpGet:
+            path: api/v3/docs
+            port: 4448
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: api/v3/docs
+            port: 4448
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: api/v3/docs
+            port: 4448
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: {{ API_H5P_EDITOR_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ API_H5P_EDITOR_MEMORY_LIMITS|default("500Mi", true) }}
+          requests:
+            cpu: {{ API_H5P_EDITOR_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ API_H5P_EDITOR_MEMORY_REQUESTS|default("50Mi", true) }}

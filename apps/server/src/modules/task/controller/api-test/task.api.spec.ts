@@ -1,10 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputFormat, Permission, Task } from '@shared/domain';
+import { InputFormat, Permission } from '@shared/domain';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	courseFactory,
 	lessonFactory,
@@ -12,1148 +13,759 @@ import {
 	roleFactory,
 	submissionFactory,
 	taskFactory,
-	TestApiClient,
 	userFactory,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { TaskCreateParams, TaskListResponse, TaskResponse, TaskUpdateParams } from '@src/modules/task/controller/dto';
-import { ObjectID } from 'bson';
 import { Request } from 'express';
 import request from 'supertest';
 
 const tomorrow = new Date(Date.now() + 86400000);
 
-class API {
-	app: INestApplication;
+const createStudent = () => {
+	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
+		Permission.TASK_CARD_VIEW,
+		Permission.TASK_DASHBOARD_VIEW_V3,
+		Permission.HOMEWORK_VIEW,
+	]);
+	return { account: studentAccount, user: studentUser };
+};
 
-	routeName: string;
-
-	constructor(app: INestApplication, routeName: string) {
-		this.app = app;
-		this.routeName = routeName;
-	}
-
-	async get(query?: string | Record<string, unknown>) {
-		const response = await request(this.app.getHttpServer())
-			.get(this.routeName)
-			.set('Accept', 'application/json')
-			.set('Authorization', 'jwt')
-			.query(query || {});
-
-		return {
-			result: response.body as TaskListResponse,
-			status: response.status,
-		};
-	}
-
-	async copyTask(taskId: string, courseId: string) {
-		const params = { courseId };
-		const response = await request(this.app.getHttpServer())
-			.post(`/tasks/${taskId}/copy`)
-			.set('Authorization', 'jwt')
-			.send(params);
-
-		const copyStatus = response.body as { id: string; title: string };
-
-		return {
-			status: response.status,
-			copyStatus,
-		};
-	}
-}
+const createTeacher = () => {
+	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
+		Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
+	]);
+	return { account: teacherAccount, user: teacherUser };
+};
 
 describe('Task Controller (API)', () => {
-	describe('without permissions', () => {
-		let app: INestApplication;
-		let api: API;
+	let app: INestApplication;
+	let em: EntityManager;
+	let apiRequest: TestApiClient;
 
-		const setConfig = () => {
-			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
-		};
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		}).compile();
 
-		beforeAll(async () => {
-			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			}).compile();
-
-			app = moduleFixture.createNestApplication();
-			await app.init();
-			api = new API(app, '/tasks');
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		beforeEach(() => {
-			setConfig();
-		});
-
-		it('[FIND] /tasks', async () => {
-			const { status } = await api.get();
-			expect(status).toEqual(401);
-		});
+		app = module.createNestApplication();
+		await app.init();
+		em = app.get(EntityManager);
+		apiRequest = new TestApiClient(app, 'tasks');
 	});
 
-	describe('As user with write permissions in courses', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
-		let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	afterAll(async () => {
+		await app.close();
+	});
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
+	beforeEach(async () => {
+		await cleanupCollections(em);
+	});
 
-						return true;
-					},
-				})
-				.overrideProvider(FilesStorageClientAdapterService)
-				.useValue(createMock<FilesStorageClientAdapterService>())
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			api = new API(app, '/tasks');
-			filesStorageClientAdapterService = app.get(FilesStorageClientAdapterService);
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
-		const setup = () => {
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3],
-			});
-			const user = userFactory.build({ roles });
-
-			return user;
-		};
-
-		it('[FIND] /tasks can open it', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { result } = await api.get();
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
+	describe('[GET] /tasks', () => {
+		describe('when no authorization is provided', () => {
+			it('should return 401', async () => {
+				const { statusCode } = await apiRequest.get();
+				expect(statusCode).toEqual(401);
 			});
 		});
 
-		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { result } = await api.get({ limit: 100, skip: 100 });
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 100, // maximum is 100
-				skip: 100,
-			});
-		});
-
-		it('[FIND] /tasks should allow to modified pagination limit greater then 100', async () => {
-			const user = setup();
-
-			await em.persistAndFlush([user]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { status } = await api.get({ limit: 1000, skip: 100 });
-
-			expect(status).toEqual(400);
-		});
-
-		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const user = setup();
-			const course = courseFactory.build({ teachers: [user] });
-			const task = taskFactory.build({
-				course,
-				description: '<p>test</p>',
-				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
-			});
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { result } = await api.get();
-
-			expect(result.data[0]).toBeDefined();
-			expect(result.data[0]).toHaveProperty('status');
-			expect(result.data[0]).toHaveProperty('displayColor');
-			expect(result.data[0]).toHaveProperty('name');
-			expect(result.data[0]).toHaveProperty('description');
-			expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
-		});
-
-		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const teacher = setup();
-			const student = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.build({ course });
-			task.submissions.add(submissionFactory.submitted().build({ task, student }));
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.data[0]).toBeDefined();
-			expect(result.data[0].status).toEqual({
-				submitted: 1,
-				maxSubmissions: course.getStudentIds().length,
-				graded: 0,
-				isDraft: false,
-				isFinished: false,
-				isSubstitutionTeacher: false,
-			});
-		});
-
-		it('[FIND] /tasks retun a status flag in task if the teacher is only a substitution teacher.', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({ substitutionTeachers: [teacher] });
-			const task = taskFactory.build({ course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
-		});
-
-		it('[FIND] /tasks return a list of tasks', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({ teachers: [teacher] });
-			const task1 = taskFactory.build({ course });
-			const task2 = taskFactory.build({ course });
-			const task3 = taskFactory.build({ course });
-
-			await em.persistAndFlush([task1, task2, task3]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(3);
-		});
-
-		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
-			const teacher = setup();
-			const course1 = courseFactory.build({ teachers: [teacher] });
-			const course2 = courseFactory.build({ teachers: [teacher] });
-			const course3 = courseFactory.build({ teachers: [teacher] });
-			const task1 = taskFactory.build({ course: course1 });
-			const task2 = taskFactory.build({ course: course2 });
-
-			await em.persistAndFlush([task1, task2, course3]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(2);
-		});
-
-		it('[FIND] /tasks should also return private tasks created by the user', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({ teachers: [teacher] });
-			const task = taskFactory.draft().build({ creator: teacher, course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(1);
-			expect(result.data[0].status.isDraft).toEqual(true);
-		});
-
-		it('[FIND] /tasks should not return private tasks created by other users', async () => {
-			const teacher = setup();
-			const otherUser = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher, otherUser] });
-			const task = taskFactory.draft().build({ creator: otherUser, course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should return unavailable tasks created by the user', async () => {
-			const user = setup();
-			const course = courseFactory.build({
-				teachers: [user],
-			});
-			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(1);
-		});
-
-		it('should not return unavailable tasks created by other users', async () => {
-			const teacher = setup();
-			const otherUser = userFactory.build();
-			const course = courseFactory.build({ teachers: [teacher, otherUser] });
-			const task = taskFactory.build({ creator: otherUser, course, availableDate: tomorrow });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('[FIND] /tasks should return nothing from courses when the user has only read permissions', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({ students: [teacher] });
-			const task = taskFactory.build({ course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should not return finished tasks', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-			});
-			const task = taskFactory.build({ course, finished: [teacher] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should finish own task', async () => {
-			const teacher = setup();
-			const task = taskFactory.build({ creator: teacher, finished: [] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/finish`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toEqual([teacher.id]);
-		});
-
-		it('should finish task created by another user', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-			});
-			const student = userFactory.build();
-			const task = taskFactory.build({ creator: student, course, finished: [student] });
-
-			await em.persistAndFlush([teacher, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/finish`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers().sort()).toEqual([student.id, teacher.id].sort());
-		});
-
-		it('should restore own task', async () => {
-			const teacher = setup();
-			const task = taskFactory.build({ creator: teacher, finished: [teacher] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/restore`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toHaveLength(0);
-		});
-
-		it('should restore task created by another user', async () => {
-			const teacher = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-			});
-			const student = userFactory.build();
-			const task = taskFactory.build({ creator: student, course, finished: [student, teacher] });
-
-			await em.persistAndFlush([teacher, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(teacher);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/restore`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
-		});
-
-		describe('revert published task', () => {
-			it('should revert published own task', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
+		describe('when user is teacher with course and task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.build({
+					course,
+					description: '<p>test</p>',
+					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				});
-				const task = taskFactory.build({ creator: teacher, course, private: false });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
 
-				await em.persistAndFlush([teacher, task]);
+			it('should return tasks that include the appropriate information of task.', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0]).toHaveProperty('status');
+				expect(result.data[0]).toHaveProperty('displayColor');
+				expect(result.data[0]).toHaveProperty('name');
+				expect(result.data[0]).toHaveProperty('description');
+				expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
+			});
+		});
+
+		describe('when user is substitution teacher in course with task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ substitutionTeachers: [user] });
+				const task = taskFactory.build({ course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+			it('should retun a status flag in task if the teacher is only a substitution teacher.', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0].status.isSubstitutionTeacher).toEqual(true);
+			});
+		});
+
+		describe('when user is teacher with draft task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.draft().build({ creator: user, course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+
+			it('should return private tasks created by the user', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+				expect(result.data[0].status.isDraft).toEqual(true);
+			});
+		});
+
+		describe('when user is teacher with unavailable task', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, teacher: user, course, task };
+			};
+
+			it('should return unavailable tasks created by the user', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is teacher of course with unavailable task of other teacher in course', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const { account: otherTeacherAccount, user: otherTeacher } = createTeacher();
+
+				const course = courseFactory.build({ teachers: [user, otherTeacher] });
+				const task = taskFactory.build({ creator: otherTeacher, course, availableDate: tomorrow });
+
+				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
+				em.clear();
+				return { account, teacher: user, course, task, otherTeacher, otherTeacherAccount };
+			};
+
+			it('should not return unavailable tasks created by other users', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is teacher with course and other unrelated user with draft task in the course is created', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const { account: otherUserAccount, user: otherUser } = createStudent();
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.draft().build({ creator: otherUser, course });
+				await em.persistAndFlush([account, user, course, task, otherUser, otherUserAccount]);
+				em.clear();
+				return { account, teacher: user, course, task, otherUser, otherUserAccount };
+			};
+
+			it('should not return private tasks created by other users', async () => {
+				const { account: teacherAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is teacher with write permission in course', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				await em.persistAndFlush([account, user, course]);
+				em.clear();
+				return { account, teacher: user, course };
+			};
+
+			it('should allow teacher to open it', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result).toEqual({
+					total: 0,
+					data: [],
+					limit: 10,
+					skip: 0,
+				});
+			});
+
+			it('should allow teacher to set modified pagination and set correct limit', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account, { limit: '100', skip: '100' });
+				const result = response.body as TaskListResponse;
+
+				expect(result).toEqual({
+					total: 0,
+					data: [],
+					limit: 100, // maximum is 100
+					skip: 100,
+				});
+			});
+
+			it('should not allow teacher to set modified pagination limit greater then 100', async () => {
+				const { account } = await setup();
+
+				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
+
+				expect(statusCode).toEqual(400);
+			});
+		});
+
+		describe('when user is teacher of course with 3 tasks', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				const task1 = taskFactory.build({ course });
+				const task2 = taskFactory.build({ course });
+				const task3 = taskFactory.build({ course });
+				await em.persistAndFlush([account, user, course, task1, task2, task3]);
+				em.clear();
+				return { account, teacher: user, course, task1, task2, task3 };
+			};
+
+			it('should return a list of tasks', async () => {
+				const { account } = await setup();
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+				expect(result.total).toEqual(3);
+			});
+		});
+
+		describe('when user is teacher of 3 course with 1 task each', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course1 = courseFactory.build({ teachers: [user] });
+				const course2 = courseFactory.build({ teachers: [user] });
+				const course3 = courseFactory.build({ teachers: [user] });
+				const task1 = taskFactory.build({ course: course1 });
+				const task2 = taskFactory.build({ course: course2 });
+				const task3 = taskFactory.build({ course: course3 });
+				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
+				em.clear();
+				return { account, teacher: user, course1, course2, course3, task1, task2, task3 };
+			};
+
+			it('should return a list of tasks from multiple courses', async () => {
+				const { account } = await setup();
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+				expect(result.total).toEqual(3);
+			});
+		});
+
+		describe('when course with teacher, student and task is given but student has TASK_DASHBOARD_VIEW_V3 permission set', () => {
+			const setup = async () => {
+				const { account: teacherAccount, user: teacher } = createTeacher();
+				const { account: studentAccount, user: student } = createTeacher();
+				const course = courseFactory.build({ teachers: [teacher], students: [student] });
+				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course]);
+				em.clear();
+				return { teacherAccount, studentAccount, teacher, student, course };
+			};
+
+			it('should return nothing from courses when the student has only TASK_DASHBOARD_VIEW_V3 permissions', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when course with student, teacher and 3 tasks are given', () => {
+			const setup = async () => {
+				const { account: teacherAccount, user: teacher } = createTeacher();
+				const { account: studentAccount, user: student } = createStudent();
+				const course = courseFactory.build({ teachers: [teacher], students: [student] });
+				const task1 = taskFactory.build({ course });
+				const task2 = taskFactory.build({ course });
+				const task3 = taskFactory.build({ course });
+
+				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course, task1, task2, task3]);
+				em.clear();
+				return { teacherAccount, studentAccount, teacher, student, course, task1, task2, task3 };
+			};
+
+			it('should return a list of tasks with additional tasks', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(3);
+			});
+		});
+
+		describe('when course with teacher, student, 1 finished task and 1 open submitted task is given', () => {
+			const setup = async () => {
+				const { account: teacherAccount, user: teacher } = createTeacher();
+				const { account: studentAccount, user: student } = createStudent();
+				const course = courseFactory.build({ teachers: [teacher], students: [student] });
+				const openTask = taskFactory.build({ course });
+				const finishedTask = taskFactory.build({ course, finished: [student] });
+				openTask.submissions.add(submissionFactory.submitted().build({ task: openTask, student }));
+
+				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask]);
+				em.clear();
+				return { teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask };
+			};
+
+			it('should return tasks that include the appropriate information of task with submission.', async () => {
+				const { teacherAccount, course } = await setup();
+
+				const response = await apiRequest.get(undefined, teacherAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0].status).toEqual({
+					submitted: 1,
+					maxSubmissions: course.getStudentIds().length,
+					graded: 0,
+					isDraft: false,
+					isFinished: false,
+					isSubstitutionTeacher: false,
+				});
+			});
+
+			it('should not return finished tasks for student', async () => {
+				const { studentAccount } = await setup();
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+
+			it('should return tasks that include the appropriate information.', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.data[0]).toBeDefined();
+				expect(result.data[0]).toHaveProperty('status');
+				expect(result.data[0]).toHaveProperty('displayColor');
+				expect(result.data[0]).toHaveProperty('name');
+				expect(result.data[0].status).toEqual({
+					submitted: 1,
+					maxSubmissions: 1,
+					graded: 0,
+					isDraft: false,
+					isFinished: false,
+					isSubstitutionTeacher: false,
+				});
+			});
+
+			it('should not return finished tasks', async () => {
+				const { studentAccount } = await setup();
+
+				const response = await apiRequest.get(undefined, studentAccount);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is student with draft task', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ course, private: true });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should not return private tasks', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is student with unavailable task and task is not created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should not return a task of a course that has no lesson and is not published', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is student with unavailable task and task is created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should return unavailable tasks created by the student', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is student with task with dueDate and task is not created by student', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				// @ts-expect-error expected value null in db
+				const task = taskFactory.build({ course, dueDate: null });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should return a task of a course that has no lesson and is not limited by date', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(1);
+			});
+		});
+
+		describe('when user is student of finished course with task', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const untilDate = new Date(Date.now() - 60 * 1000);
+				const course = courseFactory.build({ untilDate, students: [user] });
+				const task = taskFactory.build({ course });
+				await em.persistAndFlush([account, user, course, task]);
+				em.clear();
+				return { account, student: user, course, task };
+			};
+
+			it('should not return task of finished courses', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result.total).toEqual(0);
+			});
+		});
+
+		describe('when user is student with read permission in course', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course = courseFactory.build({ students: [user] });
+				await em.persistAndFlush([account, user, course]);
+				em.clear();
+				return { account, student: user, course };
+			};
+
+			it('should return 200 when student open it', async () => {
+				const { account } = await setup();
+
+				const { statusCode } = await apiRequest.get(undefined, account);
+
+				expect(statusCode).toEqual(200);
+			});
+
+			it('should return empty tasks when student open it', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+
+				expect(result).toEqual({
+					total: 0,
+					data: [],
+					limit: 10,
+					skip: 0,
+				});
+			});
+
+			it('should allow to modified pagination and set correct limit', async () => {
+				const { account } = await setup();
+
+				const response = await apiRequest.get(undefined, account, { limit: '100', skip: '100' });
+				const result = response.body as TaskListResponse;
+
+				expect(result).toEqual({
+					total: 0,
+					data: [],
+					limit: 100, // maximum is 100
+					skip: 100,
+				});
+			});
+
+			it('should not allow to set modified pagination limit greater then 100', async () => {
+				const { account } = await setup();
+
+				const { statusCode } = await apiRequest.get(undefined, account, { limit: '1000', skip: '100' });
+
+				expect(statusCode).toEqual(400);
+			});
+		});
+
+		describe('when user is student of 3 course with 1 task each', () => {
+			const setup = async () => {
+				const { account, user } = createStudent();
+				const course1 = courseFactory.build({ students: [user] });
+				const course2 = courseFactory.build({ students: [user] });
+				const course3 = courseFactory.build({ students: [user] });
+				const task1 = taskFactory.build({ course: course1 });
+				const task2 = taskFactory.build({ course: course2 });
+				const task3 = taskFactory.build({ course: course3 });
+				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
+				em.clear();
+				return { account, student: user, course1, course2, course3, task1, task2, task3 };
+			};
+
+			it('should return a list of tasks from multiple courses', async () => {
+				const { account } = await setup();
+				const response = await apiRequest.get(undefined, account);
+				const result = response.body as TaskListResponse;
+				expect(result.total).toEqual(3);
+			});
+		});
+
+		describe('when student is assigned to 1 task in course is given', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+					students: [student.user],
+				});
+				const task = taskFactory.build({ course, users: [student.user] });
+
+				await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, course, task]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(teacher);
+				return { student, task, teacher, course };
+			};
 
-				await request(app.getHttpServer())
-					.patch(`/tasks/${task.id}/revertPublished`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(200);
+			it('should find tasks to which student is assigned', async () => {
+				const { student, task } = await setup();
 
-				const foundTask = await em.findOne(Task, { id: task.id });
-				expect(foundTask?.isDraft()).toEqual(true);
+				const response = await apiRequest.get(undefined, student.account);
+				const { data } = response.body as TaskListResponse;
+
+				expect(response.statusCode).toBe(200);
+				expect(data[0].id).toContain(task.id);
 			});
 
-			it('should revert published task by another user in course', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: student, course, private: false });
+			it('should finds all tasks as teacher (assignment does not change the result)', async () => {
+				const { teacher } = await setup();
 
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
+				const response = await apiRequest.get(undefined, teacher.account);
 
-				currentUser = mapUserToCurrentUser(teacher);
-
-				await request(app.getHttpServer())
-					.patch(`/tasks/${task.id}/revertPublished`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(200);
-
-				const foundTask = await em.findOne(Task, { id: task.id });
-				expect(foundTask?.isDraft()).toEqual(true);
-			});
-
-			it('should throw 403 "Forbidden", if user(Student) has no permissions', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course, private: false });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(student);
-
-				await request(app.getHttpServer())
-					.patch(`/tasks/${task.id}/revertPublished`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(403);
-			});
-
-			it('should throw 403 "Forbidden" for teacher, if task is not from my course', async () => {
-				const teacherOne = setup();
-				const teacherTwo = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacherOne],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacherOne, course, private: false });
-
-				await em.persistAndFlush([teacherOne, teacherTwo, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacherTwo);
-
-				await request(app.getHttpServer())
-					.patch(`/tasks/${task.id}/revertPublished`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(403);
-			});
-
-			it('should throw 404 if wrong task ID', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course, private: false });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				await request(app.getHttpServer())
-					.patch(`/tasks/${new ObjectID().toHexString()}/revertPublished`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(404);
-			});
-
-			it('should throw 400 if task ID is invalid', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course, private: false });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				const result = await request(app.getHttpServer())
-					.patch('/tasks/string/revertPublished')
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(400);
-				expect(result.body).toMatchObject({
-					type: 'API_VALIDATION_ERROR',
-					title: 'API Validation Error',
-					code: 400,
-				});
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(1);
 			});
 		});
 
-		describe('delete task', () => {
-			it('should delete task created by user', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
+		describe('when 2 students are in course but one is assigned to task is given', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const assignedStudent = createStudent();
+				const notAssignedStudent = createStudent();
 				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
+					teachers: [teacher.user],
+					students: [assignedStudent.user, notAssignedStudent.user],
 				});
-				const task = taskFactory.build({ creator: teacher, course });
+				const task = taskFactory.build({ course, users: [assignedStudent.user] });
 
-				await em.persistAndFlush([teacher, task]);
+				await em.persistAndFlush([
+					teacher.user,
+					teacher.account,
+					assignedStudent.user,
+					assignedStudent.account,
+					notAssignedStudent.user,
+					notAssignedStudent.account,
+					course,
+					task,
+				]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(teacher);
+				return { task, course, assignedStudent, notAssignedStudent };
+			};
 
-				await request(app.getHttpServer())
-					.delete(`/tasks/${task.id}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(200);
+			it('student does not find tasks, it task has users assigned, but himself is not assigned', async () => {
+				const { notAssignedStudent } = await setup();
 
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toBeCalled();
+				const response = await apiRequest.get(undefined, notAssignedStudent.account);
 
-				const foundTask = await em.findOne(Task, { id: task.id });
-				expect(foundTask).toEqual(null);
-			});
-
-			it('should throw 403 "Forbidden", if user(Student) has not permissions', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(student);
-
-				await request(app.getHttpServer())
-					.delete(`/tasks/${task.id}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(403);
-			});
-
-			it('should throw 404 if wrong task ID', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				await request(app.getHttpServer())
-					.delete(`/tasks/${new ObjectID().toHexString()}`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(404);
-			});
-
-			it('should throw 400 if task ID is invalid', async () => {
-				const teacher = setup();
-				const student = userFactory.build();
-				const course = courseFactory.build({
-					teachers: [teacher],
-					students: [student],
-				});
-				const task = taskFactory.build({ creator: teacher, course });
-
-				await em.persistAndFlush([teacher, task]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				const r = await request(app.getHttpServer())
-					.delete(`/tasks/string`)
-					.set('Accept', 'application/json')
-					.set('Authorization', 'jwt')
-					.expect(400);
-				expect(r.body).toMatchObject({
-					type: 'API_VALIDATION_ERROR',
-					title: 'API Validation Error',
-					code: 400,
-				});
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(0);
 			});
 		});
 
-		describe('copy tasks', () => {
-			it('should duplicate a task', async () => {
-				const teacher = setup();
+		describe('when task has empty assignment list', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
 				const course = courseFactory.build({
-					teachers: [teacher],
+					teachers: [teacher.user],
+					students: [student.user],
 				});
-				const task = taskFactory.build({ creator: teacher, course });
+				const task = taskFactory.build({ course, users: [] });
 
-				await em.persistAndFlush([teacher, task]);
+				await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, course, task]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(teacher);
-				const params = { courseId: course.id };
+				return { student, task, teacher, course };
+			};
 
-				const response = await request(app.getHttpServer())
-					.post(`/tasks/${task.id}/copy`)
-					.set('Authorization', 'jwt')
-					.send(params);
+			it('student finds tasks, if task assignment list is empty', async () => {
+				const { student, task } = await setup();
 
-				expect(response.status).toEqual(201);
+				const response = await apiRequest.get(undefined, student.account);
+
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(data[0].id).toContain(task.id);
 			});
+		});
 
-			it('should duplicate a task avoiding name collisions', async () => {
-				const teacher = setup();
+		describe('when student is assigned to task but not part of course', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
 				const course = courseFactory.build({
-					teachers: [teacher],
+					teachers: [teacher.user],
+					students: [],
 				});
-				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
-				const task2 = taskFactory.build({ creator: teacher, course, name: 'Addition (1)' });
-				const task3 = taskFactory.build({ creator: teacher, course, name: 'Addition (3)' });
+				const task = taskFactory.build({ course, users: [student.user] });
 
-				await em.persistAndFlush([teacher, originalTask, task2, task3]);
+				await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, course, task]);
 				em.clear();
 
-				currentUser = mapUserToCurrentUser(teacher);
+				return { student, task, teacher, course };
+			};
 
-				const result = await api.copyTask(originalTask.id, course.id);
-				expect(result.status).toEqual(201);
-				expect(result.copyStatus?.title).toEqual('Addition (2)');
-			});
+			it('student does not find tasks to which he is assigned, if he does not belong to course', async () => {
+				const { student } = await setup();
 
-			it('should avoid name collisions when copying the same task twice', async () => {
-				const teacher = setup();
-				const course = courseFactory.build({
-					teachers: [teacher],
-				});
-				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
+				const response = await apiRequest.get(undefined, student.account);
 
-				await em.persistAndFlush([teacher, course, originalTask]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				const result1 = await api.copyTask(originalTask.id, course.id);
-				expect(result1.status).toEqual(201);
-				expect(result1.copyStatus?.title).toEqual('Addition (1)');
-
-				const result2 = await api.copyTask(originalTask.id, course.id);
-				expect(result2.status).toEqual(201);
-				expect(result2.copyStatus?.title).toEqual('Addition (2)');
-			});
-
-			it('should avoid name collisions when copying the copy of a task', async () => {
-				const teacher = setup();
-				const course = courseFactory.build({
-					teachers: [teacher],
-				});
-				const originalTask = taskFactory.build({ creator: teacher, course, name: 'Addition' });
-
-				await em.persistAndFlush([teacher, course, originalTask]);
-				em.clear();
-
-				currentUser = mapUserToCurrentUser(teacher);
-
-				const result1 = await api.copyTask(originalTask.id, course.id);
-				expect(result1.status).toEqual(201);
-				expect(result1.copyStatus?.title).toEqual('Addition (1)');
-
-				const result2 = await api.copyTask(result1.copyStatus.id, course.id);
-				expect(result2.status).toEqual(201);
-				expect(result2.copyStatus?.title).toEqual('Addition (2)');
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(0);
 			});
 		});
 	});
 
-	describe('As user with read permissions in courses', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
+	describe('[GET] /finished', () => {
+		describe('when task has student assigned to finished task', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
+				const notAssignedStudent = createStudent();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+					students: [student.user, notAssignedStudent.user],
+				});
+				const task = taskFactory.build({ course, users: [student.user], finished: [student.user] });
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
+				await em.persistAndFlush([
+					teacher.user,
+					teacher.account,
+					student.user,
+					student.account,
+					course,
+					task,
+					notAssignedStudent.account,
+					notAssignedStudent.user,
+				]);
+				em.clear();
 
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			api = new API(app, '/tasks');
-		});
+				return { student, task, teacher, course, notAssignedStudent };
+			};
 
-		afterAll(async () => {
-			await app.close();
-		});
+			it('should find finished tasks to which student is assigned ', async () => {
+				const { student, task } = await setup();
 
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
+				const response = await apiRequest.get('/finished', student.account);
 
-		const setup = () => {
-			const roles = roleFactory.buildList(1, {
-				permissions: [Permission.TASK_DASHBOARD_VIEW_V3],
+				const { data } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(data[0].id).toContain(task.id);
 			});
-			const user = userFactory.build({ roles });
 
-			return user;
-		};
+			it('student does not find finished tasks, if tasks have users assigned, but himself is not assigned', async () => {
+				const { notAssignedStudent } = await setup();
 
-		it('[FIND] /tasks can open it', async () => {
-			const student = setup();
+				const response = await apiRequest.get('/finished', notAssignedStudent.account);
 
-			await em.persistAndFlush([student]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { status } = await api.get();
-
-			expect(status).toEqual(200);
-		});
-
-		it('[FIND] /tasks can open it', async () => {
-			const student = setup();
-
-			await em.persistAndFlush([student]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 10,
-				skip: 0,
+				const { total } = response.body as TaskListResponse;
+				expect(response.statusCode).toBe(200);
+				expect(total).toBe(0);
 			});
-		});
-
-		it('[FIND] /tasks should allow to modified pagination and set correct limit', async () => {
-			const student = setup();
-
-			await em.persistAndFlush([student]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get({ limit: 100, skip: 100 });
-
-			expect(result).toEqual({
-				total: 0,
-				data: [],
-				limit: 100, // maximum is 100
-				skip: 100,
-			});
-		});
-
-		it('[FIND] /tasks should allow to modified pagination limit greater then 100', async () => {
-			const student = setup();
-
-			await em.persistAndFlush([student]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { status } = await api.get({ limit: 1000, skip: 100 });
-
-			expect(status).toEqual(400);
-		});
-
-		it('[FIND] /tasks return tasks that include the appropriate information.', async () => {
-			const teacher = userFactory.build();
-			const student = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const task = taskFactory.build({ course });
-			task.submissions.add(submissionFactory.submitted().build({ task, student }));
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.data[0]).toBeDefined();
-			expect(result.data[0]).toHaveProperty('status');
-			expect(result.data[0]).toHaveProperty('displayColor');
-			expect(result.data[0]).toHaveProperty('name');
-			expect(result.data[0].status).toEqual({
-				submitted: 1,
-				maxSubmissions: 1,
-				graded: 0,
-				isDraft: false,
-				isFinished: false,
-				isSubstitutionTeacher: false,
-			});
-		});
-
-		it('[FIND] /tasks return a list of tasks', async () => {
-			const teacher = userFactory.build();
-			const student = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const task1 = taskFactory.build({ course });
-			const task2 = taskFactory.build({ course });
-			const task3 = taskFactory.build({ course });
-
-			await em.persistAndFlush([task1, task2, task3]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(3);
-		});
-
-		it('[FIND] /tasks return a list of tasks from multiple courses', async () => {
-			const teacher = userFactory.build();
-			const student = setup();
-			const course1 = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const course2 = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const course3 = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const task1 = taskFactory.build({ course: course1 });
-			const task2 = taskFactory.build({ course: course2 });
-
-			await em.persistAndFlush([task1, task2, course3]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(2);
-		});
-
-		it('[FIND] /tasks should not return private tasks', async () => {
-			const teacher = userFactory.build();
-			const student = setup();
-			const course = courseFactory.build({
-				teachers: [teacher],
-				students: [student],
-			});
-			const task = taskFactory.build({ course, private: true });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should not return a task of a course that has no lesson and is not published', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const task = taskFactory.build({ course, availableDate: tomorrow });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should return a task of a course that has no lesson and is not limited', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			// @ts-expect-error expected value null in db
-			const task = taskFactory.build({ course, dueDate: null });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(1);
-		});
-
-		it('should not return finished tasks', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const task = taskFactory.build({ course, finished: [student] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should return unavailable tasks created by the user', async () => {
-			const user = setup();
-			const course = courseFactory.build({
-				students: [user],
-			});
-			const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(user);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(1);
-		});
-
-		it('should not return unavailable tasks', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const task = taskFactory.build({ course, availableDate: tomorrow });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should not return task of finished courses', async () => {
-			const untilDate = new Date(Date.now() - 60 * 1000);
-			const student = setup();
-			const course = courseFactory.build({ untilDate, students: [student] });
-			const task = taskFactory.build({ course });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-			const { result } = await api.get();
-
-			expect(result.total).toEqual(0);
-		});
-
-		it('should finish own task', async () => {
-			const student = setup();
-			const task = taskFactory.build({ creator: student, finished: [] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/finish`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toEqual([student.id]);
-		});
-
-		it('should finish task created by another user', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const teacher = userFactory.build();
-			const task = taskFactory.build({ creator: teacher, course, finished: [teacher] });
-
-			await em.persistAndFlush([student, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/finish`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers().sort()).toEqual([student.id, teacher.id].sort());
-		});
-
-		it('should restore own task', async () => {
-			const student = setup();
-			const task = taskFactory.build({ creator: student, finished: [student] });
-
-			await em.persistAndFlush([task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/restore`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toHaveLength(0);
-		});
-
-		it('should finish task created by another user', async () => {
-			const student = setup();
-			const course = courseFactory.build({
-				students: [student],
-			});
-			const teacher = userFactory.build();
-			const task = taskFactory.build({ creator: teacher, course, finished: [teacher, student] });
-
-			await em.persistAndFlush([student, task]);
-			em.clear();
-
-			currentUser = mapUserToCurrentUser(student);
-
-			await request(app.getHttpServer())
-				.patch(`/tasks/${task.id}/restore`)
-				.set('Accept', 'application/json')
-				.expect(200);
-
-			const foundTask = await em.findOne(Task, { id: task.id });
-			expect(foundTask?.finished.getIdentifiers()).toEqual([teacher.id]);
 		});
 	});
 
+	// TODO: refactor
 	describe('When task-card feature is enabled', () => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		let app: INestApplication;
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 
@@ -1363,8 +975,11 @@ describe('Task Controller (API)', () => {
 		});
 	});
 
+	// TODO: refactor
 	describe('When task-card feature is not enabled', () => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		let app: INestApplication;
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		let em: EntityManager;
 		let currentUser: ICurrentUser;
 
@@ -1457,210 +1072,6 @@ describe('Task Controller (API)', () => {
 				.set('Accept', 'application/json')
 				.send(params)
 				.expect(501);
-		});
-	});
-
-	describe('Find tasks with assigned users', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let apiRequest: TestApiClient;
-
-		const setup = async () => {
-			const createStudent = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
-					Permission.TASK_CARD_VIEW,
-					Permission.TASK_DASHBOARD_VIEW_V3,
-					Permission.HOMEWORK_VIEW,
-				]);
-				return { account: studentAccount, user: studentUser };
-			};
-
-			const createTeacher = () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
-					Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
-				]);
-				return { account: teacherAccount, user: teacherUser };
-			};
-
-			const teacher = createTeacher();
-			const student1 = createStudent();
-			const student2 = createStudent();
-			const student3 = createStudent();
-
-			const course1 = courseFactory.build({
-				teachers: [teacher.user],
-				students: [student1.user, student2.user],
-			});
-			const course2 = courseFactory.build({
-				teachers: [teacher.user],
-				students: [student1.user, student2.user, student3.user],
-			});
-
-			const course1Task1 = taskFactory.build({
-				course: course1,
-				finished: [student1.user, student2.user],
-				users: [student1.user, student2.user, student3.user],
-			});
-			const course1Task2 = taskFactory.build({
-				course: course1,
-				finished: [student1.user],
-				users: [student2.user],
-			});
-			const course1Task3 = taskFactory.build({
-				course: course1,
-				users: [],
-			});
-			const course1Task4 = taskFactory.build({
-				course: course1,
-			});
-			const course2Task1 = taskFactory.build({
-				course: course2,
-				users: [student1.user, student2.user],
-			});
-			const course2Task2 = taskFactory.build({
-				course: course2,
-				users: [student2.user, student3.user],
-				finished: [student2.user],
-			});
-			const course2Task3 = taskFactory.build({
-				course: course2,
-				finished: [student2.user],
-			});
-
-			await em.persistAndFlush([
-				teacher.account,
-				teacher.user,
-				student1.account,
-				student1.user,
-				student2.account,
-				student2.user,
-				student3.account,
-				student3.user,
-				course1,
-				course2,
-				course1Task1,
-				course1Task2,
-				course1Task3,
-				course1Task4,
-				course2Task1,
-				course2Task2,
-				course2Task3,
-			]);
-			em.clear();
-
-			return {
-				teacher,
-				student1,
-				student2,
-				student3,
-				course1,
-				course2,
-				course1Task1,
-				course1Task2,
-				course1Task3,
-				course1Task4,
-				course2Task1,
-				course2Task2,
-				course2Task3,
-			};
-		};
-
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			}).compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			apiRequest = new TestApiClient(app, 'tasks');
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
-		describe('when tasks have assigment', () => {
-			it('finds tasks to which student is assigned', async () => {
-				const { student1, course2Task1 } = await setup();
-
-				const response = await apiRequest.get(undefined, student1.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).toContain(course2Task1.id);
-			});
-
-			it('find finished tasks to which student is assigned ', async () => {
-				const { student2, course1Task1, course2Task2 } = await setup();
-
-				const response = await apiRequest.get('/finished', student2.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).toContain(course1Task1.id);
-				expect(taskIds).toContain(course2Task2.id);
-			});
-
-			it('student does not find tasks to which he is assigned, if he does not belong to course', async () => {
-				const { student3, course1Task1 } = await setup();
-
-				const response = await apiRequest.get(undefined, student3.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).not.toContain(course1Task1.id);
-			});
-
-			it('student does not find tasks, it task has users assigned, but himself is not assigned', async () => {
-				const { student1, course1Task2 } = await setup();
-
-				const response = await apiRequest.get(undefined, student1.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).not.toContain(course1Task2.id);
-			});
-
-			it('student does not find finished tasks, it tasks have users assigned, but himself is not assigned', async () => {
-				const { student1, course1Task2 } = await setup();
-
-				const response = await apiRequest.get('/finished', student1.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).not.toContain(course1Task2.id);
-			});
-
-			it('teacher finds all tasks (assignment does not change the result)', async () => {
-				const { teacher } = await setup();
-
-				const response = await apiRequest.get(undefined, teacher.account);
-
-				const { total } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				expect(total).toBe(7);
-			});
-
-			it('student finds tasks, if task assignment list is empty', async () => {
-				const { student1, course1Task3 } = await setup();
-
-				const response = await apiRequest.get(undefined, student1.account);
-
-				const { data } = response.body as TaskListResponse;
-				expect(response.statusCode).toBe(200);
-				const taskIds = data.map((task) => task.id);
-				expect(taskIds).toContain(course1Task3.id);
-			});
 		});
 	});
 });
