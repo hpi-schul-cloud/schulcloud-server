@@ -65,6 +65,8 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	private readonly organizations = new Array<CommonCartridgeOrganizationBuilder>();
 
+	private readonly resources = new Array<CommonCartridgeResourceItemElement>();
+
 	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
@@ -73,9 +75,15 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 		return organizationBuilder;
 	}
 
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
+		const resource = new CommonCartridgeResourceItemElement(props);
+		this.resources.push(resource);
+		return this;
+	}
+
 	async build(): Promise<Buffer> {
 		const organizations = this.organizations.map((organization) => organization.organization);
-		const resources = this.organizations.flatMap((organization) => organization.resources);
+		const resources = this.organizations.flatMap((organization) => organization.resources).concat(this.resources);
 		const manifest = toXmlString(
 			new CommonCartridgeManifestElement(
 				{

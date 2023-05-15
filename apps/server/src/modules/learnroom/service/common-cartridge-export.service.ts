@@ -29,6 +29,18 @@ export class CommonCartridgeExportService {
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
+		const builder = new CommonCartridgeFileBuilder({
+			identifier: `i${course.id}`,
+			title: course.name,
+			version,
+		});
+		lessons.forEach((lesson) => {
+			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			lesson.contents.forEach((content) => {
+				organizationBuilder.addResourceToOrganization(this.mapContentToResource(content));
+			});
+		});
+
 		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		// const builder = new CommonCartridgeFileBuilder({
 		// 	identifier: `i${course.id}`,
@@ -38,18 +50,6 @@ export class CommonCartridgeExportService {
 		// 	.addAssignments(this.mapTasksToAssignments(tasks));
 		// return builder.build();
 
-		const builder = new CommonCartridgeFileBuilder({
-			identifier: `i${course.id}`,
-			title: course.name,
-			version,
-		});
-
-		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
-			lesson.contents.forEach((content) => {
-				organizationBuilder.addResourceToOrganization(this.mapContentToResource(content));
-			});
-		});
 
 		return builder.build();
 	}
