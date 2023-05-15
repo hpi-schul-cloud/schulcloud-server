@@ -178,9 +178,10 @@ export abstract class AbstractLaunchStrategy {
 			return contextExternalToolDO.contextId;
 		}
 
-		return customParameter.scope === CustomParameterScope.GLOBAL
-			? customParameter.default
-			: matchingParameterEntry.value;
+		const parameterValue =
+			customParameter.scope === CustomParameterScope.GLOBAL ? customParameter.default : matchingParameterEntry.value;
+
+		return parameterValue;
 	}
 
 	private addProperty(
