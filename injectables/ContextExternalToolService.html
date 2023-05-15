@@ -86,6 +86,14 @@
                                     <span class="modifier">Async</span>
                                 <a href="#deleteBySchoolExternalToolId" >deleteBySchoolExternalToolId</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getContextExternalToolById" >getContextExternalToolById</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -174,8 +182,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:16</a></div>
                 </td>
             </tr>
 
@@ -245,8 +253,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -294,6 +302,148 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteContextExternalTool"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteContextExternalTool</b></span>
+                        <a href="#deleteContextExternalTool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteContextExternalTool(contextExternalTool: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:32</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contextExternalTool</td>
+                                    <td>
+                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getContextExternalToolById"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getContextExternalToolById</b></span>
+                        <a href="#getContextExternalToolById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContextExternalToolById(contextExternalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:10</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contextExternalToolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -309,10 +459,17 @@ import { EntityId } from &#x27;@shared/domain&#x27;;
 export class ContextExternalToolService {
 	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
 
+	async getContextExternalToolById(contextExternalToolId: EntityId): Promise&lt;ContextExternalToolDO&gt; {
+		const contextExternalTool &#x3D; await this.contextExternalToolRepo.findById(contextExternalToolId);
+
+		return contextExternalTool;
+	}
+
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;ContextExternalToolDO&gt; {
 		const createdContextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolRepo.save(
 			contextExternalTool
 		);
+
 		return createdContextExternalTool;
 	}
 
@@ -320,7 +477,12 @@ export class ContextExternalToolService {
 		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
 			schoolToolId: schoolExternalToolId,
 		});
+
 		await this.contextExternalToolRepo.delete(contextExternalTools);
+	}
+
+	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;void&gt; {
+		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 }
 </code></pre>

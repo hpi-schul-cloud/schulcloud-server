@@ -2577,6 +2577,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextExternalToolDOFactory.html" data-type="entity-link" >ContextExternalToolDOFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalToolIdParams.html" data-type="entity-link" >ContextExternalToolIdParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolPostParams.html" data-type="entity-link" >ContextExternalToolPostParams</a>
                             </li>
                             <li class="link">
