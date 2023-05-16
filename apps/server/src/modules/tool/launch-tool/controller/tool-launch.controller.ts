@@ -14,7 +14,6 @@ import { ToolLaunchMapper } from '../mapper/tool-launch.mapper';
 export class ToolLaunchController {
 	constructor(private readonly toolLaunchUc: ToolLaunchUc) {}
 
-	// TODO: api test
 	@Get('context/:contextExternalToolId/launch')
 	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })

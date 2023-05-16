@@ -68,7 +68,7 @@ export abstract class AbstractLaunchStrategy {
 
 		if (queryProperties.length > 0) {
 			const queryParams: URLSearchParams = new URLSearchParams();
-			queryProperties.map((property: PropertyDataDO) => queryParams.append(property.name, property.value));
+			queryProperties.forEach((property: PropertyDataDO) => queryParams.append(property.name, property.value));
 
 			url.search += queryParams.toString();
 		}

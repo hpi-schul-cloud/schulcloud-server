@@ -82,7 +82,7 @@ describe('ToolLaunchController (API)', () => {
 				currentUser = mapUserToCurrentUser(user);
 
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({
-					config: basicToolConfigDOFactory.build({ baseUrl: 'http://mockurl.de', type: ToolConfigType.BASIC }),
+					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
 				});
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					tool: externalTool,
@@ -112,13 +112,11 @@ describe('ToolLaunchController (API)', () => {
 				const body: ToolLaunchRequestResponse = response.body as ToolLaunchRequestResponse;
 				expect(body).toEqual<ToolLaunchRequestResponse>({
 					method: LaunchRequestMethod.GET,
-					url: 'http://mockurl.de/',
+					url: 'https://mockurl.de/',
 					payload: '',
 					openNewTab: true,
 				});
 			});
-
-			// TODO: test unauthorized after merged pr and permission check
 		});
 	});
 });
