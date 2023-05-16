@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AllowedAuthorizationObjectType } from '@src/modules/authorization';
 import { plainToClass } from 'class-transformer';
 import {
 	DownloadFileParams,
@@ -11,15 +11,15 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 
 export class FilesStorageMapper {
-	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
-		const types: Map<FileRecordParentType, AllowedAuthorizationEntityType> = new Map();
-		types.set(FileRecordParentType.Task, AllowedAuthorizationEntityType.Task);
-		types.set(FileRecordParentType.Course, AllowedAuthorizationEntityType.Course);
-		types.set(FileRecordParentType.User, AllowedAuthorizationEntityType.User);
-		types.set(FileRecordParentType.School, AllowedAuthorizationEntityType.School);
-		types.set(FileRecordParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
-		types.set(FileRecordParentType.Submission, AllowedAuthorizationEntityType.Submission);
-		types.set(FileRecordParentType.BoardNode, AllowedAuthorizationEntityType.BoardNode);
+	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationObjectType {
+		const types: Map<FileRecordParentType, AllowedAuthorizationObjectType> = new Map();
+		types.set(FileRecordParentType.Task, AllowedAuthorizationObjectType.Task);
+		types.set(FileRecordParentType.Course, AllowedAuthorizationObjectType.Course);
+		types.set(FileRecordParentType.User, AllowedAuthorizationObjectType.User);
+		types.set(FileRecordParentType.School, AllowedAuthorizationObjectType.School);
+		types.set(FileRecordParentType.Lesson, AllowedAuthorizationObjectType.Lesson);
+		types.set(FileRecordParentType.Submission, AllowedAuthorizationObjectType.Submission);
+		types.set(FileRecordParentType.BoardNode, AllowedAuthorizationObjectType.BoardNode);
 
 		const res = types.get(type);
 

@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject, BaseDO, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AllowedAuthorizationObjectType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { TaskCopyService } from '../service';
@@ -215,7 +215,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.Course,
+					AllowedAuthorizationObjectType.Course,
 					course.id,
 					{
 						action: Action.write,

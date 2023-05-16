@@ -9,7 +9,7 @@ import { AuthorizationService } from './authorization.service';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationEntityType, Rule } from './types';
+import { AllowedAuthorizationObjectType, Rule } from './types';
 
 describe('AuthorizationService', () => {
 	class TestRule implements Rule {
@@ -150,7 +150,7 @@ describe('AuthorizationService', () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
-				const entityName = AllowedAuthorizationEntityType.Course;
+				const entityName = AllowedAuthorizationObjectType.Course;
 
 				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(false);
 
@@ -173,7 +173,7 @@ describe('AuthorizationService', () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
-				const entityName = AllowedAuthorizationEntityType.Course;
+				const entityName = AllowedAuthorizationObjectType.Course;
 
 				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(true);
 
@@ -196,9 +196,9 @@ describe('AuthorizationService', () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
-				const entityName = AllowedAuthorizationEntityType.Course;
+				const entityName = AllowedAuthorizationObjectType.Course;
 
-				loader.loadEntity.mockRejectedValueOnce(InternalServerErrorException);
+				loader.loadAuthorizableObject.mockRejectedValueOnce(InternalServerErrorException);
 
 				return { context, userId, entityId, entityName };
 			};
@@ -217,7 +217,7 @@ describe('AuthorizationService', () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
-				const entityName = AllowedAuthorizationEntityType.Course;
+				const entityName = AllowedAuthorizationObjectType.Course;
 				const testRule = new TestRule(true);
 
 				ruleManager.selectRule.mockReturnValueOnce(testRule);
@@ -239,7 +239,7 @@ describe('AuthorizationService', () => {
 				const context = AuthorizationContextBuilder.read([]);
 				const userId = 'test';
 				const entityId = 'test';
-				const entityName = AllowedAuthorizationEntityType.Course;
+				const entityName = AllowedAuthorizationObjectType.Course;
 				const testRule = new TestRule(false);
 
 				ruleManager.selectRule.mockReturnValueOnce(testRule);

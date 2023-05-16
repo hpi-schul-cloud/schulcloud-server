@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AllowedAuthorizationObjectType } from '@src/modules/authorization';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenParentTypeMapper } from './parent-type.mapper';
 
@@ -7,15 +7,15 @@ describe('ShareTokenParentTypeMapper', () => {
 	describe('mapToAllowedAuthorizationEntityType()', () => {
 		it('should return allowed type equal Course', () => {
 			const result = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(ShareTokenParentType.Course);
-			expect(result).toBe(AllowedAuthorizationEntityType.Course);
+			expect(result).toBe(AllowedAuthorizationObjectType.Course);
 		});
 		it('should return allowed type equal Lesson', () =>
 			expect(ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(ShareTokenParentType.Lesson)).toBe(
-				AllowedAuthorizationEntityType.Lesson
+				AllowedAuthorizationObjectType.Lesson
 			));
 		it('should return allowed type equal Task', () =>
 			expect(ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(ShareTokenParentType.Task)).toBe(
-				AllowedAuthorizationEntityType.Task
+				AllowedAuthorizationObjectType.Task
 			));
 		it('should throw Error', () => {
 			const exec = () => {

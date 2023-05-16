@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission } from '@shared/domain';
-import { Action, AuthorizationService, AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { Action, AuthorizationService, AllowedAuthorizationObjectType } from '@src/modules/authorization';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class CourseExportUc {
 	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationEntityType.Course,
+			AllowedAuthorizationObjectType.Course,
 			courseId,
 			{
 				action: Action.read,

@@ -5,7 +5,7 @@ import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationEntityType, AuthorizationContext } from './types';
+import { AllowedAuthorizationObjectType, AuthorizationContext } from './types';
 
 @Injectable()
 export class AuthorizationService {
@@ -33,7 +33,7 @@ export class AuthorizationService {
 	 */
 	public async checkPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AllowedAuthorizationObjectType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<void> {
@@ -47,7 +47,7 @@ export class AuthorizationService {
 	 */
 	public async hasPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AllowedAuthorizationObjectType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {
@@ -55,7 +55,7 @@ export class AuthorizationService {
 		try {
 			const [user, object] = await Promise.all([
 				this.getUserWithPermissions(userId),
-				this.loader.loadEntity(entityName, entityId),
+				this.loader.loadAuthorizableObject(entityName, entityId),
 			]);
 			const rule = this.ruleManager.selectRule(user, object, context);
 			const hasPermission = rule.hasPermission(user, object, context);

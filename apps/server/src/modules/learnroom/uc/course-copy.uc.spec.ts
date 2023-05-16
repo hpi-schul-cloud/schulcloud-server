@@ -4,7 +4,7 @@ import { ForbiddenException, InternalServerErrorException } from '@nestjs/common
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { Action, AllowedAuthorizationObjectType } from '@src/modules/authorization';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';
@@ -86,7 +86,7 @@ describe('course copy uc', () => {
 			await uc.copyCourse(user.id, course.id);
 			expect(authorization.checkPermissionByReferences).toBeCalledWith(
 				user.id,
-				AllowedAuthorizationEntityType.Course,
+				AllowedAuthorizationObjectType.Course,
 				course.id,
 				{
 					action: Action.write,
