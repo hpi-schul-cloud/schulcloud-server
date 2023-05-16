@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ToolLaunchRequestDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -18,6 +18,7 @@ export class ToolLaunchController {
 	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
 	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+	@ApiForbiddenResponse({ description: 'Forbidden' })
 	async getToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolLaunchParams

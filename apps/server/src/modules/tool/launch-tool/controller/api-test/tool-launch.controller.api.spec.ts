@@ -1,4 +1,4 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
@@ -17,6 +17,7 @@ import {
 } from '@shared/domain';
 import {
 	basicToolConfigDOFactory,
+	contextExternalToolDOFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolFactory,
@@ -107,7 +108,7 @@ describe('ToolLaunchController (API)', () => {
 
 				const response: Response = await request(app.getHttpServer())
 					.get(`${BASE_URL}/${params.contextExternalToolId}/launch`)
-					.expect(200);
+					.expect(HttpStatus.OK);
 
 				const body: ToolLaunchRequestResponse = response.body as ToolLaunchRequestResponse;
 				expect(body).toEqual<ToolLaunchRequestResponse>({
@@ -116,6 +117,68 @@ describe('ToolLaunchController (API)', () => {
 					payload: '',
 					openNewTab: true,
 				});
+			});
+		});
+
+		describe('when user wants to launch tool from another school', () => {
+			const setup = async () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [] });
+
+				const toolSchool: School = schoolFactory.buildWithId();
+				const usersSchool: School = schoolFactory.buildWithId();
+
+				const user: User = userFactory.buildWithId({ roles: [role], school: usersSchool });
+				const course: Course = courseFactory.buildWithId({ school: usersSchool, teachers: [user] });
+				currentUser = mapUserToCurrentUser(user);
+
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					config: basicToolConfigDOFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					tool: externalTool,
+					school: toolSchool,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					schoolTool: schoolExternalTool,
+					contextId: course.id,
+					contextType: ContextExternalToolType.COURSE,
+				});
+
+				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
+
+				await em.persistAndFlush([
+					toolSchool,
+					usersSchool,
+					user,
+					course,
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				]);
+				em.clear();
+
+				return { params };
+			};
+
+			it('should return forbidden', async () => {
+				const { params } = await setup();
+
+				await request(app.getHttpServer())
+					.get(`${BASE_URL}/${params.contextExternalToolId}/launch`)
+					.expect(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			it('should return unauthorized', async () => {
+				const params: ToolLaunchParams = {
+					contextExternalToolId: contextExternalToolDOFactory.buildWithId().id as string,
+				};
+				currentUser = undefined;
+
+				await request(app.getHttpServer())
+					.get(`${BASE_URL}/${params.contextExternalToolId}/launch`)
+					.expect(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
