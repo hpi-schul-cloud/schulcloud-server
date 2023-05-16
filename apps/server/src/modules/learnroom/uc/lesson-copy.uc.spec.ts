@@ -9,8 +9,8 @@ import { courseFactory, lessonFactory, setupEntities, userFactory } from '@share
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
-import { LessonCopyUC } from './lesson-copy.uc';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {
 	let module: TestingModule;

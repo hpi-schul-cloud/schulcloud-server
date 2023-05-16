@@ -9,9 +9,9 @@ import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory }
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
-import { AuthorizableObject } from '@shared/domain/domain-object';
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
