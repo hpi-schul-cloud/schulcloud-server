@@ -88,6 +88,7 @@ export class CommonCartridgeExportService {
 				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.title,
 				url: content.content.materialId,
+				description: '',
 			};
 		}
 
@@ -97,7 +98,7 @@ export class CommonCartridgeExportService {
 				type: CommonCartridgeResourceType.WEB_LINK,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.content.title,
+				title: content.title,
 				url: content.content.url,
 			};
 		}
