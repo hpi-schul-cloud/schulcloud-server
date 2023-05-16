@@ -30,6 +30,17 @@ export class ContextExternalToolUc {
 		return createdTool;
 	}
 
+	async deleteContextExternalTool(userId: EntityId, contextExternalToolId: EntityId): Promise<void> {
+		const tool: ContextExternalToolDO = await this.contextExternalToolService.getContextExternalToolById(
+			contextExternalToolId
+		);
+		await this.ensureContextPermission(userId, tool.contextId, tool.contextType);
+
+		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
+
+		return promise;
+	}
+
 	private async ensureContextPermission(
 		userId: EntityId,
 		contextId: EntityId,

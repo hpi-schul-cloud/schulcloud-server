@@ -5,11 +5,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
+import {
+	accountDtoFactory,
+	defaultTestPassword,
+	defaultTestPasswordHash,
+	schoolDOFactory,
+	schoolFactory,
+	setupEntities,
+	systemFactory,
+	userFactory,
+} from '@shared/testing';
 import { AccountDto } from '@src/modules/account/services/dto';
-import bcrypt from 'bcryptjs';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
+import { ICurrentUser } from '../interface';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';
@@ -17,15 +25,12 @@ import { LdapStrategy } from './ldap.strategy';
 describe('LdapStrategy', () => {
 	let module: TestingModule;
 	let strategy: LdapStrategy;
+
 	let userRepoMock: DeepMocked<UserRepo>;
 	let schoolRepoMock: DeepMocked<SchoolRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let ldapServiceMock: DeepMocked<LdapService>;
-	let mockUser: User;
-	let mockAccount: AccountDto;
-
-	const mockPassword = 'mockPassword123&';
-	const mockPasswordHash = bcrypt.hashSync(mockPassword);
+	let systemRepo: DeepMocked<SystemRepo>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -36,11 +41,7 @@ describe('LdapStrategy', () => {
 				LdapStrategy,
 				{
 					provide: AuthenticationService,
-					useValue: createMock<AuthenticationService>({
-						loadAccount: (username) => Promise.resolve({ ...mockAccount, username }),
-						normalizeUsername: (username: string) => username,
-						normalizePassword: (password: string) => password,
-					}),
+					useValue: createMock<AuthenticationService>(),
 				},
 				{
 					provide: LdapService,
@@ -48,26 +49,15 @@ describe('LdapStrategy', () => {
 				},
 				{
 					provide: UserRepo,
-					useValue: createMock<UserRepo>({
-						findById: (id: string) => Promise.resolve({ ...mockUser, id, ldapDn: 'mockLdapDn' } as User),
-					}),
+					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: SchoolRepo,
-					useValue: createMock<SchoolRepo>({
-						findById: (id: string) => {
-							if (id !== 'missingExternalId') {
-								return Promise.resolve({ id, externalId: 'mockExternalId' } as SchoolDO);
-							}
-							return Promise.resolve({ id } as SchoolDO);
-						},
-					}),
+					useValue: createMock<SchoolRepo>(),
 				},
 				{
 					provide: SystemRepo,
-					useValue: createMock<SystemRepo>({
-						findById: (id) => Promise.resolve({ id } as System),
-					}),
+					useValue: createMock<SystemRepo>(),
 				},
 			],
 		}).compile();
@@ -77,11 +67,7 @@ describe('LdapStrategy', () => {
 		schoolRepoMock = module.get(SchoolRepo);
 		userRepoMock = module.get(UserRepo);
 		ldapServiceMock = module.get(LdapService);
-
-		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = AccountEntityToDtoMapper.mapToDto(
-			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
-		);
+		systemRepo = module.get(SystemRepo);
 	});
 
 	afterAll(async () => {
@@ -94,89 +80,283 @@ describe('LdapStrategy', () => {
 
 	describe('validate', () => {
 		describe('when user has no LDAP DN', () => {
-			it('should throw unauthorized error', async () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: undefined });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
-				userRepoMock.findById.mockResolvedValueOnce(mockUser);
 
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
+
+				return {
+					request,
+				};
+			};
+
+			it('should throw unauthorized error', async () => {
+				const { request } = setup();
+
+				const func = async () => strategy.validate(request);
+
+				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
-		describe('when school has no external id', () => {
-			it('should throw unauthorized error', async () => {
+		describe('when school does not have the system', () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
-				schoolRepoMock.findById.mockResolvedValueOnce({} as SchoolDO);
 
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
+
+				return {
+					request,
+				};
+			};
+
+			it('should throw unauthorized error', async () => {
+				const { request } = setup();
+
+				const func = async () => strategy.validate(request);
+
+				await expect(func).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when school has no systems', () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: undefined }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
+				const request: { body: LdapAuthorizationBodyParams } = {
+					body: {
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
+					},
+				};
+
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
+
+				return {
+					request,
+				};
+			};
+
+			it('should throw unauthorized error', async () => {
+				const { request } = setup();
+
+				const func = async () => strategy.validate(request);
+
+				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when account has no user id', () => {
-			it('should throw unauthorized error', async () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: undefined,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
-				const mockAccountWithoutUserId = { ...mockAccount };
-				delete mockAccountWithoutUserId.userId;
-				authenticationServiceMock.loadAccount.mockResolvedValueOnce(mockAccountWithoutUserId);
 
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
+
+				return {
+					request,
+				};
+			};
+
+			it('should throw unauthorized error', async () => {
+				const { request } = setup();
+
+				const func = async () => strategy.validate(request);
+
+				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
 		describe('when authentication with ldap fails', () => {
-			it('should throw unauthorized error', async () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
 
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
 
-				await expect(strategy.validate(request)).rejects.toThrow(UnauthorizedException);
+				return {
+					request,
+					account,
+				};
+			};
 
-				expect(authenticationServiceMock.updateLastTriedFailedLogin).toHaveBeenCalledWith(mockAccount.id);
+			it('should throw unauthorized error', async () => {
+				const { request, account } = setup();
+
+				const func = async () => strategy.validate(request);
+
+				await expect(func).rejects.toThrow(UnauthorizedException);
+
+				expect(authenticationServiceMock.updateLastTriedFailedLogin).toHaveBeenCalledWith(account.id);
 			});
 		});
 
 		describe('when connection to ldap fails', () => {
 			const setup = () => {
 				const error = new Error('error');
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
 
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(error);
 
-				return { error, request };
+				return {
+					request,
+					error,
+				};
 			};
 
 			it('should throw error', async () => {
@@ -190,28 +370,65 @@ describe('LdapStrategy', () => {
 
 				await expect(strategy.validate(request)).rejects.toThrow(error);
 
-				expect(authenticationServiceMock.updateLastTriedFailedLogin).not.toHaveBeenCalledWith(mockAccount.id);
+				expect(authenticationServiceMock.updateLastTriedFailedLogin).not.toHaveBeenCalled();
 			});
 		});
 
 		describe('when authentication with LDAP succeeds', () => {
-			it('should return user', async () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+
+				const user: User = userFactory
+					.withRoleByName(RoleName.STUDENT)
+					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
 				const request: { body: LdapAuthorizationBodyParams } = {
 					body: {
-						username: 'mockUserName',
-						password: 'somePassword1234$',
-						schoolId: 'mockSchoolId',
-						systemId: 'mockSystemId',
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
 					},
 				};
 
-				const user = await strategy.validate(request);
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockResolvedValue(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
 
-				expect(user).toMatchObject({
-					userId: mockUser.id,
-					roles: [mockUser.roles[0].id],
-					schoolId: mockUser.school.id,
-					accountId: mockAccount.id,
+				return {
+					request,
+					user,
+					school,
+					account,
+					system,
+				};
+			};
+
+			it('should return user', async () => {
+				const { request, user, school, account, system } = setup();
+
+				const result: ICurrentUser = await strategy.validate(request);
+
+				expect(result).toEqual({
+					userId: user.id,
+					roles: [user.roles[0].id],
+					schoolId: school.id,
+					systemId: system.id,
+					accountId: account.id,
 				});
 			});
 		});
