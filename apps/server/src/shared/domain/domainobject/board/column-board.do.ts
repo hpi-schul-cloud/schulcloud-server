@@ -20,6 +20,10 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 		return this.props.context;
 	}
 
+	set context(context: { type: BoardExternalReferenceType; id: string }) {
+		this.props.context = context;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed = domainObject instanceof Column;
 		return allowed;

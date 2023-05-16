@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
+import { AuthorizationService } from '@src/modules/authorization';
 import { BoardDoService, CardService, ColumnService } from '../service';
 import { ColumnBoardService } from '../service/column-board.service';
 import { BoardUc } from './board.uc';
@@ -10,6 +11,7 @@ import { BoardUc } from './board.uc';
 describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnService: DeepMocked<ColumnService>;
 	let cardService: DeepMocked<CardService>;
@@ -19,8 +21,16 @@ describe(BoardUc.name, () => {
 			providers: [
 				BoardUc,
 				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
+				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -31,10 +41,6 @@ describe(BoardUc.name, () => {
 					useValue: createMock<ColumnService>(),
 				},
 				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
-				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -42,6 +48,7 @@ describe(BoardUc.name, () => {
 		}).compile();
 
 		uc = module.get(BoardUc);
+		authorizationService = module.get(AuthorizationService);
 		columnBoardService = module.get(ColumnBoardService);
 		columnService = module.get(ColumnService);
 		cardService = module.get(CardService);
@@ -58,12 +65,13 @@ describe(BoardUc.name, () => {
 		const boardId = board.id;
 		const column = columnFactory.build();
 		const card = cardFactory.build();
+		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 		return { user, board, boardId, column, card };
 	};
 
 	describe('findBoard', () => {
-		describe('when finding a board', () => {
+		describe('when loading a board', () => {
 			it('should call the service', async () => {
 				const { user, boardId } = setup();
 

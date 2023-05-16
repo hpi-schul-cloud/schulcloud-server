@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
+import { Card, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 
 @Injectable()
 export class BoardUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
+		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly cardService: CardService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(BoardUc.name);
@@ -17,9 +19,14 @@ export class BoardUc {
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
-		// TODO check permissions
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const board = await this.columnBoardService.findById(boardId);
+
+		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
+
+		this.authorizationService.checkPermission(user, board, context);
+
 		return board;
 	}
 

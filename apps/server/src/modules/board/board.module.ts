@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '..';
+import { LearnroomModule } from '../learnroom';
 import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
+	BoardDoAuthorizableService,
 	BoardDoService,
-	BoardNodeService,
 	CardService,
 	ColumnBoardService,
 	ColumnService,
@@ -16,7 +18,7 @@ import {
 import { BoardManagementUc } from './uc';
 
 @Module({
-	imports: [ConsoleWriterModule, LoggerModule],
+	imports: [AuthorizationModule, ConsoleWriterModule, LearnroomModule, LoggerModule],
 	providers: [
 		BoardDoRepo,
 		BoardDoService,
@@ -29,8 +31,8 @@ import { BoardManagementUc } from './uc';
 		ContentElementService,
 		RecursiveDeleteVisitor,
 		ContentElementFactory,
-		BoardNodeService,
+		BoardDoAuthorizableService,
 	],
-	exports: [ColumnBoardService, ColumnService, CardService, ContentElementService, BoardNodeService],
+	exports: [ColumnBoardService, ColumnService, CardService, ContentElementService, BoardDoAuthorizableService],
 })
 export class BoardModule {}

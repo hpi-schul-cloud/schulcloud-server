@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { User } from '@shared/domain';
 import {
-	BoardNodeRule,
+	BoardDoRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
@@ -30,7 +30,7 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardNodeRule: BoardNodeRule
+		private readonly boardDoRule: BoardDoRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -43,7 +43,7 @@ export class RuleManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-			this.boardNodeRule,
+			this.boardDoRule,
 		];
 	}
 
