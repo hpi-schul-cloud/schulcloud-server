@@ -11,7 +11,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { BoardDoAuthorizableService } from '@src/modules/board';
+import { BoardDoAuthorizableService } from '@src/modules/board/service/board-do-authorizable.service';
 import { AllowedAuthorizationEntityType, AllowedEntity } from './types';
 
 type RepoType =
