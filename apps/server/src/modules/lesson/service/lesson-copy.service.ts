@@ -6,7 +6,6 @@ import {
 	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
-	IComponentInternalProperties,
 	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,

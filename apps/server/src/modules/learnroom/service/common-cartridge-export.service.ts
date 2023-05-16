@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson } from '@shared/domain';
+import { EntityId, Lesson, IComponentProperties } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
