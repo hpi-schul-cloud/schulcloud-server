@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '..';
+import { AuthorizationModule } from '../authorization';
 import { LearnroomModule } from '../learnroom';
 import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';

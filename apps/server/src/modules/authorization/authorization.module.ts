@@ -15,7 +15,7 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board';
+import { BoardDoAuthorizableService } from '../board/service';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
@@ -23,7 +23,7 @@ import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule, BoardModule],
+	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
@@ -41,6 +41,7 @@ import { RuleManager } from './rule-manager';
 		SchoolExternalToolRepo,
 		RuleManager,
 		AuthorizationHelper,
+		BoardDoAuthorizableService,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService],
 })
