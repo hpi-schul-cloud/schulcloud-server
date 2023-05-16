@@ -1,5 +1,5 @@
-import { Command, Console } from 'nestjs-console';
 import { ConsoleWriterService } from '@shared/infra/console/console-writer/console-writer.service';
+import { Command, Console } from 'nestjs-console';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 
 interface Options {
@@ -24,7 +24,7 @@ export class DatabaseManagementConsole {
 	})
 	async seedCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
-		const collections = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter);
+		const collections = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter, true);
 		const report = JSON.stringify(collections);
 		this.consoleWriter.info(report);
 		return collections;

@@ -10,6 +10,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
+import { collectionSeedData } from '../seed-data';
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -145,24 +146,75 @@ export class DatabaseManagementUc {
 		return allCollectionsWithFilePaths;
 	}
 
+	private async dropCollectionIfExists(collectionName: string) {
+		const collectionExists = await this.databaseManagementService.collectionExists(collectionName);
+		if (collectionExists) {
+			// clear existing documents, if collection exists
+			await this.databaseManagementService.clearCollection(collectionName);
+		} else {
+			// create collection
+			await this.databaseManagementService.createCollection(collectionName);
+		}
+	}
+
+	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
+		const seededCollectionsWithAmount = await Promise.all(
+			collectionSeedData
+				.filter((data) => {
+					if (collections && collections.length > 0) {
+						return collections.includes(data.collectionName);
+					}
+					return true;
+				})
+				.map(async ({ collectionName, data }) => {
+					if (collectionName === systemsCollectionName || collectionName === storageprovidersCollectionName) {
+						// TODO: this.injectEnvVars, once we include the related collections
+					}
+
+					if (collectionName === systemsCollectionName) {
+						// TODO: this.encryptSecrets(collectionName, jsonDocuments); , once we include the related collections
+					}
+					await this.dropCollectionIfExists(collectionName);
+
+					await this.databaseManagementService.getDatabaseCollection(collectionName).insertMany(data);
+					return `${collectionName}:${data.length}`;
+				})
+		);
+
+		return seededCollectionsWithAmount;
+	}
+
 	/**
 	 * Imports all or filtered <collections> from filesystem as bson to database.
 	 * The behaviour should match $ mongoimport
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
-	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
+	async seedDatabaseCollectionsFromFileSystem(
+		collections?: string[],
+		seedAlsoFromFactories = false
+	): Promise<string[]> {
+		// TODO: once all collection seed generation is moved to factories, seedDatabaseCollectionsFromFileSystem will be removed
+		// currently we first seed from factories and seed the remaining collections from the filesystem
+		const collectionsGeneratedByFactories = collectionSeedData.map(({ collectionName }) => collectionName);
+		const seededCollectionsWithAmount: string[] = seedAlsoFromFactories
+			? await this.seedDatabaseCollectionsFromFactories(collections)
+			: [];
+
 		// detect collections to seed based on filesystem data
 		const setupPath = this.getSeedFolder();
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 			'files',
 			setupPath,
 			collections
+		).then((collectionNames) =>
+			collectionNames.filter(({ collectionName }) => {
+				if (seedAlsoFromFactories) {
+					return !collectionsGeneratedByFactories.includes(collectionName);
+				}
+				return true;
+			})
 		);
-
-		console.log(collectionsToSeed);
-
-		const seededCollectionsWithAmount: string[] = [];
 
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
