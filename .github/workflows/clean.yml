@@ -13,4 +13,3 @@ jobs:
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
       DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
-      TOKEN_INVENTORY: ${{ secrets.TOKEN_INVENTORY }}

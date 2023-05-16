@@ -1,4 +1,4 @@
-import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterDO, ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Injectable } from '@nestjs/common';
 import { CustomParameterScope } from '@shared/domain';
 import { ValidationError } from '@shared/common';
