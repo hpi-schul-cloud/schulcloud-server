@@ -48,7 +48,6 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
-	// TODO: add new permission CONTEXT_TOOL_USER to teacher or user role - maybe better teacher for testing first?
 	public async ensureContextPermissions(
 		userId: EntityId,
 		contextExternalToolDO: ContextExternalToolDO,
