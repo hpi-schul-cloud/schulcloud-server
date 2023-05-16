@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/board';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { BoardDoService, CardService, ColumnService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { ColumnBoardService } from '../service/column-board.service';
 import { BoardUc } from './board.uc';
 
@@ -12,6 +14,7 @@ describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnService: DeepMocked<ColumnService>;
 	let cardService: DeepMocked<CardService>;
@@ -27,6 +30,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
+				},
+				{
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
 				},
 				{
 					provide: CardService,
@@ -49,6 +56,7 @@ describe(BoardUc.name, () => {
 
 		uc = module.get(BoardUc);
 		authorizationService = module.get(AuthorizationService);
+		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnBoardService = module.get(ColumnBoardService);
 		columnService = module.get(ColumnService);
 		cardService = module.get(CardService);
@@ -67,6 +75,12 @@ describe(BoardUc.name, () => {
 		const card = cardFactory.build();
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
+		const authorizableMock: BoardDoAuthorizable = {
+			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+			id: board.id,
+		};
+		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
 		return { user, board, boardId, column, card };
 	};
 
@@ -82,7 +96,6 @@ describe(BoardUc.name, () => {
 
 			it('should return the column board object', async () => {
 				const { user, board } = setup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const result = await uc.findBoard(user.id, board.id);
 				expect(result).toEqual(board);

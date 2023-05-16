@@ -20,11 +20,9 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
 		const { users } = await this.getBoardAuthorizable(boardDo);
+		const boardDoAuthorizable = new BoardDoAuthorizable(users, id);
 
-		return {
-			users,
-			id,
-		};
+		return boardDoAuthorizable;
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {

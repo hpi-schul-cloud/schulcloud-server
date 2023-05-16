@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Card, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 
 @Injectable()
 export class BoardUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
@@ -21,11 +24,18 @@ export class BoardUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(boardId);
+
+		const context = {
+			action: Action.read, // scope-related permission
+			requiredPermissions: [Permission.COURSE_EDIT], // school-wide permissions
+		};
+
+		// const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
+
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+
 		const board = await this.columnBoardService.findById(boardId);
-
-		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
-
-		this.authorizationService.checkPermission(user, board, context);
 
 		return board;
 	}
