@@ -11,15 +11,10 @@ export class CourseExportUc {
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			courseId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.COURSE_EDIT],
-			}
-		);
+		await this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
+			action: Action.read,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
 		return this.courseExportService.exportCourse(courseId, userId);
 	}
 }

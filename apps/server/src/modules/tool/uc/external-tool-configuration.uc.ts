@@ -51,14 +51,9 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
-		return this.authorizationService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.School,
-			schoolId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-			}
-		);
+		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
 	}
 }
