@@ -3,6 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalTool, Course, Permission, Role, RoleName, SchoolExternalTool, User } from '@shared/domain';
 import {
+	contextExternalToolFactory,
 	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
@@ -162,6 +163,85 @@ describe('ToolContextController (API)', () => {
 				};
 
 				await request(app.getHttpServer()).post(basePath).send(postParams).expect(403);
+			});
+		});
+	});
+
+	describe('[DELETE] tools/context/:contextExternalToolId', () => {
+		describe('when deletion of contextExternalTool is successfully', () => {
+			const setup = async () => {
+				const teacherRole: Role = roleFactory.build({
+					name: RoleName.TEACHER,
+					permissions: [Permission.CONTEXT_TOOL_ADMIN],
+				});
+
+				const teacher: User = userFactory.buildWithId({ roles: [teacherRole] });
+
+				const course: Course = courseFactory.buildWithId({ teachers: [teacher] });
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolVersion: 1,
+				});
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					contextId: course.id,
+					schoolTool: schoolExternalTool,
+					toolVersion: 1,
+				});
+
+				em.persist([teacherRole, course, teacher, schoolExternalTool, contextExternalTool]);
+				await em.flush();
+				em.clear();
+
+				return {
+					contextExternalTool,
+					teacher,
+				};
+			};
+
+			it('should delete an contextExternalTool', async () => {
+				const { teacher, contextExternalTool } = await setup();
+				currentUser = mapUserToCurrentUser(teacher);
+
+				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(200);
+
+				const deleted: ContextExternalTool | null = await em.findOne(ContextExternalTool, {
+					contextId: contextExternalTool.id,
+				});
+
+				expect(deleted).toBeNull();
+			});
+		});
+
+		describe('when deletion of contextExternalTool failed', () => {
+			const setup = async () => {
+				const userWithMissingPermission: User = userFactory.buildWithId();
+
+				const course: Course = courseFactory.buildWithId({ teachers: [userWithMissingPermission] });
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolVersion: 1,
+				});
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					schoolTool: schoolExternalTool,
+					toolVersion: 1,
+				});
+
+				em.persist([course, userWithMissingPermission, schoolExternalTool, contextExternalTool]);
+				await em.flush();
+				em.clear();
+
+				return {
+					contextExternalTool,
+					userWithMissingPermission,
+				};
+			};
+
+			it('should return forbidden when user is not authorized', async () => {
+				const { userWithMissingPermission, contextExternalTool } = await setup();
+				currentUser = mapUserToCurrentUser(userWithMissingPermission);
+
+				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(403);
 			});
 		});
 	});
