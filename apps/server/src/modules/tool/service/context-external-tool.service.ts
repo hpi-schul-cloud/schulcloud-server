@@ -1,9 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
-import { EntityId, Permission } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 import {
-	Action,
 	AllowedAuthorizationEntityType,
 	AuthorizationContext,
 	AuthorizationLoaderService,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { Action } from '@src/modules/authorization';
 import { ContextExternalTool } from './dto';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
-import { Action } from '../../authorization';
 
 @Injectable()
 export class ContextExternalToolUc {
