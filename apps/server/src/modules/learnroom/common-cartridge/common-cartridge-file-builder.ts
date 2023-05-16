@@ -18,12 +18,13 @@ export type ICommonCartridgeFileBuilderOptions = {
 	version?: CommonCartridgeVersion;
 };
 
-export interface ICommonCartridgeOrganizationBuilder extends ICommonCartridgeFileBuilder {
+export interface ICommonCartridgeOrganizationBuilder {
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
 }
 
 export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
 	build(): Promise<Buffer>;
 }
 
@@ -42,10 +43,6 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 		return this.props.resources.map((resourceProps) => new CommonCartridgeResourceItemElement(resourceProps));
 	}
 
-	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		return this.fileBuilder.addOrganization(props);
-	}
-
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
 		const newResource = new CommonCartridgeResourceItemElement(props);
 		this.props.resources.push(props);
@@ -53,10 +50,6 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 			this.zipBuilder.addFile(props.href, Buffer.from(newResource.content()));
 		}
 		return this;
-	}
-
-	build(): Promise<Buffer> {
-		return this.fileBuilder.build();
 	}
 }
 
@@ -77,6 +70,9 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
 		const resource = new CommonCartridgeResourceItemElement(props);
+		if (!resource.canInline()) {
+			this.zipBuilder.addFile(props.href, Buffer.from(resource.content()));
+		}
 		this.resources.push(resource);
 		return this;
 	}
