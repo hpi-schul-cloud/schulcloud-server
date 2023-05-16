@@ -13,6 +13,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
+import { collectionSeedData } from '../seed-data';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
@@ -617,11 +618,21 @@ describe('DatabaseManagementService', () => {
 			});
 		});
 	});
+
 	describe('DatabaseManagementService', () => {
 		it('should call syncIndexes()', async () => {
 			dbService.syncIndexes = jest.fn();
 			await uc.syncIndexes();
 			expect(dbService.syncIndexes).toHaveBeenCalled();
+		});
+	});
+
+	describe('when seeding database from factories', () => {
+		it('should seed database with factories', async () => {
+			const accountData = collectionSeedData.filter((c) => c.collectionName === 'accounts').at(0)?.data;
+			expect(accountData).toBeDefined();
+			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
+			expect(collectionsSeeded).toStrictEqual(collectionSeedData.map((c) => `${c.collectionName}:${c.data.length}`));
 		});
 	});
 });
