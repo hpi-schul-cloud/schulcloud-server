@@ -6,13 +6,13 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Delete, Param } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import { ContextExternalToolDO } from '@shared/domain';
-import { ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
+import { ContextExternalToolIdParams, ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from './mapper';
 import { ContextExternalTool } from '../uc/dto';
@@ -49,5 +49,19 @@ export class ToolContextController {
 
 		this.logger.debug(`ContextExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
 		return response;
+	}
+
+	@Delete(':contextExternalToolId')
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	async deleteContextExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams
+	): Promise<void> {
+		await this.contextExternalToolUc.deleteContextExternalTool(currentUser.userId, params.contextExternalToolId);
+
+		this.logger.debug(
+			`ContextExternalTool with id ${params.contextExternalToolId} was deleted by user with id ${currentUser.userId}`
+		);
 	}
 }
