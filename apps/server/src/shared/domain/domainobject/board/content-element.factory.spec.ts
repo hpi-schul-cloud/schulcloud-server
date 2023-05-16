@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { ContentElementFactory } from './content-element.factory';
 import { FileElement } from './file-element.do';
-import { TextElement } from './text-element.do';
+import { RichTextElement } from './richtext-element.do';
 import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {
@@ -12,12 +12,12 @@ describe(ContentElementFactory.name, () => {
 			return { contentElementFactory };
 		};
 
-		it('should return element of TEXT', () => {
+		it('should return element of RICH_TEXT', () => {
 			const { contentElementFactory } = setup();
 
-			const element = contentElementFactory.build(ContentElementType.TEXT);
+			const element = contentElementFactory.build(ContentElementType.RICH_TEXT);
 
-			expect(element).toBeInstanceOf(TextElement);
+			expect(element).toBeInstanceOf(RichTextElement);
 		});
 
 		it('should return element of FILE', () => {

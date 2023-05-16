@@ -3,5 +3,5 @@ export * from './card-node.entity';
 export * from './column-board-node.entity';
 export * from './column-node.entity';
 export * from './file-element-node.entity';
-export * from './text-element-node.entity';
+export * from './richtext-element-node.entity';
 export * from './types';

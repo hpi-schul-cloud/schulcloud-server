@@ -4,8 +4,8 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	fileElementNodeFactory,
+	richTextElementNodeFactory,
 	setupEntities,
-	textElementNodeFactory,
 } from '@shared/testing';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 
@@ -125,8 +125,8 @@ describe(BoardDoBuilderImpl.name, () => {
 
 		it('should assign the children', () => {
 			const cardNode = cardNodeFactory.buildWithId();
-			const elementNode1 = textElementNodeFactory.buildWithId({ parent: cardNode });
-			const elementNode2 = textElementNodeFactory.buildWithId({ parent: cardNode });
+			const elementNode1 = richTextElementNodeFactory.buildWithId({ parent: cardNode });
+			const elementNode2 = richTextElementNodeFactory.buildWithId({ parent: cardNode });
 
 			const domainObject = new BoardDoBuilderImpl([elementNode1, elementNode2]).buildCard(cardNode);
 
@@ -135,9 +135,9 @@ describe(BoardDoBuilderImpl.name, () => {
 
 		it('should sort the children by their node position', () => {
 			const cardNode = cardNodeFactory.buildWithId();
-			const elementNode1 = textElementNodeFactory.buildWithId({ parent: cardNode, position: 2 });
-			const elementNode2 = textElementNodeFactory.buildWithId({ parent: cardNode, position: 3 });
-			const elementNode3 = textElementNodeFactory.buildWithId({ parent: cardNode, position: 1 });
+			const elementNode1 = richTextElementNodeFactory.buildWithId({ parent: cardNode, position: 2 });
+			const elementNode2 = richTextElementNodeFactory.buildWithId({ parent: cardNode, position: 3 });
+			const elementNode3 = richTextElementNodeFactory.buildWithId({ parent: cardNode, position: 1 });
 
 			const domainObject = new BoardDoBuilderImpl([elementNode1, elementNode2, elementNode3]).buildCard(cardNode);
 
@@ -146,21 +146,21 @@ describe(BoardDoBuilderImpl.name, () => {
 		});
 	});
 
-	describe('when building an text element', () => {
+	describe('when building an richtext element', () => {
 		it('should work without descendants', () => {
-			const textElementNode = textElementNodeFactory.build();
+			const richTextElementNode = richTextElementNodeFactory.build();
 
-			const domainObject = new BoardDoBuilderImpl().buildTextElement(textElementNode);
+			const domainObject = new BoardDoBuilderImpl().buildRichTextElement(richTextElementNode);
 
-			expect(domainObject.constructor.name).toBe('TextElement');
+			expect(domainObject.constructor.name).toBe('RichTextElement');
 		});
 
 		it('should throw error if textElement is not a leaf', () => {
-			const textElementNode = textElementNodeFactory.buildWithId();
-			const columnNode = columnNodeFactory.buildWithId({ parent: textElementNode });
+			const richTextElementNode = richTextElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: richTextElementNode });
 
 			expect(() => {
-				new BoardDoBuilderImpl([columnNode]).buildTextElement(textElementNode);
+				new BoardDoBuilderImpl([columnNode]).buildRichTextElement(richTextElementNode);
 			}).toThrowError();
 		});
 	});
@@ -191,13 +191,13 @@ describe(BoardDoBuilderImpl.name, () => {
 	});
 
 	it('should delegate to the board node', () => {
-		const textElementNode = textElementNodeFactory.build();
-		jest.spyOn(textElementNode, 'useDoBuilder');
+		const richTextElementNode = richTextElementNodeFactory.build();
+		jest.spyOn(richTextElementNode, 'useDoBuilder');
 
 		const builder = new BoardDoBuilderImpl();
-		builder.buildDomainObject(textElementNode);
+		builder.buildDomainObject(richTextElementNode);
 
-		expect(textElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
+		expect(richTextElementNode.useDoBuilder).toHaveBeenCalledWith(builder);
 	});
 
 	it('should delegate to the board node', () => {

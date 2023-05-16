@@ -2,7 +2,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardNode, EntityId } from '@shared/domain';
-import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from '@shared/testing';
+import {
+	cardNodeFactory,
+	columnBoardNodeFactory,
+	columnNodeFactory,
+	richTextElementNodeFactory,
+} from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
@@ -49,7 +54,7 @@ export class BoardManagementUc {
 
 	private createElements(amount: number, parent: BoardNode): BoardNode[] {
 		return this.generateArray(amount, (i) =>
-			textElementNodeFactory.build({
+			richTextElementNodeFactory.build({
 				parent,
 				text: `Text ${i + 1}`,
 				position: i,

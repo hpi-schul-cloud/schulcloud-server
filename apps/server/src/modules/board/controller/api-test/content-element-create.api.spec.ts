@@ -90,7 +90,7 @@ describe(`content element create (api)`, () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const response = await api.post(cardNode.id, ContentElementType.TEXT);
+			const response = await api.post(cardNode.id, ContentElementType.RICH_TEXT);
 
 			expect(response.status).toEqual(201);
 		});
@@ -99,9 +99,9 @@ describe(`content element create (api)`, () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const { result } = await api.post(cardNode.id, ContentElementType.TEXT);
+			const { result } = await api.post(cardNode.id, ContentElementType.RICH_TEXT);
 
-			expect(result.type).toEqual(ContentElementType.TEXT);
+			expect(result.type).toEqual(ContentElementType.RICH_TEXT);
 		});
 
 		it('should return the created content element of type FILE', async () => {

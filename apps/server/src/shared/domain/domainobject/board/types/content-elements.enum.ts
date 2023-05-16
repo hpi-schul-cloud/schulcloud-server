@@ -1,4 +1,4 @@
 export enum ContentElementType {
-	'TEXT' = 'text',
+	'RICH_TEXT' = 'richtext',
 	'FILE' = 'file',
 }

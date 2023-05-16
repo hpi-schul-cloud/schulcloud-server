@@ -1,5 +1,5 @@
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
 import { IsEnum, IsString, ValidateNested } from 'class-validator';
 
@@ -12,10 +12,13 @@ export abstract class ElementContentBody {
 	type!: ContentElementType;
 }
 
-export class TextContentBody {
+export class RichTextContentBody {
 	@IsString()
 	@ApiProperty()
 	text!: string;
+
+	@IsEnum(InputFormat)
+	inputFormat!: InputFormat;
 }
 
 export class FileContentBody {
@@ -24,13 +27,13 @@ export class FileContentBody {
 	caption!: string;
 }
 
-export class TextElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.TEXT })
-	type!: ContentElementType.TEXT;
+export class RichTextElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.RICH_TEXT })
+	type!: ContentElementType.RICH_TEXT;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: TextContentBody;
+	content!: RichTextContentBody;
 }
 
 export class FileElementContentBody extends ElementContentBody {
@@ -42,7 +45,7 @@ export class FileElementContentBody extends ElementContentBody {
 	content!: FileContentBody;
 }
 
-export type AnyElementContentBody = TextContentBody | FileContentBody;
+export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
 
 export class ElementContentUpdateBodyParams {
 	@ValidateNested()
@@ -50,14 +53,14 @@ export class ElementContentUpdateBodyParams {
 		discriminator: {
 			property: 'type',
 			subTypes: [
-				{ value: TextElementContentBody, name: ContentElementType.TEXT },
+				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 			],
 		},
 		keepDiscriminatorProperty: true,
 	})
 	@ApiProperty({
-		oneOf: [{ $ref: getSchemaPath(TextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
+		oneOf: [{ $ref: getSchemaPath(RichTextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
 	})
-	data!: TextElementContentBody | FileElementContentBody;
+	data!: RichTextElementContentBody | FileElementContentBody;
 }
