@@ -68,6 +68,7 @@ export class ContentStorage implements IContentStorage {
 		return contentId;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
 		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
@@ -75,7 +76,7 @@ export class ContentStorage implements IContentStorage {
 		}
 
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
-		await this.existsOrCreateDir(path.dirname(fullPath));
+		// await this.existsOrCreateDir(path.dirname(fullPath));
 		const writeStream = fs.createWriteStream(fullPath);
 		stream.pipe(writeStream);
 	}
@@ -87,11 +88,23 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
-		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
+		const fullPath = path.join(this.getContentPath(), contentId.toString());
+		if (!fs.existsSync(fullPath)) {
 			throw new Error('404: storage-file-implementations:delete-content-not-found');
 		}
+		try {
+			fs.readdirSync(fullPath).forEach((file, index) => {
+				const curPath = path.join(fullPath, file);
+				fs.unlinkSync(curPath);
+			});
 
-		await fsPromises.rm(path.join(this.getContentPath(), contentId.toString()));
+			await fsPromises.rmdir(path.join(this.getContentPath(), contentId.toString()));
+		} catch (error) {
+			if (error) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				throw new Error(error.toString());
+			}
+		}
 	}
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
@@ -106,14 +119,15 @@ export class ContentStorage implements IContentStorage {
 
 	public fileExists(contentId: string, filename: string): Promise<boolean> {
 		this.checkFilename(filename);
-		let exist: Promise<boolean> = <Promise<boolean>>(<unknown>false);
+		let exist = false;
 		if (contentId !== undefined) {
-			exist = <Promise<boolean>>(
-				(<unknown>fs.existsSync(path.join(this.getContentPath(), contentId.toString(), filename)))
-			);
-			return exist;
+			const fullPath = path.join(this.contentPath, contentId.toString(), filename);
+			// exist = fs.existsSync(fullPath);
+			exist = fs.existsSync(fullPath);
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			return <Promise<boolean>>(<unknown>exist);
 		}
-		return exist;
+		return <Promise<boolean>>(<unknown>exist);
 	}
 
 	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
