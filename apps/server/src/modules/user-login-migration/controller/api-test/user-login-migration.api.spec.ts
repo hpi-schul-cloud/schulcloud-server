@@ -178,7 +178,7 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return UserLoginMigrationResponse ', async () => {
+			it('should return the Status CREATED ', async () => {
 				const { user } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
