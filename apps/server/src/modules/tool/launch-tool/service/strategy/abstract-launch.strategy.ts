@@ -16,6 +16,7 @@ import {
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
+import { URLSearchParams } from 'url';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 import { ToolLaunchMapper } from '../../mapper/tool-launch.mapper';
 import { ToolContextType } from '../../../interface';
@@ -66,10 +67,10 @@ export abstract class AbstractLaunchStrategy {
 		}
 
 		if (queryProperties.length > 0) {
-			const queryParams: string = queryProperties
-				.map((property: PropertyDataDO) => `${property.name}=${property.value}`)
-				.join('&');
-			url.search += `?${queryParams}`;
+			const queryParams: URLSearchParams = new URLSearchParams();
+			queryProperties.map((property: PropertyDataDO) => queryParams.append(property.name, property.value));
+
+			url.search += queryParams.toString();
 		}
 
 		const urlString = url.toString();
@@ -102,15 +103,15 @@ export abstract class AbstractLaunchStrategy {
 	private buildToolLaunchDataFromTools(data: IToolLaunchParams): PropertyDataDO[] {
 		const propertyData: PropertyDataDO[] = [];
 		const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = data;
-		const externalParameters = externalToolDO.parameters || [];
+		const customParameters = externalToolDO.parameters || [];
 
 		const scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[] = [
-			{ scope: CustomParameterScope.GLOBAL, params: externalToolDO.parameters || [] },
+			{ scope: CustomParameterScope.GLOBAL, params: customParameters },
 			{ scope: CustomParameterScope.SCHOOL, params: schoolExternalToolDO.parameters || [] },
 			{ scope: CustomParameterScope.CONTEXT, params: contextExternalToolDO.parameters || [] },
 		];
 
-		this.addParameters(propertyData, externalParameters, scopes, schoolExternalToolDO, contextExternalToolDO);
+		this.addParameters(propertyData, customParameters, scopes, schoolExternalToolDO, contextExternalToolDO);
 
 		return propertyData;
 	}

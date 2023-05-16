@@ -18,6 +18,7 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardNodeService } from '@src/modules/board';
 import { ReferenceLoader } from './reference.loader';
 import { AllowedAuthorizationEntityType } from './types';
+import { ContextExternalToolService } from '../tool/service';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -31,6 +32,8 @@ describe('reference.loader', () => {
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -79,6 +82,10 @@ describe('reference.loader', () => {
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
 				},
+				{
+					provide: ContextExternalToolService,
+					useValue: createMock<ContextExternalToolService>(),
+				},
 			],
 		}).compile();
 
@@ -93,6 +100,7 @@ describe('reference.loader', () => {
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeService = await module.get(BoardNodeService);
+		contextExternalToolService = await module.get(ContextExternalToolService);
 	});
 
 	afterEach(() => {
@@ -162,6 +170,12 @@ describe('reference.loader', () => {
 			await service.loadEntity(AllowedAuthorizationEntityType.BoardNode, entityId);
 
 			expect(boardNodeService.findById).toBeCalledWith(entityId);
+		});
+
+		it('should call contextExternalToolService.findById', async () => {
+			await service.loadEntity(AllowedAuthorizationEntityType.ContextExternalTool, entityId);
+
+			expect(contextExternalToolService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return entity', async () => {

@@ -10,7 +10,24 @@ describe('CourseExternalToolScope', () => {
 		scope.allowEmptyQuery(true);
 	});
 
-	// TODO test new function
+	describe('byId is called', () => {
+		describe('when id parameter is undefined', () => {
+			it('should return scope without added id to query', () => {
+				scope.byId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when id parameter is defined', () => {
+			it('should return scope with added id to query', () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				scope.byId(schoolExternalTool.id);
+
+				expect(scope.query).toEqual({ id: schoolExternalTool.id });
+			});
+		});
+	});
 
 	describe('bySchoolToolId is called', () => {
 		describe('when schoolToolId parameter is undefined', () => {
@@ -27,6 +44,25 @@ describe('CourseExternalToolScope', () => {
 				scope.bySchoolToolId(schoolExternalTool.id);
 
 				expect(scope.query).toEqual({ schoolTool: schoolExternalTool.id });
+			});
+		});
+	});
+
+	describe('byContextId is called', () => {
+		describe('when contextId parameter is undefined', () => {
+			it('should return scope without added contextId to query', () => {
+				scope.byContextId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when contextId parameter is defined', () => {
+			it('should return scope with added contextId to query', () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				scope.byContextId(schoolExternalTool.id);
+
+				expect(scope.query).toEqual({ contextId: schoolExternalTool.id });
 			});
 		});
 	});

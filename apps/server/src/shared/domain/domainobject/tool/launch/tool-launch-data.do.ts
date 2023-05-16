@@ -13,7 +13,7 @@ export class ToolLaunchDataDO {
 	constructor(props: ToolLaunchDataDO) {
 		this.baseUrl = props.baseUrl;
 		this.type = props.type;
-		this.properties = props.properties ?? [];
-		this.openNewTab = props.openNewTab ?? true;
+		this.properties = props.properties;
+		this.openNewTab = props.openNewTab;
 	}
 }

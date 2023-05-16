@@ -119,6 +119,7 @@ describe('ContextExternalToolRepo', () => {
 					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 					schoolToolRef: {
 						schoolToolId: new ObjectId().toHexString(),
+						schoolId: undefined,
 					},
 					toolVersion: 1,
 				});
@@ -171,7 +172,7 @@ describe('ContextExternalToolRepo', () => {
 			it('should return a do', async () => {
 				const { schoolExternalTool1 } = await setup();
 				const query: ContextExternalToolDO = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalTool1.id, 'schoolId')
+					.withSchoolExternalToolRef(schoolExternalTool1.id, schoolExternalTool1.school.id)
 					.build({ contextId: undefined });
 
 				const result: ContextExternalToolDO[] = await repo.find(query);
@@ -181,8 +182,7 @@ describe('ContextExternalToolRepo', () => {
 
 			it('should return all dos', async () => {
 				await setup();
-				const query: ContextExternalToolQuery = contextExternalToolDOFactory.build();
-				query.schoolToolRef = undefined;
+				const query: ContextExternalToolQuery = {};
 
 				const result: ContextExternalToolDO[] = await repo.find(query);
 
@@ -193,7 +193,7 @@ describe('ContextExternalToolRepo', () => {
 				it('should return a do', async () => {
 					const { schoolExternalTool1, contextExternalTool1 } = await setup();
 					const query: ContextExternalToolDO = contextExternalToolDOFactory
-						.withSchoolExternalToolRef(schoolExternalTool1.id, 'schoolId')
+						.withSchoolExternalToolRef(schoolExternalTool1.id, schoolExternalTool1.school.id)
 						.build({ contextId: contextExternalTool1.contextId });
 
 					const result: ContextExternalToolDO[] = await repo.find(query);
@@ -203,9 +203,11 @@ describe('ContextExternalToolRepo', () => {
 				});
 
 				it('should return all dos', async () => {
-					await setup();
-					const query: ContextExternalToolQuery = contextExternalToolDOFactory.build();
-					query.schoolToolRef = undefined;
+					const { contextExternalTool1 } = await setup();
+					const query: ContextExternalToolQuery = {
+						schoolToolRef: { schoolToolId: contextExternalTool1.schoolTool.id },
+						contextId: contextExternalTool1.contextId,
+					};
 
 					const result: ContextExternalToolDO[] = await repo.find(query);
 

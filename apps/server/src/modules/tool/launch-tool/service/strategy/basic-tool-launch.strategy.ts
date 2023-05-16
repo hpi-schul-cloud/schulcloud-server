@@ -15,6 +15,9 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 			payload[property.name] = property.value;
 		}
 
+		if (Object.keys(payload).length === 0) {
+			return '';
+		}
 		return JSON.stringify(payload);
 	}
 }

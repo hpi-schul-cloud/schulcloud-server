@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolDO, EntityId, ToolLaunchDataDO, ToolLaunchRequestDO } from '@shared/domain';
+import { ContextExternalToolDO, EntityId, Permission, ToolLaunchDataDO, ToolLaunchRequestDO } from '@shared/domain';
+import { Action } from '@src/modules/authorization';
 import { ToolLaunchService } from '../service/tool-launch.service';
 import { ContextExternalToolService } from '../../service';
 
@@ -14,7 +15,10 @@ export class ToolLaunchUc {
 		const contextExternalToolDO: ContextExternalToolDO =
 			await this.contextExternalToolService.getContextExternalToolById(contextExternalToolId);
 
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO);
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalToolDO, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+			action: Action.read,
+		});
 
 		const toolLaunchDataDO: ToolLaunchDataDO = await this.toolLaunchService.getLaunchData(contextExternalToolDO);
 		const launchRequestDO: ToolLaunchRequestDO = this.toolLaunchService.generateLaunchRequest(toolLaunchDataDO);

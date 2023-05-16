@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolDO, EntityId } from '@shared/domain';
+import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { ContextExternalTool } from './dto';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
+import { Action } from '../../authorization';
 
 @Injectable()
 export class ContextExternalToolUc {
@@ -14,7 +15,10 @@ export class ContextExternalToolUc {
 		userId: EntityId,
 		contextExternalTool: ContextExternalTool
 	): Promise<ContextExternalToolDO> {
-		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool);
+		await this.contextExternalToolService.ensureContextPermissions(userId, contextExternalTool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.write,
+		});
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
@@ -29,7 +33,10 @@ export class ContextExternalToolUc {
 		const tool: ContextExternalToolDO = await this.contextExternalToolService.getContextExternalToolById(
 			contextExternalToolId
 		);
-		await this.contextExternalToolService.ensureContextPermissions(userId, tool);
+		await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
+			requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+			action: Action.write,
+		});
 
 		const promise: Promise<void> = this.contextExternalToolService.deleteContextExternalTool(tool);
 

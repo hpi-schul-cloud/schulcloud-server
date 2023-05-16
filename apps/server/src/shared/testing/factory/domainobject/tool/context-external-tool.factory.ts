@@ -8,7 +8,7 @@ import { ToolContextType } from '@src/modules/tool/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolDO> {
-	withSchoolExternalToolRef(schoolToolId: string, schoolId: string): this {
+	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial<ContextExternalToolDO> = {
 			schoolToolRef: new SchoolExternalToolRefDO({ schoolToolId, schoolId }),
 		};

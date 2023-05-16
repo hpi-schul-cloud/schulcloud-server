@@ -17,9 +17,12 @@ import {
 	Oauth2ToolConfigDO,
 	SchoolExternalToolDO,
 	ToolConfigType,
+	ToolLaunchDataType,
+	ToolLaunchRequestDO,
 } from '@shared/domain';
 import { ToolLaunchDataDO } from '@shared/domain/domainobject/tool/launch';
 import { toolLaunchDataFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-data.factory';
+import { toolLaunchRequestFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-request.factory';
 import { ToolLaunchService } from './tool-launch.service';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { BasicToolLaunchStrategy, IToolLaunchParams } from './strategy';
@@ -69,9 +72,9 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is BASIC', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
-					schoolToolId: schoolExternalToolDO.id,
-				});
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
+					.build();
 				const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: basicToolConfigDO,
@@ -134,9 +137,9 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is LTI11', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
-					schoolToolId: schoolExternalToolDO.id,
-				});
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
+					.build();
 				const lti11ToolConfigDO: Lti11ToolConfigDO = lti11ToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: lti11ToolConfigDO,
@@ -198,9 +201,9 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is Oauth2', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
-					schoolToolId: schoolExternalToolDO.id,
-				});
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
+					.build();
 				const oauth2ToolConfigDO: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 					config: oauth2ToolConfigDO,
@@ -262,9 +265,9 @@ describe('ToolLaunchService', () => {
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
-					schoolToolId: schoolExternalToolDO.id,
-				});
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
+					.build();
 				const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
 				externalToolDO.config.type = 'unknown' as ToolConfigType;
 
@@ -316,6 +319,44 @@ describe('ToolLaunchService', () => {
 
 				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalToolDO.toolId);
 			});
+		});
+	});
+
+	describe('generateLaunchRequest', () => {
+		it('should generate launch request for BASIC type', () => {
+			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.BASIC });
+
+			const expectedLaunchRequest: ToolLaunchRequestDO = toolLaunchRequestFactory.build();
+			basicToolLaunchStrategy.createLaunchRequest.mockReturnValue(expectedLaunchRequest);
+
+			const result: ToolLaunchRequestDO = service.generateLaunchRequest(toolLaunchDataDO);
+
+			expect(result).toEqual(expectedLaunchRequest);
+			expect(basicToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith(toolLaunchDataDO);
+		});
+
+		it('should throw NotImplementedException for LTI11 type', () => {
+			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.LTI11 });
+
+			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
+
+			expect(() => func()).toThrow(new NotImplementedException('LTI 1.1 launch is not implemented yet'));
+		});
+
+		it('should throw NotImplementedException for OAUTH2 type', () => {
+			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.OAUTH2 });
+
+			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
+
+			expect(() => func()).toThrow(new NotImplementedException('OAuth2 launch is not implemented yet'));
+		});
+
+		it('should throw InternalServerErrorException for unknown type', () => {
+			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: undefined });
+
+			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
+
+			expect(() => func()).toThrow(new InternalServerErrorException('Unknown tool launch data type'));
 		});
 	});
 });

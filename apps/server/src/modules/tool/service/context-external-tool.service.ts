@@ -5,6 +5,7 @@ import { EntityId, Permission } from '@shared/domain';
 import {
 	Action,
 	AllowedAuthorizationEntityType,
+	AuthorizationContext,
 	AuthorizationLoaderService,
 	AuthorizationService,
 } from '@src/modules/authorization';
@@ -49,25 +50,25 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 	}
 
 	// TODO: add new permission CONTEXT_TOOL_USER to teacher or user role - maybe better teacher for testing first?
-	public async ensureContextPermissions(userId: EntityId, contextExternalToolDO: ContextExternalToolDO): Promise<void> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.ContextExternalTool,
-			contextExternalToolDO.id ?? '',
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-			}
-		);
+	public async ensureContextPermissions(
+		userId: EntityId,
+		contextExternalToolDO: ContextExternalToolDO,
+		context: AuthorizationContext
+	): Promise<void> {
+		if (contextExternalToolDO.id) {
+			await this.authorizationService.checkPermissionByReferences(
+				userId,
+				AllowedAuthorizationEntityType.ContextExternalTool,
+				contextExternalToolDO.id,
+				context
+			);
+		}
 
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
 			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextType),
 			contextExternalToolDO.contextId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.CONTEXT_TOOL_USER],
-			}
+			context
 		);
 	}
 

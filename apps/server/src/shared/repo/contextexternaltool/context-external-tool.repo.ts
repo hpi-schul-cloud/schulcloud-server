@@ -59,13 +59,9 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
 
-		if (query.id) {
-			scope.byId(query.id);
-		} else if (query.contextId && query.schoolToolRef?.schoolToolId) {
-			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolRef.schoolToolId);
-		} else if (query.schoolToolRef?.schoolToolId && !query.contextId) {
-			scope.bySchoolToolId(query.schoolToolRef.schoolToolId);
-		}
+		scope.byId(query.id);
+		scope.bySchoolToolId(query.schoolToolRef?.schoolToolId);
+		scope.byContextId(query.contextId);
 
 		scope.allowEmptyQuery(true);
 
@@ -74,7 +70,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 	mapEntityToDO(entity: ContextExternalTool): ContextExternalToolDO {
 		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
-			schoolId: entity.schoolTool.school.id,
+			schoolId: entity.schoolTool.school?.id,
 			schoolToolId: entity.schoolTool.id,
 		});
 

@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
-import { ContextExternalToolDO, EntityId } from '@shared/domain';
+import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { Action } from '@src/modules/authorization';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ToolContextType } from '../interface';
@@ -75,7 +76,10 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.createContextExternalTool(userId, contextExternalTool);
 
-				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool);
+				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+					action: Action.write,
+				});
 			});
 
 			it('should call contextExternalToolValidationService', async () => {
@@ -118,7 +122,10 @@ describe('ContextExternalToolUc', () => {
 
 				await uc.deleteContextExternalTool(userId, contextExternalToolId);
 
-				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool);
+				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+					action: Action.write,
+				});
 			});
 		});
 	});

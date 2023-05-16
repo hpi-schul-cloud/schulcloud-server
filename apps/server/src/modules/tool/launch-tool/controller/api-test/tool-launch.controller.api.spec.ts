@@ -4,25 +4,32 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import {
 	ContextExternalTool,
+	ContextExternalToolType,
+	Course,
 	ExternalTool,
 	LaunchRequestMethod,
 	Permission,
 	Role,
+	School,
 	SchoolExternalTool,
+	ToolConfigType,
 	User,
 } from '@shared/domain';
 import {
+	basicToolConfigDOFactory,
 	contextExternalToolFactory,
+	courseFactory,
 	externalToolFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolExternalToolFactory,
+	schoolFactory,
 	userFactory,
 } from '@shared/testing';
 import request, { Response } from 'supertest';
-import { JwtAuthGuard } from '../../../../authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '../../../../server';
-import { ICurrentUser } from '../../../../authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication';
+import { ServerTestModule } from '@src/modules/server';
 import { ToolLaunchParams } from '../dto/tool-launch.params';
 import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
 
@@ -68,19 +75,28 @@ describe('ToolLaunchController (API)', () => {
 	describe('[GET] tools/context/{contextExternalToolId}/launch', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_VIEW] });
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.CONTEXT_TOOL_USER] });
+				const school: School = schoolFactory.buildWithId();
+				const user: User = userFactory.buildWithId({ roles: [role], school });
+				const course: Course = courseFactory.buildWithId({ school, teachers: [user] });
 				currentUser = mapUserToCurrentUser(user);
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ tool: externalTool });
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					config: basicToolConfigDOFactory.build({ baseUrl: 'http://mockurl.de', type: ToolConfigType.BASIC }),
+				});
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					tool: externalTool,
+					school,
+				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					schoolTool: schoolExternalTool,
+					contextId: course.id,
+					contextType: ContextExternalToolType.COURSE,
 				});
 
 				const params: ToolLaunchParams = { contextExternalToolId: contextExternalTool.id };
 
-				await em.persistAndFlush([user, externalTool, schoolExternalTool, contextExternalTool]);
+				await em.persistAndFlush([school, user, course, externalTool, schoolExternalTool, contextExternalTool]);
 				em.clear();
 
 				return { params };
@@ -96,7 +112,7 @@ describe('ToolLaunchController (API)', () => {
 				const body: ToolLaunchRequestResponse = response.body as ToolLaunchRequestResponse;
 				expect(body).toEqual<ToolLaunchRequestResponse>({
 					method: LaunchRequestMethod.GET,
-					url: 'https://www.google.com/search?q=hello+world',
+					url: 'http://mockurl.de/',
 					payload: '',
 					openNewTab: true,
 				});
