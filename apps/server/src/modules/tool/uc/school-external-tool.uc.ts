@@ -42,10 +42,9 @@ export class SchoolExternalToolUc {
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-				action: Action.read,
-				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-			}
-		);
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
