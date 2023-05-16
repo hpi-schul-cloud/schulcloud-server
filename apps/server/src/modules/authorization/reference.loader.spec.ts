@@ -17,7 +17,7 @@ import {
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { BoardNodeService } from '@src/modules/board';
 import { ReferenceLoader } from './reference.loader';
-import { AllowedAuthorizationObjectType } from './types';
+import { AuthorizableReferenceType } from './types';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -105,61 +105,61 @@ describe('reference.loader', () => {
 
 	describe('loadEntity', () => {
 		it('should call taskRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.Task, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Task, entityId);
 
 			expect(taskRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call courseRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.Course, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Course, entityId);
 
 			expect(courseRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call courseGroupRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.CourseGroup, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.CourseGroup, entityId);
 
 			expect(courseGroupRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.School, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.School, entityId);
 
 			expect(schoolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call userRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.User, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
 			expect(userRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call lessonRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.Lesson, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
 
 			expect(lessonRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call teamsRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.Team, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Team, entityId);
 
 			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call submissionRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.Submission, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Submission, entityId);
 
 			expect(submissionRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.SchoolExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalTool, entityId);
 
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call findNodeService.findById', async () => {
-			await service.loadAuthorizableObject(AllowedAuthorizationObjectType.BoardNode, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
 			expect(boardNodeService.findById).toBeCalledWith(entityId);
 		});
@@ -168,14 +168,14 @@ describe('reference.loader', () => {
 			const user = userFactory.build();
 			userRepo.findById.mockResolvedValue(user);
 
-			const result = await service.loadAuthorizableObject(AllowedAuthorizationObjectType.User, entityId);
+			const result = await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
 			expect(result).toBe(user);
 		});
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
-				service.loadAuthorizableObject('NotAllowedEntityType' as AllowedAuthorizationObjectType, entityId)
+				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
 		});
 	});

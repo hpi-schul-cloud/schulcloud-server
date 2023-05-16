@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, Permission, SchoolExternalToolDO } from '@shared/domain';
-import { Action, AuthorizationService, AllowedAuthorizationObjectType } from '@src/modules/authorization';
+import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto';
 
@@ -43,7 +43,7 @@ export class SchoolExternalToolUc {
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationObjectType.School,
+			AuthorizableReferenceType.School,
 			schoolId,
 			{
 				action: Action.read,
@@ -90,7 +90,7 @@ export class SchoolExternalToolUc {
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationObjectType.SchoolExternalTool,
+			AuthorizableReferenceType.SchoolExternalTool,
 			schoolExternalToolId,
 			{
 				action: Action.read,

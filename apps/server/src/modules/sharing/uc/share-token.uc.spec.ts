@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AllowedAuthorizationObjectType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '@src/modules/learnroom';
 import { CourseService } from '@src/modules/learnroom/service/course.service';
@@ -131,7 +131,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.Course,
+					AuthorizableReferenceType.Course,
 					course.id,
 					{
 						action: Action.write,
@@ -192,7 +192,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.Lesson,
+					AuthorizableReferenceType.Lesson,
 					lesson.id,
 					{
 						action: Action.write,
@@ -253,7 +253,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.Task,
+					AuthorizableReferenceType.Task,
 					task.id,
 					{
 						action: Action.write,
@@ -311,7 +311,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.Course,
+					AuthorizableReferenceType.Course,
 					course.id,
 					{
 						action: Action.write,
@@ -339,7 +339,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.School,
+					AuthorizableReferenceType.School,
 					school.id,
 					{
 						action: Action.read,
@@ -576,7 +576,7 @@ describe('ShareTokenUC', () => {
 
 				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.School,
+					AuthorizableReferenceType.School,
 					school.id,
 					{
 						action: Action.read,
@@ -688,7 +688,7 @@ describe('ShareTokenUC', () => {
 
 					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
-						AllowedAuthorizationObjectType.School,
+						AuthorizableReferenceType.School,
 						school.id,
 						{
 							action: Action.read,
@@ -805,7 +805,7 @@ describe('ShareTokenUC', () => {
 
 					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
-						AllowedAuthorizationObjectType.School,
+						AuthorizableReferenceType.School,
 						school.id,
 						{
 							action: Action.read,
@@ -921,7 +921,7 @@ describe('ShareTokenUC', () => {
 
 					expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 						user.id,
-						AllowedAuthorizationObjectType.School,
+						AuthorizableReferenceType.School,
 						school.id,
 						{
 							action: Action.read,

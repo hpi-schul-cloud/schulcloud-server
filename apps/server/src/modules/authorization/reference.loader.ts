@@ -13,7 +13,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { BoardNodeService } from '@src/modules/board';
-import { AllowedAuthorizationObjectType } from './types';
+import { AuthorizableReferenceType } from './types';
 
 // replace later with general "base" do-repo
 type RepoType =
@@ -35,7 +35,7 @@ interface IRepoLoader {
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AllowedAuthorizationObjectType, IRepoLoader> = new Map();
+	private repos: Map<AuthorizableReferenceType, IRepoLoader> = new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
@@ -49,19 +49,19 @@ export class ReferenceLoader {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeService: BoardNodeService
 	) {
-		this.repos.set(AllowedAuthorizationObjectType.Task, { repo: this.taskRepo });
-		this.repos.set(AllowedAuthorizationObjectType.Course, { repo: this.courseRepo });
-		this.repos.set(AllowedAuthorizationObjectType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AllowedAuthorizationObjectType.User, { repo: this.userRepo, populate: true });
-		this.repos.set(AllowedAuthorizationObjectType.School, { repo: this.schoolRepo });
-		this.repos.set(AllowedAuthorizationObjectType.Lesson, { repo: this.lessonRepo });
-		this.repos.set(AllowedAuthorizationObjectType.Team, { repo: this.teamsRepo, populate: true });
-		this.repos.set(AllowedAuthorizationObjectType.Submission, { repo: this.submissionRepo });
-		this.repos.set(AllowedAuthorizationObjectType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AllowedAuthorizationObjectType.BoardNode, { repo: this.boardNodeService });
+		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
+		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
+		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
+		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
+		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
+		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
+		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
+		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeService });
 	}
 
-	private resolveRepo(type: AllowedAuthorizationObjectType): IRepoLoader {
+	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {
 		const repo = this.repos.get(type);
 		if (repo) {
 			return repo;
@@ -70,7 +70,7 @@ export class ReferenceLoader {
 	}
 
 	async loadAuthorizableObject(
-		objectName: AllowedAuthorizationObjectType,
+		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
 		const repoLoader: IRepoLoader = this.resolveRepo(objectName);

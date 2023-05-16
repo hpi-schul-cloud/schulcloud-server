@@ -5,7 +5,7 @@ import { AuthorizationHelper } from './authorization.helper';
 import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { AllowedAuthorizationObjectType, AuthorizationContext } from './types';
+import { AuthorizableReferenceType, AuthorizationContext } from './types';
 
 @Injectable()
 export class AuthorizationService {
@@ -33,7 +33,7 @@ export class AuthorizationService {
 	 */
 	public async checkPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationObjectType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<void> {
@@ -47,7 +47,7 @@ export class AuthorizationService {
 	 */
 	public async hasPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationObjectType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise<boolean> {

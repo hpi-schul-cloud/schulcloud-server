@@ -7,7 +7,7 @@ import { Permission, User, ExternalToolDO, Page } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
-import { Action, AllowedAuthorizationObjectType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -88,7 +88,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.School,
+					AuthorizableReferenceType.School,
 					'schoolId',
 					{
 						action: Action.read,
@@ -164,7 +164,7 @@ describe('ExternalToolConfigurationUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationObjectType.School,
+					AuthorizableReferenceType.School,
 					schoolId,
 					{
 						action: Action.read,

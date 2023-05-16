@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AllowedAuthorizationObjectType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
 import { SchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
@@ -22,7 +22,7 @@ export class SchoolUc {
 		oauthMigrationFinished: boolean,
 		userId: string
 	): Promise<OauthMigrationDto> {
-		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationObjectType.School, schoolId, {
+		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
@@ -61,7 +61,7 @@ export class SchoolUc {
 	}
 
 	async getMigration(schoolId: string, userId: string): Promise<OauthMigrationDto> {
-		await this.authService.checkPermissionByReferences(userId, AllowedAuthorizationObjectType.School, schoolId, {
+		await this.authService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});

@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject, BaseDO, Permission, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, userFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationObjectType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { EtherpadService, LessonCopyService } from '@src/modules/lesson/service';
 import { LessonCopyUC } from './lesson-copy.uc';
@@ -159,7 +159,7 @@ describe('lesson copy uc', () => {
 			await uc.copyLesson(user.id, lesson.id, { courseId: course.id, userId });
 			expect(authorisation.checkPermissionByReferences).toBeCalledWith(
 				user.id,
-				AllowedAuthorizationObjectType.Course,
+				AuthorizableReferenceType.Course,
 				course.id,
 				{
 					action: Action.write,
