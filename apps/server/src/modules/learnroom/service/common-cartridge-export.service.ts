@@ -44,6 +44,7 @@ export class CommonCartridgeExportService {
 			});
 		});
 
+		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
 		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		// const builder = new CommonCartridgeFileBuilder({
 		// 	identifier: `i${course.id}`,
