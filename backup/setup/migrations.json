@@ -229,5 +229,16 @@
 			"$date": "2023-05-05T07:26:34.051Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "64633c303e907b74ec1257b4"
+		},
+		"state": "up",
+		"name": "add-user-login-migration-admin-permission-to-admin",
+		"createdAt": {
+			"$date": "2023-05-16T08:02:20.719Z"
+		},
+		"__v": 0
 	}
 ]
