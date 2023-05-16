@@ -19,7 +19,7 @@
 				"name": "q",
 				"displayName": "Suchparameter",
 				"description": "Hier nach wird gesucht",
-				"scope": "course",
+				"scope": "context",
 				"location": "query",
 				"type": "string",
 				"isOptional": false
