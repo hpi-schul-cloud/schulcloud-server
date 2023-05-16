@@ -40,17 +40,16 @@ export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICom
 					description: this.props.description,
 					launch_url: this.props.url,
 					secure_launch_url: this.props.url,
-					// this are maybe required properties
-					// cartridge_bundle: {
-					// 	$: {
-					// 		identifierref: 'iXYZ',
-					// 	},
-					// },
-					// cartridge_icon: {
-					// 	$: {
-					// 		identifierref: 'iXYZ',
-					// 	},
-					// },
+					cartridge_bundle: {
+						$: {
+							identifierref: 'BLTI001_Bundle',
+						},
+					},
+					cartridge_icon: {
+						$: {
+							identifierref: 'BLTI001_Icon',
+						},
+					},
 					// this are optional properties
 					// custom: {},
 					// extensions: {},
