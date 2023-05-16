@@ -16,10 +16,6 @@ export class VideoConferenceOptionsDO {
 }
 
 export class VideoConferenceDO extends BaseDO {
-	createdAt?: Date;
-
-	updatedAt?: Date;
-
 	target: string;
 
 	targetModel: VideoConferenceScope;
@@ -29,8 +25,6 @@ export class VideoConferenceDO extends BaseDO {
 	constructor(domainObject: VideoConferenceDO) {
 		super(domainObject.id);
 
-		this.createdAt = domainObject.createdAt;
-		this.updatedAt = domainObject.updatedAt;
 		this.target = domainObject.target;
 		this.targetModel = domainObject.targetModel;
 		this.options = domainObject.options;

@@ -29,5 +29,25 @@ describe('SchoolExternalToolRequestMapper', () => {
 				});
 			});
 		});
+
+		describe('when parameters are not given', () => {
+			it('should return an schoolExternalTool without parameter', () => {
+				const params: SchoolExternalToolPostParams = {
+					toolId: 'toolId',
+					version: 1,
+					schoolId: 'schoolId',
+					parameters: undefined,
+				};
+
+				const schoolExternalTool: SchoolExternalTool = mapper.mapSchoolExternalToolRequest(params);
+
+				expect(schoolExternalTool).toEqual<SchoolExternalTool>({
+					toolId: params.toolId,
+					parameters: [],
+					schoolId: params.schoolId,
+					toolVersion: params.version,
+				});
+			});
+		});
 	});
 });

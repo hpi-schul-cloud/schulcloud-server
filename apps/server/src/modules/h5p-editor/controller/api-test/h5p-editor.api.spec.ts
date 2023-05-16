@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { H5PEditorTestModule } from '@src/modules/h5p-editor';
+import { H5PEditorTestModule } from '@src/modules/h5p-editor/h5p-editor-test.module';
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;

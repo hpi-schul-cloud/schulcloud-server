@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool';
+import { CustomParameterEntryDO } from '@shared/domain';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../dto';
-import { SchoolExternalTool } from '../../uc/dto/school-external-tool.types';
+import { SchoolExternalTool } from '../../uc/dto';
 
 @Injectable()
 export class SchoolExternalToolRequestMapper {
