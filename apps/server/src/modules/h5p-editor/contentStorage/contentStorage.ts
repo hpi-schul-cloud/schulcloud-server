@@ -26,14 +26,12 @@ export class ContentStorage implements IContentStorage {
 	private maxFileLength: number;
 
 	constructor(
-		private logger: LegacyLogger,
 		protected contentPath: string,
 		protected options?: {
 			invalidCharactersRegexp?: RegExp;
 			maxPathLength?: number;
 		}
 	) {
-		this.logger.setContext(ContentStorage.name);
 		this.maxFileLength = (options?.maxPathLength ?? 255) - (contentPath.length + 1) - 23;
 
 		if (this.maxFileLength < 20) {
@@ -147,13 +145,19 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return JSON.parse(await streamToString(await this.getFileStream(contentId, 'h5p.json', user)));
+		if (user !== undefined && user !== null) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			return JSON.parse(await streamToString(await this.getFileStream(contentId, 'h5p.json', user)));
+		}
+		throw new Error('Could not get Metadata');
 	}
 
 	public async getParameters(contentId: string, user?: IUser | undefined): Promise<any> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return JSON.parse(await streamToString(await this.getFileStream(contentId, 'content.json', user)));
+		if (user !== undefined && user !== null) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			return JSON.parse(await streamToString(await this.getFileStream(contentId, 'content.json', user)));
+		}
+		throw new Error('Could not get Parameters');
 	}
 
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
