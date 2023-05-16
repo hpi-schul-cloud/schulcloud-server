@@ -66,7 +66,7 @@ export interface IComponentInternalProperties {
 
 export type IComponentProperties = {
 	_id?: string;
-	title?: string;
+	title: string;
 	hidden: boolean;
 	user?: User;
 } & (
@@ -77,6 +77,7 @@ export type IComponentProperties = {
 	| { component: ComponentType.LERNSTORE; content: IComponentLernstoreProperties }
 	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
 );
+
 export interface ILessonParent {
 	getStudentIds(): EntityId[];
 }

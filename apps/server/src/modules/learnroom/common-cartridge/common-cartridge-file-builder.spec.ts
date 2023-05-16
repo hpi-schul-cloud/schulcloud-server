@@ -117,7 +117,6 @@ describe('CommonCartridgeFileBuilder', () => {
 			const assignmentManifest = assignmentManifestFile?.getData().toString();
 
 			expect(assignmentManifestFile).toBeDefined();
-			expect(assignmentManifestFile).toBeDefined();
 			expect(assignmentManifest).toContain(`${assignmentProps.title}`);
 			expect(assignmentManifest).toContain(`${assignmentProps.description}`);
 		});

@@ -74,9 +74,9 @@ export class CommonCartridgeExportService {
 				version: this.defaultVersion,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id || ''}.html`,
-				title: content.title || '',
-				html: `<h1>${content.title || ''}</h1><p>${content.content.text}</p>`,
+				href: `i${lessonId}/i${content._id as string}.html`,
+				title: content.title,
+				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
 		}
 
@@ -85,8 +85,8 @@ export class CommonCartridgeExportService {
 				version: this.defaultVersion,
 				type: CommonCartridgeResourceType.LTI,
 				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id || ''}.xml`,
-				title: content.title || '',
+				href: `i${lessonId}/i${content._id as string}.xml`,
+				title: content.title,
 				url: content.content.materialId,
 			};
 		}
@@ -96,7 +96,7 @@ export class CommonCartridgeExportService {
 				version: this.defaultVersion,
 				type: CommonCartridgeResourceType.WEB_LINK,
 				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id || ''}.xml`,
+				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.content.title,
 				url: content.content.url,
 			};

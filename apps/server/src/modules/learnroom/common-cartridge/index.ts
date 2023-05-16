@@ -2,7 +2,7 @@ export * from './common-cartridge-assignment-element';
 export * from './common-cartridge-assignment-resource-item-element';
 export * from './common-cartridge-element.interface';
 export * from './common-cartridge-enums';
-export * from './builder';
+export * from './common-cartridge-file-builder';
 export * from './common-cartridge-file.interface';
 export * from './common-cartridge-lti-resource';
 export * from './common-cartridge-manifest-element';
