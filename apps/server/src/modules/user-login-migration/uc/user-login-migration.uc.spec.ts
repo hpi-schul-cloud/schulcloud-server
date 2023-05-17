@@ -7,7 +7,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { systemFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
@@ -64,8 +64,8 @@ describe('UserLoginMigrationUc', () => {
 					useValue: createMock<AuthenticationService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -78,7 +78,7 @@ describe('UserLoginMigrationUc', () => {
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userMigrationService = module.get(UserMigrationService);
 		authenticationService = module.get(AuthenticationService);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {
