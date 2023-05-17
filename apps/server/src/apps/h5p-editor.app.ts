@@ -21,11 +21,7 @@ async function bootstrap() {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(H5PEditorModule, nestExpressAdapter);
 	// WinstonLogger
-<<<<<<< HEAD
-	nestApp.useLogger(await nestApp.resolve(Logger));
-=======
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
->>>>>>> main
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
