@@ -6,7 +6,7 @@ import {
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/external-tool';
+} from '@shared/domain/domainobject/tool';
 import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
 import {
 	BasicToolConfigResponse,
@@ -16,8 +16,8 @@ import {
 	Oauth2ToolConfigResponse,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
+	ExternalToolConfigurationTemplateResponse,
 } from '../dto';
-import { ExternalToolConfigurationTemplateResponse } from '../dto/response/external-tool-configuration-template.response';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
