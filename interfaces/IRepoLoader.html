@@ -184,7 +184,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, User } from &#x27;@shared/domain&#x27;;
+import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
+import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -197,8 +198,9 @@ import {
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
 import { BoardNodeService } from &#x27;@src/modules/board&#x27;;
-import { AllowedAuthorizationEntityType, AllowedEntity } from &#x27;./types&#x27;;
+import { AuthorizableReferenceType } from &#x27;./types&#x27;;
 
+// replace later with general &quot;base&quot; do-repo
 type RepoType &#x3D;
 	| TaskRepo
 	| CourseRepo
@@ -218,7 +220,7 @@ interface IRepoLoader {
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map&lt;AllowedAuthorizationEntityType, IRepoLoader&gt; &#x3D; new Map();
+	private repos: Map&lt;AuthorizableReferenceType, IRepoLoader&gt; &#x3D; new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
@@ -232,37 +234,40 @@ export class ReferenceLoader {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeService: BoardNodeService
 	) {
-		this.repos.set(AllowedAuthorizationEntityType.Task, { repo: this.taskRepo });
-		this.repos.set(AllowedAuthorizationEntityType.Course, { repo: this.courseRepo });
-		this.repos.set(AllowedAuthorizationEntityType.CourseGroup, { repo: this.courseGroupRepo });
-		this.repos.set(AllowedAuthorizationEntityType.User, { repo: this.userRepo, populate: true });
-		this.repos.set(AllowedAuthorizationEntityType.School, { repo: this.schoolRepo });
-		this.repos.set(AllowedAuthorizationEntityType.Lesson, { repo: this.lessonRepo });
-		this.repos.set(AllowedAuthorizationEntityType.Team, { repo: this.teamsRepo, populate: true });
-		this.repos.set(AllowedAuthorizationEntityType.Submission, { repo: this.submissionRepo });
-		this.repos.set(AllowedAuthorizationEntityType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AllowedAuthorizationEntityType.BoardNode, { repo: this.boardNodeService });
+		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
+		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
+		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
+		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
+		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
+		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
+		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
+		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
+		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeService });
 	}
 
-	private resolveRepo(type: AllowedAuthorizationEntityType): IRepoLoader {
+	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {
 		const repo &#x3D; this.repos.get(type);
 		if (repo) {
 			return repo;
 		}
-		throw new NotImplementedException(&#x27;REPO_NOT_IMPLEMENT&#x27;);
+		throw new NotImplementedException(&#x27;REPO_OR_SERVICE_NOT_IMPLEMENT&#x27;);
 	}
 
-	async loadEntity(entityName: AllowedAuthorizationEntityType, entityId: EntityId): Promise&lt;AllowedEntity&gt; {
-		const repoLoader: IRepoLoader &#x3D; this.resolveRepo(entityName);
+	async loadAuthorizableObject(
+		objectName: AuthorizableReferenceType,
+		objectId: EntityId
+	): Promise&lt;AuthorizableObject | BaseDO&gt; {
+		const repoLoader: IRepoLoader &#x3D; this.resolveRepo(objectName);
 
-		let entity: AllowedEntity;
+		let object: AuthorizableObject | BaseDO;
 		if (repoLoader.populate) {
-			entity &#x3D; await repoLoader.repo.findById(entityId, true);
+			object &#x3D; await repoLoader.repo.findById(objectId, true);
 		} else {
-			entity &#x3D; await repoLoader.repo.findById(entityId);
+			object &#x3D; await repoLoader.repo.findById(objectId);
 		}
 
-		return entity;
+		return object;
 	}
 
 	async getUserWithPermissions(userId: EntityId): Promise&lt;User&gt; {

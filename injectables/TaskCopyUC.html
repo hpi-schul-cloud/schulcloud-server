@@ -613,7 +613,7 @@ import { Course, EntityId, Lesson, User } from &#x27;@shared/domain&#x27;;
 import { CourseRepo, LessonRepo, TaskRepo } from &#x27;@shared/repo&#x27;;
 import {
 	Action,
-	AllowedAuthorizationEntityType,
+	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
@@ -644,7 +644,7 @@ export class TaskCopyUC {
 		if (parentParams.courseId) {
 			await this.authorisation.checkPermissionByReferences(
 				userId,
-				AllowedAuthorizationEntityType.Course,
+				AuthorizableReferenceType.Course,
 				parentParams.courseId,
 				{
 					action: Action.write,

@@ -315,8 +315,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:50</a></div>
                 </td>
             </tr>
 
@@ -399,8 +399,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="90"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:90</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:85</a></div>
                 </td>
             </tr>
 
@@ -649,8 +649,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:59</a></div>
                 </td>
             </tr>
 
@@ -732,8 +732,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/school-external-tool.uc.ts:68</a></div>
                 </td>
             </tr>
 
@@ -813,7 +813,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
-import { Action, AuthorizationService, AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
+import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
 import { SchoolExternalTool, SchoolExternalToolQueryInput } from &#x27;./dto&#x27;;
 
@@ -854,15 +854,10 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise&lt;void&gt; {
-		return this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.School,
-			schoolId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-			}
-		);
+		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise&lt;void&gt; {
@@ -903,7 +898,7 @@ export class SchoolExternalToolUc {
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise&lt;void&gt; {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationEntityType.SchoolExternalTool,
+			AuthorizableReferenceType.SchoolExternalTool,
 			schoolExternalToolId,
 			{
 				action: Action.read,

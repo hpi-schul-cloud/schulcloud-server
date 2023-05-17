@@ -453,7 +453,7 @@
 import { CustomParameterScope, EntityId, Permission, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { ExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
-import { Action, AuthorizationService, AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
+import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { ExternalToolService, SchoolExternalToolService } from &#x27;../service&#x27;;
 
@@ -502,15 +502,10 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
-		return this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.School,
-			schoolId,
-			{
-				action: Action.read,
-				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-			}
-		);
+		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
 	}
 }
 </code></pre>

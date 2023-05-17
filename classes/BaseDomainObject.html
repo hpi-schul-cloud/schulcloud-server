@@ -44,7 +44,9 @@
 
 <ol class="breadcrumb">
   <li>Classes</li>
-  <li >BaseDomainObject</li>
+  <li 
+        class="deprecated-name"
+    >BaseDomainObject</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -65,6 +67,12 @@
             <code>apps/server/src/shared/domain/interface/base-domain-object.ts</code>
         </p>
 
+            <p class="comment">
+                <h3 class="deprecated">Deprecated</h3>
+            </p>
+            <p class="comment">
+                
+            </p>
 
 
 
@@ -72,7 +80,7 @@
                 <h3>Implements</h3>
             </p>
             <p class="comment">
-                            <code><a href="../interfaces/IReferenceId.html" target="_self" >IReferenceId</a></code>
+                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject</a></code>
             </p>
 
 
@@ -131,7 +139,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/shared/domain/interface/base-domain-object.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/interface/base-domain-object.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -150,11 +158,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { IReferenceId } from &#x27;./entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject } from &#x27;../domain-object&#x27;;
 
 // idea support for each CRUD action like Actions.read as abstract class, to have a generall interface
 
-export abstract class BaseDomainObject implements IReferenceId {
+/**
+ * @deprecated
+ */
+export abstract class BaseDomainObject implements AuthorizableObject {
 	abstract id: string;
 }
 </code></pre>

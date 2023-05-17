@@ -254,7 +254,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AllowedAuthorizationEntityType" target="_self" >AllowedAuthorizationEntityType</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
 
                     </div>
                     <div class="io-description">
@@ -524,7 +524,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import {
 	DownloadFileParams,
@@ -536,15 +536,15 @@ import {
 import { FileRecord, FileRecordParentType } from &#x27;../entity&#x27;;
 
 export class FilesStorageMapper {
-	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AllowedAuthorizationEntityType {
-		const types: Map&lt;FileRecordParentType, AllowedAuthorizationEntityType&gt; &#x3D; new Map();
-		types.set(FileRecordParentType.Task, AllowedAuthorizationEntityType.Task);
-		types.set(FileRecordParentType.Course, AllowedAuthorizationEntityType.Course);
-		types.set(FileRecordParentType.User, AllowedAuthorizationEntityType.User);
-		types.set(FileRecordParentType.School, AllowedAuthorizationEntityType.School);
-		types.set(FileRecordParentType.Lesson, AllowedAuthorizationEntityType.Lesson);
-		types.set(FileRecordParentType.Submission, AllowedAuthorizationEntityType.Submission);
-		types.set(FileRecordParentType.BoardNode, AllowedAuthorizationEntityType.BoardNode);
+	static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizableReferenceType {
+		const types: Map&lt;FileRecordParentType, AuthorizableReferenceType&gt; &#x3D; new Map();
+		types.set(FileRecordParentType.Task, AuthorizableReferenceType.Task);
+		types.set(FileRecordParentType.Course, AuthorizableReferenceType.Course);
+		types.set(FileRecordParentType.User, AuthorizableReferenceType.User);
+		types.set(FileRecordParentType.School, AuthorizableReferenceType.School);
+		types.set(FileRecordParentType.Lesson, AuthorizableReferenceType.Lesson);
+		types.set(FileRecordParentType.Submission, AuthorizableReferenceType.Submission);
+		types.set(FileRecordParentType.BoardNode, AuthorizableReferenceType.BoardNode);
 
 		const res &#x3D; types.get(type);
 

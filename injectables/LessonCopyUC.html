@@ -347,7 +347,7 @@ import { Permission } from &#x27;@shared/domain/interface/permission.enum&#x27;;
 import { CourseRepo, LessonRepo } from &#x27;@shared/repo&#x27;;
 import {
 	Action,
-	AllowedAuthorizationEntityType,
+	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
@@ -379,7 +379,7 @@ export class LessonCopyUC {
 			: originalLesson.course;
 		await this.authorisation.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationEntityType.Course,
+			AuthorizableReferenceType.Course,
 			destinationCourse.id,
 			{
 				action: Action.write,

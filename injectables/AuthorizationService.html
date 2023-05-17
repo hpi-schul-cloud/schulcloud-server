@@ -93,7 +93,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkPermissionByReferences" >checkPermissionByReferences</a>
+                                <a href="#checkPermissionByReferences" class="deprecated-name">checkPermissionByReferences</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -115,7 +115,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#hasPermissionByReferences" >hasPermissionByReferences</a>
+                                <a href="#hasPermissionByReferences" class="deprecated-name">hasPermissionByReferences</a>
                             </li>
                         </ul>
                     </td>
@@ -140,7 +140,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -229,8 +229,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="62"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:62</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:69</a></div>
                 </td>
             </tr>
 
@@ -312,8 +312,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:80</a></div>
                 </td>
             </tr>
 
@@ -388,15 +388,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../undefineds/AuthorizableObject.html" target="_self">AuthorizableObject</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>checkPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../interfaces/AuthorizableObject.html" target="_self">AuthorizableObject | BaseDO</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:18</a></div>
                 </td>
             </tr>
 
@@ -429,9 +429,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>entity</td>
+                                    <td>object</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#AuthorizableObject" target="_self" >AuthorizableObject</a></code>
+                                                <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject | BaseDO</a></code>
                                     </td>
 
                                     <td>
@@ -476,23 +476,28 @@
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>checkPermissionByReferences</b></span>
+                        <span class="deprecated-name"><b>checkPermissionByReferences</b></span>
                         <a href="#checkPermissionByReferences"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AllowedAuthorizationEntityType.html" target="_self">AllowedAuthorizationEntityType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>checkPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:34</a></div>
                 </td>
             </tr>
 
@@ -527,7 +532,7 @@
                                 <tr>
                                     <td>entityName</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#AllowedAuthorizationEntityType" target="_self" >AllowedAuthorizationEntityType</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
                                     </td>
 
                                     <td>
@@ -599,8 +604,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:91</a></div>
                 </td>
             </tr>
 
@@ -670,8 +675,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:76</a></div>
                 </td>
             </tr>
 
@@ -753,8 +758,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="80"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:80</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:87</a></div>
                 </td>
             </tr>
 
@@ -829,15 +834,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../undefineds/AuthorizableObject.html" target="_self">AuthorizableObject</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, object: <a href="../interfaces/AuthorizableObject.html" target="_self">AuthorizableObject | BaseDO</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -870,9 +875,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td>entity</td>
+                                    <td>object</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#AuthorizableObject" target="_self" >AuthorizableObject</a></code>
+                                                <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject | BaseDO</a></code>
                                     </td>
 
                                     <td>
@@ -917,23 +922,28 @@
                     <span class="name">
                         <span class="modifier">Public</span>
                         <span class="modifier">Async</span>
-                        <span ><b>hasPermissionByReferences</b></span>
+                        <span class="deprecated-name"><b>hasPermissionByReferences</b></span>
                         <a href="#hasPermissionByReferences"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
+                <td class="col-md-4 deprecated">
+                    
+                </td>
+            </tr>
+            <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AllowedAuthorizationEntityType.html" target="_self">AllowedAuthorizationEntityType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermissionByReferences(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/authorization/authorization.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -968,7 +978,7 @@
                                 <tr>
                                     <td>entityName</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#AllowedAuthorizationEntityType" target="_self" >AllowedAuthorizationEntityType</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
                                     </td>
 
                                     <td>
@@ -1024,12 +1034,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, User } from &#x27;@shared/domain&#x27;;
+import { BaseDO, EntityId, User } from &#x27;@shared/domain&#x27;;
+import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { AuthorizationHelper } from &#x27;./authorization.helper&#x27;;
 import { ForbiddenLoggableException } from &#x27;./errors/forbidden.loggable-exception&#x27;;
 import { ReferenceLoader } from &#x27;./reference.loader&#x27;;
 import { RuleManager } from &#x27;./rule-manager&#x27;;
-import { AllowedAuthorizationEntityType, AuthorizableObject, AuthorizationContext } from &#x27;./types&#x27;;
+import { AuthorizableReferenceType, AuthorizationContext } from &#x27;./types&#x27;;
 
 @Injectable()
 export class AuthorizationService {
@@ -1039,22 +1050,25 @@ export class AuthorizationService {
 		private readonly authorizationHelper: AuthorizationHelper
 	) {}
 
-	public checkPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext): void {
-		if (!this.hasPermission(user, entity, context)) {
-			throw new ForbiddenLoggableException(user.id, entity.constructor.name, context);
+	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {
+		if (!this.hasPermission(user, object, context)) {
+			throw new ForbiddenLoggableException(user.id, object.constructor.name, context);
 		}
 	}
 
-	public hasPermission(user: User, entity: AuthorizableObject, context: AuthorizationContext): boolean {
-		const rule &#x3D; this.ruleManager.selectRule(user, entity, context);
-		const hasPermission &#x3D; rule.hasPermission(user, entity, context);
+	public hasPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): boolean {
+		const rule &#x3D; this.ruleManager.selectRule(user, object, context);
+		const hasPermission &#x3D; rule.hasPermission(user, object, context);
 
 		return hasPermission;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public async checkPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise&lt;void&gt; {
@@ -1063,20 +1077,23 @@ export class AuthorizationService {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public async hasPermissionByReferences(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		context: AuthorizationContext
 	): Promise&lt;boolean&gt; {
 		// TODO: This try-catch-block should be removed. See ticket: https://ticketsystem.dbildungscloud.de/browse/BC-4023
 		try {
-			const [user, entity] &#x3D; await Promise.all([
+			const [user, object] &#x3D; await Promise.all([
 				this.getUserWithPermissions(userId),
-				this.loader.loadEntity(entityName, entityId),
+				this.loader.loadAuthorizableObject(entityName, entityId),
 			]);
-			const rule &#x3D; this.ruleManager.selectRule(user, entity, context);
-			const hasPermission &#x3D; rule.hasPermission(user, entity, context);
+			const rule &#x3D; this.ruleManager.selectRule(user, object, context);
+			const hasPermission &#x3D; rule.hasPermission(user, object, context);
 
 			return hasPermission;
 		} catch (err) {

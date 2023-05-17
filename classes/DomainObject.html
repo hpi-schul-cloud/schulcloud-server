@@ -28,7 +28,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -38,9 +38,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >CourseCopyUC</li>
+  <li>Classes</li>
+  <li >DomainObject</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -58,17 +62,39 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/uc/course-copy.uc.ts</code>
+            <code>apps/server/src/shared/domain/domain-object.ts</code>
         </p>
 
 
 
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject</a></code>
+            </p>
 
 
             <section>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#props" >props</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -79,12 +105,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#copyCourse" >copyCourse</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#getProps" >getProps</a>
                             </li>
                         </ul>
                     </td>
@@ -94,6 +116,20 @@
 
 
 
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#id" >id</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
         </tbody>
     </table>
 </section>
@@ -104,12 +140,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorization: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseCopyService: <a href="../injectables/CourseCopyService.html" target="_self">CourseCopyService</a>)</code>
+<code>constructor(props: T)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/domain-object.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -127,22 +163,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>authorization</td>
+                                                        <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>courseCopyService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseCopyService.html" target="_self" >CourseCopyService</a></code>
+                                                                    <code>T</code>
                                                         </td>
                                                   
                                                     <td>
@@ -161,6 +185,40 @@
 
             <section>
     
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="props"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>props</b></span>
+                        <a href="#props"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>T</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/domain-object.ts:8</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    
     <h3 id="methods">
         Methods
     </h3>
@@ -168,65 +226,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkFeatureEnabled"></a>
+                    <a name="getProps"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>checkFeatureEnabled</b></span>
-                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Public</span>
+                        <span ><b>getProps</b></span>
+                        <a href="#getProps"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkFeatureEnabled()</code>
+                    <code>getProps()</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:28</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="copyCourse"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>copyCourse</b></span>
-                        <a href="#copyCourse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>copyCourse(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="15"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/course-copy.uc.ts:15</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/shared/domain/domain-object.ts:18</a></div>
                 </td>
             </tr>
 
@@ -235,52 +254,8 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>userId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
+                        <b>Returns : </b>    <code>T</code>
 
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>courseId</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
                     </div>
                 </td>
             </tr>
@@ -288,52 +263,67 @@
     </table>
 </section>
 
+
+
+
+
+            <section>
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="id"></a>
+                        <span class="name"><b>id</b><a href="#id"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>id()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/domain/domain-object.ts:14</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
-import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Permission } from &#x27;@shared/domain&#x27;;
-import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
-import { CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
-import { CourseCopyService } from &#x27;../service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;./types&#x27;;
 
-@Injectable()
-export class CourseCopyUC {
-	constructor(
-		private readonly authorization: AuthorizationService,
-		private readonly courseCopyService: CourseCopyService
-	) {}
+export interface AuthorizableObject {
+	get id(): EntityId;
+}
 
-	async copyCourse(userId: EntityId, courseId: EntityId): Promise&lt;CopyStatus&gt; {
-		this.checkFeatureEnabled();
+export abstract class DomainObject&lt;T extends AuthorizableObject&gt; implements AuthorizableObject {
+	protected props: T;
 
-		await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
-			action: Action.write,
-			requiredPermissions: [Permission.COURSE_CREATE],
-		});
-
-		const result &#x3D; await this.courseCopyService.copyCourse({ userId, courseId });
-
-		return result;
+	constructor(props: T) {
+		this.props &#x3D; props;
 	}
 
-	private checkFeatureEnabled() {
-		const enabled &#x3D; Configuration.get(&#x27;FEATURE_COPY_SERVICE_ENABLED&#x27;) as boolean;
-		if (!enabled) {
-			throw new InternalServerErrorException(&#x27;Copy Feature not enabled&#x27;);
-		}
+	public get id(): EntityId {
+		return this.props.id;
+	}
+
+	public getProps(): T {
+		const copyProps &#x3D; { ...this.props };
+
+		return copyProps;
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -368,8 +358,8 @@ export class CourseCopyUC {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'CourseCopyUC.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'DomainObject.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

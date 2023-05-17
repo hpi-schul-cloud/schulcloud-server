@@ -2391,10 +2391,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/AuthorizationParams.html" data-type="entity-link" class="deprecated-name">AuthorizationParams</a>
                             </li>
                             <li class="link">
-                                <a href="classes/BaseDO.html" data-type="entity-link" >BaseDO</a>
+                                <a href="classes/BaseDO.html" data-type="entity-link" class="deprecated-name">BaseDO</a>
                             </li>
                             <li class="link">
-                                <a href="classes/BaseDomainObject.html" data-type="entity-link" >BaseDomainObject</a>
+                                <a href="classes/BaseDomainObject.html" data-type="entity-link" class="deprecated-name">BaseDomainObject</a>
                             </li>
                             <li class="link">
                                 <a href="classes/BaseEntity.html" data-type="entity-link" >BaseEntity</a>
@@ -2719,6 +2719,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/DoBaseFactory.html" data-type="entity-link" >DoBaseFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/DomainObject.html" data-type="entity-link" >DomainObject</a>
                             </li>
                             <li class="link">
                                 <a href="classes/DownloadFileParams.html" data-type="entity-link" >DownloadFileParams</a>
@@ -4184,6 +4187,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AuthenticationResponse.html" data-type="entity-link" >AuthenticationResponse</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/AuthorizableObject.html" data-type="entity-link" >AuthorizableObject</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/AuthorizationContext.html" data-type="entity-link" >AuthorizationContext</a>
                             </li>
                             <li class="link">
@@ -4488,9 +4494,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IParentInfo.html" data-type="entity-link" >IParentInfo</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IReferenceId.html" data-type="entity-link" >IReferenceId</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IRelatedResourceProperties.html" data-type="entity-link" >IRelatedResourceProperties</a>

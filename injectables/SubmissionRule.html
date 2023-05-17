@@ -721,7 +721,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../undefineds/AuthorizableObject.html" target="_self">AuthorizableObject</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Submission.html" target="_self">Submission</a>)</code>
                 </td>
             </tr>
 
@@ -764,7 +764,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#AuthorizableObject" target="_self" >AuthorizableObject</a></code>
+                                                <code><a href="../classes/Submission.html" target="_self" >Submission</a></code>
                                     </td>
 
                                     <td>
@@ -798,14 +798,14 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Submission, User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;@src/modules/authorization/authorization.helper&#x27;;
-import { Action, AuthorizableObject, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;@src/modules/authorization/types&#x27;;
 import { TaskRule } from &#x27;./task.rule&#x27;;
 
 @Injectable()
 export class SubmissionRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
-	public isApplicable(user: User, entity: AuthorizableObject): boolean {
+	public isApplicable(user: User, entity: Submission): boolean {
 		const isMatched &#x3D; entity instanceof Submission;
 
 		return isMatched;

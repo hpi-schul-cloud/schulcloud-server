@@ -79,10 +79,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#hasUserAllSchoolPermissions" >hasUserAllSchoolPermissions</a>
+                                <a href="#hasUserAllSchoolPermissions" class="deprecated-name">hasUserAllSchoolPermissions</a>
                             </li>
                             <li>
-                                <a href="#resolvePermissions" >resolvePermissions</a>
+                                <a href="#resolvePermissions" class="deprecated-name">resolvePermissions</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -112,9 +112,14 @@
                 <td class="col-md-4">
                     <a name="hasUserAllSchoolPermissions"></a>
                     <span class="name">
-                        <span ><b>hasUserAllSchoolPermissions</b></span>
+                        <span class="deprecated-name"><b>hasUserAllSchoolPermissions</b></span>
                         <a href="#hasUserAllSchoolPermissions"><span class="icon ion-ios-link"></span></a>
                     </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    
                 </td>
             </tr>
             <tr>
@@ -126,8 +131,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:51</a></div>
                 </td>
             </tr>
 
@@ -193,9 +198,14 @@
                 <td class="col-md-4">
                     <a name="resolvePermissions"></a>
                     <span class="name">
-                        <span ><b>resolvePermissions</b></span>
+                        <span class="deprecated-name"><b>resolvePermissions</b></span>
                         <a href="#resolvePermissions"><span class="icon ion-ios-link"></span></a>
                     </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    
                 </td>
             </tr>
             <tr>
@@ -207,8 +217,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="17"
+                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -282,8 +292,8 @@ Please make sure you populate them before calling this method.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/shared/domain/service/permission.service.ts:26</a></div>
                 </td>
             </tr>
 
@@ -350,6 +360,7 @@ export class PermissionService {
 	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
 	 * Please make sure you populate them before calling this method.
 	 * @param user
+	 * @deprecated
 	 * @returns
 	 */
 	resolvePermissions(user: User): string[] {
@@ -383,6 +394,9 @@ export class PermissionService {
 		return permissions;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length &#x3D;&#x3D;&#x3D; 0) {
 			return false;

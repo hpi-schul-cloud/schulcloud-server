@@ -256,22 +256,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ForbiddenException } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import if it is avaible
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
-export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; {
-	protected props: T;
-
-	constructor(props: T) {
-		this.props &#x3D; {
-			...props,
-		};
-	}
-
-	get id(): EntityId {
-		return this.props.id;
-	}
-
+export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; extends DomainObject&lt;T&gt; {
 	get children(): AnyBoardDo[] {
 		return this.props.children;
 	}
@@ -309,6 +298,7 @@ export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; {
 		const exists &#x3D; this.children.some((obj) &#x3D;&gt; obj.id &#x3D;&#x3D;&#x3D; child.id);
 		return exists;
 	}
+
 	abstract accept(visitor: BoardCompositeVisitor): void;
 
 	abstract acceptAsync(visitor: BoardCompositeVisitorAsync): Promise&lt;void&gt;;
@@ -316,11 +306,8 @@ export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; {
 
 export interface BoardCompositeProps {
 	id: EntityId;
-
 	children: AnyBoardDo[];
-
 	createdAt: Date;
-
 	updatedAt: Date;
 }
 </code></pre>

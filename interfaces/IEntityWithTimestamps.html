@@ -186,11 +186,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { School } from &#x27;@shared/domain/entity/school.entity&#x27;;
 
-export interface IReferenceId {
-	id: string;
-}
-
-export interface IEntity extends IReferenceId {
+export interface IEntity {
 	_id: ObjectId;
 	id: string;
 }

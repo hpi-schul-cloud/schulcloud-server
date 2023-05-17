@@ -959,7 +959,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AllowedAuthorizationEntityType.html" target="_self">AllowedAuthorizationEntityType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, permissions: <a href="../undefineds/Permission.html" target="_self">Permission[]</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
+                    <code>hasPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, entityName: <a href="../undefineds/AuthorizableReferenceType.html" target="_self">AuthorizableReferenceType</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, permissions: <a href="../undefineds/Permission.html" target="_self">Permission[]</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
@@ -1002,7 +1002,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>entityName</td>
                                     <td>
-                                                <code><a href="../miscellaneous/enumerations.html#AllowedAuthorizationEntityType" target="_self" >AllowedAuthorizationEntityType</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
                                     </td>
 
                                     <td>
@@ -1473,7 +1473,7 @@ import { VideoConferenceRepo } from &#x27;@shared/repo/videoconference/video-con
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import {
 	Action,
-	AllowedAuthorizationEntityType,
+	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from &#x27;@src/modules/authorization&#x27;;
@@ -1515,8 +1515,8 @@ const PermissionMapping &#x3D; {
 };
 
 const PermissionScopeMapping &#x3D; {
-	[VideoConferenceScope.COURSE]: AllowedAuthorizationEntityType.Course,
-	[VideoConferenceScope.EVENT]: AllowedAuthorizationEntityType.Team,
+	[VideoConferenceScope.COURSE]: AuthorizableReferenceType.Course,
+	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
 @Injectable()
@@ -1867,7 +1867,7 @@ export class VideoConferenceUc {
 
 	private hasPermissions(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		permissions: Permission[],
 		action: Action

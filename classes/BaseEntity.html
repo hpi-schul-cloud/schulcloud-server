@@ -73,6 +73,7 @@
             </p>
             <p class="comment">
                             <code><a href="../interfaces/IEntity.html" target="_self" >IEntity</a></code>
+                            <code><a href="../interfaces/AuthorizableObject.html" target="_self" >AuthorizableObject</a></code>
             </p>
 
 
@@ -141,7 +142,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/entity/base.entity.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/entity/base.entity.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -176,7 +177,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/shared/domain/entity/base.entity.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/entity/base.entity.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -197,9 +198,10 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PrimaryKey, Property, SerializedPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import type { AuthorizableObject } from &#x27;../domain-object&#x27;;
 import type { IEntity } from &#x27;../interface&#x27;;
 
-export abstract class BaseEntity implements IEntity {
+export abstract class BaseEntity implements IEntity, AuthorizableObject {
 	@PrimaryKey()
 	_id!: ObjectId;
 
@@ -216,7 +218,7 @@ export type BaseEntityReference &#x3D; &#x27;id&#x27; | &#x27;_id&#x27;;
 // that can be cumbersome e.g. in tests. that&#x27;s why we define it as a root class here.
 // TODO check if we can use EntitySchema to prevent code duplication (decorators don&#x27;t work for defining properties btw.)
 
-export abstract class BaseEntityWithTimestamps {
+export abstract class BaseEntityWithTimestamps implements AuthorizableObject {
 	@PrimaryKey()
 	_id!: ObjectId;
 

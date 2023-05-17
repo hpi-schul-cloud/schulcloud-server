@@ -47,7 +47,7 @@
   <li>Interfaces</li>
   <li
   >
-  IReferenceId</li>
+  AuthorizableObject</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -65,98 +65,41 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/interface/entity.ts</code>
+            <code>apps/server/src/shared/domain/domain-object.ts</code>
         </p>
 
 
 
 
-        <section>
-            <h3 id="index">Index</h3>
-            <table class="table table-sm table-bordered index-table">
-                <tbody>
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Properties</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                        <a href="#id" 
->
-                                            id
-                                        </a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
 
 
 
-            <section>
-                <h3 id="inputs">Properties</h3>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="id"></a>
-                                        <span class="name "><b>id</b>
-                                            <a href="#id">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>id:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-            </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { School } from &#x27;@shared/domain/entity/school.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;./types&#x27;;
 
-export interface IReferenceId {
-	id: string;
+export interface AuthorizableObject {
+	get id(): EntityId;
 }
 
-export interface IEntity extends IReferenceId {
-	_id: ObjectId;
-	id: string;
-}
+export abstract class DomainObject&lt;T extends AuthorizableObject&gt; implements AuthorizableObject {
+	protected props: T;
 
-export interface IEntityWithTimestamps extends IEntity {
-	createdAt: Date;
-	updatedAt: Date;
-}
+	constructor(props: T) {
+		this.props &#x3D; props;
+	}
 
-export interface IEntityWithSchool extends IEntity {
-	school: School;
+	public get id(): EntityId {
+		return this.props.id;
+	}
+
+	public getProps(): T {
+		const copyProps &#x3D; { ...this.props };
+
+		return copyProps;
+	}
 }
 </code></pre>
     </div>
@@ -195,7 +138,7 @@ export interface IEntityWithSchool extends IEntity {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'IReferenceId.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'AuthorizableObject.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

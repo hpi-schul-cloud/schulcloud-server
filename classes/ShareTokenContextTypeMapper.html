@@ -167,7 +167,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AllowedAuthorizationEntityType" target="_self" >AllowedAuthorizationEntityType</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AuthorizableReferenceType" target="_self" >AuthorizableReferenceType</a></code>
 
                     </div>
                     <div class="io-description">
@@ -188,13 +188,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
-import { AllowedAuthorizationEntityType } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;
 import { ShareTokenContextType } from &#x27;../domainobject/share-token.do&#x27;;
 
 export class ShareTokenContextTypeMapper {
-	static mapToAllowedAuthorizationEntityType(type: ShareTokenContextType): AllowedAuthorizationEntityType {
-		const types: Map&lt;ShareTokenContextType, AllowedAuthorizationEntityType&gt; &#x3D; new Map();
-		types.set(ShareTokenContextType.School, AllowedAuthorizationEntityType.School);
+	static mapToAllowedAuthorizationEntityType(type: ShareTokenContextType): AuthorizableReferenceType {
+		const types: Map&lt;ShareTokenContextType, AuthorizableReferenceType&gt; &#x3D; new Map();
+		types.set(ShareTokenContextType.School, AuthorizableReferenceType.School);
 
 		const res &#x3D; types.get(type);
 
