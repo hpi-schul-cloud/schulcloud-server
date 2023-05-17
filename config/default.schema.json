@@ -807,17 +807,17 @@
 		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enable Prometheus metrics."
+			"description": "Feature flag for collecting and exporting Prometheus metrics."
 		},
 		"PROMETHEUS_METRICS_ROUTE": {
 			"type": "string",
 			"default": "/metrics",
-			"description": "Route at which Prometheus metrics will be exported."
+			"description": "Route at which Prometheus metrics are exported (if enabled by the feature flag)."
 		},
 		"PROMETHEUS_METRICS_PORT": {
 			"type": "number",
 			"default": 9090,
-			"description": "Port on which the additional server that will export Prometheus metrics will run."
+			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag)."
 		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
