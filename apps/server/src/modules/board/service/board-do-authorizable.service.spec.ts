@@ -50,7 +50,7 @@ describe(BoardDoAuthorizableService.name, () => {
 			it('should call the repository', async () => {
 				const { columnBoardId } = setup();
 
-				await service.findById(columnBoardId, 1);
+				await service.findById(columnBoardId);
 
 				expect(boardDoRepo.findById).toHaveBeenCalledWith(columnBoardId, 1);
 			});
