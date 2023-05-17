@@ -1,4 +1,4 @@
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 
 export type SchoolExternalTool = SchoolExternalToolDO;
 

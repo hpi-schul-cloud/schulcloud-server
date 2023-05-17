@@ -1,0 +1,51 @@
+[
+	{
+		"_id": {
+			"$oid": "644a4593d0a8301e6cf25d85"
+		},
+		"createdAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"updatedAt": {
+			"$date": "2023-04-27T09:51:15.592Z"
+		},
+		"name": "TestTool",
+		"url": "https://google.de/",
+		"logoUrl": "https://www.google.de/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.de/",
+		"parameters": [
+			{
+				"name": "q",
+				"displayName": "Suchparameter",
+				"description": "Hier nach wird gesucht",
+				"scope": "course",
+				"location": "query",
+				"type": "string",
+				"isOptional": false
+			},
+			{
+				"name": "search",
+				"displayName": "Such-Endpunkt",
+				"description": "Dieser Endpunkt wird für die Suche aufgerufen",
+				"default": "search",
+				"scope": "global",
+				"location": "path",
+				"type": "string",
+				"isOptional": false
+			},
+			{
+				"name": "param1",
+				"displayName": "Testparamter",
+				"description": "Dieser Parameter macht rein gar nichts",
+				"scope": "school",
+				"location": "path",
+				"type": "string",
+				"isOptional": true
+			}
+		],
+		"isHidden": false,
+		"openNewTab": true,
+		"version": 1
+	}
+]
