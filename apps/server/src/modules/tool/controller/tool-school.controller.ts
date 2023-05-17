@@ -11,8 +11,8 @@ import {
 } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
 import { LegacyLogger } from '@src/core/logger';
+import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import {
@@ -25,7 +25,7 @@ import {
 } from './dto';
 import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
 import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from './mapper';
-import { SchoolExternalTool } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalTool } from '../uc/dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

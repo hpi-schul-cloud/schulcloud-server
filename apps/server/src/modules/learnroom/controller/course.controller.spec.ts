@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { CourseExportUc } from '@src/modules/learnroom/uc/course-export.uc';
 import { CourseController } from './course.controller';
 import { CourseUc } from '../uc/course.uc';
+import { CourseUrlParams } from './dto';
 
 describe('CourseController', () => {
 	let controller: CourseController;
@@ -77,19 +78,28 @@ describe('CourseController', () => {
 	});
 
 	describe('exportCourse', () => {
+		const setup = () => {
+			const courseUrlParams: CourseUrlParams = { courseId: 'courseId' };
+			return { courseUrlParams };
+		};
 		it('should return an imscc file', async () => {
+			configServiceMock.get.mockReturnValueOnce(true);
+			const { courseUrlParams } = setup();
 			courseExportUcMock.exportCourse.mockResolvedValueOnce({} as Buffer);
 
-			configServiceMock.get.mockReturnValue(true);
-
 			await expect(
-				controller.exportCourse({ userId: 'userId' } as ICurrentUser, '', { set: () => {} } as unknown as Response)
+				controller.exportCourse({ userId: 'userId' } as ICurrentUser, courseUrlParams, {
+					set: () => {},
+				} as unknown as Response)
 			).resolves.toBeDefined();
 		});
 		it('should return not found if feature is disabled', async () => {
-			configServiceMock.get.mockReturnValue(false);
+			const { courseUrlParams } = setup();
+			configServiceMock.get.mockReturnValueOnce(false);
 			await expect(
-				controller.exportCourse({ userId: 'userId' } as ICurrentUser, '', { set: () => {} } as unknown as Response)
+				controller.exportCourse({ userId: 'userId' } as ICurrentUser, courseUrlParams, {
+					set: () => {},
+				} as unknown as Response)
 			).rejects.toThrow(NotFoundException);
 		});
 	});
