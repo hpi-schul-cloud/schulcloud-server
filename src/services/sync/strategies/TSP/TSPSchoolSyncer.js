@@ -1,5 +1,6 @@
 const { mix } = require('mixwith');
 const pLimit = require('p-limit');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
@@ -10,8 +11,8 @@ const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUs
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
-const schoolLimit = pLimit(10);
-const limit = pLimit(150);
+const schoolLimit = pLimit(Configuration.get('TSP_SCHOOL_SYNCER__SCHOOL_LIMIT'));
+const limit = pLimit(Configuration.get('TSP_SCHOOL_SYNCER__STUDENTS_TEACHERS_CLASSES_LIMIT'));
 
 /**
  * Used to sync one or more schools from the TSP to the Schul-Cloud instance.
@@ -159,52 +160,50 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 					`, and ${schoolClasses.length} classes.`
 			);
 			const teacherMapping = await this.processTSPTeachers(schoolTeachers, school);
-			const classMapping = await this.processTSPStudents(schoolStudents, school);
+			const studentMapping = await this.processTSPStudents(schoolStudents, school);
 			this.logInfo('Syncing classes...');
 			// create classes based on API response and user mappings
-			await this.createOrUpdateClasses(schoolClasses, school, teacherMapping, classMapping);
+			await this.createOrUpdateClasses(schoolClasses, school, teacherMapping, studentMapping);
 
 			this.logInfo('Done.');
 		} catch (err) {
-			this.logError('Error while syncing process TSP Schools', { error: err });
-			this.stats.errors.push(err);
+			this.handleError('Error while syncing process TSP Schools', err);
 		}
 	}
 
 	/**
-	 * Create students and return classMapping
+	 * Create students and return studentMapping
 	 * @param {Array} schoolStudents
 	 * @param {Object} school
-	 * @returns {Object} map (classIdentifier => [Entity])
+	 * @returns {Map} (classIdentifier => [Entity])
 	 * @async
 	 */
 	async processTSPStudents(schoolStudents, school) {
-		const classMapping = {};
+		const studentMapping = new Map();
 		this.logInfo('Syncing students...');
 		// create students and add them to the mapping (classUid => [User])
 		await Promise.all(
-			schoolStudents.map((tspStudent) => limit(() => this.processStudent(tspStudent, school, classMapping)))
+			schoolStudents.map((tspStudent) => limit(() => this.processStudent(tspStudent, school, studentMapping)))
 		);
-		return classMapping;
+		return studentMapping;
 	}
 
 	/**
-	 * Create student and add entry to classMapping
+	 * Create student and add entry to studentMapping
 	 * @param {Object} tspStudent
 	 * @param {Object} school
-	 * @param {Object} classMapping
+	 * @param {Map} studentMapping
 	 * @async
 	 */
-	async processStudent(tspStudent, school, classMapping) {
+	async processStudent(tspStudent, school, studentMapping) {
 		try {
 			const student = await this.createOrUpdateStudent(tspStudent, school);
 			if (student !== null) {
-				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
-				classMapping[tspStudent.klasseId].push(student._id);
+				studentMapping.set(tspStudent.klasseId, studentMapping.get(tspStudent.klasseId) || []);
+				studentMapping.get(tspStudent.klasseId).push(student._id);
 			}
 		} catch (err) {
-			this.logError('Error while syncing process TSP Students', { error: err });
-			this.stats.errors.push(err);
+			this.handleError('Error while syncing process TSP Students', err);
 		}
 	}
 
@@ -212,11 +211,11 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Create teachers and return teacherMapping
 	 * @param {Array} schoolTeachers
 	 * @param {Object} school
-	 * @returns {Object} map (teacherIdentifier => [Entity])
+	 * @returns {Map} (teacherIdentifier => [Entity])
 	 * @async
 	 */
 	async processTSPTeachers(schoolTeachers, school) {
-		const teacherMapping = {};
+		const teacherMapping = new Map();
 		this.logInfo('Syncing teachers...');
 		// create teachers and add them to the mapping (teacherUID => User)
 		await Promise.all(
@@ -229,19 +228,28 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Create teacher and add entry to teacherMapping
 	 * @param {Object} tspTeacher
 	 * @param {Object} school
-	 * @param {Object} teacherMapping
+	 * @param {Map} teacherMapping
 	 * @async
 	 */
 	async processTeacher(tspTeacher, school, teacherMapping) {
 		try {
 			const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
 			if (teacher !== null) {
-				teacherMapping[tspTeacher.lehrerUid] = teacher;
+				teacherMapping.set(tspTeacher.lehrerUid, teacher);
 			}
 		} catch (err) {
-			this.logError('Error while syncing process TSP Teachers', { error: err });
-			this.stats.errors.push(err);
+			this.handleError('Error while syncing process TSP Teachers', err);
 		}
+	}
+
+	/**
+	 * Log error and add error to stats
+	 * @param {String} message
+	 * @param {Object} error
+	 */
+	handleError(message, error) {
+		this.logError(message, { error });
+		this.stats.errors.push(error);
 	}
 
 	/**
@@ -519,36 +527,44 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * Creates classes based on TSP API response
 	 * @param {*} classes list of TSP class objects
 	 * @param {*} school school
-	 * @param {*} teacherMapping a mapping (teacherUid => User)
-	 * @param {*} classMapping a mapping (classUid => [User])
+	 * @param {Map} teacherMapping a mapping (teacherUid => User)
+	 * @param {Map} studentMapping a mapping (classUid => [User])
 	 * @returns {Array<Class>} created classes
 	 * @async
 	 */
-	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
+	createOrUpdateClasses(classes, school, teacherMapping, studentMapping) {
 		return Promise.all(
-			classes.map((klass) =>
-				limit(() => {
-					const sourceOptions = {};
-					sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
-					const query = {
-						source: ENTITY_SOURCE,
-						sourceOptions,
-					};
-					const teacher = teacherMapping[klass.lehrerUid];
-					const options = {
-						name: klass.klasseName,
-						schoolId: school._id,
-						year: school.currentYear,
-						teacherIds: teacher ? [teacher] : [],
-						userIds: classMapping[klass.klasseId] || [],
-						source: ENTITY_SOURCE,
-						sourceOptions,
-					};
-					const onlyAddNew = this.config.lastChange !== undefined;
-					return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
-				})
-			)
+			classes.map((klass) => limit(() => this.createOrUpdateOneClass(klass, school, teacherMapping, studentMapping)))
 		);
+	}
+
+	/**
+	 * Creates classes based on TSP API response
+	 * @param {*} klass TSP class objects
+	 * @param {*} school school
+	 * @param {Map} teacherMapping a mapping (teacherUid => User)
+	 * @param {Map} studentMapping a mapping (classUid => [User])
+	 * @returns {Class} created class
+	 */
+	createOrUpdateOneClass(klass, school, teacherMapping, studentMapping) {
+		const sourceOptions = {};
+		sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
+		const query = {
+			source: ENTITY_SOURCE,
+			sourceOptions,
+		};
+		const teacher = teacherMapping.get(klass.lehrerUid);
+		const options = {
+			name: klass.klasseName,
+			schoolId: school._id,
+			year: school.currentYear,
+			teacherIds: teacher ? [teacher] : [],
+			userIds: studentMapping.get(klass.klasseId) || [],
+			source: ENTITY_SOURCE,
+			sourceOptions,
+		};
+		const onlyAddNew = this.config.lastChange !== undefined;
+		return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
 	}
 }
 
