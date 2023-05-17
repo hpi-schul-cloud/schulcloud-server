@@ -1,5 +1,9 @@
 import { DeepPartial } from 'fishery';
-import { CustomParameterEntryDO, SchoolExternalToolStatus, SchoolExternalToolDO } from '@shared/domain';
+import {
+	CustomParameterEntryDO,
+	SchoolExternalToolDO,
+	SchoolExternalToolStatus,
+} from '@shared/domain/domainobject/tool';
 import { DoBaseFactory } from '../do-base.factory';
 
 class SchoolExternalToolDOFactory extends DoBaseFactory<SchoolExternalToolDO, SchoolExternalToolDO> {
