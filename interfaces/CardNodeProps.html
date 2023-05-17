@@ -147,7 +147,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
 import { Card } from &#x27;@shared/domain/domainobject&#x27;;
 import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
-import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
+import { BoardDoBuilder } from &#x27;./types&#x27;;
+import { BoardNodeType } from &#x27;./types/board-node-type&#x27;;
 
 @Entity({ discriminatorValue: BoardNodeType.CARD })
 export class CardNode extends BoardNode {

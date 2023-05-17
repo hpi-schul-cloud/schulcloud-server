@@ -84,6 +84,14 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getPublicSchoolData" >getPublicSchoolData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isRestartMigrationRequired" >isRestartMigrationRequired</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#setMigration" >setMigration</a>
                             </li>
                         </ul>
@@ -104,12 +112,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>, userLoginMigrationService: <a href="../injectables/UserLoginMigrationService.html" target="_self">UserLoginMigrationService</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolMigrationService: <a href="../injectables/SchoolMigrationService.html" target="_self">SchoolMigrationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -162,18 +170,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>userLoginMigrationService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserLoginMigrationService.html" target="_self" >UserLoginMigrationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -210,8 +206,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:60</a></div>
                 </td>
             </tr>
 
@@ -275,6 +271,184 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getPublicSchoolData"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getPublicSchoolData</b></span>
+                        <a href="#getPublicSchoolData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPublicSchoolData(schoolnumber: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolnumber</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;PublicSchoolResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isRestartMigrationRequired"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>isRestartMigrationRequired</b></span>
+                        <a href="#isRestartMigrationRequired"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isRestartMigrationRequired(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>, oauthMigrationPossible: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, oauthMigrationMandatory: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, oauthMigrationFinished: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:79</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>school</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationPossible</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationMandatory</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationFinished</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="setMigration"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -293,8 +467,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/school/uc/school.uc.ts:20</a></div>
                 </td>
             </tr>
 
@@ -396,20 +570,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Permission, SchoolDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { SchoolService } from &#x27;@src/modules/school/service/school.service&#x27;;
+import { Permission } from &#x27;@shared/domain&#x27;;
+import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { SchoolMigrationService } from &#x27;@src/modules/user-login-migration/service&#x27;;
 import { Action, AuthorizableReferenceType, AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
-import { SchoolMigrationService, UserLoginMigrationService } from &#x27;@src/modules/user-login-migration&#x27;;
-import { SchoolService } from &#x27;../service&#x27;;
-import { OauthMigrationDto } from &#x27;./dto/oauth-migration.dto&#x27;;
+import { OauthMigrationDto } from &#x27;../dto/oauth-migration.dto&#x27;;
+import { PublicSchoolResponse } from &#x27;../controller/dto/public.school.response&#x27;;
+import { SchoolUcMapper } from &#x27;../mapper/school.uc.mapper&#x27;;
 
 @Injectable()
 export class SchoolUc {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly authService: AuthorizationService,
-		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userLoginMigrationService: UserLoginMigrationService
+		private readonly schoolMigrationService: SchoolMigrationService
 	) {}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
@@ -424,36 +600,31 @@ export class SchoolUc {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
+		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
+		const migrationStartedAt: Date | undefined &#x3D; school.oauthMigrationStart;
 
-		const existingUserLoginMigration: UserLoginMigrationDO | null &#x3D;
-			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
+		const shouldRestartMigration: boolean &#x3D; this.isRestartMigrationRequired(
+			school,
+			oauthMigrationPossible,
+			oauthMigrationMandatory,
+			oauthMigrationFinished
+		);
 
-		if (existingUserLoginMigration) {
-			this.schoolMigrationService.validateGracePeriod(existingUserLoginMigration);
+		if (shouldRestartMigration) {
+			this.schoolMigrationService.validateGracePeriod(school);
+			await this.schoolMigrationService.restartMigration(schoolId);
 		}
 
-		const updatedUserLoginMigration: UserLoginMigrationDO &#x3D; await this.userLoginMigrationService.setMigration(
+		const migrationDto: OauthMigrationDto &#x3D; await this.schoolService.setMigration(
 			schoolId,
 			oauthMigrationPossible,
 			oauthMigrationMandatory,
 			oauthMigrationFinished
 		);
 
-		if (!existingUserLoginMigration?.closedAt &amp;&amp; updatedUserLoginMigration.closedAt) {
-			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
-		} else if (existingUserLoginMigration?.closedAt &amp;&amp; !updatedUserLoginMigration.closedAt) {
-			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
+		if (oauthMigrationFinished) {
+			await this.schoolMigrationService.completeMigration(schoolId, migrationStartedAt);
 		}
-
-		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
-
-		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
-			oauthMigrationPossible: !updatedUserLoginMigration.closedAt ? updatedUserLoginMigration.startedAt : undefined,
-			oauthMigrationMandatory: updatedUserLoginMigration.mandatorySince,
-			oauthMigrationFinished: updatedUserLoginMigration.closedAt,
-			oauthMigrationFinalFinish: updatedUserLoginMigration.finishedAt,
-			enableMigrationStart: !!school.officialSchoolNumber,
-		});
 
 		return migrationDto;
 	}
@@ -463,23 +634,35 @@ export class SchoolUc {
 			action: Action.read,
 			requiredPermissions: [Permission.SCHOOL_EDIT],
 		});
-
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
-
-		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
-
-		const migrationDto: OauthMigrationDto &#x3D; new OauthMigrationDto({
-			oauthMigrationPossible:
-				userLoginMigration &amp;&amp; !userLoginMigration.closedAt ? userLoginMigration.startedAt : undefined,
-			oauthMigrationMandatory: userLoginMigration ? userLoginMigration.mandatorySince : undefined,
-			oauthMigrationFinished: userLoginMigration ? userLoginMigration.closedAt : undefined,
-			oauthMigrationFinalFinish: userLoginMigration ? userLoginMigration.finishedAt : undefined,
-			enableMigrationStart: !!school.officialSchoolNumber,
-		});
+		const migrationDto: OauthMigrationDto &#x3D; await this.schoolService.getMigration(schoolId);
 
 		return migrationDto;
+	}
+
+	async getPublicSchoolData(schoolnumber: string): Promise&lt;PublicSchoolResponse&gt; {
+		const schoolDO: SchoolDO | null &#x3D; await this.schoolService.getSchoolBySchoolNumber(schoolnumber);
+		if (schoolDO) {
+			const response: PublicSchoolResponse &#x3D; SchoolUcMapper.mapDOToPublicResponse(schoolDO);
+			return response;
+		}
+		throw new NotFoundException(&#x60;No school found for schoolnumber: ${schoolnumber}&#x60;);
+	}
+
+	private isRestartMigrationRequired(
+		school: SchoolDO,
+		oauthMigrationPossible: boolean,
+		oauthMigrationMandatory: boolean,
+		oauthMigrationFinished: boolean
+	): boolean {
+		const hasSchoolOauthMigrationFinished &#x3D; !!school.oauthMigrationFinished;
+		const isOauthMigrationMandatory &#x3D; oauthMigrationMandatory &#x3D;&#x3D;&#x3D; !!school.oauthMigrationMandatory;
+		const isOauthMigrationNotFinished &#x3D; !oauthMigrationFinished;
+		const isRequired &#x3D;
+			hasSchoolOauthMigrationFinished &amp;&amp;
+			oauthMigrationPossible &amp;&amp;
+			isOauthMigrationMandatory &amp;&amp;
+			isOauthMigrationNotFinished;
+		return isRequired;
 	}
 }
 </code></pre>

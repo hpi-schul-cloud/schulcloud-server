@@ -28,7 +28,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content entity">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -36,9 +36,15 @@
 
 
 
+
+
+
+
+
+
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >FileElementNode</li>
+  <li>Classes</li>
+  <li >SchoolQueryParams</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -56,8 +62,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/boardnode/file-element-node.entity.ts</code>
+            <code>apps/server/src/modules/school/controller/dto/school.query.params.ts</code>
         </p>
+
+
 
 
 
@@ -75,7 +83,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#caption" >caption</a>
+                                    <span class="modifier">Optional</span>
+                                <a href="#schoolnumber" >schoolnumber</a>
                             </li>
                         </ul>
                     </td>
@@ -90,6 +99,7 @@
     </table>
 </section>
 
+
             <section>
     
     <h3 id="inputs">
@@ -99,10 +109,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="caption"></a>
+                    <a name="schoolnumber"></a>
                     <span class="name">
-                        <span ><b>caption</b></span>
-                        <a href="#caption"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Optional</span>
+                        <span ><b>schoolnumber</b></span>
+                        <a href="#schoolnumber"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -117,13 +128,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @IsOptional()<br />@IsString()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/file-element-node.entity.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/school/controller/dto/school.query.params.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -131,45 +142,27 @@
         </tbody>
     </table>
 </section>
+
+
+
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
-import { AnyBoardDo } from &#x27;../../domainobject&#x27;;
-import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
-import { BoardDoBuilder, BoardNodeType } from &#x27;./types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { IsOptional, IsString } from &#x27;class-validator&#x27;;
 
-@Entity({ discriminatorValue: BoardNodeType.FILE_ELEMENT })
-export class FileElementNode extends BoardNode {
-	@Property()
-	caption: string;
-
-	constructor(props: FileElementNodeProps) {
-		super(props);
-		this.type &#x3D; BoardNodeType.FILE_ELEMENT;
-		this.caption &#x3D; props.caption;
-	}
-
-	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
-		const domainObject &#x3D; builder.buildFileElement(this);
-
-		return domainObject;
-	}
-}
-
-export interface FileElementNodeProps extends BoardNodeProps {
-	caption: string;
+export class SchoolQueryParams {
+	@IsOptional()
+	@IsString()
+	schoolnumber?: string;
 }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
-
 
 
 
@@ -204,8 +197,8 @@ export interface FileElementNodeProps extends BoardNodeProps {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
-            var COMPODOC_CURRENT_PAGE_URL = 'FileElementNode.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolQueryParams.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

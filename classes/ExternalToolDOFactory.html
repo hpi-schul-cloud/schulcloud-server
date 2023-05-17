@@ -234,8 +234,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="95"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:95</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:97</a></div>
                 </td>
             </tr>
 
@@ -308,8 +308,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:90</a></div>
                 </td>
             </tr>
 
@@ -370,8 +370,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="81"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:81</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:83</a></div>
                 </td>
             </tr>
 
@@ -1466,13 +1466,15 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
+} from &#x27;@shared/domain&#x27;;
+import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
+import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from &#x27;@shared/domain&#x27;;
-import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
+} from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 export const basicToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfigDO, BasicToolConfigDO&gt;(

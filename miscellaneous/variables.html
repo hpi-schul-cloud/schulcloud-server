@@ -610,9 +610,6 @@
                             <a href="#userFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>userFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#userLoginMigrationFactory" title="apps/server/src/shared/testing/factory/user-login-migration.factory.ts" ><b>userLoginMigrationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
-                        </li>
-                        <li>
                             <a href="#videoConferenceFactory" title="apps/server/src/shared/testing/factory/video-conference.factory.ts" ><b>videoConferenceFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.factory.ts)</a>
                         </li>
                         <li>
@@ -1308,7 +1305,6 @@
 	TeamNews,
 	TeamUser,
 	User,
-	UserLoginMigration,
 	VideoConference,
 ]</code>
                     </td>
@@ -2847,7 +2843,7 @@ must use @ApiProperty</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User, System] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
@@ -6824,38 +6820,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		school: schoolFactory.build(),
 	};
 })</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/user-login-migration.factory.ts</h3>
-    <section>
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="userLoginMigrationFactory"></a>
-                    <span class="name">
-                        <span ><b>userLoginMigrationFactory</b></span>
-                        <a href="#userLoginMigrationFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;UserLoginMigration, IUserLoginMigration&gt;(
-	UserLoginMigration,
-	() &#x3D;&gt; {
-		return {
-			school: schoolFactory.buildWithId(),
-			startedAt: new Date(&#x27;2023-04-28&#x27;),
-			targetSystem: systemFactory.buildWithId(),
-		};
-	}
-)</code>
                     </td>
                 </tr>
 

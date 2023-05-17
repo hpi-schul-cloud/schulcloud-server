@@ -138,7 +138,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:52</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -174,7 +174,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:55</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -193,18 +193,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-	Collection,
-	Embeddable,
-	Embedded,
-	Entity,
-	Index,
-	ManyToMany,
-	ManyToOne,
-	OneToOne,
-	Property,
-} from &#x27;@mikro-orm/core&#x27;;
-import { UserLoginMigration } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Embeddable, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntity } from &#x27;./base.entity&#x27;;
 import { SchoolYear } from &#x27;./schoolyear.entity&#x27;;
 import { System } from &#x27;./system.entity&#x27;;
@@ -223,13 +212,17 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationStart?: Date;
+	oauthMigrationPossible?: Date;
+	oauthMigrationMandatory?: Date;
+	oauthMigrationFinished?: Date;
+	oauthMigrationFinalFinish?: Date;
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
-	userLoginMigration?: UserLoginMigration;
 }
 
 @Embeddable()
@@ -262,6 +255,21 @@ export class School extends BaseEntity {
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
+	@Property({ nullable: true })
+	oauthMigrationStart?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationPossible?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationMandatory?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinished?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinalFinish?: Date;
+
 	@Property({ nullable: true, fieldName: &#x27;ldapSchoolIdentifier&#x27; })
 	externalId?: string;
 
@@ -283,12 +291,6 @@ export class School extends BaseEntity {
 	@ManyToOne(&#x27;SchoolYear&#x27;, { fieldName: &#x27;currentYear&#x27;, nullable: true })
 	schoolYear?: SchoolYear;
 
-	@OneToOne(() &#x3D;&gt; UserLoginMigration, (userLoginMigration: UserLoginMigration) &#x3D;&gt; userLoginMigration.school, {
-		orphanRemoval: true,
-		nullable: true,
-	})
-	userLoginMigration?: UserLoginMigration;
-
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -303,6 +305,11 @@ export class School extends BaseEntity {
 		if (props.inUserMigration !&#x3D;&#x3D; null) {
 			this.inUserMigration &#x3D; props.inUserMigration;
 		}
+		this.oauthMigrationStart &#x3D; props.oauthMigrationStart;
+		this.oauthMigrationPossible &#x3D; props.oauthMigrationPossible;
+		this.oauthMigrationMandatory &#x3D; props.oauthMigrationMandatory;
+		this.oauthMigrationFinished &#x3D; props.oauthMigrationFinished;
+		this.oauthMigrationFinalFinish &#x3D; props.oauthMigrationFinalFinish;
 		this.name &#x3D; props.name;
 		if (props.officialSchoolNumber) {
 			this.officialSchoolNumber &#x3D; props.officialSchoolNumber;
@@ -316,7 +323,6 @@ export class School extends BaseEntity {
 		if (props.schoolYear) {
 			this.schoolYear &#x3D; props.schoolYear;
 		}
-		this.userLoginMigration &#x3D; props.userLoginMigration;
 	}
 }
 </code></pre>

@@ -70,13 +70,13 @@
 <title>cluster_SchoolModule_imports</title>
 <polygon fill="none" stroke="black" points="336,-78 336,-130 452,-130 452,-78 336,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SchoolModule_exports</title>
-<polygon fill="none" stroke="black" points="204,-208 204,-260 320,-260 320,-208 204,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_SchoolModule_providers</title>
 <polygon fill="none" stroke="black" points="44,-78 44,-130 328,-130 328,-78 44,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_SchoolModule_exports</title>
+<polygon fill="none" stroke="black" points="204,-208 204,-260 320,-260 320,-208 204,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
@@ -212,7 +212,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { SchoolRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { SchoolService } from &#x27;./service&#x27;;
+import { SchoolService } from &#x27;@src/modules/school/service/school.service&#x27;;
 
 @Module({
 	imports: [LoggerModule],

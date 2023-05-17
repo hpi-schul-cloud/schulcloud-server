@@ -79,8 +79,20 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#calculateMigrationFinalFinish" >calculateMigrationFinalFinish</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#createOrUpdateSchool" >createOrUpdateSchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#enableOauthMigration" >enableOauthMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMigration" >getMigration</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -100,12 +112,28 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#isNewMigration" >isNewMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#patchSchool" >patchSchool</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#setMigration" >setMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#setMigrationStart" >setMigrationStart</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#setOrClearDate" >setOrClearDate</a>
                             </li>
                         </ul>
                     </td>
@@ -130,7 +158,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -177,6 +205,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="calculateMigrationFinalFinish"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>calculateMigrationFinalFinish</b></span>
+                        <a href="#calculateMigrationFinalFinish"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>calculateMigrationFinalFinish(schoolDo: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="80"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:80</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolDo</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="createOrUpdateSchool"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -195,8 +294,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:12</a></div>
                 </td>
             </tr>
 
@@ -248,6 +347,148 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="enableOauthMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>enableOauthMigration</b></span>
+                        <a href="#enableOauthMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>enableOauthMigration(schoolDo: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:88</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolDo</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getMigration</b></span>
+                        <a href="#getMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMigration(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="96"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:96</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;OauthMigrationDto&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSchoolByExternalId"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -266,8 +507,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:115</a></div>
                 </td>
             </tr>
 
@@ -349,8 +590,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:110</a></div>
                 </td>
             </tr>
 
@@ -420,8 +661,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:120</a></div>
                 </td>
             </tr>
 
@@ -491,8 +732,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:22</a></div>
                 </td>
             </tr>
 
@@ -556,6 +797,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isNewMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>isNewMigration</b></span>
+                        <a href="#isNewMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isNewMigration(schoolDo: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:65</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolDo</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="patchSchool"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -575,8 +887,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="130"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:130</a></div>
                 </td>
             </tr>
 
@@ -646,8 +958,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="125"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:125</a></div>
                 </td>
             </tr>
 
@@ -695,6 +1007,267 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>setMigration</b></span>
+                        <a href="#setMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setMigration(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, oauthMigrationPossible?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, oauthMigrationMandatory?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, oauthMigrationFinished?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:27</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationPossible</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationMandatory</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationFinished</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;OauthMigrationDto&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setMigrationStart"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>setMigrationStart</b></span>
+                        <a href="#setMigrationStart"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setMigrationStart(schoolDo: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>, oauthMigrationPossible: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:75</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolDo</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>oauthMigrationPossible</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setOrClearDate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>setOrClearDate</b></span>
+                        <a href="#setOrClearDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setOrClearDate(migrationFlag: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>migrationFlag</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Date | undefined</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -705,6 +1278,8 @@
 import { EntityId, SchoolFeatures } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { SchoolRepo } from &#x27;@shared/repo&#x27;;
+import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { OauthMigrationDto } from &#x27;../dto/oauth-migration.dto&#x27;;
 
 @Injectable()
 export class SchoolService {
@@ -723,6 +1298,89 @@ export class SchoolService {
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise&lt;boolean&gt; {
 		const entity: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
+	}
+
+	async setMigration(
+		schoolId: EntityId,
+		oauthMigrationPossible?: boolean,
+		oauthMigrationMandatory?: boolean,
+		oauthMigrationFinished?: boolean
+	): Promise&lt;OauthMigrationDto&gt; {
+		const schoolDo: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
+		if (oauthMigrationPossible !&#x3D;&#x3D; undefined) {
+			if (this.isNewMigration(schoolDo)) {
+				this.setMigrationStart(schoolDo, oauthMigrationPossible);
+			} else {
+				schoolDo.oauthMigrationPossible &#x3D; this.setOrClearDate(oauthMigrationPossible);
+				schoolDo.oauthMigrationFinalFinish &#x3D; undefined;
+			}
+
+			this.enableOauthMigration(schoolDo);
+		}
+		if (oauthMigrationMandatory !&#x3D;&#x3D; undefined) {
+			schoolDo.oauthMigrationMandatory &#x3D; this.setOrClearDate(oauthMigrationMandatory);
+		}
+		if (oauthMigrationFinished !&#x3D;&#x3D; undefined) {
+			schoolDo.oauthMigrationFinished &#x3D; this.setOrClearDate(oauthMigrationFinished);
+			this.calculateMigrationFinalFinish(schoolDo);
+		}
+
+		await this.schoolRepo.save(schoolDo);
+
+		const response: OauthMigrationDto &#x3D; new OauthMigrationDto({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
+		});
+
+		return response;
+	}
+
+	private isNewMigration(schoolDo: SchoolDO): boolean {
+		const isNewMigration: boolean &#x3D; !schoolDo.oauthMigrationFinished &amp;&amp; !schoolDo.oauthMigrationPossible;
+		return isNewMigration;
+	}
+
+	private setOrClearDate(migrationFlag: boolean): Date | undefined {
+		const result: Date | undefined &#x3D; migrationFlag ? new Date() : undefined;
+		return result;
+	}
+
+	private setMigrationStart(schoolDo: SchoolDO, oauthMigrationPossible: boolean): void {
+		schoolDo.oauthMigrationPossible &#x3D; this.setOrClearDate(oauthMigrationPossible);
+		schoolDo.oauthMigrationStart &#x3D; schoolDo.oauthMigrationPossible;
+	}
+
+	private calculateMigrationFinalFinish(schoolDo: SchoolDO) {
+		if (schoolDo.oauthMigrationFinished) {
+			schoolDo.oauthMigrationFinalFinish &#x3D; new Date(
+				schoolDo.oauthMigrationFinished.getTime() + (Configuration.get(&#x27;MIGRATION_END_GRACE_PERIOD_MS&#x27;) as number)
+			);
+		}
+	}
+
+	private enableOauthMigration(schoolDo: SchoolDO) {
+		if (schoolDo.features &amp;&amp; !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
+			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+		} else {
+			schoolDo.features &#x3D; [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+		}
+	}
+
+	async getMigration(schoolId: string): Promise&lt;OauthMigrationDto&gt; {
+		const schoolDo: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
+
+		const response: OauthMigrationDto &#x3D; new OauthMigrationDto({
+			oauthMigrationPossible: schoolDo.oauthMigrationPossible,
+			oauthMigrationMandatory: schoolDo.oauthMigrationMandatory,
+			oauthMigrationFinished: schoolDo.oauthMigrationFinished,
+			oauthMigrationFinalFinish: schoolDo.oauthMigrationFinalFinish,
+			enableMigrationStart: !!schoolDo.officialSchoolNumber,
+		});
+
+		return response;
 	}
 
 	async getSchoolById(id: string): Promise&lt;SchoolDO&gt; {

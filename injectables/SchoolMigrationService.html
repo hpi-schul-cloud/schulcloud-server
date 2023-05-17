@@ -83,6 +83,10 @@
                                 <a href="#checkOfficialSchoolNumbersMatch" >checkOfficialSchoolNumbersMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#completeMigration" >completeMigration</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#doMigration" >doMigration</a>
@@ -93,11 +97,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#markUnmigratedUsersAsOutdated" >markUnmigratedUsersAsOutdated</a>
+                                <a href="#migrateSchool" >migrateSchool</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#migrateSchool" >migrateSchool</a>
+                                <a href="#restartMigration" >restartMigration</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -107,10 +111,6 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#schoolToMigrate" >schoolToMigrate</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#unmarkOutdatedUsers" >unmarkOutdatedUsers</a>
                             </li>
                             <li>
                                 <a href="#validateGracePeriod" >validateGracePeriod</a>
@@ -133,12 +133,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, userLoginMigrationRepo: <a href="../injectables/UserLoginMigrationRepo.html" target="_self">UserLoginMigrationRepo</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -191,18 +191,6 @@
                                                     </td>
                                                     
                                                 </tr>
-                                                <tr>
-                                                        <td>userLoginMigrationRepo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserLoginMigrationRepo.html" target="_self" >UserLoginMigrationRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -239,8 +227,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="131"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:131</a></div>
                 </td>
             </tr>
 
@@ -304,6 +292,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="completeMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>completeMigration</b></span>
+                        <a href="#completeMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>completeMigration(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, migrationStartedAt: Date | undefined)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>migrationStartedAt</td>
+                                    <td>
+                                            <code>Date | undefined</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="doMigration"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -323,8 +394,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="127"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:127</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:114</a></div>
                 </td>
             </tr>
 
@@ -418,8 +489,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="155"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:155</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="142"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:142</a></div>
                 </td>
             </tr>
 
@@ -470,77 +541,6 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="markUnmigratedUsersAsOutdated"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>markUnmigratedUsersAsOutdated</b></span>
-                        <a href="#markUnmigratedUsersAsOutdated"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>markUnmigratedUsersAsOutdated(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:78</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>schoolId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -649,6 +649,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="restartMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>restartMigration</b></span>
+                        <a href="#restartMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>restartMigration(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:95</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="rollbackMigration"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -668,8 +739,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="138"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:138</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="125"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:125</a></div>
                 </td>
             </tr>
 
@@ -816,77 +887,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="unmarkOutdatedUsers"></a>
-                    <span class="name">
-                        <span class="modifier">Async</span>
-                        <span ><b>unmarkOutdatedUsers</b></span>
-                        <a href="#unmarkOutdatedUsers"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>unmarkOutdatedUsers(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:103</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>schoolId</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="validateGracePeriod"></a>
                     <span class="name">
                         <span ><b>validateGracePeriod</b></span>
@@ -896,7 +896,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validateGracePeriod(userLoginMigration: <a href="../interfaces/User.html" target="_self">UserLoginMigrationDO</a>)</code>
+<code>validateGracePeriod(school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
                 </td>
             </tr>
 
@@ -925,9 +925,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>userLoginMigration</td>
+                                    <td>school</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >UserLoginMigrationDO</a></code>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
                                     </td>
 
                                     <td>
@@ -958,28 +958,28 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
-import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
-import { UserLoginMigrationRepo } from &#x27;@shared/repo&#x27;;
+import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
+import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
+import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration&#x27;;
+import { OAuthMigrationError } from &#x27;@src/modules/user-login-migration/error/oauth-migration.error&#x27;;
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly logger: LegacyLogger,
-		private readonly userService: UserService,
-		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
+		private readonly userService: UserService
 	) {}
 
-	validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
-		if (userLoginMigration.finishedAt &amp;&amp; Date.now() &gt;&#x3D; userLoginMigration.finishedAt.getTime()) {
+	validateGracePeriod(school: SchoolDO) {
+		if (!school.oauthMigrationFinalFinish || Date.now() &gt;&#x3D; school.oauthMigrationFinalFinish.getTime()) {
 			throw new ValidationError(&#x27;grace_period_expired: The grace period after finishing migration has expired&#x27;, {
-				finishedAt: userLoginMigration.finishedAt,
+				&#x27;school.oauthMigrationFinalFinish&#x27;: school.oauthMigrationFinalFinish,
 			});
 		}
 	}
@@ -1035,50 +1035,37 @@ export class SchoolMigrationService {
 		return existingSchool;
 	}
 
-	async markUnmigratedUsersAsOutdated(schoolId: string): Promise&lt;void&gt; {
+	async completeMigration(schoolId: string, migrationStartedAt: Date | undefined): Promise&lt;void&gt; {
 		const startTime: number &#x3D; performance.now();
-
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(&#x60;School ${schoolId} has no UserLoginMigration&#x60;);
-		}
-
+		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
 		const notMigratedUsers: Page&lt;UserDO&gt; &#x3D; await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
+			lastLoginSystemChangeSmallerThan: migrationStartedAt,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) &#x3D;&gt; {
-			user.outdatedSince &#x3D; userLoginMigration.closedAt;
+			user.outdatedSince &#x3D; school.oauthMigrationFinished;
 		});
-
 		await this.userService.saveAll(notMigratedUsers.data);
-
 		const endTime: number &#x3D; performance.now();
 		this.logger.warn(&#x60;completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds&#x60;);
 	}
 
-	async unmarkOutdatedUsers(schoolId: string): Promise&lt;void&gt; {
+	async restartMigration(schoolId: string): Promise&lt;void&gt; {
 		const startTime: number &#x3D; performance.now();
-
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(&#x60;School ${schoolId} has no UserLoginMigration&#x60;);
-		}
-
+		const school: SchoolDO &#x3D; await this.schoolService.getSchoolById(schoolId);
 		const migratedUsers: Page&lt;UserDO&gt; &#x3D; await this.userService.findUsers({
 			schoolId,
-			outdatedSince: userLoginMigration.finishedAt,
+			outdatedSince: school.oauthMigrationFinished,
 		});
 
 		migratedUsers.data.forEach((user: UserDO) &#x3D;&gt; {
 			user.outdatedSince &#x3D; undefined;
 		});
-
 		await this.userService.saveAll(migratedUsers.data);
+
+		school.oauthMigrationMandatory &#x3D; undefined;
 
 		const endTime: number &#x3D; performance.now();
 		this.logger.warn(&#x60;restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds&#x60;);

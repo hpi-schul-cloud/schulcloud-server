@@ -1527,13 +1527,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolModule.html" data-type="entity-link" >SchoolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' : 'data-target="#xs-injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' }>
+                                        'data-target="#injectables-links-module-SchoolModule-ca296c26390c56faa9a86372aaef7ad6108454c476c72e5d60f064dd2d6fa511a5637ee237e6c19b39b05489450b31b1202af7bc435869bbcd0e9fc00de69c49"' : 'data-target="#xs-injectables-links-module-SchoolModule-ca296c26390c56faa9a86372aaef7ad6108454c476c72e5d60f064dd2d6fa511a5637ee237e6c19b39b05489450b31b1202af7bc435869bbcd0e9fc00de69c49"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' :
-                                        'id="xs-injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-ca296c26390c56faa9a86372aaef7ad6108454c476c72e5d60f064dd2d6fa511a5637ee237e6c19b39b05489450b31b1202af7bc435869bbcd0e9fc00de69c49"' :
+                                        'id="xs-injectables-links-module-SchoolModule-ca296c26390c56faa9a86372aaef7ad6108454c476c72e5d60f064dd2d6fa511a5637ee237e6c19b39b05489450b31b1202af7bc435869bbcd0e9fc00de69c49"' }>
                                         <li class="link">
                                             <a href="injectables/SchoolRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolRepo</a>
                                         </li>
@@ -2008,21 +2008,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationModule.html" data-type="entity-link" >UserLoginMigrationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-UserLoginMigrationModule-567ec9bde99280e5081da4b50bce5c9179bc6c75ccacd17389731e5d85e6c6efca1e6a331d4686fbac748edc2d22b725f435fc834506cd9505d60bd640f27e55"' : 'data-target="#xs-injectables-links-module-UserLoginMigrationModule-567ec9bde99280e5081da4b50bce5c9179bc6c75ccacd17389731e5d85e6c6efca1e6a331d4686fbac748edc2d22b725f435fc834506cd9505d60bd640f27e55"' }>
+                                        'data-target="#injectables-links-module-UserLoginMigrationModule-3503de4ced1b7b4b9beb3be787545d1426bbec3da7a986032de9cd214be1198913e25610a6f5eba3d8a4ede850efe089873436b857250c02b259f98d325c1da6"' : 'data-target="#xs-injectables-links-module-UserLoginMigrationModule-3503de4ced1b7b4b9beb3be787545d1426bbec3da7a986032de9cd214be1198913e25610a6f5eba3d8a4ede850efe089873436b857250c02b259f98d325c1da6"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-567ec9bde99280e5081da4b50bce5c9179bc6c75ccacd17389731e5d85e6c6efca1e6a331d4686fbac748edc2d22b725f435fc834506cd9505d60bd640f27e55"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationModule-567ec9bde99280e5081da4b50bce5c9179bc6c75ccacd17389731e5d85e6c6efca1e6a331d4686fbac748edc2d22b725f435fc834506cd9505d60bd640f27e55"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-3503de4ced1b7b4b9beb3be787545d1426bbec3da7a986032de9cd214be1198913e25610a6f5eba3d8a4ede850efe089873436b857250c02b259f98d325c1da6"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationModule-3503de4ced1b7b4b9beb3be787545d1426bbec3da7a986032de9cd214be1198913e25610a6f5eba3d8a4ede850efe089873436b857250c02b259f98d325c1da6"' }>
                                         <li class="link">
                                             <a href="injectables/MigrationCheckService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MigrationCheckService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchoolMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolMigrationService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationRepo</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationService</a>
@@ -2310,9 +2307,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/User.html" data-type="entity-link" >User</a>
-                                </li>
-                                <li class="link">
-                                    <a href="entities/UserLoginMigration.html" data-type="entity-link" >UserLoginMigration</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/VideoConference.html" data-type="entity-link" >VideoConference</a>
@@ -3228,6 +3222,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PseudonymDO.html" data-type="entity-link" >PseudonymDO</a>
                             </li>
                             <li class="link">
+                                <a href="classes/PublicSchoolResponse.html" data-type="entity-link" >PublicSchoolResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/PublicSystemListResponse.html" data-type="entity-link" >PublicSystemListResponse</a>
                             </li>
                             <li class="link">
@@ -3345,10 +3342,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolParams.html" data-type="entity-link" >SchoolParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolQueryParams.html" data-type="entity-link" >SchoolQueryParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolRolePermission.html" data-type="entity-link" >SchoolRolePermission</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolRoles.html" data-type="entity-link" >SchoolRoles</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolUcMapper.html" data-type="entity-link" >SchoolUcMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Scope.html" data-type="entity-link" >Scope</a>
@@ -4121,9 +4124,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserDORepo.html" data-type="entity-link" >UserDORepo</a>
-                                </li>
-                                <li class="link">
-                                    <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" >UserLoginMigrationRepo</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" >UserLoginMigrationService</a>

@@ -311,7 +311,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
-import { Account, Role, School, SchoolYear, User } from &#x27;@shared/domain&#x27;;
+import { Account, Role, School, SchoolYear, System, User } from &#x27;@shared/domain&#x27;;
 import { MongoMemoryDatabaseModule } from &#x27;@shared/infra/database&#x27;;
 import { MongoDatabaseModuleOptions } from &#x27;@shared/infra/database/mongo-memory-database/types&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
@@ -323,7 +323,7 @@ import { H5PEditorModule } from &#x27;./h5p-editor.module&#x27;;
 
 const imports &#x3D; [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User, System] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,

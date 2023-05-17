@@ -228,8 +228,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts:31</a></div>
                 </td>
             </tr>
 
@@ -1324,13 +1324,15 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
+} from &#x27;@shared/domain&#x27;;
+import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
+import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from &#x27;@shared/domain&#x27;;
-import { TokenEndpointAuthMethod } from &#x27;@src/modules/tool/interface&#x27;;
+} from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 export const basicToolConfigDOFactory &#x3D; DoBaseFactory.define&lt;BasicToolConfigDO, BasicToolConfigDO&gt;(
