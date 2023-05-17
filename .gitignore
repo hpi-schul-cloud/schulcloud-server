@@ -85,7 +85,3 @@ build
 /coverage
 /.nyc_output
 /.idea/
-
-# Custom files
-*compose.yml
-*compose.yaml
