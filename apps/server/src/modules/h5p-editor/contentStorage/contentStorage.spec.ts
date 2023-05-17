@@ -6,6 +6,10 @@ import rimraf from 'rimraf';
 import path from 'node:path';
 import { ContentStorage } from './contentStorage';
 
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
 const setup = () => {
 	const dir = './apps/server/src/modules/h5p-editor/contentStorage/testContentStorage/';
 
@@ -113,7 +117,7 @@ describe('ContentStorage', () => {
 				const { stream, contentId } = setup();
 				const filename = 'testFiletoAdd123.json';
 				await service.addFile(contentId, filename, stream);
-				// TODO: Fix expect check
+				await delay(0);
 				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename));
 				expect(fileExists).toEqual(true);
 			});
@@ -150,7 +154,7 @@ describe('ContentStorage', () => {
 
 	describe('deleteContent', () => {
 		describe('WHEN content is deleted successfully', () => {
-			it('delete existing content', async () => {
+			it('should delete existing content', async () => {
 				const { contentId } = setup();
 				await service.deleteContent(contentId);
 				const contentExists = fs.existsSync(path.join(dir, contentId.toString()));
@@ -159,7 +163,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN content can not be deleted', () => {
-			it('throw error at deleteContent', async () => {
+			it('should throw error', async () => {
 				const { notExistingContentId } = setup();
 				try {
 					await service.deleteContent(notExistingContentId);
@@ -171,7 +175,7 @@ describe('ContentStorage', () => {
 	});
 	describe('deleteFile', () => {
 		describe('WHEN file is deleted successfully', () => {
-			it('delete existing file', async () => {
+			it('should delete existing file', async () => {
 				const { contentId, filename1 } = setup();
 				await service.deleteFile(contentId, filename1);
 				const fileExists = fs.existsSync(path.join(dir, contentId.toString(), filename1));
@@ -180,7 +184,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN file can not be deleted', () => {
-			it('throw error at deleteFile', async () => {
+			it('should throw error', async () => {
 				const { notExistingContentId, notExistingFilename } = setup();
 				try {
 					await service.deleteFile(notExistingContentId, notExistingFilename);
@@ -192,7 +196,7 @@ describe('ContentStorage', () => {
 	});
 	describe('fileExists', () => {
 		describe('WHEN file exists', () => {
-			it('returns true', async () => {
+			it('should return true', async () => {
 				const { contentId, filename1 } = setup();
 				// const contentId = '901901';
 				const fileExists = await service.fileExists(contentId, filename1);
@@ -201,7 +205,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN file does not exist', () => {
-			it('returns false', async () => {
+			it('should return false', async () => {
 				const { notExistingContentId, notExistingFilename } = setup();
 				const fileExists = await service.fileExists(notExistingContentId, notExistingFilename);
 				expect(fileExists).toEqual(false);
@@ -211,7 +215,7 @@ describe('ContentStorage', () => {
 
 	describe('getFileStats', () => {
 		describe('WHEN file exists', () => {
-			it('filestats is defined and has a size greate than 0 and a defined birthtime', async () => {
+			it('should return fileStats', async () => {
 				const { contentId, filename1, user } = setup();
 				const fileStats = await service.getFileStats(contentId, filename1, user);
 				expect(fileStats).toBeDefined();
@@ -222,7 +226,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN file does not exist', () => {
-			it('getFileStats throws an error', async () => {
+			it('should throw an error', async () => {
 				const { notExistingContentId, notExistingFilename, user } = setup();
 				try {
 					await service.getFileStats(notExistingContentId, notExistingFilename, user);
@@ -235,7 +239,7 @@ describe('ContentStorage', () => {
 
 	describe('getFileStream', () => {
 		describe('WHEN file exists', () => {
-			it('returns fileStream', async () => {
+			it('should return fileStream', async () => {
 				const { contentId, filename1, user } = setup();
 				const fileStream = await service.getFileStream(contentId, filename1, user);
 				expect(fileStream).toBeDefined();
@@ -245,7 +249,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN file does not exist', () => {
-			it('getFileStream throws an error', async () => {
+			it('should throw an error', async () => {
 				const { notExistingContentId, notExistingFilename, user } = setup();
 				try {
 					await service.getFileStream(notExistingContentId, notExistingFilename, user);
@@ -258,7 +262,7 @@ describe('ContentStorage', () => {
 
 	describe('getMetadata', () => {
 		describe('WHEN file exists', () => {
-			it('returns metadata', async () => {
+			it('should return metadata', async () => {
 				const { contentId, user } = setup();
 				const metadata = await service.getMetadata(contentId, user);
 				expect(metadata).toBeDefined();
@@ -267,7 +271,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN user is not defined', () => {
-			it('getMetadata throws an error', async () => {
+			it('should throw an error', async () => {
 				const { contentId } = setup();
 				try {
 					await service.getMetadata(contentId);
@@ -280,7 +284,7 @@ describe('ContentStorage', () => {
 
 	describe('getParameters', () => {
 		describe('WHEN user and content is defined', () => {
-			it('returns parameters', async () => {
+			it('should return parameters', async () => {
 				const { contentId, user } = setup();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const parameters = await service.getParameters(contentId, user);
@@ -290,7 +294,7 @@ describe('ContentStorage', () => {
 		});
 
 		describe('WHEN user is not defined', () => {
-			it('throws an error', async () => {
+			it('should throw an error', async () => {
 				const { contentId } = setup();
 				try {
 					await service.getParameters(contentId);
@@ -303,7 +307,7 @@ describe('ContentStorage', () => {
 
 	describe('getUsage', () => {
 		describe('WHEN file exists', () => {
-			it('returns usage', async () => {
+			it('should return usage', async () => {
 				const { library } = setup();
 				// TODO: Fix Bug
 				const usage = await service.getUsage(library);
@@ -314,7 +318,7 @@ describe('ContentStorage', () => {
 		});
 		// TODO: Implement
 		describe('WHEN user is not defined', () => {
-			it('throws an error', async () => {
+			it('should throw an error', async () => {
 				const { library } = setup();
 				try {
 					await service.getUsage(library);
@@ -327,7 +331,7 @@ describe('ContentStorage', () => {
 
 	describe('getUserPermissions', () => {
 		describe('WHEN user and content is defined', () => {
-			it('returns parameters', async () => {
+			it('should return parameters', async () => {
 				const { contentId, user } = setup();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const permissions = await service.getUserPermissions(contentId, user);
@@ -343,7 +347,7 @@ describe('ContentStorage', () => {
 
 	describe('listFiles', () => {
 		describe('WHEN content has files', () => {
-			it('returns a list of files from the content', async () => {
+			it('should return a list of files from the content', async () => {
 				const { contentId, user } = setup();
 				const fileList = await service.listFiles(contentId, user);
 				expect(fileList).toBeDefined();
