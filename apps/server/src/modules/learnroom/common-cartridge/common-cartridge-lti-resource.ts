@@ -1,7 +1,7 @@
+import { Builder } from 'xml2js';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
-import { toXmlString } from './utils';
 
 export type ICommonCartridgeLtiResourceProps = {
 	type: CommonCartridgeResourceType.LTI;
@@ -14,14 +14,14 @@ export type ICommonCartridgeLtiResourceProps = {
 };
 
 export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICommonCartridgeFile {
-	constructor(private readonly props: ICommonCartridgeLtiResourceProps) {}
+	constructor(private readonly props: ICommonCartridgeLtiResourceProps, private readonly xmlBuilder: Builder) {}
 
 	canInline(): boolean {
 		return false;
 	}
 
 	content(): string {
-		return toXmlString({
+		return this.xmlBuilder.buildObject({
 			cartridge_basiclti_link: {
 				$: {
 					xmlns: '/xsd/imslticc_v1p0',

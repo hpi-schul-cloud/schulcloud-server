@@ -1,3 +1,4 @@
+import { Builder } from 'xml2js';
 import { CommonCartridgeLtiResource, ICommonCartridgeLtiResourceProps } from './common-cartridge-lti-resource';
 import {
 	CommonCartridgeWebContentResource,
@@ -19,13 +20,13 @@ export type ICommonCartridgeResourceProps =
 export class CommonCartridgeResourceItemElement implements ICommonCartridgeElement, ICommonCartridgeFile {
 	private readonly inner: ICommonCartridgeElement & ICommonCartridgeFile;
 
-	constructor(props: ICommonCartridgeResourceProps) {
+	constructor(props: ICommonCartridgeResourceProps, xmlBuilder: Builder) {
 		if (props.type === CommonCartridgeResourceType.LTI) {
-			this.inner = new CommonCartridgeLtiResource(props);
+			this.inner = new CommonCartridgeLtiResource(props, xmlBuilder);
 		} else if (props.type === CommonCartridgeResourceType.WEB_CONTENT) {
 			this.inner = new CommonCartridgeWebContentResource(props);
 		} else if (props.type === CommonCartridgeResourceType.WEB_LINK) {
-			this.inner = new CommonCartridgeWebLinkResourceElement(props);
+			this.inner = new CommonCartridgeWebLinkResourceElement(props, xmlBuilder);
 		} else {
 			throw new Error('Resource type is unknown!');
 		}

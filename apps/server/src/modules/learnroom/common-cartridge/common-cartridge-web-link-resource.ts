@@ -1,7 +1,7 @@
+import { Builder } from 'xml2js';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeFile } from './common-cartridge-file.interface';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
-import { toXmlString } from './utils';
 
 export type ICommonCartridgeWebLinkResourceProps = {
 	type: CommonCartridgeResourceType.WEB_LINK;
@@ -13,14 +13,14 @@ export type ICommonCartridgeWebLinkResourceProps = {
 };
 
 export class CommonCartridgeWebLinkResourceElement implements ICommonCartridgeElement, ICommonCartridgeFile {
-	constructor(private readonly props: ICommonCartridgeWebLinkResourceProps) {}
+	constructor(private readonly props: ICommonCartridgeWebLinkResourceProps, private readonly xmlBuilder: Builder) {}
 
 	canInline(): boolean {
 		return false;
 	}
 
 	content(): string {
-		return toXmlString({
+		return this.xmlBuilder.buildObject({
 			webLink: {
 				$: {
 					xmlns: '/xsd/imsccv1p1/imswl_v1p1',

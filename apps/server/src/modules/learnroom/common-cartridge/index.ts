@@ -13,4 +13,3 @@ export * from './common-cartridge-resource-wrapper-element';
 export * from './common-cartridge-web-content-resource';
 export * from './common-cartridge-web-link-resource';
 export * from './common-cartridge.config';
-export * from './utils';

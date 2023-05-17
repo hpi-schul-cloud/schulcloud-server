@@ -1,4 +1,5 @@
 import AdmZip from 'adm-zip';
+import { Builder } from 'xml2js';
 import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
@@ -6,7 +7,6 @@ import {
 	CommonCartridgeResourceItemElement,
 	ICommonCartridgeResourceProps,
 } from './common-cartridge-resource-item-element';
-import { toXmlString } from './utils';
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
@@ -32,6 +32,7 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
 		private readonly fileBuilder: ICommonCartridgeFileBuilder,
+		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
 
@@ -40,11 +41,13 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 	}
 
 	get resources(): ICommonCartridgeElement[] {
-		return this.props.resources.map((resourceProps) => new CommonCartridgeResourceItemElement(resourceProps));
+		return this.props.resources.map(
+			(resourceProps) => new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
+		);
 	}
 
 	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
-		const newResource = new CommonCartridgeResourceItemElement(props);
+		const newResource = new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
 		this.props.resources.push(props);
 		if (!newResource.canInline()) {
 			this.zipBuilder.addFile(props.href, Buffer.from(newResource.content()));
@@ -54,6 +57,8 @@ class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganization
 }
 
 export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
+	private readonly xmlBuilder = new Builder();
+
 	private readonly zipBuilder = new AdmZip();
 
 	private readonly organizations = new Array<CommonCartridgeOrganizationBuilder>();
@@ -63,13 +68,13 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this, this.zipBuilder);
+		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
 	}
 
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
-		const resource = new CommonCartridgeResourceItemElement(props);
+		const resource = new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
 		if (!resource.canInline()) {
 			this.zipBuilder.addFile(props.href, Buffer.from(resource.content()));
 		}
@@ -80,7 +85,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 	async build(): Promise<Buffer> {
 		const organizations = this.organizations.map((organization) => organization.organization);
 		const resources = this.organizations.flatMap((organization) => organization.resources).concat(this.resources);
-		const manifest = toXmlString(
+		const manifest = this.xmlBuilder.buildObject(
 			new CommonCartridgeManifestElement(
 				{
 					identifier: this.options.identifier,
