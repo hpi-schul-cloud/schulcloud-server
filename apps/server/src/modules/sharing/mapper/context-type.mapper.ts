@@ -1,11 +1,11 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
 
 export class ShareTokenContextTypeMapper {
-	static mapToAllowedAuthorizationEntityType(type: ShareTokenContextType): AllowedAuthorizationEntityType {
-		const types: Map<ShareTokenContextType, AllowedAuthorizationEntityType> = new Map();
-		types.set(ShareTokenContextType.School, AllowedAuthorizationEntityType.School);
+	static mapToAllowedAuthorizationEntityType(type: ShareTokenContextType): AuthorizableReferenceType {
+		const types: Map<ShareTokenContextType, AuthorizableReferenceType> = new Map();
+		types.set(ShareTokenContextType.School, AuthorizableReferenceType.School);
 
 		const res = types.get(type);
 
