@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
-import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules';
+import { Action } from '@src/modules';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ToolContextType } from '../interface';
@@ -104,7 +104,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id as EntityId,
+					contextExternalToolId: contextExternalTool.id,
 					userId,
 				};
 			};

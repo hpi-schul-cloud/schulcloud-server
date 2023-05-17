@@ -173,11 +173,10 @@ describe('reference.loader', () => {
 		});
 
 		it('should call contextExternalToolService.findById', async () => {
-			await service.loadEntity(AuthorizableReferenceType.ContextExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.ContextExternalTool, entityId);
 
 			expect(contextExternalToolService.findById).toBeCalledWith(entityId);
 		});
-
 
 		it('should return authorizable object', async () => {
 			const user = userFactory.build();

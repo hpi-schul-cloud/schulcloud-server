@@ -171,8 +171,9 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
+				const contextExternalToolDO = contextExternalToolDOFactory.buildWithId();
 				const params: ToolLaunchParams = {
-					contextExternalToolId: contextExternalToolDOFactory.buildWithId().id as string,
+					contextExternalToolId: contextExternalToolDO.id,
 				};
 				currentUser = undefined;
 

@@ -7,7 +7,7 @@ import {
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/';
 import { ContextExternalToolDO, Permission, SchoolDO, SchoolExternalToolDO } from '@shared/domain';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../interface';
 
@@ -127,9 +127,7 @@ describe('ContextExternalToolService', () => {
 				const { contextExternalTool } = setup();
 				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool]);
 
-				const result: ContextExternalToolDO = await service.getContextExternalToolById(
-					contextExternalTool.id as string
-				);
+				const result: ContextExternalToolDO = await service.getContextExternalToolById(contextExternalTool.id);
 
 				expect(result).toEqual(contextExternalTool);
 			});
@@ -178,7 +176,7 @@ describe('ContextExternalToolService', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
-					AllowedAuthorizationEntityType.ContextExternalTool,
+					AuthorizableReferenceType.ContextExternalTool,
 					contextExternalTool.id,
 					{
 						action: Action.read,
@@ -198,7 +196,7 @@ describe('ContextExternalToolService', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
-					AllowedAuthorizationEntityType.Course,
+					AuthorizableReferenceType.Course,
 					contextExternalTool.contextId,
 					{
 						action: Action.read,
@@ -211,17 +209,17 @@ describe('ContextExternalToolService', () => {
 		describe('context external tool has no id yet', () => {
 			it('should skip permission check for context external tool', async () => {
 				const { userId, contextExternalTool } = setup();
-				contextExternalTool.id = undefined;
+				const contextExternalToolWithoutId = new ContextExternalToolDO({ ...contextExternalTool, id: '' });
 
-				await service.ensureContextPermissions(userId, contextExternalTool, {
+				await service.ensureContextPermissions(userId, contextExternalToolWithoutId, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
 					action: Action.read,
 				});
 
 				expect(authorizationService.checkPermissionByReferences).not.toHaveBeenCalledWith(
 					userId,
-					AllowedAuthorizationEntityType.ContextExternalTool,
-					contextExternalTool.id,
+					AuthorizableReferenceType.ContextExternalTool,
+					contextExternalToolWithoutId.id,
 					{
 						action: Action.read,
 						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
