@@ -17,6 +17,13 @@
       template: api-fwu-svc.yml.j2
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
+  - name: H5pEditorService
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-svc.yml.j2
+    when: FEATURE_H5P_EDITOR_ENABLED is defined and FEATURE_H5P_EDITOR_ENABLED|bool
+
   - name: Configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

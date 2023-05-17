@@ -11,15 +11,26 @@
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
 
-  - name: Ldap Syncer service
+  - name: Delete legacy ldapsync deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
+      state: absent
       namespace: "{{ NAMESPACE }}"
-      template: api-ldap-sync-service.yml.j2
+      resource_definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: api-ldapsync-deployment
+          namespace: "{{ NAMESPACE }}"
 
-  - name: Ldap Syncer Deployment
+  - name: Delete legacy ldapsync service
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
+      state: absent
       namespace: "{{ NAMESPACE }}"
-      template: api-ldap-sync-deployment.yml.j2
-
+      resource_definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: api-ldapsync-svc
+          namespace: "{{ NAMESPACE }}"
