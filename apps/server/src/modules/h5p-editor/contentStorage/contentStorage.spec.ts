@@ -7,7 +7,8 @@ import path from 'node:path';
 import { ContentStorage } from './contentStorage';
 
 function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+	// eslint-disable-next-line no-promise-executor-return
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const setup = () => {
@@ -17,15 +18,32 @@ const setup = () => {
 		fs.mkdirSync(dir);
 	}
 
+	const library: ILibraryName = {
+		machineName: 'testLibrary',
+		majorVersion: 1,
+		minorVersion: 0,
+	};
+
 	const metadata: IContentMetadata = {
 		embedTypes: ['div'],
 		language: 'de',
 		mainLibrary: 'testLibrary',
-		preloadedDependencies: [],
+		preloadedDependencies: [library],
 		defaultLanguage: '',
 		license: '',
 		title: 'Test123',
 	};
+
+	const metadata2: IContentMetadata = {
+		embedTypes: ['div'],
+		language: 'de',
+		mainLibrary: 'testLibrary2',
+		preloadedDependencies: [library],
+		defaultLanguage: '',
+		license: '',
+		title: 'Test123',
+	};
+
 	const testContentFilename = 'testContent.json';
 	fs.writeFileSync(path.join(dir, testContentFilename), JSON.stringify(metadata));
 	const content = testContentFilename;
@@ -38,18 +56,18 @@ const setup = () => {
 		name: 'User Test',
 		type: '',
 	};
-	const library: ILibraryName = {
-		machineName: 'testLibrary',
-		majorVersion: 1,
-		minorVersion: 0,
-	};
 	const stream: Stream = new Stream();
 
 	const contentId = '2345';
+	const contentId2 = '6789';
 	const notExistingContentId = '987mn';
 	fs.mkdirSync(path.join(dir, contentId.toString()), { recursive: true });
 	fs.writeFileSync(path.join(dir, contentId.toString(), 'h5p.json'), JSON.stringify(metadata));
 	fs.writeFileSync(path.join(dir, contentId.toString(), 'content.json'), JSON.stringify(content));
+
+	fs.mkdirSync(path.join(dir, contentId2), { recursive: true });
+	fs.writeFileSync(path.join(dir, contentId2.toString(), 'h5p.json'), JSON.stringify(metadata2));
+	fs.writeFileSync(path.join(dir, contentId2.toString(), 'content.json'), JSON.stringify(content));
 
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
@@ -62,6 +80,7 @@ const setup = () => {
 		dir,
 		stream,
 		contentId,
+		contentId2,
 		notExistingContentId,
 		filename1,
 		notExistingFilename,
@@ -306,25 +325,14 @@ describe('ContentStorage', () => {
 	});
 
 	describe('getUsage', () => {
-		describe('WHEN file exists', () => {
-			it('should return usage', async () => {
+		describe('WHEN file exists and has main library', () => {
+			it('should return usage with main library greater than 0', async () => {
 				const { library } = setup();
 				// TODO: Fix Bug
 				const usage = await service.getUsage(library);
 				expect(usage).toBeDefined();
 				expect(usage.asMainLibrary).toBeGreaterThan(0);
 				expect(usage.asDependency).toBeGreaterThan(0);
-			});
-		});
-		// TODO: Implement
-		describe('WHEN user is not defined', () => {
-			it('should throw an error', async () => {
-				const { library } = setup();
-				try {
-					await service.getUsage(library);
-				} catch (err) {
-					expect(err).toBeInstanceOf(Error);
-				}
 			});
 		});
 	});
