@@ -4,12 +4,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { PrometheusMetricsConfig } from './prometheus-metrics-config';
 
 describe('PrometheusMetricsConfig', () => {
-	const isEnabledConfigKey = 'FEATURE_PROMETHEUS_METRICS_ENABLED';
-
-	const routeConfigKey = 'PROMETHEUS_METRICS_ROUTE';
-
-	const portConfigKey = 'PROMETHEUS_METRICS_PORT';
-
 	let configBefore: IConfig;
 
 	beforeAll(() => {
@@ -29,7 +23,7 @@ describe('PrometheusMetricsConfig', () => {
 	});
 
 	it("singleton should have custom 'isEnabled' flag value loaded from the configuration", () => {
-		Configuration.set(isEnabledConfigKey, true);
+		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
 		PrometheusMetricsConfig.reload();
 
 		expect(PrometheusMetricsConfig.instance.isEnabled).toBe(true);
@@ -40,7 +34,7 @@ describe('PrometheusMetricsConfig', () => {
 	});
 
 	it("singleton should have custom 'route' field value loaded from the configuration", () => {
-		Configuration.set(routeConfigKey, '/prometheus');
+		Configuration.set('PROMETHEUS_METRICS_ROUTE', '/prometheus');
 		PrometheusMetricsConfig.reload();
 
 		expect(PrometheusMetricsConfig.instance.route).toBe('/prometheus');
@@ -51,7 +45,7 @@ describe('PrometheusMetricsConfig', () => {
 	});
 
 	it("singleton should have custom 'port' field value loaded from the configuration", () => {
-		Configuration.set(portConfigKey, 9100);
+		Configuration.set('PROMETHEUS_METRICS_PORT', 9100);
 		PrometheusMetricsConfig.reload();
 
 		expect(PrometheusMetricsConfig.instance.port).toBe(9100);
