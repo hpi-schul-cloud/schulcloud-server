@@ -12,7 +12,7 @@ import {
 	UserMigrationService,
 } from './service';
 import { StartUserLoginMigrationCheckService } from './service/start-user-login-migration-check.service';
-import { AuthorizationModule, AuthorizationService } from '../authorization';
+import { AuthorizationModule } from '../authorization';
 
 @Module({
 	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
