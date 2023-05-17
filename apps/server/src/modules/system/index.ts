@@ -1,2 +1,2 @@
 export * from './system.module';
-export * from './service';
+export * from './service/system.service';

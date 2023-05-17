@@ -1,25 +1,25 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Page } from '@shared/domain/domainobject/page';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Logger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { OAuthMigrationError } from '@src/modules/user-login-migration';
+import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 
 @Injectable()
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: LegacyLogger,
-		private readonly userService: UserService,
-		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
+		private readonly logger: Logger,
+		private readonly userService: UserService
 	) {}
 
-	validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
-		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
+	validateGracePeriod(school: SchoolDO) {
+		if (!school.oauthMigrationFinalFinish || Date.now() >= school.oauthMigrationFinalFinish.getTime()) {
 			throw new ValidationError('grace_period_expired: The grace period after finishing migration has expired', {
-				finishedAt: userLoginMigration.finishedAt,
+				'school.oauthMigrationFinalFinish': school.oauthMigrationFinalFinish,
 			});
 		}
 	}
@@ -75,50 +75,37 @@ export class SchoolMigrationService {
 		return existingSchool;
 	}
 
-	async markUnmigratedUsersAsOutdated(schoolId: string): Promise<void> {
+	async completeMigration(schoolId: string, migrationStartedAt: Date | undefined): Promise<void> {
 		const startTime: number = performance.now();
-
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
-		}
-
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
 			isOutdated: false,
-			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
+			lastLoginSystemChangeSmallerThan: migrationStartedAt,
 		});
 
 		notMigratedUsers.data.forEach((user: UserDO) => {
-			user.outdatedSince = userLoginMigration.closedAt;
+			user.outdatedSince = school.oauthMigrationFinished;
 		});
-
 		await this.userService.saveAll(notMigratedUsers.data);
-
 		const endTime: number = performance.now();
 		this.logger.warn(`completeMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);
 	}
 
-	async unmarkOutdatedUsers(schoolId: string): Promise<void> {
+	async restartMigration(schoolId: string): Promise<void> {
 		const startTime: number = performance.now();
-
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
-		}
-
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId,
-			outdatedSince: userLoginMigration.finishedAt,
+			outdatedSince: school.oauthMigrationFinished,
 		});
 
 		migratedUsers.data.forEach((user: UserDO) => {
 			user.outdatedSince = undefined;
 		});
-
 		await this.userService.saveAll(migratedUsers.data);
+
+		school.oauthMigrationMandatory = undefined;
 
 		const endTime: number = performance.now();
 		this.logger.warn(`restartMigration for schoolId ${schoolId} took ${endTime - startTime} milliseconds`);

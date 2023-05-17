@@ -1,6 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
+import { EntityId, IFindOptions, UserLoginMigrationDO } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { Logger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
@@ -23,7 +25,7 @@ export class UserLoginMigrationUc {
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {}
 
 	async getPageContent(pageType: PageTypes, sourceSystem: string, targetSystem: string): Promise<PageContentDto> {
@@ -36,24 +38,18 @@ export class UserLoginMigrationUc {
 		return content;
 	}
 
-	async getMigrations(userId: EntityId, query: UserLoginMigrationQuery): Promise<Page<UserLoginMigrationDO>> {
-		let page = new Page<UserLoginMigrationDO>([], 0);
-
-		if (query.userId) {
-			if (userId !== query.userId) {
-				throw new ForbiddenException('Accessing migration status of another user is forbidden.');
-			}
-
-			const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationByUser(
-				query.userId
-			);
-
-			if (userLoginMigration) {
-				page = new Page<UserLoginMigrationDO>([userLoginMigration], 1);
-			}
+	async getMigrations(
+		userId: EntityId,
+		query: UserLoginMigrationQuery,
+		options: IFindOptions<UserLoginMigrationDO>
+	): Promise<Page<UserLoginMigrationDO>> {
+		if (userId !== query.userId) {
+			throw new ForbiddenException('Accessing migration status of another user is forbidden.');
 		}
 
-		return page;
+		const userLoginMigrations: Page<UserLoginMigrationDO> =
+			await this.userLoginMigrationService.findUserLoginMigrations(query, options);
+		return userLoginMigrations;
 	}
 
 	async migrate(
