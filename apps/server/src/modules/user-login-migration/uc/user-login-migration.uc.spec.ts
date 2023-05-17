@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Permission, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
+import { Page, SchoolDO, System, UserLoginMigrationDO } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolDOFactory, systemFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -11,7 +11,7 @@ import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
 import { SchoolService } from '@src/modules/school';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@src/modules/authorization';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
 import { OAuthMigrationError } from '../error';
 import { SchoolMigrationError } from '../error/school-migration.error';
@@ -20,7 +20,6 @@ import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
-import { StartUserLoginMigrationError } from '../error/start-user-login-migration.error';
 
 describe('UserLoginMigrationUc', () => {
 	let module: TestingModule;
@@ -32,8 +31,6 @@ describe('UserLoginMigrationUc', () => {
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userMigrationService: DeepMocked<UserMigrationService>;
 	let authenticationService: DeepMocked<AuthenticationService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
 	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
@@ -87,8 +84,6 @@ describe('UserLoginMigrationUc', () => {
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userMigrationService = module.get(UserMigrationService);
 		authenticationService = module.get(AuthenticationService);
-		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
 		logger = module.get(LegacyLogger);
 	});
 
@@ -191,167 +186,6 @@ describe('UserLoginMigrationUc', () => {
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenException('Accessing migration status of another user is forbidden.')
-				);
-			});
-		});
-	});
-
-	describe('startMigration', () => {
-		describe('when start migration was successful', () => {
-			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-				});
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
-				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
-
-				return { userId, migration, schoolId: school.id as string };
-			};
-
-			it('should check permission', async () => {
-				const { userId, schoolId } = setup();
-
-				await uc.startMigration(userId, schoolId);
-
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AllowedAuthorizationEntityType.School,
-					schoolId,
-					{
-						action: Action.write,
-						requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					}
-				);
-			});
-
-			it('should check if migration exists', async () => {
-				const { userId, schoolId } = setup();
-
-				await uc.startMigration(userId, schoolId);
-
-				expect(userLoginMigrationService.findMigrationBySchool).toHaveBeenCalledWith(schoolId);
-			});
-
-			it('should get school by Id ', async () => {
-				const { userId, schoolId } = setup();
-
-				await uc.startMigration(userId, schoolId);
-
-				expect(schoolService.getSchoolById).toHaveBeenCalledWith(schoolId);
-			});
-
-			it('should start the migration ', async () => {
-				const { userId, schoolId } = setup();
-
-				await uc.startMigration(userId, schoolId);
-
-				expect(userLoginMigrationService.startMigration).toHaveBeenCalledWith(schoolId);
-			});
-
-			it('should return a UserLoginMigrationDO', async () => {
-				const { userId, schoolId, migration } = setup();
-
-				const result: UserLoginMigrationDO = await uc.startMigration(userId, schoolId);
-
-				expect(result).toEqual(migration);
-			});
-		});
-
-		describe('when school has no officialSchoolNumber', () => {
-			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-				});
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-				school.officialSchoolNumber = undefined;
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				schoolService.getSchoolById.mockResolvedValue(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
-
-				return { userId, migration, schoolId: school.id as string };
-			};
-
-			it('should throw ForbiddenException ', async () => {
-				const { userId, schoolId } = setup();
-
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(
-					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
-				);
-			});
-		});
-
-		describe('when migration has already finished', () => {
-			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-					closedAt: new Date(),
-				});
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
-				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
-
-				return { userId, migration, schoolId: school.id as string };
-			};
-
-			it('should throw StartUserLoginMigrationError ', async () => {
-				const { userId, schoolId } = setup();
-
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(
-					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already finished the migration.`)
-				);
-			});
-		});
-
-		describe('when migration has already started', () => {
-			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-				});
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
-				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
-
-				return { userId, migration, schoolId: school.id as string };
-			};
-
-			it('should throw StartUserLoginMigrationError ', async () => {
-				const { userId, schoolId } = setup();
-
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(
-					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already started the migration.`)
 				);
 			});
 		});

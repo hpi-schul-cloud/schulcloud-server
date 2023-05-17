@@ -7,9 +7,9 @@ export class StartUserLoginMigrationError extends BusinessError {
 			{
 				type: 'START_USER_MIGRATION_FAILED',
 				title: 'Start Migration failed',
-				defaultMessage: message || 'Migration of user failed during migration process',
+				defaultMessage: message || 'Migration of school could not be started.',
 			},
-			HttpStatus.FORBIDDEN,
+			HttpStatus.BAD_REQUEST,
 			details
 		);
 	}

@@ -1,19 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, Page, Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, Page, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthTokenDto } from '@src/modules/oauth';
 import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { ProvisioningService } from '@src/modules/provisioning';
 import { OauthDataDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
-import {
-	OAuthMigrationError,
-	SchoolMigrationError,
-	UserLoginMigrationError,
-	StartUserLoginMigrationError,
-} from '../error';
+import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
@@ -27,9 +20,7 @@ export class UserLoginMigrationUc {
 		private readonly oauthService: OAuthService,
 		private readonly provisioningService: ProvisioningService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly schoolService: SchoolService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly authorizationService: AuthorizationService,
 		private readonly logger: LegacyLogger
 	) {}
 
@@ -61,39 +52,6 @@ export class UserLoginMigrationUc {
 		}
 
 		return page;
-	}
-
-	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.School,
-			schoolId,
-			{
-				action: Action.write,
-				requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-			}
-		);
-
-		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
-		if (!schoolDo.officialSchoolNumber) {
-			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`);
-		}
-
-		const existingUserLoginMigration: UserLoginMigrationDO | null =
-			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
-
-		if (existingUserLoginMigration?.closedAt) {
-			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already finished the migration.`);
-		}
-		if (existingUserLoginMigration) {
-			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} already started the migration.`);
-		}
-
-		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
-		this.logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);
-
-		return userLoginMigrationDO;
 	}
 
 	async migrate(

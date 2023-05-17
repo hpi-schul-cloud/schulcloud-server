@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
@@ -19,12 +20,17 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
+import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
+import { StartUserLoginMigrationError } from '../error';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
 @Authenticate('jwt')
 export class UserLoginMigrationController {
-	constructor(private readonly userLoginMigrationUc: UserLoginMigrationUc) {}
+	constructor(
+		private readonly userLoginMigrationUc: UserLoginMigrationUc,
+		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc
+	) {}
 
 	@Get()
 	@ApiForbiddenResponse()
@@ -57,11 +63,14 @@ export class UserLoginMigrationController {
 	}
 
 	@Post('start')
-	@ApiForbiddenResponse()
+	@ApiBadRequestResponse({
+		description: 'Preconditions for starting user login migration are not met',
+		type: StartUserLoginMigrationError,
+	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
-		const migrationDto: UserLoginMigrationDO = await this.userLoginMigrationUc.startMigration(
+		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);

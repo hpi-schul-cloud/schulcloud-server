@@ -10,6 +10,7 @@ import { UserLoginMigrationUc } from './uc/user-login-migration.uc';
 import { UserLoginMigrationModule } from './user-login-migration.module';
 import { SchoolModule } from '../school';
 import { AuthorizationModule } from '../authorization';
+import { StartUserLoginMigrationUc } from './uc/start-user-login-migration.uc';
 
 @Module({
 	imports: [
@@ -21,7 +22,7 @@ import { AuthorizationModule } from '../authorization';
 		LoggerModule,
 		SchoolModule,
 	],
-	providers: [UserLoginMigrationUc, PageContentMapper],
+	providers: [UserLoginMigrationUc, StartUserLoginMigrationUc, PageContentMapper],
 	controllers: [UserMigrationController, UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}
