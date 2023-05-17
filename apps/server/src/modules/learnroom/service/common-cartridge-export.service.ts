@@ -84,12 +84,11 @@ export class CommonCartridgeExportService {
 		if (content.component === ComponentType.GEOGEBRA) {
 			return {
 				version: this.defaultVersion,
-				type: CommonCartridgeResourceType.LTI,
+				type: CommonCartridgeResourceType.WEB_LINK,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.title,
-				url: content.content.materialId,
-				description: '',
+				url: `https://www.geogebra.org/m/${content.content.materialId}`,
 			};
 		}
 
