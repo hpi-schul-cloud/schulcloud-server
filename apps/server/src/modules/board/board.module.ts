@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
 import { LearnroomModule } from '../learnroom';
 import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
@@ -18,7 +17,7 @@ import {
 import { BoardManagementUc } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, ConsoleWriterModule, LearnroomModule, LoggerModule],
+	imports: [ConsoleWriterModule, LearnroomModule, LoggerModule],
 	providers: [
 		BoardDoRepo,
 		BoardDoService,
