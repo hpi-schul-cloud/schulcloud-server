@@ -3,7 +3,7 @@ import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { EntityId } from '@shared/domain';
 import {
-	AllowedAuthorizationEntityType,
+	AuthorizableReferenceType,
 	AuthorizationContext,
 	AuthorizationLoaderService,
 	AuthorizationService,
@@ -56,7 +56,7 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		if (contextExternalToolDO.id) {
 			await this.authorizationService.checkPermissionByReferences(
 				userId,
-				AllowedAuthorizationEntityType.ContextExternalTool,
+				AuthorizableReferenceType.ContextExternalTool,
 				contextExternalToolDO.id,
 				context
 			);

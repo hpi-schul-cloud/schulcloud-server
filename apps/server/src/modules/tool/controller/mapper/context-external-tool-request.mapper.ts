@@ -1,10 +1,11 @@
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/tool';
+import { ContextExternalProps, ContextExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalTool } from '../../uc/dto';
 import { ContextExternalToolPostParams, CustomParameterEntryParam } from '../dto';
 
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
-		return {
+		const newRequest: ContextExternalProps = {
+			id: '',
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
@@ -14,6 +15,7 @@ export class ContextExternalToolRequestMapper {
 			toolVersion: request.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};
+		return new ContextExternalToolDO(newRequest);
 	}
 
 	private static mapRequestToCustomParameterEntryDO(
