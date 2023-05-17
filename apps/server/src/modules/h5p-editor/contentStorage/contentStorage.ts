@@ -82,6 +82,9 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	public contentExists(contentId: string): Promise<boolean> {
+		if (contentId === undefined) {
+			throw new Error('Error halt.');
+		}
 		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
 		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
 		return existPromise;
@@ -119,15 +122,12 @@ export class ContentStorage implements IContentStorage {
 
 	public fileExists(contentId: string, filename: string): Promise<boolean> {
 		this.checkFilename(filename);
-		let exist = false;
-		if (contentId !== undefined) {
-			const fullPath = path.join(this.contentPath, contentId.toString(), filename);
-			// exist = fs.existsSync(fullPath);
-			exist = fs.existsSync(fullPath);
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			return <Promise<boolean>>(<unknown>exist);
+		if (contentId === undefined) {
+			throw new Error('Error halt.');
 		}
-		return <Promise<boolean>>(<unknown>exist);
+		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString(), filename));
+		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
+		return existPromise;
 	}
 
 	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
@@ -230,21 +230,7 @@ export class ContentStorage implements IContentStorage {
 			.map((p) => p.substring(contentDirectoryPathLength));
 	}
 
-	public sanitizeFilename?(filename: string): string {
-		let sanitizedFilename = '';
-		if (this.options?.invalidCharactersRegexp) {
-			sanitizedFilename = this.generalSanitizeFilename(
-				filename,
-				this.maxFileLength,
-				this.options?.invalidCharactersRegexp
-			);
-		} else {
-			throw new Error('No invalidCharactersRegexp found to sanitize filename.');
-		}
-		return sanitizedFilename;
-	}
-
-	// own methods
+	// private methods
 
 	protected createContentId() {
 		let counter = 0;
@@ -324,6 +310,7 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	checkFilename(filename: string): void {
+		filename = filename.split('.').slice(0, -1).join('.');
 		if (/^[a-zA-Z0-9/.-_]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
