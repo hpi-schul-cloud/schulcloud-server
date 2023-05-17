@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,
@@ -19,27 +19,27 @@ describe('FilesStorageMapper', () => {
 	describe('mapToAllowedAuthorizationEntityType()', () => {
 		it('should return allowed type equal Course', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Course);
-			expect(result).toBe(AllowedAuthorizationEntityType.Course);
+			expect(result).toBe(AuthorizableReferenceType.Course);
 		});
 
 		it('should return allowed type equal Task', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Task);
-			expect(result).toBe(AllowedAuthorizationEntityType.Task);
+			expect(result).toBe(AuthorizableReferenceType.Task);
 		});
 
 		it('should return allowed type equal School', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.School);
-			expect(result).toBe(AllowedAuthorizationEntityType.School);
+			expect(result).toBe(AuthorizableReferenceType.School);
 		});
 
 		it('should return allowed type equal User', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.User);
-			expect(result).toBe(AllowedAuthorizationEntityType.User);
+			expect(result).toBe(AuthorizableReferenceType.User);
 		});
 
 		it('should return allowed type equal Submission', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Submission);
-			expect(result).toBe(AllowedAuthorizationEntityType.Submission);
+			expect(result).toBe(AuthorizableReferenceType.Submission);
 		});
 
 		it('should throw Error', () => {

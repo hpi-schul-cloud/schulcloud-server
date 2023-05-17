@@ -11,6 +11,7 @@ export class PermissionService {
 	 * IMPORTANT: The role collections of the user and nested roles will not be loaded lazily.
 	 * Please make sure you populate them before calling this method.
 	 * @param user
+	 * @deprecated
 	 * @returns
 	 */
 	resolvePermissions(user: User): string[] {
@@ -44,6 +45,9 @@ export class PermissionService {
 		return permissions;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	hasUserAllSchoolPermissions(user: User, requiredPermissions: string[]): boolean {
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
