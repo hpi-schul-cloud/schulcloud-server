@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { SchoolService } from '@src/modules/school';
@@ -37,7 +37,7 @@ export class UserMigrationService {
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService
 	) {
 		this.hostUrl = Configuration.get('HOST') as string;

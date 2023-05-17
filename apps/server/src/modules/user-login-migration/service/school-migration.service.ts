@@ -3,7 +3,7 @@ import { ValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
@@ -12,7 +12,7 @@ import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oau
 export class SchoolMigrationService {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly logger: Logger,
+		private readonly logger: LegacyLogger,
 		private readonly userService: UserService
 	) {}
 
