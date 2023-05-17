@@ -76,7 +76,6 @@ export class ContentStorage implements IContentStorage {
 		}
 
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
-		// await this.existsOrCreateDir(path.dirname(fullPath));
 		const writeStream = fs.createWriteStream(fullPath);
 		stream.pipe(writeStream);
 	}
