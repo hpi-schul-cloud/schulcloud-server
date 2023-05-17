@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson, Task } from '@shared/domain';
+import { Course, EntityId, Lesson, Task } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
@@ -23,6 +23,8 @@ export class CommonCartridgeExportService {
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: `i${course.id}`,
 			title: course.name,
+			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
+			currentYear: new Date().getFullYear().toString(),
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addAssignments(this.mapTasksToAssignments(tasks));
@@ -68,5 +70,18 @@ export class CommonCartridgeExportService {
 				content: mappedContent,
 			};
 		});
+	}
+
+	/**
+	 * This method gets the course as parameter and maps the contained teacher names within the teachers Collection to a string.
+	 * @param Course
+	 * @return string
+	 * */
+	private mapCourseTeachersToCopyrightOwners(course: Course): string {
+		const result = course.teachers
+			.toArray()
+			.map((teacher) => `${teacher.firstName} ${teacher.lastName}`)
+			.reduce((previousTeachers, currentTeacher) => `${previousTeachers}, ${currentTeacher}`);
+		return result;
 	}
 }

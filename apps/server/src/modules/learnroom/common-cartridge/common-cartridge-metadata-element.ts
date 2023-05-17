@@ -2,6 +2,8 @@ import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 
 export type ICommonCartridgeMetadataProps = {
 	title: string;
+	copyrightOwners: string;
+	currentYear: string;
 };
 
 export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
@@ -15,6 +17,14 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 				'mnf:general': {
 					'mnf:title': {
 						'mnf:string': this.props.title,
+					},
+				},
+				'mnf:rights': {
+					'mnf:copyrightAndOtherRestrictions': {
+						'mnf:value': 'yes',
+					},
+					'mnf:description': {
+						'mnf:string': `${this.props.currentYear} ${this.props.copyrightOwners}`,
 					},
 				},
 			},

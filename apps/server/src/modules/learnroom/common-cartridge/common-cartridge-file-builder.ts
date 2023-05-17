@@ -22,6 +22,8 @@ import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-co
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;
 	title: string;
+	copyrightOwners: string;
+	currentYear: string;
 };
 
 /*
@@ -46,6 +48,8 @@ export class CommonCartridgeFileBuilder {
 		this.options = options;
 		this.metadata = new CommonCartridgeMetadataElement({
 			title: options.title,
+			copyrightOwners: options.copyrightOwners,
+			currentYear: options.currentYear,
 		});
 	}
 

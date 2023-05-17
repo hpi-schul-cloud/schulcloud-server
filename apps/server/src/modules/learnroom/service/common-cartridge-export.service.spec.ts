@@ -42,7 +42,7 @@ describe('CommonCartridgeExportService', () => {
 		courseServiceMock = module.get(CourseService);
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
-		course = courseFactory.buildWithId();
+		course = courseFactory.teachersWithId(2).buildWithId();
 		lessons = lessonFactory.buildList(5);
 		tasks = taskFactory.buildList(5);
 	});
@@ -97,6 +97,15 @@ describe('CommonCartridgeExportService', () => {
 			tasks.forEach((task) => {
 				expect(manifest).toContain(`i${task.id}`);
 			});
+		});
+
+		it('should add copyright information to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(new Date().getFullYear().toString());
+			expect(manifest).toContain(course.teachers[0].firstName);
+			expect(manifest).toContain(course.teachers[0].lastName);
+			expect(manifest).toContain(course.teachers[1].firstName);
+			expect(manifest).toContain(course.teachers[1].lastName);
 		});
 	});
 });

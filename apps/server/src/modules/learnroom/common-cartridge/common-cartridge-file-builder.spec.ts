@@ -10,6 +10,8 @@ describe('CommonCartridgeFileBuilder', () => {
 	const builderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'Placeholder Identifier',
 		title: 'Placeholder Title',
+		copyrightOwners: 'Placeholder Copyright',
+		currentYear: 'Placeholder Current Year',
 	};
 	const lessonContent: ICommonCartridgeLessonContentProps[] = [
 		{
