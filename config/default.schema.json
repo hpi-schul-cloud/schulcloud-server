@@ -840,6 +840,21 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
+		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable Prometheus metrics."
+		},
+		"PROMETHEUS_METRICS_ROUTE": {
+			"type": "string",
+			"default": "/metrics",
+			"description": "Route at which Prometheus metrics will be exported."
+		},
+		"PROMETHEUS_METRICS_PORT": {
+			"type": "number",
+			"default": 9090,
+			"description": "Port on which the additional server that will export Prometheus metrics will run."
+		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
