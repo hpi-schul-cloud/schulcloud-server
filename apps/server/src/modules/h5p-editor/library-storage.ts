@@ -9,7 +9,7 @@ import {
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 
 import fsSync, { constants as FSConstants } from 'node:fs';
 import fs from 'node:fs/promises';
@@ -56,7 +56,7 @@ export class LibraryStorage implements ILibraryStorage {
 	private checkFilename(filename: string): void {
 		const fullPath = path.join(this.libraryDirectory, filename);
 		if (!fullPath.startsWith(this.libraryDirectory)) {
-			throw new Error(`Filename is invalid ${filename}`);
+			throw new NotAcceptableException(`Filename is invalid ${filename}`);
 		}
 	}
 
@@ -140,7 +140,7 @@ export class LibraryStorage implements ILibraryStorage {
 		const fullLibraryPath = this.getDirectoryPath(library);
 		const files = (await fs.readdir(fullLibraryPath)).filter((file) => file !== 'library.json');
 
-		await Promise.all(files.map((entry) => fs.unlink(this.getFilePath(library, entry))));
+		await Promise.all(files.map((entry) => fs.rm(this.getFilePath(library, entry), { recursive: true, force: true })));
 	}
 
 	/**
@@ -154,7 +154,7 @@ export class LibraryStorage implements ILibraryStorage {
 			throw new Error("Can't delete library, because it is not installed");
 		}
 
-		await fs.rmdir(libPath);
+		await fs.rm(libPath, { recursive: true, force: true });
 	}
 
 	/**
@@ -225,6 +225,7 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file
 	 */
 	public async getFileAsJson(library: ILibraryName, file: 'library.json'): Promise<ILibraryMetadata>;
+	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown>;
 	public async getFileAsJson(library: ILibraryName, file: string): Promise<unknown> {
 		const content = await this.getFileAsString(library, file);
 		return JSON.parse(content) as unknown;
@@ -259,13 +260,9 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param library
 	 * @param file
 	 */
-	public async getFileStream(library: ILibraryName, file: string): Promise<Readable> {
-		if (!(await this.fileExists(library, file))) {
-			throw new Error('The requested file does not exist');
-		}
-
+	public getFileStream(library: ILibraryName, file: string): Promise<Readable> {
 		const readStream = fsSync.createReadStream(this.getFilePath(library, file));
-		return readStream;
+		return Promise.resolve(readStream);
 	}
 
 	/**
