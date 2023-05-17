@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, Column, ColumnBoard, EntityId, Permission } from '@shared/domain';
+import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -22,20 +22,8 @@ export class BoardUc {
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(boardId);
-
-		const context = {
-			action: Action.read, // scope-related permission
-			requiredPermissions: [Permission.COURSE_EDIT], // school-wide permissions
-		};
-
-		// const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
-
-		this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
-
 		const board = await this.columnBoardService.findById(boardId);
+		await this.checkPermission(userId, board, Action.read);
 
 		return board;
 	}
@@ -44,8 +32,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
 	}
@@ -54,8 +41,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
 	}
@@ -64,8 +50,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		const column = await this.columnService.create(board);
 		return column;
@@ -75,8 +60,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteColumn', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.delete(column);
 	}
@@ -92,7 +76,8 @@ export class BoardUc {
 		const column = await this.columnService.findById(columnId);
 		const targetBoard = await this.columnBoardService.findById(targetBoardId);
 
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.read);
+		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
@@ -101,8 +86,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'updateColumnTitle', userId, columnId, title });
 
 		const column = await this.columnService.findById(columnId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.updateTitle(column, title);
 	}
@@ -111,8 +95,8 @@ export class BoardUc {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
+		await this.checkPermission(userId, column, Action.read);
 
-		// TODO: check Permissions
 		const card = await this.cardService.create(column);
 
 		return card;
@@ -124,7 +108,8 @@ export class BoardUc {
 		const card = await this.cardService.findById(cardId);
 		const targetColumn = await this.columnService.findById(targetColumnId);
 
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.read);
+		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}
@@ -133,8 +118,7 @@ export class BoardUc {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.cardService.findById(cardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.write);
 
 		await this.cardService.updateTitle(card, title);
 	}
@@ -143,9 +127,16 @@ export class BoardUc {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.cardService.findById(cardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.write);
 
 		await this.cardService.delete(card);
+	}
+
+	private async checkPermission(userId: EntityId, boardDo, action: Action): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		const context = { action, requiredPermissions: [] };
+
+		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 }

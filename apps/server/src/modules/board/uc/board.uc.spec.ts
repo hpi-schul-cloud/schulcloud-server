@@ -1,11 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/board';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { BoardDoService, CardService, ColumnService } from '../service';
+import { ObjectId } from 'bson';
+import { CardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { ColumnBoardService } from '../service/column-board.service';
 import { BoardUc } from './board.uc';
@@ -26,10 +28,6 @@ describe(BoardUc.name, () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
-				},
-				{
-					provide: BoardDoService,
-					useValue: createMock<BoardDoService>(),
 				},
 				{
 					provide: BoardDoAuthorizableService,
@@ -67,7 +65,12 @@ describe(BoardUc.name, () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	const setup = () => {
+		jest.clearAllMocks();
 		const user = userFactory.buildWithId();
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
@@ -79,13 +82,14 @@ describe(BoardUc.name, () => {
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
 		};
+
 		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 		return { user, board, boardId, column, card };
 	};
 
 	describe('findBoard', () => {
-		describe('when loading a board', () => {
+		describe('when loading a board and having required permission', () => {
 			it('should call the service', async () => {
 				const { user, boardId } = setup();
 
@@ -96,9 +100,25 @@ describe(BoardUc.name, () => {
 
 			it('should return the column board object', async () => {
 				const { user, board } = setup();
+				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const result = await uc.findBoard(user.id, board.id);
+
 				expect(result).toEqual(board);
+			});
+		});
+
+		describe('when loading a board without having permissions', () => {
+			it('should return the column board object', async () => {
+				const { board } = setup();
+				columnBoardService.findById.mockResolvedValueOnce(board);
+
+				const fakeUserId = new ObjectId().toHexString();
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+
+				expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});
@@ -115,7 +135,6 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to delete the board', async () => {
 				const { user, board } = setup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -136,7 +155,6 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to update the board title', async () => {
 				const { user, board } = setup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 				const newTitle = 'new title';
 
 				await uc.updateBoardTitle(user.id, board.id, newTitle);
@@ -162,7 +180,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(columnService.create).toHaveBeenCalledWith(board.id);
+				expect(columnService.create).toHaveBeenCalledWith(board);
 			});
 
 			it('should return the column board object', async () => {
@@ -170,6 +188,7 @@ describe(BoardUc.name, () => {
 				columnService.create.mockResolvedValueOnce(column);
 
 				const result = await uc.createColumn(user.id, board.id);
+
 				expect(result).toEqual(column);
 			});
 		});
@@ -255,7 +274,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createCard(user.id, column.id);
 
-				expect(cardService.create).toHaveBeenCalledWith(column.id);
+				expect(cardService.create).toHaveBeenCalledWith(column);
 			});
 
 			it('should return the card object', async () => {
