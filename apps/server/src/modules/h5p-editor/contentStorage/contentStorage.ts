@@ -176,11 +176,20 @@ export class ContentStorage implements IContentStorage {
 	public async getUsage(library: ILibraryName): Promise<{ asDependency: number; asMainLibrary: number }> {
 		let asDependency = 0;
 		let asMainLibrary = 0;
+		const defaultUser: IUser = {
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+			email: '',
+			id: '',
+			name: 'getUsage',
+			type: '',
+		};
 
 		const contentIds = await this.listContent();
 		for (const contentId of contentIds) {
 			// eslint-disable-next-line no-await-in-loop
-			const contentMetadata = await this.getMetadata(contentId);
+			const contentMetadata = await this.getMetadata(contentId, defaultUser);
 			const isMainLibrary = contentMetadata.mainLibrary === library.machineName;
 			if (this.hasDependencyOn(contentMetadata, library)) {
 				if (isMainLibrary) {
@@ -190,7 +199,6 @@ export class ContentStorage implements IContentStorage {
 				}
 			}
 		}
-
 		return { asDependency, asMainLibrary };
 	}
 
