@@ -328,7 +328,6 @@ describe('ContentStorage', () => {
 		describe('WHEN file exists and has main library', () => {
 			it('should return usage with main library greater than 0', async () => {
 				const { library } = setup();
-				// TODO: Fix Bug
 				const usage = await service.getUsage(library);
 				expect(usage).toBeDefined();
 				expect(usage.asMainLibrary).toBeGreaterThan(0);
