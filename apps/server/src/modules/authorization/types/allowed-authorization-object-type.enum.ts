@@ -1,4 +1,4 @@
-export enum AllowedAuthorizationEntityType {
+export enum AuthorizableReferenceType {
 	'User' = 'users',
 	'School' = 'schools',
 	'Course' = 'courses',
