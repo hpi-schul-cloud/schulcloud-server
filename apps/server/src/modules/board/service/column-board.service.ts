@@ -14,6 +14,11 @@ export class ColumnBoardService {
 		return board;
 	}
 
+	async findByParentReference(parentId: EntityId, parentExternalReference: any): Promise<ColumnBoard[]> {
+		// TODO: implement search by parentReference
+		return [];
+	}
+
 	async create(): Promise<ColumnBoard> {
 		const board = new ColumnBoard({
 			id: new ObjectId().toHexString(),
