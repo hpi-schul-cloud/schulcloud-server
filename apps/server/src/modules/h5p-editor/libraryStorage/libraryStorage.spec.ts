@@ -8,7 +8,7 @@ import path from 'path';
 import rimraf from 'rimraf';
 import { Readable } from 'stream';
 
-import { LibraryStorage } from './library-storage';
+import { LibraryStorage } from './libraryStorage';
 
 describe('LibraryStorage', () => {
 	let module: TestingModule;
