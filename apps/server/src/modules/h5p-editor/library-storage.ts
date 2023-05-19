@@ -8,8 +8,7 @@ import {
 	type ILibraryName,
 	type ILibraryStorage,
 } from '@lumieducation/h5p-server';
-
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import fsSync, { constants as FSConstants } from 'node:fs';
 import fs from 'node:fs/promises';
@@ -49,14 +48,13 @@ export class LibraryStorage implements ILibraryStorage {
 	}
 
 	/**
-	 * Checks if the given path is a subdirectory of our root path.
-	 * Otherwise throws error
+	 * Checks if the filename is absolute or traverses outside the directory.
+	 * Throws an error if the filename is illegal.
 	 * @param filename the requested file
 	 */
 	private checkFilename(filename: string): void {
-		const fullPath = path.join(this.libraryDirectory, filename);
-		if (!fullPath.startsWith(this.libraryDirectory)) {
-			throw new NotAcceptableException(`Filename is invalid ${filename}`);
+		if (path.normalize(filename).startsWith(`..${path.sep}`) || path.isAbsolute(filename)) {
+			throw new Error('Illegal filename');
 		}
 	}
 
@@ -123,7 +121,7 @@ export class LibraryStorage implements ILibraryStorage {
 			await fs.writeFile(libraryMetadataPath, JSON.stringify(libraryMetadata, undefined, 2));
 			return library;
 		} catch (error) {
-			await fs.rmdir(libraryPath);
+			await fs.rm(libraryPath, { recursive: true, force: true });
 			throw error;
 		}
 	}
@@ -185,12 +183,17 @@ export class LibraryStorage implements ILibraryStorage {
 		for (const libraryMetadata of librariesMetadata) {
 			for (const dependency of libraryMetadata.editorDependencies ?? []) {
 				const ubername = LibraryName.toUberName(dependency);
-				const index = librariesMetadataMap
-					.get(ubername)
-					?.preloadedDependencies?.findIndex((libName) => LibraryName.equal(libName, libraryMetadata));
 
-				if (index && index >= 0) {
-					librariesMetadataMap.get(ubername)?.preloadedDependencies?.splice(index, 1);
+				const dependencyMetadata = librariesMetadataMap.get(ubername);
+
+				if (dependencyMetadata?.preloadedDependencies) {
+					const index = dependencyMetadata.preloadedDependencies.findIndex((libName) =>
+						LibraryName.equal(libName, libraryMetadata)
+					);
+
+					if (index >= 0) {
+						dependencyMetadata.preloadedDependencies.splice(index, 1);
+					}
 				}
 			}
 		}
