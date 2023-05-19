@@ -1,4 +1,4 @@
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
 import { UserMigrationResponse } from '../controller/dto';
 
 export class UserMigrationMapper {

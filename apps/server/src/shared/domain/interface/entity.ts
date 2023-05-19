@@ -1,11 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { School } from '@shared/domain/entity/school.entity';
 
-export interface IReferenceId {
-	id: string;
-}
-
-export interface IEntity extends IReferenceId {
+export interface IEntity {
 	_id: ObjectId;
 	id: string;
 }

@@ -67,6 +67,7 @@ describe('SubmissionRule', () => {
 			it('should return false', () => {
 				const { user, task } = setup();
 
+				// @ts-expect-error Testcase
 				const result = submissionRule.isApplicable(user, task);
 
 				expect(result).toBe(false);
