@@ -12,7 +12,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { BoardDoAuthorizableService } from '@src/modules/board';
+import { BoardDoAuthorizableService } from '@src/modules/board/service';
 import { AuthorizableReferenceType } from './types';
 
 // replace later with general "base" do-repo
