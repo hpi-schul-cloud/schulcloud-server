@@ -79,10 +79,10 @@ describe(BoardUc.name, () => {
 		const card = cardFactory.build();
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-		const authorizableMock: BoardDoAuthorizable = {
+		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
-		};
+		});
 
 		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 

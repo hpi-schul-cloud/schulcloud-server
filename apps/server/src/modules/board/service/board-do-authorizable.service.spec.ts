@@ -60,7 +60,7 @@ describe(BoardDoAuthorizableService.name, () => {
 
 				const result = await service.findById(columnBoardId);
 
-				expect(result).toEqual({ users: [], id: columnBoardId });
+				expect(result.id).toEqual(columnBoardId);
 			});
 		});
 	});
@@ -78,7 +78,8 @@ describe(BoardDoAuthorizableService.name, () => {
 
 				const userGroup = await service.getBoardAuthorizable(board);
 
-				expect(userGroup).toEqual({ users: [], id: board.id });
+				expect(userGroup.id).toEqual(board.id);
+				expect(userGroup.users.length).toEqual(0);
 			});
 		});
 

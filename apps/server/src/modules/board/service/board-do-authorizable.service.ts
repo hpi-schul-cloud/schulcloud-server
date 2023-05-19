@@ -20,7 +20,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
 		const { users } = await this.getBoardAuthorizable(boardDo);
-		const boardDoAuthorizable = new BoardDoAuthorizable(users, id);
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id });
 
 		return boardDoAuthorizable;
 	}
@@ -34,13 +34,13 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 			if (rootBoardDo.context.type === BoardExternalReferenceType.Course) {
 				const course = await this.courseService.findById(rootBoardDo.context.id);
 				const users = this.mapCourseUsersToUsergroup(course);
-				return { users, id: boardDo.id };
+				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
 		} else {
 			throw new Error('root boardnode was expected to be a ColumnBoard');
 		}
 
-		return { users: [], id: boardDo.id };
+		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
 	}
 
 	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {

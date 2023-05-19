@@ -1,5 +1,5 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { BaseDO } from '../../base.do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -11,13 +11,13 @@ export interface UserBoardRoles {
 	userId: EntityId;
 }
 
-export class BoardDoAuthorizable extends BaseDO {
-	users: UserBoardRoles[];
+export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
+	users: UserBoardRoles[];
+}
 
-	constructor(users: UserBoardRoles[], id: EntityId) {
-		super(id);
-		this.users = users;
-		this.id = id;
+export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> {
+	get users(): UserBoardRoles[] {
+		return this.props.users;
 	}
 }
