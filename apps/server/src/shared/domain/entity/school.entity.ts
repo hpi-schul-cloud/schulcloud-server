@@ -1,15 +1,4 @@
-import {
-	Collection,
-	Embeddable,
-	Embedded,
-	Entity,
-	Index,
-	ManyToMany,
-	ManyToOne,
-	OneToOne,
-	Property,
-} from '@mikro-orm/core';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { Collection, Embeddable, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { SchoolYear } from './schoolyear.entity';
 import { System } from './system.entity';
@@ -28,13 +17,17 @@ export interface ISchoolProperties {
 	externalId?: string;
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
+	oauthMigrationStart?: Date;
+	oauthMigrationPossible?: Date;
+	oauthMigrationMandatory?: Date;
+	oauthMigrationFinished?: Date;
+	oauthMigrationFinalFinish?: Date;
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: System[];
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
-	userLoginMigration?: UserLoginMigration;
 }
 
 @Embeddable()
@@ -67,6 +60,21 @@ export class School extends BaseEntity {
 	@Property({ nullable: true })
 	inUserMigration?: boolean;
 
+	@Property({ nullable: true })
+	oauthMigrationStart?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationPossible?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationMandatory?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinished?: Date;
+
+	@Property({ nullable: true })
+	oauthMigrationFinalFinish?: Date;
+
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
 
@@ -88,12 +96,6 @@ export class School extends BaseEntity {
 	@ManyToOne('SchoolYear', { fieldName: 'currentYear', nullable: true })
 	schoolYear?: SchoolYear;
 
-	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
-		orphanRemoval: true,
-		nullable: true,
-	})
-	userLoginMigration?: UserLoginMigration;
-
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -108,6 +110,11 @@ export class School extends BaseEntity {
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
+		this.oauthMigrationStart = props.oauthMigrationStart;
+		this.oauthMigrationPossible = props.oauthMigrationPossible;
+		this.oauthMigrationMandatory = props.oauthMigrationMandatory;
+		this.oauthMigrationFinished = props.oauthMigrationFinished;
+		this.oauthMigrationFinalFinish = props.oauthMigrationFinalFinish;
 		this.name = props.name;
 		if (props.officialSchoolNumber) {
 			this.officialSchoolNumber = props.officialSchoolNumber;
@@ -121,6 +128,5 @@ export class School extends BaseEntity {
 		if (props.schoolYear) {
 			this.schoolYear = props.schoolYear;
 		}
-		this.userLoginMigration = props.userLoginMigration;
 	}
 }

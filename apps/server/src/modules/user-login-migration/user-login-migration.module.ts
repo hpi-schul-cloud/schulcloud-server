@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@src/modules/account';
 import { SchoolModule } from '@src/modules/school';
@@ -13,14 +12,8 @@ import {
 } from './service';
 
 @Module({
-	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule],
-	providers: [
-		UserMigrationService,
-		SchoolMigrationService,
-		MigrationCheckService,
-		UserLoginMigrationService,
-		UserLoginMigrationRepo,
-	],
+	imports: [SchoolModule, SystemModule, UserModule, LoggerModule, AccountModule],
+	providers: [UserMigrationService, SchoolMigrationService, MigrationCheckService, UserLoginMigrationService],
 	exports: [UserMigrationService, SchoolMigrationService, MigrationCheckService, UserLoginMigrationService],
 })
 export class UserLoginMigrationModule {}
