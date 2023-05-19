@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, Column, ColumnBoard, EntityId } from '@shared/domain';
+import { AnyBoardDo, Card, Column, ColumnBoard, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
@@ -132,7 +132,7 @@ export class BoardUc {
 		await this.cardService.delete(card);
 	}
 
-	private async checkPermission(userId: EntityId, boardDo, action: Action): Promise<void> {
+	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
 		const context = { action, requiredPermissions: [] };

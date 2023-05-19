@@ -118,7 +118,7 @@ describe(BoardUc.name, () => {
 					throw new ForbiddenException();
 				});
 
-				expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
+				await expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});
