@@ -19,12 +19,9 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      resource_definition:
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: api-ldap-deployment
-          namespace: "{{ NAMESPACE }}"
+      apiVersion: apps/v1
+      kind: Deployment
+      name: api-ldap-deployment
 
   - name: Delete Ldap service
     when: WITH_LDAP_SEPERATION is not defined or WITH_LDAP_SEPERATION|bool == false
@@ -32,9 +29,6 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      resource_definition:
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: api-ldap-svc
-          namespace: "{{ NAMESPACE }}"
+      apiVersion: v1
+      kind: Service
+      name: api-ldap-svc

@@ -19,12 +19,9 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      resource_definition:
-        apiVersion: batch/v1beta1
-        kind: CronJob
-        metadata:
-          name: api-ldapsync-full-cronjob
-          namespace: "{{ NAMESPACE }}"
+      apiVersion: batch/v1
+      kind: CronJob
+      name: api-ldapsync-full-cronjob
 
   - name: Delete Ldap Worker Deployment
     when: WITH_LDAP is not defined or WITH_LDAP|bool == false
@@ -32,12 +29,9 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      resource_definition:
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: api-worker-deployment
-          namespace: "{{ NAMESPACE }}"
+      apiVersion: apps/v1
+      kind: Deployment
+      name: api-worker-deployment
 
   - name: Delete legacy ldapsync deployment
     kubernetes.core.k8s:
