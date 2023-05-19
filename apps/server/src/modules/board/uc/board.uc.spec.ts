@@ -7,9 +7,10 @@ import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { ObjectId } from 'bson';
-import { CardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { CardService } from '../service/card.service';
 import { ColumnBoardService } from '../service/column-board.service';
+import { ColumnService } from '../service/column.service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
