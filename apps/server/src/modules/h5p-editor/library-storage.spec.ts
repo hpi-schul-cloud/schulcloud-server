@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ILibraryMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { mkdtemp } from 'fs/promises';
+import fs from 'node:fs/promises';
 import os from 'os';
 import path from 'path';
-
 import rimraf from 'rimraf';
 import { Readable } from 'stream';
+
 import { LibraryStorage } from './library-storage';
 
 describe('LibraryStorage', () => {
@@ -14,58 +16,62 @@ describe('LibraryStorage', () => {
 
 	let tmpDir: string;
 
-	const createParameters = () => {
-		const library = {
-			machineName: 'test_library',
-			majorVersion: 1,
-			minorVersion: 2,
-			patchVersion: 3,
-			runnable: false,
-			title: 'Test Library',
+	const createTestData = () => {
+		const createLib = (name: string, major: number, minor: number, patch: number): ILibraryMetadata => {
+			return {
+				machineName: name,
+				majorVersion: major,
+				minorVersion: minor,
+				patchVersion: patch,
+				runnable: false,
+				title: name,
+			};
 		};
 
-		const addon = {
-			machineName: 'test_addon',
-			majorVersion: 4,
-			minorVersion: 5,
-			patchVersion: 6,
-			runnable: false,
-			title: 'Test Addon',
-			addTo: {
-				player: {
-					machineNames: ['test_library'],
-				},
+		const metadataToName = ({ machineName, majorVersion, minorVersion }: ILibraryMetadata): ILibraryName => {
+			return {
+				machineName,
+				majorVersion,
+				minorVersion,
+			};
+		};
+
+		const testingLib = createLib('testing', 1, 2, 3);
+
+		const addonLib = createLib('addon', 1, 2, 3);
+		addonLib.addTo = { player: { machineNames: [testingLib.machineName] } };
+
+		const circularA = createLib('circular_a', 1, 2, 3);
+		const circularB = createLib('circular_b', 1, 2, 3);
+		circularA.preloadedDependencies = [metadataToName(circularB)];
+		circularB.editorDependencies = [metadataToName(circularA)];
+
+		const fakeLibraryName: ILibraryName = { machineName: 'fake', majorVersion: 2, minorVersion: 3 };
+
+		const testingLibDependentA = createLib('first_dependent', 2, 5, 6);
+		testingLibDependentA.dynamicDependencies = [metadataToName(testingLib)];
+		const testingLibDependentB = createLib('second_dependent', 2, 5, 6);
+		testingLibDependentB.preloadedDependencies = [metadataToName(testingLib)];
+
+		const libWithNonExistingDependency = createLib('fake_dependency', 2, 5, 6);
+		libWithNonExistingDependency.editorDependencies = [fakeLibraryName];
+
+		return {
+			libraries: [
+				testingLib,
+				addonLib,
+				circularA,
+				circularB,
+				testingLibDependentA,
+				testingLibDependentB,
+				libWithNonExistingDependency,
+			],
+			names: {
+				testingLib,
+				addonLib,
+				fakeLibraryName,
 			},
 		};
-
-		const fakeLib = {
-			machineName: 'not_installed',
-			majorVersion: 4,
-			minorVersion: 5,
-			patchVersion: 6,
-			runnable: false,
-			title: 'Not installed',
-		};
-
-		const libWithDependencies = {
-			machineName: 'has_dependencies',
-			majorVersion: 4,
-			minorVersion: 5,
-			patchVersion: 6,
-			runnable: false,
-			title: 'Has Dependencies',
-			preloadDependencies: [
-				{
-					library,
-				},
-			],
-		};
-
-		const filename = '/language/example.json';
-		const contents = JSON.stringify({ property: 'value' });
-		const invalidFilename = '/nested/../../test.txt';
-
-		return { library, addon, fakeLib, libWithDependencies, filename, invalidFilename, contents };
 	};
 
 	beforeAll(async () => {
@@ -81,6 +87,9 @@ describe('LibraryStorage', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
 		rimraf.sync(tmpDir);
 	});
 
@@ -88,214 +97,366 @@ describe('LibraryStorage', () => {
 		expect(adapter).toBeDefined();
 	});
 
-	describe('when managing a library', () => {
-		it('should save library metadata', async () => {
-			const { library } = createParameters();
+	describe('when managing library metadata', () => {
+		const setup = async (addLibrary = true) => {
+			const {
+				names: { testingLib },
+			} = createTestData();
 
-			await adapter.addLibrary(library, false);
+			if (addLibrary) {
+				await adapter.addLibrary(testingLib, false);
+			}
+
+			return { testingLib };
+		};
+
+		describe('when adding library', () => {
+			it('should succeed', async () => {
+				await setup();
+			});
+
+			it('should fail to override existing library', async () => {
+				const { testingLib } = await setup();
+
+				const addLib = adapter.addLibrary(testingLib, false);
+				await expect(addLib).rejects.toThrowError("Can't add library because it already exists");
+			});
+
+			it('should fail on IO errors', async () => {
+				const { testingLib } = await setup(false);
+
+				jest.spyOn(fs, 'mkdir').mockImplementationOnce(() => {
+					throw new Error('Could not create directory');
+				});
+
+				const addLibrary = adapter.addLibrary(testingLib, false);
+				await expect(addLibrary).rejects.toThrowError('Could not create directory');
+			});
 		});
 
-		it('should fail to override existing library', async () => {
-			const { library } = createParameters();
+		describe('when getting metadata', () => {
+			it('should succeed if library existst', async () => {
+				const { testingLib } = await setup();
 
-			const addLib = adapter.addLibrary(library, false);
-			await expect(addLib).rejects.toThrowError("Can't add library because it already exists");
+				const returnedLibrary = await adapter.getLibrary(testingLib);
+				expect(returnedLibrary).toEqual(expect.objectContaining(testingLib));
+			});
+
+			it("should fail if library doesn't exist", async () => {
+				const { testingLib } = await setup(false);
+
+				const getLibrary = adapter.getLibrary(testingLib);
+				await expect(getLibrary).rejects.toThrowError('The requested library does not exist');
+			});
+		});
+
+		describe('when checking installed status', () => {
+			it('should return true if library is installed', async () => {
+				const { testingLib } = await setup();
+
+				const installed = await adapter.isInstalled(testingLib);
+				expect(installed).toBe(true);
+			});
+
+			it("should return false if library isn't installed", async () => {
+				const { testingLib } = await setup(false);
+
+				const installed = await adapter.isInstalled(testingLib);
+				expect(installed).toBe(false);
+			});
+		});
+
+		describe('when updating metadata', () => {
+			it('should update metadata', async () => {
+				const { testingLib } = await setup();
+
+				testingLib.author = 'Test Author';
+				const updatedLibrary = await adapter.updateLibrary(testingLib);
+				const retrievedLibrary = await adapter.getLibrary(testingLib);
+				expect(retrievedLibrary).toEqual(updatedLibrary);
+			});
+
+			it("should fail if library doesn't exist", async () => {
+				const { testingLib } = await setup(false);
+
+				const updateLibrary = adapter.updateLibrary(testingLib);
+				await expect(updateLibrary).rejects.toThrowError('Library is not installed');
+			});
+		});
+
+		describe('when updating additional metadata', () => {
+			it('should return true if data has changed', async () => {
+				const { testingLib } = await setup();
+
+				const updated = await adapter.updateAdditionalMetadata(testingLib, { restricted: true });
+				expect(updated).toBe(true);
+			});
+
+			it("should return false if data hasn't changed", async () => {
+				const { testingLib } = await setup();
+
+				const updated = await adapter.updateAdditionalMetadata(testingLib, { restricted: false });
+				expect(updated).toBe(false);
+			});
+
+			it('should fail if data could not be updated', async () => {
+				const { testingLib } = await setup();
+
+				jest.spyOn(fs, 'writeFile').mockImplementationOnce(() => {
+					throw new Error('Could not write file');
+				});
+
+				const updateMetadata = adapter.updateAdditionalMetadata(testingLib, { restricted: true });
+				await expect(updateMetadata).rejects.toThrowError('Could not update metadata');
+			});
+		});
+
+		describe('when deleting library', () => {
+			it('should succeed if library existst', async () => {
+				const { testingLib } = await setup();
+
+				await adapter.deleteLibrary(testingLib);
+				await expect(adapter.getLibrary(testingLib)).rejects.toThrow();
+			});
+
+			it("should fail if library doesn't existst", async () => {
+				const { testingLib } = await setup(false);
+
+				const deleteLibrary = adapter.deleteLibrary(testingLib);
+				await expect(deleteLibrary).rejects.toThrowError("Can't delete library, because it is not installed");
+			});
 		});
 	});
 
-	describe('When using addon libraries', () => {
-		it('should install addon library', async () => {
-			const { addon } = createParameters();
-			await adapter.addLibrary(addon, false);
-		});
+	describe('When getting library dependencies', () => {
+		const setup = async () => {
+			const { libraries, names } = createTestData();
 
-		it('should find addon library', async () => {
-			const { addon } = createParameters();
+			for await (const library of libraries) {
+				await adapter.addLibrary(library, false);
+			}
+
+			return names;
+		};
+
+		it('should find addon libraries', async () => {
+			const { addonLib } = await setup();
+
 			const addons = await adapter.listAddons();
-			expect(addons).toContainEqual(expect.objectContaining(addon));
-		});
-	});
-
-	describe('when retrieving library metadata', () => {
-		it('should retrieve library metadata if it is installed', async () => {
-			const { library } = createParameters();
-
-			const returnedLibrary = await adapter.getLibrary(library);
-			expect(returnedLibrary).toEqual(expect.objectContaining(library));
+			expect(addons).toContainEqual(expect.objectContaining(addonLib));
 		});
 
-		it('should fail to retrieve library metadata when it is not installed', async () => {
-			const { fakeLib } = createParameters();
+		it('should count dependencies', async () => {
+			await setup();
 
-			const getLibrary = adapter.getLibrary(fakeLib);
-			await expect(getLibrary).rejects.toThrow('The requested library does not exist');
+			const dependencies = await adapter.getAllDependentsCount();
+			expect(dependencies).toEqual({ 'circular_a-1.2': 1, 'testing-1.2': 2, 'fake-2.3': 1 });
+		});
+
+		it('should count dependents for single library', async () => {
+			const { testingLib } = await setup();
+
+			const count = await adapter.getDependentsCount(testingLib);
+			expect(count).toBe(2);
+		});
+
+		it('should count dependencies for library without dependents', async () => {
+			const { addonLib } = await setup();
+
+			const count = await adapter.getDependentsCount(addonLib);
+			expect(count).toBe(0);
 		});
 	});
 
 	describe('when listing libraries', () => {
+		const setup = async () => {
+			const {
+				libraries,
+				names: { testingLib },
+			} = createTestData();
+
+			for await (const library of libraries) {
+				await adapter.addLibrary(library, false);
+			}
+
+			return { libraries, testingLib };
+		};
+
 		it('should return all libraries when no filter is used', async () => {
-			const libraries = await adapter.getInstalledLibraryNames();
-			expect(libraries.length).toBe(2);
+			const { libraries } = await setup();
+
+			const allLibraries = await adapter.getInstalledLibraryNames();
+			expect(allLibraries.length).toBe(libraries.length);
 		});
 
 		it('should return all libraries with machinename', async () => {
-			const { library } = createParameters();
+			const { testingLib } = await setup();
 
-			const libraries = await adapter.getInstalledLibraryNames(library.machineName);
-			expect(libraries.length).toBe(1);
+			const allLibraries = await adapter.getInstalledLibraryNames(testingLib.machineName);
+			expect(allLibraries.length).toBe(1);
 		});
 	});
 
-	describe('when checking if a library is installed', () => {
-		it('should return true, if the library exists', async () => {
-			const { library } = createParameters();
-			const installed = await adapter.isInstalled(library);
-			expect(installed).toEqual(true);
-		});
+	describe('when managing files', () => {
+		const setup = async (addFiles = true) => {
+			const {
+				names: { testingLib },
+			} = createTestData();
 
-		it('should return false, if the library does not exists', async () => {
-			const { fakeLib } = createParameters();
-			const installed = await adapter.isInstalled(fakeLib);
-			expect(installed).toEqual(false);
-		});
-	});
+			const testFile = {
+				name: 'test/abc.json',
+				content: JSON.stringify({ property: 'value' }),
+			};
 
-	describe('when adding a file to a library', () => {
-		it('should write a file to existing library', async () => {
-			const { library, filename, contents } = createParameters();
-			await adapter.addFile(library, filename, Readable.from(contents));
-		});
+			if (addFiles) {
+				await adapter.addLibrary(testingLib, false);
+				await adapter.addFile(testingLib, testFile.name, Readable.from(testFile.content));
+			}
 
-		it('should not write a file to non-existing library', async () => {
-			const { fakeLib, filename, contents } = createParameters();
-			const addFile = adapter.addFile(fakeLib, filename, Readable.from(contents));
-			await expect(addFile).rejects.toThrowError('Could not add file to library');
-		});
+			return { testingLib, testFile };
+		};
 
-		it('should not allow directory traversal', async () => {
-			const { library: dummyLib, invalidFilename, contents } = createParameters();
-			const addFile = adapter.addFile(dummyLib, invalidFilename, Readable.from(contents));
-			await expect(addFile).rejects.toThrowError(`Filename is invalid ${invalidFilename}`);
-		});
-	});
-
-	describe('when reading files from a library', () => {
-		it('should list files', async () => {
-			const { library, filename } = createParameters();
-
-			const files = await adapter.listFiles(library);
-			expect(files).toContainEqual(expect.stringContaining(filename));
-		});
-
-		it('should check if file exists', async () => {
-			const { library, filename } = createParameters();
-			await expect(adapter.fileExists(library, filename)).resolves.toEqual(true);
-			await expect(adapter.fileExists(library, 'nonExistant')).resolves.toEqual(false);
-		});
-
-		it('should return parsed json', async () => {
-			const { library, filename, contents } = createParameters();
-
-			const json = await adapter.getFileAsJson(library, filename);
-			expect(json).toEqual(JSON.parse(contents));
-		});
-
-		it('should return file as string', async () => {
-			const { library, filename, contents } = createParameters();
-
-			const fileContent = await adapter.getFileAsString(library, filename);
-			expect(fileContent).toEqual(contents);
-		});
-
-		it('should return file as stream', async () => {
-			const { library, filename, contents } = createParameters();
-
-			const fileStream = await adapter.getFileStream(library, filename);
-
-			const streamContents = await new Promise((resolve, reject) => {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const chunks: any[] = [];
-				fileStream.on('data', (chunk) => chunks.push(chunk));
-				fileStream.on('error', reject);
-				fileStream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+		describe('when adding files', () => {
+			it('should work', async () => {
+				await setup();
 			});
 
-			expect(streamContents).toEqual(contents);
+			it('should fail if library is not installed', async () => {
+				const { testingLib, testFile } = await setup(false);
+
+				const addFile = adapter.addFile(testingLib, testFile.name, Readable.from(testFile.content));
+				await expect(addFile).rejects.toThrowError('Could not add file to library');
+			});
+
+			it('should fail on illegal filename', async () => {
+				const { testingLib } = await setup();
+
+				const filenames = ['../abc.json', '/test/abc.json'];
+
+				await Promise.all(
+					filenames.map((filename) => {
+						const addFile = adapter.addFile(testingLib, filename, Readable.from(''));
+						return expect(addFile).rejects.toThrowError('Illegal filename');
+					})
+				);
+			});
 		});
 
+		it('should list all files', async () => {
+			const { testingLib, testFile } = await setup();
+
+			const files = await adapter.listFiles(testingLib);
+			expect(files).toContainEqual(expect.stringContaining(testFile.name));
+		});
+
+		describe('when checking if file exists', () => {
+			it('should return true if it exists', async () => {
+				const { testingLib, testFile } = await setup();
+
+				const exists = await adapter.fileExists(testingLib, testFile.name);
+				expect(exists).toBe(true);
+			});
+
+			it("should return false if it doesn't  exist", async () => {
+				const { testingLib, testFile } = await setup(false);
+
+				const exists = await adapter.fileExists(testingLib, testFile.name);
+				expect(exists).toBe(false);
+			});
+		});
+
+		describe('when clearing files', () => {
+			it('should remove all files', async () => {
+				const { testingLib } = await setup();
+
+				await adapter.clearFiles(testingLib);
+				const files = await adapter.listFiles(testingLib);
+				expect(files).toEqual([expect.stringContaining('library.json')]);
+			});
+
+			it("should fail if library doesn't exist", async () => {
+				const { testingLib } = await setup(false);
+
+				const clearFiles = adapter.clearFiles(testingLib);
+				await expect(clearFiles).rejects.toThrowError("Can't clear library files, because it is not installed");
+			});
+		});
+
+		describe('when retrieving files', () => {
+			it('should return parsed json', async () => {
+				const { testingLib, testFile } = await setup();
+
+				const json = await adapter.getFileAsJson(testingLib, testFile.name);
+				expect(json).toEqual(JSON.parse(testFile.content));
+			});
+
+			it('should return file as string', async () => {
+				const { testingLib, testFile } = await setup();
+
+				const fileContent = await adapter.getFileAsString(testingLib, testFile.name);
+				expect(fileContent).toEqual(testFile.content);
+			});
+
+			it('should return file as stream', async () => {
+				const { testingLib, testFile } = await setup();
+
+				const fileStream = await adapter.getFileStream(testingLib, testFile.name);
+
+				const streamContents = await new Promise((resolve, reject) => {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					const chunks: any[] = [];
+					fileStream.on('data', (chunk) => chunks.push(chunk));
+					fileStream.on('error', reject);
+					fileStream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+				});
+
+				expect(streamContents).toEqual(testFile.content);
+			});
+		});
 		describe('when getting file stats', () => {
-			it('should get file stats', async () => {
-				const { library, filename } = createParameters();
+			it('should return parsed json', async () => {
+				const { testingLib, testFile } = await setup();
 
-				const fileStats = await adapter.getFileStats(library, filename);
-				expect(fileStats).toHaveProperty('birthtime');
-				expect(fileStats).toHaveProperty('size');
+				const stats = await adapter.getFileStats(testingLib, testFile.name);
+
+				expect(stats).toMatchObject({
+					size: expect.any(Number),
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					birthtime: expect.any(Object), // expect.any(Date) behaves incorrectly
+				});
 			});
 
-			it('should fail if file does not exist', async () => {
-				const { library } = createParameters();
+			it("should fail if file doesn't exist", async () => {
+				const { testingLib, testFile } = await setup(false);
 
-				const fileStatsPromise = adapter.getFileStats(library, 'nonExistant');
-				await expect(fileStatsPromise).rejects.toThrowError('The requested file does not exist');
+				const getStats = adapter.getFileStats(testingLib, testFile.name);
+				await expect(getStats).rejects.toThrowError('The requested file does not exist');
 			});
-		});
-	});
-
-	describe('when updating a library', () => {
-		it('should work if it exists', async () => {
-			const { library } = createParameters();
-
-			await adapter.updateLibrary({ ...library, author: 'Test Author' });
-		});
-
-		it('should fail if it does not exist', async () => {
-			const { fakeLib } = createParameters();
-
-			const addLibrary = adapter.updateLibrary({ ...fakeLib, author: 'Test Author' });
-			await expect(addLibrary).rejects.toThrowError('Library is not installed');
 		});
 	});
 
 	describe('when getting languages', () => {
-		it('should return a list of languages', async () => {
-			const { library } = createParameters();
+		const setup = async () => {
+			const {
+				names: { testingLib },
+			} = createTestData();
 
-			const languages = await adapter.getLanguages(library);
-			expect(languages).toContain('example');
-		});
-	});
+			await adapter.addLibrary(testingLib, false);
 
-	describe('when clearing files', () => {
-		it('should remove all files', async () => {
-			const { library } = createParameters();
+			const languages = ['en', 'de'];
 
-			await adapter.clearFiles(library);
-			const files = await adapter.listFiles(library);
-			// Only library.json is left
-			expect(files).toEqual([expect.stringContaining('library.json')]);
-		});
-
-		it('should fail if library does not exist', async () => {
-			const { fakeLib } = createParameters();
-			const clearFiles = adapter.clearFiles(fakeLib);
-			await expect(clearFiles).rejects.toThrowError("Can't clear library files, because it is not installed");
-		});
-	});
-
-	describe('when deleting a library', () => {
-		it("should remove the library and all of it's files", async () => {
-			const { library } = createParameters();
-
-			await adapter.deleteLibrary(library);
-			await expect(adapter.getLibrary(library)).rejects.toThrowError();
-		});
-
-		it('should fail if the library is not installed', async () => {
-			const { library } = createParameters();
-
-			await expect(adapter.deleteLibrary(library)).rejects.toThrowError(
-				"Can't delete library, because it is not installed"
+			await Promise.all(
+				languages.map((language) => adapter.addFile(testingLib, `language/${language}.json`, Readable.from('')))
 			);
+
+			return { testingLib, languages };
+		};
+
+		it('should return a list of languages', async () => {
+			const { testingLib, languages } = await setup();
+
+			const supportedLanguages = await adapter.getLanguages(testingLib);
+			expect(supportedLanguages).toEqual(expect.arrayContaining(languages));
 		});
 	});
 });
