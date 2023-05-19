@@ -1,7 +1,8 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { AnyBoardDo } from '@shared/domain/domainobject';
+import { AnyBoardDo } from '../../domainobject';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types';
+import { BoardNodeType } from './types/board-node-type';
 
 @Entity({ discriminatorValue: BoardNodeType.TEXT_ELEMENT })
 export class TextElementNode extends BoardNode {

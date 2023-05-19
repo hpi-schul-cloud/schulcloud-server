@@ -2,7 +2,8 @@ import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
 import { AnyBoardDo, BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
-import { BoardDoBuilder, BoardNodeType } from './types';
+import { BoardDoBuilder } from './types';
+import { BoardNodeType } from './types/board-node-type';
 
 @Embeddable()
 export class ContextReference {

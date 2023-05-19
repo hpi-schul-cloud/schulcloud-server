@@ -1,20 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
-import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
+import { ValidationError } from '@shared/common';
+import { ICurrentUser } from '@src/modules/authentication';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {
@@ -23,11 +20,8 @@ describe('SchoolMigrationService', () => {
 
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<SchoolService>;
-	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
 
 	beforeAll(async () => {
-		jest.useFakeTimers();
-
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolMigrationService,
@@ -43,76 +37,71 @@ describe('SchoolMigrationService', () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
-				{
-					provide: UserLoginMigrationRepo,
-					useValue: createMock<UserLoginMigrationRepo>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(SchoolMigrationService);
 		schoolService = module.get(SchoolService);
 		userService = module.get(UserService);
-		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 
 		await setupEntities();
 	});
 
 	afterAll(async () => {
-		jest.useRealTimers();
 		await module.close();
 	});
 
 	describe('validateGracePeriod is called', () => {
-		describe('when current date is before finish date', () => {
+		describe('when current date is before finalFinish date', () => {
 			const setup = () => {
-				jest.setSystemTime(new Date('2023-05-01'));
-
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'systemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-02'),
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				return {
-					userLoginMigration,
+					schoolDO,
 				};
 			};
-
 			it('should not throw', () => {
-				const { userLoginMigration } = setup();
+				const { schoolDO } = setup();
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date(2023, 3, 14));
 
-				const func = () => service.validateGracePeriod(userLoginMigration);
-
-				expect(func).not.toThrow();
+				expect(() => service.validateGracePeriod(schoolDO)).not.toThrow();
 			});
 		});
 
-		describe('when current date is after finish date', () => {
+		describe('when current date is after finalFinish date', () => {
 			const setup = () => {
-				jest.setSystemTime(new Date('2023-05-03'));
-
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'systemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-02'),
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				return {
-					userLoginMigration,
+					schoolDO,
 				};
 			};
 
 			it('should throw validation error', () => {
-				const { userLoginMigration } = setup();
+				const { schoolDO } = setup();
+				jest.useFakeTimers();
+				jest.setSystemTime(new Date(2023, 3, 28));
 
-				const func = () => service.validateGracePeriod(userLoginMigration);
-
-				expect(func).toThrow(
+				expect(() => service.validateGracePeriod(schoolDO)).toThrow(
 					new ValidationError('grace_period_expired: The grace period after finishing migration has expired')
 				);
 			});
@@ -122,11 +111,15 @@ describe('SchoolMigrationService', () => {
 	describe('schoolToMigrate is called', () => {
 		describe('when school number is missing', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
@@ -159,11 +152,15 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school could not be found with official school number', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
@@ -196,11 +193,15 @@ describe('SchoolMigrationService', () => {
 
 		describe('when current users school not match with school of to migrate user ', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
@@ -236,11 +237,15 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school was already migrated', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
@@ -271,11 +276,15 @@ describe('SchoolMigrationService', () => {
 
 		describe('when school has to be migrated', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
 				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
@@ -307,11 +316,15 @@ describe('SchoolMigrationService', () => {
 	describe('migrateSchool is called', () => {
 		describe('when school will be migrated', () => {
 			const setup = () => {
+				const oauthMigrationStart = new Date(2023, 2, 26);
 				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
 					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 				const targetSystemId = 'targetSystemId';
 
@@ -380,98 +393,134 @@ describe('SchoolMigrationService', () => {
 		});
 	});
 
-	describe('markUnmigratedUsersAsOutdated', () => {
+	describe('completeMigration is called', () => {
 		describe('when admin completes the migration', () => {
 			const setup = () => {
-				const closedAt: Date = new Date('2023-05-01');
-
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt,
-					finishedAt: new Date('2023-05-01'),
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
-				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
-
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-				userService.findUsers.mockResolvedValue(new Page(users, users.length));
+				const userDO: UserDO = userDoFactory.buildWithId({ schoolId: schoolDO.id }, new ObjectId().toHexString(), {});
 
 				return {
-					closedAt,
+					schoolDO,
+					schoolId: schoolDO.id as string,
+					userDO,
+					oauthMigrationStart,
 				};
 			};
 
-			it('should save migrated user with removed outdatedSince entry', async () => {
-				const { closedAt } = setup();
+			it('should call getSchoolById on schoolService', async () => {
+				const expectedSchoolId = 'expectedSchoolId';
+				const migrationStartedAt = new Date();
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-				await service.markUnmigratedUsersAsOutdated('schoolId');
+				await service.completeMigration(expectedSchoolId, migrationStartedAt);
 
-				expect(userService.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
-				]);
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
 			});
-		});
 
-		describe('when the school has no migration', () => {
-			const setup = () => {
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-			};
+			it('should call findUsers on userService', async () => {
+				const { schoolId, oauthMigrationStart } = setup();
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-			it('should throw an UnprocessableEntityException', async () => {
-				setup();
+				await service.completeMigration(schoolId, oauthMigrationStart);
 
-				const func = async () => service.markUnmigratedUsersAsOutdated('schoolId');
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					schoolId,
+					isOutdated: false,
+					lastLoginSystemChangeSmallerThan: expect.objectContaining<Date>(oauthMigrationStart) as Date,
+				});
+			});
 
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
+			it('should save non migrated user', async () => {
+				const { schoolDO, userDO, schoolId } = setup();
+				const users: Page<UserDO> = new Page([userDO], 1);
+				userService.findUsers.mockResolvedValue(users);
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
+
+				await service.completeMigration(schoolId, schoolDO.oauthMigrationStart);
+
+				expect(userService.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining<UserDO>([
+						{
+							...users.data[0],
+							outdatedSince: schoolDO.oauthMigrationFinished,
+						},
+					])
+				);
 			});
 		});
 	});
 
-	describe('unmarkOutdatedUsers', () => {
+	describe('restartMigration is called', () => {
 		describe('when admin restarts the migration', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-01'),
+				const oauthMigrationStart = new Date(2023, 2, 26);
+				const schoolDO: SchoolDO = schoolDOFactory.buildWithId({
+					id: 'schoolId',
+					name: 'schoolName',
+					officialSchoolNumber: 'officialSchoolNumber',
+					externalId: 'firstExternalId',
+					oauthMigrationFinished: new Date(2023, 2, 27),
+					oauthMigrationFinalFinish: new Date(2023, 3, 27),
+					oauthMigrationStart,
 				});
 
-				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
-
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-				userService.findUsers.mockResolvedValue(new Page(users, users.length));
+				return {
+					schoolDO,
+				};
 			};
+
+			it('should call getSchoolById on schoolService', async () => {
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
+
+				await service.restartMigration(expectedSchoolId);
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(expectedSchoolId);
+			});
+
+			it('should call findUsers on userService', async () => {
+				const { schoolDO } = setup();
+				schoolService.getSchoolById.mockResolvedValue(schoolDO);
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId({ outdatedSince: new Date(2023, 2, 27) })], 1);
+				userService.findUsers.mockResolvedValue(users);
+
+				await service.restartMigration(expectedSchoolId);
+
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					schoolId: expectedSchoolId,
+					outdatedSince: schoolDO.oauthMigrationFinished,
+				});
+			});
 
 			it('should save migrated user with removed outdatedSince entry', async () => {
-				setup();
+				const expectedSchoolId = 'expectedSchoolId';
+				const users: Page<UserDO> = new Page([userDoFactory.buildWithId()], 1);
+				userService.findUsers.mockResolvedValue(users);
 
-				await service.unmarkOutdatedUsers('schoolId');
+				await service.restartMigration(expectedSchoolId);
 
-				expect(userService.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
-				]);
-			});
-		});
-
-		describe('when the school has no migration', () => {
-			const setup = () => {
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-			};
-
-			it('should throw an UnprocessableEntityException', async () => {
-				setup();
-
-				const func = async () => service.unmarkOutdatedUsers('schoolId');
-
-				await expect(func).rejects.toThrow(UnprocessableEntityException);
+				expect(userService.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining<UserDO>([
+						{
+							...users.data[0],
+							outdatedSince: undefined,
+						},
+					])
+				);
 			});
 		});
 	});
