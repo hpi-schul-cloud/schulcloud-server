@@ -6,6 +6,10 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsServerIfEnabled,
+} from '@shared/infra/metrics';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
@@ -74,6 +78,8 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
@@ -95,7 +101,12 @@ async function bootstrap() {
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	const port = 3030;
-	rootExpress.listen(port);
+
+	rootExpress.listen(port, () => {
+		logger.log(`Main server started on port ${port}`);
+
+		createAndStartPrometheusMetricsServerIfEnabled(logger);
+	});
 
 	console.log('#################################');
 	console.log(`### Start Server              ###`);
