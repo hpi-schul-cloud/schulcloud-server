@@ -23,18 +23,18 @@ describe('getAPIResponseTimeMetricLabels', () => {
 	});
 
 	it('should return proper metric labels even for a less typical request and response', () => {
-		const mockReq = { method: 'DELETE' } as Request;
+		const mockReq = { method: 'DELETE', baseUrl: '/' } as Request;
 
-		const mockRes = { statusCode: 422 } as Response;
+		const mockRes = { statusCode: 501 } as Response;
 
 		const labels = getAPIResponseTimeMetricLabels(mockReq, mockRes);
 
 		expect(labels).toEqual({
 			method: 'DELETE',
-			base_url: '',
-			full_path: '',
+			base_url: '/',
+			full_path: '/',
 			route_path: '',
-			status_code: 422,
+			status_code: 501,
 		});
 	});
 });
