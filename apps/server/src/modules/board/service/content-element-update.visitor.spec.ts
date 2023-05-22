@@ -1,3 +1,4 @@
+import { InputFormat } from '@shared/domain';
 import {
 	cardFactory,
 	columnBoardFactory,
@@ -16,6 +17,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const card = cardFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
 			return { board, column, card, updater };
@@ -43,7 +45,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a text element using the wrong content', () => {
+	describe('when visiting a richtext element using the wrong content', () => {
 		const setup = () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
@@ -65,6 +67,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const fileElement = fileElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
 			return { fileElement, updater };

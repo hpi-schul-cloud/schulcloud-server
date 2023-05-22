@@ -15,6 +15,10 @@ export class RichTextElement extends BoardComposite<RichTextElementProps> {
 		return this.props.inputFormat;
 	}
 
+	set inputFormat(value: InputFormat) {
+		this.props.inputFormat = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}

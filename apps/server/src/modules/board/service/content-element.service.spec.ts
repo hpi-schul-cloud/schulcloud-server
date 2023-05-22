@@ -167,7 +167,8 @@ describe(ContentElementService.name, () => {
 			const setup = () => {
 				const richTextElement = richTextElementFactory.build();
 				const content = new RichTextContentBody();
-				content.text = 'this has been updated';
+				content.text = '<p>this has been updated</p>';
+				content.inputFormat = InputFormat.RICH_TEXT_CK5;
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 

@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { sanitizeRichText } from '@shared/controller';
 import { InputFormat, RichTextElementNode } from '@shared/domain';
 import {
 	TestApiClient,
@@ -72,6 +73,23 @@ describe(`content element update content (api)`, () => {
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
 
 			expect(result.text).toEqual('hello world');
+		});
+
+		it('should sanitize richtext before changing content of the element', async () => {
+			const { studentAccount, element } = await setup();
+
+			const text = '<iframe>rich text 1</iframe> some more text';
+
+			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+
+			await request.put(
+				`${element.id}/content`,
+				{ data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richtext' } },
+				studentAccount
+			);
+			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+
+			expect(result.text).toEqual(sanitizedText);
 		});
 	});
 

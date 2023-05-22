@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { sanitizeRichText } from '@shared/controller';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class RichTextElementContent {
 	constructor({ text, inputFormat }: RichTextElementContent) {
-		this.text = text;
+		this.text = sanitizeRichText(text, inputFormat);
 		this.inputFormat = inputFormat;
 	}
 

@@ -1,3 +1,4 @@
+import { sanitizeRichText } from '@shared/controller';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitor,
@@ -32,7 +33,8 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		if (this.content instanceof RichTextContentBody) {
-			richTextElement.text = this.content.text;
+			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
+			richTextElement.inputFormat = this.content.inputFormat;
 		} else {
 			this.throwNotHandled(richTextElement);
 		}
