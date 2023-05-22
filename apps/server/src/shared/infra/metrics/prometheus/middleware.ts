@@ -52,8 +52,8 @@ const getAPIResponseTimeMetricLabels = (req: Request, res: Response) => {
 };
 
 const apiResponseTimeHistogram = new client.Histogram({
-	name: 'api_response_time_in_seconds',
-	help: 'API response time in seconds',
+	name: 'sc_api_response_time_in_seconds',
+	help: 'SC API response time in seconds',
 	labelNames: apiResponseTimeMetricLabelNames,
 });
 
