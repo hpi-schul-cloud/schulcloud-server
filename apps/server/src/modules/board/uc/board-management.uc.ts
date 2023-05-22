@@ -68,7 +68,7 @@ export class BoardManagementUc {
 		return Math.floor(Math.random() * (max + min - 1) + min);
 	}
 
-	private ensureCourseExists(courseId: EntityId) {
-		this.em.findOneOrFail(Course, courseId);
+	private async ensureCourseExists(courseId: EntityId): Promise<any> {
+		return this.em.findOneOrFail(Course, courseId);
 	}
 }
