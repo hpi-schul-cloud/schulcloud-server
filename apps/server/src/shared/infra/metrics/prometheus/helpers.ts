@@ -1,13 +1,13 @@
 import { Express } from 'express';
 
-import { LegacyLogger } from '@src/core/logger';
-import { PrometheusMetricsConfig } from '@src/config';
+import { Logger, LoggableMessage } from '@src/core/logger';
+import { Config } from './config';
 import { createAPIResponseTimeMetricMiddleware } from './middleware';
 import { createServer } from './server';
 
-export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: LegacyLogger, app: Express) => {
-	if (!PrometheusMetricsConfig.instance.isEnabled) {
-		logger.debug('Prometheus metrics feature is disabled, omitting adding all the middlewares');
+export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Express) => {
+	if (!Config.instance.isEnabled) {
+		logger.debug(new LoggableMessage('Prometheus metrics feature is disabled, omitting adding metrics middlewares'));
 
 		return;
 	}
@@ -15,20 +15,24 @@ export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: LegacyLogger, a
 	app.use(createAPIResponseTimeMetricMiddleware());
 };
 
-export const createAndStartPrometheusMetricsServerIfEnabled = (logger: LegacyLogger) => {
-	if (!PrometheusMetricsConfig.instance.isEnabled) {
-		logger.debug('Prometheus metrics feature is disabled, omitting creating and starting the server');
+export const createAndStartPrometheusMetricsServerIfEnabled = (logger: Logger) => {
+	if (!Config.instance.isEnabled) {
+		logger.debug(
+			new LoggableMessage('Prometheus metrics feature is disabled, omitting creating and starting the server')
+		);
 
 		return;
 	}
 
-	const server = createServer(PrometheusMetricsConfig.instance.route);
+	const server = createServer(Config.instance.route);
 
-	const { port } = PrometheusMetricsConfig.instance;
+	const { port } = Config.instance;
 
 	server.listen(port, () => {
 		logger.log(
-			`Prometheus metrics server started on port ${port} (metrics route: ${PrometheusMetricsConfig.instance.route})`
+			new LoggableMessage(
+				`Prometheus metrics server successfully started on port ${port} (metrics route: ${Config.instance.route})`
+			)
 		);
 	});
 };

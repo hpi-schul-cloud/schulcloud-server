@@ -10,7 +10,7 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsServerIfEnabled,
 } from '@shared/infra/metrics';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger, LoggableMessage, Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -34,8 +34,10 @@ async function bootstrap() {
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
-	const logger = await nestApp.resolve(LegacyLogger);
-	nestApp.useLogger(logger);
+	const legacyLogger = await nestApp.resolve(LegacyLogger);
+	nestApp.useLogger(legacyLogger);
+
+	const logger = await nestApp.resolve(Logger);
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -89,7 +91,7 @@ async function bootstrap() {
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
 	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		logger.error(req.path, 'DEPRECATED-PATH');
+		legacyLogger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};
 
@@ -103,7 +105,7 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(`Main server started on port ${port}`);
+		logger.log(new LoggableMessage(`Main server successfully started on port ${port}`));
 
 		createAndStartPrometheusMetricsServerIfEnabled(logger);
 	});
