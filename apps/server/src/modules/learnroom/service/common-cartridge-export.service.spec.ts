@@ -43,7 +43,32 @@ describe('CommonCartridgeExportService', () => {
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
 		course = courseFactory.teachersWithId(2).buildWithId();
-		lessons = lessonFactory.buildList(5);
+		lessons = lessonFactory.buildListWithId(5, {
+			contents: [
+				{
+					component: ComponentType.TEXT,
+					title: 'Text',
+					content: {
+						text: 'text',
+					},
+				} as IComponentProperties,
+				{
+					component: ComponentType.ETHERPAD,
+					title: 'Etherpad',
+					content: {
+						url: 'url',
+					},
+				} as IComponentProperties,
+				{
+					component: ComponentType.GEOGEBRA,
+					title: 'Geogebra',
+					content: {
+						materialId: 'materialId',
+					},
+				} as IComponentProperties,
+				{} as IComponentProperties,
+			],
+		});
 		tasks = taskFactory.buildList(5);
 	});
 
@@ -107,5 +132,12 @@ describe('CommonCartridgeExportService', () => {
 			expect(manifest).toContain(course.teachers[1].lastName);
 			expect(manifest).toContain(course.createdAt.getFullYear().toString());
 		});
+		// TODO: will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+		// it('should add tasks as assignments', () => {
+		// 	const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+		// 	tasks.forEach((task) => {
+		// 		expect(manifest).toContain(`i${task.id}`);
+		// 	});
+		// });
 	});
 });

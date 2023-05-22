@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Course, EntityId, Lesson, Task } from '@shared/domain';
+import { EntityId, Lesson, IComponentProperties, Course } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
-import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
-import { ICommonCartridgeLessonContentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element';
-import { IComponentProperties, IComponentTextProperties } from '@src/shared/domain/entity/lesson.entity';
+import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import { CourseService } from './course.service';
-import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from '../common-cartridge';
+import {
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
+	CommonCartridgeFileBuilder,
+	CommonCartridgeVersion,
+	CommonCartridgeResourceType,
+} from '../common-cartridge';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -16,60 +20,91 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
+	async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0
+	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 		const builder = new CommonCartridgeFileBuilder({
 			identifier: `i${course.id}`,
 			title: course.name,
+			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
 			currentYear: course.createdAt.getFullYear().toString(),
-		})
-			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-			.addAssignments(this.mapTasksToAssignments(tasks));
+		});
+		lessons.forEach((lesson) => {
+			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			lesson.contents.forEach((content) => {
+				const resourceProps = this.mapContentToResource(lesson.id, content, version);
+				if (resourceProps) {
+					organizationBuilder.addResourceToOrganization(resourceProps);
+				}
+			});
+		});
+
+		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+		// const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		// const builder = new CommonCartridgeFileBuilder({
+		// 	identifier: `i${course.id}`,
+		// 	title: course.name,
+		// })
+		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
+		// 	.addAssignments(this.mapTasksToAssignments(tasks));
+		// return builder.build();
+
 		return builder.build();
 	}
 
-	private mapLessonsToOrganizationItems(lessons: Lesson[]): ICommonCartridgeOrganizationProps[] {
-		return lessons.map((lesson) => {
-			return {
-				identifier: `i${lesson.id}`,
-				title: lesson.name,
-				contents: this.mapContentsToLesson(lesson.contents),
-			};
-		});
+	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
+		return {
+			identifier: `i${lesson.id}`,
+			version,
+			title: lesson.name,
+			resources: [],
+		};
 	}
 
-	private mapTasksToAssignments(tasks: Task[]): ICommonCartridgeAssignmentProps[] {
-		return tasks.map((task) => {
+	private mapContentToResource(
+		lessonId: string,
+		content: IComponentProperties,
+		version: CommonCartridgeVersion
+	): ICommonCartridgeResourceProps | undefined {
+		if (content.component === ComponentType.TEXT) {
 			return {
-				identifier: `i${task.id}`,
-				title: task.name,
-				description: task.description,
-			};
-		});
-	}
-
-	/**
-	 * This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.
-	 * @param IComponentProperties
-	 * @return ICommonCartridgeLessonContentProps
-	 * */
-	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
-		return contents.map((content) => {
-			let mappedContent = '';
-
-			if (content.content && (content.content as IComponentTextProperties).text) {
-				mappedContent = (content.content as IComponentTextProperties).text;
-			}
-
-			return {
+				version,
+				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: `i${content._id as string}`,
-				title: content.title as string,
-				content: mappedContent,
+				href: `i${lessonId}/i${content._id as string}.html`,
+				title: content.title,
+				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
-		});
+		}
+
+		if (content.component === ComponentType.GEOGEBRA) {
+			return {
+				version,
+				type: CommonCartridgeResourceType.WEB_LINK,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.xml`,
+				title: content.title,
+				url: `https://www.geogebra.org/m/${content.content.materialId}`,
+			};
+		}
+
+		if (content.component === ComponentType.ETHERPAD) {
+			return {
+				version,
+				type: CommonCartridgeResourceType.WEB_LINK,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.xml`,
+				title: content.title,
+				url: content.content.url,
+			};
+		}
+
+		return undefined;
 	}
 
 	/**

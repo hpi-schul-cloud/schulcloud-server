@@ -1,9 +1,11 @@
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeMetadataProps = {
 	title: string;
 	copyrightOwners: string;
 	currentYear: string;
+	version: CommonCartridgeVersion;
 };
 
 export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
@@ -12,7 +14,7 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 	transform(): Record<string, unknown> {
 		return {
 			schema: 'IMS Common Cartridge',
-			schemaversion: '1.1.0',
+			schemaversion: this.props.version,
 			'mnf:lom': {
 				'mnf:general': {
 					'mnf:title': {

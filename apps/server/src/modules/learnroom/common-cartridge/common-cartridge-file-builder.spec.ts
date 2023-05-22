@@ -1,135 +1,137 @@
 import AdmZip from 'adm-zip';
 import { parseStringPromise } from 'xml2js';
-import { ICommonCartridgeAssignmentProps } from '@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element';
-import { ICommonCartridgeFileBuilderOptions, CommonCartridgeFileBuilder } from './common-cartridge-file-builder';
+import { CommonCartridgeFileBuilder, ICommonCartridgeFileBuilderOptions } from './common-cartridge-file-builder';
+import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
 import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
-import { ICommonCartridgeLessonContentProps } from './common-cartridge-lesson-content-element';
+import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
-	const builderOptions: ICommonCartridgeFileBuilderOptions = {
-		identifier: 'Placeholder Identifier',
-		title: 'Placeholder Title',
+	let archive: AdmZip;
+
+	const getFileContentAsString = (path: string): string | undefined => archive.getEntry(path)?.getData().toString();
+	const fileBuilderOptions: ICommonCartridgeFileBuilderOptions = {
+		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
 		currentYear: 'Placeholder Current Year',
+		title: 'file-title',
 	};
-	const lessonContent: ICommonCartridgeLessonContentProps[] = [
-		{
-			identifier: 'lesson-content-identifier',
-			title: 'lesson-content-title',
-			content: 'lesson-content',
-		},
-		{
-			identifier: 'another-lesson-content-identifier',
-			title: 'another-lesson-content-title',
-			content: 'another-lesson-content',
-		},
-	];
 	const organizationProps: ICommonCartridgeOrganizationProps = {
+		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'organization-identifier',
 		title: 'organization-title',
-		contents: lessonContent,
+		resources: [],
 	};
-	const resourceProps: ICommonCartridgeResourceProps = {
-		identifier: 'resource-identifier',
-		type: 'webcontent',
-		href: 'placeholder.html',
+	const ltiResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_1_0,
+		type: CommonCartridgeResourceType.LTI,
+		identifier: 'lti-identifier',
+		href: 'lti-identifier/lti.xml',
+		title: 'lti-title',
+		description: 'lti-description',
+		url: 'https://to-a-lti-tool.tld',
 	};
-	const assignmentProps: ICommonCartridgeAssignmentProps = {
-		identifier: 'assignment-identifier',
-		title: 'assignment-title',
-		description: 'assignment-description',
+	const webContentResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_1_0,
+		type: CommonCartridgeResourceType.WEB_CONTENT,
+		identifier: 'web-content-identifier',
+		href: 'web-content-identifier/web-content.html',
+		title: 'web-content-title',
+		html: '<h1>Text Resource Title</h1><p>Text Resource Description</p>',
 	};
-	let builder: CommonCartridgeFileBuilder;
+	const webLinkResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_1_0,
+		type: CommonCartridgeResourceType.WEB_LINK,
+		identifier: 'web-content-identifier',
+		href: 'web-content-identifier/web-content.xml',
+		title: 'web-link-title',
+		url: 'https://to-a-web-link.tld',
+	};
 
-	beforeEach(() => {
-		builder = new CommonCartridgeFileBuilder(builderOptions);
+	beforeAll(async () => {
+		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptions).addResourceToFile(webContentResourceProps);
+		fileBuilder
+			.addOrganization(organizationProps)
+			.addResourceToOrganization(ltiResourceProps)
+			.addResourceToOrganization(webLinkResourceProps);
+
+		archive = new AdmZip(await fileBuilder.build());
 	});
 
-	describe('manifest', () => {
-		it('should return valid xml string', async () => {
-			await expect(parseStringPromise(builder.manifest)).resolves.not.toThrow();
+	describe('addOrganization', () => {
+		describe('when adding an organization to the common cartridge file', () => {
+			it('should add organization to manifest', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(organizationProps.identifier);
+			expect(manifest).toContain(builderOptions.copyrightOwners);
+			expect(manifest).toContain(builderOptions.currentYear);
+				expect(manifest).toContain(organizationProps.title);
+			});
+		});
+
+		describe('when adding a resource to an organization', () => {
+			it('should add resource to organization', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(`<title>${ltiResourceProps.title}</title>`);
+			});
+
+			it('should add resource to manifest', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(`<file href="${ltiResourceProps.href}"/>`);
+			});
+
+			it('should create corresponding resource file in archive', () => {
+				expect(getFileContentAsString(ltiResourceProps.href)).toBeTruthy();
+			});
+		});
+	});
+
+	describe('addResourceToFile', () => {
+		describe('when adding a resource to the common cartridge file', () => {
+			it('should add resource to manifest', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(webContentResourceProps.identifier);
+				expect(manifest).toContain(`<file href="${webContentResourceProps.href}"/>`);
+				expect(manifest).not.toContain(webContentResourceProps.title);
+			});
+
+			it('should create corresponding file in archive', () => {
+				expect(getFileContentAsString(webContentResourceProps.href)).toBeTruthy();
+			});
 		});
 	});
 
 	describe('build', () => {
-		it('should return a buffer', async () => {
-			builder.addOrganizationItems([organizationProps]).addResourceItems([resourceProps]);
+		describe('when creating common cartridge archive', () => {
+			it('should create manifest file at archive root', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toBeTruthy();
+			});
 
-			await expect(builder.build()).resolves.toBeInstanceOf(Buffer);
-		});
+			it('should create valid manifest file', async () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				await expect(parseStringPromise(manifest as string)).resolves.not.toThrow();
+			});
 
-		it('should place manifest in root directory', async () => {
-			const buffer = await builder.addOrganizationItems([organizationProps]).addResourceItems([resourceProps]).build();
-			const archive = new AdmZip(buffer);
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-
-			expect(manifest).toContain(builderOptions.title);
-			expect(manifest).toContain(builderOptions.copyrightOwners);
-			expect(manifest).toContain(builderOptions.currentYear);
-			expect(manifest).toContain(organizationProps.title);
-			expect(manifest).toContain(resourceProps.identifier);
-		});
-	});
-
-	describe('addOrganizations', () => {
-		it('should add an organization element to the manifest', () => {
-			builder.addOrganizationItems([organizationProps]);
-
-			expect(builder.manifest).toContain(builderOptions.title);
-			expect(builder.manifest).toContain(organizationProps.title);
-			expect(organizationProps.contents).toBeDefined();
-			expect(builder.manifest).toContain(organizationProps.contents?.[0]?.identifier);
-			expect(builder.manifest).toContain(organizationProps.contents?.[1]?.identifier);
-		});
-
-		it('should not throw an error if the contents of organizationProps is undefined', () => {
-			organizationProps.contents = undefined;
-			expect(() => builder.addOrganizationItems([organizationProps])).not.toThrow();
+			it('should use common cartridge version 1.1.0', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
+			});
 		});
 	});
 
-	describe('addResources', () => {
-		it('should add a resource element to the manifest', () => {
-			builder.addResourceItems([resourceProps]).addResourceItems([resourceProps]);
+	describe('some tests for coverage reasons', () => {
+		// it('throw if resource type is unknown', () => {
+		// 	expect(() => new CommonCartridgeResourceItemElement({} as ICommonCartridgeResourceProps, {})).toThrow();
+		// });
 
-			expect(builder.manifest).toContain(builderOptions.title);
-			expect(builder.manifest).toContain(resourceProps.identifier);
-		});
-	});
-
-	describe('addAssignment', () => {
-		let archive: AdmZip;
-
-		beforeAll(async () => {
-			const buffer = await builder
-				.addOrganizationItems([organizationProps])
-				.addAssignments([assignmentProps])
-				.addResourceItems([resourceProps])
-				.build();
-			archive = new AdmZip(buffer);
-		});
-
-		it('should create an assignment folder', () => {
-			const assignmentFolder = archive.getEntry(assignmentProps.identifier);
-
-			expect(assignmentFolder).toBeDefined();
-		});
-
-		it('should create an assignment manifest which contains title and description', () => {
-			const assignmentManifestFile = archive.getEntry(`${assignmentProps.identifier}/assignment.html`);
-			const assignmentManifest = assignmentManifestFile?.getData().toString();
-
-			expect(assignmentManifestFile).toBeDefined();
-			expect(assignmentManifestFile).toBeDefined();
-			expect(assignmentManifest).toContain(`${assignmentProps.title}`);
-			expect(assignmentManifest).toContain(`${assignmentProps.description}`);
-		});
-
-		it('should add the html file as resource the ims manifest file', () => {
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-
-			expect(manifest).toContain(assignmentProps.identifier);
+		it('should cover CommonCartridgeResourceItemElement', () => {
+			const element = new CommonCartridgeAssignmentResourceItemElement({
+				href: 'href',
+				identifier: 'identifier',
+				type: 'type',
+			});
+			expect(() => element.transform()).not.toThrow();
 		});
 	});
 });
