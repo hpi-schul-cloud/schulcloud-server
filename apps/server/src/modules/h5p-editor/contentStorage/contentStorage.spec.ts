@@ -172,7 +172,7 @@ describe('ContentStorage', () => {
 			});
 		});
 		describe('WHEN content is undefined', () => {
-			it('should return false', async () => {
+			it('should throw an error', async () => {
 				const { undefinedContentId } = setup();
 				try {
 					await service.contentExists(undefinedContentId);
@@ -240,6 +240,16 @@ describe('ContentStorage', () => {
 				const { notExistingContentId, notExistingFilename } = setup();
 				const fileExists = await service.fileExists(notExistingContentId, notExistingFilename);
 				expect(fileExists).toEqual(false);
+			});
+		});
+		describe('WHEN conetntId is undefined', () => {
+			it('should throw an error', async () => {
+				const { undefinedContentId, notExistingFilename } = setup();
+				try {
+					await service.fileExists(undefinedContentId, notExistingFilename);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
 			});
 		});
 	});

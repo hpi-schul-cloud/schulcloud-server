@@ -121,8 +121,8 @@ export class ContentStorage implements IContentStorage {
 
 	public fileExists(contentId: string, filename: string): Promise<boolean> {
 		this.checkFilename(filename);
-		if (contentId === undefined) {
-			throw new Error('Error halt.');
+		if (contentId === '' || contentId === undefined) {
+			throw new Error('ContentId is empty or undefined.');
 		}
 		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString(), filename));
 		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
