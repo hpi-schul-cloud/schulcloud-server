@@ -1,16 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementType } from '@shared/domain';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ContentElementService } from '../service';
+import { AuthorizationService } from '@src/modules/authorization';
+import { ObjectId } from 'bson';
+import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
 	let module: TestingModule;
 	let uc: CardUc;
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let cardService: DeepMocked<CardService>;
 	let elementService: DeepMocked<ContentElementService>;
 
@@ -18,6 +22,14 @@ describe(CardUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardUc,
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
+				},
 				{
 					provide: CardService,
 					useValue: createMock<CardService>(),
@@ -34,6 +46,11 @@ describe(CardUc.name, () => {
 		}).compile();
 
 		uc = module.get(CardUc);
+		authorizationService = module.get(AuthorizationService);
+		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+		);
 		cardService = module.get(CardService);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
@@ -146,6 +163,15 @@ describe(CardUc.name, () => {
 				const user = userFactory.build();
 				const element = textElementFactory.build();
 				const card = cardFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: element.id,
+				});
+
+				boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 				return { user, card, element };
 			};
