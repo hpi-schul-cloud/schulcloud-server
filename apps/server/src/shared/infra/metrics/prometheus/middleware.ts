@@ -38,7 +38,7 @@ class ResponseInfo {
 
 const apiResponseTimeMetricLabelNames = ['method', 'base_url', 'full_path', 'route_path', 'status_code'];
 
-const getAPIResponseTimeMetricLabels = (req: Request, res: Response) => {
+export const getAPIResponseTimeMetricLabels = (req: Request, res: Response) => {
 	const reqInfo = new RequestInfo(req);
 	const resInfo = new ResponseInfo(res);
 
