@@ -163,7 +163,7 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('update', () => {
-		describe('when element is a richtext element', () => {
+		describe('when element is a rich text element', () => {
 			const setup = () => {
 				const richTextElement = richTextElementFactory.build();
 				const content = new RichTextContentBody();

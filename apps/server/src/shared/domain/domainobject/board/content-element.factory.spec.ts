@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { ContentElementFactory } from './content-element.factory';
 import { FileElement } from './file-element.do';
-import { RichTextElement } from './richtext-element.do';
+import { RichTextElement } from './rich-text-element.do';
 import { ContentElementType } from './types/content-elements.enum';
 
 describe(ContentElementFactory.name, () => {

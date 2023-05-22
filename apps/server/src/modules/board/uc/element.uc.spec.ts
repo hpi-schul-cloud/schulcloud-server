@@ -36,7 +36,7 @@ describe(ElementUc.name, () => {
 	});
 
 	describe('updateElementContent', () => {
-		describe('update richtext element', () => {
+		describe('update rich text element', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const richTextElement = richTextElementFactory.build();

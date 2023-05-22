@@ -1,7 +1,7 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 import { AnyContentElementResponse } from '../element';
-import { RichTextElementResponse } from '../element/richtext-element.response';
+import { RichTextElementResponse } from '../element/rich-text-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 

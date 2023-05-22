@@ -26,7 +26,7 @@ import {
 	MoveCardBodyParams,
 	RenameBodyParams,
 } from './dto';
-import { RichTextElementResponse } from './dto/element/richtext-element.response';
+import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')

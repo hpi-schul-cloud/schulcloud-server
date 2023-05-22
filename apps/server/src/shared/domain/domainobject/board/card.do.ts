@@ -1,6 +1,6 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { FileElement } from './file-element.do';
-import { RichTextElement } from './richtext-element.do';
+import { RichTextElement } from './rich-text-element.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export class Card extends BoardComposite<CardProps> {

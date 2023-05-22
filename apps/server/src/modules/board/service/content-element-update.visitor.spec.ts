@@ -45,7 +45,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a richtext element using the wrong content', () => {
+	describe('when visiting a rich text element using the wrong content', () => {
 		const setup = () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();

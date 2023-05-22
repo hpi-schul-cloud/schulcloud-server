@@ -106,7 +106,7 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a richtext element composite', () => {
+	describe('when visiting a rich text element composite', () => {
 		it('should create or update the node', () => {
 			const richTextElement = richTextElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');

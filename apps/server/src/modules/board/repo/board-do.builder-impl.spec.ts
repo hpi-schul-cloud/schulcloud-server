@@ -146,7 +146,7 @@ describe(BoardDoBuilderImpl.name, () => {
 		});
 	});
 
-	describe('when building an richtext element', () => {
+	describe('when building an rich text element', () => {
 		it('should work without descendants', () => {
 			const richTextElementNode = richTextElementNodeFactory.build();
 
@@ -155,7 +155,7 @@ describe(BoardDoBuilderImpl.name, () => {
 			expect(domainObject.constructor.name).toBe('RichTextElement');
 		});
 
-		it('should throw error if richtextElement is not a leaf', () => {
+		it('should throw error if richTextElement is not a leaf', () => {
 			const richTextElementNode = richTextElementNodeFactory.buildWithId();
 			const columnNode = columnNodeFactory.buildWithId({ parent: richTextElementNode });
 

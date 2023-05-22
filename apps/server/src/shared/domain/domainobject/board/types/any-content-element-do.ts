@@ -1,5 +1,5 @@
 import { FileElement } from '../file-element.do';
-import { RichTextElement } from '../richtext-element.do';
+import { RichTextElement } from '../rich-text-element.do';
 import type { AnyBoardDo } from './any-board-do';
 
 export type AnyContentElementDo = RichTextElement | FileElement;

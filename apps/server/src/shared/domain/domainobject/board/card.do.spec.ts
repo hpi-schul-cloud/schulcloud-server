@@ -5,7 +5,7 @@ import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(Card.name, () => {
 	describe('isAllowedAsChild', () => {
-		it('should allow richtext element objects', () => {
+		it('should allow rich text element objects', () => {
 			const card = cardFactory.build();
 			const richTextElement = richTextElementFactory.build();
 			expect(card.isAllowedAsChild(richTextElement)).toBe(true);

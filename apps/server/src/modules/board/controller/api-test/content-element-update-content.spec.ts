@@ -55,7 +55,7 @@ describe(`content element update content (api)`, () => {
 
 			const response = await request.put(
 				`${element.id}/content`,
-				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richtext' } },
+				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
 				studentAccount
 			);
 
@@ -67,7 +67,7 @@ describe(`content element update content (api)`, () => {
 
 			await request.put(
 				`${element.id}/content`,
-				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richtext' } },
+				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
 				studentAccount
 			);
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
@@ -75,7 +75,7 @@ describe(`content element update content (api)`, () => {
 			expect(result.text).toEqual('hello world');
 		});
 
-		it('should sanitize richtext before changing content of the element', async () => {
+		it('should sanitize rich text before changing content of the element', async () => {
 			const { studentAccount, element } = await setup();
 
 			const text = '<iframe>rich text 1</iframe> some more text';
@@ -84,7 +84,7 @@ describe(`content element update content (api)`, () => {
 
 			await request.put(
 				`${element.id}/content`,
-				{ data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richtext' } },
+				{ data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
 				studentAccount
 			);
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
