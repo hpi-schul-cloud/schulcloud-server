@@ -1,10 +1,7 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, School, System, User } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { School, System, User, Account } from '@shared/domain';
 import {
 	accountFactory,
 	cleanupCollections,
@@ -13,18 +10,19 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
-import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
-import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { ServerTestModule } from '@src/modules/server';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import MockAdapter from 'axios-mock-adapter';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import axios from 'axios';
+import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { UUID } from 'bson';
+import { OauthTokenResponse } from '@src/modules/oauth/service/dto';
+import { SanisResponse, SanisRole } from '@src/modules/provisioning';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
 jest.mock('jwks-rsa', () => () => {
@@ -85,33 +83,28 @@ describe('UserLoginMigrationController (API)', () => {
 				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
 				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: School = schoolFactory.buildWithId({
+					oauthMigrationStart: date,
+					oauthMigrationFinished: date,
+					oauthMigrationFinalFinish: date,
+					oauthMigrationMandatory: date,
 					systems: [sourceSystem],
-				});
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: date,
-					mandatorySince: date,
-					closedAt: date,
-					finishedAt: date,
 				});
 				const user: User = userFactory.buildWithId({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
 
 				currentUser = mapUserToCurrentUser(user);
 
 				return {
 					sourceSystem,
 					targetSystem,
+					school,
 					user,
-					userLoginMigration,
 				};
 			};
 
 			it('should return the users migration', async () => {
-				const { sourceSystem, targetSystem, user, userLoginMigration } = await setup();
+				const { sourceSystem, targetSystem, school, user } = await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.get(`/user-login-migrations`)
@@ -123,10 +116,10 @@ describe('UserLoginMigrationController (API)', () => {
 						{
 							sourceSystemId: sourceSystem.id,
 							targetSystemId: targetSystem.id,
-							startedAt: userLoginMigration.startedAt.toISOString(),
-							closedAt: userLoginMigration.closedAt?.toISOString(),
-							finishedAt: userLoginMigration.finishedAt?.toISOString(),
-							mandatorySince: userLoginMigration.mandatorySince?.toISOString(),
+							startedAt: school.oauthMigrationStart?.toISOString(),
+							closedAt: school.oauthMigrationFinished?.toISOString(),
+							finishedAt: school.oauthMigrationFinalFinish?.toISOString(),
+							mandatorySince: school.oauthMigrationMandatory?.toISOString(),
 						},
 					],
 					total: 1,
@@ -215,13 +208,7 @@ describe('UserLoginMigrationController (API)', () => {
 					systems: [sourceSystem],
 					officialSchoolNumber,
 					externalId,
-				});
-
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: new Date('2022-12-17T03:24:00'),
+					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
 				});
 
 				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
@@ -232,7 +219,7 @@ describe('UserLoginMigrationController (API)', () => {
 					username: user.email,
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
@@ -287,13 +274,7 @@ describe('UserLoginMigrationController (API)', () => {
 					systems: [sourceSystem],
 					officialSchoolNumber,
 					externalId,
-				});
-
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
-					school,
-					targetSystem,
-					sourceSystem,
-					startedAt: new Date('2022-12-17T03:24:00'),
+					oauthMigrationPossible: new Date('2022-12-17T03:24:00'),
 				});
 
 				const user: User = userFactory.buildWithId({ externalId: 'externalUserId', school });
@@ -304,7 +285,7 @@ describe('UserLoginMigrationController (API)', () => {
 					username: user.email,
 				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, account]);
 				em.clear();
 
 				currentUser = mapUserToCurrentUser(user);
