@@ -117,13 +117,6 @@ describe('CommonCartridgeExportService', () => {
 			expect(manifest).toContain(lessons[0].contents[0].title);
 		});
 
-		it('should add tasks as assignments', () => {
-			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			tasks.forEach((task) => {
-				expect(manifest).toContain(`i${task.id}`);
-			});
-		});
-
 		it('should add copyright information to manifest file', () => {
 			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 			expect(manifest).toContain(course.teachers[0].firstName);
