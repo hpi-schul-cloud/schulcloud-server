@@ -21,25 +21,13 @@ import path from 'path';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
-	private deletedFolderName = 'trash';
-
-	private maxFileLength: number;
-
 	constructor(
 		protected contentPath: string,
 		protected options?: {
 			invalidCharactersRegexp?: RegExp;
 			maxPathLength?: number;
 		}
-	) {
-		this.maxFileLength = (options?.maxPathLength ?? 255) - (contentPath.length + 1) - 23;
-
-		if (this.maxFileLength < 20) {
-			throw new Error(
-				'The path of content directory is too long to add files to it. Put the directory into a different location.'
-			);
-		}
-	}
+	) {}
 
 	public async addContent(
 		metadata: IContentMetadata,
@@ -50,6 +38,10 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === null || contentId === undefined) {
 			contentId = this.createContentId();
 		}
+		if (contentId === '') {
+			throw new Error('Error generating contentId.');
+		}
+
 		try {
 			fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
 			await this.existsOrCreateDir(contentId);
@@ -63,7 +55,7 @@ export class ContentStorage implements IContentStorage {
 			);
 		} catch (error) {
 			await fsPromises.rm(path.join(this.getContentPath(), contentId.toString()));
-			throw new Error('storage-file-implementations:error-creating-content');
+			throw new Error('Error creating content.');
 		}
 		return contentId;
 	}
@@ -72,7 +64,7 @@ export class ContentStorage implements IContentStorage {
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
 		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
-			throw new Error('404: storage-file-implementations:add-file-content-not-found');
+			throw new Error('404: Content not Found at addFile.');
 		}
 
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
@@ -91,10 +83,10 @@ export class ContentStorage implements IContentStorage {
 
 	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
 		const fullPath = path.join(this.getContentPath(), contentId.toString());
-		if (!fs.existsSync(fullPath)) {
-			throw new Error('404: storage-file-implementations:delete-content-not-found');
-		}
 		try {
+			if (!fs.existsSync(fullPath)) {
+				throw new Error('404: Content not Found at deleteContent.');
+			}
 			fs.readdirSync(fullPath).forEach((file, index) => {
 				const curPath = path.join(fullPath, file);
 				fs.unlinkSync(curPath);
@@ -114,7 +106,7 @@ export class ContentStorage implements IContentStorage {
 		const absolutePath = path.join(this.getContentPath(), contentId.toString(), filename);
 		const exist = fs.existsSync(absolutePath);
 		if (!exist) {
-			throw new Error('404: storage-file-implementations:delete-content-file-not-found');
+			throw new Error('404: Content not Found at deleteFile.');
 		}
 		await fsPromises.rm(absolutePath);
 	}
@@ -131,7 +123,7 @@ export class ContentStorage implements IContentStorage {
 
 	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
 		if (!(await this.fileExists(contentId, file))) {
-			throw new Error('404: content-file-missing');
+			throw new Error('404: Content does not found to get file stats.');
 		}
 		const fileStats = await fsPromises.stat(path.join(this.getContentPath(), contentId.toString(), file));
 		return fileStats;
@@ -146,7 +138,7 @@ export class ContentStorage implements IContentStorage {
 	): Promise<Readable> {
 		const exist = <boolean>(<unknown>this.fileExists(contentId, file));
 		if (!exist) {
-			throw new Error('404: content-file-missing');
+			throw new Error('404: Content file missing.');
 		}
 		return <Promise<Readable>>(<unknown>fs.createReadStream(
 			path.join(this.getContentPath(), contentId.toString(), file),
@@ -248,9 +240,9 @@ export class ContentStorage implements IContentStorage {
 			counter += 1;
 			const p = path.join(this.getContentPath(), id.toString());
 			exists = fs.existsSync(p);
-		} while (exists && counter < 5); // try 5x and give up then
+		} while (exists && counter < 10);
 		if (exists) {
-			throw new Error('storage-file-implementations:error-generating-content-id');
+			return '';
 		}
 		return id.toString();
 	}
@@ -269,11 +261,7 @@ export class ContentStorage implements IContentStorage {
 		try {
 			await fsPromises.access(path.join(this.getContentPath(), contentId.toString()));
 		} catch (error) {
-			fs.mkdir(path.join(this.getContentPath(), contentId.toString()), { recursive: true }, (err) => {
-				if (err) {
-					throw new Error(err.toString());
-				}
-			});
+			await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString()));
 		}
 	}
 

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
 import * as fs from 'node:fs';
+import * as fsPromises from 'node:fs/promises';
 import { Readable, Stream } from 'stream';
 import rimraf from 'rimraf';
 import path from 'node:path';
@@ -24,11 +25,19 @@ const setup = () => {
 		minorVersion: 0,
 	};
 
+	const library2: ILibraryName = {
+		machineName: '',
+		majorVersion: 1,
+		minorVersion: 0,
+	};
+
 	const metadata: IContentMetadata = {
 		embedTypes: ['div'],
 		language: 'de',
 		mainLibrary: 'testLibrary',
 		preloadedDependencies: [library],
+		editorDependencies: [library],
+		dynamicDependencies: [library],
 		defaultLanguage: '',
 		license: '',
 		title: 'Test123',
@@ -72,6 +81,10 @@ const setup = () => {
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
 	const undefinedContentId = '';
+	const wrongFilename = 'testName!?.json';
+	const filename2 = 'testFiletoAdd123.json';
+	const emptyContentId = '';
+	const falseContentId = '123#*+!?';
 	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
 
 	return {
@@ -87,6 +100,11 @@ const setup = () => {
 		notExistingFilename,
 		library,
 		undefinedContentId,
+		wrongFilename,
+		filename2,
+		library2,
+		emptyContentId,
+		falseContentId,
 	};
 };
 
@@ -129,7 +147,26 @@ describe('ContentStorage', () => {
 				expect(typeof contentID).toBe('string');
 			});
 		});
-		// TODO: Error case
+		describe('WHEN contentId is empty', () => {
+			it('should throw new error', async () => {
+				const { metadata, content, user, emptyContentId } = setup();
+				try {
+					await service.addContent(metadata, content, user, emptyContentId);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+		});
+		describe('WHEN content can not be added', () => {
+			it('should throw new error', async () => {
+				const { metadata, content, user, falseContentId } = setup();
+				try {
+					await service.addContent(metadata, content, user, falseContentId);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+		});
 	});
 
 	describe('addFile', () => {
@@ -145,10 +182,19 @@ describe('ContentStorage', () => {
 		});
 		describe('WHEN file is not created successfully', () => {
 			it('should throw an error', async () => {
-				const { stream, notExistingContentId } = setup();
-				const filename = 'testFiletoAdd123.json';
+				const { stream, notExistingContentId, filename2 } = setup();
 				try {
-					await service.addFile(notExistingContentId, filename, stream);
+					await service.addFile(notExistingContentId, filename2, stream);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+		});
+		describe('WHEN filename has special characters', () => {
+			it('should throw an error', async () => {
+				const { stream, notExistingContentId, wrongFilename } = setup();
+				try {
+					await service.addFile(notExistingContentId, wrongFilename, stream);
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}
@@ -354,6 +400,15 @@ describe('ContentStorage', () => {
 				expect(usage).toBeDefined();
 				expect(usage.asMainLibrary).toBeGreaterThan(0);
 				expect(usage.asDependency).toBeGreaterThan(0);
+			});
+		});
+		describe('WHEN file exists and does not have a library', () => {
+			it('should return 0 dependecies and libaries', async () => {
+				const { library2 } = setup();
+				const usage = await service.getUsage(library2);
+				expect(usage).toBeDefined();
+				expect(usage.asMainLibrary).toEqual(0);
+				expect(usage.asDependency).toEqual(0);
 			});
 		});
 	});
