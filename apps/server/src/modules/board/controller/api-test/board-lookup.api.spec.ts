@@ -2,11 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { BoardExternalReferenceType } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
@@ -72,27 +74,24 @@ describe(`board lookup (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
+
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const notOfThisBoardCardNode = cardNodeFactory.buildWithId();
 
-		await em.persistAndFlush([
-			user,
-			columnBoardNode,
-			columnNode,
-			cardNode1,
-			cardNode2,
-			cardNode3,
-			notOfThisBoardCardNode,
-		]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
 		em.clear();
 
 		currentUser = mapUserToCurrentUser(user);
 
-		return { columnBoardNode, columnNode, card1: cardNode1, card2: cardNode2, card3: cardNode3, user };
+		return { columnBoardNode, columnNode, card1: cardNode1, card2: cardNode2, card3: cardNode3 };
 	};
 
 	describe('with valid board ids', () => {
@@ -127,5 +126,17 @@ describe(`board lookup (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 200', async () => {
+			const { columnBoardNode } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.get(`${columnBoardNode.id}`);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });
