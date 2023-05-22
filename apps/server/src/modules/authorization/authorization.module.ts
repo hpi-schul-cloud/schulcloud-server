@@ -15,9 +15,7 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
-import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from '../board/repo';
-import { BoardDoAuthorizableService } from '../board/service';
-import { CourseService } from '../learnroom/service/course.service';
+import { BoardModule } from '../board/board.module';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
@@ -25,7 +23,7 @@ import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, SchoolModule, ToolModule],
+	imports: [FeathersModule, BoardModule, LoggerModule, SchoolModule, ToolModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
@@ -43,12 +41,6 @@ import { RuleManager } from './rule-manager';
 		SchoolExternalToolRepo,
 		RuleManager,
 		AuthorizationHelper,
-		// ////
-		BoardDoAuthorizableService,
-		CourseService,
-		BoardDoRepo,
-		BoardNodeRepo,
-		RecursiveDeleteVisitor,
 	],
 	exports: [FeathersAuthorizationService, AuthorizationService],
 })

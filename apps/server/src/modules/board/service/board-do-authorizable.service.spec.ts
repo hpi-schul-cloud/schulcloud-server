@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, BoardRoles } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory } from '@shared/testing/factory/domainobject';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { BoardDoRepo } from '../repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
 
@@ -11,7 +11,7 @@ describe(BoardDoAuthorizableService.name, () => {
 	let module: TestingModule;
 	let service: BoardDoAuthorizableService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
-	let courseService: DeepMocked<CourseService>;
+	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,15 +22,15 @@ describe(BoardDoAuthorizableService.name, () => {
 					useValue: createMock<BoardDoRepo>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(BoardDoAuthorizableService);
 		boardDoRepo = module.get(BoardDoRepo);
-		courseService = module.get(CourseService);
+		courseRepo = module.get(CourseRepo);
 		await setupEntities();
 	});
 
@@ -91,7 +91,7 @@ describe(BoardDoAuthorizableService.name, () => {
 				const course = courseFactory.buildWithId({ teachers: [teacher], students });
 				const board = columnBoardFactory.build({ context: { type: BoardExternalReferenceType.Course, id: course.id } });
 				boardDoRepo.findById.mockResolvedValueOnce(board);
-				courseService.findById.mockResolvedValueOnce(course);
+				courseRepo.findById.mockResolvedValueOnce(course);
 				return { board, teacherId: teacher.id, studentIds: students.map((s) => s.id) };
 			};
 

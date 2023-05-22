@@ -9,13 +9,13 @@ import {
 	EntityId,
 	UserBoardRoles,
 } from '@shared/domain';
+import { CourseRepo } from '@shared/repo';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class BoardDoAuthorizableService implements AuthorizationLoaderService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly courseService: CourseService) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly courseRepo: CourseRepo) {}
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
@@ -32,7 +32,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
 		if (rootBoardDo instanceof ColumnBoard) {
 			if (rootBoardDo.context.type === BoardExternalReferenceType.Course) {
-				const course = await this.courseService.findById(rootBoardDo.context.id);
+				const course = await this.courseRepo.findById(rootBoardDo.context.id);
 				const users = this.mapCourseUsersToUsergroup(course);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
