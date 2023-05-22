@@ -24,7 +24,7 @@ export class CommonCartridgeExportService {
 			identifier: `i${course.id}`,
 			title: course.name,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
-			currentYear: course.createdAt.toLocaleDateString(),
+			currentYear: course.createdAt.getFullYear().toString(),
 		})
 			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
 			.addAssignments(this.mapTasksToAssignments(tasks));
