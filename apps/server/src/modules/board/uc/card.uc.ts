@@ -81,11 +81,11 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context = { action, requiredPermissions: [] };
-		const promises = boardDos.map((boardDo) => {
-			return this.boardDoAuthorizableService.getBoardAuthorizable(boardDo).then((boardDoAuthorizable) => {
-				return { boardDoAuthorizable, boardDo };
-			});
-		});
+		const promises = boardDos.map((boardDo) =>
+			this.boardDoAuthorizableService
+				.getBoardAuthorizable(boardDo)
+				.then((boardDoAuthorizable) => ({ boardDoAuthorizable, boardDo }))
+		);
 		const result = await Promise.all(promises);
 
 		const allowed = result.reduce((allowedDos: T[], { boardDoAuthorizable, boardDo }) => {
