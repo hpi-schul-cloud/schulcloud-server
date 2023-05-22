@@ -6,7 +6,7 @@ import {
 	schoolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, Permission, SchoolDO, SchoolExternalToolDO } from '@shared/domain';
+import { ContextExternalToolDO, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../interface';
@@ -110,8 +110,10 @@ describe('ContextExternalToolService', () => {
 	describe('getContextExternalToolById is called', () => {
 		describe('when contextExternalToolId is given', () => {
 			const setup = () => {
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({ schoolId: school.id });
+				const schoolId: string = schoolDOFactory.buildWithId().id as string;
+				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					schoolId,
+				});
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
 					.build();
