@@ -1,11 +1,6 @@
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { Column } from './column.do';
-import type {
-	AnyBoardDo,
-	BoardCompositeVisitor,
-	BoardCompositeVisitorAsync,
-	BoardExternalReferenceType,
-} from './types';
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from './types';
 
 export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 	get title(): string {
@@ -16,11 +11,11 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 		this.props.title = title;
 	}
 
-	get context() {
+	get context(): BoardExternalReference {
 		return this.props.context;
 	}
 
-	set context(context: { type: BoardExternalReferenceType; id: string }) {
+	set context(context: BoardExternalReference) {
 		this.props.context = context;
 	}
 
@@ -40,8 +35,5 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 
 export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
-	context: {
-		type: BoardExternalReferenceType;
-		id: string;
-	};
+	context: BoardExternalReference;
 }
