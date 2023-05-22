@@ -105,6 +105,7 @@ describe('CommonCartridgeExportService', () => {
 			expect(manifest).toContain(course.teachers[0].lastName);
 			expect(manifest).toContain(course.teachers[1].firstName);
 			expect(manifest).toContain(course.teachers[1].lastName);
+			expect(manifest).toContain(course.createdAt.toLocaleDateString());
 		});
 	});
 });
