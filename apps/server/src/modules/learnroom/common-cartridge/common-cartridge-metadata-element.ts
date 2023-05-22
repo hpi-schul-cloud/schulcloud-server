@@ -3,6 +3,8 @@ import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeMetadataProps = {
 	title: string;
+	copyrightOwners: string;
+	currentYear: string;
 	version: CommonCartridgeVersion;
 };
 
@@ -17,6 +19,14 @@ export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {
 				'mnf:general': {
 					'mnf:title': {
 						'mnf:string': this.props.title,
+					},
+				},
+				'mnf:rights': {
+					'mnf:copyrightAndOtherRestrictions': {
+						'mnf:value': 'yes',
+					},
+					'mnf:description': {
+						'mnf:string': `${this.props.currentYear} ${this.props.copyrightOwners}`,
 					},
 				},
 			},
