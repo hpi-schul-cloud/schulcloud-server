@@ -71,6 +71,7 @@ const setup = () => {
 
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
+	const undefinedContentId = '';
 	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
 
 	return {
@@ -85,6 +86,7 @@ const setup = () => {
 		filename1,
 		notExistingFilename,
 		library,
+		undefinedContentId,
 	};
 };
 
@@ -167,6 +169,16 @@ describe('ContentStorage', () => {
 				const { notExistingContentId } = setup();
 				const contentExists = await service.contentExists(notExistingContentId);
 				expect(contentExists).toEqual(false);
+			});
+		});
+		describe('WHEN content is undefined', () => {
+			it('should return false', async () => {
+				const { undefinedContentId } = setup();
+				try {
+					await service.contentExists(undefinedContentId);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
 			});
 		});
 	});
