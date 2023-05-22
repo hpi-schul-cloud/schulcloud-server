@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId, Permission, User, SchoolExternalToolDO } from '@shared/domain';
 import { setupEntities, userFactory, schoolExternalToolDOFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
@@ -77,7 +77,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.School,
+					AuthorizableReferenceType.School,
 					schoolId,
 					{
 						action: Action.read,
@@ -138,7 +138,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.SchoolExternalTool,
+					AuthorizableReferenceType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -176,7 +176,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.School,
+					AuthorizableReferenceType.School,
 					schoolId,
 					{
 						action: Action.read,
@@ -214,7 +214,7 @@ describe('SchoolExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.SchoolExternalTool,
+					AuthorizableReferenceType.SchoolExternalTool,
 					schoolExternalToolId,
 					{
 						action: Action.read,
@@ -256,7 +256,7 @@ describe('SchoolExternalToolUc', () => {
 
 			expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 				user.id,
-				AllowedAuthorizationEntityType.SchoolExternalTool,
+				AuthorizableReferenceType.SchoolExternalTool,
 				schoolExternalToolId,
 				{
 					action: Action.read,

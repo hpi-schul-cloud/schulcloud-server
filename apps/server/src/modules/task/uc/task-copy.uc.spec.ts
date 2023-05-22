@@ -3,17 +3,13 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain';
+import { BaseDO, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import {
-	Action,
-	AllowedAuthorizationEntityType,
-	AuthorizableObject,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import { TaskCopyService } from '../service';
 import { TaskCopyUC } from './task-copy.uc';
 
@@ -220,7 +216,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 				expect(authorisation.checkPermissionByReferences).toBeCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.Course,
+					AuthorizableReferenceType.Course,
 					course.id,
 					{
 						action: Action.write,
@@ -270,7 +266,8 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== task);
+					// authorisation should not be mocked
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => e !== task);
 					return { user, course, lesson, task };
 				};
 
@@ -297,7 +294,8 @@ describe('task copy uc', () => {
 					const task = taskFactory.buildWithId();
 					userRepo.findById.mockResolvedValue(user);
 					taskRepo.findById.mockResolvedValue(task);
-					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => e !== course);
+					// authorisation should not be mocked
+					authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => e !== course);
 					authorisation.checkPermissionByReferences.mockImplementation(() => {
 						throw new ForbiddenException();
 					});
@@ -365,7 +363,8 @@ describe('task copy uc', () => {
 				taskRepo.findById.mockResolvedValue(task);
 				courseRepo.findById.mockResolvedValue(course);
 				lessonRepo.findById.mockResolvedValue(lesson);
-				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject) => {
+				// Authorisation should not be mocked
+				authorisation.hasPermission.mockImplementation((u: User, e: AuthorizableObject | BaseDO) => {
 					if (e === lesson) return false;
 					return true;
 				});
