@@ -104,7 +104,7 @@ describe('ContextExternalToolUc', () => {
 
 				return {
 					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id,
+					contextExternalToolId: contextExternalTool.id as string,
 					userId,
 				};
 			};
