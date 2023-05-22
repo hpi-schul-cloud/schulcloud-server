@@ -142,7 +142,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 			a: ['href', 'name', 'target', 'rel'],
 			figure: ['class'],
 			mark: ['class'],
-			span: ['class'],
+			span: ['class', 'style'],
 		},
 	},
 
