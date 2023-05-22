@@ -232,4 +232,33 @@ describe('ContextExternalToolService', () => {
 			});
 		});
 	});
+
+	describe('findById is called', () => {
+		describe('when id is given', () => {
+			const setup = () => {
+				const schoolId: string = schoolDOFactory.buildWithId().id as string;
+				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build({
+					schoolId,
+				});
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string, schoolExternalTool.schoolId)
+					.build();
+
+				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should return a contextExternalTool', async () => {
+				const { contextExternalTool } = setup();
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool]);
+
+				const result: ContextExternalToolDO = await service.findById(contextExternalTool.id as string);
+
+				expect(result).toEqual(contextExternalTool);
+			});
+		});
+	});
 });
