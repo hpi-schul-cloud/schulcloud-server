@@ -146,7 +146,7 @@ describe(BoardDoBuilderImpl.name, () => {
 		});
 	});
 
-	describe('when building an rich text element', () => {
+	describe('when building a rich text element', () => {
 		it('should work without descendants', () => {
 			const richTextElementNode = richTextElementNodeFactory.build();
 
