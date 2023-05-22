@@ -2,16 +2,11 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { EntityId } from '@shared/domain';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContext,
-	AuthorizationLoaderService,
-	AuthorizationService,
-} from '@src/modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { ContextTypeMapper } from './mapper';
 
 @Injectable()
-export class ContextExternalToolService implements AuthorizationLoaderService {
+export class ContextExternalToolService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
 		@Inject(forwardRef(() => AuthorizationService))
@@ -68,9 +63,5 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 			contextExternalToolDO.contextId,
 			context
 		);
-	}
-
-	findById(id: EntityId): Promise<ContextExternalToolDO> {
-		return this.getContextExternalToolById(id);
 	}
 }

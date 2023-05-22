@@ -129,7 +129,9 @@ describe('ContextExternalToolService', () => {
 				const { contextExternalTool } = setup();
 				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool]);
 
-				const result: ContextExternalToolDO = await service.getContextExternalToolById(contextExternalTool.id);
+				const result: ContextExternalToolDO = await service.getContextExternalToolById(
+					contextExternalTool.id as string
+				);
 
 				expect(result).toEqual(contextExternalTool);
 			});

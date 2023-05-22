@@ -1,17 +1,12 @@
 import { DeepPartial } from 'fishery';
-import {
-	ContextExternalProps,
-	ContextExternalToolDO,
-	CustomParameterEntryDO,
-	SchoolExternalToolRefDO,
-} from '@shared/domain/domainobject/tool';
+import { ContextExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/tool';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolDO> {
 	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial<ContextExternalToolDO> = {
-			schoolToolRef: new SchoolExternalToolRefDO({ schoolToolId, schoolId }),
+			schoolToolRef: { schoolToolId, schoolId },
 		};
 		return this.params(params);
 	}
@@ -20,10 +15,9 @@ class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, 
 export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
 	ContextExternalToolDO,
 	({ sequence }) => {
-		const props: ContextExternalProps = {
-			id: `id-${sequence}`,
+		return {
 			updatedAt: new Date(),
-			schoolToolRef: new SchoolExternalToolRefDO({ schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' }),
+			schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
 			contextId: 'courseId',
 			contextType: ToolContextType.COURSE,
 			contextToolName: 'My Course Tool 1',
@@ -31,6 +25,5 @@ export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
 			toolVersion: 1,
 			createdAt: new Date(),
 		};
-		return new ContextExternalToolDO(props);
 	}
 );

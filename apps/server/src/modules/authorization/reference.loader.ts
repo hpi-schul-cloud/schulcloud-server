@@ -2,6 +2,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { BaseDO, EntityId, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
+	ContextExternalToolRepo,
 	CourseGroupRepo,
 	CourseRepo,
 	LessonRepo,
@@ -14,7 +15,6 @@ import {
 } from '@shared/repo';
 import { BoardNodeService } from '@src/modules/board';
 import { AuthorizableReferenceType } from './types';
-import { ContextExternalToolService } from '../tool/service';
 
 // replace later with general "base" do-repo
 type RepoType =
@@ -28,7 +28,7 @@ type RepoType =
 	| SubmissionRepo
 	| SchoolExternalToolRepo
 	| BoardNodeService
-	| ContextExternalToolService;
+	| ContextExternalToolRepo;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -50,7 +50,7 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolRepo: ContextExternalToolRepo
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -62,7 +62,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeService });
-		this.repos.set(AuthorizableReferenceType.ContextExternalTool, { repo: this.contextExternalToolService });
+		this.repos.set(AuthorizableReferenceType.ContextExternalTool, { repo: this.contextExternalToolRepo });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {
