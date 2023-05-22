@@ -6,9 +6,9 @@ import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
+import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { CourseExternalTool, ExternalTool, SchoolExternalTool } from './external-tools';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
@@ -39,7 +39,7 @@ export const ALL_ENTITIES = [
 	FileElementNode,
 	TextElementNode,
 	Course,
-	CourseExternalTool,
+	ContextExternalTool,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,

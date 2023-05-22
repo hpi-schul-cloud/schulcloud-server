@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContentElementType } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { CardService } from '../service/card.service';
 import { CardUc } from './card.uc';
@@ -27,8 +27,8 @@ describe(CardUc.name, () => {
 					useValue: createMock<ContentElementService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -46,7 +46,7 @@ describe(CardUc.name, () => {
 	describe('findCards', () => {
 		describe('when finding many cards', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const cards = cardFactory.buildList(3);
 				const cardIds = cards.map((c) => c.id);
 
@@ -75,7 +75,7 @@ describe(CardUc.name, () => {
 	describe('createElement', () => {
 		describe('when creating a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const card = cardFactory.build();
 				const element = textElementFactory.build();
 
@@ -114,7 +114,7 @@ describe(CardUc.name, () => {
 	describe('deleteElement', () => {
 		describe('when deleting a content element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const user = userFactory.build();
 				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
@@ -143,8 +143,8 @@ describe(CardUc.name, () => {
 	describe('moveElement', () => {
 		describe('when moving an element', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
-				const element = textElementFactory.buildWithId();
+				const user = userFactory.build();
+				const element = textElementFactory.build();
 				const card = cardFactory.build();
 
 				return { user, card, element };

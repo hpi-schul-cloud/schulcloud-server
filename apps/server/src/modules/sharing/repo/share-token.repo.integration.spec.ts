@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, schoolFactory, shareTokenFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from './share-token.repo';
 
@@ -18,8 +18,8 @@ describe('ShareTokenRepo', () => {
 			providers: [
 				ShareTokenRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

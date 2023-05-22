@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common';
-import { Actions, Course, ITaskUpdate, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Course, ITaskUpdate, Permission, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -14,7 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@src/modules';
+import { Action, AuthorizationService } from '@src/modules';
 import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
@@ -206,7 +206,7 @@ describe('TaskService', () => {
 			it('should check for course permission to create the task in a course', async () => {
 				await taskService.create(user.id, { name: 'test', courseId: course.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -215,7 +215,7 @@ describe('TaskService', () => {
 				lessonRepo.findById.mockResolvedValue(lesson);
 				await taskService.create(user.id, { name: 'test', courseId: course.id, lessonId: lesson.id });
 				expect(authorizationService.checkPermission).toBeCalledWith(user, lesson, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -335,7 +335,7 @@ describe('TaskService', () => {
 				};
 				await taskService.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [Permission.HOMEWORK_EDIT],
 				});
 			});
@@ -346,7 +346,7 @@ describe('TaskService', () => {
 				};
 				await taskService.update(user.id, task.id, params);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, course, {
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [],
 				});
 			});
@@ -505,7 +505,7 @@ describe('TaskService', () => {
 			it('should check for permission to view the task', async () => {
 				await taskService.find(user.id, task.id);
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					action: Actions.read,
+					action: Action.read,
 					requiredPermissions: [Permission.HOMEWORK_VIEW],
 				});
 			});

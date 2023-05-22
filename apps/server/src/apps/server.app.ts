@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -30,7 +30,7 @@ async function bootstrap() {
 	const orm = nestApp.get(MikroORM);
 
 	// WinstonLogger
-	const logger = await nestApp.resolve(Logger);
+	const logger = await nestApp.resolve(LegacyLogger);
 	nestApp.useLogger(logger);
 
 	// load the legacy feathers/express server

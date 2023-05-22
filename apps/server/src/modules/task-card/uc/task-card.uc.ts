@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
-import { CardType, Course, EntityId, Permission, PermissionContextBuilder, TaskCard, User } from '@shared/domain';
+import { CardType, Course, EntityId, Permission, TaskCard, User } from '@shared/domain';
 import { CardElement, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
 import { ITaskCardProps } from '@shared/domain/entity/task-card.entity';
 import { CardElementRepo, CourseRepo, TaskCardRepo } from '@shared/repo';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { TaskService } from '@src/modules/task/service';
 import { ITaskCardCRUD } from '../interface';
 
@@ -25,7 +25,7 @@ export class TaskCardUc {
 		}
 
 		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 
 		this.validateDueDate({ params, course, user });
 
@@ -68,7 +68,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.read([Permission.TASK_CARD_VIEW]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.read([Permission.TASK_CARD_VIEW])
+			)
 		) {
 			throw new ForbiddenException();
 		}
@@ -83,7 +87,11 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
+			)
 		) {
 			throw new ForbiddenException();
 		}
@@ -98,13 +106,17 @@ export class TaskCardUc {
 		const card = await this.taskCardRepo.findById(id);
 
 		if (
-			!this.authorizationService.hasPermission(user, card, PermissionContextBuilder.write([Permission.TASK_CARD_EDIT]))
+			!this.authorizationService.hasPermission(
+				user,
+				card,
+				AuthorizationContextBuilder.write([Permission.TASK_CARD_EDIT])
+			)
 		) {
 			throw new ForbiddenException();
 		}
 
 		const course = await this.courseRepo.findById(params.courseId);
-		this.authorizationService.checkPermission(user, course, PermissionContextBuilder.write([]));
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
 
 		this.validateDueDate({ params, course, user });
 

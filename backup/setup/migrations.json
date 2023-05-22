@@ -207,5 +207,27 @@
 			"$date": "2023-04-04T12:25:50.707Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "644bc358c994f501e40c73e0"
+		},
+		"state": "up",
+		"name": "add-context-tool-admin-permission-to-teachers",
+		"createdAt": {
+			"$date": "2023-04-28T11:00:42.924Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6458ecb692a2c4444867d973"
+		},
+		"state": "up",
+		"name": "remove-leave-team-permission-from-user",
+		"createdAt": {
+			"$date": "2023-05-05T07:26:34.051Z"
+		},
+		"__v": 0
 	}
 ]

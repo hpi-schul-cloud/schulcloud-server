@@ -3,15 +3,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission, User } from '@shared/domain';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
-import { Page } from '@shared/domain/domainobject/page';
+import { Permission, User, ExternalToolDO, Page } from '@shared/domain';
 import { setupEntities, userFactory } from '@shared/testing';
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
-import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/school-external-tool.factory';
+import { externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/tool';
 import { ICurrentUser } from '@src/modules/authentication';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ConfigurationScope } from '../interface';
 import { ExternalToolService, SchoolExternalToolService } from '../service';
 import { ExternalToolConfigurationUc } from './external-tool-configuration.uc';
@@ -92,10 +88,10 @@ describe('ExternalToolConfigurationUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.School,
+					AuthorizableReferenceType.School,
 					'schoolId',
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);
@@ -168,10 +164,10 @@ describe('ExternalToolConfigurationUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					user.id,
-					AllowedAuthorizationEntityType.School,
+					AuthorizableReferenceType.School,
 					schoolId,
 					{
-						action: Actions.read,
+						action: Action.read,
 						requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 					}
 				);

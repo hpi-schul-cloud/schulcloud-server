@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
-import { CourseExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
-import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { EntityId, Permission, SchoolExternalToolDO } from '@shared/domain';
+import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
+import { ContextExternalToolService, SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalTool, SchoolExternalToolQueryInput } from './dto';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly courseExternalToolService: CourseExternalToolService,
+		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService
 	) {}
 
@@ -43,22 +41,17 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId): Promise<void> {
-		return this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.School,
-			schoolId,
-			{
-				action: Actions.read,
-				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-			}
-		);
+		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		await this.ensureSchoolExternalToolPermission(userId, schoolExternalToolId);
 
 		await Promise.all([
-			this.courseExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
+			this.contextExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
 			this.schoolExternalToolService.deleteSchoolExternalToolById(schoolExternalToolId),
 		]);
 	}
@@ -92,10 +85,10 @@ export class SchoolExternalToolUc {
 	private async ensureSchoolExternalToolPermission(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		return this.authorizationService.checkPermissionByReferences(
 			userId,
-			AllowedAuthorizationEntityType.SchoolExternalTool,
+			AuthorizableReferenceType.SchoolExternalTool,
 			schoolExternalToolId,
 			{
-				action: Actions.read,
+				action: Action.read,
 				requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
 			}
 		);

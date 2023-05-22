@@ -7,7 +7,7 @@ export * from './card-element.entity';
 export * from './boardnode';
 export * from './course.entity';
 export * from './coursegroup.entity';
-export * from './external-tools';
+export * from './tools';
 export * from './dashboard.entity';
 export * from './dashboard.model.entity';
 export * from './file.entity';

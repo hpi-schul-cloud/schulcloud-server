@@ -5,7 +5,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { ValidationError } from '@shared/common';
@@ -34,8 +34,8 @@ describe('SchoolMigrationService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

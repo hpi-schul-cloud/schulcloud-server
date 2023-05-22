@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PermissionService } from '@shared/domain';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
@@ -10,7 +9,7 @@ import { UserService } from './service/user.service';
 
 @Module({
 	imports: [SchoolModule, RoleModule, AccountModule, LoggerModule],
-	providers: [UserRepo, UserDORepo, UserService, PermissionService],
+	providers: [UserRepo, UserDORepo, UserService],
 	exports: [UserService, UserRepo],
 })
 export class UserModule {}

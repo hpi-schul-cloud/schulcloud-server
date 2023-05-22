@@ -5,12 +5,12 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
-import { PermissionContexts } from '../files-storage.const';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { IGetFileResponse } from '../interface/storage-client';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -54,8 +54,8 @@ describe('FilesStorageUC', () => {
 					useValue: createMock<AntivirusService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -120,7 +120,7 @@ describe('FilesStorageUC', () => {
 					userId,
 					allowedType,
 					fileRecord.parentId,
-					PermissionContexts.read
+					FileStorageAuthorizationContext.read
 				);
 			});
 

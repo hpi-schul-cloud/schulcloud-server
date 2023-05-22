@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { OauthConfig } from '@shared/domain';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { HydraRedirectDto } from '@src/modules/oauth/service/dto/hydra.redirect.dto';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
@@ -15,7 +15,7 @@ export class HydraOauthUc {
 	constructor(
 		private readonly oauthService: OAuthService,
 		private readonly hydraSsoService: HydraSsoService,
-		private logger: Logger
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(HydraOauthUc.name);
 	}

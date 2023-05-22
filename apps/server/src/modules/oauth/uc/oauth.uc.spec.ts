@@ -6,7 +6,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ISession } from '@shared/domain/types/session';
 import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
@@ -53,8 +53,8 @@ describe('OAuthUc', () => {
 			providers: [
 				OauthUc,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: SystemService,

@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ErrorMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -24,8 +24,8 @@ describe('FilesStorageProducer', () => {
 			providers: [
 				FilesStorageProducer,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: AmqpConnection,

@@ -1,35 +1,69 @@
+/* eslint-disable no-await-in-loop */
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger/logger.service';
+import { LegacyLogger } from '@src/core/logger/legacy-logger.service';
 import { FilesRepo } from '@shared/repo';
+import { File } from '@shared/domain';
+import { FileStorageAdapter } from '@shared/infra/filestorage';
 
 @Injectable()
 export class DeleteFilesUc {
-	constructor(private filesRepo: FilesRepo, private logger: Logger) {
+	constructor(
+		private readonly filesRepo: FilesRepo,
+		private readonly fileStorageAdapter: FileStorageAdapter,
+		private readonly logger: LegacyLogger
+	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
-	/**
-	 * Schedules files that have been removed prior removedSince by a user to be removed.
-	 * @param removedSince
-	 */
-	async removeDeletedFilesData(removedSince: Date): Promise<void> {
-		const filesForDeletion = await this.filesRepo.findAllFilesForCleanup(removedSince);
-		const numberOfFiles = filesForDeletion.length;
-		this.logger.log(`${numberOfFiles} files will be deleted`);
+	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
+		let batchCounter = 0;
+		let numberOfFilesInBatch = 0;
+		let numberOfProcessedFiles = 0;
 		const failingFileIds: string[] = [];
-		// eslint-disable-next-line no-restricted-syntax
-		for (const file of filesForDeletion) {
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				await this.filesRepo.deleteFile(file);
-			} catch (err) {
-				failingFileIds.push(file.id);
-				this.logger.error(err);
-			}
-		}
-		this.logger.log(`${numberOfFiles - failingFileIds.length} out of ${numberOfFiles} files were successfully deleted`);
+
+		do {
+			const offset = failingFileIds.length;
+			const files = await this.filesRepo.findFilesForCleanup(thresholdDate, batchSize, offset);
+
+			const promises = files.map((file) => this.deleteFile(file));
+			const results = await Promise.all(promises);
+
+			results.forEach((result) => {
+				if (!result.success) {
+					failingFileIds.push(result.fileId);
+				}
+			});
+
+			numberOfFilesInBatch = files.length;
+			numberOfProcessedFiles += files.length;
+			batchCounter += 1;
+
+			this.logger.log(`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files`);
+		} while (numberOfFilesInBatch > 0);
+
+		this.logger.log(
+			`${
+				numberOfProcessedFiles - failingFileIds.length
+			} out of ${numberOfProcessedFiles} files were successfully deleted`
+		);
+
 		if (failingFileIds.length > 0) {
-			this.logger.error('the following files could not be deleted:', failingFileIds);
+			this.logger.error(`the following files could not be deleted: ${failingFileIds.toString()}`);
+		}
+	}
+
+	private async deleteFile(file: File): Promise<{ fileId: string; success: boolean }> {
+		try {
+			if (!file.isDirectory) {
+				await this.fileStorageAdapter.deleteFile(file);
+			}
+			await this.filesRepo.delete(file);
+
+			return { fileId: file.id, success: true };
+		} catch (error) {
+			this.logger.error(error);
+
+			return { fileId: file.id, success: false };
 		}
 	}
 }

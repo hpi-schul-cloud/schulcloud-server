@@ -1,29 +1,35 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { ForbiddenException, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_RULES, BaseEntity, Permission, PermissionContextBuilder } from '@shared/domain';
-import {
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	roleFactory,
-	schoolFactory,
-	setupEntities,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
+import { Permission } from '@shared/domain';
+import { setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationContextBuilder } from './authorization-context.builder';
+import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { AllowedAuthorizationEntityType } from './interfaces';
+import { ForbiddenLoggableException } from './errors/forbidden.loggable-exception';
 import { ReferenceLoader } from './reference.loader';
-
-class TestEntity extends BaseEntity {}
+import { RuleManager } from './rule-manager';
+import { AuthorizableReferenceType, Rule } from './types';
 
 describe('AuthorizationService', () => {
+	class TestRule implements Rule {
+		constructor(private returnValueOfhasPermission: boolean) {}
+
+		isApplicable(): boolean {
+			return true;
+		}
+
+		hasPermission(): boolean {
+			return this.returnValueOfhasPermission;
+		}
+	}
+
 	let service: AuthorizationService;
+	let ruleManager: DeepMocked<RuleManager>;
 	let loader: DeepMocked<ReferenceLoader>;
+	let authorizationHelper: DeepMocked<AuthorizationHelper>;
+
+	const testPermission = 'CAN_TEST' as Permission;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -31,326 +37,387 @@ describe('AuthorizationService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				AuthorizationService,
-				...ALL_RULES,
+				{
+					provide: RuleManager,
+					useValue: createMock<RuleManager>(),
+				},
 				{
 					provide: ReferenceLoader,
 					useValue: createMock<ReferenceLoader>(),
+				},
+				{
+					provide: AuthorizationHelper,
+					useValue: createMock<AuthorizationHelper>(),
 				},
 			],
 		}).compile();
 
 		service = await module.get(AuthorizationService);
+		ruleManager = await module.get(RuleManager);
 		loader = await module.get(ReferenceLoader);
+		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
 	afterEach(() => {
 		jest.resetAllMocks();
-		jest.restoreAllMocks();
-	});
-
-	describe('hasPermission', () => {
-		describe('when rule not exist', () => {
-			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
-				const user = userFactory.build();
-				const entity = new TestEntity();
-				return { context, entity, user };
-			};
-
-			it('should throw NotImplementedException ', () => {
-				const { context, entity, user } = setup();
-
-				const exec = () => {
-					service.hasPermission(user, entity, context);
-				};
-				expect(exec).toThrowError(NotImplementedException);
-			});
-		});
-
-		describe('when can resolve', () => {
-			const setup = () => {
-				const context = PermissionContextBuilder.read([Permission.BASE_VIEW]);
-				const school = schoolFactory.build();
-				const role = roleFactory.build({ permissions: [Permission.BASE_VIEW] });
-				const user = userFactory.buildWithId({ school, roles: [role] });
-				const course = courseFactory.build({ teachers: [user] });
-				const lesson = lessonFactory.build({ course });
-				const task = taskFactory.build({ creator: user });
-				const submission = submissionFactory.build({ task, student: user });
-				const courseGroup = courseGroupFactory.build({ course });
-				const teamRoleA = roleFactory.build({ permissions: [Permission.CHANGE_TEAM_ROLES] });
-				const teamRole = roleFactory.build({ permissions: [Permission.TEAM_INVITE_EXTERNAL], roles: [teamRoleA] });
-				const team = teamFactory.withRoleAndUserId(teamRole, user.id).build();
-
-				return {
-					context,
-					course,
-					courseGroup,
-					lesson,
-					role,
-					school,
-					submission,
-					task,
-					team,
-					user,
-				};
-			};
-
-			it('lesson', () => {
-				const { context, lesson, user } = setup();
-
-				const response = service.hasPermission(user, lesson, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('tasks', () => {
-				const { context, task, user } = setup();
-
-				const response = service.hasPermission(user, task, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('courses', () => {
-				const { context, course, user } = setup();
-
-				const response = service.hasPermission(user, course, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('school', () => {
-				const { context, school, user } = setup();
-
-				const response = service.hasPermission(user, school, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('user', () => {
-				const { context, user } = setup();
-
-				const response = service.hasPermission(user, user, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('team', () => {
-				const { team, user } = setup();
-
-				const context = PermissionContextBuilder.read([Permission.CHANGE_TEAM_ROLES]);
-				const response = service.hasPermission(user, team, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('courseGroup', () => {
-				const { context, courseGroup, user } = setup();
-
-				const response = service.hasPermission(user, courseGroup, context);
-
-				expect(response).toBe(true);
-			});
-
-			it('submission', () => {
-				const { context, submission, user } = setup();
-
-				const response = service.hasPermission(user, submission, context);
-
-				expect(response).toBe(true);
-			});
-		});
 	});
 
 	describe('checkPermission', () => {
-		describe('when data successfully', () => {
+		describe('when hasPermission returns false', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				const spyHasPermission = jest.spyOn(service, 'hasPermission').mockReturnValue(true);
-				return { context, user, spyHasPermission };
+
+				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(false);
+
+				return { context, user, spy };
 			};
 
-			it('should call AuthorizationService.hasPermission with specific arguments', () => {
-				const { context, user, spyHasPermission } = setup();
-				service.checkPermission(user, user, context);
+			it('should throw ForbiddenLoggableException', () => {
+				const { context, user, spy } = setup();
 
-				expect(spyHasPermission).toBeCalledWith(user, user, context);
+				expect(() => service.checkPermission(user, user, context)).toThrow(ForbiddenLoggableException);
 
-				spyHasPermission.mockRestore();
+				spy.mockRestore();
 			});
 		});
 
-		describe('when data not successfully', () => {
+		describe('when hasPermission returns true', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
+				const context = AuthorizationContextBuilder.read([]);
 				const user = userFactory.build();
-				const spyHasPermission = jest.spyOn(service, 'hasPermission').mockReturnValue(false);
-				return { context, user, spyHasPermission };
+
+				const spy = jest.spyOn(service, 'hasPermission').mockReturnValueOnce(true);
+
+				return { context, user, spy };
 			};
 
-			it('should throw ForbiddenException', () => {
-				const { context, user, spyHasPermission } = setup();
+			it('should not throw', () => {
+				const { context, user, spy } = setup();
 
-				expect(() => service.checkPermission(user, user, context)).toThrowError(ForbiddenException);
+				expect(() => service.checkPermission(user, user, context)).not.toThrow();
 
-				spyHasPermission.mockRestore();
+				spy.mockRestore();
 			});
 		});
 	});
 
-	describe('hasPermissionByReferences', () => {
-		describe('when ReferenceLoader.loadEntity throw an error', () => {
+	describe('hasPermission', () => {
+		describe('when the selected rule returns false', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
-				const userId = new ObjectId().toHexString();
-				const entityName = AllowedAuthorizationEntityType.Course;
-				const entityId = new ObjectId().toHexString();
+				const context = AuthorizationContextBuilder.read([]);
+				const user = userFactory.build();
+				const testRule = new TestRule(false);
 
-				loader.loadEntity.mockRejectedValueOnce(new NotFoundException());
-				const spyGetUserWithPermissions = jest
-					.spyOn(service, 'getUserWithPermissions')
-					.mockRejectedValueOnce(new NotFoundException());
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
 
-				return { context, userId, entityName, entityId, spyGetUserWithPermissions };
+				return { context, user };
 			};
 
-			it('should throw ForbiddenException', async () => {
-				const { context, userId, entityName, entityId, spyGetUserWithPermissions } = setup();
+			it('should return false', () => {
+				const { context, user } = setup();
 
-				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrowError(
-					ForbiddenException
-				);
+				const result = service.hasPermission(user, user, context);
 
-				spyGetUserWithPermissions.mockRestore();
+				expect(result).toBe(false);
 			});
 		});
 
-		describe('when data successfully', () => {
+		describe('when the selected rule returns true', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
-				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
-				const entityName = AllowedAuthorizationEntityType.Course;
-				const entityId = course.id;
-				const spyGetUserWithPermissions = jest.spyOn(service, 'getUserWithPermissions').mockResolvedValueOnce(user);
-				const spyHasPermission = jest.spyOn(service, 'hasPermission').mockReturnValue(true);
-				loader.loadEntity.mockResolvedValueOnce(course);
+				const context = AuthorizationContextBuilder.read([]);
+				const user = userFactory.build();
+				const testRule = new TestRule(true);
 
-				return { context, course, user, entityName, entityId, spyGetUserWithPermissions, spyHasPermission };
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
+
+				return { context, user };
 			};
 
-			it('should call AuthorizationService.getUserWithPermissions with specific arguments', async () => {
-				const { context, user, entityName, entityId, spyGetUserWithPermissions } = setup();
+			it('should return true', () => {
+				const { context, user } = setup();
 
-				await service.hasPermissionByReferences(user.id, entityName, entityId, context);
+				const result = service.hasPermission(user, user, context);
 
-				expect(spyGetUserWithPermissions).toBeCalledWith(user.id);
-
-				spyGetUserWithPermissions.mockRestore();
-			});
-
-			it('should call ReferenceLoader.loadEntity with specific arguments', async () => {
-				const { context, user, entityName, entityId, spyHasPermission } = setup();
-
-				await service.hasPermissionByReferences(user.id, entityName, entityId, context);
-
-				expect(loader.loadEntity).toBeCalledWith(entityName, entityId);
-
-				spyHasPermission.mockRestore();
-			});
-
-			it('should call AuthorizationService.hasPermission with specific arguments', async () => {
-				const { context, user, entityName, course, entityId, spyHasPermission } = setup();
-
-				await service.hasPermissionByReferences(user.id, entityName, entityId, context);
-
-				expect(spyHasPermission).toBeCalledWith(user, course, context);
-
-				spyHasPermission.mockRestore();
-			});
-
-			it('should return true', async () => {
-				const { context, user, entityName, entityId } = setup();
-
-				const result = await service.hasPermissionByReferences(user.id, entityName, entityId, context);
-
-				expect(result).toStrictEqual(true);
+				expect(result).toBe(true);
 			});
 		});
 	});
 
 	describe('checkPermissionByReferences', () => {
-		describe('when hasPermissionByReferences return false', () => {
+		describe('when hasPermissionByReferences returns false', () => {
 			const setup = () => {
-				const context = PermissionContextBuilder.read([]);
-				const userId = new ObjectId().toHexString();
-				const entityName = AllowedAuthorizationEntityType.Course;
-				const entityId = new ObjectId().toHexString();
-				const spyHasPermissionByReferences = jest
-					.spyOn(service, 'hasPermissionByReferences')
-					.mockResolvedValueOnce(false);
+				const context = AuthorizationContextBuilder.read([]);
+				const userId = 'test';
+				const entityId = 'test';
+				const entityName = AuthorizableReferenceType.Course;
 
-				return { context, userId, entityName, entityId, spyHasPermissionByReferences };
+				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(false);
+
+				return { context, userId, entityId, entityName, spy };
 			};
 
-			it('should throw ForbiddenException', async () => {
-				const { context, userId, entityName, entityId, spyHasPermissionByReferences } = setup();
+			it('should reject with ForbiddenLoggableException', async () => {
+				const { context, userId, entityId, entityName, spy } = setup();
 
-				await expect(() =>
-					service.checkPermissionByReferences(userId, entityName, entityId, context)
-				).rejects.toThrowError(ForbiddenException);
+				await expect(service.checkPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+					ForbiddenLoggableException
+				);
 
-				spyHasPermissionByReferences.mockRestore();
+				spy.mockRestore();
+			});
+		});
+
+		describe('when hasPermissionByReferences returns true', () => {
+			const setup = () => {
+				const context = AuthorizationContextBuilder.read([]);
+				const userId = 'test';
+				const entityId = 'test';
+				const entityName = AuthorizableReferenceType.Course;
+
+				const spy = jest.spyOn(service, 'hasPermissionByReferences').mockResolvedValueOnce(true);
+
+				return { context, userId, entityId, entityName, spy };
+			};
+
+			it('should resolve', async () => {
+				const { context, userId, entityId, entityName, spy } = setup();
+
+				await expect(service.checkPermissionByReferences(userId, entityName, entityId, context)).resolves.not.toThrow();
+
+				spy.mockRestore();
+			});
+		});
+	});
+
+	describe('hasPermissionByReferences', () => {
+		describe('when loader throws an error', () => {
+			const setup = () => {
+				const context = AuthorizationContextBuilder.read([]);
+				const userId = 'test';
+				const entityId = 'test';
+				const entityName = AuthorizableReferenceType.Course;
+
+				loader.loadAuthorizableObject.mockRejectedValueOnce(InternalServerErrorException);
+
+				return { context, userId, entityId, entityName };
+			};
+
+			it('should reject with ForbiddenException', async () => {
+				const { context, userId, entityId, entityName } = setup();
+
+				await expect(service.hasPermissionByReferences(userId, entityName, entityId, context)).rejects.toThrow(
+					ForbiddenException
+				);
+			});
+		});
+
+		describe('when the selected rule returns true', () => {
+			const setup = () => {
+				const context = AuthorizationContextBuilder.read([]);
+				const userId = 'test';
+				const entityId = 'test';
+				const entityName = AuthorizableReferenceType.Course;
+				const testRule = new TestRule(true);
+
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
+
+				return { context, userId, entityId, entityName };
+			};
+
+			it('should resolve to true', async () => {
+				const { context, userId, entityId, entityName } = setup();
+
+				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when the selected rule returns false', () => {
+			const setup = () => {
+				const context = AuthorizationContextBuilder.read([]);
+				const userId = 'test';
+				const entityId = 'test';
+				const entityName = AuthorizableReferenceType.Course;
+				const testRule = new TestRule(false);
+
+				ruleManager.selectRule.mockReturnValueOnce(testRule);
+
+				return { context, userId, entityId, entityName };
+			};
+
+			it('should resolve to false', async () => {
+				const { context, userId, entityId, entityName } = setup();
+
+				const result = await service.hasPermissionByReferences(userId, entityName, entityId, context);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('checkAllPermissions', () => {
+		describe('when helper method returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should throw UnauthorizedException', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkAllPermissions(user, requiredPermissions)).toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when helper method returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should not throw', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkAllPermissions(user, requiredPermissions)).not.toThrow();
+			});
+		});
+	});
+
+	describe('hasAllPermissions', () => {
+		describe('when helper method returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return false', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasAllPermissions(user, requiredPermissions);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when helper method returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return true', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasAllPermissions(user, requiredPermissions);
+
+				expect(result).toBe(true);
+			});
+		});
+	});
+
+	describe('checkOneOfPermissions', () => {
+		describe('when helper method returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should throw UnauthorizedException', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkOneOfPermissions(user, requiredPermissions)).toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when helper method returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should not throw', () => {
+				const { user, requiredPermissions } = setup();
+
+				expect(() => service.checkOneOfPermissions(user, requiredPermissions)).not.toThrow();
+			});
+		});
+	});
+
+	describe('hasOneOfPermissions', () => {
+		describe('when helper method returns false', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(false);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return false', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasOneOfPermissions(user, requiredPermissions);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when helper method returns true', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const requiredPermissions = [testPermission];
+
+				authorizationHelper.hasOneOfPermissions.mockReturnValueOnce(true);
+
+				return { user, requiredPermissions };
+			};
+
+			it('should return true', () => {
+				const { user, requiredPermissions } = setup();
+
+				const result = service.hasOneOfPermissions(user, requiredPermissions);
+
+				expect(result).toBe(true);
 			});
 		});
 	});
 
 	describe('getUserWithPermissions', () => {
-		describe('when user successfully', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				loader.getUserWithPermissions.mockResolvedValueOnce(user);
+		it('should return user received from loader', async () => {
+			const userId = 'test';
+			const user = userFactory.build();
+			loader.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				return {
-					user,
-				};
-			};
+			const result = await service.getUserWithPermissions(userId);
 
-			it('should call ReferenceLoader.getUserWithPermissions with specific arguments', async () => {
-				const { user } = setup();
-
-				await service.getUserWithPermissions(user.id);
-
-				expect(loader.getUserWithPermissions).toBeCalledWith(user.id);
-			});
-
-			it('should return user', async () => {
-				const { user } = setup();
-
-				const res = await service.getUserWithPermissions(user.id);
-
-				expect(res).toStrictEqual(user);
-			});
-		});
-
-		describe('when user can not be found', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const error = new NotFoundException();
-
-				loader.getUserWithPermissions.mockRejectedValue(error);
-
-				return {
-					userId,
-					error,
-				};
-			};
-			it('should throw NotFoundException', async () => {
-				const { userId, error } = setup();
-				await expect(service.getUserWithPermissions(userId)).rejects.toThrowError(error);
-			});
+			expect(result).toEqual(user);
 		});
 	});
 });

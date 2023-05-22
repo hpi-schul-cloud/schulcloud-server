@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ISession } from '@shared/domain/types/session';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthenticationService } from '@src/modules/authentication/services/authentication.service';
 import { ProvisioningService } from '@src/modules/provisioning';
@@ -36,7 +36,7 @@ export class OauthUc {
 		private readonly userService: UserService,
 		private readonly userMigrationService: UserMigrationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly logger: Logger
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(OauthUc.name);
 	}

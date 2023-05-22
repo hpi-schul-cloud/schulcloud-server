@@ -1,22 +1,10 @@
-import { EntityName, FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardNode } from '@shared/domain';
 
 @Injectable()
 export class BoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
-
-	async findById<T extends BoardNode>(entityName: EntityName<T>, id: EntityId): Promise<T> {
-		const boardNode = await this.em.findOneOrFail(entityName, id as FilterQuery<T>);
-
-		return boardNode;
-	}
-
-	async findByIds<T extends BoardNode>(entityName: EntityName<T>, ids: EntityId[]): Promise<T[]> {
-		const boardNodes = await this.em.find(entityName, { id: { $in: ids } } as FilterQuery<T>);
-		return boardNodes;
-	}
 
 	async findDescendants(node: BoardNode, depth?: number): Promise<BoardNode[]> {
 		const levelQuery = depth !== undefined ? { $gt: node.level, $lte: node.level + depth } : { $gt: node.level };
@@ -59,27 +47,5 @@ export class BoardNodeRepo {
 			});
 		}
 		return map;
-	}
-
-	async save(boardNode: BoardNode | BoardNode[]) {
-		const boardNodes = Utils.asArray(boardNode);
-
-		// fill identity map with existing board nodes
-		// const boardNodeIds = boardNodes.map((bn) => bn.id);
-		// await this.em.find(BoardNode, { id: { $in: boardNodeIds } });
-		// => should not be be necessary because existing board nodes should
-		//    already be part of the unit of work
-
-		boardNodes.forEach((node) => {
-			const existing = this.em.getUnitOfWork().getById<BoardNode>(BoardNode.name, node.id);
-			if (existing) {
-				const { createdAt, updatedAt } = existing;
-				this.em.assign(existing, { ...node, createdAt, updatedAt });
-			} else {
-				this.em.create(BoardNode, node, { managed: true, persist: true });
-			}
-		});
-
-		await this.em.flush();
 	}
 }

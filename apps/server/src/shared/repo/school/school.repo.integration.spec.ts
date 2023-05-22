@@ -7,7 +7,7 @@ import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolRepo } from '..';
@@ -23,8 +23,8 @@ describe('SchoolRepo', () => {
 			providers: [
 				SchoolRepo,
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();

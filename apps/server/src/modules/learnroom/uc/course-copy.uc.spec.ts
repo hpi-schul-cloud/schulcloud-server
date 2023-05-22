@@ -2,10 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Actions, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain';
 import { boardFactory, courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { Action, AuthorizableReferenceType } from '@src/modules/authorization';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
 import { CopyElementType, CopyStatusEnum } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
@@ -86,10 +86,10 @@ describe('course copy uc', () => {
 			await uc.copyCourse(user.id, course.id);
 			expect(authorization.checkPermissionByReferences).toBeCalledWith(
 				user.id,
-				AllowedAuthorizationEntityType.Course,
+				AuthorizableReferenceType.Course,
 				course.id,
 				{
-					action: Actions.write,
+					action: Action.write,
 					requiredPermissions: [Permission.COURSE_CREATE],
 				}
 			);

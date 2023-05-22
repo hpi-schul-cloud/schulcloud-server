@@ -9,7 +9,7 @@ import { NextcloudStrategy } from '@shared/infra/collaborative-storage/strategy/
 import { PseudonymsRepo } from '@shared/repo/index';
 import { LtiToolRepo } from '@shared/repo/ltitool/index';
 import { setupEntities, userFactory } from '@shared/testing/index';
-import { Logger } from '@src/core/logger';
+import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
@@ -34,7 +34,7 @@ describe('NextCloud Adapter Strategy', () => {
 	let pseudonymsRepo: DeepMocked<PseudonymsRepo>;
 	let ltiToolRepo: DeepMocked<LtiToolRepo>;
 	let nextcloudTool: LtiToolDO;
-	let logger: Logger;
+	let logger: LegacyLogger;
 	const toolName = 'SchulcloudNextcloud';
 
 	afterAll(async () => {
@@ -58,8 +58,8 @@ describe('NextCloud Adapter Strategy', () => {
 					useValue: createMock<PseudonymsRepo>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -67,7 +67,7 @@ describe('NextCloud Adapter Strategy', () => {
 		client = module.get(NextcloudClient);
 		pseudonymsRepo = module.get(PseudonymsRepo);
 		ltiToolRepo = module.get(LtiToolRepo);
-		logger = module.get(Logger);
+		logger = module.get(LegacyLogger);
 		await setupEntities();
 	});
 
@@ -79,8 +79,6 @@ describe('NextCloud Adapter Strategy', () => {
 		nextcloudTool = new LtiToolDO({
 			id: 'toolId',
 			name: toolName,
-			createdAt: new Date('2022-07-20'),
-			updatedAt: new Date('2022-07-20'),
 			isLocal: true,
 			oAuthClientId: 'oauthClientId',
 			secret: 'secret',
