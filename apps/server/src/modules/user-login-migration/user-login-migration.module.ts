@@ -7,12 +7,14 @@ import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
 import {
 	MigrationCheckService,
+	RestartUserLoginMigrationValidationService,
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
 } from './service';
-import { StartUserLoginMigrationCheckService } from './service/start-user-login-migration-check.service';
+import { StartUserLoginMigrationValidationService } from './service/start-user-login-migration-validation.service';
 import { AuthorizationModule } from '../authorization';
+import { CommonUserLoginMigrationService } from './service/common-user-login-migration.service';
 
 @Module({
 	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
@@ -22,14 +24,17 @@ import { AuthorizationModule } from '../authorization';
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
-		StartUserLoginMigrationCheckService,
+		StartUserLoginMigrationValidationService,
+		RestartUserLoginMigrationValidationService,
+		CommonUserLoginMigrationService,
 	],
 	exports: [
 		UserMigrationService,
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
-		StartUserLoginMigrationCheckService,
+		StartUserLoginMigrationValidationService,
+		RestartUserLoginMigrationValidationService,
 	],
 })
 export class UserLoginMigrationModule {}

@@ -7,11 +7,11 @@ import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@s
 import { LegacyLogger } from '@src/core/logger';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { StartUserLoginMigrationError } from '../error';
-import { StartUserLoginMigrationCheckService } from './start-user-login-migration-check.service';
+import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 
-describe('StartUserLoginMigrationCheckService', () => {
+describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
-	let service: StartUserLoginMigrationCheckService;
+	let service: StartUserLoginMigrationValidationService;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
@@ -20,7 +20,7 @@ describe('StartUserLoginMigrationCheckService', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				StartUserLoginMigrationCheckService,
+				StartUserLoginMigrationValidationService,
 				{
 					provide: UserLoginMigrationService,
 					useValue: createMock<UserLoginMigrationService>(),
@@ -40,7 +40,7 @@ describe('StartUserLoginMigrationCheckService', () => {
 			],
 		}).compile();
 
-		service = module.get(StartUserLoginMigrationCheckService);
+		service = module.get(StartUserLoginMigrationValidationService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);

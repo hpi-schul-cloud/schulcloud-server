@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { UserLoginMigrationService } from '../service';
-import { StartUserLoginMigrationCheckService } from '../service/start-user-login-migration-check.service';
+import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
 
 @Injectable()
 export class StartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly startUserLoginMigrationCheckService: StartUserLoginMigrationCheckService,
+		private readonly startUserLoginMigrationCheckService: StartUserLoginMigrationValidationService,
 		private readonly logger: LegacyLogger
 	) {}
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiForbiddenResponse,
@@ -22,6 +22,7 @@ import {
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
 import { StartUserLoginMigrationError } from '../error';
+import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -29,7 +30,8 @@ import { StartUserLoginMigrationError } from '../error';
 export class UserLoginMigrationController {
 	constructor(
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
-		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc
+		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
+		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -71,6 +73,25 @@ export class UserLoginMigrationController {
 	@ApiUnauthorizedResponse()
 	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
+	}
+
+	@Put('restart')
+	@ApiBadRequestResponse({
+		description: 'Preconditions for starting user login migration are not met',
+		type: StartUserLoginMigrationError,
+	})
+	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,
 			currentUser.schoolId
 		);

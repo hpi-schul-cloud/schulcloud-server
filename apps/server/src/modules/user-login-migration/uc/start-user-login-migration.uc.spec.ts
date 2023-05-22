@@ -6,14 +6,14 @@ import { schoolDOFactory } from '@shared/testing';
 import { UserLoginMigrationService } from '../service';
 import { StartUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
-import { StartUserLoginMigrationCheckService } from '../service/start-user-login-migration-check.service';
+import { StartUserLoginMigrationValidationService } from '../service/start-user-login-migration-validation.service';
 
 describe('StartUserLoginMigrationUc', () => {
 	let module: TestingModule;
 	let uc: StartUserLoginMigrationUc;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
-	let startUserLoginMigrationCheckService: DeepMocked<StartUserLoginMigrationCheckService>;
+	let startUserLoginMigrationCheckService: DeepMocked<StartUserLoginMigrationValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,8 +24,8 @@ describe('StartUserLoginMigrationUc', () => {
 					useValue: createMock<UserLoginMigrationService>(),
 				},
 				{
-					provide: StartUserLoginMigrationCheckService,
-					useValue: createMock<StartUserLoginMigrationCheckService>(),
+					provide: StartUserLoginMigrationValidationService,
+					useValue: createMock<StartUserLoginMigrationValidationService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -36,7 +36,7 @@ describe('StartUserLoginMigrationUc', () => {
 
 		uc = module.get(StartUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
-		startUserLoginMigrationCheckService = module.get(StartUserLoginMigrationCheckService);
+		startUserLoginMigrationCheckService = module.get(StartUserLoginMigrationValidationService);
 	});
 
 	afterAll(async () => {
