@@ -126,13 +126,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsEnum(ContentElementType)<br />@ApiProperty({description: &#x27;The type of element&#x27;, enum: ContentElementType, required: true, nullable: false})<br />
+                            @IsEnum(ContentElementType)<br />@ApiProperty({description: &#x27;The type of element&#x27;, enum: ContentElementType, required: true, nullable: false, enumName: &#x27;ContentElementType&#x27;})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/create-content-element.body.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/create-content-element.body.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -162,6 +162,7 @@ export class CreateContentElementBody {
 		enum: ContentElementType,
 		required: true,
 		nullable: false,
+		enumName: &#x27;ContentElementType&#x27;,
 	})
 	type!: ContentElementType;
 }

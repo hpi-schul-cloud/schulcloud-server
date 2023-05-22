@@ -222,7 +222,7 @@ export class TextElementResponse {
 	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ContentElementType, enumName: &#x27;ContentElementType&#x27; })
 	type: ContentElementType.TEXT;
 
 	@ApiProperty()

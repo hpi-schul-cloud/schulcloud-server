@@ -126,13 +126,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({enum: ContentElementType, description: &#x27;the type of the updated element&#x27;})<br />@IsEnum(ContentElementType)<br />
+                            @ApiProperty({enum: ContentElementType, description: &#x27;the type of the updated element&#x27;, enumName: &#x27;ContentElementType&#x27;})<br />@IsEnum(ContentElementType)<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -160,6 +160,7 @@ export abstract class ElementContentBody {
 	@ApiProperty({
 		enum: ContentElementType,
 		description: &#x27;the type of the updated element&#x27;,
+		enumName: &#x27;ContentElementType&#x27;,
 	})
 	@IsEnum(ContentElementType)
 	type!: ContentElementType;
