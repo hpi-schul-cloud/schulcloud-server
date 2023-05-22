@@ -40,6 +40,7 @@ describe(ElementUc.name, () => {
 
 		uc = module.get(ElementUc);
 		authorizationService = module.get(AuthorizationService);
+		authorizationService.checkPermission.mockImplementation(() => {});
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
