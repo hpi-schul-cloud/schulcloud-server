@@ -10,7 +10,7 @@
 		"web": "http://localhost:3100"
 	},
 	"I18N": {
-		"AVAILABLE_LANGUAGES": "de,en,es,ua",
+		"AVAILABLE_LANGUAGES": "de,en,es,uk",
 		"DEFAULT_LANGUAGE": "de",
 		"DEFAULT_TIMEZONE": "Europe/Berlin",
 		"FALLBACK_LANGUAGE": "de"
