@@ -10,7 +10,7 @@ export const richTextElementFactory = BaseFactory.define<RichTextElement, RichTe
 			id: new ObjectId().toHexString(),
 			title: `element #${sequence}`,
 			children: [],
-			text: `<p>text #${sequence}</p>`,
+			text: `<p><b>text</b> #${sequence}</p>`,
 			inputFormat: InputFormat.RICH_TEXT_CK5,
 			createdAt: new Date(),
 			updatedAt: new Date(),

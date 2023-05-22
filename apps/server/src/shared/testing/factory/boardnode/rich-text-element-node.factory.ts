@@ -6,7 +6,7 @@ export const richTextElementNodeFactory = BaseFactory.define<RichTextElementNode
 	RichTextElementNode,
 	({ sequence }) => {
 		return {
-			text: `text #${sequence}`,
+			text: `<p><b>text</b> #${sequence}</p>`,
 			inputFormat: InputFormat.RICH_TEXT_CK5,
 		};
 	}

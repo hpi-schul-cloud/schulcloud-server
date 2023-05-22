@@ -56,7 +56,7 @@ export class BoardManagementUc {
 		return this.generateArray(amount, (i) =>
 			richTextElementNodeFactory.build({
 				parent,
-				text: `Text ${i + 1}`,
+				text: `<p><b>Text</b> ${i + 1}</p>`,
 				inputFormat: InputFormat.RICH_TEXT_CK5,
 				position: i,
 			})
