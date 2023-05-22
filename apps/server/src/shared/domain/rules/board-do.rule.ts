@@ -31,8 +31,7 @@ export class BoardDoRule implements Rule {
 
 		if (
 			context.action === Action.read &&
-			result.roles.includes(BoardRoles.EDITOR) &&
-			result.roles.includes(BoardRoles.READER)
+			(result.roles.includes(BoardRoles.EDITOR) || result.roles.includes(BoardRoles.READER))
 		) {
 			return true;
 		}

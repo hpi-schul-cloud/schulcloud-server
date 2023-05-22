@@ -76,7 +76,7 @@ export class BoardUc {
 		const column = await this.columnService.findById(columnId);
 		const targetBoard = await this.columnBoardService.findById(targetBoardId);
 
-		await this.checkPermission(userId, column, Action.read);
+		await this.checkPermission(userId, column, Action.write);
 		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
@@ -108,7 +108,7 @@ export class BoardUc {
 		const card = await this.cardService.findById(cardId);
 		const targetColumn = await this.columnService.findById(targetColumnId);
 
-		await this.checkPermission(userId, card, Action.read);
+		await this.checkPermission(userId, card, Action.write);
 		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
