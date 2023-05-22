@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileElementFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { Action } from '@src/modules';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
+import { ObjectId } from 'bson';
+import { BoardDoAuthorizable, BoardRoles } from '../domainobject';
 import { Permission } from '../interface';
-import { BoardNodeRule } from './board-node.rule';
+import { BoardDoRule } from './board-do.rule';
 
-describe(BoardNodeRule.name, () => {
-	let service: BoardNodeRule;
+describe(BoardDoRule.name, () => {
+	let service: BoardDoRule;
 	let authorizationHelper: AuthorizationHelper;
 
 	beforeAll(async () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [BoardNodeRule, AuthorizationHelper],
+			providers: [BoardDoRule, AuthorizationHelper],
 		}).compile();
 
-		service = await module.get(BoardNodeRule);
+		service = await module.get(BoardDoRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 	});
 
@@ -24,14 +26,14 @@ describe(BoardNodeRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const entity = fileElementFactory.build();
-				return { user, entity };
+				const boardDoAuthorizable = new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() });
+				return { user, boardDoAuthorizable };
 			};
 
-			it('should return true', () => {
-				const { user, entity } = setup();
+			it('should return true', async () => {
+				const { user, boardDoAuthorizable } = setup();
 
-				const result = service.isApplicable(user, entity);
+				const result = service.isApplicable(user, boardDoAuthorizable);
 
 				expect(result).toStrictEqual(true);
 			});
@@ -60,23 +62,27 @@ describe(BoardNodeRule.name, () => {
 				const permissionB = 'b' as Permission;
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.build({ roles: [role] });
-				const entity = fileElementFactory.build();
-				return { user, entity };
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: new ObjectId().toHexString(),
+				});
+
+				return { user, boardDoAuthorizable };
 			};
 
 			it('should call hasAllPermissions on AuthorizationHelper', () => {
-				const { user, entity } = setup();
+				const { user, boardDoAuthorizable } = setup();
 
 				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+				service.hasPermission(user, boardDoAuthorizable, { action: Action.read, requiredPermissions: [] });
 
 				expect(spy).toBeCalledWith(user, []);
 			});
 
 			it('should return "true"', () => {
-				const { user, entity } = setup();
+				const { user, boardDoAuthorizable } = setup();
 
-				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+				const res = service.hasPermission(user, boardDoAuthorizable, { action: Action.read, requiredPermissions: [] });
 
 				expect(res).toBe(true);
 			});
