@@ -295,27 +295,6 @@ export class ContentStorage implements IContentStorage {
 		return false;
 	}
 
-	private generalSanitizeFilename(filename: string, maxLength: number, invalidCharacterRegex: RegExp): string {
-		let cleanedFilename = filename.replace(invalidCharacterRegex, '');
-
-		let extension = upath.extname(cleanedFilename);
-		let basename = upath.basename(cleanedFilename, extension);
-		const dirname = upath.dirname(cleanedFilename);
-		if (extension === '') {
-			extension = basename;
-			basename = 'file';
-			cleanedFilename = `${dirname}/${basename}${extension}`;
-		}
-
-		const numberOfCharactersToCut = cleanedFilename.length - maxLength;
-		if (numberOfCharactersToCut < 0) {
-			return cleanedFilename;
-		}
-
-		const finalBasenameLength = Math.max(1, basename.length - numberOfCharactersToCut);
-		return `${dirname}/${basename.substring(0, finalBasenameLength)}${extension}`;
-	}
-
 	checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');
 		if (/^[a-zA-Z0-9/.-_]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
