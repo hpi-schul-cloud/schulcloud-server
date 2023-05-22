@@ -95,7 +95,7 @@ describe(`content element create (api)`, () => {
 			expect(response.status).toEqual(201);
 		});
 
-		it('should return the created content element of type TEXT', async () => {
+		it('should return the created content element of type RICH_TEXT', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
