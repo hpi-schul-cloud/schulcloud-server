@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardNode, EntityId } from '@shared/domain';
+import { BoardNode, EntityId, InputFormat } from '@shared/domain';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
@@ -57,6 +57,7 @@ export class BoardManagementUc {
 			richTextElementNodeFactory.build({
 				parent,
 				text: `Text ${i + 1}`,
+				inputFormat: InputFormat.RICH_TEXT_CK5,
 				position: i,
 			})
 		);
