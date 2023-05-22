@@ -248,8 +248,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:71</a></div>
                 </td>
             </tr>
 
@@ -343,8 +343,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="93"
-                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:93</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:95</a></div>
                 </td>
             </tr>
 
@@ -438,8 +438,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="118"
-                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:118</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:120</a></div>
                 </td>
             </tr>
 
@@ -502,7 +502,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, populate)</code>
                 </td>
             </tr>
 
@@ -533,6 +533,7 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -546,6 +547,22 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>populate</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>true</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -586,8 +603,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="127"
-                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:127</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="129"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:129</a></div>
                 </td>
             </tr>
 
@@ -669,8 +686,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:137</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/shared/repo/course/course.repo.ts:139</a></div>
                 </td>
             </tr>
 
@@ -1054,9 +1071,11 @@ export class CourseRepo extends BaseRepo&lt;Course&gt; {
 		return this.save(this.create(course));
 	}
 
-	async findById(id: EntityId): Promise&lt;Course&gt; {
+	async findById(id: EntityId, populate &#x3D; true): Promise&lt;Course&gt; {
 		const course &#x3D; await super.findById(id);
-		await this._em.populate(course, [&#x27;courseGroups&#x27;]);
+		if (populate) {
+			await this._em.populate(course, [&#x27;courseGroups&#x27;, &#x27;teachers&#x27;]);
+		}
 		return course;
 	}
 

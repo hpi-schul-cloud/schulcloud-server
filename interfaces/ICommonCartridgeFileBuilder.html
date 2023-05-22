@@ -133,8 +133,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:28</a></div>
                 </td>
             </tr>
 
@@ -202,8 +202,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:29</a></div>
                 </td>
             </tr>
 
@@ -271,8 +271,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:30</a></div>
                 </td>
             </tr>
 
@@ -311,6 +311,8 @@ import {
 export type ICommonCartridgeFileBuilderOptions &#x3D; {
 	identifier: string;
 	title: string;
+	copyrightOwners: string;
+	currentYear: string;
 	version?: CommonCartridgeVersion;
 };
 
@@ -388,6 +390,8 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 				},
 				{
 					title: this.options.title,
+					copyrightOwners: this.options.copyrightOwners,
+					currentYear: this.options.currentYear,
 					version: this.options.version || CommonCartridgeVersion.V_1_1_0,
 				},
 				organizations,

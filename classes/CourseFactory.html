@@ -115,6 +115,9 @@
                                 <a href="#studentsWithId" >studentsWithId</a>
                             </li>
                             <li>
+                                <a href="#teachersWithId" >teachersWithId</a>
+                            </li>
+                            <li>
                                 <a href="#afterBuild" >afterBuild</a>
                             </li>
                             <li>
@@ -312,6 +315,68 @@
                             <tbody>
                                 <tr>
                                     <td>numberOfStudents</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="teachersWithId"></a>
+                    <span class="name">
+                        <span ><b>teachersWithId</b></span>
+                        <a href="#teachersWithId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>teachersWithId(numberOfTeachers: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:33</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>numberOfTeachers</td>
                                     <td>
                                                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                     </td>
@@ -1406,6 +1471,13 @@ class CourseFactory extends BaseFactory&lt;Course, ICourseProperties&gt; {
 	studentsWithId(numberOfStudents: number): this {
 		const students &#x3D; userFactory.buildListWithId(numberOfStudents);
 		const params: DeepPartial&lt;ICourseProperties&gt; &#x3D; { students };
+
+		return this.params(params);
+	}
+
+	teachersWithId(numberOfTeachers: number): this {
+		const teachers &#x3D; userFactory.buildListWithId(numberOfTeachers);
+		const params: DeepPartial&lt;ICourseProperties&gt; &#x3D; { teachers };
 
 		return this.params(params);
 	}
