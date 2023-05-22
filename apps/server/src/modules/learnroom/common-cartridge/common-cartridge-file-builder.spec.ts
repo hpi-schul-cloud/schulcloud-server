@@ -65,6 +65,8 @@ describe('CommonCartridgeFileBuilder', () => {
 			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
 			expect(manifest).toContain(builderOptions.title);
+			expect(manifest).toContain(builderOptions.copyrightOwners);
+			expect(manifest).toContain(builderOptions.currentYear);
 			expect(manifest).toContain(organizationProps.title);
 			expect(manifest).toContain(resourceProps.identifier);
 		});

@@ -101,7 +101,6 @@ describe('CommonCartridgeExportService', () => {
 
 		it('should add copyright information to manifest file', () => {
 			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
-			expect(manifest).toContain(new Date().getFullYear().toString());
 			expect(manifest).toContain(course.teachers[0].firstName);
 			expect(manifest).toContain(course.teachers[0].lastName);
 			expect(manifest).toContain(course.teachers[1].firstName);
