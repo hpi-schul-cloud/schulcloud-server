@@ -60,9 +60,11 @@ export class CourseRepo extends BaseRepo<Course> {
 		return this.save(this.create(course));
 	}
 
-	async findById(id: EntityId): Promise<Course> {
+	async findById(id: EntityId, populate = true): Promise<Course> {
 		const course = await super.findById(id);
-		await this._em.populate(course, ['courseGroups']);
+		if (populate) {
+			await this._em.populate(course, ['courseGroups', 'teachers']);
+		}
 		return course;
 	}
 

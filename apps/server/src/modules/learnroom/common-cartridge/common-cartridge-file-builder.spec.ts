@@ -12,6 +12,8 @@ describe('CommonCartridgeFileBuilder', () => {
 	const getFileContentAsString = (path: string): string | undefined => archive.getEntry(path)?.getData().toString();
 	const fileBuilderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
+		copyrightOwners: 'Placeholder Copyright',
+		currentYear: 'Placeholder Current Year',
 		title: 'file-title',
 	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
@@ -61,6 +63,8 @@ describe('CommonCartridgeFileBuilder', () => {
 			it('should add organization to manifest', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				expect(manifest).toContain(organizationProps.identifier);
+				expect(manifest).toContain(fileBuilderOptions.copyrightOwners);
+				expect(manifest).toContain(fileBuilderOptions.currentYear);
 				expect(manifest).toContain(organizationProps.title);
 			});
 		});
