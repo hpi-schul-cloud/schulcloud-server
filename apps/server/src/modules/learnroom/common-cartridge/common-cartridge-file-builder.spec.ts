@@ -63,8 +63,8 @@ describe('CommonCartridgeFileBuilder', () => {
 			it('should add organization to manifest', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				expect(manifest).toContain(organizationProps.identifier);
-			expect(manifest).toContain(builderOptions.copyrightOwners);
-			expect(manifest).toContain(builderOptions.currentYear);
+				expect(manifest).toContain(fileBuilderOptions.copyrightOwners);
+				expect(manifest).toContain(fileBuilderOptions.currentYear);
 				expect(manifest).toContain(organizationProps.title);
 			});
 		});
