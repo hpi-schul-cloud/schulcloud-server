@@ -3,10 +3,7 @@ import { parseStringPromise } from 'xml2js';
 import { CommonCartridgeFileBuilder, ICommonCartridgeFileBuilderOptions } from './common-cartridge-file-builder';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
 import { ICommonCartridgeOrganizationProps } from './common-cartridge-organization-item-element';
-import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from './common-cartridge-resource-item-element';
+import { ICommonCartridgeResourceProps } from './common-cartridge-resource-item-element';
 import { CommonCartridgeAssignmentResourceItemElement } from './common-cartridge-assignment-resource-item-element';
 
 describe('CommonCartridgeFileBuilder', () => {
