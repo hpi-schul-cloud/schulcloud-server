@@ -68,6 +68,12 @@
 
 
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/ICommonCartridgeFileBuilder.html" target="_self" >ICommonCartridgeFileBuilder</a></code>
+            </p>
 
 
             <section>
@@ -84,18 +90,12 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#metadata" >metadata</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#options" >options</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#organizations" >organizations</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#resources" >resources</a>
                             </li>
                             <li>
@@ -121,25 +121,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#addAssignments" >addAssignments</a>
+                                <a href="#addOrganization" >addOrganization</a>
                             </li>
                             <li>
-                                <a href="#addOrganizationItems" >addOrganizationItems</a>
-                            </li>
-                            <li>
-                                <a href="#addResourceItems" >addResourceItems</a>
+                                <a href="#addResourceToFile" >addResourceToFile</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#build" >build</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapAssignmentPropsToResourceProps" >mapAssignmentPropsToResourceProps</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapOrganizationAndContentPropsToResourceProps" >mapOrganizationAndContentPropsToResourceProps</a>
                             </li>
                         </ul>
                     </td>
@@ -149,20 +138,6 @@
 
 
 
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#manifest" >manifest</a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
         </tbody>
     </table>
 </section>
@@ -173,12 +148,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(options: <a href="../interfaces/Options.html" target="_self">ICommonCartridgeFileBuilderOptions</a>)</code>
+<code>constructor(options: <a href="../entitys/File.html" target="_self">ICommonCartridgeFileBuilderOptions</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:66</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +174,7 @@
                                                         <td>options</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/Options.html" target="_self" >ICommonCartridgeFileBuilderOptions</a></code>
+                                                                        <code><a href="../entitys/File.html" target="_self" >ICommonCartridgeFileBuilderOptions</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -225,63 +200,10 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="metadata"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>metadata</b></span>
-                        <a href="#metadata"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/Meta.html" target="_self" >CommonCartridgeMetadataElement</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:39</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="options"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>options</b></span>
-                        <a href="#options"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/Options.html" target="_self" >ICommonCartridgeFileBuilderOptions</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:33</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="organizations"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
                         <span ><b>organizations</b></span>
                         <a href="#organizations"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -289,12 +211,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[] as ICommonCartridgeElement[]</code>
+                        <i>Default value : </i><code>new Array&lt;CommonCartridgeOrganizationBuilder&gt;()</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:41</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -308,6 +230,7 @@
                     <a name="resources"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
                         <span ><b>resources</b></span>
                         <a href="#resources"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -315,12 +238,12 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[] as ICommonCartridgeElement[]</code>
+                        <i>Default value : </i><code>new Array&lt;CommonCartridgeResourceItemElement&gt;()</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -347,7 +270,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:37</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -374,7 +297,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -392,32 +315,30 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addAssignments"></a>
+                    <a name="addOrganization"></a>
                     <span class="name">
-                        <span ><b>addAssignments</b></span>
-                        <a href="#addAssignments"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>addOrganization</b></span>
+                        <a href="#addOrganization"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addAssignments(assignments: <a href="../undefineds/ICommonCartridgeAssignmentProps.html" target="_self">ICommonCartridgeAssignmentProps[]</a>)</code>
+<code>addOrganization(props: <a href="../undefineds/ICommonCartridgeOrganizationProps.html" target="_self">ICommonCartridgeOrganizationProps</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:70</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>This method adds assignments xml-items in the exported xml file.</p>
-</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -428,14 +349,13 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
-                                    <td>Description</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>assignments</td>
+                                    <td>props</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeAssignmentProps" target="_self" >ICommonCartridgeAssignmentProps[]</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps</a></code>
                                     </td>
 
                                     <td>
@@ -443,12 +363,6 @@
                                     </td>
 
 
-                                    <td>
-                                        <ul>
-<li>An array of objects that contains the properties of each assignment.</li>
-</ul>
-
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -456,12 +370,11 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/ICommonCartridgeOrganizationBuilder.html" target="_self" >ICommonCartridgeOrganizationBuilder</a></code>
 
                     </div>
                     <div class="io-description">
-                        <p>The CommonCartridgeFileBuilder object.</p>
-
+                        
                     </div>
                 </td>
             </tr>
@@ -471,32 +384,30 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addOrganizationItems"></a>
+                    <a name="addResourceToFile"></a>
                     <span class="name">
-                        <span ><b>addOrganizationItems</b></span>
-                        <a href="#addOrganizationItems"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>addResourceToFile</b></span>
+                        <a href="#addResourceToFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addOrganizationItems(organizations: <a href="../undefineds/ICommonCartridgeOrganizationProps.html" target="_self">ICommonCartridgeOrganizationProps[]</a>)</code>
+<code>addResourceToFile(props: <a href="../undefineds/ICommonCartridgeResourceProps.html" target="_self">ICommonCartridgeResourceProps</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:76</a></div>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-description"><p>This method creates organization xml-items in the exported xml file.</p>
-</div>
 
                     <div class="io-description">
                         <b>Parameters :</b>
@@ -507,14 +418,13 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
-                                    <td>Description</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>organizations</td>
+                                    <td>props</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps[]</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeResourceProps" target="_self" >ICommonCartridgeResourceProps</a></code>
                                     </td>
 
                                     <td>
@@ -522,10 +432,6 @@
                                     </td>
 
 
-                                    <td>
-                                        <p>An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.</p>
-
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -533,91 +439,11 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
+                        <b>Returns : </b>        <code><a href="../interfaces/ICommonCartridgeFileBuilder.html" target="_self" >ICommonCartridgeFileBuilder</a></code>
 
                     </div>
                     <div class="io-description">
-                        <p>The CommonCartridgeFileBuilder object.</p>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="addResourceItems"></a>
-                    <span class="name">
-                        <span ><b>addResourceItems</b></span>
-                        <a href="#addResourceItems"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>addResourceItems(resources: <a href="../undefineds/ICommonCartridgeResourceProps.html" target="_self">ICommonCartridgeResourceProps[]</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="103"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:103</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>This method creates resources xml-items in the exported xml file.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
                         
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>resources</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeResourceProps" target="_self" >ICommonCartridgeResourceProps[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <ul>
-<li>An Array of ICommonCartridgeResourceProps objects that contain the resource properties.</li>
-</ul>
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>The CommonCartridgeFileBuilder object.</p>
-
                     </div>
                 </td>
             </tr>
@@ -645,8 +471,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:85</a></div>
                 </td>
             </tr>
 
@@ -662,377 +488,118 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapAssignmentPropsToResourceProps"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>mapAssignmentPropsToResourceProps</b></span>
-                        <a href="#mapAssignmentPropsToResourceProps"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapAssignmentPropsToResourceProps(assignmentProps: <a href="../undefineds/ICommonCartridgeAssignmentProps.html" target="_self">ICommonCartridgeAssignmentProps</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="147"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:147</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>This private method maps ICommonCartridgeAssignmentProps to ICommonCartridgeAssignmentResourceItemProps.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>assignmentProps</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeAssignmentProps" target="_self" >ICommonCartridgeAssignmentProps</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <ul>
-<li>ICommonCartridgeAssignmentProps</li>
-</ul>
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeAssignmentResourceItemProps" target="_self" >ICommonCartridgeAssignmentResourceItemProps</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>ICommonCartridgeAssignmentResourceItemProps</p>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapOrganizationAndContentPropsToResourceProps"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>mapOrganizationAndContentPropsToResourceProps</b></span>
-                        <a href="#mapOrganizationAndContentPropsToResourceProps"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapOrganizationAndContentPropsToResourceProps(organizationProps: <a href="../undefineds/ICommonCartridgeOrganizationProps.html" target="_self">ICommonCartridgeOrganizationProps</a>, contentProps: <a href="../entitys/Lesson.html" target="_self">ICommonCartridgeLessonContentProps</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="131"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:131</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>This private method maps ICommonCartridgeOrganizationProps and ICommonCartridgeLessonContentProps to ICommonCartridgeResourceProps.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                    <td>Description</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>organizationProps</td>
-                                    <td>
-                                                <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <ul>
-<li>ICommonCartridgeOrganizationProps</li>
-</ul>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>contentProps</td>
-                                    <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >ICommonCartridgeLessonContentProps</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                    <td>
-                                        <ul>
-<li>ICommonCartridgeLessonContentProps</li>
-</ul>
-
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeResourceProps" target="_self" >ICommonCartridgeResourceProps</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>ICommonCartridgeResourceProps</p>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
 
 
 
 
-            <section>
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="manifest"></a>
-                        <span class="name"><b>manifest</b><a href="#manifest"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>manifest()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:52</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import AdmZip from &#x27;adm-zip&#x27;;
 import { Builder } from &#x27;xml2js&#x27;;
-import { CommonCartridgeResourceWrapperElement } from &#x27;./common-cartridge-resource-wrapper-element&#x27;;
-import { CommonCartridgeOrganizationWrapperElement } from &#x27;./common-cartridge-organization-wrapper-element&#x27;;
-import { ICommonCartridgeAssignmentProps } from &#x27;./common-cartridge-assignment-element&#x27;;
-import {
-	ICommonCartridgeAssignmentResourceItemProps,
-	CommonCartridgeAssignmentResourceItemElement,
-} from &#x27;./common-cartridge-assignment-resource-item-element&#x27;;
+import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
 import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { CommonCartridgeMetadataElement } from &#x27;./common-cartridge-metadata-element&#x27;;
+import { CommonCartridgeManifestElement } from &#x27;./common-cartridge-manifest-element&#x27;;
+import {
+	CommonCartridgeResourceItemElement,
+	ICommonCartridgeResourceProps,
+} from &#x27;./common-cartridge-resource-item-element&#x27;;
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
 } from &#x27;./common-cartridge-organization-item-element&#x27;;
-import {
-	ICommonCartridgeResourceProps,
-	CommonCartridgeResourceItemElement,
-} from &#x27;./common-cartridge-resource-item-element&#x27;;
-import { ICommonCartridgeLessonContentProps } from &#x27;./common-cartridge-lesson-content-element&#x27;;
 
 export type ICommonCartridgeFileBuilderOptions &#x3D; {
 	identifier: string;
 	title: string;
+	version?: CommonCartridgeVersion;
 };
 
-/*
-  This class builds a Common Cartridge file according to
-  Common Cartridge 1.1.0 and supports only this format at the moment.
-  For more information look here: https://www.imsglobal.org/cc/index.html
- */
-export class CommonCartridgeFileBuilder {
-	private options: ICommonCartridgeFileBuilderOptions;
+export interface ICommonCartridgeOrganizationBuilder {
+	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
+}
+
+export interface ICommonCartridgeFileBuilder {
+	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
+	build(): Promise&lt;Buffer&gt;;
+}
+
+class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
+	constructor(
+		private readonly props: ICommonCartridgeOrganizationProps,
+		private readonly fileBuilder: ICommonCartridgeFileBuilder,
+		private readonly xmlBuilder: Builder,
+		private readonly zipBuilder: AdmZip
+	) {}
+
+	get organization(): ICommonCartridgeElement {
+		return new CommonCartridgeOrganizationItemElement(this.props);
+	}
+
+	get resources(): ICommonCartridgeElement[] {
+		return this.props.resources.map(
+			(resourceProps) &#x3D;&gt; new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
+		);
+	}
+
+	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
+		const newResource &#x3D; new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
+		this.props.resources.push(props);
+		if (!newResource.canInline()) {
+			this.zipBuilder.addFile(props.href, Buffer.from(newResource.content()));
+		}
+		return this;
+	}
+}
+
+export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
+	private readonly xmlBuilder &#x3D; new Builder();
 
 	private readonly zipBuilder &#x3D; new AdmZip();
 
-	private readonly xmlBuilder &#x3D; new Builder();
+	private readonly organizations &#x3D; new Array&lt;CommonCartridgeOrganizationBuilder&gt;();
 
-	private metadata: CommonCartridgeMetadataElement;
+	private readonly resources &#x3D; new Array&lt;CommonCartridgeResourceItemElement&gt;();
 
-	private organizations &#x3D; [] as ICommonCartridgeElement[];
+	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
 
-	private resources &#x3D; [] as ICommonCartridgeElement[];
-
-	constructor(options: ICommonCartridgeFileBuilderOptions) {
-		this.options &#x3D; options;
-		this.metadata &#x3D; new CommonCartridgeMetadataElement({
-			title: options.title,
-		});
+	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
+		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
+		this.organizations.push(organizationBuilder);
+		return organizationBuilder;
 	}
 
-	get manifest(): string {
-		return this.xmlBuilder.buildObject({
-			manifest: {
-				$: {
-					identifier: this.options.identifier,
-					xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1&#x27;,
-					&#x27;xmlns:mnf&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest&#x27;,
-					&#x27;xmlns:res&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource&#x27;,
-					&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-					&#x27;xsi:schemaLocation&#x27;:
-						&#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd &#x27; +
-						&#x27;http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd &#x27; +
-						&#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd &#x27;,
-				},
-				metadata: this.metadata.transform(),
-				organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
-				resources: new CommonCartridgeResourceWrapperElement(this.resources).transform(),
-			},
-		});
+	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
+		const resource &#x3D; new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
+		if (!resource.canInline()) {
+			this.zipBuilder.addFile(props.href, Buffer.from(resource.content()));
+		}
+		this.resources.push(resource);
+		return this;
 	}
 
 	async build(): Promise&lt;Buffer&gt; {
-		this.zipBuilder.addFile(&#x27;imsmanifest.xml&#x27;, Buffer.from(this.manifest));
+		const organizations &#x3D; this.organizations.map((organization) &#x3D;&gt; organization.organization);
+		const resources &#x3D; this.organizations.flatMap((organization) &#x3D;&gt; organization.resources).concat(this.resources);
+		const manifest &#x3D; this.xmlBuilder.buildObject(
+			new CommonCartridgeManifestElement(
+				{
+					identifier: this.options.identifier,
+				},
+				{
+					title: this.options.title,
+					version: this.options.version || CommonCartridgeVersion.V_1_1_0,
+				},
+				organizations,
+				resources
+			).transform()
+		);
+		this.zipBuilder.addFile(&#x27;imsmanifest.xml&#x27;, Buffer.from(manifest));
 		return this.zipBuilder.toBufferPromise();
-	}
-
-	/**
-	 * This method creates organization xml-items in the exported xml file.
-	 * @param organizations An array of ICommonCartridgeOrganizationProps objects that contain the organization properties.
-	 * @returns The CommonCartridgeFileBuilder object.
-	 */
-	addOrganizationItems(organizations: ICommonCartridgeOrganizationProps[]): CommonCartridgeFileBuilder {
-		organizations.forEach((organizationProps) &#x3D;&gt; {
-			this.organizations.push(new CommonCartridgeOrganizationItemElement(organizationProps));
-			organizationProps.contents?.forEach((contentProps) &#x3D;&gt; {
-				const resourceProps &#x3D; this.mapOrganizationAndContentPropsToResourceProps(organizationProps, contentProps);
-				this.zipBuilder.addFile(
-					resourceProps.href,
-					Buffer.from(&#x60;&lt;h1&gt;${contentProps.title}&lt;/h1&gt;&lt;p&gt;${contentProps.content}&lt;/p&gt;&#x60;)
-				);
-				this.resources.push(new CommonCartridgeResourceItemElement(resourceProps));
-			});
-		});
-		return this;
-	}
-
-	/**
-	 * This method creates resources xml-items in the exported xml file.
-	 * @param resources - An Array of ICommonCartridgeResourceProps objects that contain the resource properties.
-	 * @returns The CommonCartridgeFileBuilder object.
-	 */
-	addResourceItems(resources: ICommonCartridgeResourceProps[]): CommonCartridgeFileBuilder {
-		resources.forEach((resourceProps) &#x3D;&gt; this.resources.push(new CommonCartridgeResourceItemElement(resourceProps)));
-		return this;
-	}
-
-	/**
-	 * This method adds assignments xml-items in the exported xml file.
-	 * @param assignments - An array of objects that contains the properties of each assignment.
-	 * @returns The CommonCartridgeFileBuilder object.
-	 */
-	addAssignments(assignments: ICommonCartridgeAssignmentProps[]): CommonCartridgeFileBuilder {
-		assignments.forEach((assignmentProps) &#x3D;&gt; {
-			const resourceProps &#x3D; this.mapAssignmentPropsToResourceProps(assignmentProps);
-			this.zipBuilder.addFile(
-				resourceProps.href,
-				Buffer.from(&#x60;&lt;h1&gt;${assignmentProps.title}&lt;/h1&gt;${assignmentProps.description}&#x60;)
-			);
-			this.resources.push(new CommonCartridgeAssignmentResourceItemElement(resourceProps));
-		});
-		return this;
-	}
-
-	/**
-	 * This private method maps ICommonCartridgeOrganizationProps and ICommonCartridgeLessonContentProps to ICommonCartridgeResourceProps.
-	 * @param organizationProps - ICommonCartridgeOrganizationProps
-	 * @param contentProps - ICommonCartridgeLessonContentProps
-	 * @returns ICommonCartridgeResourceProps
-	 */
-	private mapOrganizationAndContentPropsToResourceProps(
-		organizationProps: ICommonCartridgeOrganizationProps,
-		contentProps: ICommonCartridgeLessonContentProps
-	): ICommonCartridgeResourceProps {
-		return {
-			identifier: contentProps.identifier,
-			type: &#x27;webcontent&#x27;,
-			href: &#x60;${organizationProps.identifier}/${contentProps.identifier}_content.html&#x60;,
-		};
-	}
-
-	/**
-	 * This private method maps ICommonCartridgeAssignmentProps to ICommonCartridgeAssignmentResourceItemProps.
-	 * @param assignmentProps - ICommonCartridgeAssignmentProps
-	 * @returns ICommonCartridgeAssignmentResourceItemProps
-	 */
-	private mapAssignmentPropsToResourceProps(
-		assignmentProps: ICommonCartridgeAssignmentProps
-	): ICommonCartridgeAssignmentResourceItemProps {
-		return {
-			identifier: assignmentProps.identifier,
-			type: &#x27;webcontent&#x27;,
-			href: &#x60;${assignmentProps.identifier}/assignment.html&#x60;,
-		};
 	}
 }
 </code></pre>

@@ -2532,7 +2532,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeFileBuilder.html" data-type="entity-link" >CommonCartridgeFileBuilder</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeLtiResource.html" data-type="entity-link" >CommonCartridgeLtiResource</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeManifestElement.html" data-type="entity-link" >CommonCartridgeManifestElement</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeMetadataElement.html" data-type="entity-link" >CommonCartridgeMetadataElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeOrganizationBuilder.html" data-type="entity-link" >CommonCartridgeOrganizationBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeOrganizationItemElement.html" data-type="entity-link" >CommonCartridgeOrganizationItemElement</a>
@@ -2545,6 +2554,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeResourceWrapperElement.html" data-type="entity-link" >CommonCartridgeResourceWrapperElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebContentResource.html" data-type="entity-link" >CommonCartridgeWebContentResource</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebLinkResourceElement.html" data-type="entity-link" >CommonCartridgeWebLinkResourceElement</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ConsentRequestBody.html" data-type="entity-link" >ConsentRequestBody</a>
@@ -4307,6 +4322,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ICommonCartridgeElement.html" data-type="entity-link" >ICommonCartridgeElement</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/ICommonCartridgeFile.html" data-type="entity-link" >ICommonCartridgeFile</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ICommonCartridgeFileBuilder.html" data-type="entity-link" >ICommonCartridgeFileBuilder</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/ICommonCartridgeOrganizationBuilder.html" data-type="entity-link" >ICommonCartridgeOrganizationBuilder</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/IComponentEtherpadProperties.html" data-type="entity-link" >IComponentEtherpadProperties</a>
                             </li>
                             <li class="link">
@@ -4320,9 +4344,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IComponentNexboardProperties.html" data-type="entity-link" >IComponentNexboardProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/IComponentProperties.html" data-type="entity-link" >IComponentProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IComponentTextProperties.html" data-type="entity-link" >IComponentTextProperties</a>

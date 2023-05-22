@@ -115,7 +115,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -179,8 +179,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:16</a></div>
                 </td>
             </tr>
 
@@ -206,14 +206,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;mongodb&#x27;;
-import { ICommonCartridgeLessonContentProps } from &#x27;./common-cartridge-lesson-content-element&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;bson&#x27;;
 import { ICommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
+import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
+import { ICommonCartridgeResourceProps } from &#x27;./common-cartridge-resource-item-element&#x27;;
 
 export type ICommonCartridgeOrganizationProps &#x3D; {
 	identifier: string;
-	title?: string;
-	contents?: ICommonCartridgeLessonContentProps[];
+	title: string;
+	version: CommonCartridgeVersion;
+	resources: ICommonCartridgeResourceProps[];
 };
 
 export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeElement {
@@ -225,14 +227,13 @@ export class CommonCartridgeOrganizationItemElement implements ICommonCartridgeE
 				identifier: this.props.identifier,
 			},
 			title: this.props.title,
-			item: this.props.contents?.map((content) &#x3D;&gt; {
+			item: this.props.resources.map((content) &#x3D;&gt; {
 				const newId &#x3D; new ObjectId();
 				return {
 					$: {
 						identifier: &#x60;i${newId.toString()}&#x60;,
 						identifierref: content.identifier,
 					},
-
 					title: content.title,
 				};
 			}),

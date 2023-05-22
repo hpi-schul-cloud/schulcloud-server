@@ -69,6 +69,20 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#defaultVersion" >defaultVersion</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -84,15 +98,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#mapContentsToLesson" >mapContentsToLesson</a>
+                                <a href="#mapContentToResource" >mapContentToResource</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#mapLessonsToOrganizationItems" >mapLessonsToOrganizationItems</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#mapTasksToAssignments" >mapTasksToAssignments</a>
+                                <a href="#mapLessonToOrganization" >mapLessonToOrganization</a>
                             </li>
                         </ul>
                     </td>
@@ -117,7 +127,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -199,15 +209,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -224,6 +234,7 @@
                                     <td>Name</td>
                                     <td>Type</td>
                                     <td>Optional</td>
+                                    <td>Default value</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -237,6 +248,8 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
 
                                 </tr>
                                 <tr>
@@ -249,6 +262,23 @@
                                         No
                                     </td>
 
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>version</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>CommonCartridgeVersion.V_1_1_0</code>
+                                    </td>
 
                                 </tr>
                             </tbody>
@@ -271,100 +301,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapContentsToLesson"></a>
+                    <a name="mapContentToResource"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>mapContentsToLesson</b></span>
-                        <a href="#mapContentsToLesson"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapContentToResource</b></span>
+                        <a href="#mapContentToResource"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapContentsToLesson(contents: <a href="../interfaces/IComponentProperties.html" target="_self">IComponentProperties[]</a>)</code>
+                    <code>mapContentToResource(lessonId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, content: <a href="../undefineds/IComponentProperties.html" target="_self">IComponentProperties</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:57</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-description"><p>This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.</p>
-</div>
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>contents</td>
-                                    <td>
-                                                <code><a href="../interfaces/IComponentProperties.html" target="_self" >IComponentProperties[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Lesson.html" target="_self" >ICommonCartridgeLessonContentProps[]</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        <p>ICommonCartridgeLessonContentProps</p>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapLessonsToOrganizationItems"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>mapLessonsToOrganizationItems</b></span>
-                        <a href="#mapLessonsToOrganizationItems"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapLessonsToOrganizationItems(lessons: <a href="../entitys/Lesson.html" target="_self">Lesson[]</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:69</a></div>
                 </td>
             </tr>
 
@@ -385,9 +341,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>lessons</td>
+                                    <td>lessonId</td>
                                     <td>
-                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson[]</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>content</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#IComponentProperties" target="_self" >IComponentProperties</a></code>
                                     </td>
 
                                     <td>
@@ -402,7 +370,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps[]</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeResourceProps" target="_self" >ICommonCartridgeResourceProps | undefined</a></code>
 
                     </div>
                     <div class="io-description">
@@ -416,26 +384,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapTasksToAssignments"></a>
+                    <a name="mapLessonToOrganization"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
-                        <span ><b>mapTasksToAssignments</b></span>
-                        <a href="#mapTasksToAssignments"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapLessonToOrganization</b></span>
+                        <a href="#mapLessonToOrganization"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapTasksToAssignments(tasks: <a href="../classes/Task.html" target="_self">Task[]</a>)</code>
+                    <code>mapLessonToOrganization(lesson: <a href="../entitys/Lesson.html" target="_self">Lesson</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
                 </td>
             </tr>
 
@@ -456,9 +424,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>tasks</td>
+                                    <td>lesson</td>
                                     <td>
-                                                <code><a href="../classes/Task.html" target="_self" >Task[]</a></code>
+                                                <code><a href="../entitys/Lesson.html" target="_self" >Lesson</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>version</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
                                     </td>
 
                                     <td>
@@ -473,7 +453,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeAssignmentProps" target="_self" >ICommonCartridgeAssignmentProps[]</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps</a></code>
 
                     </div>
                     <div class="io-description">
@@ -484,81 +464,148 @@
         </tbody>
     </table>
 </section>
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultVersion"></a>
+                    <span class="name">
+                        <span ><b>defaultVersion</b></span>
+                        <a href="#defaultVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>CommonCartridgeVersion.V_1_1_0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, Lesson, Task } from &#x27;@shared/domain&#x27;;
+import { EntityId, Lesson, IComponentProperties } from &#x27;@shared/domain&#x27;;
 import { LessonService } from &#x27;@src/modules/lesson/service&#x27;;
 import { TaskService } from &#x27;@src/modules/task/service/task.service&#x27;;
-import { ICommonCartridgeAssignmentProps } from &#x27;@src/modules/learnroom/common-cartridge/common-cartridge-assignment-element&#x27;;
-import { ICommonCartridgeLessonContentProps } from &#x27;@src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element&#x27;;
-import { IComponentProperties, IComponentTextProperties } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
+import { ComponentType } from &#x27;@src/shared/domain/entity/lesson.entity&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
-import { ICommonCartridgeOrganizationProps, CommonCartridgeFileBuilder } from &#x27;../common-cartridge&#x27;;
+import {
+	ICommonCartridgeOrganizationProps,
+	ICommonCartridgeResourceProps,
+	CommonCartridgeFileBuilder,
+	CommonCartridgeVersion,
+	CommonCartridgeResourceType,
+} from &#x27;../common-cartridge&#x27;;
 
 @Injectable()
 export class CommonCartridgeExportService {
+	defaultVersion &#x3D; CommonCartridgeVersion.V_1_1_0;
+
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId): Promise&lt;Buffer&gt; {
+	async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion &#x3D; CommonCartridgeVersion.V_1_1_0
+	): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
 		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
-		const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
 		const builder &#x3D; new CommonCartridgeFileBuilder({
 			identifier: &#x60;i${course.id}&#x60;,
 			title: course.name,
-		})
-			.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
-			.addAssignments(this.mapTasksToAssignments(tasks));
+			version,
+		});
+		lessons.forEach((lesson) &#x3D;&gt; {
+			const organizationBuilder &#x3D; builder.addOrganization(this.mapLessonToOrganization(lesson, version));
+			lesson.contents.forEach((content) &#x3D;&gt; {
+				const resourceProps &#x3D; this.mapContentToResource(lesson.id, content);
+				if (resourceProps) {
+					organizationBuilder.addResourceToOrganization(resourceProps);
+				}
+			});
+		});
+
+		// TODO: add tasks as assignments, will be done in EW-526: https://ticketsystem.dbildungscloud.de/browse/EW-526
+		// const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
+		// const builder &#x3D; new CommonCartridgeFileBuilder({
+		// 	identifier: &#x60;i${course.id}&#x60;,
+		// 	title: course.name,
+		// })
+		// 	.addOrganizationItems(this.mapLessonsToOrganizationItems(lessons))
+		// 	.addAssignments(this.mapTasksToAssignments(tasks));
+		// return builder.build();
+
 		return builder.build();
 	}
 
-	private mapLessonsToOrganizationItems(lessons: Lesson[]): ICommonCartridgeOrganizationProps[] {
-		return lessons.map((lesson) &#x3D;&gt; {
-			return {
-				identifier: &#x60;i${lesson.id}&#x60;,
-				title: lesson.name,
-				contents: this.mapContentsToLesson(lesson.contents),
-			};
-		});
+	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
+		return {
+			identifier: &#x60;i${lesson.id}&#x60;,
+			version,
+			title: lesson.name,
+			resources: [],
+		};
 	}
 
-	private mapTasksToAssignments(tasks: Task[]): ICommonCartridgeAssignmentProps[] {
-		return tasks.map((task) &#x3D;&gt; {
+	private mapContentToResource(
+		lessonId: string,
+		content: IComponentProperties
+	): ICommonCartridgeResourceProps | undefined {
+		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.TEXT) {
 			return {
-				identifier: &#x60;i${task.id}&#x60;,
-				title: task.name,
-				description: task.description,
-			};
-		});
-	}
-
-	/**
-	 * This method gets the text contents of a Lesson as parameter and maps these to an array of Lesson content.
-	 * @param IComponentProperties
-	 * @return ICommonCartridgeLessonContentProps
-	 * */
-	private mapContentsToLesson(contents: IComponentProperties[]): ICommonCartridgeLessonContentProps[] {
-		return contents.map((content) &#x3D;&gt; {
-			let mappedContent &#x3D; &#x27;&#x27;;
-
-			if (content.content &amp;&amp; (content.content as IComponentTextProperties).text) {
-				mappedContent &#x3D; (content.content as IComponentTextProperties).text;
-			}
-
-			return {
+				version: this.defaultVersion,
+				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: &#x60;i${content._id as string}&#x60;,
-				title: content.title as string,
-				content: mappedContent,
+				href: &#x60;i${lessonId}/i${content._id as string}.html&#x60;,
+				title: content.title,
+				html: &#x60;&lt;h1&gt;${content.title}&lt;/h1&gt;&lt;p&gt;${content.content.text}&lt;/p&gt;&#x60;,
 			};
-		});
+		}
+
+		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.GEOGEBRA) {
+			return {
+				version: this.defaultVersion,
+				type: CommonCartridgeResourceType.WEB_LINK,
+				identifier: &#x60;i${content._id as string}&#x60;,
+				href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
+				title: content.title,
+				url: &#x60;https://www.geogebra.org/m/${content.content.materialId}&#x60;,
+			};
+		}
+
+		if (content.component &#x3D;&#x3D;&#x3D; ComponentType.ETHERPAD) {
+			return {
+				version: this.defaultVersion,
+				type: CommonCartridgeResourceType.WEB_LINK,
+				identifier: &#x60;i${content._id as string}&#x60;,
+				href: &#x60;i${lessonId}/i${content._id as string}.xml&#x60;,
+				title: content.title,
+				url: content.content.url,
+			};
+		}
+
+		return undefined;
 	}
 }
 </code></pre>
