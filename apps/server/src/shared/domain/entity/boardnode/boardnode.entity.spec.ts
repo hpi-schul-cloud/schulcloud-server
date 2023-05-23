@@ -18,6 +18,7 @@ describe(BoardNode.name, () => {
 					title: 'column #1',
 					context: { type: BoardExternalReferenceType.Course, id: 'course1' },
 				});
+				column.title = 'hate to get useless sonar lint errors';
 			}).toThrowError();
 		});
 	});
