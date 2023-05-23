@@ -29,24 +29,24 @@ describe(BoardManagementConsole.name, () => {
 		service = module.get(BoardManagementConsole);
 		consoleWriter = module.get(ConsoleWriterService);
 		boarManagementUc = module.get(BoardManagementUc);
-		boarManagementUc.createBoards.mockResolvedValue(new ObjectId().toHexString());
+		boarManagementUc.createBoard.mockResolvedValue(new ObjectId().toHexString());
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('createBoards', () => {
+	describe('createBoard', () => {
 		it('should call the board use case', async () => {
 			const fakeEntityId = new ObjectId().toHexString();
-			await service.createBoards(fakeEntityId);
+			await service.createBoard(fakeEntityId);
 
-			expect(boarManagementUc.createBoards).toHaveBeenCalled();
+			expect(boarManagementUc.createBoard).toHaveBeenCalled();
 		});
 
 		it('should log a report to the console', async () => {
 			const fakeEntityId = new ObjectId().toHexString();
-			await service.createBoards(fakeEntityId);
+			await service.createBoard(fakeEntityId);
 			expect(consoleWriter.info).toHaveBeenCalled();
 		});
 
@@ -59,7 +59,7 @@ describe(BoardManagementConsole.name, () => {
 
 			const fakeEntityId = new ObjectId().toHexString();
 
-			const output = await service.createBoards(fakeEntityId);
+			const output = await service.createBoard(fakeEntityId);
 
 			expect(output).toEqual(report);
 		});

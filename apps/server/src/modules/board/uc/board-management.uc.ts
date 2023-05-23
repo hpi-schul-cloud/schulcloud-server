@@ -8,8 +8,10 @@ import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElement
 export class BoardManagementUc {
 	constructor(private em: EntityManager) {}
 
-	async createBoards(courseId: EntityId): Promise<EntityId> {
-		this.ensureCourseExists(courseId);
+	async createBoard(courseId: EntityId): Promise<EntityId | undefined> {
+		if (!(await this.doesCourseExist(courseId))) {
+			return;
+		}
 
 		const context = { type: BoardExternalReferenceType.Course, id: courseId };
 		const board = columnBoardNodeFactory.build({ context });
@@ -68,7 +70,13 @@ export class BoardManagementUc {
 		return Math.floor(Math.random() * (max + min - 1) + min);
 	}
 
-	private async ensureCourseExists(courseId: EntityId): Promise<any> {
-		return this.em.findOneOrFail(Course, courseId);
+	private async doesCourseExist(courseId: EntityId = ''): Promise<boolean> {
+		try {
+			await this.em.findOneOrFail(Course, courseId);
+			return true;
+		} catch (err) {
+			console.log(`Error: course does not exist (courseId: "${courseId}")`);
+		}
+		return false;
 	}
 }
