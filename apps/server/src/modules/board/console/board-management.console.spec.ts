@@ -47,21 +47,15 @@ describe(BoardManagementConsole.name, () => {
 		it('should log a report to the console', async () => {
 			const fakeEntityId = new ObjectId().toHexString();
 			await service.createBoard(fakeEntityId);
+
 			expect(consoleWriter.info).toHaveBeenCalled();
 		});
 
 		it('should return the report', async () => {
-			let report = '';
-
-			consoleWriter.info.mockImplementationOnce((text) => {
-				report = text;
-			});
-
 			const fakeEntityId = new ObjectId().toHexString();
+			await service.createBoard(fakeEntityId);
 
-			const output = await service.createBoard(fakeEntityId);
-
-			expect(output).toEqual(report);
+			expect(consoleWriter.info).toHaveBeenCalledWith(expect.stringContaining('Success'));
 		});
 	});
 });
