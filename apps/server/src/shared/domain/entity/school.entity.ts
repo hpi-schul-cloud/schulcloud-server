@@ -91,6 +91,7 @@ export class School extends BaseEntity {
 	@OneToOne(() => UserLoginMigration, (userLoginMigration: UserLoginMigration) => userLoginMigration.school, {
 		orphanRemoval: true,
 		nullable: true,
+		fieldName: 'userLoginMigrationId',
 	})
 	userLoginMigration?: UserLoginMigration;
 
@@ -121,6 +122,8 @@ export class School extends BaseEntity {
 		if (props.schoolYear) {
 			this.schoolYear = props.schoolYear;
 		}
-		this.userLoginMigration = props.userLoginMigration;
+		if (props.userLoginMigration) {
+			this.userLoginMigration = props.userLoginMigration;
+		}
 	}
 }

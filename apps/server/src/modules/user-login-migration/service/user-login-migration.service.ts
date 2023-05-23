@@ -39,7 +39,6 @@ export class UserLoginMigrationService {
 			userLoginMigration = await this.createNewMigration(schoolId, schoolDo);
 
 			this.enableOauthMigrationFeature(schoolDo);
-			await this.schoolService.save(schoolDo);
 		}
 
 		if (oauthMigrationPossible === true) {
@@ -59,33 +58,30 @@ export class UserLoginMigrationService {
 		}
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
+		schoolDo.userLoginMigrationId = savedMigration.id;
+		await this.schoolService.save(schoolDo);
 
 		return savedMigration;
 	}
 
 	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const sanisSystem: SystemDto | undefined = oauthSystems.find(
-			(system: SystemDto): boolean => system.alias === 'SANIS'
-		);
+		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
 		if (!sanisSystem) {
 			throw new InternalServerErrorException('Cannot find SANIS system');
 		}
 
-		const systemIds: EntityId[] = school.systems
-			? school.systems.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string))
-			: [];
-		const sourceSystemId = systemIds.length >= 1 ? systemIds[0] : undefined;
+		const systemIds: EntityId[] =
+			school.systems?.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string)) || [];
+		const sourceSystemId = systemIds[0];
 
-		const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+		return new UserLoginMigrationDO({
 			schoolId,
 			targetSystemId: sanisSystem.id as string,
 			sourceSystemId,
 			startedAt: new Date(),
 		});
-
-		return userLoginMigration;
 	}
 
 	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
