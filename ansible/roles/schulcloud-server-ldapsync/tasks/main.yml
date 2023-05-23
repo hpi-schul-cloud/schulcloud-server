@@ -19,7 +19,7 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      apiVersion: batch/v1
+      api_version: batch/v1
       kind: CronJob
       name: api-ldapsync-full-cronjob
 
@@ -29,7 +29,7 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      apiVersion: apps/v1
+      api_version: apps/v1
       kind: Deployment
       name: api-worker-deployment
 

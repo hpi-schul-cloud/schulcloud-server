@@ -19,7 +19,7 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      apiVersion: apps/v1
+      api_version: apps/v1
       kind: Deployment
       name: api-ldap-deployment
 
@@ -29,6 +29,6 @@
       kubeconfig: ~/.kube/config
       state: absent
       namespace: "{{ NAMESPACE }}"
-      apiVersion: v1
+      api_version: v1
       kind: Service
       name: api-ldap-svc
