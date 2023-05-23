@@ -1,15 +1,37 @@
 
   - name: Ldap Sync CronJob
+    when: WITH_LDAP is defined and WITH_LDAP|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-sync-full-cronjob.yml.j2
 
   - name: Ldap Worker Deployment
+    when: WITH_LDAP is defined and WITH_LDAP|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
+
+  - name: Delete Ldap Sync CronJob
+    when: WITH_LDAP is not defined or WITH_LDAP|bool == false
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      api_version: batch/v1
+      kind: CronJob
+      name: api-ldapsync-full-cronjob
+
+  - name: Delete Ldap Worker Deployment
+    when: WITH_LDAP is not defined or WITH_LDAP|bool == false
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      api_version: apps/v1
+      kind: Deployment
+      name: api-worker-deployment
 
   - name: Delete legacy ldapsync deployment
     kubernetes.core.k8s:
