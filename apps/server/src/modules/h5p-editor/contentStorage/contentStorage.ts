@@ -253,9 +253,10 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	private static getRandomId(min: number, max: number): number {
-		const finalMin = Math.ceil(min);
-		const finalMax = Math.floor(max);
-		return Math.floor(Math.random() * (finalMax - finalMin + 1)) + finalMin;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, global-require, @typescript-eslint/no-var-requires
+		const crypto = require('crypto');
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+		return crypto.randomBytes(4).readUInt32BE(0, true);
 	}
 
 	protected getContentPath(): string {
