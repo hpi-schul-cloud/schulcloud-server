@@ -15,6 +15,8 @@ import {
 export type ICommonCartridgeFileBuilderOptions = {
 	identifier: string;
 	title: string;
+	copyrightOwners: string;
+	currentYear: string;
 	version?: CommonCartridgeVersion;
 };
 
@@ -92,6 +94,8 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 				},
 				{
 					title: this.options.title,
+					copyrightOwners: this.options.copyrightOwners,
+					currentYear: this.options.currentYear,
 					version: this.options.version || CommonCartridgeVersion.V_1_1_0,
 				},
 				organizations,
