@@ -1,14 +1,34 @@
 
   - name: Ldap Deployment
+    when: WITH_LDAP_SEPERATION is defined and WITH_LDAP_SEPERATION|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
 
   - name: Ldap service
+    when: WITH_LDAP_SEPERATION is defined and WITH_LDAP_SEPERATION|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: service.yml.j2
 
+  - name: Delete Ldap Deployment
+    when: WITH_LDAP_SEPERATION is not defined or WITH_LDAP_SEPERATION|bool == false
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      api_version: apps/v1
+      kind: Deployment
+      name: api-ldap-deployment
 
+  - name: Delete Ldap service
+    when: WITH_LDAP_SEPERATION is not defined or WITH_LDAP_SEPERATION|bool == false
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      state: absent
+      namespace: "{{ NAMESPACE }}"
+      api_version: v1
+      kind: Service
+      name: api-ldap-svc
