@@ -30,7 +30,7 @@ describe(BoardDoRule.name, () => {
 				return { user, boardDoAuthorizable };
 			};
 
-			it('should return true', async () => {
+			it('should return true', () => {
 				const { user, boardDoAuthorizable } = setup();
 
 				const result = service.isApplicable(user, boardDoAuthorizable);

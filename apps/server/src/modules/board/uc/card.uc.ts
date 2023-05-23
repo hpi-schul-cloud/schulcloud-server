@@ -82,9 +82,9 @@ export class CardUc {
 
 		const context = { action, requiredPermissions: [] };
 		const promises = boardDos.map((boardDo) =>
-			this.boardDoAuthorizableService
-				.getBoardAuthorizable(boardDo)
-				.then((boardDoAuthorizable) => ({ boardDoAuthorizable, boardDo }))
+			this.boardDoAuthorizableService.getBoardAuthorizable(boardDo).then((boardDoAuthorizable) => {
+				return { boardDoAuthorizable, boardDo };
+			})
 		);
 		const result = await Promise.all(promises);
 

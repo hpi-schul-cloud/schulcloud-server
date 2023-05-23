@@ -11,7 +11,7 @@ export class BoardManagementConsole {
 		command: 'create-board [courseId]',
 		description: 'create a multi-column-board',
 	})
-	async createBoard(courseId: string = ''): Promise<void> {
+	async createBoard(courseId = ''): Promise<void> {
 		if (!ObjectId.isValid(courseId)) {
 			this.consoleWriter.info('Error: please provide a valid courseId this board should be assigned to.');
 			return;
