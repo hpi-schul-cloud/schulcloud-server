@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
 import {
@@ -8,21 +8,35 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
+	mapUserToCurrentUser,
 	TestApiClient,
 	textElementNodeFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { Request } from 'express';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let request: TestApiClient;
+	let currentUser: ICurrentUser;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideGuard(JwtAuthGuard)
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.user = currentUser;
+					return true;
+				},
+			})
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -34,30 +48,32 @@ describe(`content element update content (api)`, () => {
 		await app.close();
 	});
 
-	const setup = async () => {
-		await cleanupCollections(em);
-		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-		const course = courseFactory.build({ teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, course]);
-
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
-		});
-
-		const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const parentCard = cardNodeFactory.buildWithId({ parent: column });
-		const element = textElementNodeFactory.buildWithId({ parent: parentCard });
-
-		await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
-		em.clear();
-
-		return { teacherAccount, parentCard, column, columnBoardNode, element };
-	};
-
 	describe('with valid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+			const course = courseFactory.build({ teachers: [teacherUser] });
+			await em.persistAndFlush([teacherUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const parentCard = cardNodeFactory.buildWithId({ parent: column });
+			const element = textElementNodeFactory.buildWithId({ parent: parentCard });
+
+			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
+			em.clear();
+
+			return { teacherAccount, teacherUser, parentCard, column, columnBoardNode, element };
+		};
+
 		it('should return status 204', async () => {
-			const { teacherAccount, element } = await setup();
+			const { teacherAccount, teacherUser, element } = await setup();
+
+			currentUser = mapUserToCurrentUser(teacherUser);
 
 			const response = await request.put(
 				`${element.id}/content`,
@@ -69,7 +85,9 @@ describe(`content element update content (api)`, () => {
 		});
 
 		it('should actually change content of the element', async () => {
-			const { teacherAccount, element } = await setup();
+			const { teacherAccount, teacherUser, element } = await setup();
+
+			currentUser = mapUserToCurrentUser(teacherUser);
 
 			await request.put(
 				`${element.id}/content`,
@@ -82,11 +100,33 @@ describe(`content element update content (api)`, () => {
 		});
 	});
 
-	describe('with valid user', () => {
-		it('should return status 403', async () => {
-			const { element } = await setup();
+	describe('with invalid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+			const { teacherUser: invalidTeacherUser, teacherAccount: invalidTeacherAccount } =
+				UserAndAccountTestFactory.buildTeacher();
 
-			const { teacherAccount: invalidTeacherAccount } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [] });
+			await em.persistAndFlush([invalidTeacherUser, invalidTeacherAccount, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const parentCard = cardNodeFactory.buildWithId({ parent: column });
+			const element = textElementNodeFactory.buildWithId({ parent: parentCard });
+
+			await em.persistAndFlush([parentCard, column, columnBoardNode, element]);
+			em.clear();
+
+			return { invalidTeacherAccount, invalidTeacherUser, parentCard, column, columnBoardNode, element };
+		};
+
+		it('should return status 403', async () => {
+			const { invalidTeacherAccount, invalidTeacherUser, element } = await setup();
+
+			currentUser = mapUserToCurrentUser(invalidTeacherUser);
 
 			const response = await request.put(
 				`${element.id}/content`,
@@ -94,7 +134,7 @@ describe(`content element update content (api)`, () => {
 				invalidTeacherAccount
 			);
 
-			expect(response.statusCode).toEqual(401);
+			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 		});
 	});
 });

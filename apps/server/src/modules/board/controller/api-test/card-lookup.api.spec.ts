@@ -165,7 +165,7 @@ describe(`card lookup (api)`, () => {
 	});
 
 	describe('with invalid user', () => {
-		it('should return status 403', async () => {
+		it('should return status 200', async () => {
 			const { card1 } = await setup();
 
 			const invalidUser = userFactory.build();
@@ -174,7 +174,8 @@ describe(`card lookup (api)`, () => {
 
 			const response = await api.get({ ids: [card1.id] });
 
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(200);
+			expect(response.result).toEqual({ data: [] });
 		});
 	});
 });
