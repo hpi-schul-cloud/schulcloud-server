@@ -233,9 +233,9 @@ export class ContentStorage implements IContentStorage {
 	protected async createContentId() {
 		let counter = 0;
 		let id = 0;
-		let exists = true;
+		let notExistingId = true;
 		do {
-			exists = true;
+			notExistingId = true;
 			id = ContentStorage.getRandomId(1, 2 ** 32);
 			counter += 1;
 			const p = path.join(this.getContentPath(), id.toString());
@@ -243,10 +243,10 @@ export class ContentStorage implements IContentStorage {
 				// eslint-disable-next-line no-await-in-loop
 				await fsPromises.access(p);
 			} catch (error) {
-				exists = false;
+				notExistingId = false;
 			}
-		} while (exists && counter < 10);
-		if (exists && counter === 10) {
+		} while (!notExistingId && counter < 10);
+		if (!notExistingId && counter === 10) {
 			throw new Error('Error generating contentId.');
 		}
 		return id.toString();
