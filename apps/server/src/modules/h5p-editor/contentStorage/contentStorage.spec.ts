@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IContentMetadata, ILibraryName, IUser } from '@lumieducation/h5p-server';
 import * as fs from 'node:fs';
-import * as fsPromises from 'node:fs/promises';
+import fsPromiseMock from 'node:fs/promises';
 import { Readable, Stream } from 'stream';
 import rimraf from 'rimraf';
 import path from 'node:path';
@@ -26,7 +26,13 @@ const setup = () => {
 	};
 
 	const library2: ILibraryName = {
-		machineName: '',
+		machineName: 'testLibrary56',
+		majorVersion: 1,
+		minorVersion: 0,
+	};
+
+	const library3: ILibraryName = {
+		machineName: 'testLibrary98',
 		majorVersion: 1,
 		minorVersion: 0,
 	};
@@ -38,6 +44,18 @@ const setup = () => {
 		preloadedDependencies: [library],
 		editorDependencies: [library],
 		dynamicDependencies: [library],
+		defaultLanguage: '',
+		license: '',
+		title: 'Test123',
+	};
+
+	const metadata3: IContentMetadata = {
+		embedTypes: ['div'],
+		language: 'de',
+		mainLibrary: 'testLibrary3',
+		preloadedDependencies: [],
+		editorDependencies: [],
+		dynamicDependencies: [],
 		defaultLanguage: '',
 		license: '',
 		title: 'Test123',
@@ -69,6 +87,7 @@ const setup = () => {
 
 	const contentId = '2345';
 	const contentId2 = '6789';
+	const contentId4 = '5678906';
 	const notExistingContentId = '987mn';
 	fs.mkdirSync(path.join(dir, contentId.toString()), { recursive: true });
 	fs.writeFileSync(path.join(dir, contentId.toString(), 'h5p.json'), JSON.stringify(metadata));
@@ -78,6 +97,10 @@ const setup = () => {
 	fs.writeFileSync(path.join(dir, contentId2.toString(), 'h5p.json'), JSON.stringify(metadata2));
 	fs.writeFileSync(path.join(dir, contentId2.toString(), 'content.json'), JSON.stringify(content));
 
+	fs.mkdirSync(path.join(dir, contentId4), { recursive: true });
+	fs.writeFileSync(path.join(dir, contentId4.toString(), 'h5p.json'), JSON.stringify(metadata3));
+	fs.writeFileSync(path.join(dir, contentId4.toString(), 'content.json'), JSON.stringify(content));
+
 	const filename1 = 'testFile1.json';
 	const notExistingFilename = 'testFile987.json';
 	const undefinedContentId = '';
@@ -85,6 +108,7 @@ const setup = () => {
 	const filename2 = 'testFiletoAdd123.json';
 	const emptyContentId = '';
 	const falseContentId = '123#*+!?';
+	const contentId3 = '0';
 	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
 
 	return {
@@ -95,6 +119,7 @@ const setup = () => {
 		stream,
 		contentId,
 		contentId2,
+		contentId3,
 		notExistingContentId,
 		filename1,
 		notExistingFilename,
@@ -103,8 +128,10 @@ const setup = () => {
 		wrongFilename,
 		filename2,
 		library2,
+		library3,
 		emptyContentId,
 		falseContentId,
+		metadata3,
 	};
 };
 
@@ -157,11 +184,27 @@ describe('ContentStorage', () => {
 				}
 			});
 		});
-		describe('WHEN content can not be added', () => {
+		describe('WHEN content can not be added error', () => {
 			it('should throw new error', async () => {
-				const { metadata, content, user, falseContentId } = setup();
+				const { metadata, content, user } = setup();
+				jest.spyOn(fsPromiseMock, 'writeFile').mockImplementationOnce(() => {
+					throw new Error('Could not write file');
+				});
 				try {
-					await service.addContent(metadata, content, user, falseContentId);
+					await service.addContent(metadata, content, user);
+				} catch (err) {
+					expect(err).toBeInstanceOf(Error);
+				}
+			});
+		});
+		describe('WHEN contentId can not be generated', () => {
+			it('should throw new error', async () => {
+				const { metadata, content, user } = setup();
+				jest.spyOn(fsPromiseMock, 'access').mockImplementationOnce(() => {
+					throw new Error('Could not access file');
+				});
+				try {
+					await service.addContent(metadata, content, user);
 				} catch (err) {
 					expect(err).toBeInstanceOf(Error);
 				}

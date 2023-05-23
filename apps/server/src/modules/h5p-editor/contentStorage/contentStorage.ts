@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
 import { Readable, Stream } from 'stream';
 import * as fs from 'node:fs';
 import * as fsPromises from 'node:fs/promises';
-import upath from 'upath';
 import { getAllFiles } from 'get-all-files';
 import {
 	ContentId,
@@ -18,6 +16,7 @@ import {
 	streamToString,
 } from '@lumieducation/h5p-server';
 import path from 'path';
+import rimraf from 'rimraf';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -36,12 +35,8 @@ export class ContentStorage implements IContentStorage {
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
 		if (contentId === null || contentId === undefined) {
-			contentId = this.createContentId();
+			contentId = await this.createContentId();
 		}
-		if (contentId === '') {
-			throw new Error('Error generating contentId.');
-		}
-
 		try {
 			fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
 			await this.existsOrCreateDir(contentId);
@@ -54,8 +49,12 @@ export class ContentStorage implements IContentStorage {
 				JSON.stringify(content)
 			);
 		} catch (error) {
-			await fsPromises.rm(path.join(this.getContentPath(), contentId.toString()));
-			throw new Error('Error creating content.');
+			if (fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
+				rimraf.sync(path.join(this.getContentPath(), contentId.toString()));
+			}
+
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+			throw new Error(`Error creating content.${error.toString()}`);
 		}
 		return contentId;
 	}
@@ -231,18 +230,24 @@ export class ContentStorage implements IContentStorage {
 
 	// private methods
 
-	protected createContentId() {
+	protected async createContentId() {
 		let counter = 0;
-		let id: number;
-		let exists = false;
+		let id = 0;
+		let exists = true;
 		do {
+			exists = true;
 			id = ContentStorage.getRandomId(1, 2 ** 32);
 			counter += 1;
 			const p = path.join(this.getContentPath(), id.toString());
-			exists = fs.existsSync(p);
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await fsPromises.access(p);
+			} catch (error) {
+				exists = false;
+			}
 		} while (exists && counter < 10);
-		if (exists) {
-			return '';
+		if (exists && counter === 10) {
+			throw new Error('Error generating contentId.');
 		}
 		return id.toString();
 	}
@@ -269,12 +274,12 @@ export class ContentStorage implements IContentStorage {
 		metadata: {
 			dynamicDependencies?: ILibraryName[];
 			editorDependencies?: ILibraryName[];
-			preloadedDependencies?: ILibraryName[];
+			preloadedDependencies: ILibraryName[];
 		},
 		library: ILibraryName
 	): boolean {
 		if (
-			metadata.preloadedDependencies?.some((dep) => LibraryName.equal(dep, library)) ||
+			metadata.preloadedDependencies.some((dep) => LibraryName.equal(dep, library)) ||
 			metadata.editorDependencies?.some((dep) => LibraryName.equal(dep, library)) ||
 			metadata.dynamicDependencies?.some((dep) => LibraryName.equal(dep, library))
 		) {
