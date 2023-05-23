@@ -1,8 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { CopyStatus } from '@src/modules/copy-helper';
 import { CourseCopyService } from '../service';
 
@@ -16,8 +15,8 @@ export class CourseCopyUC {
 	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
-		await this.authorization.checkPermissionByReferences(userId, AllowedAuthorizationEntityType.Course, courseId, {
-			action: Actions.write,
+		await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
+			action: Action.write,
 			requiredPermissions: [Permission.COURSE_CREATE],
 		});
 

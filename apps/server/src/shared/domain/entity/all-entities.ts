@@ -6,9 +6,9 @@ import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
+import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { CourseExternalTool, ExternalTool, SchoolExternalTool } from './external-tools';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import { Lesson } from './lesson.entity';
@@ -25,7 +25,6 @@ import { System } from './system.entity';
 import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
-import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -40,7 +39,7 @@ export const ALL_ENTITIES = [
 	FileElementNode,
 	TextElementNode,
 	Course,
-	CourseExternalTool,
+	ContextExternalTool,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
@@ -74,6 +73,5 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	TeamUser,
 	User,
-	UserLoginMigration,
 	VideoConference,
 ];

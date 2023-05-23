@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Actions, EntityId, Permission } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization/interfaces';
+import { EntityId, Permission } from '@shared/domain';
+import { Action, AuthorizationService, AuthorizableReferenceType } from '@src/modules/authorization';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 
 @Injectable()
@@ -12,15 +11,10 @@ export class CourseExportUc {
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId): Promise<Buffer> {
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			AllowedAuthorizationEntityType.Course,
-			courseId,
-			{
-				action: Actions.read,
-				requiredPermissions: [Permission.COURSE_EDIT],
-			}
-		);
+		await this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, {
+			action: Action.read,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
 		return this.courseExportService.exportCourse(courseId, userId);
 	}
 }

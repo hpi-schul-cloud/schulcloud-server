@@ -4,7 +4,7 @@ metadata:
   name: api-h5p-deployment
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-fwu
+    app: api-h5p
 spec:
   replicas: {{ API_H5P_EDITOR_REPLICAS|default("1", true) }}
   strategy:

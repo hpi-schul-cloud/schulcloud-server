@@ -1,18 +1,16 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { CourseGroupRule, CourseRule, LessonRule, TaskRule } from '.';
-import { Task, User } from '../entity';
-import type { Role } from '../entity';
-import { Permission, RoleName } from '../interface';
-import { Actions } from './actions.enum';
+import { Action } from '../../../modules/authorization/types/action.enum';
 
 describe('TaskRule', () => {
 	let service: TaskRule;
+	let authorizationHelper: AuthorizationHelper;
 	let courseRule: DeepPartial<CourseRule>;
 	let lessonRule: DeepPartial<LessonRule>;
-	let user: User;
-	let entity: Task;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -21,146 +19,216 @@ describe('TaskRule', () => {
 		await setupEntities();
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRule, CourseRule, LessonRule, CourseGroupRule],
+			providers: [AuthorizationHelper, TaskRule, CourseRule, LessonRule, CourseGroupRule],
 		}).compile();
 
 		service = await module.get(TaskRule);
+		authorizationHelper = await module.get(AuthorizationHelper);
 		courseRule = await module.get(CourseRule);
 		lessonRule = await module.get(LessonRule);
 	});
 
-	beforeEach(() => {
-		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
-		user = userFactory.build({ roles: [role] });
-	});
+	describe('[method] hasPermission', () => {
+		describe('when user with permission A,B and empty task', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+				const user = userFactory.build({ roles: [role] });
+				const task = taskFactory.build();
 
-	it('should call baseRule.hasAllPermissions', () => {
-		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service.utils, 'hasAllPermissions');
-		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-		expect(spy).toBeCalledWith(user, []);
-	});
+				return { role, user, task };
+			};
 
-	it('should call baseRule.hasAccessToEntity', () => {
-		entity = taskFactory.build({ creator: user });
-		const spy = jest.spyOn(service.utils, 'hasAccessToEntity');
-		service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-		expect(spy).toBeCalledWith(user, entity, ['creator']);
-	});
+			it('should return "false" if user has not access to task', () => {
+				const { user, task } = setup();
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [permissionC] });
+				expect(res).toBe(false);
+			});
+		});
+		describe('when user is task creator with some permission granted', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+				const user = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator: user });
 
-	it('should call courseRule.hasPermission', () => {
-		const course = courseFactory.build({ teachers: [user] });
-		entity = taskFactory.build({ course });
-		const spy = jest.spyOn(courseRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(user, entity.course, { action: Actions.write, requiredPermissions: [] });
-	});
+				return { role, user, task };
+			};
 
-	it('should call lessonRule.hasPermission', () => {
-		const course = courseFactory.build({ teachers: [user] });
-		const lesson = lessonFactory.build({ course, hidden: true });
-		entity = taskFactory.build({ course, lesson });
-		const spy = jest.spyOn(lessonRule, 'hasPermission');
-		service.hasPermission(user, entity, { action: Actions.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(user, entity.lesson, { action: Actions.write, requiredPermissions: [] });
-	});
+			it('should call baseRule.hasAllPermissions on AuthorizationHelper', () => {
+				const { user, task } = setup();
+				const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
+				expect(spy).toBeCalledWith(user, []);
+			});
 
-	describe('User [TEACHER]', () => {
-		it('should return "true" if user is creator', () => {
-			entity = taskFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+			it('should call baseRule.hasAccessToEntity on AuthorizationHelper', () => {
+				const { user, task } = setup();
+				const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
+				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
+				expect(spy).toBeCalledWith(user, task, ['creator']);
+			});
+
+			it('should return "true" if user has all required permissions', () => {
+				const { task, user } = setup();
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('should return "false" when user does not have all required permissions', () => {
+				const { user, task } = setup();
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [permissionC] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "true" if user in scope', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			entity = taskFactory.build({ course });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+		describe('when user is teacher of course and course has task with permission A,B but not C', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
+				const user = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ teachers: [user] });
+				const task = taskFactory.build({ course });
+
+				return { role, user, course, task };
+			};
+
+			it('should call courseRule.hasPermission', () => {
+				const { user, task } = setup();
+				const spy = jest.spyOn(courseRule, 'hasPermission');
+				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
+				expect(spy).toBeCalledWith(user, task.course, { action: Action.write, requiredPermissions: [] });
+			});
+
+			it('should return "true" if user in scope', () => {
+				const { user, task } = setup();
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
 		});
 
-		it('should return "true" if user in scope and lesson hidden', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			const lesson = lessonFactory.build({ course, hidden: true });
-			entity = taskFactory.build({ course, lesson });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+		describe('when user is teacher of course with lesson and course has task with permission A,B but not C', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
+				const user = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ teachers: [user] });
+				const lesson = lessonFactory.build({ course, hidden: true });
+				const task = taskFactory.build({ course, lesson });
+
+				return { role, user, course, task, lesson };
+			};
+
+			it('should call lessonRule.hasPermission', () => {
+				const { task, user } = setup();
+				const spy = jest.spyOn(lessonRule, 'hasPermission');
+				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
+				expect(spy).toBeCalledWith(user, task.lesson, { action: Action.write, requiredPermissions: [] });
+			});
+
+			it('should return "true" if user is in scope and lesson hidden', () => {
+				const { task, user } = setup();
+				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
 		});
 
-		it('should return "false" if user has not permission', () => {
-			entity = taskFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
+		describe('when user is student and is task creator with Permission A,B', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+				const student = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator: student });
+
+				return { role, student, task };
+			};
+
+			it('should return "true" if user is creator', () => {
+				const { student, task } = setup();
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('should return "false" if user has not permission for C', () => {
+				const { student, task } = setup();
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [permissionC] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "false" if user has not access to entity', () => {
-			entity = taskFactory.build();
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
-		});
-	});
+		describe('when user is student of course and course has task with Permission A,B', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+				const student = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ students: [student] });
+				const task = taskFactory.build({ course });
 
-	describe('User [STUDENT]', () => {
-		let student: User;
-		let role: Role;
-		beforeEach(() => {
-			role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
-			student = userFactory.build({ roles: [role] });
-		});
-		it('should return "true" if user is creator', () => {
-			entity = taskFactory.build({ creator: user });
-			const res = service.hasPermission(user, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+				return { role, student, task, course };
+			};
+
+			it('should return "true" if user is in scope', () => {
+				const { student, task } = setup();
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
 		});
 
-		it('should return "true" if user in scope', () => {
-			const course = courseFactory.build({ students: [student] });
-			entity = taskFactory.build({ course });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+		describe('when user is student of course with hidden lesson and course has task with Permission A,B', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+				const student = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ students: [student] });
+				const lesson = lessonFactory.build({ course, hidden: true });
+				const task = taskFactory.build({ course, lesson });
+
+				return { role, student, task, course };
+			};
+
+			it('should return "false" if user in scope and lesson hidden', () => {
+				const { student, task } = setup();
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "false" if user in scope and lesson hidden', () => {
-			const course = courseFactory.build({ students: [student] });
-			const lesson = lessonFactory.build({ course, hidden: true });
-			entity = taskFactory.build({ course, lesson });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(false);
+		describe('when user is student of course with lesson and course has private task', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+				const student = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ students: [student] });
+				const lesson = lessonFactory.build({ course });
+				const task = taskFactory.build({ course, lesson, private: true });
+
+				return { role, student, task, course };
+			};
+
+			it('should return "false" if user in scope and task private', () => {
+				const { student, task } = setup();
+				const res = service.hasPermission(student, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(false);
+			});
 		});
 
-		it('should return "false" if user in scope and task private', () => {
-			const course = courseFactory.build({ students: [student] });
-			const lesson = lessonFactory.build({ course });
-			entity = taskFactory.build({ course, lesson, private: true });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(false);
-		});
+		describe('when task has course with 2 students and task has 1 assigned students', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.STUDENT });
+				const assignedStudent = userFactory.build({ roles: [role] });
+				const notAssignedStudent = userFactory.build({ roles: [role] });
+				const course = courseFactory.build({ students: [assignedStudent, notAssignedStudent] });
+				const task = taskFactory.build({ course, users: [assignedStudent] });
 
-		it('should return "false" if user has not permission', () => {
-			entity = taskFactory.build({ creator: student });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
-		});
+				return { role, task, course, assignedStudent, notAssignedStudent };
+			};
 
-		it('should return "false" if user has not access to entity', () => {
-			entity = taskFactory.build();
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [permissionC] });
-			expect(res).toBe(false);
-		});
+			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
+				const { notAssignedStudent, task } = setup();
+				const res = service.hasPermission(notAssignedStudent, task, {
+					action: Action.read,
+					requiredPermissions: [permissionA, permissionB, permissionC],
+				});
+				expect(res).toBe(false);
+			});
 
-		it('should return "false" if task has Assignees and user is not assigned ', () => {
-			const otherStudent: User = userFactory.build({ roles: [role] });
-			const course = courseFactory.build();
-			entity = taskFactory.build({ course, users: [otherStudent] });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(false);
-		});
-
-		it('should return "true" if task has Assignees and user is assigned ', () => {
-			const course = courseFactory.build();
-			entity = taskFactory.build({ course, users: [student] });
-			const res = service.hasPermission(student, entity, { action: Actions.read, requiredPermissions: [] });
-			expect(res).toBe(true);
+			it('should return "false" if user is not assigend to task regardless of task permissions', () => {
+				const { assignedStudent, task } = setup();
+				const res = service.hasPermission(assignedStudent, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
 		});
 	});
 });

@@ -1,5 +1,5 @@
 import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
-import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/external-tool';
+import { Oauth2ToolConfigDO } from '@shared/domain/domainobject/tool';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

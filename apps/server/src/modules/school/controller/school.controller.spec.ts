@@ -1,12 +1,14 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ICurrentUser } from '@src/modules/authentication';
-import { MigrationMapper } from '../mapper/migration.mapper';
-import { OauthMigrationDto } from '../uc/dto/oauth-migration.dto';
+import { SchoolController } from './school.controller';
 import { SchoolUc } from '../uc/school.uc';
 import { MigrationBody, MigrationResponse, SchoolParams } from './dto';
-import { SchoolController } from './school.controller';
+import { MigrationMapper } from '../mapper/migration.mapper';
+import { OauthMigrationDto } from '../dto/oauth-migration.dto';
+import { PublicSchoolResponse } from './dto/public.school.response';
+import { SchoolQueryParams } from './dto/school.query.params';
 
 describe('School Controller', () => {
 	let module: TestingModule;
@@ -45,6 +47,7 @@ describe('School Controller', () => {
 	const setupBasicData = () => {
 		const schoolParams: SchoolParams = { schoolId: new ObjectId().toHexString() };
 		const testUser: ICurrentUser = { userId: 'testUser' } as ICurrentUser;
+		const schoolQueryParams: SchoolQueryParams = { schoolnumber: '1234' } as SchoolQueryParams;
 
 		const migrationResp: MigrationResponse = {
 			oauthMigrationMandatory: new Date(),
@@ -58,7 +61,7 @@ describe('School Controller', () => {
 			oauthMigrationFinished: new Date(),
 			enableMigrationStart: true,
 		});
-		return { schoolParams, testUser, migrationDto, migrationResp };
+		return { schoolParams, schoolQueryParams, testUser, migrationDto, migrationResp };
 	};
 
 	describe('setMigration', () => {
@@ -88,6 +91,37 @@ describe('School Controller', () => {
 
 				expect(schoolUc.getMigration).toHaveBeenCalled();
 				expect(res).toBe(migrationResp);
+			});
+		});
+	});
+
+	describe('getPublicSchool', () => {
+		describe('when it gets the public schooldata', () => {
+			it('should call UC', async () => {
+				const { schoolQueryParams } = setupBasicData();
+				const publicSchoolResponse: PublicSchoolResponse = {
+					schoolName: 'testSchool',
+					schoolNumber: '1234',
+					oauthMigrationMandatory: true,
+					oauthMigrationPossible: true,
+				};
+				schoolUc.getPublicSchoolData.mockResolvedValue(publicSchoolResponse);
+
+				const res: PublicSchoolResponse = await controller.getPublicSchool(schoolQueryParams);
+
+				expect(schoolUc.getPublicSchoolData).toHaveBeenCalled();
+				expect(res).toBe(publicSchoolResponse);
+			});
+		});
+
+		describe('when schoolnumber is missing', () => {
+			it('should call the uc with empty string', async () => {
+				const { schoolQueryParams } = setupBasicData();
+				schoolQueryParams.schoolnumber = undefined;
+
+				await controller.getPublicSchool(schoolQueryParams);
+
+				expect(schoolUc.getPublicSchoolData).toHaveBeenCalledWith('');
 			});
 		});
 	});

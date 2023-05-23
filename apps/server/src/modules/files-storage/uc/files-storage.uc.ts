@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId, IPermissionContext } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
@@ -21,7 +21,7 @@ import {
 } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
-import { PermissionContexts } from '../files-storage.const';
+import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { IGetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -41,7 +41,7 @@ export class FilesStorageUC {
 		userId: EntityId,
 		parentType: FileRecordParentType,
 		parentId: EntityId,
-		context: IPermissionContext
+		context: AuthorizationContext
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
@@ -49,7 +49,7 @@ export class FilesStorageUC {
 
 	// upload
 	public async upload(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
 		const fileRecord = await this.uploadFileWithBusboy(userId, params, req);
 
@@ -80,7 +80,7 @@ export class FilesStorageUC {
 	}
 
 	public async uploadFromUrl(userId: EntityId, params: FileRecordParams & FileUrlParams) {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 
 		const response = await this.getResponse(params);
 
@@ -126,7 +126,7 @@ export class FilesStorageUC {
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, PermissionContexts.read);
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
 
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
@@ -140,7 +140,7 @@ export class FilesStorageUC {
 
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.delete);
+		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params);
 
 		return [fileRecords, count];
@@ -150,7 +150,7 @@ export class FilesStorageUC {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, PermissionContexts.delete);
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
 		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;
@@ -158,7 +158,7 @@ export class FilesStorageUC {
 
 	// restore
 	public async restoreFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create);
+		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create);
 		const [fileRecords, count] = await this.filesStorageService.restoreFilesOfParent(params);
 
 		return [fileRecords, count];
@@ -168,7 +168,7 @@ export class FilesStorageUC {
 		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, PermissionContexts.create);
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.create);
 		await this.filesStorageService.restore([fileRecord]);
 
 		return fileRecord;
@@ -181,12 +181,12 @@ export class FilesStorageUC {
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<CopyFileResponse[]>> {
 		await Promise.all([
-			this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.create),
+			this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.create),
 			this.checkPermission(
 				userId,
 				copyFilesParams.target.parentType,
 				copyFilesParams.target.parentId,
-				PermissionContexts.create
+				FileStorageAuthorizationContext.create
 			),
 		]);
 
@@ -204,12 +204,12 @@ export class FilesStorageUC {
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await Promise.all([
-			this.checkPermission(userId, parentType, parentId, PermissionContexts.create),
+			this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.create),
 			this.checkPermission(
 				userId,
 				copyFileParams.target.parentType,
 				copyFileParams.target.parentId,
-				PermissionContexts.create
+				FileStorageAuthorizationContext.create
 			),
 		]);
 
@@ -223,7 +223,7 @@ export class FilesStorageUC {
 		const fileRecord = await this.filesStorageService.getFileRecord(params);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
-		await this.checkPermission(userId, parentType, parentId, PermissionContexts.update);
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.update);
 
 		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
 
@@ -237,7 +237,7 @@ export class FilesStorageUC {
 
 	// get
 	public async getFileRecordsOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		await this.checkPermission(userId, params.parentType, params.parentId, PermissionContexts.read);
+		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.read);
 
 		const countedFileRecords = await this.filesStorageService.getFileRecordsOfParent(params);
 

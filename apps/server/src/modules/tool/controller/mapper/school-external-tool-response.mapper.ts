@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { SchoolExternalToolDO } from '@shared/domain/domainobject/external-tool/school-external-tool.do';
-import { CustomParameterEntryDO } from '@shared/domain/domainobject/external-tool/custom-parameter-entry.do';
-import { CustomParameterEntry } from '@shared/domain';
-import { SchoolExternalToolStatus } from '@shared/domain/domainobject/external-tool/school-external-tool-status';
+import { SchoolExternalToolDO, CustomParameterEntryDO, CustomParameterEntry } from '@shared/domain';
+import { SchoolExternalToolStatus } from '@shared/domain/domainobject/tool/';
 import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolResponse,

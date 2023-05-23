@@ -1,13 +1,13 @@
-import { externalToolDOFactory } from '@shared/testing/factory/domainobject/external-tool.factory';
+import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalToolDO } from '@shared/domain/domainobject/external-tool';
+import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ValidationError } from '@shared/common';
 import { ExternalToolService } from '../external-tool.service';
 import { ExternalToolValidationService } from './external-tool-validation.service';
 import { CommonToolValidationService } from './common-tool-validation.service';
 
-describe('ExternalToolValidation', () => {
+describe('ExternalToolValidationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolValidationService;
 

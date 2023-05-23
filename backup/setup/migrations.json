@@ -210,12 +210,12 @@
 	},
 	{
 		"_id": {
-			"$oid": "644a5cc76018bf037415806a"
+			"$oid": "644bc358c994f501e40c73e0"
 		},
 		"state": "up",
-		"name": "move-school-migration-attributes-to-entity",
+		"name": "add-context-tool-admin-permission-to-teachers",
 		"createdAt": {
-			"$date": "2023-04-27T11:30:15.605Z"
+			"$date": "2023-04-28T11:00:42.924Z"
 		},
 		"__v": 0
 	},
