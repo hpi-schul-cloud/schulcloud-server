@@ -318,7 +318,6 @@ describe('ContentStorage', () => {
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
 				const { contentId, filename1 } = setup();
-				// const contentId = '901901';
 				const fileExists = await service.fileExists(contentId, filename1);
 				expect(fileExists).toEqual(true);
 			});
