@@ -2,11 +2,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType, BoardNode, Course, EntityId } from '@shared/domain';
+import { ConsoleWriterService } from '@shared/infra/console';
 import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
-	constructor(private em: EntityManager) {}
+	constructor(private consoleWriter: ConsoleWriterService, private em: EntityManager) {}
 
 	async createBoard(courseId: EntityId): Promise<EntityId | undefined> {
 		if (!(await this.doesCourseExist(courseId))) {
@@ -75,7 +76,7 @@ export class BoardManagementUc {
 			await this.em.findOneOrFail(Course, courseId);
 			return true;
 		} catch (err) {
-			console.log(`Error: course does not exist (courseId: "${courseId}")`);
+			this.consoleWriter.info(`Error: course does not exist (courseId: "${courseId}")`);
 		}
 		return false;
 	}

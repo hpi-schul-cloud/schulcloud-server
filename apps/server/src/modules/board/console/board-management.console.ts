@@ -11,20 +11,15 @@ export class BoardManagementConsole {
 		command: 'create-board [courseId]',
 		description: 'create a multi-column-board',
 	})
-	async createBoard(courseId: string = ''): Promise<string> {
-		let report;
+	async createBoard(courseId: string = ''): Promise<void> {
 		if (!ObjectId.isValid(courseId)) {
-			report = 'Error: please provide a valid courseId this board should be assigned to.';
-		} else {
-			const boardId = await this.boardManagementUc.createBoard(courseId);
-			if (boardId) {
-				report = `Success: board creation is completed: new boardId = "${boardId ?? ''}"`;
-			}
+			this.consoleWriter.info('Error: please provide a valid courseId this board should be assigned to.');
+			return;
 		}
 
-		if (report) {
-			this.consoleWriter.info(report);
+		const boardId = await this.boardManagementUc.createBoard(courseId);
+		if (boardId) {
+			this.consoleWriter.info(`Success: board creation is completed! The new boardId is "${boardId ?? ''}"`);
 		}
-		return report;
 	}
 }
