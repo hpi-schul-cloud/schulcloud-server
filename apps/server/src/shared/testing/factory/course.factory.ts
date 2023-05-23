@@ -29,6 +29,13 @@ class CourseFactory extends BaseFactory<Course, ICourseProperties> {
 
 		return this.params(params);
 	}
+
+	teachersWithId(numberOfTeachers: number): this {
+		const teachers = userFactory.buildListWithId(numberOfTeachers);
+		const params: DeepPartial<ICourseProperties> = { teachers };
+
+		return this.params(params);
+	}
 }
 
 export const courseFactory = CourseFactory.define(Course, ({ sequence }) => {
