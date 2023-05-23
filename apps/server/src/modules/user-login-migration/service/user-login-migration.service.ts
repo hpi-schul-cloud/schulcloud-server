@@ -1,124 +1,71 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, SchoolDO, SchoolFeatures, SystemTypeEnum, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId, IFindOptions, SystemTypeEnum, UserLoginMigrationDO } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
+import { SchoolDO } from '@shared/domain/domainobject/school.do';
+import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SchoolService } from '@src/modules/school';
-import { SystemDto, SystemService } from '@src/modules/system';
+import { SystemService } from '@src/modules/system';
+import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
+import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
 
 @Injectable()
 export class UserLoginMigrationService {
 	constructor(
 		private readonly userService: UserService,
-		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: SchoolService,
 		private readonly systemService: SystemService
 	) {}
 
-	async setMigration(
-		schoolId: EntityId,
-		oauthMigrationPossible?: boolean,
-		oauthMigrationMandatory?: boolean,
-		oauthMigrationFinished?: boolean
-	): Promise<UserLoginMigrationDO> {
-		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+	// TODO: N21-822 after introduction of entity use repo instead of services
+	async findUserLoginMigrations(
+		query: UserLoginMigrationQuery,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		options: IFindOptions<UserLoginMigrationDO>
+	): Promise<Page<UserLoginMigrationDO>> {
+		const page = new Page<UserLoginMigrationDO>([], 0);
 
-		const existingUserLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(
-			schoolId
-		);
+		if (query.userId) {
+			const userDO: UserDO = await this.userService.findById(query.userId);
+			const schoolDO: SchoolDO = await this.schoolService.getSchoolById(userDO.schoolId);
 
-		let userLoginMigration: UserLoginMigrationDO;
+			if (schoolDO.oauthMigrationStart) {
+				// TODO: N21-824 change logic with post migration endpoint
+				const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
+				const sanisSystem: SystemDto | undefined = oauthSystems.find(
+					(system: SystemDto): boolean => system.alias === 'SANIS'
+				);
 
-		if (existingUserLoginMigration) {
-			userLoginMigration = existingUserLoginMigration;
-		} else {
-			if (!oauthMigrationPossible) {
-				throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
+				if (!sanisSystem?.id) {
+					throw new InternalServerErrorException('Cannot find Sanis system information.');
+				}
+
+				// TODO: N21-824 change logic with post migration endpoint
+				const sourceSystemId: EntityId | undefined =
+					schoolDO.systems && schoolDO.systems.length > 0 && schoolDO.systems[0] !== sanisSystem.id
+						? schoolDO.systems[0]
+						: undefined;
+
+				const hasUserMigrated =
+					userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > schoolDO.oauthMigrationStart;
+
+				if (!hasUserMigrated) {
+					page.data = [
+						new UserLoginMigrationDO({
+							id: undefined,
+							sourceSystemId,
+							targetSystemId: sanisSystem.id,
+							startedAt: schoolDO.oauthMigrationStart,
+							closedAt: schoolDO.oauthMigrationFinished,
+							finishedAt: schoolDO.oauthMigrationFinalFinish,
+							mandatorySince: schoolDO.oauthMigrationMandatory,
+						}),
+					];
+					page.total = 1;
+				}
 			}
-
-			userLoginMigration = await this.createNewMigration(schoolId, schoolDo);
-
-			this.enableOauthMigrationFeature(schoolDo);
-			await this.schoolService.save(schoolDo);
 		}
 
-		if (oauthMigrationPossible === true) {
-			userLoginMigration.closedAt = undefined;
-			userLoginMigration.finishedAt = undefined;
-		}
-
-		if (oauthMigrationMandatory !== undefined) {
-			userLoginMigration.mandatorySince = oauthMigrationMandatory ? new Date() : undefined;
-		}
-
-		if (oauthMigrationFinished !== undefined) {
-			userLoginMigration.closedAt = oauthMigrationFinished ? new Date() : undefined;
-			userLoginMigration.finishedAt = oauthMigrationFinished
-				? new Date(Date.now() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number))
-				: undefined;
-		}
-
-		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
-
-		return savedMigration;
-	}
-
-	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
-		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const sanisSystem: SystemDto | undefined = oauthSystems.find(
-			(system: SystemDto): boolean => system.alias === 'SANIS'
-		);
-
-		if (!sanisSystem) {
-			throw new InternalServerErrorException('Cannot find SANIS system');
-		}
-
-		const systemIds: EntityId[] = school.systems
-			? school.systems.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string))
-			: [];
-		const sourceSystemId = systemIds.length >= 1 ? systemIds[0] : undefined;
-
-		const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-			schoolId,
-			targetSystemId: sanisSystem.id as string,
-			sourceSystemId,
-			startedAt: new Date(),
-		});
-
-		return userLoginMigration;
-	}
-
-	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
-		if (schoolDo.features && !schoolDo.features.includes(SchoolFeatures.OAUTH_PROVISIONING_ENABLED)) {
-			schoolDo.features.push(SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
-		} else {
-			schoolDo.features = [SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
-		}
-	}
-
-	async findMigrationBySchool(schoolId: string): Promise<UserLoginMigrationDO | null> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		return userLoginMigration;
-	}
-
-	async findMigrationByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
-		const userDO: UserDO = await this.userService.findById(userId);
-		const { schoolId } = userDO;
-
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
-
-		if (!userLoginMigration) {
-			return null;
-		}
-
-		const hasUserMigrated: boolean =
-			!!userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > userLoginMigration.startedAt;
-
-		if (hasUserMigrated) {
-			return null;
-		}
-
-		return userLoginMigration;
+		return Promise.resolve(page);
 	}
 }

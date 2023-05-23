@@ -1,15 +1,15 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ISchoolProperties, School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { LegacyLogger } from '@src/core/logger';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
+import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolRepo } from '..';
 
 describe('SchoolRepo', () => {
@@ -181,6 +181,11 @@ describe('SchoolRepo', () => {
 					features: [],
 					inMaintenanceSince: schoolEntity.inMaintenanceSince,
 					inUserMigration: schoolEntity.inUserMigration,
+					oauthMigrationStart: schoolEntity.oauthMigrationStart,
+					oauthMigrationMandatory: schoolEntity.oauthMigrationMandatory,
+					oauthMigrationPossible: schoolEntity.oauthMigrationPossible,
+					oauthMigrationFinished: schoolEntity.oauthMigrationFinished,
+					oauthMigrationFinalFinish: schoolEntity.oauthMigrationFinalFinish,
 					previousExternalId: schoolEntity.previousExternalId,
 					officialSchoolNumber: schoolEntity.officialSchoolNumber,
 					schoolYear,
@@ -212,6 +217,11 @@ describe('SchoolRepo', () => {
 			expect(result.inMaintenanceSince).toEqual(entityDO.inMaintenanceSince);
 			expect(result.inUserMigration).toEqual(entityDO.inUserMigration);
 			expect(result.name).toEqual(entityDO.name);
+			expect(result.oauthMigrationStart).toEqual(entityDO.oauthMigrationStart);
+			expect(result.oauthMigrationMandatory).toEqual(entityDO.oauthMigrationMandatory);
+			expect(result.oauthMigrationPossible).toEqual(entityDO.oauthMigrationPossible);
+			expect(result.oauthMigrationFinished).toEqual(entityDO.oauthMigrationFinished);
+			expect(result.oauthMigrationFinalFinish).toEqual(entityDO.oauthMigrationFinalFinish);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
 			expect(result.schoolYear).toEqual(entityDO.schoolYear);

@@ -6,7 +6,6 @@ import {
 	EntityId,
 	IComponentEtherpadProperties,
 	IComponentGeogebraProperties,
-	IComponentInternalProperties,
 	IComponentLernstoreProperties,
 	IComponentNexboardProperties,
 	IComponentProperties,
@@ -125,15 +124,11 @@ export class LessonCopyService {
 		value: IComponentProperties,
 		copyDict: Map<EntityId, BaseEntity>
 	): IComponentProperties => {
-		if (
-			value.component !== ComponentType.INTERNAL ||
-			value.content === undefined ||
-			(value.content as IComponentInternalProperties).url === undefined
-		) {
+		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
 			return value;
 		}
 
-		const content = value.content as IComponentInternalProperties;
+		const { content } = value;
 		const extractTaskId = (url: string) => {
 			const urlObject = new URL(url, 'https://www.example.com');
 			const taskId = urlObject.pathname.split('/')[2];
@@ -254,7 +249,7 @@ export class LessonCopyService {
 		return { copiedContent, contentStatus };
 	}
 
-	private copyTextContent(element: IComponentProperties) {
+	private copyTextContent(element: IComponentProperties): IComponentProperties {
 		return {
 			title: element.title,
 			hidden: element.hidden,
@@ -266,7 +261,7 @@ export class LessonCopyService {
 		};
 	}
 
-	private copyLernStore(element: IComponentProperties) {
+	private copyLernStore(element: IComponentProperties): IComponentProperties {
 		const resources = ((element.content as IComponentLernstoreProperties).resources ?? []).map(
 			({ client, description, merlinReference, title, url }) => {
 				const result = {
@@ -289,7 +284,7 @@ export class LessonCopyService {
 				resources,
 			},
 		};
-		return lernstore;
+		return lernstore as IComponentProperties;
 	}
 
 	private static copyGeogebra(originalElement: IComponentProperties): IComponentProperties {
