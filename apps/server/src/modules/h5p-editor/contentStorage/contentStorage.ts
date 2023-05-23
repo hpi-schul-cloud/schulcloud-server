@@ -233,9 +233,8 @@ export class ContentStorage implements IContentStorage {
 	protected async createContentId() {
 		let counter = 0;
 		let id = 0;
-		let notExistingId = true;
+		let exist = true;
 		do {
-			notExistingId = true;
 			id = ContentStorage.getRandomId(1, 2 ** 32);
 			counter += 1;
 			const p = path.join(this.getContentPath(), id.toString());
@@ -243,10 +242,10 @@ export class ContentStorage implements IContentStorage {
 				// eslint-disable-next-line no-await-in-loop
 				await fsPromises.access(p);
 			} catch (error) {
-				notExistingId = false;
+				exist = false;
 			}
-		} while (!notExistingId && counter < 10);
-		if (!notExistingId && counter === 10) {
+		} while (exist && counter < 10);
+		if (exist && counter === 10) {
 			throw new Error('Error generating contentId.');
 		}
 		return id.toString();
@@ -291,7 +290,7 @@ export class ContentStorage implements IContentStorage {
 
 	checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');
-		if (/^[a-zA-Z0-9/.-_]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
+		if (/^[a-zA-Z0-9/._-]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
 		throw new Error(`Filename contains forbidden characters ${filename}`);
