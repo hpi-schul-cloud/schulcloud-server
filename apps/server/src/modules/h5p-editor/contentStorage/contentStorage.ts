@@ -291,12 +291,7 @@ export class ContentStorage implements IContentStorage {
 
 	checkFilename(filename: string): void {
 		filename = filename.split('.').slice(0, -1).join('.');
-		if (
-			/^[a-z0-9A-Z]*$/.test(filename) &&
-			/^[/.-_]*$/.test(filename) &&
-			!filename.includes('..') &&
-			!filename.startsWith('/')
-		) {
+		if (/^[a-zA-Z0-9/.-_]*$/.test(filename) && !filename.includes('..') && !filename.startsWith('/')) {
 			return;
 		}
 		throw new Error(`Filename contains forbidden characters ${filename}`);

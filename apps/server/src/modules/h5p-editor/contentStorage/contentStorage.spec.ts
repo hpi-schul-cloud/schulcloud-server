@@ -31,12 +31,6 @@ const setup = () => {
 		minorVersion: 0,
 	};
 
-	const library3: ILibraryName = {
-		machineName: 'testLibrary98',
-		majorVersion: 1,
-		minorVersion: 0,
-	};
-
 	const metadata: IContentMetadata = {
 		embedTypes: ['div'],
 		language: 'de',
@@ -49,6 +43,16 @@ const setup = () => {
 		title: 'Test123',
 	};
 
+	const metadata2: IContentMetadata = {
+		embedTypes: ['div'],
+		language: 'de',
+		mainLibrary: 'testLibrary2',
+		preloadedDependencies: [library],
+		defaultLanguage: '',
+		license: '',
+		title: 'Test123',
+	};
+
 	const metadata3: IContentMetadata = {
 		embedTypes: ['div'],
 		language: 'de',
@@ -56,16 +60,6 @@ const setup = () => {
 		preloadedDependencies: [],
 		editorDependencies: [],
 		dynamicDependencies: [],
-		defaultLanguage: '',
-		license: '',
-		title: 'Test123',
-	};
-
-	const metadata2: IContentMetadata = {
-		embedTypes: ['div'],
-		language: 'de',
-		mainLibrary: 'testLibrary2',
-		preloadedDependencies: [library],
 		defaultLanguage: '',
 		license: '',
 		title: 'Test123',
@@ -107,31 +101,25 @@ const setup = () => {
 	const wrongFilename = 'testName!?.json';
 	const filename2 = 'testFiletoAdd123.json';
 	const emptyContentId = '';
-	const falseContentId = '123#*+!?';
-	const contentId3 = '0';
 	fs.writeFileSync(path.join(dir, contentId.toString(), filename1), JSON.stringify(content));
 
 	return {
-		metadata,
 		content,
-		user,
-		dir,
-		stream,
 		contentId,
 		contentId2,
-		contentId3,
-		notExistingContentId,
-		filename1,
-		notExistingFilename,
-		library,
-		undefinedContentId,
-		wrongFilename,
-		filename2,
-		library2,
-		library3,
+		dir,
 		emptyContentId,
-		falseContentId,
-		metadata3,
+		filename1,
+		filename2,
+		library,
+		library2,
+		metadata,
+		notExistingContentId,
+		notExistingFilename,
+		stream,
+		undefinedContentId,
+		user,
+		wrongFilename,
 	};
 };
 
