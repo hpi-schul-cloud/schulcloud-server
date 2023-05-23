@@ -26,7 +26,7 @@ export class RichTextElementResponse {
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
 	type: ContentElementType.RICH_TEXT;
 
 	@ApiProperty()
