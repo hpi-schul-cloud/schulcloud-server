@@ -30,7 +30,7 @@ export class ContentStorage implements IContentStorage {
 
 	public async addContent(
 		metadata: IContentMetadata,
-		content: any,
+		content: unknown,
 		user: IUser,
 		contentId?: ContentId | undefined
 	): Promise<ContentId> {
@@ -156,7 +156,7 @@ export class ContentStorage implements IContentStorage {
 		throw new Error('Could not get Metadata');
 	}
 
-	public async getParameters(contentId: string, user?: IUser | undefined): Promise<any> {
+	public async getParameters(contentId: string, user?: IUser | undefined): Promise<unknown> {
 		if (user !== undefined && user !== null) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return JSON.parse(await streamToString(await this.getFileStream(contentId, 'content.json', user)));
