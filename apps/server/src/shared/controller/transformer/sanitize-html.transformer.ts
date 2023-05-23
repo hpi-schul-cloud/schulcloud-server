@@ -108,9 +108,8 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 	RichTextCk5: {
 		allowedTags: [
-			'h2',
-			'h3',
 			'h4',
+			'h5',
 			'p',
 			'span',
 			'br',

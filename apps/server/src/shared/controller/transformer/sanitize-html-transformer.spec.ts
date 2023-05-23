@@ -59,11 +59,11 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text ck5 tags', () => {
 			const plainString = {
 				contentCk5:
-					'<h1></h1><h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk5).toEqual(
-				'<h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
+				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
 		});
 	});
