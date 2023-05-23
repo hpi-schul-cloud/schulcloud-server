@@ -3,25 +3,25 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-svc.yml.j2
-    when: WITH_TSP 
-    
+    when: WITH_TSP
+
   - name: remove API TSP Sync Service
     kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config 
+      kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       state: absent
       api_version: v1
       kind: Service
       name: api-tsp-sync-svc
-    when: not WITH_TSP 
-      
+    when: not WITH_TSP
+
   - name: API TSP Sync Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-deployment.yml.j2
     when: WITH_TSP
-    
+
   - name: remove API TSP Sync Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -38,12 +38,12 @@
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-base-cronjob.yml.j2
     when: WITH_TSP
-    
+
   - name: remove API TSP Sync Base CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       state: absent
-      api_version: batch/v1beta1
+      api_version: batch/v1
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-base-cronjobt
@@ -54,13 +54,13 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-tsp-sync-school-cronjob.yml.j2
-    when: WITH_TSP 
-    
+    when: WITH_TSP
+
   - name: remove API TSP Sync School CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       state: absent
-      api_version: batch/v1beta1
+      api_version: batch/v1
       kind: CronJob
       namespace: "{{ NAMESPACE }}"
       name: api-tsp-sync-school-cronjob
