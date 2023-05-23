@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, Lesson, IComponentProperties } from '@shared/domain';
+import { EntityId, Lesson, IComponentProperties, Course } from '@shared/domain';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
@@ -14,8 +14,6 @@ import {
 
 @Injectable()
 export class CommonCartridgeExportService {
-	defaultVersion = CommonCartridgeVersion.V_1_1_0;
-
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
@@ -33,11 +31,13 @@ export class CommonCartridgeExportService {
 			identifier: `i${course.id}`,
 			title: course.name,
 			version,
+			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
+			currentYear: course.createdAt.getFullYear().toString(),
 		});
 		lessons.forEach((lesson) => {
 			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));
 			lesson.contents.forEach((content) => {
-				const resourceProps = this.mapContentToResource(lesson.id, content);
+				const resourceProps = this.mapContentToResource(lesson.id, content, version);
 				if (resourceProps) {
 					organizationBuilder.addResourceToOrganization(resourceProps);
 				}
@@ -68,11 +68,12 @@ export class CommonCartridgeExportService {
 
 	private mapContentToResource(
 		lessonId: string,
-		content: IComponentProperties
+		content: IComponentProperties,
+		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
 		if (content.component === ComponentType.TEXT) {
 			return {
-				version: this.defaultVersion,
+				version,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.html`,
@@ -83,7 +84,7 @@ export class CommonCartridgeExportService {
 
 		if (content.component === ComponentType.GEOGEBRA) {
 			return {
-				version: this.defaultVersion,
+				version,
 				type: CommonCartridgeResourceType.WEB_LINK,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
@@ -94,7 +95,7 @@ export class CommonCartridgeExportService {
 
 		if (content.component === ComponentType.ETHERPAD) {
 			return {
-				version: this.defaultVersion,
+				version,
 				type: CommonCartridgeResourceType.WEB_LINK,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
@@ -104,5 +105,18 @@ export class CommonCartridgeExportService {
 		}
 
 		return undefined;
+	}
+
+	/**
+	 * This method gets the course as parameter and maps the contained teacher names within the teachers Collection to a string.
+	 * @param Course
+	 * @return string
+	 * */
+	private mapCourseTeachersToCopyrightOwners(course: Course): string {
+		const result = course.teachers
+			.toArray()
+			.map((teacher) => `${teacher.firstName} ${teacher.lastName}`)
+			.reduce((previousTeachers, currentTeacher) => `${previousTeachers}, ${currentTeacher}`);
+		return result;
 	}
 }
