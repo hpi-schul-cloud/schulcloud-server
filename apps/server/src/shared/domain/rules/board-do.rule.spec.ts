@@ -61,7 +61,7 @@ describe(BoardDoRule.name, () => {
 				const permissionA = 'a' as Permission;
 				const permissionB = 'b' as Permission;
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
-				const user = userFactory.build({ roles: [role] });
+				const user = userFactory.buildWithId({ roles: [role] });
 				const boardDoAuthorizable = new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
@@ -88,6 +88,31 @@ describe(BoardDoRule.name, () => {
 			});
 		});
 
-		it.todo('should implement really permission checks');
+		describe('when user does not have permission', () => {
+			const setup = () => {
+				const permissionA = 'a' as Permission;
+				const permissionB = 'b' as Permission;
+				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: new ObjectId().toHexString(),
+				});
+
+				return { userWithoutPermision, boardDoAuthorizable };
+			};
+
+			it('should return "true"', () => {
+				const { userWithoutPermision, boardDoAuthorizable } = setup();
+
+				const res = service.hasPermission(userWithoutPermision, boardDoAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
 	});
 });
