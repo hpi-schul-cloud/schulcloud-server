@@ -188,9 +188,8 @@ describe('ContentStorage', () => {
 		describe('WHEN contentId can not be generated', () => {
 			it('should throw new error', async () => {
 				const { metadata, content, user } = setup();
-				jest.spyOn(fsPromiseMock, 'access').mockImplementationOnce(() => {
-					throw new Error('Could not access file');
-				});
+				// eslint-disable-next-line @typescript-eslint/require-await
+				jest.spyOn(fsPromiseMock, 'access').mockImplementation(async () => undefined);
 				try {
 					await service.addContent(metadata, content, user);
 				} catch (err) {
