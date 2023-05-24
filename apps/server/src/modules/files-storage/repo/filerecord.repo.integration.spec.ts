@@ -7,6 +7,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileRecordRepo } from './filerecord.repo';
 
+const sortFunction = (a: string, b: string) => a.localeCompare(b);
+
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
 	let repo: FileRecordRepo;
@@ -166,8 +168,8 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual(
-				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
 		});
 	});
@@ -258,8 +260,8 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual(
-				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
 		});
 	});
@@ -329,8 +331,8 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual(
-				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
 		});
 	});
