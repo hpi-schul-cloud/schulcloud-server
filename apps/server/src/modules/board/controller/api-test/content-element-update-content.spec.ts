@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
 import {
@@ -8,35 +8,22 @@ import {
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
-	mapUserToCurrentUser,
 	TestApiClient,
 	textElementNodeFactory,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let request: TestApiClient;
-	let currentUser: ICurrentUser;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		.compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -67,13 +54,11 @@ describe(`content element update content (api)`, () => {
 			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
 			em.clear();
 
-			return { teacherAccount, teacherUser, parentCard, column, columnBoardNode, element };
+			return { teacherAccount, parentCard, column, columnBoardNode, element };
 		};
 
 		it('should return status 204', async () => {
-			const { teacherAccount, teacherUser, element } = await setup();
-
-			currentUser = mapUserToCurrentUser(teacherUser);
+			const { teacherAccount, element } = await setup();
 
 			const response = await request.put(
 				`${element.id}/content`,
@@ -85,9 +70,7 @@ describe(`content element update content (api)`, () => {
 		});
 
 		it('should actually change content of the element', async () => {
-			const { teacherAccount, teacherUser, element } = await setup();
-
-			currentUser = mapUserToCurrentUser(teacherUser);
+			const { teacherAccount, element } = await setup();
 
 			await request.put(
 				`${element.id}/content`,
@@ -124,9 +107,7 @@ describe(`content element update content (api)`, () => {
 		};
 
 		it('should return status 403', async () => {
-			const { invalidTeacherAccount, invalidTeacherUser, element } = await setup();
-
-			currentUser = mapUserToCurrentUser(invalidTeacherUser);
+			const { invalidTeacherAccount, element } = await setup();
 
 			const response = await request.put(
 				`${element.id}/content`,
