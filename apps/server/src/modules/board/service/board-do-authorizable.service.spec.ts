@@ -148,7 +148,7 @@ describe(BoardDoAuthorizableService.name, () => {
 				return { board, teacherId: teacher.id };
 			};
 
-			it.only('should return an boardDoAuthorizable without user-entries', async () => {
+			it('should return an boardDoAuthorizable without user-entries', async () => {
 				const { board } = setup();
 
 				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
