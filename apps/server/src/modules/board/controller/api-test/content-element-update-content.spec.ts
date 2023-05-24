@@ -3,41 +3,43 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
-	TestApiClient,
 	textElementNodeFactory,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
 describe(`content element update content (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let request: TestApiClient;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-		.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		request = new TestApiClient(app, 'elements');
+		testApiClient = new TestApiClient(app, 'elements');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
+	beforeEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	describe('with valid user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
@@ -54,29 +56,28 @@ describe(`content element update content (api)`, () => {
 			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
 			em.clear();
 
-			return { teacherAccount, parentCard, column, columnBoardNode, element };
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return { loggedInClient, element };
 		};
 
 		it('should return status 204', async () => {
-			const { teacherAccount, element } = await setup();
+			const { loggedInClient, element } = await setup();
 
-			const response = await request.put(
-				`${element.id}/content`,
-				{ data: { content: { text: 'hello world' }, type: 'text' } },
-				teacherAccount
-			);
+			const response = await loggedInClient
+				.put(`${element.id}/content`, {
+					data: { content: { text: 'hello world' }, type: 'text' },
+				})
+				.set('myheader', 'foo')
+				.query({ foo: 'bar' });
 
 			expect(response.statusCode).toEqual(204);
 		});
 
 		it('should actually change content of the element', async () => {
-			const { teacherAccount, element } = await setup();
+			const { loggedInClient, element } = await setup();
 
-			await request.put(
-				`${element.id}/content`,
-				{ data: { content: { text: 'hello world' }, type: 'text' } },
-				teacherAccount
-			);
+			await loggedInClient.put(`${element.id}/content`, { data: { content: { text: 'hello world' }, type: 'text' } });
 			const result = await em.findOneOrFail(TextElementNode, element.id);
 
 			expect(result.text).toEqual('hello world');
@@ -85,7 +86,6 @@ describe(`content element update content (api)`, () => {
 
 	describe('with invalid user', () => {
 		const setup = async () => {
-			await cleanupCollections(em);
 			const { teacherUser: invalidTeacherUser, teacherAccount: invalidTeacherAccount } =
 				UserAndAccountTestFactory.buildTeacher();
 
@@ -103,17 +103,17 @@ describe(`content element update content (api)`, () => {
 			await em.persistAndFlush([parentCard, column, columnBoardNode, element]);
 			em.clear();
 
-			return { invalidTeacherAccount, invalidTeacherUser, parentCard, column, columnBoardNode, element };
+			const loggedInClient = await testApiClient.login(invalidTeacherAccount);
+
+			return { loggedInClient, element };
 		};
 
 		it('should return status 403', async () => {
-			const { invalidTeacherAccount, element } = await setup();
+			const { loggedInClient, element } = await setup();
 
-			const response = await request.put(
-				`${element.id}/content`,
-				{ data: { content: { text: 'hello world' }, type: 'text' } },
-				invalidTeacherAccount
-			);
+			const response = await loggedInClient.put(`${element.id}/content`, {
+				data: { content: { text: 'hello world' }, type: 'text' },
+			});
 
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 		});

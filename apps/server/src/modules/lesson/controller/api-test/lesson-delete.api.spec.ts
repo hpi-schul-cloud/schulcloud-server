@@ -86,13 +86,15 @@ describe('Lesson Controller (API) - delete', () => {
 				await em.persistAndFlush([teacherAccount, teacherUser]);
 				em.clear();
 
-				return { account: teacherAccount };
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
 			};
 
 			it('should response with route not found', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await testApiClient.delete('', account);
+				const response = await loggedInClient.delete('');
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual({
@@ -104,9 +106,9 @@ describe('Lesson Controller (API) - delete', () => {
 			});
 
 			it('should response with api validation error', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await testApiClient.delete('123', account);
+				const response = await loggedInClient.delete('123');
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -119,10 +121,10 @@ describe('Lesson Controller (API) - delete', () => {
 			});
 
 			it('should response with entity not found', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 				const notExistingId = new ObjectId().toHexString();
 
-				const response = await testApiClient.delete(notExistingId, account);
+				const response = await loggedInClient.delete(notExistingId);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual({
@@ -146,22 +148,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
 					em.clear();
 
-					return { studentAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with forbidden', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, studentAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 
 				it('should NOT delete the lesson', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, studentAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -177,22 +181,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
 					em.clear();
 
-					return { studentAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with forbidden', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, studentAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 
 				it('should NOT delete the lesson', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, studentAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -208,22 +214,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
 					em.clear();
 
-					return { studentAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with an empty result and status code 200', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, studentAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
 				});
 
 				it('should delete the lesson', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, studentAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -239,22 +247,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
 					em.clear();
 
-					return { studentAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(studentAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with forbidden', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, studentAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 
 				it('should NOT delete the lesson', async () => {
-					const { lessonId, studentAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, studentAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -274,22 +284,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
 					em.clear();
 
-					return { teacherAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with an empty result and status code 200', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, teacherAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
 				});
 
 				it('should delete the lesson', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, teacherAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -305,22 +317,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
 					em.clear();
 
-					return { teacherAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with forbidden', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, teacherAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 
 				it('should NOT delete the lesson', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, teacherAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
@@ -337,22 +351,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
 					em.clear();
 
-					return { teacherAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with an empty result and status code 200', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, teacherAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
 				});
 
 				it('should delete the lesson', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, teacherAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -369,22 +385,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
 					em.clear();
 
-					return { teacherAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(teacherAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with an empty result and status code 200', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, teacherAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
 				});
 
 				it('should delete the lesson', async () => {
-					const { lessonId, teacherAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, teacherAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -404,22 +422,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);
 					em.clear();
 
-					return { adminAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with an empty result and status code 200', async () => {
-					const { lessonId, adminAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, adminAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual({});
 				});
 
 				it('should delete the lesson', async () => {
-					const { lessonId, adminAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, adminAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeNull();
@@ -435,22 +455,24 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);
 					em.clear();
 
-					return { adminAccount, lessonId: lesson.id };
+					const loggedInClient = await testApiClient.login(adminAccount);
+
+					return { loggedInClient, lessonId: lesson.id };
 				};
 
 				it('should response with forbidden', async () => {
-					const { lessonId, adminAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					const response = await testApiClient.delete(lessonId, adminAccount);
+					const response = await loggedInClient.delete(lessonId);
 
 					expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 					expect(response.body).toEqual(expectedForbiddenResponse);
 				});
 
 				it('should NOT delete the lesson', async () => {
-					const { lessonId, adminAccount } = await setup();
+					const { lessonId, loggedInClient } = await setup();
 
-					await testApiClient.delete(lessonId, adminAccount);
+					await loggedInClient.delete(lessonId);
 
 					const result = await em.findOne(Lesson, { id: lessonId });
 					expect(result).toBeInstanceOf(Lesson);
