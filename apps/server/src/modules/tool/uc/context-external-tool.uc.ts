@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { Action, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '@src/modules/tool/interface';
-import { ContextTypeMapper } from './mapper';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalTool } from './dto';
-import { ContextExternalToolService } from '../service';
-import { ContextExternalToolValidationService } from '../service/validation/context-external-tool-validation.service';
+import { ContextTypeMapper } from './mapper';
 
 @Injectable()
 export class ContextExternalToolUc {
