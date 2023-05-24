@@ -82,7 +82,12 @@ describe('SchoolRepo', () => {
 
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
-		const school = new School({ name: 'test', schoolYear, previousExternalId: 'someId' });
+		const school = new School({
+			name: 'test',
+			schoolYear,
+			previousExternalId: 'someId',
+			userLoginMigration: userLoginMigrationFactory.build(),
+		});
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
@@ -103,6 +108,7 @@ describe('SchoolRepo', () => {
 		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
+		expect(storedSchool.userLoginMigration).toBeDefined();
 	});
 
 	describe('findByExternalId', () => {
