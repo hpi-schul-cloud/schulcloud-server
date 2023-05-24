@@ -129,7 +129,7 @@ describe(baseRouteName, () => {
 
 			expect(response.error.validationErrors).toEqual([
 				{
-					errors: ['language must be one of the following values: de, en, es, ua'],
+					errors: ['language must be one of the following values: de, en, es, uk'],
 					field: ['language'],
 				},
 			]);
@@ -202,7 +202,7 @@ describe(baseRouteName, () => {
 			const de = await api.patch(LanguageType.DE);
 			const en = await api.patch(LanguageType.EN);
 			const es = await api.patch(LanguageType.ES);
-			const ua = await api.patch(LanguageType.UA);
+			const ua = await api.patch(LanguageType.UK);
 
 			expect(de.status).toEqual(200);
 			expect(en.status).toEqual(200);
