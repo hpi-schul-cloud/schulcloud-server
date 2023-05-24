@@ -91,8 +91,30 @@ describe(BoardDoRule.name, () => {
 		describe('when user does not have permission', () => {
 			const setup = () => {
 				const permissionA = 'a' as Permission;
-				const permissionB = 'b' as Permission;
-				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
+				const user = userFactory.buildWithId();
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+					id: new ObjectId().toHexString(),
+				});
+
+				return { user, permissionA, boardDoAuthorizable };
+			};
+
+			it('should return "false"', () => {
+				const { user, permissionA, boardDoAuthorizable } = setup();
+
+				const res = service.hasPermission(user, boardDoAuthorizable, {
+					action: Action.write,
+					requiredPermissions: [permissionA],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
+
+		describe('when user does not have the right role', () => {
+			const setup = () => {
+				const role = roleFactory.build();
 				const user = userFactory.buildWithId({ roles: [role] });
 				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
 				const boardDoAuthorizable = new BoardDoAuthorizable({
