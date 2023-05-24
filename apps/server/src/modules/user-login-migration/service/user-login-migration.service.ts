@@ -39,6 +39,7 @@ export class UserLoginMigrationService {
 			userLoginMigration = await this.createNewMigration(schoolDo);
 
 			this.enableOauthMigrationFeature(schoolDo);
+			await this.schoolService.save(schoolDo);
 		}
 
 		if (oauthMigrationPossible === true) {
