@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,9 +51,9 @@
 
 
 
-<h1 id="architecture-mapping-to-code">Architecture mapping to Code</h1>
-<h2 id="conventions">Conventions</h2>
-<h3 id="file-structure">File structure</h3>
+<h1>Architecture mapping to Code</h1>
+<h2>Conventions</h2>
+<h3>File structure</h3>
 <p>The server app located in <code>/apps/server</code> is structured like. Beside each ts-file, a test file _.spec.ts has to be added for unit tests (hidden for simplification). Use index.ts files that combine a folders content and export all files from within of the folder using <code>export _ from &#39;./file&#39;</code> where this makes sense. When there are naming conflicts, use more specific names and correct concepts. Think about not to create sub-folders, when only one concept exist.</p>
 <div><pre class="line-numbers"><code class="language-js">src/ // sourcecode &amp; unit tests
     - config/  // for global definitions
@@ -88,7 +88,7 @@
         - util/ // helpers, tools, utils can be located here (but find a better name)
 test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 </code></pre></div><p>For concepts (see <a href="https://docs.nestjs.com/first-steps">https://docs.nestjs.com/first-steps</a>) of NestJS put implementations in shared/core. You might use shared/utils for own solutions, assume TextUtils but when it contains text validators, move it better to shared/validators/text.validator.ts before merge. The core concepts of NestJS can be extended with ours (like repo).</p>
-<h3 id="file-naming-conventions">File naming conventions</h3>
+<h3>File naming conventions</h3>
 <p>In TypeScript files: for Classes we use <code>PascalCase</code> (names start with uppercase letter), variables use lowercase for the first letter <code>camelCase</code>.</p>
 <p>When assigning names, they may end with a concept name:</p>
 <ul>
@@ -98,7 +98,7 @@ test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 </li>
 </ul>
 <p>In file names, we use lowercase and minus in the beginning and end with <code>.&lt;concept&gt;.ts</code></p>
-<h4 id="samples">Samples</h4>
+<h4>Samples</h4>
 <table class="table table-bordered compodoc-table">
 <thead>
 <tr>
@@ -135,9 +135,9 @@ test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
 </tr>
 </tbody>
 </table>
-<h2 id="components">Components</h2>
+<h2>Components</h2>
 <p>Components are defined as NestJS <a href="https://docs.nestjs.com/modules">Modules</a>. </p>
-<h3 id="communication-between-components">Communication between components</h3>
+<h3>Communication between components</h3>
 <p>To access other modules services, it can be injected anywhere. The usage is allowed only, when the module which owns that service has exported it in the modules definition.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">// modules/feathers/feathers-service.provider.ts
 // modules/feathers/feathers.module.ts
@@ -172,10 +172,10 @@ export class FeathersAuthProvider {
         // ...
         return result;
     }
-</code></pre></div><h3 id="access-legacy-code">Access legacy Code</h3>
+</code></pre></div><h3>Access legacy Code</h3>
 <p>Use the feathers module introduced above to get access to legacy services.</p>
 <p>It is important to introduce strong typing like it happened above in the FeathersAuthProvider. While the <code>FeathersServiceProvider</code> from the feathers module, has only an abstract implementation for all services, add a concrete service inside your module for a specific feathers-service, like above in <code>FeathersAuthProvider</code>.</p>
-<h3 id="access-nestjs-injectable-from-feathers">Access NestJS injectable from Feathers</h3>
+<h3>Access NestJS injectable from Feathers</h3>
 <p>To access a NestJS service from a legacy Feathers service you need to make the NestJS service known to the Feathers service-collection in <code>main.ts</code>. <br>
 This possibility should not be used for new features in Feathers, but it can help if you want to refactor a Feathers service to NestJs although other Feathers services depend on it.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">    // main.ts
@@ -185,7 +185,7 @@ This possibility should not be used for new features in Feathers, but it can hel
         // (...)
     }</code></pre></div><p>Afterwards you can access it the same way as you access other Feathers services with
 <code>app.service(&#39;/nest-rocket-chat&#39;);</code></p>
-<h2 id="layered-architecture">Layered Architecture</h2>
+<h2>Layered Architecture</h2>
 <p>The different layers use separately defined objects that must be mapped when crossing layers.</p>
 <ul>
 <li>Never export entities through the service layer without DTO-mapping which is defined in the controller</li>
@@ -193,7 +193,7 @@ This possibility should not be used for new features in Feathers, but it can hel
 </ul>
 <p><img src="../../assets/object-ownership.svg" alt="" class="img-responsive"></p>
 <p>Further reading: <a href="https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/">https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/</a></p>
-<h3 id="controller">Controller</h3>
+<h3>Controller</h3>
 <p>A modules api layer is defined within of <a href="https://docs.nestjs.com/controllers">controllers</a>.</p>
 <p>The main responsibilities of a controller is to define the REST API interface as openAPI specification and map DTO&#39;s to match the logic layers interfaces.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">    &#64;Post()
@@ -205,19 +205,19 @@ This possibility should not be used for new features in Feathers, but it can hel
         );
         const dto = NewsMapper.mapToResponse(news);
         return dto;
-    }</code></pre></div><h4 id="jwt-authentication">JWT-Authentication</h4>
+    }</code></pre></div><h4>JWT-Authentication</h4>
 <p>For <strong>authentication</strong>, use <a href="https://docs.nestjs.com/guards">guards</a> like JwtAuthGuard. It can be applied to a whole controller or a single controller method only. Then, <a href="/apps/server/src/modules/authentication/interface/jwt-payload.ts">ICurrentUser</a> can be injected using the <code>@CurrentUser()</code> decorator.</p>
-<h4 id="validation">Validation</h4>
+<h4>Validation</h4>
 <p>Global settings of the core-module ensure <strong>request/response validation</strong> against the api definition. Simple input types might additionally use a custom <a href="https://docs.nestjs.com/pipes">pipe</a> while for complex types injected as query/body are validated by default when parsed as DTO class.</p>
-<h4 id="file-naming">File naming</h4>
+<h4>File naming</h4>
 <p>Complex input DTOs are defined like [create-news].params.ts (class-name: CreateNewsParams).</p>
 <p>When DTO&#39;s are shared between multiple modules, locate them in the layer-related shared folder.</p>
 <blockquote>
 <p><strong>Security:</strong> When exporting data, internal entities must be mapped to a response DTO class named like [news].response.dto. The mapping ensures which data of internal entities are exported.</p>
 </blockquote>
-<h4 id="openapi-specification">openAPI specification</h4>
+<h4>openAPI specification</h4>
 <p>Defining the request/response DTOs in a controller will define the openAPI specification automatically. Additional <a href="https://docs.nestjs.com/techniques/validation">validation rules</a> and <a href="https://docs.nestjs.com/openapi/decorators">openAPI definitions</a> can be added using decorators. For simplification, openAPI decorators should define a type and if a property is required, while additional decorators can be used from class-validator to validate content.</p>
-<h4 id="mapping">Mapping</h4>
+<h4>Mapping</h4>
 <p>It is forbidden, to directly pass a DTO to a use-case or return an Entity (or other use-case result) via REST. In-between a mapper must transform the given data, to protect the logic layer from outside implications.</p>
 <p>The use of a mapper gives us the guarantee, that</p>
 <ul>

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >MigrationResponse</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >MigrationResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,21 +89,26 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#enableMigrationStart" >enableMigrationStart</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauthMigrationFinalFinish" >oauthMigrationFinalFinish</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauthMigrationFinished" >oauthMigrationFinished</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauthMigrationMandatory" >oauthMigrationMandatory</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauthMigrationPossible" >oauthMigrationPossible</a>
                             </li>
@@ -114,7 +125,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -163,7 +174,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -174,6 +185,7 @@
                 <td class="col-md-4">
                     <a name="enableMigrationStart"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>enableMigrationStart</b></span>
                         <a href="#enableMigrationStart"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -209,6 +221,7 @@
                 <td class="col-md-4">
                     <a name="oauthMigrationFinalFinish"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauthMigrationFinalFinish</b></span>
                         <a href="#oauthMigrationFinalFinish"><span class="icon ion-ios-link"></span></a>
@@ -245,6 +258,7 @@
                 <td class="col-md-4">
                     <a name="oauthMigrationFinished"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauthMigrationFinished</b></span>
                         <a href="#oauthMigrationFinished"><span class="icon ion-ios-link"></span></a>
@@ -281,6 +295,7 @@
                 <td class="col-md-4">
                     <a name="oauthMigrationMandatory"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauthMigrationMandatory</b></span>
                         <a href="#oauthMigrationMandatory"><span class="icon ion-ios-link"></span></a>
@@ -317,6 +332,7 @@
                 <td class="col-md-4">
                     <a name="oauthMigrationPossible"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauthMigrationPossible</b></span>
                         <a href="#oauthMigrationPossible"><span class="icon ion-ios-link"></span></a>
@@ -358,7 +374,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 
 export class MigrationResponse {

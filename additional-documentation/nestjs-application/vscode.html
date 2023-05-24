@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,18 +51,18 @@
 
 
 
-<h1 id="vscode">VSCode</h1>
-<h2 id="launch-scripts">Launch scripts</h2>
+<h1>VSCode</h1>
+<h2>Launch scripts</h2>
 <p>In the file <code>./vscode/launch.default.json</code> you find following actions:</p>
 <ul>
 <li><code>Attach to NestJS</code> will allow to attach VSCode debugger to an already running application</li>
 <li><code>Deubg NestJS via NPM</code> will start the application and attach the debugger</li>
 </ul>
-<h2 id="settings">Settings</h2>
+<h2>Settings</h2>
 <p>In the file <code>./vscode/settings.default.json</code> find suggested settings.</p>
-<h2 id="recommended-extensions">Recommended extensions</h2>
+<h2>Recommended extensions</h2>
 <p>See <code>./vscode/extensions.json</code> for recommendations.</p>
-<h3 id="jest">Jest</h3>
+<h3>Jest</h3>
 <p>Jest is used to care of unit- and end2end tests on all <code>*.spec.ts</code> files.</p>
 <p><img src="./assets/failing-tests-in-problems-tab.png" alt="" class="img-responsive"> Allows to just see failing tests in Problems tab.</p>
 <p><img src="./assets/succeeded-test-checkmark.png" alt="" class="img-responsive"> and get small icons like ✔️ or a cross beside it-definitions inside of test files.</p>

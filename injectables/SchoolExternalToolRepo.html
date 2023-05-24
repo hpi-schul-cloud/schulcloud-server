@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -39,21 +39,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >SchoolExternalToolRepo</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >SchoolExternalToolRepo</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -71,7 +77,7 @@
             </p>
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -180,7 +186,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -253,7 +259,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -273,7 +279,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildScope(query: <a href="../classes/School.html" target="_self">SchoolExternalToolQuery</a>)</code>
+                    <code>buildScope(query: <a href="../undefineds/SchoolExternalToolQuery.html" target="_self">SchoolExternalToolQuery</a>)</code>
                 </td>
             </tr>
 
@@ -304,7 +310,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalToolQuery</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolQuery" target="_self" >SchoolExternalToolQuery</a></code>
                                     </td>
 
                                     <td>
@@ -465,7 +471,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >SchoolExternalTool</a></code>
+                        <b>Returns : </b>        <code><a href="../entitys/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
 
                     </div>
                     <div class="io-description">
@@ -490,7 +496,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>find(query: <a href="../classes/School.html" target="_self">SchoolExternalToolQuery</a>)</code>
+                    <code>find(query: <a href="../undefineds/SchoolExternalToolQuery.html" target="_self">SchoolExternalToolQuery</a>)</code>
                 </td>
             </tr>
 
@@ -521,7 +527,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalToolQuery</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolQuery" target="_self" >SchoolExternalToolQuery</a></code>
                                     </td>
 
                                     <td>
@@ -776,7 +782,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>mapEntityToDO(entity: <a href="../classes/School.html" target="_self">SchoolExternalTool</a>)</code>
+<code>mapEntityToDO(entity: <a href="../entitys/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -813,7 +819,7 @@
                                 <tr>
                                     <td>entity</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalTool</a></code>
+                                                <code><a href="../entitys/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -1618,7 +1624,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-accessors">
     <h3 id="accessors">
         Accessors
     </h3>
@@ -1648,7 +1654,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityName } from &#x27;@mikro-orm/core&#x27;;
 import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;

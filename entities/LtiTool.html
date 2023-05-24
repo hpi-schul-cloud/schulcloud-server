@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >LtiTool</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >LtiTool</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,74 +81,96 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#_originToolId" >_originToolId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#customs" >customs</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#friendlyUrl" >friendlyUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#frontchannel_logout_uri" >frontchannel_logout_uri</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#isHidden" >isHidden</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#isLocal" >isLocal</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#isTemplate" >isTemplate</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#key" >key</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#logo_url" >logo_url</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#lti_message_type" >lti_message_type</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#lti_version" >lti_version</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oAuthClientId" >oAuthClientId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#openNewTab" >openNewTab</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#privacy_permission" >privacy_permission</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#resource_link_id" >resource_link_id</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#roles" >roles</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#secret" >secret</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#skipConsent" >skipConsent</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#url" >url</a>
                             </li>
                         </ul>
@@ -158,7 +186,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -169,6 +197,7 @@
                 <td class="col-md-4">
                     <a name="_originToolId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>_originToolId</b></span>
                         <a href="#_originToolId"><span class="icon ion-ios-link"></span></a>
@@ -205,6 +234,7 @@
                 <td class="col-md-4">
                     <a name="customs"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>customs</b></span>
                         <a href="#customs"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -240,6 +270,8 @@
                 <td class="col-md-4">
                     <a name="friendlyUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>friendlyUrl</b></span>
                         <a href="#friendlyUrl"><span class="icon ion-ios-link"></span></a>
@@ -276,6 +308,7 @@
                 <td class="col-md-4">
                     <a name="frontchannel_logout_uri"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>frontchannel_logout_uri</b></span>
                         <a href="#frontchannel_logout_uri"><span class="icon ion-ios-link"></span></a>
@@ -312,6 +345,7 @@
                 <td class="col-md-4">
                     <a name="isHidden"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>isHidden</b></span>
                         <a href="#isHidden"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -347,6 +381,7 @@
                 <td class="col-md-4">
                     <a name="isLocal"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>isLocal</b></span>
                         <a href="#isLocal"><span class="icon ion-ios-link"></span></a>
@@ -383,6 +418,7 @@
                 <td class="col-md-4">
                     <a name="isTemplate"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>isTemplate</b></span>
                         <a href="#isTemplate"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -418,6 +454,7 @@
                 <td class="col-md-4">
                     <a name="key"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>key</b></span>
                         <a href="#key"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -453,6 +490,7 @@
                 <td class="col-md-4">
                     <a name="logo_url"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>logo_url</b></span>
                         <a href="#logo_url"><span class="icon ion-ios-link"></span></a>
@@ -489,6 +527,7 @@
                 <td class="col-md-4">
                     <a name="lti_message_type"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>lti_message_type</b></span>
                         <a href="#lti_message_type"><span class="icon ion-ios-link"></span></a>
@@ -525,6 +564,7 @@
                 <td class="col-md-4">
                     <a name="lti_version"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>lti_version</b></span>
                         <a href="#lti_version"><span class="icon ion-ios-link"></span></a>
@@ -561,6 +601,7 @@
                 <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>name</b></span>
                         <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -596,6 +637,7 @@
                 <td class="col-md-4">
                     <a name="oAuthClientId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oAuthClientId</b></span>
                         <a href="#oAuthClientId"><span class="icon ion-ios-link"></span></a>
@@ -632,6 +674,7 @@
                 <td class="col-md-4">
                     <a name="openNewTab"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>openNewTab</b></span>
                         <a href="#openNewTab"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -667,6 +710,7 @@
                 <td class="col-md-4">
                     <a name="privacy_permission"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>privacy_permission</b></span>
                         <a href="#privacy_permission"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -702,6 +746,7 @@
                 <td class="col-md-4">
                     <a name="resource_link_id"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>resource_link_id</b></span>
                         <a href="#resource_link_id"><span class="icon ion-ios-link"></span></a>
@@ -738,6 +783,8 @@
                 <td class="col-md-4">
                     <a name="roles"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>roles</b></span>
                         <a href="#roles"><span class="icon ion-ios-link"></span></a>
@@ -774,6 +821,7 @@
                 <td class="col-md-4">
                     <a name="secret"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>secret</b></span>
                         <a href="#secret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -809,6 +857,7 @@
                 <td class="col-md-4">
                     <a name="skipConsent"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>skipConsent</b></span>
                         <a href="#skipConsent"><span class="icon ion-ios-link"></span></a>
@@ -845,6 +894,7 @@
                 <td class="col-md-4">
                     <a name="url"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>url</b></span>
                         <a href="#url"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -878,7 +928,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, Property, Unique } from &#x27;@mikro-orm/core&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;

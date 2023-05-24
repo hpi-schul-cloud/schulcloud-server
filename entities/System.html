@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >System</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >System</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,37 +81,47 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#alias" >alias</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#displayName" >displayName</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#ldapConfig" >ldapConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauthConfig" >oauthConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oidcConfig" >oidcConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#provisioningStrategy" >provisioningStrategy</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#provisioningUrl" >provisioningUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#type" >type</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#url" >url</a>
                             </li>
@@ -122,7 +138,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -133,6 +149,7 @@
                 <td class="col-md-4">
                     <a name="alias"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>alias</b></span>
                         <a href="#alias"><span class="icon ion-ios-link"></span></a>
@@ -169,6 +186,7 @@
                 <td class="col-md-4">
                     <a name="displayName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>displayName</b></span>
                         <a href="#displayName"><span class="icon ion-ios-link"></span></a>
@@ -205,6 +223,7 @@
                 <td class="col-md-4">
                     <a name="ldapConfig"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>ldapConfig</b></span>
                         <a href="#ldapConfig"><span class="icon ion-ios-link"></span></a>
@@ -241,6 +260,7 @@
                 <td class="col-md-4">
                     <a name="oauthConfig"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauthConfig</b></span>
                         <a href="#oauthConfig"><span class="icon ion-ios-link"></span></a>
@@ -277,6 +297,7 @@
                 <td class="col-md-4">
                     <a name="oidcConfig"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oidcConfig</b></span>
                         <a href="#oidcConfig"><span class="icon ion-ios-link"></span></a>
@@ -313,6 +334,8 @@
                 <td class="col-md-4">
                     <a name="provisioningStrategy"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>provisioningStrategy</b></span>
                         <a href="#provisioningStrategy"><span class="icon ion-ios-link"></span></a>
@@ -321,7 +344,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/ProvisioningStrategy.html" target="_self" >SystemProvisioningStrategy</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#SystemProvisioningStrategy" target="_self" >SystemProvisioningStrategy</a></code>
 
                     </td>
                 </tr>
@@ -349,6 +372,7 @@
                 <td class="col-md-4">
                     <a name="provisioningUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>provisioningUrl</b></span>
                         <a href="#provisioningUrl"><span class="icon ion-ios-link"></span></a>
@@ -385,6 +409,7 @@
                 <td class="col-md-4">
                     <a name="type"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>type</b></span>
                         <a href="#type"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -420,6 +445,7 @@
                 <td class="col-md-4">
                     <a name="url"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>url</b></span>
                         <a href="#url"><span class="icon ion-ios-link"></span></a>
@@ -454,7 +480,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, Enum, Property } from &#x27;@mikro-orm/core&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { EntityId } from &#x27;../types&#x27;;

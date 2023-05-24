@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -36,21 +36,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Controllers</li>
-  <li >ImportUserController</li>
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >ImportUserController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -84,34 +90,42 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#endSchoolInMaintenance" >endSchoolInMaintenance</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAllImportUsers" >findAllImportUsers</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAllUnmatchedUsers" >findAllUnmatchedUsers</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#removeMatch" >removeMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#saveAllUsersMatches" >saveAllUsersMatches</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#setMatch" >setMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#startSchoolInUserMigration" >startSchoolInUserMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateFlag" >updateFlag</a>
                             </li>
@@ -127,7 +141,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -138,6 +152,7 @@
                 <td class="col-md-4">
                     <a name="endSchoolInMaintenance"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>endSchoolInMaintenance</b></span>
                         <a href="#endSchoolInMaintenance"><span class="icon ion-ios-link"></span></a>
@@ -216,6 +231,7 @@
                 <td class="col-md-4">
                     <a name="findAllImportUsers"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>findAllImportUsers</b></span>
                         <a href="#findAllImportUsers"><span class="icon ion-ios-link"></span></a>
@@ -330,6 +346,7 @@
                 <td class="col-md-4">
                     <a name="findAllUnmatchedUsers"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>findAllUnmatchedUsers</b></span>
                         <a href="#findAllUnmatchedUsers"><span class="icon ion-ios-link"></span></a>
@@ -432,6 +449,7 @@
                 <td class="col-md-4">
                     <a name="removeMatch"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>removeMatch</b></span>
                         <a href="#removeMatch"><span class="icon ion-ios-link"></span></a>
@@ -441,7 +459,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeMatch(urlParams: <a href="../interfaces/User.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>removeMatch(urlParams: <a href="../classes/ImportUserUrlParams.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -479,7 +497,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >ImportUserUrlParams</a></code>
+                                                <code><a href="../classes/ImportUserUrlParams.html" target="_self" >ImportUserUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -522,6 +540,7 @@
                 <td class="col-md-4">
                     <a name="saveAllUsersMatches"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>saveAllUsersMatches</b></span>
                         <a href="#saveAllUsersMatches"><span class="icon ion-ios-link"></span></a>
@@ -600,6 +619,7 @@
                 <td class="col-md-4">
                     <a name="setMatch"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>setMatch</b></span>
                         <a href="#setMatch"><span class="icon ion-ios-link"></span></a>
@@ -609,7 +629,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setMatch(urlParams: <a href="../interfaces/User.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/UpdateMatchParams.html" target="_self">UpdateMatchParams</a>)</code>
+                    <code>setMatch(urlParams: <a href="../classes/ImportUserUrlParams.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/UpdateMatchParams.html" target="_self">UpdateMatchParams</a>)</code>
                 </td>
             </tr>
 
@@ -647,7 +667,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >ImportUserUrlParams</a></code>
+                                                <code><a href="../classes/ImportUserUrlParams.html" target="_self" >ImportUserUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -702,6 +722,7 @@
                 <td class="col-md-4">
                     <a name="startSchoolInUserMigration"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>startSchoolInUserMigration</b></span>
                         <a href="#startSchoolInUserMigration"><span class="icon ion-ios-link"></span></a>
@@ -792,6 +813,7 @@
                 <td class="col-md-4">
                     <a name="updateFlag"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>updateFlag</b></span>
                         <a href="#updateFlag"><span class="icon ion-ios-link"></span></a>
@@ -801,7 +823,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateFlag(urlParams: <a href="../interfaces/User.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/UpdateFlagParams.html" target="_self">UpdateFlagParams</a>)</code>
+                    <code>updateFlag(urlParams: <a href="../classes/ImportUserUrlParams.html" target="_self">ImportUserUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/UpdateFlagParams.html" target="_self">UpdateFlagParams</a>)</code>
                 </td>
             </tr>
 
@@ -839,7 +861,7 @@
                                 <tr>
                                     <td>urlParams</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >ImportUserUrlParams</a></code>
+                                                <code><a href="../classes/ImportUserUrlParams.html" target="_self" >ImportUserUrlParams</a></code>
                                     </td>
 
                                     <td>
@@ -891,7 +913,7 @@
 </section>    </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 

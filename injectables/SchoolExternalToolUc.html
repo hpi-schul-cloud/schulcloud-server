@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -39,21 +39,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >SchoolExternalToolUc</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >SchoolExternalToolUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -65,7 +71,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -120,7 +126,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -205,7 +211,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -225,7 +231,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalTool: <a href="../classes/School.html" target="_self">SchoolExternalTool</a>)</code>
+                    <code>createSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalTool: <a href="../entitys/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -268,7 +274,7 @@
                                 <tr>
                                     <td>schoolExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalTool</a></code>
+                                                <code><a href="../entitys/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -559,7 +565,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findSchoolExternalTools(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../classes/School.html" target="_self">SchoolExternalToolQueryInput</a>)</code>
+                    <code>findSchoolExternalTools(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../undefineds/SchoolExternalToolQueryInput.html" target="_self">SchoolExternalToolQueryInput</a>)</code>
                 </td>
             </tr>
 
@@ -602,7 +608,7 @@
                                 <tr>
                                     <td>query</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalToolQueryInput</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#SchoolExternalToolQueryInput" target="_self" >SchoolExternalToolQueryInput</a></code>
                                     </td>
 
                                     <td>
@@ -725,7 +731,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolExternalTool: <a href="../classes/School.html" target="_self">SchoolExternalTool</a>)</code>
+                    <code>updateSchoolExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolExternalTool: <a href="../entitys/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -780,7 +786,7 @@
                                 <tr>
                                     <td>schoolExternalTool</td>
                                     <td>
-                                                <code><a href="../classes/School.html" target="_self" >SchoolExternalTool</a></code>
+                                                <code><a href="../entitys/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -810,7 +816,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, Permission, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
 import { Action, AuthorizationService, AuthorizableReferenceType } from &#x27;@src/modules/authorization&#x27;;

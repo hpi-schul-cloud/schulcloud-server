@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >Material</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >Material</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,35 +81,45 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#client" >client</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#description" >description</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#license" >license</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#merlinReference" >merlinReference</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#relatedResources" >relatedResources</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#subjects" >subjects</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#tags" >tags</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#targetGroups" >targetGroups</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#title" >title</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#url" >url</a>
                             </li>
                         </ul>
@@ -119,7 +135,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -130,6 +146,7 @@
                 <td class="col-md-4">
                     <a name="client"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>client</b></span>
                         <a href="#client"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -165,6 +182,7 @@
                 <td class="col-md-4">
                     <a name="description"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>description</b></span>
                         <a href="#description"><span class="icon ion-ios-link"></span></a>
@@ -201,6 +219,7 @@
                 <td class="col-md-4">
                     <a name="license"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>license</b></span>
                         <a href="#license"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -236,6 +255,7 @@
                 <td class="col-md-4">
                     <a name="merlinReference"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>merlinReference</b></span>
                         <a href="#merlinReference"><span class="icon ion-ios-link"></span></a>
@@ -272,6 +292,7 @@
                 <td class="col-md-4">
                     <a name="relatedResources"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>relatedResources</b></span>
                         <a href="#relatedResources"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -307,6 +328,7 @@
                 <td class="col-md-4">
                     <a name="subjects"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>subjects</b></span>
                         <a href="#subjects"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -342,6 +364,7 @@
                 <td class="col-md-4">
                     <a name="tags"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>tags</b></span>
                         <a href="#tags"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -377,6 +400,7 @@
                 <td class="col-md-4">
                     <a name="targetGroups"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>targetGroups</b></span>
                         <a href="#targetGroups"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -412,6 +436,7 @@
                 <td class="col-md-4">
                     <a name="title"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>title</b></span>
                         <a href="#title"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -447,6 +472,7 @@
                 <td class="col-md-4">
                     <a name="url"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>url</b></span>
                         <a href="#url"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -480,7 +506,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Property } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,8 +51,8 @@
 
 
 
-<h1 id="git">Git</h1>
-<h2 id="branch-name-conventions">Branch name conventions</h2>
+<h1>Git</h1>
+<h2>Branch name conventions</h2>
 <ul>
 <li>Each change should be done in a ticket (no matter how small)<ul>
 <li>The ticket does not need to be refined for very small things</li>
@@ -70,7 +70,7 @@
 </ul>
 </li>
 </ul>
-<div><pre class="line-numbers"><code class="language-none">BC-XXXX-kebab-case-short-description</code></pre></div><h2 id="commit-message-conventions">Commit message conventions</h2>
+<div><pre class="line-numbers"><code class="language-none">BC-XXXX-kebab-case-short-description</code></pre></div><h2>Commit message conventions</h2>
 <ul>
 <li>Squashed commit subject should start with a ticket number, and end with a PR number</li>
 <li>Clean body (contains all commits by default)<ul>
@@ -97,7 +97,7 @@ we would like some descriptive text here that explains what we did and why.
  
 # I dont need to mention tests, changes that didnt make it to main, linter, or other fixups
 # only leave lines that are relevant changes compared to main
-# comments like this will not actually show up in the git history</code></pre></div><h2 id="windows">Windows</h2>
+# comments like this will not actually show up in the git history</code></pre></div><h2>Windows</h2>
 <p>We strongly recommend to let git translate line endings. Please set <code>git config --global --add core.autocrlf input</code> when working with windows.</p>
 
                    </div><div class="search-results">

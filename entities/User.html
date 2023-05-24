@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >User</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >User</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,70 +81,94 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#deletedAt" >deletedAt</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#email" >email</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#emailSearchValues" >emailSearchValues</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#externalId" >externalId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#firstName" >firstName</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#firstNameSearchValues" >firstNameSearchValues</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#forcePasswordChange" >forcePasswordChange</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#importHash" >importHash</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#language" >language</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#lastLoginSystemChange" >lastLoginSystemChange</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#lastName" >lastName</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#lastNameSearchValues" >lastNameSearchValues</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#ldapDn" >ldapDn</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#outdatedSince" >outdatedSince</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#preferences" >preferences</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#previousExternalId" >previousExternalId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#roles" >roles</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#school" >school</a>
                             </li>
                         </ul>
@@ -154,7 +184,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -165,6 +195,8 @@
                 <td class="col-md-4">
                     <a name="deletedAt"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>deletedAt</b></span>
                         <a href="#deletedAt"><span class="icon ion-ios-link"></span></a>
@@ -201,6 +233,8 @@
                 <td class="col-md-4">
                     <a name="email"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>email</b></span>
                         <a href="#email"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -236,6 +270,7 @@
                 <td class="col-md-4">
                     <a name="emailSearchValues"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>emailSearchValues</b></span>
                         <a href="#emailSearchValues"><span class="icon ion-ios-link"></span></a>
@@ -272,6 +307,7 @@
                 <td class="col-md-4">
                     <a name="externalId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>externalId</b></span>
                         <a href="#externalId"><span class="icon ion-ios-link"></span></a>
@@ -308,6 +344,7 @@
                 <td class="col-md-4">
                     <a name="firstName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>firstName</b></span>
                         <a href="#firstName"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -343,6 +380,7 @@
                 <td class="col-md-4">
                     <a name="firstNameSearchValues"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>firstNameSearchValues</b></span>
                         <a href="#firstNameSearchValues"><span class="icon ion-ios-link"></span></a>
@@ -379,6 +417,7 @@
                 <td class="col-md-4">
                     <a name="forcePasswordChange"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>forcePasswordChange</b></span>
                         <a href="#forcePasswordChange"><span class="icon ion-ios-link"></span></a>
@@ -415,6 +454,8 @@
                 <td class="col-md-4">
                     <a name="importHash"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>importHash</b></span>
                         <a href="#importHash"><span class="icon ion-ios-link"></span></a>
@@ -451,6 +492,7 @@
                 <td class="col-md-4">
                     <a name="language"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>language</b></span>
                         <a href="#language"><span class="icon ion-ios-link"></span></a>
@@ -487,6 +529,7 @@
                 <td class="col-md-4">
                     <a name="lastLoginSystemChange"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>lastLoginSystemChange</b></span>
                         <a href="#lastLoginSystemChange"><span class="icon ion-ios-link"></span></a>
@@ -523,6 +566,7 @@
                 <td class="col-md-4">
                     <a name="lastName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>lastName</b></span>
                         <a href="#lastName"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -558,6 +602,7 @@
                 <td class="col-md-4">
                     <a name="lastNameSearchValues"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>lastNameSearchValues</b></span>
                         <a href="#lastNameSearchValues"><span class="icon ion-ios-link"></span></a>
@@ -594,6 +639,8 @@
                 <td class="col-md-4">
                     <a name="ldapDn"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>ldapDn</b></span>
                         <a href="#ldapDn"><span class="icon ion-ios-link"></span></a>
@@ -630,6 +677,7 @@
                 <td class="col-md-4">
                     <a name="outdatedSince"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>outdatedSince</b></span>
                         <a href="#outdatedSince"><span class="icon ion-ios-link"></span></a>
@@ -666,6 +714,7 @@
                 <td class="col-md-4">
                     <a name="preferences"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>preferences</b></span>
                         <a href="#preferences"><span class="icon ion-ios-link"></span></a>
@@ -702,6 +751,7 @@
                 <td class="col-md-4">
                     <a name="previousExternalId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>previousExternalId</b></span>
                         <a href="#previousExternalId"><span class="icon ion-ios-link"></span></a>
@@ -738,6 +788,8 @@
                 <td class="col-md-4">
                     <a name="roles"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>roles</b></span>
                         <a href="#roles"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -772,6 +824,8 @@
                 <td class="col-md-4">
                     <a name="school"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>school</b></span>
                         <a href="#school"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -805,7 +859,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { IEntityWithSchool } from &#x27;../interface&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
@@ -816,7 +870,7 @@ export enum LanguageType {
 	DE &#x3D; &#x27;de&#x27;,
 	EN &#x3D; &#x27;en&#x27;,
 	ES &#x3D; &#x27;es&#x27;,
-	UA &#x3D; &#x27;ua&#x27;,
+	UK &#x3D; &#x27;uk&#x27;,
 }
 
 export interface IUserProperties {

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,11 +51,11 @@
 
 
 
-<h1 id="schul-cloud-server">Schul-Cloud Server</h1>
+<h1>Schul-Cloud Server</h1>
 <p><a href="https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server"><img src="https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=alert_status" alt="Quality Gate Status" class="img-responsive"></a>
 <a href="https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server"><img src="https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=coverage" alt="Coverage" class="img-responsive"></a>
 <a href="https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server"><img src="https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=sqale_rating" alt="Maintainability Rating" class="img-responsive"></a></p>
-<h2 id="nestjs-application">NestJS application</h2>
+<h2>NestJS application</h2>
 <blockquote>
 <p>Find the <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html">NestJS applications documentation</a> of this repository at GitHub pages. It contains information about</p>
 </blockquote>
@@ -67,10 +67,10 @@
 <li>architecture</li>
 </ul>
 <p>Based on <a href="https://docs.nestjs.com/">NestJS</a></p>
-<h2 id="feathers-application">Feathers application</h2>
+<h2>Feathers application</h2>
 <p>This is legacy part of the application!</p>
 <p>Based on <a href="https://nodejs.org/en/">Node.js</a> and <a href="https://feathersjs.com/">Feathers</a></p>
-<h2 id="application-seperation">Application seperation</h2>
+<h2>Application seperation</h2>
 <p>In order to seperate NestJS and Feathers each application runs in its own express instance. These express instances are then mounted on seperate paths under a common root express instance.</p>
 <div><pre class="line-numbers"><code class="language-none">Root-Express-App 
 ├─ api/v1/       --&gt; Feathers-App
@@ -83,18 +83,18 @@
 <li><code>/api</code> - for external calls</li>
 </ul>
 <p>When these paths are accessed an error with context <code>[DEPRECATED-PATH]</code> is logged.</p>
-<h2 id="setup">Setup</h2>
+<h2>Setup</h2>
 <p>The whole application setup with all dependencies can be found in <a href="https://docs.dbildungscloud.de/display/DBH/System+Architecture">System Architecture</a>. It contains information about how different application components are connected to each other.</p>
-<h2 id="debugger-configuration-in-visual-studio-code">Debugger Configuration in Visual Studio Code</h2>
+<h2>Debugger Configuration in Visual Studio Code</h2>
 <p>For more details how to set up Visual Studio Code, read <a href="https://docs.dbildungscloud.de/display/DBH/Visual+Studio+Code+-+Beginners+Guide">this document</a>.</p>
-<h2 id="how-to-name-your-branch-and-create-a-pull-request-pr">How to name your branch and create a pull request (PR)</h2>
+<h2>How to name your branch and create a pull request (PR)</h2>
 <ol>
 <li>Take the Ticket Number from JIRA (ticketsystem.dbildungscloud.de), e.g. SC-999</li>
 <li>Name the feature branch beginning with Ticket Number, all words separated by dash &quot;-&quot;, e.g. <code>feature/SC-999-fantasy-problem</code></li>
 <li>Create a PR on branch develop containing the Ticket Number in PR title</li>
 <li>Keep the <code>WIP</code> label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the <code>WIP</code> label. Reviewers will be added automatically.</li>
 </ol>
-<h2 id="committing">Committing</h2>
+<h2>Committing</h2>
 <p>Default branch: <code>main</code></p>
 <ol>
 <li>Go into project folder</li>

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,9 +51,9 @@
 
 
 
-<h1 id="cross-cutting-concerns">Cross cutting concerns</h1>
+<h1>Cross cutting concerns</h1>
 <p>The cross cutting topics are implemented within of the core-module. </p>
-<h2 id="logging">Logging</h2>
+<h2>Logging</h2>
 <p>For logging use the logger ServerLogger, provided by the logger module. It is hooked up in the application on startup, replacing the default logger and can be transient injected into any provider by additionally define set a context into the logger.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">// add Logger module to your feature module imports or unit tests
 import { LoggerModule } from &#39;&#64;src/core/logger&#39;;
@@ -90,7 +90,7 @@ export class YourUc {
     verbose?(message: any, context?: string): any;
 }</code></pre></div><p>Only a string should be provided as a single parameter by default. Ensure not putting complex objects into a log. Think about persisting more complex results for later analysis into a database.</p>
 <p>Optionally in the second parameter, the context can be overridden only.</p>
-<h2 id="exception-handling">Exception Handling</h2>
+<h2>Exception Handling</h2>
 <p><img src="../../assets/exception-hierarchy.svg" alt="" class="img-responsive"></p>
 <p>We separate our business exceptions from technical exceptions. While for technical exceptions, we use the predefined HTTPExceptions from NestJS, business exceptions inherit from abstract BusinessException.</p>
 <p>By default, implementations of BusinessException must define</p>

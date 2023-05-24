@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,13 +51,13 @@
 
 
 
-<h1 id="erwin-idm-keycloak">ErWIn-IDM (Keycloak)</h1>
+<h1>ErWIn-IDM (Keycloak)</h1>
 <blockquote>
 <p>ErWIn-IDM, namely Keycloak, will be the future Identity Management System (IDM) for the dBildungscloud. Keycloak
 provides OpenID Connect, SAML 2.0 and other identity related functionalities like SSO out of the box. It can
 also act as identity broker or aggregate identities from third party services which can be an active directory or LDAP.</p>
 </blockquote>
-<h2 id="docker">Docker</h2>
+<h2>Docker</h2>
 <p>To run Keycloak locally for development purpose use the following Bash or PowerShell command. You can log into Keycloak
 here <a href="http://localhost:8080">http://localhost:8080</a>. If you don&#39;t want to block your terminal, you can add the <code>-d</code> option to start the container
 in the background. Execute these commands in the repository root or the data seeding will fail, and you can not log into
@@ -76,7 +76,7 @@ Keycloak with any user.</p>
   -p 8443:8443 `
   -v &quot;$PWD/backup/idm/keycloak:/tmp/realms&quot; `
   ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest `
-  &quot;&amp;&amp; /opt/keycloak/bin/kc.sh import --dir /tmp/realms&quot;</code></pre></div><h3 id="setup-openid-connect-identity-provider-mock-for-erwin-idm-brokering">Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering</h3>
+  &quot;&amp;&amp; /opt/keycloak/bin/kc.sh import --dir /tmp/realms&quot;</code></pre></div><h3>Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering</h3>
 <p>To add ErWIn-IDM identity broker feature via OpenID Connect (OIDC) Identity Provider (IdP) mock follow the steps below. Execute these commands in the repository root.</p>
 <ul>
 <li>Set env vars (or in your .env file) &#39;OIDCMOCK__BASE_URL&#39; to http://&lt;your-local-ip&gt;:4011.</li>
@@ -101,7 +101,7 @@ Keycloak with any user.</p>
   -e USERS_CONFIGURATION_PATH=&#39;/tmp/config/users-config.json&#39; `
   -e CLIENTS_CONFIGURATION_PATH=&#39;/tmp/config/clients-config.json&#39; `
   -v &quot;$PWD/backup/idm/oidcmock:/tmp/config&quot; `
-  ghcr.io/soluto/oidc-server-mock:0.6.0</code></pre></div><h3 id="setup-openid-connect-identity-provider-mock-for-erwin-idm-brokering-with-ldap-provisioning">Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering with LDAP provisioning</h3>
+  ghcr.io/soluto/oidc-server-mock:0.6.0</code></pre></div><h3>Setup OpenID Connect Identity Provider mock for ErWIn-IDM brokering with LDAP provisioning</h3>
 <p>The broker feature can be setup in conjunction with LDAP provisioning for local testing purpose. Therefore, run the sc-openldap-single container:</p>
 <div><pre class="line-numbers"><code class="language-bash">docker run \
   --name sc-openldap-single \
@@ -117,9 +117,9 @@ Keycloak with any user.</p>
  -Uri &#39;http://localhost:3030/api/v1/sync?target=ldap&#39; `
  -Method Post `
  -Headers &#64;{ &quot;Accept&quot; = &quot;*/*&quot;; &quot;X-API-KEY&quot; = &quot;example&quot; }</code></pre></div><p>See &#39;/tmp/config/users-config.json&#39; for the users details.</p>
-<h2 id="test-local-environment">Test local environment</h2>
+<h2>Test local environment</h2>
 <p>You may test your local setup executing &#39;keycloak-identity-management.integration.spec.ts&#39;:</p>
-<div><pre class="line-numbers"><code class="language-pwsh">npx jest apps/server/src/shared/infra/identity-management/keycloak/service/keycloak-identity-management.service.integration.spec.ts</code></pre></div><h2 id="seeding-data">Seeding Data</h2>
+<div><pre class="line-numbers"><code class="language-pwsh">npx jest apps/server/src/shared/infra/identity-management/keycloak/service/keycloak-identity-management.service.integration.spec.ts</code></pre></div><h2>Seeding Data</h2>
 <p>During container startup Keycloak will always create the Master realm with the admin user. After startup, we use the
 Keycloak-CLI to import the dBildungscloud realm, which contains some seed users, groups and permissions for development
 and testing. In the table below you can see the username and password combinations for the Keycloak login.</p>
@@ -144,7 +144,7 @@ and testing. In the table below you can see the username and password combinatio
 </tr>
 </tbody>
 </table>
-<h2 id="updating-seed-data">Updating Seed Data</h2>
+<h2>Updating Seed Data</h2>
 <ol>
 <li>Run Keycloak and make the desired changes</li>
 <li>Use <code>docker container exec -it keycloak bash</code> to start a bash in the container</li>
@@ -162,7 +162,7 @@ transition from WildFly to Quarkus as application server there is currently no d
 <li><code>docker cp ./backup/idm/keycloak keycloak:/tmp/realms</code></li>
 <li><code>docker exec erwinidm /opt/keycloak/bin/kc.sh import --dir /tmp/realms</code></li>
 </ol>
-<h2 id="npm-commands">NPM Commands</h2>
+<h2>NPM Commands</h2>
 <p>A list of available NPM commands regarding Keycloak / IDM.</p>
 <table class="table table-bordered compodoc-table">
 <thead>

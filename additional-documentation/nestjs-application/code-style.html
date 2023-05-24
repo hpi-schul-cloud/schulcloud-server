@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,23 +51,23 @@
 
 
 
-<h1 id="code-style">Code Style</h1>
-<h2 id="function">Function</h2>
-<h3 id="naming">Naming</h3>
+<h1>Code Style</h1>
+<h2>Function</h2>
+<h3>Naming</h3>
 <p>The name of a function should clearly communicate what it does. There should be no need to read the implementation of a function to understand what it does.</p>
 <p>There are a few keywords that we use with specific meaning:</p>
-<h4 id="is">is...</h4>
+<h4>is...</h4>
 <p><code>isTask()</code>, <code>isPublished()</code>, <code>isAuthenticated()</code>, <code>isValid()</code></p>
 <p>A function with the prefix &quot;is...&quot; is checking wether the input belongs to a certain (sub)class, or fulfils a specific criteria.</p>
 <p>The function should return a boolean, and have no sideeffects.</p>
-<h4 id="check">check...</h4>
+<h4>check...</h4>
 <p><code>checkPermission()</code>, <code>checkInputIsValid()</code></p>
 <p>A function with the prefix &quot;check...&quot; is checking the condition described in its name, throwing an error if it does not apply.</p>
-<h4 id="has">has...</h4>
+<h4>has...</h4>
 <p><code>hasPermission()</code>,</p>
 <p>similar to &quot;is...&quot;, the prefix &quot;has...&quot; means that the function is checking a condition, and returns a boolean. It does NOT throw an error.</p>
-<h2 id="classes">Classes</h2>
-<h3 id="order-of-declarations">Order of declarations</h3>
+<h2>Classes</h2>
+<h3>Order of declarations</h3>
 <p>Classes are declared in the following order:</p>
 <ol>
 <li>properties</li>

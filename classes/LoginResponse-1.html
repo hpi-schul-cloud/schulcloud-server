@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >LoginResponse</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >LoginResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,39 +89,57 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#challenge" >challenge</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#client" >client</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#client_id" >client_id</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oidc_context" >oidc_context</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#request_url" >request_url</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#requested_access_token_audience" >requested_access_token_audience</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#requested_scope" >requested_scope</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#session_id" >session_id</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#skip" >skip</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#subject" >subject</a>
                             </li>
                         </ul>
@@ -131,7 +155,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -180,7 +204,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -191,6 +215,7 @@
                 <td class="col-md-4">
                     <a name="challenge"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>challenge</b></span>
                         <a href="#challenge"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -226,6 +251,7 @@
                 <td class="col-md-4">
                     <a name="client"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>client</b></span>
                         <a href="#client"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -261,6 +287,8 @@
                 <td class="col-md-4">
                     <a name="client_id"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>client_id</b></span>
                         <a href="#client_id"><span class="icon ion-ios-link"></span></a>
@@ -297,6 +325,8 @@
                 <td class="col-md-4">
                     <a name="oidc_context"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oidc_context</b></span>
                         <a href="#oidc_context"><span class="icon ion-ios-link"></span></a>
@@ -333,6 +363,8 @@
                 <td class="col-md-4">
                     <a name="request_url"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>request_url</b></span>
                         <a href="#request_url"><span class="icon ion-ios-link"></span></a>
@@ -369,6 +401,8 @@
                 <td class="col-md-4">
                     <a name="requested_access_token_audience"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>requested_access_token_audience</b></span>
                         <a href="#requested_access_token_audience"><span class="icon ion-ios-link"></span></a>
@@ -405,6 +439,10 @@
                 <td class="col-md-4">
                     <a name="requested_scope"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>requested_scope</b></span>
                         <a href="#requested_scope"><span class="icon ion-ios-link"></span></a>
@@ -441,6 +479,8 @@
                 <td class="col-md-4">
                     <a name="session_id"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>session_id</b></span>
                         <a href="#session_id"><span class="icon ion-ios-link"></span></a>
@@ -477,6 +517,7 @@
                 <td class="col-md-4">
                     <a name="skip"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>skip</b></span>
                         <a href="#skip"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -512,6 +553,7 @@
                 <td class="col-md-4">
                     <a name="subject"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>subject</b></span>
                         <a href="#subject"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -552,7 +594,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { OauthClientResponse } from &#x27;@src/modules/oauth-provider/controller/dto/response/oauth-client.response&#x27;;
 import { OidcContextResponse } from &#x27;@src/modules/oauth-provider/controller/dto/response/oidc-context.response&#x27;;

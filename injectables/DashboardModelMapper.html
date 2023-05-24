@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -39,21 +39,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >DashboardModelMapper</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >DashboardModelMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -65,7 +71,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -133,7 +139,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -182,7 +188,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -203,7 +209,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createGridElement(elementWithPosition: <a href="../classes/GridElement.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
+                    <code>createGridElement(elementWithPosition: <a href="../undefineds/GridElementWithPosition.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
                 </td>
             </tr>
 
@@ -234,7 +240,7 @@
                                 <tr>
                                     <td>elementWithPosition</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >GridElementWithPosition</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#GridElementWithPosition" target="_self" >GridElementWithPosition</a></code>
                                     </td>
 
                                     <td>
@@ -287,7 +293,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findExistingGridElement(elementWithPosition: <a href="../classes/GridElement.html" target="_self">GridElementWithPosition</a>)</code>
+                    <code>findExistingGridElement(elementWithPosition: <a href="../undefineds/GridElementWithPosition.html" target="_self">GridElementWithPosition</a>)</code>
                 </td>
             </tr>
 
@@ -318,7 +324,7 @@
                                 <tr>
                                     <td>elementWithPosition</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >GridElementWithPosition</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#GridElementWithPosition" target="_self" >GridElementWithPosition</a></code>
                                     </td>
 
                                     <td>
@@ -572,7 +578,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapElementToEntity(modelEntity: <a href="../classes/GridElement.html" target="_self">DashboardGridElementModel</a>)</code>
+                    <code>mapElementToEntity(modelEntity: <a href="../entitys/DashboardGridElementModel.html" target="_self">DashboardGridElementModel</a>)</code>
                 </td>
             </tr>
 
@@ -603,7 +609,7 @@
                                 <tr>
                                     <td>modelEntity</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >DashboardGridElementModel</a></code>
+                                                <code><a href="../entitys/DashboardGridElementModel.html" target="_self" >DashboardGridElementModel</a></code>
                                     </td>
 
                                     <td>
@@ -643,7 +649,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapGridElementToModel(elementWithPosition: <a href="../classes/GridElement.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
+                    <code>mapGridElementToModel(elementWithPosition: <a href="../undefineds/GridElementWithPosition.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
                 </td>
             </tr>
 
@@ -674,7 +680,7 @@
                                 <tr>
                                     <td>elementWithPosition</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >GridElementWithPosition</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#GridElementWithPosition" target="_self" >GridElementWithPosition</a></code>
                                     </td>
 
                                     <td>
@@ -867,7 +873,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExistingGridElement(elementModel: <a href="../classes/GridElement.html" target="_self">DashboardGridElementModel</a>, elementWithPosition: <a href="../classes/GridElement.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
+                    <code>updateExistingGridElement(elementModel: <a href="../entitys/DashboardGridElementModel.html" target="_self">DashboardGridElementModel</a>, elementWithPosition: <a href="../undefineds/GridElementWithPosition.html" target="_self">GridElementWithPosition</a>, dashboard: <a href="../entitys/DashboardModelEntity.html" target="_self">DashboardModelEntity</a>)</code>
                 </td>
             </tr>
 
@@ -898,7 +904,7 @@
                                 <tr>
                                     <td>elementModel</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >DashboardGridElementModel</a></code>
+                                                <code><a href="../entitys/DashboardGridElementModel.html" target="_self" >DashboardGridElementModel</a></code>
                                     </td>
 
                                     <td>
@@ -910,7 +916,7 @@
                                 <tr>
                                     <td>elementWithPosition</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >GridElementWithPosition</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#GridElementWithPosition" target="_self" >GridElementWithPosition</a></code>
                                     </td>
 
                                     <td>
@@ -952,7 +958,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { wrap, EntityManager } from &#x27;@mikro-orm/core&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import {

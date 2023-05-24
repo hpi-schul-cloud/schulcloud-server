@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -39,21 +39,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >VideoConferenceUc</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >VideoConferenceUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -65,7 +71,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -155,7 +161,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -288,7 +294,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -308,7 +314,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>canGuestJoin(isGuest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, state: <a href="../classes/VideoConference.html" target="_self">VideoConferenceState</a>, waitingRoomEnabled: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    <code>canGuestJoin(isGuest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, state: <a href="../undefineds/VideoConferenceState.html" target="_self">VideoConferenceState</a>, waitingRoomEnabled: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
@@ -362,7 +368,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>state</td>
                                     <td>
-                                                <code><a href="../classes/VideoConference.html" target="_self" >VideoConferenceState</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceState" target="_self" >VideoConferenceState</a></code>
                                     </td>
 
                                     <td>
@@ -423,7 +429,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, entityId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -468,7 +474,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -520,7 +526,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>)</code>
+                    <code>create(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options: <a href="../interfaces/VideoConferenceOptions.html" target="_self">VideoConferenceOptions</a>)</code>
                 </td>
             </tr>
 
@@ -568,7 +574,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -640,7 +646,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>end(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>end(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -688,7 +694,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -746,7 +752,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getMeetingInfo(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>getMeetingInfo(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -794,7 +800,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -853,7 +859,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getScopeInfo(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, refId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getScopeInfo(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -901,7 +907,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -1079,7 +1085,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isExpert(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>isExpert(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, scopeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -1122,7 +1128,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -1174,7 +1180,7 @@ They only can join a conference:</p>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>join(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../entitys/VideoConference.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>join(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, conferenceScope: <a href="../undefineds/VideoConferenceScope.html" target="_self">VideoConferenceScope</a>, refId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -1222,7 +1228,7 @@ They only can join a conference:</p>
                                 <tr>
                                     <td>conferenceScope</td>
                                     <td>
-                                                <code><a href="../entitys/VideoConference.html" target="_self" >VideoConferenceScope</a></code>
+                                                <code><a href="../miscellaneous/enumerations.html#VideoConferenceScope" target="_self" >VideoConferenceScope</a></code>
                                     </td>
 
                                     <td>
@@ -1412,7 +1418,7 @@ They only can join a conference:</p>
         </tbody>
     </table>
 </section>
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -1450,7 +1456,7 @@ They only can join a conference:</p>
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { BadRequestException, ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import {

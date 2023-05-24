@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >Lti11LaunchResponse</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >Lti11LaunchResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,29 +89,37 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauth_body_hash" >oauth_body_hash</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_consumer_key" >oauth_consumer_key</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_nonce" >oauth_nonce</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_signature" >oauth_signature</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_signature_method" >oauth_signature_method</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_timestamp" >oauth_timestamp</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#oauth_token" >oauth_token</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#oauth_version" >oauth_version</a>
                             </li>
                         </ul>
@@ -121,7 +135,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -170,7 +184,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -181,6 +195,7 @@
                 <td class="col-md-4">
                     <a name="oauth_body_hash"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauth_body_hash</b></span>
                         <a href="#oauth_body_hash"><span class="icon ion-ios-link"></span></a>
@@ -217,6 +232,7 @@
                 <td class="col-md-4">
                     <a name="oauth_consumer_key"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_consumer_key</b></span>
                         <a href="#oauth_consumer_key"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -252,6 +268,7 @@
                 <td class="col-md-4">
                     <a name="oauth_nonce"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_nonce</b></span>
                         <a href="#oauth_nonce"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -287,6 +304,7 @@
                 <td class="col-md-4">
                     <a name="oauth_signature"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_signature</b></span>
                         <a href="#oauth_signature"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -322,6 +340,7 @@
                 <td class="col-md-4">
                     <a name="oauth_signature_method"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_signature_method</b></span>
                         <a href="#oauth_signature_method"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -357,6 +376,7 @@
                 <td class="col-md-4">
                     <a name="oauth_timestamp"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_timestamp</b></span>
                         <a href="#oauth_timestamp"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -392,6 +412,7 @@
                 <td class="col-md-4">
                     <a name="oauth_token"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>oauth_token</b></span>
                         <a href="#oauth_token"><span class="icon ion-ios-link"></span></a>
@@ -428,6 +449,7 @@
                 <td class="col-md-4">
                     <a name="oauth_version"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>oauth_version</b></span>
                         <a href="#oauth_version"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -468,7 +490,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 
 export class Lti11LaunchResponse {

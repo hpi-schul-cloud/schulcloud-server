@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >Course</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >Course</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,42 +81,60 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#color" >color</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#copyingSince" >copyingSince</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#courseGroups" >courseGroups</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#description" >description</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#school" >school</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#shareToken" >shareToken</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#startDate" >startDate</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#students" >students</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#substitutionTeachers" >substitutionTeachers</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#teachers" >teachers</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#untilDate" >untilDate</a>
                             </li>
@@ -127,7 +151,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -138,6 +162,7 @@
                 <td class="col-md-4">
                     <a name="color"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>color</b></span>
                         <a href="#color"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -178,6 +203,7 @@
                 <td class="col-md-4">
                     <a name="copyingSince"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>copyingSince</b></span>
                         <a href="#copyingSince"><span class="icon ion-ios-link"></span></a>
@@ -214,6 +240,7 @@
                 <td class="col-md-4">
                     <a name="courseGroups"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>courseGroups</b></span>
                         <a href="#courseGroups"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -248,6 +275,7 @@
                 <td class="col-md-4">
                     <a name="description"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>description</b></span>
                         <a href="#description"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -288,6 +316,7 @@
                 <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>name</b></span>
                         <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -328,6 +357,8 @@
                 <td class="col-md-4">
                     <a name="school"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>school</b></span>
                         <a href="#school"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -363,6 +394,8 @@
                 <td class="col-md-4">
                     <a name="shareToken"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>shareToken</b></span>
                         <a href="#shareToken"><span class="icon ion-ios-link"></span></a>
@@ -399,6 +432,7 @@
                 <td class="col-md-4">
                     <a name="startDate"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>startDate</b></span>
                         <a href="#startDate"><span class="icon ion-ios-link"></span></a>
@@ -435,6 +469,8 @@
                 <td class="col-md-4">
                     <a name="students"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>students</b></span>
                         <a href="#students"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -469,6 +505,8 @@
                 <td class="col-md-4">
                     <a name="substitutionTeachers"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>substitutionTeachers</b></span>
                         <a href="#substitutionTeachers"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -503,6 +541,8 @@
                 <td class="col-md-4">
                     <a name="teachers"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>teachers</b></span>
                         <a href="#teachers"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -537,6 +577,8 @@
                 <td class="col-md-4">
                     <a name="untilDate"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>untilDate</b></span>
                         <a href="#untilDate"><span class="icon ion-ios-link"></span></a>
@@ -571,7 +613,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from &#x27;@mikro-orm/core&#x27;;
 import { InternalServerErrorException } from &#x27;@nestjs/common/exceptions/internal-server-error.exception&#x27;;
 import { IEntityWithSchool, ILearnroom } from &#x27;@shared/domain/interface&#x27;;

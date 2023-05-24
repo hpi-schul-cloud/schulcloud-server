@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -34,8 +34,8 @@
 
 
 <ol class="breadcrumb">
-    <li>Modules</li>
-    <li >ToolModule</li>
+    <li class="breadcrumb-item">Modules</li>
+    <li class="breadcrumb-item" >ToolModule</li>
 </ol>
 
 <div class="text-center module-graph-container">
@@ -435,16 +435,22 @@
 <script src="../js/svg-pan-zoom.controls.js"></script>
 
 <ul class="nav nav-tabs" role="tablist">
-    <li  class="active" >
-        <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+    <li class="nav-item">
+        <a href="#info" 
+            class="nav-link"
+            class="nav-link active"
+            role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
     </li>
-    <li >
-        <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+    <li class="nav-item">
+        <a href="#source" 
+            class="nav-link"
+            
+            role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
     </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
 
         <p class="comment">
             <h3>File</h3>
@@ -460,7 +466,7 @@
         <div class="container-fluid module">
             <div class="row">
                 <div class="col-sm-3">
-                    <h3>Providers<a href="https://angular.io/api/core/NgModule#providers" target="_blank"
+                    <h3>Providers<a href="https://angular.io/api/core/NgModule#providers" target="_blank" rel="noopener noreferrer"
                             title="Official documentation about module providers"><span class="icon ion-ios-information-circle-outline"></a></h3>
                     <ul class="list-group">
                         <li class="list-group-item">
@@ -514,7 +520,8 @@
                     </ul>
                 </div>
                 <div class="col-sm-3">
-                    <h3>Imports<a href="https://angular.io/api/core/NgModule#imports" target="_blank" title="Official documentation about module imports"><span
+                    <h3>Imports<a href="https://angular.io/api/core/NgModule#imports" target="_blank" rel="noopener noreferrer"
+                            title="Official documentation about module imports"><span
                                 class="icon ion-ios-information-circle-outline"></a></h3>
                     <ul class="list-group">
                         <li class="list-group-item">
@@ -529,35 +536,36 @@
                     </ul>
                 </div>
                 <div class="col-sm-3">
-                    <h3>Exports<a href="https://angular.io/api/core/NgModule#exports" target="_blank" title="Official documentation about module exports"><span
+                    <h3>Exports<a href="https://angular.io/api/core/NgModule#exports" target="_blank" rel="noopener noreferrer"
+                            title="Official documentation about module exports"><span
                                 class="icon ion-ios-information-circle-outline"></a></h3>
                     <ul class="list-group">
                         <li class="list-group-item">
-                            <a href="../s/CommonToolValidationService.html">CommonToolValidationService</a>
+                            <a href="../injectables/CommonToolValidationService.html">CommonToolValidationService</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/ContextExternalToolService.html">ContextExternalToolService</a>
+                            <a href="../injectables/ContextExternalToolService.html">ContextExternalToolService</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/ContextExternalToolValidationService.html">ContextExternalToolValidationService</a>
+                            <a href="../injectables/ContextExternalToolValidationService.html">ContextExternalToolValidationService</a>
                         </li>
                         <li class="list-group-item">
                             <a href="../s/ExternalToolRepoMapper.html">ExternalToolRepoMapper</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/ExternalToolService.html">ExternalToolService</a>
+                            <a href="../injectables/ExternalToolService.html">ExternalToolService</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/ExternalToolValidationService.html">ExternalToolValidationService</a>
+                            <a href="../injectables/ExternalToolValidationService.html">ExternalToolValidationService</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/Lti11Service.html">Lti11Service</a>
+                            <a href="../injectables/Lti11Service.html">Lti11Service</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/SchoolExternalToolService.html">SchoolExternalToolService</a>
+                            <a href="../injectables/SchoolExternalToolService.html">SchoolExternalToolService</a>
                         </li>
                         <li class="list-group-item">
-                            <a href="../s/SchoolExternalToolValidationService.html">SchoolExternalToolValidationService</a>
+                            <a href="../injectables/SchoolExternalToolValidationService.html">SchoolExternalToolValidationService</a>
                         </li>
                     </ul>
                 </div>
@@ -568,7 +576,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import {
 	PseudonymsRepo,

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -37,21 +37,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Entities</li>
-  <li >Submission</li>
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >Submission</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -62,7 +68,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -75,37 +81,49 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#comment" >comment</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#courseGroup" >courseGroup</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#grade" >grade</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#gradeComment" >gradeComment</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#graded" >graded</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#school" >school</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#student" >student</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#submitted" >submitted</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#task" >task</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#teamMembers" >teamMembers</a>
                             </li>
                         </ul>
@@ -121,7 +139,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -132,6 +150,7 @@
                 <td class="col-md-4">
                     <a name="comment"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>comment</b></span>
                         <a href="#comment"><span class="icon ion-ios-link"></span></a>
@@ -168,6 +187,7 @@
                 <td class="col-md-4">
                     <a name="courseGroup"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>courseGroup</b></span>
                         <a href="#courseGroup"><span class="icon ion-ios-link"></span></a>
@@ -204,6 +224,7 @@
                 <td class="col-md-4">
                     <a name="grade"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>grade</b></span>
                         <a href="#grade"><span class="icon ion-ios-link"></span></a>
@@ -240,6 +261,7 @@
                 <td class="col-md-4">
                     <a name="gradeComment"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>gradeComment</b></span>
                         <a href="#gradeComment"><span class="icon ion-ios-link"></span></a>
@@ -276,6 +298,7 @@
                 <td class="col-md-4">
                     <a name="graded"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>graded</b></span>
                         <a href="#graded"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -311,6 +334,8 @@
                 <td class="col-md-4">
                     <a name="school"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>school</b></span>
                         <a href="#school"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -346,6 +371,7 @@
                 <td class="col-md-4">
                     <a name="student"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>student</b></span>
                         <a href="#student"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -381,6 +407,7 @@
                 <td class="col-md-4">
                     <a name="submitted"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>submitted</b></span>
                         <a href="#submitted"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -416,6 +443,8 @@
                 <td class="col-md-4">
                     <a name="task"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>task</b></span>
                         <a href="#task"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -451,6 +480,7 @@
                 <td class="col-md-4">
                     <a name="teamMembers"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>teamMembers</b></span>
                         <a href="#teamMembers"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -483,7 +513,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from &#x27;@mikro-orm/core&#x27;;
 
 import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;

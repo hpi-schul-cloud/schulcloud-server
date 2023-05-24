@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,11 +51,11 @@
 
 
 
-<h1 id="rocketchat">Rocket.Chat</h1>
-<h2 id="start-mongodb">Start Mongodb</h2>
+<h1>Rocket.Chat</h1>
+<h2>Start Mongodb</h2>
 <p>It makes sense for Rocket.Chat to launch its own mongodb in Docker. Reason for this is Rocket.Chat requires Mongodb as replicaSet setup.</p>
 <div><pre class="line-numbers"><code class="language-bash">docker run --name rocket-chat-mongodb -m=256m -p27030:27017 -d docker.io/mongo --replSet rs0 --oplogSize 10</code></pre></div><p>Start mongoDB console and execute</p>
-<div><pre class="line-numbers"><code class="language-mongodb">rs.initiate({&quot;_id&quot; : &quot;rs0&quot;, &quot;members&quot; : [{&quot;_id&quot; : 0, &quot;host&quot; : &quot;localhost:27017&quot;}]})</code></pre></div><h2 id="start-rocketchat">Start rocketChat</h2>
+<div><pre class="line-numbers"><code class="language-mongodb">rs.initiate({&quot;_id&quot; : &quot;rs0&quot;, &quot;members&quot; : [{&quot;_id&quot; : 0, &quot;host&quot; : &quot;localhost:27017&quot;}]})</code></pre></div><h2>Start rocketChat</h2>
 <p>(check the latest settings <a href="https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/roles/rocketchat/templates/configmap.yml.j2#L9">https://github.com/hpi-schul-cloud/dof_app_deploy/blob/main/ansible/roles/rocketchat/templates/configmap.yml.j2#L9</a>)</p>
 <p>Please not that the displayed //172.29.173.128 is the IP address of the mongoDB docker container.
 You can get the ip over the command:  docker inspect rocket-chat-mongodb | grep &quot;IPAddress&quot; (dependent on our system)</p>
@@ -87,14 +87,14 @@ You can get the ip over the command:  docker inspect rocket-chat-mongodb | grep 
         -e Iframe_Restrict_Access=false \
         -e Accounts_Iframe_api_method=GET \
         -e OVERWRITE_SETTING_Show_Setup_Wizard=&#39;completed&#39; \
-        -p 3000:3000 docker.io/rocketchat/rocket.chat:4.7.2</code></pre></div><h2 id="envs">ENVS</h2>
+        -p 3000:3000 docker.io/rocketchat/rocket.chat:4.7.2</code></pre></div><h2>ENVS</h2>
 <p>You must also configure you server and legacy client application.
 Use the .env file in top of the project folders.</p>
-<h3 id="dbildungscloud-backend-server">dBildungscloud Backend Server</h3>
+<h3>dBildungscloud Backend Server</h3>
 <div><pre class="line-numbers"><code class="language-env">ROCKETCHAT_SERVICE_ENABLED=true
 ROCKET_CHAT_URI=&quot;http://localhost:3000&quot;
 ROCKET_CHAT_ADMIN_USER=admin
-ROCKET_CHAT_ADMIN_PASSWORD=huhu</code></pre></div><h3 id="dbildungscloud-legacy-client">dBildungscloud Legacy Client</h3>
+ROCKET_CHAT_ADMIN_PASSWORD=huhu</code></pre></div><h3>dBildungscloud Legacy Client</h3>
 <div><pre class="line-numbers"><code class="language-env">ROCKETCHAT_SERVICE_ENABLED=true
 ROCKET_CHAT_URI=&quot;http://localhost:3000&quot;</code></pre></div>
                    </div><div class="search-results">

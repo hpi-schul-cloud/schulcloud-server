@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,11 +51,11 @@
 
 
 
-<h1 id="testing">Testing</h1>
+<h1>Testing</h1>
 <p>Automated testing is the essential part of the software development process.
 It improves the code quality and ensure that the code operates correctly especially after refactoring.</p>
-<h2 id="general-test-conventions">General Test Conventions</h2>
-<h3 id="lean-tests">Lean Tests</h3>
+<h2>General Test Conventions</h2>
+<h3>Lean Tests</h3>
 <p>The tests should be as simple to read and understand as possible. They should be effortless to write and change, in order to not slow down development. Wherever possible:</p>
 <ul>
 <li>avoid complex logic</li>
@@ -64,7 +64,7 @@ It improves the code quality and ensure that the code operates correctly especia
 <li>stick to blackbox testing: think about the unit from the outside, not its inner workings.</li>
 <li>its okay to duplicate code for each test</li>
 </ul>
-<h3 id="naming-convention">Naming Convention</h3>
+<h3>Naming Convention</h3>
 <p>When a test fails, the name of the test is the first hint to the developer (or any other person) to what went wrong where. (along with the &quot;describe&quot; blocks the test is in).
 Thus, your describe structure and testcase names should be designed to enable a person unfamiliar with the code to identify the problem as fast as possible. It should tell him:</p>
 <ul>
@@ -85,14 +85,14 @@ describe(&quot;Course Service&quot;, (() =&gt; {
                 });
         });
     });
-});</code></pre></div><h3 id="isolation">Isolation</h3>
+});</code></pre></div><h3>Isolation</h3>
 <p>Each test should be able to run alone, as well as together with any other tests. To ensure this, it is important that the test does not depend on any preexisting data.</p>
 <ul>
 <li>Each test should generate the data it needs, and ensure that its data is deleted afterwards. (this is usually done via mocha&#39;s &quot;afterEach&quot; function.</li>
 <li>When you create objects with fields that have to be globally unique, like the account username, you must ensure the name you choose is unique. This can be done by including a timestamp.</li>
 <li>Never use seeddata.</li>
 </ul>
-<h3 id="test-structure">Test Structure</h3>
+<h3>Test Structure</h3>
 <p>Your test should be structured in three seperate areas, each distinguished by at least an empty line:</p>
 <ul>
 <li>Arrange - set up your testdata</li>
@@ -131,8 +131,8 @@ The test coverage report already enforces scenarios that test every possible if/
             const { } = setup();
         });
     });
-});</code></pre></div><h2 id="testing-samples">Testing Samples</h2>
-<h3 id="handling-of-function-return-values">Handling of function return values</h3>
+});</code></pre></div><h2>Testing Samples</h2>
+<h3>Handling of function return values</h3>
 <p>When assigning a value to an expect, separate the function call from the expectation to simplify debugging. This later helps when you not know about the return value type or if it&#39;s an promise or not. This is good style not only for tests.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : retValue
     it(&#39;bad sample&#39;, () =&gt; {
@@ -142,7 +142,7 @@ The test coverage report already enforces scenarios that test every possible if/
         const result = doSomethingCrazy(x,y,z)
         expect(result).to... // here we can simply debug
     })
-</code></pre></div><h3 id="promises-and-timouts-in-tests">Promises and Timouts in tests</h3>
+</code></pre></div><h3>Promises and Timouts in tests</h3>
 <p>When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expecting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.</p>
 <ul>
 <li>Instead of using done callback, use async test functions.</li>
@@ -167,7 +167,7 @@ The test coverage report already enforces scenarios that test every possible if/
     })</code></pre></div><blockquote>
 <p>Timeouts must not be used, when async handling is correctly defined!</p>
 </blockquote>
-<h3 id="expecting-errors-in-tests">Expecting errors in tests</h3>
+<h3>Expecting errors in tests</h3>
 <p>When expecting an error, you might take values from an error, test for the error type thrown and must care of promises.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">    // doSomethingCrazy : Promise&lt;retValue&gt;
     it(&#39;bad async sample expecting an error&#39;, () =&gt; {
@@ -182,7 +182,7 @@ The test coverage report already enforces scenarios that test every possible if/
     })
     it(&#39;good sample expecting an error type from an async function&#39;, async () =&gt; {
         await expect(doSomethingCrazySync(wrong, param)).rejects.toThrow(BadRequestException);
-    })</code></pre></div><h2 id="testing-utilities">Testing Utilities</h2>
+    })</code></pre></div><h2>Testing Utilities</h2>
 <p>NestJS:</p>
 <ul>
 <li>provides default tooling (such as test runner that builds an isolated module/application loader)</li>
@@ -202,7 +202,7 @@ Every provider can be overwritten with custom provider implementation for testin
 
       sampleService = moduleRef.get&lt;SampleService&gt;(SampleService);
       sampleController = moduleRef.get&lt;SampleController&gt;(CatsController);
-    });</code></pre></div><h2 id="mocking">Mocking</h2>
+    });</code></pre></div><h2>Mocking</h2>
 <p>Using the utilities provided by NestJs, we can easily inject mocks into our testing module. The mocks themselves, we create using a <a href="https://www.npmjs.com/package/@golevelup/ts-jest">library</a> by @golevelup.</p>
 <p>You can create a mock using <code>createMock&lt;Class&gt;()</code>. As result you will recieved a <code>DeepMocked&lt;Class&gt;</code></p>
 <div><pre class="line-numbers"><code class="language-Typescript">let fut: FeatureUnderTest;
@@ -256,13 +256,13 @@ afterEach(() =&gt; {
     });
 });</code></pre></div><p>For creating specific mock implementations the helper functions which only mock the implementation once, must be used (e.g. mockReturnValueOnce). With that approach more control over mocked functions can be achieved.</p>
 <p>If you want to mock a method that is not part of a dependency you can mock it with <code>jest.spyOn</code>. We strongly recommend the use of <code>jest.spyOn</code> and not <code>jest.fn</code>, because <code>jest.spyOn</code> can be restored a lot easier. </p>
-<h2 id="unit-tests-vs-integration-tests">Unit Tests vs Integration Tests</h2>
+<h2>Unit Tests vs Integration Tests</h2>
 <p>In Unit Tests we access directly only the component which is currently testing.
 Any dependencies should be mocked or are replaced with default testing implementation.
 Especially the database access and database calls should be mocked.</p>
 <p>In contrast to unit tests the integration tests use access to the database and execute
 real queries using repositories.</p>
-<h3 id="repo-tests">Repo Tests</h3>
+<h3>Repo Tests</h3>
 <p>For the data access layer, integration tests can be used to check the repositories base functionality against a database.</p>
 <p>For Queries care DRY principle, they should be tested very carefully.</p>
 <blockquote>
@@ -279,7 +279,7 @@ By testing repositories we want to verify the correct behaviour of the repositor
 It includes verifying expected database state after executed repository function.
 Therefore, the <code>*.repo.integration.spec.js</code> should be used.</p>
 <p>The basic structure of the repo integration test:</p>
-<h4 id="preconditions-beforeall">Preconditions (beforeAll):</h4>
+<h4>Preconditions (beforeAll):</h4>
 <ol>
 <li>Create <code>Nest JS testing module</code>:
 1.1 with <code>MongoMemoryDatabaseModule</code> defining entities which are used in tests. This will wrap MikroOrmModule.forRoot() with running a MongoDB in memory.
@@ -304,22 +304,22 @@ Therefore, the <code>*.repo.integration.spec.js</code> should be used.</p>
       repo = testModule.get(NewsRepo);                                  (2)
       orm = testModule.get(MikroORM);
       em = testModule.get(EntityManager);
-    })</code></pre></div><h4 id="post-conditions-afterall-teardown">Post conditions (afterAll), Teardown</h4>
+    })</code></pre></div><h4>Post conditions (afterAll), Teardown</h4>
 <p>After all tests are executed close the app and orm to release the resources by closing the test module.</p>
 <div><pre class="line-numbers"><code class="language-TypeScript">    afterAll(async () =&gt; {
         await testModule.close();
     });</code></pre></div><blockquote>
 <p>When Jest reports open handles that not have been closed, ensure all Promises are awaited and all application parts started are correctly closed.</p>
 </blockquote>
-<h4 id="entity-factories">Entity Factories</h4>
+<h4>Entity Factories</h4>
 <p>To fill the in-memory-db we use factories. They are located in <code>\apps\server\src\shared\testing\factory</code>. If you create a new one, please add it to the index.ts in that folder.</p>
-<h4 id="accessing-the-in-memory-db">Accessing the in-memory-db</h4>
+<h4>Accessing the in-memory-db</h4>
 <p>While debugging the tests, the URL to the in-memory-db can be found in the <code>EntityManager</code> instance of your repo in <code>em.config.options.clientUrl</code>.</p>
 <p>Copy paste this URL to your DB Tool e.g. MongoDB Compass. You will find a database called &#39;test&#39; with the data you created for your test.</p>
-<h3 id="mapping-tests">Mapping Tests</h3>
+<h3>Mapping Tests</h3>
 <p>Mapping tests are Unit Tests which verify the correct mapping between entities and Dto objects.
 These tests should not have any external dependencies to other layers like database or use cases.</p>
-<h3 id="use-case-tests">Use Case Tests</h3>
+<h3>Use Case Tests</h3>
 <p>Since a <a href="./architecture.md#domain-layer">usecase</a> only contains orchestration, its tests should be decoupled from the components it depends on. We thus use unittests to verify the orchestration where necessary</p>
 <blockquote>
 <p>All Dependencies should be mocked.</p>
@@ -328,16 +328,16 @@ These tests should not have any external dependencies to other layers like datab
 <p>Use Spies to verify necessary steps, such as authorisation checks.</p>
 </blockquote>
 <p>to be documented</p>
-<h3 id="controller-tests">Controller Tests</h3>
+<h3>Controller Tests</h3>
 <p>Controllers do not contain any logic, but exclusively information to map and validate between dataformats used on the network, and those used internally, as well as documentation of the api.</p>
 <p>Most of these things can not be covered by unit tests. Therefore we do not write specific unittests for them, and only cover them with <a href="#api-tests">api tests</a>.</p>
-<h3 id="api-tests">API Tests</h3>
+<h3>API Tests</h3>
 <p>The API tests are plumbing or integration tests. Their job is to make sure all components that interact to fulfill a specific api endpoint are wired up correctly, and fulfil the expectation set up in the documentation.</p>
 <p>API tests should be located in the folder <em>controller/api-test</em> of each module.</p>
 <p>They should call the endpoint like a external entity would, treating it like a blackbox. It should try all parameters available on the API, users with different roles, as well as relevant error cases.</p>
 <p>During the API test, all components that are part of the server, or controlled by the server, should be available. This includes an in-memory database.</p>
 <p>Any external services or servers that are outside our control should be mocked away via their respective adapters.</p>
-<h2 id="references">References</h2>
+<h2>References</h2>
 <p>This guide is inspired by <a href="https://github.com/goldbergyoni/javascript-testing-best-practices/">https://github.com/goldbergyoni/javascript-testing-best-practices/</a></p>
 
                    </div><div class="search-results">

@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >FileRecordResponse</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >FileRecordResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,31 +89,41 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#creatorId" >creatorId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#deletedSince" >deletedSince</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#id" >id</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#mimeType" >mimeType</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#name" >name</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#parentId" >parentId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#parentType" >parentType</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#securityCheckStatus" >securityCheckStatus</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#size" >size</a>
                             </li>
                         </ul>
@@ -123,7 +139,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -172,7 +188,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -183,6 +199,7 @@
                 <td class="col-md-4">
                     <a name="creatorId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>creatorId</b></span>
                         <a href="#creatorId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -218,6 +235,7 @@
                 <td class="col-md-4">
                     <a name="deletedSince"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>deletedSince</b></span>
                         <a href="#deletedSince"><span class="icon ion-ios-link"></span></a>
@@ -254,6 +272,7 @@
                 <td class="col-md-4">
                     <a name="id"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>id</b></span>
                         <a href="#id"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -289,6 +308,7 @@
                 <td class="col-md-4">
                     <a name="mimeType"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>mimeType</b></span>
                         <a href="#mimeType"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -324,6 +344,8 @@
                 <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>name</b></span>
                         <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -359,6 +381,7 @@
                 <td class="col-md-4">
                     <a name="parentId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>parentId</b></span>
                         <a href="#parentId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -394,6 +417,7 @@
                 <td class="col-md-4">
                     <a name="parentType"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>parentType</b></span>
                         <a href="#parentType"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -429,6 +453,7 @@
                 <td class="col-md-4">
                     <a name="securityCheckStatus"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>securityCheckStatus</b></span>
                         <a href="#securityCheckStatus"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -464,6 +489,7 @@
                 <td class="col-md-4">
                     <a name="size"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>size</b></span>
                         <a href="#size"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -504,7 +530,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities, PaginationResponse } from &#x27;@shared/controller&#x27;;
 import { FileRecord, FileRecordParentType, ScanStatus } from &#x27;../../entity&#x27;;

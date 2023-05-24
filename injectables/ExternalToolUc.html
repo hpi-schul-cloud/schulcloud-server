@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -39,21 +39,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Injectables</li>
-  <li >ExternalToolUc</li>
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >ExternalToolUc</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -65,7 +71,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -115,7 +121,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -188,7 +194,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -208,7 +214,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolDO: <a href="../entitys/ExternalTool.html" target="_self">CreateExternalTool</a>)</code>
+                    <code>createExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolDO: <a href="../undefineds/CreateExternalTool.html" target="_self">CreateExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -251,7 +257,7 @@
                                 <tr>
                                     <td>externalToolDO</td>
                                     <td>
-                                                <code><a href="../entitys/ExternalTool.html" target="_self" >CreateExternalTool</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#CreateExternalTool" target="_self" >CreateExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -636,7 +642,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../entitys/ExternalTool.html" target="_self">UpdateExternalTool</a>)</code>
+                    <code>updateExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../undefineds/UpdateExternalTool.html" target="_self">UpdateExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -691,7 +697,7 @@
                                 <tr>
                                     <td>externalTool</td>
                                     <td>
-                                                <code><a href="../entitys/ExternalTool.html" target="_self" >UpdateExternalTool</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#UpdateExternalTool" target="_self" >UpdateExternalTool</a></code>
                                     </td>
 
                                     <td>
@@ -721,7 +727,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId, IFindOptions, Permission, User, ExternalToolDO, Page } from &#x27;@shared/domain&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;

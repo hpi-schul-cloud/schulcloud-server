@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -51,7 +51,7 @@
 
 
 
-<h1 id="domain-object-validation">Domain Object Validation</h1>
+<h1>Domain Object Validation</h1>
 <p>If you need to validate a domain object, please write an independent class, so that the domain object itself, its repo and services can reuse it.</p>
 <p>Eric Evans suggests using the specification pattern.<br>A specification fulfills the following interface:</p>
 <div><pre class="line-numbers"><code class="language-typescript">public interface Specification&lt;T&gt; {

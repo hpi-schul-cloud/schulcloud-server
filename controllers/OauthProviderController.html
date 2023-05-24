@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -36,21 +36,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Controllers</li>
-  <li >OauthProviderController</li>
+  <li class="breadcrumb-item">Controllers</li>
+  <li class="breadcrumb-item" >OauthProviderController</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -84,51 +90,75 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#acceptLogoutRequest" >acceptLogoutRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createOAuth2Client" >createOAuth2Client</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#deleteOAuth2Client" >deleteOAuth2Client</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getConsentRequest" >getConsentRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getLoginRequest" >getLoginRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getOAuth2Client" >getOAuth2Client</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#getUrl" >getUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#listConsentSessions" >listConsentSessions</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#listOAuth2Clients" >listOAuth2Clients</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#patchConsentRequest" >patchConsentRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#patchLoginRequest" >patchLoginRequest</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#revokeConsentSession" >revokeConsentSession</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateOAuth2Client" >updateOAuth2Client</a>
                             </li>
@@ -144,7 +174,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -155,6 +185,8 @@
                 <td class="col-md-4">
                     <a name="acceptLogoutRequest"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>acceptLogoutRequest</b></span>
                         <a href="#acceptLogoutRequest"><span class="icon ion-ios-link"></span></a>
@@ -233,6 +265,8 @@
                 <td class="col-md-4">
                     <a name="createOAuth2Client"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>createOAuth2Client</b></span>
                         <a href="#createOAuth2Client"><span class="icon ion-ios-link"></span></a>
@@ -323,6 +357,8 @@
                 <td class="col-md-4">
                     <a name="deleteOAuth2Client"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span ><b>deleteOAuth2Client</b></span>
                         <a href="#deleteOAuth2Client"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -330,7 +366,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>deleteOAuth2Client(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/IdParams.html" target="_self">IdParams</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteOAuth2Client(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/IdParams.html" target="_self">IdParams</a>)</code>
                 </td>
             </tr>
 
@@ -411,6 +448,8 @@
                 <td class="col-md-4">
                     <a name="getConsentRequest"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getConsentRequest</b></span>
                         <a href="#getConsentRequest"><span class="icon ion-ios-link"></span></a>
@@ -489,6 +528,7 @@
                 <td class="col-md-4">
                     <a name="getLoginRequest"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getLoginRequest</b></span>
                         <a href="#getLoginRequest"><span class="icon ion-ios-link"></span></a>
@@ -567,6 +607,8 @@
                 <td class="col-md-4">
                     <a name="getOAuth2Client"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>getOAuth2Client</b></span>
                         <a href="#getOAuth2Client"><span class="icon ion-ios-link"></span></a>
@@ -657,6 +699,7 @@
                 <td class="col-md-4">
                     <a name="getUrl"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span ><b>getUrl</b></span>
                         <a href="#getUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -664,7 +707,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getUrl()</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUrl()</code>
                 </td>
             </tr>
 
@@ -701,6 +745,8 @@
                 <td class="col-md-4">
                     <a name="listConsentSessions"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>listConsentSessions</b></span>
                         <a href="#listConsentSessions"><span class="icon ion-ios-link"></span></a>
@@ -779,6 +825,8 @@
                 <td class="col-md-4">
                     <a name="listOAuth2Clients"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>listOAuth2Clients</b></span>
                         <a href="#listOAuth2Clients"><span class="icon ion-ios-link"></span></a>
@@ -869,6 +917,8 @@
                 <td class="col-md-4">
                     <a name="patchConsentRequest"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>patchConsentRequest</b></span>
                         <a href="#patchConsentRequest"><span class="icon ion-ios-link"></span></a>
@@ -983,6 +1033,8 @@
                 <td class="col-md-4">
                     <a name="patchLoginRequest"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>patchLoginRequest</b></span>
                         <a href="#patchLoginRequest"><span class="icon ion-ios-link"></span></a>
@@ -1097,6 +1149,8 @@
                 <td class="col-md-4">
                     <a name="revokeConsentSession"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span ><b>revokeConsentSession</b></span>
                         <a href="#revokeConsentSession"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1104,7 +1158,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>revokeConsentSession(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/RevokeConsentParams.html" target="_self">RevokeConsentParams</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>revokeConsentSession(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/RevokeConsentParams.html" target="_self">RevokeConsentParams</a>)</code>
                 </td>
             </tr>
 
@@ -1185,6 +1240,8 @@
                 <td class="col-md-4">
                     <a name="updateOAuth2Client"></a>
                     <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>updateOAuth2Client</b></span>
                         <a href="#updateOAuth2Client"><span class="icon ion-ios-link"></span></a>
@@ -1284,7 +1341,7 @@
 </section>    </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from &#x27;@nestjs/common&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;

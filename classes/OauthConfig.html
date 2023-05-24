@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >OauthConfig</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >OauthConfig</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,43 +89,56 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#authEndpoint" >authEndpoint</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#clientId" >clientId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#clientSecret" >clientSecret</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#grantType" >grantType</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#idpHint" >idpHint</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#issuer" >issuer</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#jwksEndpoint" >jwksEndpoint</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#logoutEndpoint" >logoutEndpoint</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#provider" >provider</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#redirectUri" >redirectUri</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#responseType" >responseType</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#scope" >scope</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#tokenEndpoint" >tokenEndpoint</a>
                             </li>
                         </ul>
@@ -135,7 +154,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -184,7 +203,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -195,6 +214,7 @@
                 <td class="col-md-4">
                     <a name="authEndpoint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>authEndpoint</b></span>
                         <a href="#authEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -230,6 +250,7 @@
                 <td class="col-md-4">
                     <a name="clientId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>clientId</b></span>
                         <a href="#clientId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -265,6 +286,7 @@
                 <td class="col-md-4">
                     <a name="clientSecret"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>clientSecret</b></span>
                         <a href="#clientSecret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -300,6 +322,7 @@
                 <td class="col-md-4">
                     <a name="grantType"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>grantType</b></span>
                         <a href="#grantType"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -335,6 +358,7 @@
                 <td class="col-md-4">
                     <a name="idpHint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>idpHint</b></span>
                         <a href="#idpHint"><span class="icon ion-ios-link"></span></a>
@@ -371,6 +395,7 @@
                 <td class="col-md-4">
                     <a name="issuer"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>issuer</b></span>
                         <a href="#issuer"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -406,6 +431,7 @@
                 <td class="col-md-4">
                     <a name="jwksEndpoint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>jwksEndpoint</b></span>
                         <a href="#jwksEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -441,6 +467,7 @@
                 <td class="col-md-4">
                     <a name="logoutEndpoint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>logoutEndpoint</b></span>
                         <a href="#logoutEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -476,6 +503,7 @@
                 <td class="col-md-4">
                     <a name="provider"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>provider</b></span>
                         <a href="#provider"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -511,6 +539,7 @@
                 <td class="col-md-4">
                     <a name="redirectUri"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>redirectUri</b></span>
                         <a href="#redirectUri"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -546,6 +575,7 @@
                 <td class="col-md-4">
                     <a name="responseType"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>responseType</b></span>
                         <a href="#responseType"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -581,6 +611,7 @@
                 <td class="col-md-4">
                     <a name="scope"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>scope</b></span>
                         <a href="#scope"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -616,6 +647,7 @@
                 <td class="col-md-4">
                     <a name="tokenEndpoint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>tokenEndpoint</b></span>
                         <a href="#tokenEndpoint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -656,7 +688,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, Enum, Property } from &#x27;@mikro-orm/core&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { EntityId } from &#x27;../types&#x27;;

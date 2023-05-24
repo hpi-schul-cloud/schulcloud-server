@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >OidcConfig</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >OidcConfig</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -83,27 +89,35 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#authorizationUrl" >authorizationUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#clientId" >clientId</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#clientSecret" >clientSecret</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#defaultScopes" >defaultScopes</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#idpHint" >idpHint</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#logoutUrl" >logoutUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#tokenUrl" >tokenUrl</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                 <a href="#userinfoUrl" >userinfoUrl</a>
                             </li>
                         </ul>
@@ -119,7 +133,7 @@
     </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-constructor">
     <h3 id="constructor">Constructor</h3>
         <table class="table table-sm table-bordered">
             <tbody>
@@ -168,7 +182,7 @@
         </table>
 </section>
 
-            <section>
+            <section data-compodoc="block-properties">
     
     <h3 id="inputs">
         Properties
@@ -179,6 +193,7 @@
                 <td class="col-md-4">
                     <a name="authorizationUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>authorizationUrl</b></span>
                         <a href="#authorizationUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -214,6 +229,7 @@
                 <td class="col-md-4">
                     <a name="clientId"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>clientId</b></span>
                         <a href="#clientId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -249,6 +265,7 @@
                 <td class="col-md-4">
                     <a name="clientSecret"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>clientSecret</b></span>
                         <a href="#clientSecret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -284,6 +301,7 @@
                 <td class="col-md-4">
                     <a name="defaultScopes"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>defaultScopes</b></span>
                         <a href="#defaultScopes"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -319,6 +337,7 @@
                 <td class="col-md-4">
                     <a name="idpHint"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>idpHint</b></span>
                         <a href="#idpHint"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -354,6 +373,7 @@
                 <td class="col-md-4">
                     <a name="logoutUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>logoutUrl</b></span>
                         <a href="#logoutUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -389,6 +409,7 @@
                 <td class="col-md-4">
                     <a name="tokenUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>tokenUrl</b></span>
                         <a href="#tokenUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -424,6 +445,7 @@
                 <td class="col-md-4">
                     <a name="userinfoUrl"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                         <span ><b>userinfoUrl</b></span>
                         <a href="#userinfoUrl"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -464,7 +486,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Embedded, Entity, Enum, Property } from &#x27;@mikro-orm/core&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { EntityId } from &#x27;../types&#x27;;

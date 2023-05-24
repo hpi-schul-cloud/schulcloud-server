@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -43,21 +43,27 @@
 
 
 <ol class="breadcrumb">
-  <li>Classes</li>
-  <li >DashboardMapper</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >DashboardMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
-        <li class="active">
-            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
         </li>
-        <li >
-            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
         </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
         <p class="comment">
             <h3>File</h3>
         </p>
@@ -70,7 +76,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
@@ -111,7 +117,7 @@
 
 
 
-            <section>
+            <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -132,7 +138,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapGridElement(data: <a href="../classes/GridElement.html" target="_self">GridElementWithPosition</a>)</code>
+                    <code>mapGridElement(data: <a href="../undefineds/GridElementWithPosition.html" target="_self">GridElementWithPosition</a>)</code>
                 </td>
             </tr>
 
@@ -163,7 +169,7 @@
                                 <tr>
                                     <td>data</td>
                                     <td>
-                                                <code><a href="../classes/GridElement.html" target="_self" >GridElementWithPosition</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#GridElementWithPosition" target="_self" >GridElementWithPosition</a></code>
                                     </td>
 
                                     <td>
@@ -204,7 +210,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapLearnroom(metadata: <a href="../interfaces/Meta.html" target="_self">LearnroomMetadata</a>)</code>
+                    <code>mapLearnroom(metadata: <a href="../undefineds/LearnroomMetadata.html" target="_self">LearnroomMetadata</a>)</code>
                 </td>
             </tr>
 
@@ -235,7 +241,7 @@
                                 <tr>
                                     <td>metadata</td>
                                     <td>
-                                                <code><a href="../interfaces/Meta.html" target="_self" >LearnroomMetadata</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#LearnroomMetadata" target="_self" >LearnroomMetadata</a></code>
                                     </td>
 
                                     <td>
@@ -340,7 +346,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DashboardEntity, GridElementWithPosition, LearnroomMetadata } from &#x27;@shared/domain&#x27;;
 import { DashboardResponse, DashboardGridElementResponse, DashboardGridSubElementResponse } from &#x27;../controller/dto&#x27;;
 

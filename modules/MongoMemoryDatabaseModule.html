@@ -13,7 +13,7 @@
     </head>
     <body>
 
-        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
             <a href="../" class="navbar-brand">schulcloud-server documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
@@ -34,22 +34,28 @@
 
 
 <ol class="breadcrumb">
-    <li>Modules</li>
-    <li >MongoMemoryDatabaseModule</li>
+    <li class="breadcrumb-item">Modules</li>
+    <li class="breadcrumb-item" >MongoMemoryDatabaseModule</li>
 </ol>
 
 
 <ul class="nav nav-tabs" role="tablist">
-    <li  class="active" >
-        <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+    <li class="nav-item">
+        <a href="#info" 
+            class="nav-link"
+            class="nav-link active"
+            role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
     </li>
-    <li >
-        <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+    <li class="nav-item">
+        <a href="#source" 
+            class="nav-link"
+            
+            role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
     </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="c-info">
+    <div class="tab-pane fade active in" id="info">
 
         <p class="comment">
             <h3>File</h3>
@@ -67,7 +73,7 @@
             </div>
         </div>
 
-        <section>
+        <section data-compodoc="block-methods">
     
     <h3 id="methods">
         Methods
@@ -87,7 +93,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>forRoot(options?: <a href="../interfaces/Options.html" target="_self">MongoDatabaseModuleOptions</a>)</code>
+                    <code>forRoot(options?: <a href="../undefineds/MongoDatabaseModuleOptions.html" target="_self">MongoDatabaseModuleOptions</a>)</code>
                 </td>
             </tr>
 
@@ -118,7 +124,7 @@
                                 <tr>
                                     <td>options</td>
                                     <td>
-                                                <code><a href="../interfaces/Options.html" target="_self" >MongoDatabaseModuleOptions</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#MongoDatabaseModuleOptions" target="_self" >MongoDatabaseModuleOptions</a></code>
                                     </td>
 
                                     <td>
@@ -186,7 +192,7 @@
     </div>
 
 
-    <div class="tab-pane fade  tab-source-code" id="c-source">
+    <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroORM } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
 import { DynamicModule, Inject, Module, OnModuleDestroy } from &#x27;@nestjs/common&#x27;;
