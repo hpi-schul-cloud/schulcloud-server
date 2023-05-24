@@ -22,7 +22,7 @@ export class FileElementResponse {
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
 	type: ContentElementType.FILE;
 
 	@ApiProperty()

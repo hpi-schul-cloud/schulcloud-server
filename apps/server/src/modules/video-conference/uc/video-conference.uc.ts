@@ -20,7 +20,7 @@ import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conferen
 import { ICurrentUser } from '@src/modules/authentication';
 import {
 	Action,
-	AllowedAuthorizationEntityType,
+	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 } from '@src/modules/authorization';
@@ -62,8 +62,8 @@ const PermissionMapping = {
 };
 
 const PermissionScopeMapping = {
-	[VideoConferenceScope.COURSE]: AllowedAuthorizationEntityType.Course,
-	[VideoConferenceScope.EVENT]: AllowedAuthorizationEntityType.Team,
+	[VideoConferenceScope.COURSE]: AuthorizableReferenceType.Course,
+	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
 @Injectable()
@@ -414,7 +414,7 @@ export class VideoConferenceUc {
 
 	private hasPermissions(
 		userId: EntityId,
-		entityName: AllowedAuthorizationEntityType,
+		entityName: AuthorizableReferenceType,
 		entityId: EntityId,
 		permissions: Permission[],
 		action: Action
