@@ -31,7 +31,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
 		if (rootBoardDo instanceof ColumnBoard) {
-			if (rootBoardDo.context.type === BoardExternalReferenceType.Course) {
+			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 				const course = await this.courseRepo.findById(rootBoardDo.context.id);
 				const users = this.mapCourseUsersToUsergroup(course);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
