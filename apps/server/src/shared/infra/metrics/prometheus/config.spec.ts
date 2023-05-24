@@ -50,4 +50,26 @@ describe('Config', () => {
 
 		expect(Config.instance.port).toBe(9100);
 	});
+
+	it("singleton should have 'collectDefaultMetrics' flag set to 'true' by default", () => {
+		expect(Config.instance.collectDefaultMetrics).toBe(true);
+	});
+
+	it("singleton should have custom 'collectDefaultMetrics' flag value loaded from the configuration", () => {
+		Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', false);
+		Config.reload();
+
+		expect(Config.instance.collectDefaultMetrics).toBe(false);
+	});
+
+	it("singleton should have 'collectMetricsRouteMetrics' flag set to 'true' by default", () => {
+		expect(Config.instance.collectMetricsRouteMetrics).toBe(true);
+	});
+
+	it("singleton should have custom 'collectMetricsRouteMetrics' flag value loaded from the configuration", () => {
+		Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', false);
+		Config.reload();
+
+		expect(Config.instance.collectMetricsRouteMetrics).toBe(false);
+	});
 });

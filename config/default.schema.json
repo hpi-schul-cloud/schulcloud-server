@@ -819,6 +819,16 @@
 			"default": 9090,
 			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag)."
 		},
+		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting default Prometheus client metrics (e.g. NodeJS or OS-related ones)."
+		},
+		"PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Toggle that enables/disables collecting metrics of the metrics route itself (like metrics route calls count or response time)."
+		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
