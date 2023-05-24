@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
+import { FilesStorageClientModule } from '../files-storage-client';
 import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
@@ -16,7 +17,7 @@ import {
 import { BoardManagementUc } from './uc';
 
 @Module({
-	imports: [ConsoleWriterModule, LoggerModule],
+	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
 	providers: [
 		BoardDoRepo,
 		BoardDoService,
