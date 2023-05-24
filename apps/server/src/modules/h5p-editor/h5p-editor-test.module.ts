@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
@@ -17,6 +18,7 @@ const imports = [
 	AuthenticationModule,
 	CoreModule,
 	LoggerModule,
+	RabbitMQWrapperTestModule,
 ];
 const controllers = [];
 const providers = [];
