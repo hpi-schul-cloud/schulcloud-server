@@ -10,6 +10,8 @@ import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationModule } from '../authentication/authentication.module';
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config } from './h5p-editor.config';
+import { H5PEditorService } from './service/h5p-editor.service';
+import { H5PPlayerService } from './service/h5p-player.service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -37,7 +39,7 @@ const imports = [
 
 const controllers = [H5PEditorController];
 
-const providers = [Logger];
+const providers = [Logger, H5PEditorService, H5PPlayerService];
 
 @Module({
 	imports,
