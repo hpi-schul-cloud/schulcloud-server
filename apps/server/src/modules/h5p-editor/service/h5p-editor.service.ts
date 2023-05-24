@@ -18,7 +18,7 @@ export class H5PEditorService {
 		const temporaryStorage = new fsImplementations.DirectoryTemporaryFileStorage(path.join(tmpDir, '/h5p_temporary'));
 
 		const config: H5PConfig = new H5PConfig(undefined, {
-			ajaxUrl: '/api/v3/h5p-editor',
+			baseUrl: '/api/v3/h5p-editor',
 		});
 
 		const urlGenerator = new UrlGenerator(config);

@@ -14,6 +14,7 @@ import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request } from 'express';
 
+import { H5PEditorUc } from '../uc/h5p.uc';
 import { GetH5PAjaxParams } from './dto/h5p-ajax.params';
 import { GetH5PContentFileParams } from './dto/h5p-content-file.params';
 import { GetH5PLibraryFileParams } from './dto/h5p-library-file.params';
@@ -40,6 +41,8 @@ const dummyResponse = (title: string) => `
 @Authenticate('jwt')
 @Controller('h5p-editor')
 export class H5PEditorController {
+	constructor(private h5pEditorUc: H5PEditorUc) {}
+
 	@ApiOperation({ summary: 'Return dummy HTML for testing' })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 400, type: BadRequestException })
