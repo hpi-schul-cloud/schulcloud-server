@@ -57,5 +57,13 @@ describe(BoardManagementConsole.name, () => {
 
 			expect(consoleWriter.info).toHaveBeenCalledWith(expect.stringContaining('Success'));
 		});
+
+		it('should fail if no valid courseId was provided', async () => {
+			await service.createBoard('123');
+
+			expect(consoleWriter.info).toHaveBeenCalledWith(
+				expect.stringContaining('Error: please provide a valid courseId')
+			);
+		});
 	});
 });

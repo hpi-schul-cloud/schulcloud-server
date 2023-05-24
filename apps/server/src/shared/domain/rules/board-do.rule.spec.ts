@@ -103,10 +103,34 @@ describe(BoardDoRule.name, () => {
 				return { userWithoutPermision, boardDoAuthorizable };
 			};
 
-			it('should return "true"', () => {
+			it('should return "false"', () => {
 				const { userWithoutPermision, boardDoAuthorizable } = setup();
 
 				const res = service.hasPermission(userWithoutPermision, boardDoAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
+
+		describe('when user does not have the desired role', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [{ userId: user.id, roles: [] }],
+					id: new ObjectId().toHexString(),
+				});
+
+				return { user, boardDoAuthorizable };
+			};
+
+			it('should return "false"', () => {
+				const { user, boardDoAuthorizable } = setup();
+
+				const res = service.hasPermission(user, boardDoAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});

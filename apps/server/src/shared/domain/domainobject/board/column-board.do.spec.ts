@@ -1,7 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { columnBoardFactory, columnFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { ColumnBoard } from './column-board.do';
-import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
+import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReferenceType } from './types';
 
 describe(ColumnBoard.name, () => {
 	describe('isAllowedAsChild', () => {
@@ -31,6 +32,17 @@ describe(ColumnBoard.name, () => {
 			await columnBoard.acceptAsync(visitor);
 
 			expect(visitor.visitColumnBoardAsync).toHaveBeenCalledWith(columnBoard);
+		});
+	});
+
+	describe('set context', () => {
+		it('should store context', async () => {
+			const columnBoard = columnBoardFactory.build();
+
+			const context = { type: BoardExternalReferenceType.Course, id: new ObjectId().toHexString() };
+			columnBoard.context = { ...context };
+
+			expect(columnBoard.context).toEqual(context);
 		});
 	});
 });
