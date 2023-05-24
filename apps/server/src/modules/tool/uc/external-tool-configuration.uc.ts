@@ -28,11 +28,12 @@ export class ExternalToolConfigurationUc {
 
 		const externalTools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools({});
 
-		const schoolToolsInUse: SchoolExternalToolDO[] = await this.schoolExternalToolService.findSchoolExternalTools({
-			schoolId,
-		});
+		const schoolExternalToolsInUse: SchoolExternalToolDO[] =
+			await this.schoolExternalToolService.findSchoolExternalTools({
+				schoolId,
+			});
 
-		const toolIdsInUse: EntityId[] = schoolToolsInUse.map(
+		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
 			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
 		);
 
@@ -50,33 +51,40 @@ export class ExternalToolConfigurationUc {
 	): Promise<ExternalToolDO[]> {
 		await this.ensureContextPermission(userId, contextId, contextType);
 
-		const externalTools: Page<ExternalToolDO> = await this.externalToolService.findExternalTools({});
+		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
+			Page<ExternalToolDO>,
+			SchoolExternalToolDO[],
+			ContextExternalToolDO[]
+		] = await Promise.all([
+			this.externalToolService.findExternalTools({}),
+			this.schoolExternalToolService.findSchoolExternalTools({
+				schoolId,
+			}),
+			this.contextExternalToolService.findContextExternalTools({
+				contextId,
+			}),
+		]);
 
-		const schoolExternalTools: SchoolExternalToolDO[] = await this.schoolExternalToolService.findSchoolExternalTools({
-			schoolId,
-		});
-
-		const contextToolsInUse: ContextExternalToolDO[] = await this.contextExternalToolService.findContextExternalTools({
-			contextId,
-		});
-
-		const schoolToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
-			(schoolExternalTool: SchoolExternalToolDO): boolean =>
-				contextToolsInUse.some(
+		const schoolExternalToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
+			(schoolExternalTool: SchoolExternalToolDO): boolean => {
+				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
 					(contextExternalTool: ContextExternalToolDO) => contextExternalTool.schoolToolId === schoolExternalTool.id
-				)
+				);
+
+				return hasContextExternalTool;
+			}
 		);
 
-		const toolIdsInUse: EntityId[] = schoolToolsInUse.map(
+		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
 			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
 		);
 
 		const availableTools: ExternalToolDO[] = externalTools.data.filter((tool: ExternalToolDO): boolean => {
-			const hasSchoolTool: boolean = schoolExternalTools.some(
+			const hasSchoolExternalTool: boolean = schoolExternalTools.some(
 				(schoolExternalTool: SchoolExternalToolDO): boolean => schoolExternalTool.toolId === tool.id
 			);
 
-			return !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id) && hasSchoolTool;
+			return !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id) && hasSchoolExternalTool;
 		});
 
 		return availableTools;

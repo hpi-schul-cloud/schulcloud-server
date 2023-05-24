@@ -1,11 +1,19 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+	ApiBearerAuth,
+	ApiForbiddenResponse,
+	ApiFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ExternalToolDO } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolConfigurationUc } from '../uc';
 import {
-	ContextParams,
+	ContextTypeParams,
 	ExternalToolConfigurationTemplateResponse,
 	IdParams,
 	ToolConfigurationListResponse,
@@ -40,10 +48,16 @@ export class ToolConfigurationController {
 	}
 
 	@Get('available/:context/:id')
+	@ApiBearerAuth()
 	@ApiForbiddenResponse()
+	@ApiOperation({ summary: 'Lists all available tools that can be added for a given context' })
+	@ApiOkResponse({
+		description: 'List of available tools for a context',
+		type: ToolConfigurationListResponse,
+	})
 	public async getAvailableToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() contextParams: ContextParams,
+		@Param() contextParams: ContextTypeParams,
 		@Param() idParams: IdParams
 	): Promise<ToolConfigurationListResponse> {
 		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForContext(

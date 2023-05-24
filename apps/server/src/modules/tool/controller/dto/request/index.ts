@@ -4,7 +4,7 @@ export * from './external-tool-search.params';
 export * from './external-tool-sort.params';
 export * from './lti11-launch.query';
 export * from './tool-id.params';
-export * from './context.params';
+export * from './context-type.params';
 export * from './id.params';
 export * from './school-external-tool-search.params';
 export * from './school-external-tool-id.params';
