@@ -36,7 +36,7 @@ export class UserLoginMigrationService {
 				throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
 			}
 
-			userLoginMigration = await this.createNewMigration(schoolId, schoolDo);
+			userLoginMigration = await this.createNewMigration(schoolDo);
 
 			this.enableOauthMigrationFeature(schoolDo);
 		}
@@ -58,13 +58,11 @@ export class UserLoginMigrationService {
 		}
 
 		const savedMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
-		schoolDo.userLoginMigrationId = savedMigration.id;
-		await this.schoolService.save(schoolDo);
 
 		return savedMigration;
 	}
 
-	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
+	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
@@ -77,7 +75,7 @@ export class UserLoginMigrationService {
 		const sourceSystemId = systemIds[0];
 
 		return new UserLoginMigrationDO({
-			schoolId,
+			schoolId: school.id as string,
 			targetSystemId: sanisSystem.id as string,
 			sourceSystemId,
 			startedAt: new Date(),
