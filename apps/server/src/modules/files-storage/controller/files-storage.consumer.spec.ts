@@ -17,7 +17,7 @@ describe('FilesStorageConsumer', () => {
 	let orm: MikroORM;
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	afterAll(async () => {
@@ -127,7 +127,7 @@ describe('FilesStorageConsumer', () => {
 				};
 				filesStorageService.getFileRecordsOfParent.mockResolvedValue([[], 0]);
 				await service.getFilesOfParent(payload);
-				expect(filesStorageService.getFileRecordsOfParent).toBeCalledWith(payload);
+				expect(filesStorageService.getFileRecordsOfParent).toBeCalledWith(payload.parentId);
 			});
 
 			it('should return array instances of FileRecordResponse', async () => {
@@ -160,42 +160,47 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	describe('deleteFilesOfParent()', () => {
-		const schoolId: EntityId = new ObjectId().toHexString();
 		describe('WHEN valid file exists', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
+
+				const fileRecords = fileRecordFactory.buildList(3);
+				filesStorageService.deleteFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
+
+				return { parentId };
+			};
+
 			it('should call filesStorageService.deleteFilesOfParent with params', async () => {
-				const payload = {
-					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParentType.Course,
-					schoolId,
-				};
-				filesStorageService.deleteFilesOfParent.mockResolvedValue([[], 0]);
-				await service.deleteFilesOfParent(payload);
-				expect(filesStorageService.deleteFilesOfParent).toBeCalledWith(payload);
+				const { parentId } = setup();
+
+				await service.deleteFilesOfParent(parentId);
+
+				expect(filesStorageService.deleteFilesOfParent).toBeCalledWith(parentId);
 			});
 
 			it('should return array instances of FileRecordResponse', async () => {
-				const payload = {
-					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParentType.Course,
-					schoolId: new ObjectId().toHexString(),
-				};
+				const { parentId } = setup();
 
-				const fileRecords = fileRecordFactory.buildList(3, payload);
+				const response = await service.deleteFilesOfParent(parentId);
 
-				filesStorageService.deleteFilesOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
-				const response = await service.deleteFilesOfParent(payload);
 				expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
 			});
 		});
-		describe('WHEN file not exists', () => {
-			it('should return RpcMessage with empty array', async () => {
-				const payload = {
-					parentId: new ObjectId().toHexString(),
-					parentType: FileRecordParentType.Course,
-					schoolId,
-				};
+
+		describe('WHEN no file exists', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
+
 				filesStorageService.deleteFilesOfParent.mockResolvedValue([[], 0]);
-				const response = await service.deleteFilesOfParent(payload);
+
+				return { parentId };
+			};
+
+			it('should return RpcMessage with empty array', async () => {
+				const { parentId } = setup();
+
+				const response = await service.deleteFilesOfParent(parentId);
+
 				expect(response).toStrictEqual({ message: [] });
 			});
 		});
