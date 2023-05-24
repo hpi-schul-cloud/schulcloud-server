@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyFileDto, FileDto } from '../dto';
 import { IFileRequestInfo } from '../interfaces';
@@ -27,8 +28,8 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async deleteFilesOfParent(param: IFileRequestInfo): Promise<FileDto[]> {
-		const response = await this.fileStorageMQProducer.deleteFilesOfParent(param);
+	async deleteFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.deleteFilesOfParent(parentId);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
