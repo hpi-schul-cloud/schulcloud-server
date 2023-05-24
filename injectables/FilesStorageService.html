@@ -1374,7 +1374,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteFilesOfParent(params: <a href="../classes/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>deleteFilesOfParent(parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -1403,9 +1403,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>params</td>
+                                    <td>parentId</td>
                                     <td>
-                                                <code><a href="../classes/FileRecordParams.html" target="_self" >FileRecordParams</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -1926,7 +1926,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFileRecordsOfParent(params: <a href="../classes/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>getFileRecordsOfParent(parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -1955,9 +1955,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>params</td>
+                                    <td>parentId</td>
                                     <td>
-                                                <code><a href="../classes/FileRecordParams.html" target="_self" >FileRecordParams</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -2836,8 +2836,8 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async getFileRecordsOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		const countedFileRecords &#x3D; await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+	public async getFileRecordsOfParent(parentId: EntityId): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		const countedFileRecords &#x3D; await this.fileRecordRepo.findByParentId(parentId);
 
 		return countedFileRecords;
 	}
@@ -2864,7 +2864,7 @@ export class FilesStorageService {
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise&lt;string&gt; {
 		let fileName &#x3D; file.name;
 
-		const [fileRecordsOfParent, count] &#x3D; await this.getFileRecordsOfParent(params);
+		const [fileRecordsOfParent, count] &#x3D; await this.getFileRecordsOfParent(params.parentId);
 		if (count &gt; 0) {
 			fileName &#x3D; resolveFileNameDuplicates(file.name, fileRecordsOfParent);
 		}
@@ -2926,7 +2926,7 @@ export class FilesStorageService {
 
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams &#x3D; FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
-		const [fileRecords] &#x3D; await this.getFileRecordsOfParent(fileRecordParams);
+		const [fileRecords] &#x3D; await this.getFileRecordsOfParent(fileRecordParams.parentId);
 
 		this.checkDuplicatedNames(fileRecords, data.fileName);
 		fileRecord.setName(data.fileName);
@@ -3008,8 +3008,8 @@ export class FilesStorageService {
 		await this.deleteWithRollbackByError(fileRecords);
 	}
 
-	public async deleteFilesOfParent(params: FileRecordParams): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
-		const [fileRecords, count] &#x3D; await this.getFileRecordsOfParent(params);
+	public async deleteFilesOfParent(parentId: EntityId): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		const [fileRecords, count] &#x3D; await this.getFileRecordsOfParent(parentId);
 
 		if (count &gt; 0) {
 			await this.delete(fileRecords);

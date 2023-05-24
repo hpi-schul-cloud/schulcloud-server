@@ -143,7 +143,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -232,8 +232,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:67</a></div>
                 </td>
             </tr>
 
@@ -303,8 +303,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:31</a></div>
                 </td>
             </tr>
 
@@ -367,15 +367,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createRequest(event: <a href="../undefineds/FilesStorageEvents.html" target="_self">FilesStorageEvents</a>, payload: IFileRecordParams | ICopyFilesOfParentParams)</code>
+                    <code>createRequest(event: <a href="../undefineds/FilesStorageEvents.html" target="_self">FilesStorageEvents</a>, payload: <a href="../undefineds/EntityId.html" target="_self">IFileRecordParams | ICopyFilesOfParentParams | EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:75</a></div>
                 </td>
             </tr>
 
@@ -410,7 +410,7 @@
                                 <tr>
                                     <td>payload</td>
                                     <td>
-                                            <code>IFileRecordParams | ICopyFilesOfParentParams</code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >IFileRecordParams | ICopyFilesOfParentParams | EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -450,15 +450,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteFilesOfParent(payload: <a href="../interfaces/IFileRecordParams.html" target="_self">IFileRecordParams</a>)</code>
+                    <code>deleteFilesOfParent(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:55</a></div>
                 </td>
             </tr>
 
@@ -481,7 +481,7 @@
                                 <tr>
                                     <td>payload</td>
                                     <td>
-                                                <code><a href="../interfaces/IFileRecordParams.html" target="_self" >IFileRecordParams</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                     </td>
 
                                     <td>
@@ -528,8 +528,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:43</a></div>
                 </td>
             </tr>
 
@@ -609,7 +609,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -625,6 +625,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AmqpConnection } from &#x27;@golevelup/nestjs-rabbitmq&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
 import { RpcMessage } from &#x27;@shared/infra/rabbitmq/rpc-message&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import {
@@ -675,7 +676,7 @@ export class FilesStorageProducer {
 		return response.message || [];
 	}
 
-	async deleteFilesOfParent(payload: IFileRecordParams): Promise&lt;IFileDO[]&gt; {
+	async deleteFilesOfParent(payload: EntityId): Promise&lt;IFileDO[]&gt; {
 		this.logger.debug({ action: &#x27;deleteFilesOfParent:started&#x27;, payload });
 		const response &#x3D; await this.amqpConnection.request&lt;RpcMessage&lt;IFileDO[]&gt;&gt;(
 			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
@@ -695,7 +696,7 @@ export class FilesStorageProducer {
 		}
 	}
 
-	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams) {
+	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams | EntityId) {
 		return {
 			exchange: FilesStorageExchange,
 			routingKey: event,

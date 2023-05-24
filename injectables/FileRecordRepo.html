@@ -97,6 +97,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByParentId" >findByParentId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findBySchoolIdAndParentId" >findBySchoolIdAndParentId</a>
                             </li>
                             <li>
@@ -190,8 +194,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:65</a></div>
                 </td>
             </tr>
 
@@ -255,6 +259,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByParentId"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findByParentId</b></span>
+                        <a href="#findByParentId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByParentId(parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options?: IFindOptions<FileRecord>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:27</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>parentId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>IFindOptions&lt;FileRecord&gt;</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#Counted" target="_self" >Promise&lt;Counted&lt;FileRecord[]&gt;&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findBySchoolIdAndParentId"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -273,8 +360,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:34</a></div>
                 </td>
             </tr>
 
@@ -368,8 +455,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:45</a></div>
                 </td>
             </tr>
 
@@ -463,8 +550,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:56</a></div>
                 </td>
             </tr>
 
@@ -677,8 +764,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="81"
+                            class="link-to-prism">apps/server/src/modules/files-storage/repo/filerecord.repo.ts:81</a></div>
                 </td>
             </tr>
 
@@ -1089,6 +1176,13 @@ export class FileRecordRepo extends BaseRepo&lt;FileRecord&gt; {
 		const fileRecord &#x3D; await this.findOneOrFail(scope);
 
 		return fileRecord;
+	}
+
+	async findByParentId(parentId: EntityId, options?: IFindOptions&lt;FileRecord&gt;): Promise&lt;Counted&lt;FileRecord[]&gt;&gt; {
+		const scope &#x3D; new FileRecordScope().byParentId(parentId).byMarkedForDelete(false);
+		const result &#x3D; await this.findAndCount(scope, options);
+
+		return result;
 	}
 
 	async findBySchoolIdAndParentId(

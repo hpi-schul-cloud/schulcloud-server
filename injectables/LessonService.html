@@ -267,8 +267,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="23"
+                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:23</a></div>
                 </td>
             </tr>
 
@@ -338,8 +338,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/modules/lesson/service/lesson.service.ts:19</a></div>
                 </td>
             </tr>
 
@@ -396,7 +396,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Counted, EntityId, Lesson } from &#x27;@shared/domain&#x27;;
 import { LessonRepo } from &#x27;@shared/repo&#x27;;
-import { FileParamBuilder, FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
 
 @Injectable()
 export class LessonService {
@@ -406,8 +406,7 @@ export class LessonService {
 	) {}
 
 	async deleteLesson(lesson: Lesson): Promise&lt;void&gt; {
-		const params &#x3D; FileParamBuilder.build(lesson.getSchoolId(), lesson);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
 	}
