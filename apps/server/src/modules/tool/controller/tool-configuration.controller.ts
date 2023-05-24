@@ -5,12 +5,12 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolConfigurationUc } from '../uc';
 import {
+	ContextParams,
 	ExternalToolConfigurationTemplateResponse,
 	IdParams,
 	ToolConfigurationListResponse,
 	ToolIdParams,
 } from './dto';
-import { ContextParams } from './dto/request/context.params';
 import { ExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')

@@ -57,7 +57,7 @@ export class ExternalToolConfigurationUc {
 		});
 
 		const contextToolsInUse: ContextExternalToolDO[] = await this.contextExternalToolService.findContextExternalTools({
-			contextId: contextId,
+			contextId,
 		});
 
 		const schoolToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
@@ -71,9 +71,13 @@ export class ExternalToolConfigurationUc {
 			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
 		);
 
-		const availableTools: ExternalToolDO[] = externalTools.data.filter(
-			(tool: ExternalToolDO): boolean => !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id)
-		);
+		const availableTools: ExternalToolDO[] = externalTools.data.filter((tool: ExternalToolDO): boolean => {
+			const hasSchoolTool: boolean = schoolExternalTools.some(
+				(schoolExternalTool: SchoolExternalToolDO): boolean => schoolExternalTool.toolId === tool.id
+			);
+
+			return !tool.isHidden && !!tool.id && !toolIdsInUse.includes(tool.id) && hasSchoolTool;
+		});
 
 		return availableTools;
 	}
