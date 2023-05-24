@@ -3,7 +3,6 @@ import { ContentElementFactory } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console';
 import { LoggerModule } from '@src/core/logger';
 import { FilesStorageClientModule } from '../files-storage-client';
-import { BoardManagementConsole } from './console';
 import { BoardDoRepo, BoardNodeRepo } from './repo';
 import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
 import {
@@ -14,15 +13,12 @@ import {
 	ColumnService,
 	ContentElementService,
 } from './service';
-import { BoardManagementUc } from './uc';
 
 @Module({
 	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule],
 	providers: [
 		BoardDoRepo,
 		BoardDoService,
-		BoardManagementConsole,
-		BoardManagementUc,
 		BoardNodeRepo,
 		CardService,
 		ColumnBoardService,
