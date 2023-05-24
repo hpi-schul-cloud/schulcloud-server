@@ -1,7 +1,23 @@
-import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Controller,
+	ForbiddenException,
+	Get,
+	InternalServerErrorException,
+	Param,
+	Post,
+	Query,
+	Req,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { Request } from 'express';
+
+import { GetH5PAjaxParams } from './dto/h5p-ajax.params';
+import { GetH5PContentFileParams } from './dto/h5p-content-file.params';
+import { GetH5PLibraryFileParams } from './dto/h5p-library-file.params';
+import { GetH5PStaticCoreFileParams, GetH5PStaticEditorCoreFileParams } from './dto/h5p-static-files.params';
 
 // Dummy html response so we can test i-frame integration
 const dummyResponse = (title: string) => `
@@ -53,4 +69,55 @@ export class H5PEditorController {
 	// - ajax endpoint for h5p 		(e.g. GET/POST `/ajax/*`)
 	// - static files from h5p-core	(e.g. GET `/core/*`)
 	// - static files for editor	(e.g. GET `/editor/*`)
+
+	@Get('libraries/:ubername/:file(*)')
+	async getLibraryFile(@Param() params: GetH5PLibraryFileParams) {
+		return Promise.resolve(`Library Name: ${params.ubername} | File: ${params.file}`);
+	}
+
+	@Get('content/:id')
+	async getContentParameters(@Param('id') id: string) {
+		return Promise.resolve(`Content ID: ${id}`);
+	}
+
+	@Get('content/:id/:file(*)')
+	async getContentFile(@Param() params: GetH5PContentFileParams) {
+		return Promise.resolve(`Content ID: ${params.id} | File: ${params.file}`);
+	}
+
+	@Get('temporary/:file')
+	async getTemporaryFile(@Param('file') file: string) {
+		return Promise.resolve(`Temporary File ID: ${file}`);
+	}
+
+	@Get('ajax')
+	async getAjax(@Query() query: GetH5PAjaxParams) {
+		return Promise.resolve(`Test: ${JSON.stringify(query)}`);
+	}
+
+	@Post('ajax')
+	async postAjax(@Req() req: Request) {
+		// Query
+		// - action
+		// - language?
+		// - id
+		// - hubId
+
+		// Body
+		// - files
+
+		return Promise.resolve('Dummy');
+	}
+
+	@Get('core/:file(*)')
+	async getCoreFiles(@Param() params: GetH5PStaticCoreFileParams) {
+		// Static files?
+		return Promise.resolve(`Test: ${JSON.stringify(params)}`);
+	}
+
+	@Get('editor/:ubername/:file(*)')
+	async getEditorCoreFiles(@Param() params: GetH5PStaticEditorCoreFileParams) {
+		// Static files?
+		return Promise.resolve(`Test: ${JSON.stringify(params)}`);
+	}
 }
