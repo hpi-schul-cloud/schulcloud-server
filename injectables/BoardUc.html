@@ -85,8 +85,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#createBoard" >createBoard</a>
+                                <a href="#checkPermission" >checkPermission</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -150,12 +151,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -173,6 +174,42 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardDoAuthorizableService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>columnBoardService</td>
                                                   
                                                         <td>
@@ -189,18 +226,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ColumnService.html" target="_self" >ColumnService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>cardService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -238,26 +263,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createBoard"></a>
+                    <a name="checkPermission"></a>
                     <span class="name">
+                        <span class="modifier">Private</span>
                         <span class="modifier">Async</span>
-                        <span ><b>createBoard</b></span>
-                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>checkPermission</b></span>
+                        <a href="#checkPermission"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createBoard(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:135</a></div>
                 </td>
             </tr>
 
@@ -289,13 +315,37 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>boardDo</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>action</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;ColumnBoard&gt;</a></code>
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -327,8 +377,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="102"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:102</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:94</a></div>
                 </td>
             </tr>
 
@@ -410,8 +460,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:49</a></div>
                 </td>
             </tr>
 
@@ -493,8 +543,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="31"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:31</a></div>
                 </td>
             </tr>
 
@@ -576,8 +626,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:134</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:126</a></div>
                 </td>
             </tr>
 
@@ -659,8 +709,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:59</a></div>
                 </td>
             </tr>
 
@@ -742,8 +792,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:22</a></div>
                 </td>
             </tr>
 
@@ -825,8 +875,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="105"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:105</a></div>
                 </td>
             </tr>
 
@@ -932,8 +982,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="76"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:76</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:68</a></div>
                 </td>
             </tr>
 
@@ -1039,8 +1089,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:40</a></div>
                 </td>
             </tr>
 
@@ -1134,8 +1184,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="124"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:124</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:117</a></div>
                 </td>
             </tr>
 
@@ -1229,8 +1279,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:85</a></div>
                 </td>
             </tr>
 
@@ -1309,16 +1359,21 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Card, Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, Card, Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
+import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
 import { CardService, ColumnBoardService, ColumnService } from &#x27;../service&#x27;;
+import { BoardDoAuthorizableService } from &#x27;../service/board-do-authorizable.service&#x27;;
 
 @Injectable()
 export class BoardUc {
 	constructor(
+		private readonly authorizationService: AuthorizationService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly cardService: CardService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(BoardUc.name);
@@ -1327,18 +1382,9 @@ export class BoardUc {
 	async findBoard(userId: EntityId, boardId: EntityId): Promise&lt;ColumnBoard&gt; {
 		this.logger.debug({ action: &#x27;findBoard&#x27;, userId, boardId });
 
-		// TODO check permissions
-
 		const board &#x3D; await this.columnBoardService.findById(boardId);
-		return board;
-	}
+		await this.checkPermission(userId, board, Action.read);
 
-	async createBoard(userId: EntityId): Promise&lt;ColumnBoard&gt; {
-		this.logger.debug({ action: &#x27;createBoard&#x27;, userId });
-
-		// TODO check permissions
-
-		const board &#x3D; await this.columnBoardService.create();
 		return board;
 	}
 
@@ -1346,8 +1392,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;deleteBoard&#x27;, userId, boardId });
 
 		const board &#x3D; await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.delete(board);
 	}
@@ -1356,8 +1401,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;updateBoardTitle&#x27;, userId, boardId, title });
 
 		const board &#x3D; await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		await this.columnBoardService.updateTitle(board, title);
 	}
@@ -1366,8 +1410,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;createColumn&#x27;, userId, boardId });
 
 		const board &#x3D; await this.columnBoardService.findById(boardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, board, Action.write);
 
 		const column &#x3D; await this.columnService.create(board);
 		return column;
@@ -1377,8 +1420,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;deleteColumn&#x27;, userId, columnId });
 
 		const column &#x3D; await this.columnService.findById(columnId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.delete(column);
 	}
@@ -1394,7 +1436,8 @@ export class BoardUc {
 		const column &#x3D; await this.columnService.findById(columnId);
 		const targetBoard &#x3D; await this.columnBoardService.findById(targetBoardId);
 
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.write);
+		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
@@ -1403,8 +1446,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;updateColumnTitle&#x27;, userId, columnId, title });
 
 		const column &#x3D; await this.columnService.findById(columnId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, column, Action.write);
 
 		await this.columnService.updateTitle(column, title);
 	}
@@ -1413,8 +1455,8 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;createCard&#x27;, userId, columnId });
 
 		const column &#x3D; await this.columnService.findById(columnId);
+		await this.checkPermission(userId, column, Action.read);
 
-		// TODO: check Permissions
 		const card &#x3D; await this.cardService.create(column);
 
 		return card;
@@ -1426,7 +1468,8 @@ export class BoardUc {
 		const card &#x3D; await this.cardService.findById(cardId);
 		const targetColumn &#x3D; await this.columnService.findById(targetColumnId);
 
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.write);
+		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}
@@ -1435,8 +1478,7 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;updateCardTitle&#x27;, userId, cardId, title });
 
 		const card &#x3D; await this.cardService.findById(cardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.write);
 
 		await this.cardService.updateTitle(card, title);
 	}
@@ -1445,10 +1487,17 @@ export class BoardUc {
 		this.logger.debug({ action: &#x27;deleteCard&#x27;, userId, cardId });
 
 		const card &#x3D; await this.cardService.findById(cardId);
-
-		// TODO check permissions
+		await this.checkPermission(userId, card, Action.write);
 
 		await this.cardService.delete(card);
+	}
+
+	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise&lt;void&gt; {
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		const context &#x3D; { action, requiredPermissions: [] };
+
+		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 }
 </code></pre>

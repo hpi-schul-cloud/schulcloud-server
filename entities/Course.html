@@ -711,14 +711,31 @@ export class Course
 	}
 
 	public getStudentIds(): EntityId[] {
-		if (!this.students) {
-			throw new InternalServerErrorException(&#x27;Course.students is undefined. The course need to be populated.&#x27;);
+		const studentIds &#x3D; this.extractIds(this.students);
+		return studentIds;
+	}
+
+	public getTeacherIds(): EntityId[] {
+		const teacherIds &#x3D; this.extractIds(this.teachers);
+		return teacherIds;
+	}
+
+	public getSubstitutionTeacherIds(): EntityId[] {
+		const substitutionTeacherIds &#x3D; this.extractIds(this.substitutionTeachers);
+		return substitutionTeacherIds;
+	}
+
+	private extractIds(users: Collection&lt;User&gt;): EntityId[] {
+		if (!users) {
+			throw new InternalServerErrorException(
+				&#x60;Students, teachers or stubstitution is undefined. The course needs to be populated&#x60;
+			);
 		}
 
-		const studentObjectIds &#x3D; this.students.getIdentifiers(&#x27;_id&#x27;);
-		const studentIds &#x3D; studentObjectIds.map((id): string &#x3D;&gt; id.toString());
+		const objectIds &#x3D; users.getIdentifiers(&#x27;_id&#x27;);
+		const ids &#x3D; objectIds.map((id): string &#x3D;&gt; id.toString());
 
-		return studentIds;
+		return ids;
 	}
 
 	public getStudentsList(): UsersList[] {

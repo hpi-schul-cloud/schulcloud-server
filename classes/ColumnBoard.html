@@ -152,6 +152,9 @@
                                 <li>
                                     <a href="#title" >title</a>
                                 </li>
+                                <li>
+                                    <a href="#context" >context</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -232,7 +235,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:19</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:27</a></code>
 </div>
                 </td>
             </tr>
@@ -309,7 +312,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:23</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:31</a></code>
 </div>
                 </td>
             </tr>
@@ -384,7 +387,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:14</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:22</a></code>
 </div>
                 </td>
             </tr>
@@ -794,6 +797,75 @@
                     </tr>
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="context"></a>
+                        <span class="name"><b>context</b><a href="#context"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>context()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:14</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>context(context: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:18</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>context</td>
+                                                    
+                                                            <td>
+                                                                            <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -801,7 +873,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { Column } from &#x27;./column.do&#x27;;
-import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
+import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from &#x27;./types&#x27;;
 
 export class ColumnBoard extends BoardComposite&lt;ColumnBoardProps&gt; {
 	get title(): string {
@@ -810,6 +882,14 @@ export class ColumnBoard extends BoardComposite&lt;ColumnBoardProps&gt; {
 
 	set title(title: string) {
 		this.props.title &#x3D; title;
+	}
+
+	get context(): BoardExternalReference {
+		return this.props.context;
+	}
+
+	set context(context: BoardExternalReference) {
+		this.props.context &#x3D; context;
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
@@ -828,6 +908,7 @@ export class ColumnBoard extends BoardComposite&lt;ColumnBoardProps&gt; {
 
 export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
+	context: BoardExternalReference;
 }
 </code></pre>
     </div>

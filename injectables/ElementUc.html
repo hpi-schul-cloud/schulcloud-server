@@ -85,6 +85,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkPermission" >checkPermission</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateElementContent" >updateElementContent</a>
                             </li>
@@ -106,12 +111,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(elementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, elementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -128,6 +133,30 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardDoAuthorizableService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>elementService</td>
                                                   
@@ -170,6 +199,102 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkPermission"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>checkPermission</b></span>
+                        <a href="#checkPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:29</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>boardDo</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>action</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#Action" target="_self" >Action</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateElementContent"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -188,8 +313,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:21</a></div>
                 </td>
             </tr>
 
@@ -267,21 +392,40 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { AnyBoardDo, EntityId } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
+import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
+import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
 import { FileContentBody, RichTextContentBody } from &#x27;../controller/dto&#x27;;
-import { ContentElementService } from &#x27;../service&#x27;;
+import { BoardDoAuthorizableService, ContentElementService } from &#x27;../service&#x27;;
 
 @Injectable()
 export class ElementUc {
-	constructor(private readonly elementService: ContentElementService, private readonly logger: Logger) {
+	constructor(
+		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService))
+		private readonly authorizationService: AuthorizationService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		private readonly elementService: ContentElementService,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(ElementUc.name);
 	}
 
 	async updateElementContent(userId: EntityId, elementId: EntityId, content: RichTextContentBody | FileContentBody) {
 		const element &#x3D; await this.elementService.findById(elementId);
+
+		await this.checkPermission(userId, element, Action.write);
+
 		await this.elementService.update(element, content);
+	}
+
+	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise&lt;void&gt; {
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
+		const context &#x3D; { action, requiredPermissions: [] };
+
+		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 }
 </code></pre>

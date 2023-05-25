@@ -129,7 +129,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, courseGroupRepo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, boardNodeService: <a href="../injectables/BoardNodeService.html" target="_self">BoardNodeService</a>)</code>
+<code>constructor(userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, courseGroupRepo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, teamsRepo: <a href="../injectables/TeamsRepo.html" target="_self">TeamsRepo</a>, submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, schoolExternalToolRepo: <a href="../injectables/SchoolExternalToolRepo.html" target="_self">SchoolExternalToolRepo</a>, boardNodeAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -260,10 +260,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardNodeService</td>
+                                                        <td>boardNodeAuthorizableService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardNodeService.html" target="_self" >BoardNodeService</a></code>
+                                                                        <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -568,7 +568,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
-import { BoardNodeService } from &#x27;@src/modules/board&#x27;;
+import { BoardDoAuthorizableService } from &#x27;@src/modules/board/service&#x27;;
 import { AuthorizableReferenceType } from &#x27;./types&#x27;;
 
 // replace later with general &quot;base&quot; do-repo
@@ -582,7 +582,7 @@ type RepoType &#x3D;
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
-	| BoardNodeService;
+	| BoardDoAuthorizableService;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -603,7 +603,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeService: BoardNodeService
+		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -614,7 +614,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeService });
+		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {

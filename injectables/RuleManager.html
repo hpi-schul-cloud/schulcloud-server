@@ -126,7 +126,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardNodeRule: <a href="../injectables/BoardNodeRule.html" target="_self">BoardNodeRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -269,10 +269,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardNodeRule</td>
+                                                        <td>boardDoRule</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardNodeRule.html" target="_self" >BoardNodeRule</a></code>
+                                                                        <code><a href="../injectables/BoardDoRule.html" target="_self" >BoardDoRule</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -504,7 +504,7 @@
 import { BaseDO, User } from &#x27;@shared/domain&#x27;;
 import { AuthorizableObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import when it is avaible
 import {
-	BoardNodeRule,
+	BoardDoRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
@@ -533,7 +533,7 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardNodeRule: BoardNodeRule
+		private readonly boardDoRule: BoardDoRule
 	) {
 		this.rules &#x3D; [
 			this.courseRule,
@@ -546,7 +546,7 @@ export class RuleManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-			this.boardNodeRule,
+			this.boardDoRule,
 		];
 	}
 

@@ -106,6 +106,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getAncestorIds" >getAncestorIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
                             </li>
                         </ul>
@@ -220,8 +224,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:65</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:70</a></div>
                 </td>
             </tr>
 
@@ -602,6 +606,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getAncestorIds"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getAncestorIds</b></span>
+                        <a href="#getAncestorIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAncestorIds(boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:59</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>boardDo</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -620,8 +695,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:64</a></div>
                 </td>
             </tr>
 
@@ -743,6 +818,11 @@ export class BoardDoRepo {
 		const domainObject &#x3D; boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
+	}
+
+	async getAncestorIds(boardDo: AnyBoardDo): Promise&lt;EntityId[]&gt; {
+		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, boardDo.id);
+		return boardNode.ancestorIds;
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise&lt;void&gt; {

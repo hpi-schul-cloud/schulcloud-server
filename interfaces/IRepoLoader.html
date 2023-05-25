@@ -203,7 +203,7 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from &#x27;@shared/repo&#x27;;
-import { BoardNodeService } from &#x27;@src/modules/board&#x27;;
+import { BoardDoAuthorizableService } from &#x27;@src/modules/board/service&#x27;;
 import { AuthorizableReferenceType } from &#x27;./types&#x27;;
 
 // replace later with general &quot;base&quot; do-repo
@@ -217,7 +217,7 @@ type RepoType &#x3D;
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
-	| BoardNodeService;
+	| BoardDoAuthorizableService;
 
 interface IRepoLoader {
 	repo: RepoType;
@@ -238,7 +238,7 @@ export class ReferenceLoader {
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		private readonly boardNodeService: BoardNodeService
+		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
 		this.repos.set(AuthorizableReferenceType.Course, { repo: this.courseRepo });
@@ -249,7 +249,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalTool, { repo: this.schoolExternalToolRepo });
-		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeService });
+		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
 	}
 
 	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {

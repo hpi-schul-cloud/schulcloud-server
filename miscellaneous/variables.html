@@ -1346,7 +1346,7 @@
 	TeamRule,
 	UserRule,
 	SchoolExternalToolRule,
-	BoardNodeRule,
+	BoardDoRule,
 ]</code>
                     </td>
                 </tr>
@@ -2040,13 +2040,17 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoard, ColumnBoardProps&gt;(ColumnBoard, ({ sequence }) &#x3D;&gt; {
+                        <i>Default value : </i><code>ColumnBoardFactory.define(ColumnBoard, ({ sequence }) &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
 		title: &#x60;column board #${sequence}&#x60;,
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		context: {
+			type: BoardExternalReferenceType.Course,
+			id: new ObjectId().toHexString(),
+		},
 	};
 })</code>
                     </td>
@@ -2071,11 +2075,15 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoardNode, BoardNodeProps&gt;(
+                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnBoardNode, ColumnBoardNodeProps&gt;(
 	ColumnBoardNode,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			title: &#x60;board #${sequence}&#x60;,
+			title: &#x60;columnBoard #${sequence}&#x60;,
+			context: {
+				type: BoardExternalReferenceType.Course,
+				id: new ObjectId().toHexString(),
+			},
 		};
 	}
 )</code>

@@ -92,7 +92,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
-                                <a href="#createBoards" >createBoards</a>
+                                <a href="#createBoard" >createBoard</a>
                             </li>
                         </ul>
                     </td>
@@ -117,7 +117,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/management/console/board-management.console.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/management/console/board-management.console.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -177,19 +177,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createBoards"></a>
+                    <a name="createBoard"></a>
                     <span class="name">
                         <span class="modifier"></span>
                         <span class="modifier">Async</span>
-                        <span ><b>createBoards</b></span>
-                        <a href="#createBoards"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createBoard</b></span>
+                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createBoards()</code>
+                    <code>createBoard(courseId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -197,7 +197,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Command({command: &#x27;create-boards&#x27;, options: undefined, description: &#x27;create some boards&#x27;})<br /></code>
+                    <code>@Command({command: &#x27;create-board [courseId]&#x27;, description: &#x27;create a multi-column-board&#x27;})<br /></code>
                 </td>
             </tr>
 
@@ -213,8 +213,44 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>courseId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
 
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
                     </div>
                 </td>
             </tr>
@@ -231,6 +267,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConsoleWriterService } from &#x27;@shared/infra/console&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 import { Command, Console } from &#x27;nestjs-console&#x27;;
 import { BoardManagementUc } from &#x27;../uc/board-management.uc&#x27;;
 
@@ -239,15 +276,19 @@ export class BoardManagementConsole {
 	constructor(private consoleWriter: ConsoleWriterService, private boardManagementUc: BoardManagementUc) {}
 
 	@Command({
-		command: &#x27;create-boards&#x27;,
-		options: [],
-		description: &#x27;create some boards&#x27;,
+		command: &#x27;create-board [courseId]&#x27;,
+		description: &#x27;create a multi-column-board&#x27;,
 	})
-	async createBoards(): Promise&lt;string&gt; {
-		const boardId &#x3D; await this.boardManagementUc.createBoards();
-		const report &#x3D; &#x60;creation of boards is completed (${boardId ?? &#x27;&#x27;})&#x60;;
-		this.consoleWriter.info(report);
-		return report;
+	async createBoard(courseId &#x3D; &#x27;&#x27;): Promise&lt;void&gt; {
+		if (!ObjectId.isValid(courseId)) {
+			this.consoleWriter.info(&#x27;Error: please provide a valid courseId this board should be assigned to.&#x27;);
+			return;
+		}
+
+		const boardId &#x3D; await this.boardManagementUc.createBoard(courseId);
+		if (boardId) {
+			this.consoleWriter.info(&#x60;Success: board creation is completed! The new boardId is &quot;${boardId ?? &#x27;&#x27;}&quot;&#x60;);
+		}
 	}
 }
 </code></pre>

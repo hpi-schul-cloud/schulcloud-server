@@ -95,15 +95,6 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Async</span>
-                                <a href="#createBoard" >createBoard</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createColumn" >createColumn</a>
@@ -161,89 +152,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createBoard"></a>
-                    <span class="name">
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier">Async</span>
-                        <span ><b>createBoard</b></span>
-                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createBoard(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@ApiOperation({summary: &#x27;Create a new board.&#x27;})<br />@ApiResponse({status: 201, type: BoardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@Post()<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:49</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/BoardResponse.html" target="_self" >Promise&lt;BoardResponse&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="createColumn"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -275,8 +183,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="89"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:89</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:76</a></div>
                 </td>
             </tr>
 
@@ -372,8 +280,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="79"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:79</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:66</a></div>
                 </td>
             </tr>
 
@@ -565,8 +473,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:51</a></div>
                 </td>
             </tr>
 
@@ -655,9 +563,9 @@
 	Put,
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from &#x27;./dto&#x27;;
 import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
@@ -679,19 +587,6 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;BoardResponse&gt; {
 		const board &#x3D; await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
-
-		const response &#x3D; BoardResponseMapper.mapToResponse(board);
-
-		return response;
-	}
-
-	@ApiOperation({ summary: &#x27;Create a new board.&#x27; })
-	@ApiResponse({ status: 201, type: BoardResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@Post()
-	async createBoard(@CurrentUser() currentUser: ICurrentUser): Promise&lt;BoardResponse&gt; {
-		const board &#x3D; await this.boardUc.createBoard(currentUser.userId);
 
 		const response &#x3D; BoardResponseMapper.mapToResponse(board);
 
