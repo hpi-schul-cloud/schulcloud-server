@@ -65,6 +65,28 @@ export class ExternalToolConfigurationUc {
 			}),
 		]);
 
+		const schoolExternalToolsInUse: SchoolExternalToolDO[] = this.filterForSchoolExternalToolsInUse(
+			schoolExternalTools,
+			contextExternalToolsInUse
+		);
+
+		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
+			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
+		);
+
+		const availableTools: ExternalToolDO[] = this.filterForAvailableExternalTools(
+			externalTools.data,
+			schoolExternalTools,
+			toolIdsInUse
+		);
+
+		return availableTools;
+	}
+
+	private filterForSchoolExternalToolsInUse(
+		schoolExternalTools: SchoolExternalToolDO[],
+		contextExternalToolsInUse: ContextExternalToolDO[]
+	): SchoolExternalToolDO[] {
 		const schoolExternalToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalToolDO): boolean => {
 				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
@@ -75,11 +97,15 @@ export class ExternalToolConfigurationUc {
 			}
 		);
 
-		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
-			(schoolExternalTool: SchoolExternalToolDO): EntityId => schoolExternalTool.toolId
-		);
+		return schoolExternalToolsInUse;
+	}
 
-		const availableTools: ExternalToolDO[] = externalTools.data.filter((tool: ExternalToolDO): boolean => {
+	private filterForAvailableExternalTools(
+		externalTools: ExternalToolDO[],
+		schoolExternalTools: SchoolExternalToolDO[],
+		toolIdsInUse: EntityId[]
+	): ExternalToolDO[] {
+		const availableTools: ExternalToolDO[] = externalTools.filter((tool: ExternalToolDO): boolean => {
 			const hasSchoolExternalTool: boolean = schoolExternalTools.some(
 				(schoolExternalTool: SchoolExternalToolDO): boolean => schoolExternalTool.toolId === tool.id
 			);
