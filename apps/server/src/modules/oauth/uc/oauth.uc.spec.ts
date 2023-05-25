@@ -120,7 +120,7 @@ describe('OAuthUc', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
 				responseType: 'code',
@@ -317,7 +317,7 @@ describe('OAuthUc', () => {
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
 						clientSecret: 'mocksecret',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
 						scope: 'openid uuid',
 						responseType: 'code',
@@ -401,7 +401,7 @@ describe('OAuthUc', () => {
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
 						clientSecret: 'mocksecret',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
 						scope: 'openid uuid',
 						responseType: 'code',
