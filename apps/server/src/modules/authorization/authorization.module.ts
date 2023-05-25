@@ -13,9 +13,9 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { BoardModule } from '@src/modules/board';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board/board.module';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
