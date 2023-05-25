@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { contextExternalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {
@@ -24,6 +24,28 @@ describe('ContextExternalToolService', () => {
 
 		service = module.get(ContextExternalToolService);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+	});
+
+	describe('findContextExternalTools is called', () => {
+		describe('when query is given', () => {
+			const setup = () => {
+				const contextExternalTools: ContextExternalToolDO[] = contextExternalToolDOFactory.buildList(2);
+
+				contextExternalToolRepo.find.mockResolvedValue(contextExternalTools);
+
+				return {
+					contextExternalTools,
+				};
+			};
+
+			it('should return an array of contextExternalTools', async () => {
+				const { contextExternalTools } = setup();
+
+				const result: ContextExternalToolDO[] = await service.findContextExternalTools({});
+
+				expect(result).toEqual(contextExternalTools);
+			});
+		});
 	});
 
 	describe('deleteBySchoolExternalToolId is called', () => {
