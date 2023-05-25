@@ -107,6 +107,7 @@ describe('FilesStorageMapper', () => {
 			const expectedFileRecordResponse: FileRecordResponse = {
 				id: fileRecord.id,
 				name: fileRecord.name,
+				url: expect.any(String),
 				size: fileRecord.size,
 				securityCheckStatus: fileRecord.securityCheck.status,
 				parentId: fileRecord.parentId,
