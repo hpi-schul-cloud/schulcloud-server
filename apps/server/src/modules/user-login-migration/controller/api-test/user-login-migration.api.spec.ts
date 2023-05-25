@@ -542,4 +542,193 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 	});
+
+	describe('[POST] /restart', () => {
+		describe('when current User restart the migration successfully', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 5, 4),
+					closedAt: new Date(2023, 5, 20),
+					finishedAt: new Date(2055, 5, 4),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration, adminRole]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return the Status OK ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+		});
+
+		describe('when current User restart the migration and is not authorized', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return Unauthorized', async () => {
+				setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: new ObjectId().toHexString() });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when migration is already started', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 5, 4),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when migration is finally finished', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+					officialSchoolNumber: '12345',
+				});
+
+				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+					school,
+					targetSystem,
+					sourceSystem,
+					startedAt: new Date(2023, 1, 4),
+					closedAt: new Date(2023, 1, 5),
+					finishedAt: new Date(2023, 1, 20),
+				});
+				school.userLoginMigration = userLoginMigration;
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when official school number is not set', () => {
+			const setup = async () => {
+				const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school: School = schoolFactory.buildWithId({
+					systems: [sourceSystem],
+				});
+
+				const adminRole = roleFactory.buildWithId({
+					name: RoleName.ADMINISTRATOR,
+					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				});
+
+				const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+				await em.persistAndFlush([sourceSystem, targetSystem, school, user]);
+
+				currentUser = mapUserToCurrentUser(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return a bad request ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: user.id });
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+	});
 });
