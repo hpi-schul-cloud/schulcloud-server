@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
 import {
@@ -22,8 +22,7 @@ describe(`content element update content (api)`, () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-		.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -115,7 +114,7 @@ describe(`content element update content (api)`, () => {
 				invalidTeacherAccount
 			);
 
-			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
+			expect(response.statusCode).toEqual(403);
 		});
 	});
 });
