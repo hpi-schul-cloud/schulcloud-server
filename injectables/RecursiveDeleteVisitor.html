@@ -129,12 +129,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(em: EntityManager)</code>
+<code>constructor(em: EntityManager, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -156,6 +156,18 @@
                                                   
                                                         <td>
                                                                     <code>EntityManager</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>filesStorageClientAdapterService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FilesStorageClientAdapterService.html" target="_self" >FilesStorageClientAdapterService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -197,8 +209,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="43"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:43</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:49</a></div>
                 </td>
             </tr>
 
@@ -268,8 +280,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="32"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:32</a></div>
                 </td>
             </tr>
 
@@ -339,8 +351,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:47</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:53</a></div>
                 </td>
             </tr>
 
@@ -410,8 +422,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:27</a></div>
                 </td>
             </tr>
 
@@ -481,8 +493,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="18"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:18</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:22</a></div>
                 </td>
             </tr>
 
@@ -552,8 +564,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:42</a></div>
                 </td>
             </tr>
 
@@ -623,8 +635,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="37"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:37</a></div>
                 </td>
             </tr>
 
@@ -690,10 +702,14 @@ import {
 	FileElement,
 	TextElement,
 } from &#x27;@shared/domain&#x27;;
+import { FilesStorageClientAdapterService } from &#x27;@src/modules/files-storage-client&#x27;;
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
-	constructor(private readonly em: EntityManager) {}
+	constructor(
+		private readonly em: EntityManager,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+	) {}
 
 	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise&lt;void&gt; {
 		this.deleteNode(columnBoard);
@@ -716,7 +732,9 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitFileElementAsync(fileElement: FileElement): Promise&lt;void&gt; {
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
 		this.deleteNode(fileElement);
+
 		await this.visitChildrenAsync(fileElement);
 	}
 
