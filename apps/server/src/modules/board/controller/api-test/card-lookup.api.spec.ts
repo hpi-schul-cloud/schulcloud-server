@@ -9,9 +9,9 @@ import {
 	columnNodeFactory,
 	courseFactory,
 	mapUserToCurrentUser,
+	richTextElementNodeFactory,
 	roleFactory,
 	schoolFactory,
-	textElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -87,9 +87,18 @@ describe(`card lookup (api)`, () => {
 		const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
-		const textElement = textElementNodeFactory.buildWithId({ parent: cardNode1 });
+		const richTextElement = richTextElementNodeFactory.buildWithId({ parent: cardNode1 });
 
-		await em.persistAndFlush([user, course, columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, textElement]);
+		await em.persistAndFlush([
+			user,
+			course,
+			columnBoardNode,
+			columnNode,
+			cardNode1,
+			cardNode2,
+			cardNode3,
+			richTextElement,
+		]);
 		await em.persistAndFlush([user, course, columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3]);
 		em.clear();
 

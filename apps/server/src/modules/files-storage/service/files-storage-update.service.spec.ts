@@ -125,7 +125,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.patchFilename(fileRecord, data);
 
-				expect(spy).toHaveBeenCalledWith(fileRecordParams);
+				expect(spy).toHaveBeenCalledWith(fileRecordParams.parentId);
 			});
 
 			it('should call fileRecordRepo.save with right paramaters', async () => {
