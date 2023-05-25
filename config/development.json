@@ -64,5 +64,6 @@
 	"HYDRA_URI": "http://localhost:9001",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
 	"NEST_LOG_LEVEL": "debug",
-	"SESSION_SECRET": "dev-session-secret"
+	"SESSION_SECRET": "dev-session-secret",
+	"FEATURE_COURSE_SHARE": true
 }

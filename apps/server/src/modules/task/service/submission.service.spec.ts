@@ -4,7 +4,7 @@ import { Counted, Submission } from '@shared/domain';
 import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
-import { FileDto, FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -146,7 +146,6 @@ describe('Submission Service', () => {
 		describe('delets successfully', () => {
 			const setup = () => {
 				const submission = submissionFactory.buildWithId();
-				const params = FileParamBuilder.build(submission.school.id, submission);
 				const fileDto = new FileDto({
 					id: 'id',
 					name: 'name',
@@ -157,15 +156,15 @@ describe('Submission Service', () => {
 				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([fileDto]);
 				submissionRepo.delete.mockResolvedValueOnce();
 
-				return { submission, params };
+				return { submission };
 			};
 
 			it('should resolve successfully', async () => {
-				const { submission, params } = setup();
+				const { submission } = setup();
 
 				await service.delete(submission);
 
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(params);
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(submission.id);
 				expect(submissionRepo.delete).toHaveBeenCalledWith(submission);
 			});
 		});
@@ -190,7 +189,6 @@ describe('Submission Service', () => {
 		describe('submissionRepo rejects with error', () => {
 			const setup = () => {
 				const submission = submissionFactory.buildWithId();
-				const params = FileParamBuilder.build(submission.school.id, submission);
 				const fileDto = new FileDto({
 					id: 'id',
 					name: 'name',
@@ -202,7 +200,7 @@ describe('Submission Service', () => {
 				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([fileDto]);
 				submissionRepo.delete.mockRejectedValueOnce(error);
 
-				return { submission, params, error };
+				return { submission, error };
 			};
 
 			it('should pass error', async () => {

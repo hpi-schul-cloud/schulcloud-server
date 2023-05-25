@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileElementFactory, setupEntities, textElementFactory, userFactory } from '@shared/testing';
+import { InputFormat } from '@shared/domain';
+import { fileElementFactory, richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ContentElementService } from '../service';
 import { ElementUc } from './element.uc';
@@ -35,31 +36,31 @@ describe(ElementUc.name, () => {
 	});
 
 	describe('updateElementContent', () => {
-		describe('update text element', () => {
+		describe('update rich text element', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const textElement = textElementFactory.build();
-				const content = { text: 'this has been updated' };
+				const richTextElement = richTextElementFactory.build();
+				const content = { text: 'this has been updated', inputFormat: InputFormat.RICH_TEXT_CK5 };
 
-				const elementSpy = elementService.findById.mockResolvedValue(textElement);
+				const elementSpy = elementService.findById.mockResolvedValue(richTextElement);
 
-				return { textElement, user, content, elementSpy };
+				return { richTextElement, user, content, elementSpy };
 			};
 
 			it('should get element', async () => {
-				const { textElement, user, content, elementSpy } = setup();
+				const { richTextElement, user, content, elementSpy } = setup();
 
-				await uc.updateElementContent(user.id, textElement.id, content);
+				await uc.updateElementContent(user.id, richTextElement.id, content);
 
-				expect(elementSpy).toHaveBeenCalledWith(textElement.id);
+				expect(elementSpy).toHaveBeenCalledWith(richTextElement.id);
 			});
 
 			it('should call the service', async () => {
-				const { textElement, user, content } = setup();
+				const { richTextElement, user, content } = setup();
 
-				await uc.updateElementContent(user.id, textElement.id, content);
+				await uc.updateElementContent(user.id, richTextElement.id, content);
 
-				expect(elementService.update).toHaveBeenCalledWith(textElement, content);
+				expect(elementService.update).toHaveBeenCalledWith(richTextElement, content);
 			});
 		});
 
