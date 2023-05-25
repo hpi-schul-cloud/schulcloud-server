@@ -9,7 +9,7 @@ import { ContentElementUrlParams, MoveContentElementBody } from './dto';
 import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
-	TextElementContentBody,
+	RichTextElementContentBody,
 } from './dto/element/element-content-update.body.params';
 
 @ApiTags('Board Element')
@@ -39,7 +39,7 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: 'Update a single content element.' })
-	@ApiExtraModels(TextElementContentBody, FileElementContentBody)
+	@ApiExtraModels(RichTextElementContentBody, FileElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
