@@ -439,6 +439,12 @@
                             <a href="#richTextCardElementFactory" title="apps/server/src/shared/testing/factory/card-element.factory.ts" ><b>richTextCardElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../card-element.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#richTextElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/rich-text-element.do.factory.ts" ><b>richTextElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rich-text-element.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#richTextElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/rich-text-element-node.factory.ts" ><b>richTextElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../rich-text-element-node.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#roleFactory" title="apps/server/src/shared/testing/factory/role.factory.ts" ><b>roleFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../role.factory.ts)</a>
                         </li>
                         <li>
@@ -566,12 +572,6 @@
                         </li>
                         <li>
                             <a href="#testReqestConst" title="apps/server/src/shared/testing/test-api-client.ts" ><b>testReqestConst</b>&nbsp;&nbsp;&nbsp;(apps/.../test-api-client.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#textElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/text-element.do.factory.ts" ><b>textElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../text-element.do.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#textElementNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/text-element-node.factory.ts" ><b>textElementNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../text-element-node.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#typeCheckers" title="apps/server/src/modules/tool/service/validation/school-external-tool-validation.service.ts" ><b>typeCheckers</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-validation.service.ts)</a>
@@ -1269,7 +1269,7 @@
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	TextElementNode,
+	RichTextElementNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
@@ -4495,7 +4495,7 @@ it should ensure an empty result</p>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(inputFormat?: InputFormat): IInputFormatsConfig &#x3D;&gt; {
 	switch (inputFormat) {
-		case InputFormat.RICHTEXT_SIMPLE:
+		case InputFormat.RICH_TEXT_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextSimple;
 		case InputFormat.RICH_TEXT:
 			return inputFormatsSanitizeConfig.RichText;
@@ -4635,9 +4635,8 @@ it should ensure an empty result</p>
 
 	RichTextCk5: {
 		allowedTags: [
-			&#x27;h2&#x27;,
-			&#x27;h3&#x27;,
 			&#x27;h4&#x27;,
+			&#x27;h5&#x27;,
 			&#x27;p&#x27;,
 			&#x27;span&#x27;,
 			&#x27;br&#x27;,
@@ -4886,7 +4885,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>(element: AnyBoardDo): element is AnyContentElementDo &#x3D;&gt; {
-	const result &#x3D; element instanceof TextElement || element instanceof FileElement;
+	const result &#x3D; element instanceof RichTextElement || element instanceof FileElement;
 
 	return result;
 }</code>
@@ -5857,6 +5856,73 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/board/rich-text-element.do.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="richTextElementFactory"></a>
+                    <span class="name">
+                        <span ><b>richTextElementFactory</b></span>
+                        <a href="#richTextElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;RichTextElement, RichTextElementProps&gt;(
+	RichTextElement,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			id: new ObjectId().toHexString(),
+			title: &#x60;element #${sequence}&#x60;,
+			children: [],
+			text: &#x60;&lt;p&gt;&lt;b&gt;text&lt;/b&gt; #${sequence}&lt;/p&gt;&#x60;,
+			inputFormat: InputFormat.RICH_TEXT_CK5,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardnode/rich-text-element-node.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="richTextElementNodeFactory"></a>
+                    <span class="name">
+                        <span ><b>richTextElementNodeFactory</b></span>
+                        <a href="#richTextElementNodeFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;RichTextElementNode, RichTextElementNodeProps&gt;(
+	RichTextElementNode,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			text: &#x60;&lt;p&gt;&lt;b&gt;text&lt;/b&gt; #${sequence}&lt;/p&gt;&#x60;,
+			inputFormat: InputFormat.RICH_TEXT_CK5,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/role.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6555,68 +6621,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		role,
 	});
 })</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/domainobject/board/text-element.do.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="textElementFactory"></a>
-                    <span class="name">
-                        <span ><b>textElementFactory</b></span>
-                        <a href="#textElementFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TextElement, TextElementProps&gt;(TextElement, ({ sequence }) &#x3D;&gt; {
-	return {
-		id: new ObjectId().toHexString(),
-		title: &#x60;element #${sequence}&#x60;,
-		children: [],
-		text: &#x60;&lt;p&gt;text #${sequence}&lt;/p&gt;&#x60;,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/boardnode/text-element-node.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="textElementNodeFactory"></a>
-                    <span class="name">
-                        <span ><b>textElementNodeFactory</b></span>
-                        <a href="#textElementNodeFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TextElementNode, TextElementNodeProps&gt;(
-	TextElementNode,
-	({ sequence }) &#x3D;&gt; {
-		return {
-			text: &#x60;text #${sequence}&#x60;,
-		};
-	}
-)</code>
                     </td>
                 </tr>
 

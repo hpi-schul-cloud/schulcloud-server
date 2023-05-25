@@ -149,7 +149,7 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-		TextElementResponseMapper.getInstance(),
+		RichTextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
 	]</code>
                     </td>
@@ -256,11 +256,11 @@ import { AnyBoardDo } from &#x27;@shared/domain&#x27;;
 import { AnyContentElementResponse } from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 import { FileElementResponseMapper } from &#x27;./file-element-response.mapper&#x27;;
-import { TextElementResponseMapper } from &#x27;./text-element-response.mapper&#x27;;
+import { RichTextElementResponseMapper } from &#x27;./rich-text-element-response.mapper&#x27;;
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] &#x3D; [
-		TextElementResponseMapper.getInstance(),
+		RichTextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
 	];
 

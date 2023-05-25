@@ -114,9 +114,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#visitTextElement" 
+                                    <a href="#visitRichTextElement" 
 >
-                                        visitTextElement
+                                        visitRichTextElement
                                     </a>
                                 </li>
                             </ul>
@@ -411,16 +411,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitTextElement"></a>
+                    <a name="visitRichTextElement"></a>
                     <span class="name">
-                        <span ><b>visitTextElement</b></span>
-                        <a href="#visitTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>visitRichTextElement</b></span>
+                        <a href="#visitRichTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitTextElement(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>)</code>
+<code>visitRichTextElement(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
                 </td>
             </tr>
 
@@ -449,9 +449,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>textElement</td>
+                                    <td>richTextElement</td>
                                     <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                                                <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
                                     </td>
 
                                     <td>
@@ -486,13 +486,13 @@
 import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
 import type { FileElement } from &#x27;../file-element.do&#x27;;
-import type { TextElement } from &#x27;../text-element.do&#x27;;
+import { RichTextElement } from &#x27;../rich-text-element.do&#x27;;
 
 export interface BoardCompositeVisitor {
 	visitColumnBoard(columnBoard: ColumnBoard): void;
 	visitColumn(column: Column): void;
 	visitCard(card: Card): void;
-	visitTextElement(textElement: TextElement): void;
+	visitRichTextElement(richTextElement: RichTextElement): void;
 	visitFileElement(fileElement: FileElement): void;
 }
 
@@ -500,7 +500,7 @@ export interface BoardCompositeVisitorAsync {
 	visitColumnBoardAsync(columnBoard: ColumnBoard): Promise&lt;void&gt;;
 	visitColumnAsync(column: Column): Promise&lt;void&gt;;
 	visitCardAsync(card: Card): Promise&lt;void&gt;;
-	visitTextElementAsync(textElement: TextElement): Promise&lt;void&gt;;
+	visitRichTextElementAsync(richTextElement: RichTextElement): Promise&lt;void&gt;;
 	visitFileElementAsync(fileElement: FileElement): Promise&lt;void&gt;;
 }
 </code></pre>

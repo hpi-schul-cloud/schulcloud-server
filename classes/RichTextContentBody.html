@@ -44,7 +44,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >TextElementContent</li>
+  <li class="breadcrumb-item" >RichTextContentBody</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -68,7 +68,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/controller/dto/element/text-element.response.ts</code>
+            <code>apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts</code>
         </p>
 
 
@@ -90,6 +90,12 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#inputFormat" >inputFormat</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#text" >text</a>
                             </li>
                         </ul>
@@ -105,53 +111,6 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(undefined: <a href="../classes/TextElementContent.html" target="_self">TextElementContent</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/text-element.response.ts:5</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/TextElementContent.html" target="_self" >TextElementContent</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
             <section data-compodoc="block-properties">
     
@@ -162,8 +121,46 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="inputFormat"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>inputFormat</b></span>
+                        <a href="#inputFormat"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#InputFormat" target="_self" >InputFormat</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsEnum(InputFormat)<br />@ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="text"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                         <span ><b>text</b></span>
                         <a href="#text"><span class="icon ion-ios-link"></span></a>
@@ -181,13 +178,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @IsString()<br />@ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/text-element.response.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -206,38 +203,73 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { ContentElementType } from &#x27;@shared/domain&#x27;;
-import { TimestampsResponse } from &#x27;../timestamps.response&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
+import { ContentElementType, InputFormat } from &#x27;@shared/domain&#x27;;
+import { Type } from &#x27;class-transformer&#x27;;
+import { IsEnum, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 
-export class TextElementContent {
-	constructor({ text }: TextElementContent) {
-		this.text &#x3D; text;
-	}
-
-	@ApiProperty()
-	text: string;
+export abstract class ElementContentBody {
+	@ApiProperty({
+		enum: ContentElementType,
+		description: &#x27;the type of the updated element&#x27;,
+		enumName: &#x27;ContentElementType&#x27;,
+	})
+	@IsEnum(ContentElementType)
+	type!: ContentElementType;
 }
 
-export class TextElementResponse {
-	constructor({ id, content, timestamps, type }: TextElementResponse) {
-		this.id &#x3D; id;
-		this.content &#x3D; content;
-		this.timestamps &#x3D; timestamps;
-		this.type &#x3D; type;
-	}
-
-	@ApiProperty({ pattern: &#x27;[a-f0-9]{24}&#x27; })
-	id: string;
-
-	@ApiProperty({ enum: ContentElementType, enumName: &#x27;ContentElementType&#x27; })
-	type: ContentElementType.TEXT;
-
+export class RichTextContentBody {
+	@IsString()
 	@ApiProperty()
-	content: TextElementContent;
+	text!: string;
 
+	@IsEnum(InputFormat)
 	@ApiProperty()
-	timestamps: TimestampsResponse;
+	inputFormat!: InputFormat;
+}
+
+export class FileContentBody {
+	@IsString()
+	@ApiProperty({})
+	caption!: string;
+}
+
+export class RichTextElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.RICH_TEXT })
+	type!: ContentElementType.RICH_TEXT;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: RichTextContentBody;
+}
+
+export class FileElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.FILE })
+	type!: ContentElementType.FILE;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: FileContentBody;
+}
+
+export type AnyElementContentBody &#x3D; RichTextElementContentBody | FileContentBody;
+
+export class ElementContentUpdateBodyParams {
+	@ValidateNested()
+	@Type(() &#x3D;&gt; ElementContentBody, {
+		discriminator: {
+			property: &#x27;type&#x27;,
+			subTypes: [
+				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
+				{ value: FileElementContentBody, name: ContentElementType.FILE },
+			],
+		},
+		keepDiscriminatorProperty: true,
+	})
+	@ApiProperty({
+		oneOf: [{ $ref: getSchemaPath(RichTextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
+	})
+	data!: RichTextElementContentBody | FileElementContentBody;
 }
 </code></pre>
     </div>
@@ -277,7 +309,7 @@ export class TextElementResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'TextElementContent.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'RichTextContentBody.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

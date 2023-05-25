@@ -2261,6 +2261,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/RichTextCardElement.html" data-type="entity-link" >RichTextCardElement</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/RichTextElementNode.html" data-type="entity-link" >RichTextElementNode</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/Role.html" data-type="entity-link" >Role</a>
                                 </li>
                                 <li class="link">
@@ -2301,9 +2304,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/TeamNews.html" data-type="entity-link" >TeamNews</a>
-                                </li>
-                                <li class="link">
-                                    <a href="entities/TextElementNode.html" data-type="entity-link" >TextElementNode</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/User.html" data-type="entity-link" >User</a>
@@ -3273,6 +3273,24 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RichTextCardElementParam.html" data-type="entity-link" >RichTextCardElementParam</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RichTextContentBody.html" data-type="entity-link" >RichTextContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RichTextElement.html" data-type="entity-link" >RichTextElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RichTextElementContent.html" data-type="entity-link" >RichTextElementContent</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RichTextElementContentBody.html" data-type="entity-link" >RichTextElementContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RichTextElementResponse.html" data-type="entity-link" >RichTextElementResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RichTextElementResponseMapper.html" data-type="entity-link" >RichTextElementResponseMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/RocketChatError.html" data-type="entity-link" >RocketChatError</a>
                             </li>
                             <li class="link">
@@ -3586,24 +3604,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/TestBootstrapConsole.html" data-type="entity-link" >TestBootstrapConsole</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextContentBody.html" data-type="entity-link" >TextContentBody</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextElement.html" data-type="entity-link" >TextElement</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextElementContent.html" data-type="entity-link" >TextElementContent</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextElementContentBody.html" data-type="entity-link" >TextElementContentBody</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextElementResponse.html" data-type="entity-link" >TextElementResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/TextElementResponseMapper.html" data-type="entity-link" >TextElementResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TimestampsResponse.html" data-type="entity-link" >TimestampsResponse</a>
@@ -4667,6 +4667,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/RejectRequestBody.html" data-type="entity-link" >RejectRequestBody</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/RichTextElementNodeProps.html" data-type="entity-link" >RichTextElementNodeProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/RichTextElementProps.html" data-type="entity-link" >RichTextElementProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/RocketChatGroupModel.html" data-type="entity-link" >RocketChatGroupModel</a>
                             </li>
                             <li class="link">
@@ -4692,12 +4698,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TextElementNodeProps.html" data-type="entity-link" >TextElementNodeProps</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TextElementProps.html" data-type="entity-link" >TextElementProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/User.html" data-type="entity-link" >User</a>

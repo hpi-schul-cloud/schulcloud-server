@@ -136,7 +136,7 @@
                                 <a href="#visitFileElement" >visitFileElement</a>
                             </li>
                             <li>
-                                <a href="#visitTextElement" >visitTextElement</a>
+                                <a href="#visitRichTextElement" >visitRichTextElement</a>
                             </li>
                         </ul>
                     </td>
@@ -263,8 +263,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="130"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:130</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="131"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:131</a></div>
                 </td>
             </tr>
 
@@ -332,8 +332,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="122"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:122</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:123</a></div>
                 </td>
             </tr>
 
@@ -577,8 +577,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="116"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:116</a></div>
                 </td>
             </tr>
 
@@ -796,8 +796,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:102</a></div>
                 </td>
             </tr>
 
@@ -849,16 +849,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitTextElement"></a>
+                    <a name="visitRichTextElement"></a>
                     <span class="name">
-                        <span ><b>visitTextElement</b></span>
-                        <a href="#visitTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>visitRichTextElement</b></span>
+                        <a href="#visitRichTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitTextElement(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>)</code>
+<code>visitRichTextElement(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
                 </td>
             </tr>
 
@@ -887,9 +887,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>textElement</td>
+                                    <td>richTextElement</td>
                                     <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                                                <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
                                     </td>
 
                                     <td>
@@ -939,8 +939,8 @@ import {
 	EntityId,
 	FileElement,
 	FileElementNode,
-	TextElement,
-	TextElementNode,
+	RichTextElement,
+	RichTextElementNode,
 } from &#x27;@shared/domain&#x27;;
 
 type ParentData &#x3D; {
@@ -1010,18 +1010,19 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(card, boardNode);
 	}
 
-	visitTextElement(textElement: TextElement): void {
-		const parentData &#x3D; this.parentsMap.get(textElement.id);
+	visitRichTextElement(richTextElement: RichTextElement): void {
+		const parentData &#x3D; this.parentsMap.get(richTextElement.id);
 
-		const boardNode &#x3D; new TextElementNode({
-			id: textElement.id,
-			text: textElement.text,
+		const boardNode &#x3D; new RichTextElementNode({
+			id: richTextElement.id,
+			text: richTextElement.text,
+			inputFormat: richTextElement.inputFormat,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(textElement, boardNode);
+		this.visitChildren(richTextElement, boardNode);
 	}
 
 	visitFileElement(fileElement: FileElement): void {

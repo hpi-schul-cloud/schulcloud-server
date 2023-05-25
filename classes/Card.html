@@ -826,7 +826,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
-import { TextElement } from &#x27;./text-element.do&#x27;;
+import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export class Card extends BoardComposite&lt;CardProps&gt; {
@@ -843,7 +843,7 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed &#x3D; domainObject instanceof TextElement || domainObject instanceof FileElement;
+		const allowed &#x3D; domainObject instanceof RichTextElement || domainObject instanceof FileElement;
 		return allowed;
 	}
 

@@ -131,7 +131,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -196,8 +196,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:16</a></div>
                 </td>
             </tr>
 
@@ -235,8 +235,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="39"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:39</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:44</a></div>
                 </td>
             </tr>
 
@@ -318,8 +318,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:34</a></div>
                 </td>
             </tr>
 
@@ -401,8 +401,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:55</a></div>
                 </td>
             </tr>
 
@@ -484,8 +484,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="66"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:66</a></div>
                 </td>
             </tr>
 
@@ -575,8 +575,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/management/uc/board-management.uc.ts:70</a></div>
                 </td>
             </tr>
 
@@ -644,8 +644,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardNode, EntityId } from &#x27;@shared/domain&#x27;;
-import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from &#x27;@shared/testing&#x27;;
+import { BoardNode, EntityId, InputFormat } from &#x27;@shared/domain&#x27;;
+import {
+	cardNodeFactory,
+	columnBoardNodeFactory,
+	columnNodeFactory,
+	richTextElementNodeFactory,
+} from &#x27;@shared/testing&#x27;;
 
 @Injectable()
 export class BoardManagementUc {
@@ -692,9 +697,10 @@ export class BoardManagementUc {
 
 	private createElements(amount: number, parent: BoardNode): BoardNode[] {
 		return this.generateArray(amount, (i) &#x3D;&gt;
-			textElementNodeFactory.build({
+			richTextElementNodeFactory.build({
 				parent,
-				text: &#x60;Text ${i + 1}&#x60;,
+				text: &#x60;&lt;p&gt;&lt;b&gt;Text&lt;/b&gt; ${i + 1}&lt;/p&gt;&#x60;,
+				inputFormat: InputFormat.RICH_TEXT_CK5,
 				position: i,
 			})
 		);

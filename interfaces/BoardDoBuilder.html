@@ -114,9 +114,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#buildTextElement" 
+                                    <a href="#buildRichTextElement" 
 >
-                                        buildTextElement
+                                        buildRichTextElement
                                     </a>
                                 </li>
                             </ul>
@@ -411,16 +411,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildTextElement"></a>
+                    <a name="buildRichTextElement"></a>
                     <span class="name">
-                        <span ><b>buildTextElement</b></span>
-                        <a href="#buildTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildRichTextElement</b></span>
+                        <a href="#buildRichTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildTextElement(boardNode: <a href="../entitys/TextElementNode.html" target="_self">TextElementNode</a>)</code>
+<code>buildRichTextElement(boardNode: <a href="../entitys/RichTextElementNode.html" target="_self">RichTextElementNode</a>)</code>
                 </td>
             </tr>
 
@@ -451,7 +451,7 @@
                                 <tr>
                                     <td>boardNode</td>
                                     <td>
-                                                <code><a href="../entitys/TextElementNode.html" target="_self" >TextElementNode</a></code>
+                                                <code><a href="../entitys/RichTextElementNode.html" target="_self" >RichTextElementNode</a></code>
                                     </td>
 
                                     <td>
@@ -466,7 +466,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -482,18 +482,18 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card, Column, ColumnBoard, FileElement, TextElement } from &#x27;../../../domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import type { Card, Column, ColumnBoard, FileElement, RichTextElement } from &#x27;../../../domainobject&#x27;;
 import type { CardNode } from &#x27;../card-node.entity&#x27;;
 import type { ColumnBoardNode } from &#x27;../column-board-node.entity&#x27;;
 import type { ColumnNode } from &#x27;../column-node.entity&#x27;;
 import type { FileElementNode } from &#x27;../file-element-node.entity&#x27;;
-import type { TextElementNode } from &#x27;../text-element-node.entity&#x27;;
+import type { RichTextElementNode } from &#x27;../rich-text-element-node.entity&#x27;;
 
 export interface BoardDoBuilder {
 	buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard;
 	buildColumn(boardNode: ColumnNode): Column;
 	buildCard(boardNode: CardNode): Card;
-	buildTextElement(boardNode: TextElementNode): TextElement;
+	buildRichTextElement(boardNode: RichTextElementNode): RichTextElement;
 	buildFileElement(boardNode: FileElementNode): FileElement;
 }
 </code></pre>

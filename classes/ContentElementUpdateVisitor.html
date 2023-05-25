@@ -128,7 +128,7 @@
                                 <a href="#visitFileElement" >visitFileElement</a>
                             </li>
                             <li>
-                                <a href="#visitTextElement" >visitTextElement</a>
+                                <a href="#visitRichTextElement" >visitRichTextElement</a>
                             </li>
                         </ul>
                     </td>
@@ -153,7 +153,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -217,7 +217,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -253,8 +253,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="51"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:51</a></div>
                 </td>
             </tr>
 
@@ -322,8 +322,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="21"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:21</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:30</a></div>
                 </td>
             </tr>
 
@@ -391,8 +391,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:26</a></div>
                 </td>
             </tr>
 
@@ -460,8 +460,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="13"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:13</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:22</a></div>
                 </td>
             </tr>
 
@@ -529,8 +529,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="33"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:33</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:43</a></div>
                 </td>
             </tr>
 
@@ -582,24 +582,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="visitTextElement"></a>
+                    <a name="visitRichTextElement"></a>
                     <span class="name">
-                        <span ><b>visitTextElement</b></span>
-                        <a href="#visitTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>visitRichTextElement</b></span>
+                        <a href="#visitRichTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>visitTextElement(textElement: <a href="../classes/TextElement.html" target="_self">TextElement</a>)</code>
+<code>visitRichTextElement(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element-update.visitor.ts:34</a></div>
                 </td>
             </tr>
 
@@ -620,9 +620,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>textElement</td>
+                                    <td>richTextElement</td>
                                     <td>
-                                                <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                                                <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
                                     </td>
 
                                     <td>
@@ -657,10 +657,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AnyBoardDo, BoardCompositeVisitor, Card, Column, ColumnBoard, FileElement, TextElement } from &#x27;@shared/domain&#x27;;
-import { FileContentBody, TextContentBody } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { sanitizeRichText } from &#x27;@shared/controller&#x27;;
+import {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+} from &#x27;@shared/domain&#x27;;
+import { FileContentBody, RichTextContentBody } from &#x27;../controller/dto&#x27;;
 
-type ContentType &#x3D; TextContentBody | FileContentBody;
+type ContentType &#x3D; RichTextContentBody | FileContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -681,11 +690,12 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		this.throwNotHandled(card);
 	}
 
-	visitTextElement(textElement: TextElement): void {
-		if (this.content instanceof TextContentBody) {
-			textElement.text &#x3D; this.content.text;
+	visitRichTextElement(richTextElement: RichTextElement): void {
+		if (this.content instanceof RichTextContentBody) {
+			richTextElement.text &#x3D; sanitizeRichText(this.content.text, this.content.inputFormat);
+			richTextElement.inputFormat &#x3D; this.content.inputFormat;
 		} else {
-			this.throwNotHandled(textElement);
+			this.throwNotHandled(richTextElement);
 		}
 	}
 

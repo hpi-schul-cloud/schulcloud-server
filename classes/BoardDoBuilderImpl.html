@@ -135,7 +135,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#buildTextElement" >buildTextElement</a>
+                                <a href="#buildRichTextElement" >buildRichTextElement</a>
                             </li>
                             <li>
                                 <a href="#ensureBoardNodeType" >ensureBoardNodeType</a>
@@ -342,8 +342,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="100"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:100</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:104</a></div>
                 </td>
             </tr>
 
@@ -642,8 +642,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="87"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:87</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="91"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:91</a></div>
                 </td>
             </tr>
 
@@ -695,26 +695,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildTextElement"></a>
+                    <a name="buildRichTextElement"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
-                        <span ><b>buildTextElement</b></span>
-                        <a href="#buildTextElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>buildRichTextElement</b></span>
+                        <a href="#buildRichTextElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildTextElement(boardNode: <a href="../entitys/TextElementNode.html" target="_self">TextElementNode</a>)</code>
+                    <code>buildRichTextElement(boardNode: <a href="../entitys/RichTextElementNode.html" target="_self">RichTextElementNode</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="77"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:77</a></div>
                 </td>
             </tr>
 
@@ -737,7 +737,7 @@
                                 <tr>
                                     <td>boardNode</td>
                                     <td>
-                                                <code><a href="../entitys/TextElementNode.html" target="_self" >TextElementNode</a></code>
+                                                <code><a href="../entitys/RichTextElementNode.html" target="_self" >RichTextElementNode</a></code>
                                     </td>
 
                                     <td>
@@ -752,7 +752,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/TextElement.html" target="_self" >TextElement</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
 
                     </div>
                     <div class="io-description">
@@ -782,8 +782,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="116"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:116</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="120"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:120</a></div>
                 </td>
             </tr>
 
@@ -863,8 +863,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="111"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:111</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:115</a></div>
                 </td>
             </tr>
 
@@ -932,8 +932,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="105"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:105</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="109"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:109</a></div>
                 </td>
             </tr>
 
@@ -999,9 +999,9 @@ import type {
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	TextElementNode,
+	RichTextElementNode,
 } from &#x27;@shared/domain&#x27;;
-import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, TextElement } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, RichTextElement } from &#x27;@shared/domain&#x27;;
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record&lt;string, BoardNode[]&gt; &#x3D; {};
@@ -1049,9 +1049,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildCard(boardNode: CardNode): Card {
-		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.TEXT_ELEMENT, BoardNodeType.FILE_ELEMENT]);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.FILE_ELEMENT,
+		]);
 
-		const elements &#x3D; this.buildChildren&lt;TextElement&gt;(boardNode);
+		const elements &#x3D; this.buildChildren&lt;RichTextElement&gt;(boardNode);
 
 		const card &#x3D; new Card({
 			id: boardNode.id,
@@ -1064,12 +1067,13 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return card;
 	}
 
-	public buildTextElement(boardNode: TextElementNode): TextElement {
+	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
 		this.ensureLeafNode(boardNode);
 
-		const element &#x3D; new TextElement({
+		const element &#x3D; new RichTextElement({
 			id: boardNode.id,
 			text: boardNode.text,
+			inputFormat: boardNode.inputFormat,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

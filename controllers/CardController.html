@@ -189,7 +189,7 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(TextElementResponse, FileElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Create a new element on a card.&#x27;})<br />@ApiExtraModels(RichTextElementResponse, FileElementResponse)<br />@ApiResponse({status: 201, schema: undefined})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:cardId/elements&#x27;)<br /></code>
                 </td>
             </tr>
 
@@ -709,8 +709,8 @@ import {
 	FileElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
-	TextElementResponse,
 } from &#x27;./dto&#x27;;
+import { RichTextElementResponse } from &#x27;./dto/element/rich-text-element.response&#x27;;
 import { CardResponseMapper, ContentElementResponseFactory } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board Card&#x27;)
@@ -780,11 +780,11 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: &#x27;Create a new element on a card.&#x27; })
-	@ApiExtraModels(TextElementResponse, FileElementResponse)
+	@ApiExtraModels(RichTextElementResponse, FileElementResponse)
 	@ApiResponse({
 		status: 201,
 		schema: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }, { $ref: getSchemaPath(FileElementResponse) }],
 		},
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })

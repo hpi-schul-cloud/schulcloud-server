@@ -181,7 +181,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../entitys/File.html" target="_self">TextContentBody | FileContentBody</a>)</code>
+                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../entitys/File.html" target="_self">RichTextContentBody | FileContentBody</a>)</code>
                 </td>
             </tr>
 
@@ -236,7 +236,7 @@
                                 <tr>
                                     <td>content</td>
                                     <td>
-                                                <code><a href="../entitys/File.html" target="_self" >TextContentBody | FileContentBody</a></code>
+                                                <code><a href="../entitys/File.html" target="_self" >RichTextContentBody | FileContentBody</a></code>
                                     </td>
 
                                     <td>
@@ -270,7 +270,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { FileContentBody, TextContentBody } from &#x27;../controller/dto&#x27;;
+import { FileContentBody, RichTextContentBody } from &#x27;../controller/dto&#x27;;
 import { ContentElementService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -279,7 +279,7 @@ export class ElementUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(userId: EntityId, elementId: EntityId, content: TextContentBody | FileContentBody) {
+	async updateElementContent(userId: EntityId, elementId: EntityId, content: RichTextContentBody | FileContentBody) {
 		const element &#x3D; await this.elementService.findById(elementId);
 		await this.elementService.update(element, content);
 	}
