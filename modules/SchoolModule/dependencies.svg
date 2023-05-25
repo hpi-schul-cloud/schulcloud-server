@@ -24,71 +24,71 @@
 <title>cluster_SchoolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="36,-70 36,-268 460,-268 460,-70 36,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_SchoolModule_exports</title>
-<polygon fill="none" stroke="black" points="204,-208 204,-260 320,-260 320,-208 204,-208"/>
+<g id="clust6" class="cluster">
+<title>cluster_SchoolModule_providers</title>
+<polygon fill="none" stroke="black" points="168,-78 168,-130 452,-130 452,-78 168,-78"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_SchoolModule_imports</title>
-<polygon fill="none" stroke="black" points="336,-78 336,-130 452,-130 452,-78 336,-78"/>
+<polygon fill="none" stroke="black" points="44,-78 44,-130 160,-130 160,-78 44,-78"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_SchoolModule_providers</title>
-<polygon fill="none" stroke="black" points="44,-78 44,-130 328,-130 328,-78 44,-78"/>
+<g id="clust4" class="cluster">
+<title>cluster_SchoolModule_exports</title>
+<polygon fill="none" stroke="black" points="185,-208 185,-260 301,-260 301,-208 185,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="443.98,-122 440.98,-126 419.98,-126 416.98,-122 344.02,-122 344.02,-86 443.98,-86 443.98,-122"/>
-<text text-anchor="middle" x="394" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="151.98,-122 148.98,-126 127.98,-126 124.98,-122 52.02,-122 52.02,-86 151.98,-86 151.98,-122"/>
+<text text-anchor="middle" x="102" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- SchoolModule -->
 <g id="node2" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="311.44,-187 308.44,-191 287.44,-191 284.44,-187 212.56,-187 212.56,-151 311.44,-151 311.44,-187"/>
-<text text-anchor="middle" x="262" y="-164.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="292.44,-187 289.44,-191 268.44,-191 265.44,-187 193.56,-187 193.56,-151 292.44,-151 292.44,-187"/>
+<text text-anchor="middle" x="243" y="-164.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;SchoolModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;SchoolModule</title>
-<path fill="none" stroke="black" d="M394,-122.11C394,-141.34 394,-169 394,-169 394,-169 321.53,-169 321.53,-169"/>
-<polygon fill="black" stroke="black" points="321.53,-165.5 311.53,-169 321.53,-172.5 321.53,-165.5"/>
+<path fill="none" stroke="black" d="M102,-122.11C102,-141.34 102,-169 102,-169 102,-169 183.69,-169 183.69,-169"/>
+<polygon fill="black" stroke="black" points="183.69,-172.5 193.69,-169 183.69,-165.5 183.69,-172.5"/>
 </g>
 <!-- SchoolService  -->
 <g id="node3" class="node">
 <title>SchoolService </title>
-<polygon fill="#fb8072" stroke="black" points="312.37,-252 211.63,-252 211.63,-216 312.37,-216 312.37,-252"/>
-<text text-anchor="middle" x="262" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolService </text>
+<polygon fill="#fb8072" stroke="black" points="293.37,-252 192.63,-252 192.63,-216 293.37,-216 293.37,-252"/>
+<text text-anchor="middle" x="243" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolService </text>
 </g>
 <!-- SchoolModule&#45;&gt;SchoolService  -->
 <g id="edge2" class="edge">
 <title>SchoolModule&#45;&gt;SchoolService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M262,-187.11C262,-187.11 262,-205.99 262,-205.99"/>
-<polygon fill="black" stroke="black" points="258.5,-205.99 262,-215.99 265.5,-205.99 258.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M243,-187.11C243,-187.11 243,-205.99 243,-205.99"/>
+<polygon fill="black" stroke="black" points="239.5,-205.99 243,-215.99 246.5,-205.99 239.5,-205.99"/>
 </g>
 <!-- SchoolRepo -->
 <g id="node4" class="node">
 <title>SchoolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="262" cy="-104" rx="58.49" ry="18"/>
-<text text-anchor="middle" x="262" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="386" cy="-104" rx="58.49" ry="18"/>
+<text text-anchor="middle" x="386" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolRepo</text>
 </g>
 <!-- SchoolRepo&#45;&gt;SchoolModule -->
 <g id="edge3" class="edge">
 <title>SchoolRepo&#45;&gt;SchoolModule</title>
-<path fill="none" stroke="black" d="M262,-122.11C262,-122.11 262,-140.99 262,-140.99"/>
-<polygon fill="black" stroke="black" points="258.5,-140.99 262,-150.99 265.5,-140.99 258.5,-140.99"/>
+<path fill="none" stroke="black" d="M386,-122.11C386,-141.34 386,-169 386,-169 386,-169 302.61,-169 302.61,-169"/>
+<polygon fill="black" stroke="black" points="302.61,-165.5 292.61,-169 302.61,-172.5 302.61,-165.5"/>
 </g>
 <!-- SchoolService -->
 <g id="node5" class="node">
 <title>SchoolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="119" cy="-104" rx="66.63" ry="18"/>
-<text text-anchor="middle" x="119" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="243" cy="-104" rx="66.63" ry="18"/>
+<text text-anchor="middle" x="243" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolService</text>
 </g>
 <!-- SchoolService&#45;&gt;SchoolModule -->
 <g id="edge4" class="edge">
 <title>SchoolService&#45;&gt;SchoolModule</title>
-<path fill="none" stroke="black" d="M119,-122.11C119,-141.34 119,-169 119,-169 119,-169 202.39,-169 202.39,-169"/>
-<polygon fill="black" stroke="black" points="202.39,-172.5 212.39,-169 202.39,-165.5 202.39,-172.5"/>
+<path fill="none" stroke="black" d="M243,-122.11C243,-122.11 243,-140.99 243,-140.99"/>
+<polygon fill="black" stroke="black" points="239.5,-140.99 243,-150.99 246.5,-140.99 239.5,-140.99"/>
 </g>
 </g>
 </svg>

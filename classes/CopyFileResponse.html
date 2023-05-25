@@ -126,7 +126,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:57</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:62</a></div>
                             </td>
                         </tr>
 
@@ -199,7 +199,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:65</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -236,7 +236,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:72</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -272,7 +272,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:68</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -294,11 +294,13 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { DecodeHtmlEntities, PaginationResponse } from &#x27;@shared/controller&#x27;;
 import { FileRecord, FileRecordParentType, ScanStatus } from &#x27;../../entity&#x27;;
+import { API_VERSION_PATH } from &#x27;../../files-storage.const&#x27;;
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id &#x3D; fileRecord.id;
 		this.name &#x3D; fileRecord.name;
+		this.url &#x3D; &#x60;${API_VERSION_PATH}/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}&#x60;;
 		this.size &#x3D; fileRecord.size;
 		this.securityCheckStatus &#x3D; fileRecord.securityCheck.status;
 		this.parentId &#x3D; fileRecord.parentId;
@@ -317,6 +319,9 @@ export class FileRecordResponse {
 
 	@ApiProperty()
 	parentId: string;
+
+	@ApiProperty()
+	url: string;
 
 	@ApiProperty({ enum: ScanStatus })
 	securityCheckStatus: ScanStatus;
