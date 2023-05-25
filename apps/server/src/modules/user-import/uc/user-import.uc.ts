@@ -167,7 +167,10 @@ export class UserImportUc {
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
-			await Promise.all(importUsers.map(async (importUser) => this.updateUserAndAccount(importUser, school)));
+			importUsers.map(async (importUser) => {
+				await this.updateUserAndAccount(importUser, school);
+			});
+			await this.userRepo.flush();
 		}
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
