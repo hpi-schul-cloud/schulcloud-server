@@ -10,7 +10,7 @@ export class BoardManagementUc {
 
 	async createBoard(courseId: EntityId): Promise<EntityId | undefined> {
 		if (!(await this.doesCourseExist(courseId))) {
-			return;
+			return undefined;
 		}
 
 		const context = { type: BoardExternalReferenceType.Course, id: courseId };
