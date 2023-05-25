@@ -24,6 +24,13 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
+	async findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
+		const scope = new FileRecordScope().byParentId(parentId).byMarkedForDelete(false);
+		const result = await this.findAndCount(scope, options);
+
+		return result;
+	}
+
 	async findBySchoolIdAndParentId(
 		schoolId: EntityId,
 		parentId: EntityId,

@@ -7,6 +7,8 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileRecordRepo } from './filerecord.repo';
 
+const sortFunction = (a: string, b: string) => a.localeCompare(b);
+
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
 	let repo: FileRecordRepo;
@@ -96,6 +98,82 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('findByParentId', () => {
+		const setup = () => {
+			const parentId1 = new ObjectId().toHexString();
+			const fileRecords1 = fileRecordFactory.buildList(3, {
+				parentType: FileRecordParentType.Task,
+				parentId: parentId1,
+			});
+
+			const parentId2 = new ObjectId().toHexString();
+			const fileRecords2 = fileRecordFactory.buildList(3, {
+				parentType: FileRecordParentType.Task,
+				parentId: parentId2,
+			});
+
+			const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
+				parentType: FileRecordParentType.Task,
+				parentId: parentId1,
+			});
+
+			return { fileRecords1, fileRecords2, markedForDeleteFileRecords, parentId1 };
+		};
+
+		// TODO: the next 2 pagination test are for private stuff and must be repeated in all or outsource
+		it('should work with pagination limit', async () => {
+			const { fileRecords1, parentId1 } = setup();
+			await em.persistAndFlush([...fileRecords1]);
+			em.clear();
+
+			const pagination = { limit: 1 };
+			const [result, count] = await repo.findByParentId(parentId1, { pagination });
+
+			expect(count).toEqual(3);
+			expect(result.length).toEqual(1);
+		});
+
+		it('should work with pagination skip', async () => {
+			const { fileRecords1, parentId1 } = setup();
+			await em.persistAndFlush([...fileRecords1]);
+			em.clear();
+
+			const pagination = { skip: 1 };
+			const [result, count] = await repo.findByParentId(parentId1, { pagination });
+
+			expect(count).toEqual(3);
+			expect(result.length).toEqual(2);
+		});
+
+		it('should only find searched parent', async () => {
+			const { fileRecords1, fileRecords2, parentId1 } = setup();
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
+			em.clear();
+
+			const [results, count] = await repo.findByParentId(parentId1);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+		});
+
+		it('should ignore deletedSince', async () => {
+			const { fileRecords1, markedForDeleteFileRecords, parentId1 } = setup();
+
+			await em.persistAndFlush([...fileRecords1, ...markedForDeleteFileRecords]);
+			em.clear();
+
+			const [results, count] = await repo.findByParentId(parentId1);
+
+			expect(count).toEqual(3);
+			expect(results).toHaveLength(3);
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
+			);
+		});
+	});
+
 	describe('findBySchoolIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const schoolId1 = new ObjectId().toHexString();
@@ -168,7 +246,7 @@ describe('FileRecordRepo', () => {
 			expect(results.map((o) => o.schoolId)).toEqual([schoolId1, schoolId1, schoolId1]);
 		});
 
-		it('should ingnore deletedSince', async () => {
+		it('should ignore deletedSince', async () => {
 			const fileRecordsExpired = fileRecordFactory.markedForDelete().buildList(3, {
 				schoolId: schoolId1,
 				parentType: FileRecordParentType.Task,
@@ -182,8 +260,8 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual(
-				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
 		});
 	});
@@ -253,8 +331,8 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.id).sort()).toEqual(
-				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort()
+			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
+				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
 		});
 	});
