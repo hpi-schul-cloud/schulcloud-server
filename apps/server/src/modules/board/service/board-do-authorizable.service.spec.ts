@@ -66,7 +66,7 @@ describe(BoardDoAuthorizableService.name, () => {
 	});
 
 	describe('getBoardAuthorizable', () => {
-		describe('when having an empty board', () => {
+		describe('when having a board without any users (teachers, students, substitutionTeachers)', () => {
 			const setup = () => {
 				const board = columnBoardFactory.build();
 				return { board };
