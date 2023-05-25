@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { courseFactory } from '@shared/testing';
-import { BoardManagementUc } from './board-management.uc';
+import { BoardManagementUc } from '@src/modules/management/uc/board-management.uc';
 
 describe(BoardManagementUc.name, () => {
 	let module: TestingModule;
