@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	BoardDoAuthorizable,
@@ -10,12 +10,15 @@ import {
 	UserBoardRoles,
 } from '@shared/domain';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { AuthorizationLoaderService } from '@src/modules/authorization/types/authorization-loader-service';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
 export class BoardDoAuthorizableService implements AuthorizationLoaderService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly courseRepo: CourseRepo) {}
+	constructor(
+		@Inject(forwardRef(() => BoardDoRepo)) private readonly boardDoRepo: BoardDoRepo,
+		private readonly courseRepo: CourseRepo
+	) {}
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
