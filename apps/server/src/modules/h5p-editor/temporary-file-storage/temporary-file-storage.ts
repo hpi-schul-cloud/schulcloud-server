@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { relative } from 'path';
 import { Injectable } from '@nestjs/common';
 import { ITemporaryFile, ITemporaryFileStorage, IUser } from '@lumieducation/h5p-server';
-import { FileStats } from '../file-stats';
+import { FileStats } from './file-stats';
 import { TemporaryFile } from './temporary-file';
 
 @Injectable()
