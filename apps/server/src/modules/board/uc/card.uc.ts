@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Card, ContentElementType, EntityId, FileElement, TextElement } from '@shared/domain';
+import { Card, ContentElementType, EntityId, FileElement, RichTextElement } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { CardService, ContentElementService } from '../service';
 
@@ -27,7 +27,7 @@ export class CardUc {
 		userId: EntityId,
 		cardId: EntityId,
 		type: ContentElementType
-	): Promise<TextElement | FileElement> {
+	): Promise<RichTextElement | FileElement> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);

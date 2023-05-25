@@ -1,7 +1,8 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
+import { InputFormat } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileElement } from './file-element.do';
-import { TextElement } from './text-element.do';
+import { RichTextElement } from './rich-text-element.do';
 import { AnyContentElementDo } from './types/any-content-element-do';
 import { ContentElementType } from './types/content-elements.enum';
 
@@ -11,8 +12,8 @@ export class ContentElementFactory {
 		let element!: AnyContentElementDo;
 
 		switch (type) {
-			case ContentElementType.TEXT:
-				element = this.buildText();
+			case ContentElementType.RICH_TEXT:
+				element = this.buildRichText();
 				break;
 			case ContentElementType.FILE:
 				element = this.buildFile();
@@ -28,10 +29,11 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildText() {
-		const element = new TextElement({
+	private buildRichText() {
+		const element = new RichTextElement({
 			id: new ObjectId().toHexString(),
 			text: '',
+			inputFormat: InputFormat.RICH_TEXT_CK5,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

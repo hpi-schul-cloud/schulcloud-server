@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
@@ -22,6 +23,7 @@ const imports = [
 	HttpModule,
 	CoreModule,
 	LoggerModule,
+	RabbitMQWrapperTestModule,
 ];
 const controllers = [FwuLearningContentsController];
 const providers = [FwuLearningContentsUc, S3ClientAdapter];
