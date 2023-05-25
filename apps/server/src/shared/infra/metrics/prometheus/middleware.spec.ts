@@ -1,40 +1,79 @@
-import { Request, Response } from 'express';
-import { getAPIResponseTimeMetricLabels } from './middleware';
+import request from 'supertest';
+import express, { Request, Response } from 'express';
+import {
+	apiResponseTimeMetricHistogram,
+	createAPIResponseTimeMetricMiddleware,
+	getAPIResponseTimeMetricLabels,
+} from './middleware';
 
 describe('getAPIResponseTimeMetricLabels', () => {
-	it('should return proper metric labels for a typical request and response', () => {
-		const mockReq = {
-			method: 'GET',
-			baseUrl: '/api/v1',
-			route: { path: '/schools/:schoolId' },
-		} as Request;
+	describe('should return proper metric labels for', () => {
+		it('a typical request and response', () => {
+			const mockReq = {
+				method: 'GET',
+				baseUrl: '/api/v1',
+				route: { path: '/schools/:schoolId' },
+			} as Request;
 
-		const mockRes = { statusCode: 200 } as Response;
+			const mockRes = { statusCode: 200 } as Response;
 
-		const labels = getAPIResponseTimeMetricLabels(mockReq, mockRes);
+			const labels = getAPIResponseTimeMetricLabels(mockReq, mockRes);
 
-		expect(labels).toEqual({
-			method: 'GET',
-			base_url: '/api/v1',
-			full_path: '/api/v1/schools/:schoolId',
-			route_path: '/schools/:schoolId',
-			status_code: 200,
+			expect(labels).toEqual({
+				method: 'GET',
+				base_url: '/api/v1',
+				full_path: '/api/v1/schools/:schoolId',
+				route_path: '/schools/:schoolId',
+				status_code: 200,
+			});
+		});
+
+		it('a less typical request and response', () => {
+			const mockReq = { method: 'DELETE', baseUrl: '/' } as Request;
+
+			const mockRes = { statusCode: 501 } as Response;
+
+			const labels = getAPIResponseTimeMetricLabels(mockReq, mockRes);
+
+			expect(labels).toEqual({
+				method: 'DELETE',
+				base_url: '/',
+				full_path: '/',
+				route_path: '',
+				status_code: 501,
+			});
 		});
 	});
+});
 
-	it('should return proper metric labels even for a less typical request and response', () => {
-		const mockReq = { method: 'DELETE', baseUrl: '/' } as Request;
+describe('createAPIResponseTimeMetricMiddleware', () => {
+	describe('should create a middleware that should', () => {
+		const app = express();
+		const middleware = createAPIResponseTimeMetricMiddleware();
 
-		const mockRes = { statusCode: 501 } as Response;
+		beforeAll(() => {
+			app.use(middleware);
+			app.use(express.json());
+			app.get('/sayHello', (req, res) => {
+				res.set('Test-Header', 'test_header_value');
+				res.status(201).send('hello');
+			});
+		});
 
-		const labels = getAPIResponseTimeMetricLabels(mockReq, mockRes);
+		it('not interfere with how the app endpoints work', async () => {
+			const response = await request(app).get('/sayHello');
 
-		expect(labels).toEqual({
-			method: 'DELETE',
-			base_url: '/',
-			full_path: '/',
-			route_path: '',
-			status_code: 501,
+			expect(response.statusCode).toBe(201);
+			expect(response.header).toHaveProperty('test-header', 'test_header_value');
+			expect(response.text).toBe('hello');
+		});
+
+		it('call observe() on API response time metric histogram once for every app request', async () => {
+			const observeMethodSpy = jest.spyOn(apiResponseTimeMetricHistogram, 'observe');
+
+			await request(app).get('/sayHello');
+
+			expect(observeMethodSpy).toBeCalledTimes(1);
 		});
 	});
 });

@@ -51,7 +51,7 @@ export const getAPIResponseTimeMetricLabels = (req: Request, res: Response) => {
 	};
 };
 
-const apiResponseTimeHistogram = new client.Histogram({
+export const apiResponseTimeMetricHistogram = new client.Histogram({
 	name: 'sc_api_response_time_in_seconds',
 	help: 'SC API response time in seconds',
 	labelNames: apiResponseTimeMetricLabelNames,
@@ -59,5 +59,7 @@ const apiResponseTimeHistogram = new client.Histogram({
 
 export const createAPIResponseTimeMetricMiddleware = (): RequestHandler =>
 	responseTime((req: Request, res: Response, time: number) => {
-		apiResponseTimeHistogram.observe(getAPIResponseTimeMetricLabels(req, res), time / 1000);
+		const labels = getAPIResponseTimeMetricLabels(req, res);
+
+		apiResponseTimeMetricHistogram.observe(labels, time / 1000);
 	});
