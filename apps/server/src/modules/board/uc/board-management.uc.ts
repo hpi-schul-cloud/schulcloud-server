@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType, BoardNode, Course, EntityId } from '@shared/domain';
