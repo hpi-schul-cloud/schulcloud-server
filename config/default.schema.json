@@ -817,7 +817,7 @@
 		"PROMETHEUS_METRICS_PORT": {
 			"type": "number",
 			"default": 9090,
-			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag)."
+			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag). Please remember that it must be different than the main app listening port as the Prometheus app server will run on a different port and you can't run two servers on the same port."
 		},
 		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
 			"type": "boolean",
