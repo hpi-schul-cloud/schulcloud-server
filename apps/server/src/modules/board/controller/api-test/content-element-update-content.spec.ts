@@ -128,7 +128,7 @@ describe(`content element update content (api)`, () => {
 
 			const response = await request.put(
 				`${element.id}/content`,
-				{ data: { content: { text: 'hello world' }, type: 'text' } },
+				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
 				invalidTeacherAccount
 			);
 
