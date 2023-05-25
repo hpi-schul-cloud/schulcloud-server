@@ -15,12 +15,16 @@ import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ValidationError } from '@shared/common';
 import { ContextExternalToolDO } from '@shared/domain';
-import { ContextExternalToolIdParams, ContextExternalToolPostParams, ContextExternalToolResponse } from './dto';
+import {
+	ContextExternalToolIdParams,
+	ContextExternalToolPostParams,
+	ContextExternalToolResponse,
+	ContextExternalToolContextParams,
+	ContextExternalToolSearchListResponse,
+} from './dto';
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from './mapper';
 import { ContextExternalTool } from '../uc/dto';
-import { ContextExternalToolContextParams } from './dto/request/context-external-tool-context.params';
-import { ContextExternalToolSearchListResponse } from './dto/response/context-external-tool-search-list.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

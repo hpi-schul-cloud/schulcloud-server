@@ -4,8 +4,7 @@ import { Action, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextTypeMapper } from './mapper';
 import { ContextExternalTool } from './dto';
-import { ContextExternalToolService } from '../service';
-import { ContextExternalToolValidationService } from '../service/validation/context-external-tool-validation.service';
+import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 
 @Injectable()
 export class ContextExternalToolUc {

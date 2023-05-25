@@ -162,52 +162,60 @@ describe('ContextExternalToolRepo', () => {
 	});
 
 	describe('find', () => {
-		it('should return correct results when matches found for schoolToolId', async () => {
-			const { schoolExternalTool1 } = await setup();
+		describe('when matches found for schoolToolId', () => {
+			it('should return correct results', async () => {
+				const { schoolExternalTool1 } = await setup();
 
-			const query: ContextExternalToolQuery = {
-				schoolToolId: schoolExternalTool1.id,
-			};
+				const query: ContextExternalToolQuery = {
+					schoolToolId: schoolExternalTool1.id,
+				};
 
-			const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalToolDO[] = await repo.find(query);
 
-			expect(result[0].schoolToolId).toEqual(schoolExternalTool1.id);
+				expect(result[0].schoolToolId).toEqual(schoolExternalTool1.id);
+			});
 		});
 
-		it('should return correct results when matches found for contextId', async () => {
-			const { contextExternalTool1 } = await setup();
+		describe('when matches found for contextId', () => {
+			it('should return correct results ', async () => {
+				const { contextExternalTool1 } = await setup();
 
-			const query: ContextExternalToolQuery = {
-				contextId: contextExternalTool1.contextId,
-			};
+				const query: ContextExternalToolQuery = {
+					contextId: contextExternalTool1.contextId,
+				};
 
-			const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalToolDO[] = await repo.find(query);
 
-			expect(result[0].contextId).toEqual(contextExternalTool1.contextId);
+				expect(result[0].contextId).toEqual(contextExternalTool1.contextId);
+			});
 		});
 
-		it('should return correct results when matches found for contextType', async () => {
-			await setup();
+		describe('when matches found for contextType', () => {
+			it('should return correct results when matches found for contextType', async () => {
+				await setup();
 
-			const query: ContextExternalToolQuery = {
-				contextType: ToolContextType.COURSE,
-			};
+				const query: ContextExternalToolQuery = {
+					contextType: ToolContextType.COURSE,
+				};
 
-			const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalToolDO[] = await repo.find(query);
 
-			expect(result[0].contextType).toEqual(ToolContextType.COURSE);
+				expect(result[0].contextType).toEqual(ToolContextType.COURSE);
+			});
 		});
 
-		it('should return empty array when no matches', async () => {
-			const query: ContextExternalToolQuery = {
-				schoolToolId: new ObjectId().toHexString(),
-				contextId: new ObjectId().toHexString(),
-				contextType: ToolContextType.COURSE,
-			};
+		describe('when matches found', () => {
+			it('should return empty array when no matches', async () => {
+				const query: ContextExternalToolQuery = {
+					schoolToolId: new ObjectId().toHexString(),
+					contextId: new ObjectId().toHexString(),
+					contextType: ToolContextType.COURSE,
+				};
 
-			const result: ContextExternalToolDO[] = await repo.find(query);
+				const result: ContextExternalToolDO[] = await repo.find(query);
 
-			expect(result).toEqual([]);
+				expect(result).toEqual([]);
+			});
 		});
 	});
 });
