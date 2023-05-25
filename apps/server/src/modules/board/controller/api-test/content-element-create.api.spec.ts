@@ -127,7 +127,7 @@ describe(`content element create (api)`, () => {
 			await em.persistAndFlush([invalidUser]);
 			currentUser = mapUserToCurrentUser(invalidUser);
 
-			const response = await api.post(cardNode.id, ContentElementType.TEXT);
+			const response = await api.post(cardNode.id, ContentElementType.RICH_TEXT);
 
 			expect(response.status).toEqual(403);
 		});

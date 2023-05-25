@@ -217,7 +217,7 @@ describe(BoardDoRepo.name, () => {
 				await em.persistAndFlush(columnNodes);
 				const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
 				await em.persistAndFlush(cardNodes);
-				const elementNodes = textElementNodeFactory.buildList(2, { parent: cardNodes[0] });
+				const elementNodes = richTextElementNodeFactory.buildList(2, { parent: cardNodes[0] });
 				await em.persistAndFlush(elementNodes);
 				em.clear();
 
