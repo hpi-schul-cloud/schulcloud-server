@@ -674,11 +674,9 @@ export const Accounts = accountPartials.map((partial) => {
 		userId: partial.userId,
 		username: partial.username,
 		password: partial.password,
+		lasttriedFailedLogin: partial.lasttriedFailedLogin ? new Date(partial.lasttriedFailedLogin) : undefined,
 	};
 	const account = partial.id ? accountFactory.buildWithId(params, partial.id) : accountFactory.build(params);
-	if (partial.lasttriedFailedLogin) {
-		account.lasttriedFailedLogin = new Date(partial.lasttriedFailedLogin);
-	}
 	if (partial.createdAt) {
 		account.createdAt = new Date(partial.createdAt);
 	}
