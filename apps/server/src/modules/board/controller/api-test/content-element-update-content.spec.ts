@@ -39,7 +39,6 @@ describe(`content element update content (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 			const course = courseFactory.build({ teachers: [teacherUser] });
 			await em.persistAndFlush([teacherUser, course]);
@@ -52,40 +51,31 @@ describe(`content element update content (api)`, () => {
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
 			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 
-			await em.persistAndFlush([
-				studentAccount,
-				studentUser,
-				teacherAccount,
-				teacherUser,
-				parentCard,
-				column,
-				columnBoardNode,
-				element,
-			]);
+			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
 			em.clear();
 
-			return { studentAccount, teacherAccount, parentCard, column, columnBoardNode, element };
+			return { teacherAccount, parentCard, column, columnBoardNode, element };
 		};
 
 		it('should return status 204', async () => {
-			const { studentAccount, element } = await setup();
+			const { teacherAccount, element } = await setup();
 
 			const response = await request.put(
 				`${element.id}/content`,
 				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
-				studentAccount
+				teacherAccount
 			);
 
 			expect(response.statusCode).toEqual(204);
 		});
 
 		it('should actually change content of the element', async () => {
-			const { studentAccount, element } = await setup();
+			const { teacherAccount, element } = await setup();
 
 			await request.put(
 				`${element.id}/content`,
 				{ data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
-				studentAccount
+				teacherAccount
 			);
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
 
@@ -93,7 +83,7 @@ describe(`content element update content (api)`, () => {
 		});
 
 		it('should sanitize rich text before changing content of the element', async () => {
-			const { studentAccount, element } = await setup();
+			const { teacherAccount, element } = await setup();
 
 			const text = '<iframe>rich text 1</iframe> some more text';
 
@@ -102,7 +92,7 @@ describe(`content element update content (api)`, () => {
 			await request.put(
 				`${element.id}/content`,
 				{ data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' } },
-				studentAccount
+				teacherAccount
 			);
 			const result = await em.findOneOrFail(RichTextElementNode, element.id);
 
@@ -124,13 +114,13 @@ describe(`content element update content (api)`, () => {
 			});
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
+			const card = cardNodeFactory.buildWithId({ parent: column });
+			const element = richTextElementNodeFactory.buildWithId({ parent: card });
 
-			await em.persistAndFlush([parentCard, column, columnBoardNode, element]);
+			await em.persistAndFlush([columnBoardNode, column, card, element]);
 			em.clear();
 
-			return { invalidTeacherAccount, invalidTeacherUser, parentCard, column, columnBoardNode, element };
+			return { invalidTeacherAccount, invalidTeacherUser, parentCard: card, column, columnBoardNode, element };
 		};
 
 		it('should return status 403', async () => {
