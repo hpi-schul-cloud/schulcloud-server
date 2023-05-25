@@ -189,6 +189,57 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
+	describe('getAncestorIds', () => {
+		describe('when having only a root boardnode', () => {
+			const setup = async () => {
+				const columnBoardNode = columnBoardNodeFactory.build();
+
+				await em.persistAndFlush([columnBoardNode]);
+
+				return { boardId: columnBoardNode.id };
+			};
+
+			it('should return an empty list', async () => {
+				const { boardId } = await setup();
+
+				const board = await repo.findById(boardId);
+				const ancestorIds = await repo.getAncestorIds(board);
+
+				expect(ancestorIds).toHaveLength(0);
+			});
+		});
+
+		describe('when having multiple boardnodes', () => {
+			const setup = async () => {
+				const boardNode = columnBoardNodeFactory.build();
+				await em.persistAndFlush(boardNode);
+				const columnNodes = columnNodeFactory.buildList(2, { parent: boardNode });
+				await em.persistAndFlush(columnNodes);
+				const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+				await em.persistAndFlush(cardNodes);
+				const elementNodes = richTextElementNodeFactory.buildList(2, { parent: cardNodes[0] });
+				await em.persistAndFlush(elementNodes);
+				em.clear();
+
+				const boardId = boardNode.id;
+				const columnId = columnNodes[0].id;
+				const cardId = cardNodes[0].id;
+				const secondElementId = elementNodes[1].id;
+
+				return { boardId, columnId, cardId, secondElementId };
+			};
+
+			it('should return an empty list', async () => {
+				const { boardId, columnId, cardId, secondElementId } = await setup();
+
+				const element = await repo.findById(secondElementId);
+				const ancestorIds = await repo.getAncestorIds(element);
+
+				expect(ancestorIds).toEqual([boardId, columnId, cardId]);
+			});
+		});
+	});
+
 	describe('save', () => {
 		describe('when called', () => {
 			it('should create new board nodes', async () => {
