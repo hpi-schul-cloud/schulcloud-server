@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { InputFormat } from '@shared/domain';
+import { plainToClass } from 'class-transformer';
 import { SanitizeHtml } from './sanitize-html.transformer';
 
 describe('SanitizeHtmlTransformer Decorator', () => {
@@ -11,7 +11,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml(InputFormat.PLAIN_TEXT)
 		title2!: string;
 
-		@SanitizeHtml(InputFormat.RICHTEXT_SIMPLE)
+		@SanitizeHtml(InputFormat.RICH_TEXT_SIMPLE)
 		excerpt?: string;
 
 		@SanitizeHtml(InputFormat.RICH_TEXT)
@@ -47,29 +47,29 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing richtext formatting', () => {
-		it('should remove all html but richtext tags', () => {
+	describe('when sanitizing rich text formatting', () => {
+		it('should remove all html but rich text tags', () => {
 			const plainString = { content: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.content).toEqual('<h1><b>html text</b></h1>');
 		});
 	});
 
-	describe('when sanitizing richtext ck5 formatting', () => {
-		it('should remove all html but richtext ck5 tags', () => {
+	describe('when sanitizing rich text ck5 formatting', () => {
+		it('should remove all html but rich text ck5 tags', () => {
 			const plainString = {
 				contentCk5:
-					'<h1></h1><h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk5).toEqual(
-				'<h2><b><mark>html text</mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
+				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
 		});
 	});
 
-	describe('when sanitizing richtext ck5 simple formatting', () => {
-		it('should remove all html but richtext ck5 simple tags', () => {
+	describe('when sanitizing rich text ck5 simple formatting', () => {
+		it('should remove all html but rich text ck5 simple tags', () => {
 			const plainString = {
 				contentCk5Simple:
 					'<p><b>strong</b><br />text</p><h2></h2><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
@@ -79,8 +79,8 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 	});
 
-	describe('when sanitizing richtext ck4 formatting', () => {
-		it('should remove all html but richtext ck4 tags', () => {
+	describe('when sanitizing rich text ck4 formatting', () => {
+		it('should remove all html but rich text ck4 tags', () => {
 			const plainString = { contentCk4: '<h1><b>html text</b></h1><scriPT>alert("foobar");</sCript><stYle></style>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk4).toEqual('<h1><b>html text</b></h1>');

@@ -1,22 +1,22 @@
 import { NotImplementedException } from '@nestjs/common';
-import { fileElementFactory, textElementFactory } from '@shared/testing';
-import { FileElementResponse, TextElementResponse } from '../dto';
+import { fileElementFactory, richTextElementFactory } from '@shared/testing';
+import { FileElementResponse, RichTextElementResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
 describe(ContentElementResponseFactory.name, () => {
 	const setup = () => {
-		const textElement = textElementFactory.build();
+		const richTextElement = richTextElementFactory.build();
 		const fileElement = fileElementFactory.build();
 
-		return { textElement, fileElement };
+		return { richTextElement, fileElement };
 	};
 
-	it('should return instance of TextElementResponse', () => {
-		const { textElement } = setup();
+	it('should return instance of RichTextElementResponse', () => {
+		const { richTextElement } = setup();
 
-		const result = ContentElementResponseFactory.mapToResponse(textElement);
+		const result = ContentElementResponseFactory.mapToResponse(richTextElement);
 
-		expect(result).toBeInstanceOf(TextElementResponse);
+		expect(result).toBeInstanceOf(RichTextElementResponse);
 	});
 
 	it('should return instance of FileElementResponse', () => {

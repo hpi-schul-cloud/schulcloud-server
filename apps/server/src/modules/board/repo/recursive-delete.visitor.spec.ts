@@ -1,26 +1,38 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { columnBoardFactory, columnFactory, setupEntities } from '@shared/testing';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
+import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { columnBoardFactory, columnFactory, fileElementFactory, setupEntities } from '@shared/testing';
+import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
 	let module: TestingModule;
 	let em: DeepMocked<EntityManager>;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let service: RecursiveDeleteVisitor;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [RecursiveDeleteVisitor, { provide: EntityManager, useValue: createMock<EntityManager>() }],
+			providers: [
+				RecursiveDeleteVisitor,
+				{ provide: EntityManager, useValue: createMock<EntityManager>() },
+				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
+			],
 		}).compile();
 
 		em = module.get(EntityManager);
+		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		service = module.get(RecursiveDeleteVisitor);
 		await setupEntities();
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('when used as a visitor on a board composite', () => {
@@ -44,6 +56,83 @@ describe(RecursiveDeleteVisitor.name, () => {
 
 				expect(columns[0].acceptAsync).toHaveBeenCalledWith(service);
 				expect(columns[1].acceptAsync).toHaveBeenCalledWith(service);
+			});
+		});
+	});
+
+	describe('visitFileElementAsync', () => {
+		describe('WHEN file element, child and files are deleted successfully', () => {
+			const setup = () => {
+				const childFileElement = fileElementFactory.build();
+				const fileElement = fileElementFactory.build({ children: [childFileElement] });
+
+				return { fileElement, childFileElement };
+			};
+
+			it('should call deleteFilesOfParent', async () => {
+				const { fileElement, childFileElement } = setup();
+
+				await service.visitFileElementAsync(fileElement);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(fileElement.id);
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(childFileElement.id);
+			});
+
+			it('should call deleteNode', async () => {
+				const { fileElement, childFileElement } = setup();
+
+				await service.visitFileElementAsync(fileElement);
+
+				expect(em.remove).toHaveBeenCalledWith(em.getReference(fileElement.constructor, fileElement.id));
+				expect(em.remove).toHaveBeenCalledWith(em.getReference(childFileElement.constructor, childFileElement.id));
+			});
+		});
+
+		describe('WHEN deleteFilesOfParent of file element returns an error', () => {
+			const setup = () => {
+				const fileElement = fileElementFactory.build();
+				const error = new Error('testError');
+				filesStorageClientAdapterService.deleteFilesOfParent.mockRejectedValueOnce(error);
+
+				return { fileElement, error };
+			};
+
+			it('should pass error', async () => {
+				const { fileElement, error } = setup();
+
+				await expect(service.visitFileElementAsync(fileElement)).rejects.toThrowError(error);
+			});
+
+			it('should not call deleteNode', async () => {
+				const { fileElement, error } = setup();
+
+				await expect(service.visitFileElementAsync(fileElement)).rejects.toThrowError(error);
+				expect(em.remove).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('WHEN deleteFilesOfParent of child file element returns an error', () => {
+			const setup = () => {
+				const childFileElement = fileElementFactory.build();
+				const fileElement = fileElementFactory.build({ children: [childFileElement] });
+				const error = new Error('testError');
+				const fileDto = new FileDto({
+					id: 'testId',
+					name: 'testName',
+					parentType: FileRecordParentType.BoardNode,
+					parentId: 'testParentId',
+				});
+
+				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([fileDto]);
+				filesStorageClientAdapterService.deleteFilesOfParent.mockRejectedValueOnce(error);
+
+				return { fileElement, childFileElement, error };
+			};
+
+			it('should pass error', async () => {
+				const { fileElement, error } = setup();
+
+				await expect(service.visitFileElementAsync(fileElement)).rejects.toThrowError(error);
 			});
 		});
 	});
