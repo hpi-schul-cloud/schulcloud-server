@@ -13,7 +13,7 @@ import {
 } from '@shared/domain';
 import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
@@ -44,8 +44,7 @@ export class TaskService {
 	}
 
 	async delete(task: Task): Promise<void> {
-		const params = FileParamBuilder.build(task.school.id, task);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(task.id);
 
 		await this.deleteSubmissions(task);
 

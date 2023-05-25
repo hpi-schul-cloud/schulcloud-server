@@ -162,33 +162,34 @@ describe('FilesStorageService delete methods', () => {
 
 			const setup = () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
+				const { parentId } = params;
 
 				spy = jest.spyOn(service, 'delete');
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { params, fileRecords };
+				return { parentId, fileRecords };
 			};
 
 			it('should call findBySchoolIdAndParentId once with correct params', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await service.deleteFilesOfParent(params);
+				await service.deleteFilesOfParent(parentId);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
+				expect(fileRecordRepo.findByParentId).toHaveBeenNthCalledWith(1, parentId);
 			});
 
 			it('should call delete with correct params', async () => {
-				const { params, fileRecords } = setup();
+				const { parentId, fileRecords } = setup();
 
-				await service.deleteFilesOfParent(params);
+				await service.deleteFilesOfParent(parentId);
 
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
 			});
 
 			it('should return file records and count', async () => {
-				const { params, fileRecords } = setup();
+				const { parentId, fileRecords } = setup();
 
-				const responseData = await service.deleteFilesOfParent(params);
+				const responseData = await service.deleteFilesOfParent(parentId);
 				expect(responseData[0]).toEqual(
 					expect.arrayContaining([
 						expect.objectContaining({ ...fileRecords[0] }),
@@ -210,25 +211,26 @@ describe('FilesStorageService delete methods', () => {
 			const setup = () => {
 				const fileRecords = [];
 				const { params } = buildFileRecordsWithParams();
+				const { parentId } = params;
 
 				spy = jest.spyOn(service, 'delete');
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { params };
+				return { parentId };
 			};
 
 			it('should not call delete', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await service.deleteFilesOfParent(params);
+				await service.deleteFilesOfParent(parentId);
 
 				expect(service.delete).toHaveBeenCalledTimes(0);
 			});
 
 			it('should return empty counted type', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				const result = await service.deleteFilesOfParent(params);
+				const result = await service.deleteFilesOfParent(parentId);
 
 				expect(result).toEqual([[], 0]);
 			});
@@ -237,16 +239,17 @@ describe('FilesStorageService delete methods', () => {
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
 				const { params } = buildFileRecordsWithParams();
+				const { parentId } = params;
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.findByParentId.mockRejectedValueOnce(new Error('bla'));
 
-				return { params };
+				return { parentId };
 			};
 
 			it('should pass the error', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await expect(service.deleteFilesOfParent(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
@@ -259,17 +262,18 @@ describe('FilesStorageService delete methods', () => {
 
 			const setup = () => {
 				const { params, fileRecords } = buildFileRecordsWithParams();
+				const { parentId } = params;
 
 				spy = jest.spyOn(service, 'delete').mockRejectedValue(new Error('bla'));
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { params, fileRecords };
+				return { parentId, fileRecords };
 			};
 
 			it('should pass the error', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await expect(service.deleteFilesOfParent(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
