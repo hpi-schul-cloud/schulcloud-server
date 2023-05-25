@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ContextExternalToolRepo } from '@shared/repo';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { EntityId } from '@shared/domain';
+import { ToolContextType } from '../interface';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -31,5 +32,14 @@ export class ContextExternalToolService {
 
 	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<void> {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
+	}
+
+	async getContextExternalToolsForContext(contextType: ToolContextType, contextId: string) {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+			contextType,
+			contextId,
+		});
+
+		return contextExternalTools;
 	}
 }

@@ -3,9 +3,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import {
 	ContextExternalTool,
+	ContextExternalToolDO,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
-	ContextExternalToolDO,
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
@@ -56,12 +56,9 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
 
-		if (query.contextId && query.schoolToolId) {
-			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolId);
-		} else if (query.schoolToolId && !query.contextId) {
-			scope.bySchoolToolId(query.schoolToolId);
-		}
-
+		scope.bySchoolToolId(query.schoolToolId);
+		scope.byContextId(query.contextId);
+		scope.byContextType(query.contextType);
 		scope.allowEmptyQuery(true);
 
 		return scope;

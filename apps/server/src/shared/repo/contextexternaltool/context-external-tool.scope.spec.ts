@@ -1,6 +1,7 @@
 import { SchoolExternalTool } from '@shared/domain';
 import { schoolExternalToolFactory } from '@shared/testing';
 import { ContextExternalToolScope } from './context-external-tool.scope';
+import { ToolContextType } from '../../../modules/tool/interface';
 
 describe('CourseExternalToolScope', () => {
 	let scope: ContextExternalToolScope;
@@ -25,6 +26,41 @@ describe('CourseExternalToolScope', () => {
 				scope.bySchoolToolId(schoolExternalTool.id);
 
 				expect(scope.query).toEqual({ schoolTool: schoolExternalTool.id });
+			});
+		});
+	});
+
+	describe('byContextId is called', () => {
+		describe('when contextId parameter is undefined', () => {
+			it('should return scope without added contextId to query', () => {
+				scope.byContextId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when contextId parameter is defined', () => {
+			it('should return scope with added contextId to query', () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				scope.byContextId(schoolExternalTool.id);
+
+				expect(scope.query).toEqual({ contextId: schoolExternalTool.id });
+			});
+		});
+	});
+
+	describe('byContextType is called', () => {
+		describe('when contextType parameter is undefined', () => {
+			it('should return scope without added contextType to query', () => {
+				scope.byContextType(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when contextType parameter is defined', () => {
+			it('should return scope with added contextType to query', () => {
+				scope.byContextType(ToolContextType.COURSE);
+				expect(scope.query).toEqual({ contextType: 'course' });
 			});
 		});
 	});

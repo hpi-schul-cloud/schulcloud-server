@@ -151,4 +151,20 @@ describe('ContextExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('getContextExternalToolsForContext is called', () => {
+		describe('when parameters are given and user has permission ', () => {
+			it('should call contextExternalToolService', async () => {
+				const contextId: EntityId = 'contextId';
+				const contextType: ToolContextType = ToolContextType.COURSE;
+
+				await uc.getContextExternalToolsForContext('userId', contextType, contextId);
+
+				expect(contextExternalToolService.getContextExternalToolsForContext).toHaveBeenCalledWith(
+					contextType,
+					contextId
+				);
+			});
+		});
+	});
 });

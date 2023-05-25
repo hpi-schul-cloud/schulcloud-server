@@ -4,6 +4,7 @@ import { ContextExternalToolRepo } from '@shared/repo';
 import { contextExternalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing/factory/domainobject/';
 import { ContextExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ToolContextType } from '../interface';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -120,6 +121,31 @@ describe('ContextExternalToolService', () => {
 				await service.deleteContextExternalTool(contextExternalTool);
 
 				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith(contextExternalTool);
+			});
+		});
+	});
+
+	describe('getContextExternalToolsForContext is called', () => {
+		describe('when contextType and contextId are given', () => {
+			it('should call the repository', async () => {
+				await service.getContextExternalToolsForContext(ToolContextType.COURSE, 'contextId');
+
+				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
+					contextType: ToolContextType.COURSE,
+					contextId: 'contextId',
+				});
+			});
+
+			it('should return context external tools', async () => {
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalToolDO]);
+
+				const result: ContextExternalToolDO[] = await service.getContextExternalToolsForContext(
+					contextExternalToolDO.contextType,
+					contextExternalToolDO.contextId
+				);
+
+				expect(result).toEqual([contextExternalToolDO]);
 			});
 		});
 	});

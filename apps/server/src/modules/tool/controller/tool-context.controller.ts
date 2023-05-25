@@ -1,12 +1,15 @@
 import {
+	ApiBearerAuth,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiOkResponse,
+	ApiOperation,
 	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Post, Delete, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -16,6 +19,8 @@ import { ContextExternalToolIdParams, ContextExternalToolPostParams, ContextExte
 import { ContextExternalToolUc } from '../uc';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from './mapper';
 import { ContextExternalTool } from '../uc/dto';
+import { ContextExternalToolContextParams } from './dto/request/context-external-tool-context.params';
+import { ContextExternalToolSearchListResponse } from './dto/response/context-external-tool-search-list.response';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -32,6 +37,7 @@ export class ToolContextController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
 	async createContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
@@ -54,6 +60,7 @@ export class ToolContextController {
 	@Delete(':contextExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Deletes a ContextExternalTool' })
 	async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
@@ -63,5 +70,38 @@ export class ToolContextController {
 		this.logger.debug(
 			`ContextExternalTool with id ${params.contextExternalToolId} was deleted by user with id ${currentUser.userId}`
 		);
+	}
+
+	@Get(':contextType/:contextId')
+	@ApiBearerAuth()
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiOkResponse({
+		description: 'Returns a list of ContextExternalTools for the given context',
+		type: [ContextExternalToolSearchListResponse],
+	})
+	@ApiOperation({ summary: 'Returns a list of ContextExternalTools for the given context' })
+	async getContextExternalToolsForContext(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolContextParams
+	): Promise<ContextExternalToolSearchListResponse> {
+		const contextExternalTools: ContextExternalTool[] =
+			await this.contextExternalToolUc.getContextExternalToolsForContext(
+				currentUser.userId,
+				params.contextType,
+				params.contextId
+			);
+
+		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
+			(tool: ContextExternalToolDO): ContextExternalToolResponse =>
+				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
+		);
+
+		this.logger.debug(
+			`User with id ${currentUser.userId} fetched ContextExternalTools for contextType: ${params.contextType} and contextId: ${params.contextId}`
+		);
+
+		const response: ContextExternalToolSearchListResponse = new ContextExternalToolSearchListResponse(mappedTools);
+		return response;
 	}
 }

@@ -56,4 +56,16 @@ export class ContextExternalToolUc {
 			}
 		);
 	}
+
+	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+		// TODO: N21-534 use Permission check of N21-877 to be sure that the user has READ permission to course AND tool
+		await this.ensureContextPermission(userId, contextId, contextType);
+
+		const tools: ContextExternalToolDO[] = await this.contextExternalToolService.getContextExternalToolsForContext(
+			contextType,
+			contextId
+		);
+
+		return tools;
+	}
 }

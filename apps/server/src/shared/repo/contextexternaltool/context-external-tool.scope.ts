@@ -1,5 +1,6 @@
 import { Scope } from '@shared/repo';
 import { ContextExternalTool, EntityId } from '@shared/domain';
+import { ToolContextType } from '../../../modules/tool/interface';
 
 export class ContextExternalToolScope extends Scope<ContextExternalTool> {
 	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
@@ -9,9 +10,18 @@ export class ContextExternalToolScope extends Scope<ContextExternalTool> {
 		return this;
 	}
 
-	byContextIdAndSchoolToolId(contextId: EntityId, schoolToolId: EntityId): ContextExternalToolScope {
-		this.addQuery({ $and: [{ contextId }, { schoolTool: schoolToolId }] });
+	byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
+		if (contextId !== undefined) {
+			this.addQuery({ contextId });
+		}
 
+		return this;
+	}
+
+	byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
+		if (contextType !== undefined) {
+			this.addQuery({ contextType });
+		}
 		return this;
 	}
 }
