@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthorizationModule } from '../authorization';
+import { AuthorizationModule } from '@src/modules/authorization';
 import { BoardModule } from './board.module';
 import { BoardController, CardController, ColumnController, ElementController } from './controller';
 import { BoardUc, CardUc } from './uc';
