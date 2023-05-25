@@ -1,14 +1,25 @@
 import express, { Express } from 'express';
 import client from 'prom-client';
 
-import { metricsHandler } from './handler';
+import { createAPIResponseTimeMetricMiddleware } from './middleware';
+import { createPrometheusMetricsHandler } from './handler';
 
-export const createServer = (metricsRoute: string): Express => {
+export const createPrometheusMetricsServer = (
+	metricsRoute: string,
+	collectDefaultMetrics: boolean,
+	collectMetricsRouteMetrics: boolean
+): Express => {
+	if (collectDefaultMetrics) {
+		client.collectDefaultMetrics();
+	}
+
 	const app = express();
 
-	client.collectDefaultMetrics();
+	if (collectMetricsRouteMetrics) {
+		app.use(createAPIResponseTimeMetricMiddleware());
+	}
 
-	app.get(metricsRoute, metricsHandler);
+	app.get(metricsRoute, createPrometheusMetricsHandler());
 
 	return app;
 };
