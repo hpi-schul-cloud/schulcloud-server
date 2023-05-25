@@ -1488,7 +1488,7 @@
 		},
 		"name": "Editor functionalities",
 		"description": "",
-		"descriptionInputFormat": "richtext_ck4",
+		"descriptionInputFormat": "richTextCk4",
 		"private": false,
 		"publicSubmissions": false,
 		"teacherId": {
@@ -1522,7 +1522,7 @@
 		},
 		"name": "Hausaufgabe Mathe 10-5",
 		"description": "",
-		"descriptionInputFormat": "richtext_ck4",
+		"descriptionInputFormat": "richTextCk4",
 		"private": true,
 		"publicSubmissions": false,
 		"teacherId": {

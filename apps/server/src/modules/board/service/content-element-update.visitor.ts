@@ -1,7 +1,16 @@
-import { AnyBoardDo, BoardCompositeVisitor, Card, Column, ColumnBoard, FileElement, TextElement } from '@shared/domain';
-import { FileContentBody, TextContentBody } from '../controller/dto';
+import { sanitizeRichText } from '@shared/controller';
+import {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	Card,
+	Column,
+	ColumnBoard,
+	FileElement,
+	RichTextElement,
+} from '@shared/domain';
+import { FileContentBody, RichTextContentBody } from '../controller/dto';
 
-type ContentType = TextContentBody | FileContentBody;
+type ContentType = RichTextContentBody | FileContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -22,11 +31,12 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		this.throwNotHandled(card);
 	}
 
-	visitTextElement(textElement: TextElement): void {
-		if (this.content instanceof TextContentBody) {
-			textElement.text = this.content.text;
+	visitRichTextElement(richTextElement: RichTextElement): void {
+		if (this.content instanceof RichTextContentBody) {
+			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
+			richTextElement.inputFormat = this.content.inputFormat;
 		} else {
-			this.throwNotHandled(textElement);
+			this.throwNotHandled(richTextElement);
 		}
 	}
 
