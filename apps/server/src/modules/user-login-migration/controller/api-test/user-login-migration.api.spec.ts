@@ -27,6 +27,7 @@ import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
+import { UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -587,6 +588,18 @@ describe('UserLoginMigrationController (API)', () => {
 					.query({ userId: user.id });
 
 				expect(response.status).toEqual(HttpStatus.OK);
+			});
+
+			it('should return the response ', async () => {
+				const { user } = await setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.put(`/user-login-migrations/restart`)
+					.query({ userId: user.id });
+
+				expect(response.body).toHaveProperty('startedAt');
+				expect(response.body).not.toHaveProperty('closedAt');
+				expect(response.body).not.toHaveProperty('finishedAt');
 			});
 		});
 

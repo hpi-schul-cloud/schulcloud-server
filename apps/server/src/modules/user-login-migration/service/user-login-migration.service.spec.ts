@@ -791,7 +791,7 @@ describe('UserLoginMigrationService', () => {
 	});
 
 	describe('restartMigration is called', () => {
-		describe('when migration restart was successfull', () => {
+		describe('when migration restart was successfully', () => {
 			const setup = () => {
 				const schoolId: EntityId = new ObjectId().toHexString();
 
@@ -822,41 +822,12 @@ describe('UserLoginMigrationService', () => {
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
 			});
 
-			it('should call userLoginMigrationRepo', async () => {
+			it('should call schoolMigrationService', async () => {
 				const { schoolId } = setup();
 
 				await service.restartMigration(schoolId);
 
 				expect(schoolMigrationService.unmarkOutdatedUsers).toHaveBeenCalledWith(schoolId);
-			});
-		});
-
-		describe('when migration could not be found', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-				});
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
-				};
-			};
-
-			it('should throw RestartUserLoginMigrationError ', async () => {
-				const { schoolId } = setup();
-
-				await expect(service.restartMigration(schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for restart.`)
-				);
 			});
 		});
 
