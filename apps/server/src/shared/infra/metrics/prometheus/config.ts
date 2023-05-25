@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 
-export class Config {
-	private static _instance: Config;
+export class PrometheusMetricsConfig {
+	private static _instance: PrometheusMetricsConfig;
 
 	private readonly _isEnabled: boolean;
 

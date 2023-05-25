@@ -6,10 +6,6 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
-import {
-	addPrometheusMetricsMiddlewaresIfEnabled,
-	createAndStartPrometheusMetricsServerIfEnabled,
-} from '@shared/infra/metrics';
 import { LegacyLogger, LoggableMessage, Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
@@ -23,6 +19,8 @@ import { join } from 'path';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 import legacyAppPromise = require('../../../../src/app');
+
+import { addPrometheusMetricsMiddlewares, createAndStartPrometheusMetricsApp } from './helpers/prometheus-metrics';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -80,7 +78,7 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
-	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
+	addPrometheusMetricsMiddlewares(logger, rootExpress);
 
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -105,9 +103,9 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(new LoggableMessage(`Main server successfully started on port ${port}`));
+		logger.log(new LoggableMessage(`Main app successfully started listening on port ${port}`));
 
-		createAndStartPrometheusMetricsServerIfEnabled(logger);
+		createAndStartPrometheusMetricsApp(logger);
 	});
 
 	console.log('#################################');

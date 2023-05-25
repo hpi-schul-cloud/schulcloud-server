@@ -4,7 +4,7 @@ import client from 'prom-client';
 import { createAPIResponseTimeMetricMiddleware } from './middleware';
 import { createPrometheusMetricsHandler } from './handler';
 
-export const createPrometheusMetricsServer = (
+export const createPrometheusMetricsApp = (
 	metricsRoute: string,
 	collectDefaultMetrics: boolean,
 	collectMetricsRouteMetrics: boolean

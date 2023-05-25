@@ -1,9 +1,9 @@
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
-import { Config } from './config';
+import { PrometheusMetricsConfig } from './config';
 
-describe('Config', () => {
+describe('PrometheusMetricsConfig singleton instance', () => {
 	let configBefore: IConfig;
 
 	beforeAll(() => {
@@ -18,58 +18,62 @@ describe('Config', () => {
 		Configuration.reset(configBefore);
 	});
 
-	it("singleton should have 'isEnabled' flag set to 'false' by default", () => {
-		expect(Config.instance.isEnabled).toBe(false);
+	describe('should have proper default value for the', () => {
+		it("'isEnabled' feature flag", () => {
+			expect(PrometheusMetricsConfig.instance.isEnabled).toBe(false);
+		});
+
+		it("'route' field", () => {
+			expect(PrometheusMetricsConfig.instance.route).toBe('/metrics');
+		});
+
+		it("'port' field", () => {
+			expect(PrometheusMetricsConfig.instance.port).toBe(9090);
+		});
+
+		it("'collectDefaultMetrics' toggle", () => {
+			expect(PrometheusMetricsConfig.instance.collectDefaultMetrics).toBe(true);
+		});
+
+		it("'collectMetricsRouteMetrics' toggle", () => {
+			expect(PrometheusMetricsConfig.instance.collectMetricsRouteMetrics).toBe(true);
+		});
 	});
 
-	it("singleton should have custom 'isEnabled' flag value loaded from the configuration", () => {
-		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
-		Config.reload();
+	describe('should have proper custom value loaded from the configuration for the', () => {
+		it("'isEnabled' feature flag", () => {
+			Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
+			PrometheusMetricsConfig.reload();
 
-		expect(Config.instance.isEnabled).toBe(true);
-	});
+			expect(PrometheusMetricsConfig.instance.isEnabled).toBe(true);
+		});
 
-	it("singleton should have 'route' set to '/metrics' by default", () => {
-		expect(Config.instance.route).toBe('/metrics');
-	});
+		it("'route' field", () => {
+			Configuration.set('PROMETHEUS_METRICS_ROUTE', '/prometheus');
+			PrometheusMetricsConfig.reload();
 
-	it("singleton should have custom 'route' field value loaded from the configuration", () => {
-		Configuration.set('PROMETHEUS_METRICS_ROUTE', '/prometheus');
-		Config.reload();
+			expect(PrometheusMetricsConfig.instance.route).toBe('/prometheus');
+		});
 
-		expect(Config.instance.route).toBe('/prometheus');
-	});
+		it("'port' field", () => {
+			Configuration.set('PROMETHEUS_METRICS_PORT', 9100);
+			PrometheusMetricsConfig.reload();
 
-	it("singleton should have 'port' set to '9090' by default", () => {
-		expect(Config.instance.port).toBe(9090);
-	});
+			expect(PrometheusMetricsConfig.instance.port).toBe(9100);
+		});
 
-	it("singleton should have custom 'port' field value loaded from the configuration", () => {
-		Configuration.set('PROMETHEUS_METRICS_PORT', 9100);
-		Config.reload();
+		it("'collectDefaultMetrics' toggle", () => {
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', false);
+			PrometheusMetricsConfig.reload();
 
-		expect(Config.instance.port).toBe(9100);
-	});
+			expect(PrometheusMetricsConfig.instance.collectDefaultMetrics).toBe(false);
+		});
 
-	it("singleton should have 'collectDefaultMetrics' flag set to 'true' by default", () => {
-		expect(Config.instance.collectDefaultMetrics).toBe(true);
-	});
+		it("'collectMetricsRouteMetrics' toggle", () => {
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', false);
+			PrometheusMetricsConfig.reload();
 
-	it("singleton should have custom 'collectDefaultMetrics' flag value loaded from the configuration", () => {
-		Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', false);
-		Config.reload();
-
-		expect(Config.instance.collectDefaultMetrics).toBe(false);
-	});
-
-	it("singleton should have 'collectMetricsRouteMetrics' flag set to 'true' by default", () => {
-		expect(Config.instance.collectMetricsRouteMetrics).toBe(true);
-	});
-
-	it("singleton should have custom 'collectMetricsRouteMetrics' flag value loaded from the configuration", () => {
-		Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', false);
-		Config.reload();
-
-		expect(Config.instance.collectMetricsRouteMetrics).toBe(false);
+			expect(PrometheusMetricsConfig.instance.collectMetricsRouteMetrics).toBe(false);
+		});
 	});
 });
