@@ -1,49 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolService } from '@src/modules/school';
-import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
-import { LegacyLogger } from '@src/core/logger';
-import { UserLoginMigrationService } from './user-login-migration.service';
 import { StartUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
+import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 
 describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
 	let service: StartUserLoginMigrationValidationService;
 
-	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
+	let commonUserLoginMigrationService: DeepMocked<CommonUserLoginMigrationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				StartUserLoginMigrationValidationService,
 				{
-					provide: UserLoginMigrationService,
-					useValue: createMock<UserLoginMigrationService>(),
-				},
-				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
-				},
-				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: CommonUserLoginMigrationService,
+					useValue: createMock<CommonUserLoginMigrationService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(StartUserLoginMigrationValidationService);
-		userLoginMigrationService = module.get(UserLoginMigrationService);
-		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
+		commonUserLoginMigrationService = module.get(CommonUserLoginMigrationService);
 	});
 
 	afterAll(async () => {
@@ -67,27 +55,19 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
 				return { userId, migration, schoolId: school.id as string };
 			};
 
-			it('should call checkPermission', async () => {
+			it('should call ensurePermission', async () => {
 				const { userId, schoolId } = setup();
 
 				await service.checkPreconditions(userId, schoolId);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AllowedAuthorizationEntityType.School,
-					schoolId,
-					{
-						action: Action.write,
-						requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					}
-				);
+				expect(commonUserLoginMigrationService.ensurePermission).toHaveBeenCalledWith(userId, schoolId);
 			});
 
 			it('should get school by id ', async () => {
@@ -103,7 +83,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				await service.checkPreconditions(userId, schoolId);
 
-				expect(userLoginMigrationService.findMigrationBySchool).toHaveBeenCalledWith(schoolId);
+				expect(commonUserLoginMigrationService.findExistingUserLoginMigration).toHaveBeenCalledWith(schoolId);
 			});
 		});
 
@@ -120,11 +100,9 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 				school.officialSchoolNumber = undefined;
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
-
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
 				return { userId, migration, schoolId: school.id as string };
 			};
@@ -152,10 +130,10 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.schoolId });
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
 				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
+
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration };
 			};
@@ -183,10 +161,9 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.startMigration.mockResolvedValue(migration);
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { userId, migration };
 			};
