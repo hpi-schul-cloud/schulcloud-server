@@ -1,18 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType, InputFormat } from '@shared/domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class TextElementContent {
-	constructor({ text }: TextElementContent) {
+export class RichTextElementContent {
+	constructor({ text, inputFormat }: RichTextElementContent) {
 		this.text = text;
+		this.inputFormat = inputFormat;
 	}
 
 	@ApiProperty()
 	text: string;
+
+	@ApiProperty()
+	inputFormat: InputFormat;
 }
 
-export class TextElementResponse {
-	constructor({ id, content, timestamps, type }: TextElementResponse) {
+export class RichTextElementResponse {
+	constructor({ id, content, timestamps, type }: RichTextElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;
@@ -23,10 +27,10 @@ export class TextElementResponse {
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	type: ContentElementType.TEXT;
+	type: ContentElementType.RICH_TEXT;
 
 	@ApiProperty()
-	content: TextElementContent;
+	content: RichTextElementContent;
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;

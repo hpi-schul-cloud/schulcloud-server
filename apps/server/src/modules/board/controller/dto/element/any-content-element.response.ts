@@ -1,4 +1,4 @@
 import { FileElementResponse } from './file-element.response';
-import { TextElementResponse } from './text-element.response';
+import { RichTextElementResponse } from './rich-text-element.response';
 
-export type AnyContentElementResponse = TextElementResponse | FileElementResponse;
+export type AnyContentElementResponse = RichTextElementResponse | FileElementResponse;
