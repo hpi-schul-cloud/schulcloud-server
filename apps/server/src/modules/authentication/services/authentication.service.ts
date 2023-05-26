@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -8,6 +8,7 @@ import type { IServerConfig } from '@src/modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
+import { UnauthorizedLoggableException } from '../errors/unauthorized.loggable-exception';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { LoginDto } from '../uc/dto';
 
@@ -31,7 +32,7 @@ export class AuthenticationService {
 		}
 
 		if (!account) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedLoggableException(username, systemId);
 		}
 
 		return account;

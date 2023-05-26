@@ -1,5 +1,5 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
-import { RichText } from '@shared/domain/types/richtext.types';
+import { RichText } from '@shared/domain/types/rich-text.types';
 import { InputFormat } from '../types/input-format.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 

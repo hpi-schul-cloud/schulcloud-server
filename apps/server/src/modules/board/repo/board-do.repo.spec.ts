@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AnyBoardDo, Card, CardNode, Column, ColumnBoard, TextElementNode } from '@shared/domain';
+import { AnyBoardDo, Card, CardNode, Column, ColumnBoard, RichTextElementNode } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import {
 	cardFactory,
@@ -14,8 +14,8 @@ import {
 	columnFactory,
 	columnNodeFactory,
 	fileElementFactory,
-	textElementFactory,
-	textElementNodeFactory,
+	richTextElementFactory,
+	richTextElementNodeFactory,
 } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { BoardDoRepo } from './board-do.repo';
@@ -111,7 +111,7 @@ describe(BoardDoRepo.name, () => {
 				await em.persistAndFlush(columnNodes);
 				const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
 				await em.persistAndFlush(cardNodes);
-				const elementNodes = textElementNodeFactory.buildList(2, { parent: cardNodes[1] });
+				const elementNodes = richTextElementNodeFactory.buildList(2, { parent: cardNodes[1] });
 				await em.persistAndFlush(elementNodes);
 				em.clear();
 
@@ -145,33 +145,33 @@ describe(BoardDoRepo.name, () => {
 		describe('when fetching a parent', () => {
 			const setup = async () => {
 				const cardNode = cardNodeFactory.buildWithId();
-				const [textElement1, textElement2] = textElementNodeFactory.buildList(3, { parent: cardNode });
-				const nonChildTextElement = textElementNodeFactory.buildWithId();
+				const [richTextElement1, richTextElement2] = richTextElementNodeFactory.buildList(3, { parent: cardNode });
+				const nonChildRichTextElement = richTextElementNodeFactory.buildWithId();
 
-				await em.persistAndFlush([cardNode, textElement1, textElement2]);
+				await em.persistAndFlush([cardNode, richTextElement1, richTextElement2]);
 
-				return { cardId: cardNode.id, textElement1, textElement2, nonChildTextElement };
+				return { cardId: cardNode.id, richTextElement1, richTextElement2, nonChildRichTextElement };
 			};
 
 			it('should not return the parent for an incorrect childId', async () => {
-				const { nonChildTextElement } = await setup();
+				const { nonChildRichTextElement } = await setup();
 
-				await expect(repo.findParentOfId(nonChildTextElement.id)).rejects.toThrow();
+				await expect(repo.findParentOfId(nonChildRichTextElement.id)).rejects.toThrow();
 			});
 
 			it('should return the parent for a correct childId', async () => {
-				const { cardId, textElement1 } = await setup();
+				const { cardId, richTextElement1 } = await setup();
 
-				const parent = await repo.findParentOfId(textElement1.id);
+				const parent = await repo.findParentOfId(richTextElement1.id);
 
 				expect(parent?.id).toBe(cardId);
 			});
 
 			it('should return the parent including all children', async () => {
-				const { textElement1, textElement2 } = await setup();
-				const expectedChildIds = [textElement1.id, textElement2.id];
+				const { richTextElement1, richTextElement2 } = await setup();
+				const expectedChildIds = [richTextElement1.id, richTextElement2.id];
 
-				const parent = await repo.findParentOfId(textElement1.id);
+				const parent = await repo.findParentOfId(richTextElement1.id);
 				const actualChildIds = parent?.children?.map((child: AnyBoardDo) => child.id) ?? [];
 
 				expect(parent?.children).toHaveLength(2);
@@ -185,6 +185,57 @@ describe(BoardDoRepo.name, () => {
 				const parent = await repo.findParentOfId(cardId);
 
 				expect(parent).toBeUndefined();
+			});
+		});
+	});
+
+	describe('getAncestorIds', () => {
+		describe('when having only a root boardnode', () => {
+			const setup = async () => {
+				const columnBoardNode = columnBoardNodeFactory.build();
+
+				await em.persistAndFlush([columnBoardNode]);
+
+				return { boardId: columnBoardNode.id };
+			};
+
+			it('should return an empty list', async () => {
+				const { boardId } = await setup();
+
+				const board = await repo.findById(boardId);
+				const ancestorIds = await repo.getAncestorIds(board);
+
+				expect(ancestorIds).toHaveLength(0);
+			});
+		});
+
+		describe('when having multiple boardnodes', () => {
+			const setup = async () => {
+				const boardNode = columnBoardNodeFactory.build();
+				await em.persistAndFlush(boardNode);
+				const columnNodes = columnNodeFactory.buildList(2, { parent: boardNode });
+				await em.persistAndFlush(columnNodes);
+				const cardNodes = cardNodeFactory.buildList(2, { parent: columnNodes[0] });
+				await em.persistAndFlush(cardNodes);
+				const elementNodes = richTextElementNodeFactory.buildList(2, { parent: cardNodes[0] });
+				await em.persistAndFlush(elementNodes);
+				em.clear();
+
+				const boardId = boardNode.id;
+				const columnId = columnNodes[0].id;
+				const cardId = cardNodes[0].id;
+				const secondElementId = elementNodes[1].id;
+
+				return { boardId, columnId, cardId, secondElementId };
+			};
+
+			it('should return an empty list', async () => {
+				const { boardId, columnId, cardId, secondElementId } = await setup();
+
+				const element = await repo.findById(secondElementId);
+				const ancestorIds = await repo.getAncestorIds(element);
+
+				expect(ancestorIds).toEqual([boardId, columnId, cardId]);
 			});
 		});
 	});
@@ -313,11 +364,11 @@ describe(BoardDoRepo.name, () => {
 	describe('delete', () => {
 		describe('when deleting a domainObject and its descendants', () => {
 			const setup = async () => {
-				const elements = [...textElementFactory.buildList(3), ...fileElementFactory.buildList(2)];
+				const elements = [...richTextElementFactory.buildList(3), ...fileElementFactory.buildList(2)];
 				const card = cardFactory.build({ children: elements });
 				await repo.save(card);
 				await repo.save(elements, card);
-				const siblingCardElements = textElementFactory.buildList(3);
+				const siblingCardElements = richTextElementFactory.buildList(3);
 				const siblingCard = cardFactory.build({ children: siblingCardElements });
 				await repo.save(siblingCard);
 				await repo.save(siblingCardElements, siblingCard);
@@ -334,7 +385,7 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(elements[0]);
 				em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[0].id)).rejects.toThrow();
 			});
 
 			it('should delete all descendants', async () => {
@@ -343,11 +394,11 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 				em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, elements[0].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(TextElementNode, elements[1].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(TextElementNode, elements[2].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(TextElementNode, elements[3].id)).rejects.toThrow();
-				await expect(em.findOneOrFail(TextElementNode, elements[4].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[0].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[1].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[2].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[3].id)).rejects.toThrow();
+				await expect(em.findOneOrFail(RichTextElementNode, elements[4].id)).rejects.toThrow();
 			});
 
 			it('should not delete descendants of siblings', async () => {
@@ -356,9 +407,9 @@ describe(BoardDoRepo.name, () => {
 				await repo.delete(card);
 				em.clear();
 
-				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[0].id)).resolves.toBeDefined();
-				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[1].id)).resolves.toBeDefined();
-				await expect(em.findOneOrFail(TextElementNode, siblingCardElements[2].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[0].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[1].id)).resolves.toBeDefined();
+				await expect(em.findOneOrFail(RichTextElementNode, siblingCardElements[2].id)).resolves.toBeDefined();
 			});
 
 			it('should use the visitor', async () => {
