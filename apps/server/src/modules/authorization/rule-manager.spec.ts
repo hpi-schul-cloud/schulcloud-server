@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
-	BoardNodeRule,
+	BoardDoRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
@@ -31,7 +31,7 @@ describe('RuleManager', () => {
 	let teamRule: DeepMocked<TeamRule>;
 	let submissionRule: DeepMocked<SubmissionRule>;
 	let schoolExternalToolRule: DeepMocked<SchoolExternalToolRule>;
-	let boardNodeRule: DeepMocked<BoardNodeRule>;
+	let boardDoRule: DeepMocked<BoardDoRule>;
 	let contextExternalToolRule: DeepMocked<ContextExternalToolRule>;
 
 	beforeAll(async () => {
@@ -50,7 +50,7 @@ describe('RuleManager', () => {
 				{ provide: TeamRule, useValue: createMock<TeamRule>() },
 				{ provide: SubmissionRule, useValue: createMock<SubmissionRule>() },
 				{ provide: SchoolExternalToolRule, useValue: createMock<SchoolExternalToolRule>() },
-				{ provide: BoardNodeRule, useValue: createMock<BoardNodeRule>() },
+				{ provide: BoardDoRule, useValue: createMock<BoardDoRule>() },
 				{ provide: ContextExternalToolRule, useValue: createMock<ContextExternalToolRule>() },
 			],
 		}).compile();
@@ -66,7 +66,7 @@ describe('RuleManager', () => {
 		teamRule = await module.get(TeamRule);
 		submissionRule = await module.get(SubmissionRule);
 		schoolExternalToolRule = await module.get(SchoolExternalToolRule);
-		boardNodeRule = await module.get(BoardNodeRule);
+		boardDoRule = await module.get(BoardDoRule);
 		contextExternalToolRule = await module.get(ContextExternalToolRule);
 	});
 
@@ -96,7 +96,7 @@ describe('RuleManager', () => {
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
@@ -117,7 +117,7 @@ describe('RuleManager', () => {
 				expect(teamRule.isApplicable).toBeCalled();
 				expect(submissionRule.isApplicable).toBeCalled();
 				expect(schoolExternalToolRule.isApplicable).toBeCalled();
-				expect(boardNodeRule.isApplicable).toBeCalled();
+				expect(boardDoRule.isApplicable).toBeCalled();
 				expect(contextExternalToolRule.isApplicable).toBeCalled();
 			});
 
@@ -146,7 +146,7 @@ describe('RuleManager', () => {
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
@@ -175,7 +175,7 @@ describe('RuleManager', () => {
 				teamRule.isApplicable.mockReturnValueOnce(false);
 				submissionRule.isApplicable.mockReturnValueOnce(false);
 				schoolExternalToolRule.isApplicable.mockReturnValueOnce(false);
-				boardNodeRule.isApplicable.mockReturnValueOnce(false);
+				boardDoRule.isApplicable.mockReturnValueOnce(false);
 				contextExternalToolRule.isApplicable.mockReturnValueOnce(false);
 
 				return { user, object, context };
