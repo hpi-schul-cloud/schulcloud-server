@@ -5,7 +5,7 @@ export const createPrometheusMetricsHandler = (): RequestHandler => (_req: Reque
 	client.register
 		.metrics()
 		.then((data) => res.status(200).send(data))
-		.catch((err) => {
-			res.status(500).send(err);
+		.catch(() => {
+			res.status(500).send();
 		});
 };

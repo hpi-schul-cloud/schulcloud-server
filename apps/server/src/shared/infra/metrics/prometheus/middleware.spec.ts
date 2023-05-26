@@ -7,7 +7,7 @@ import {
 } from './middleware';
 
 describe('getAPIResponseTimeMetricLabels', () => {
-	describe('should return proper metric labels for', () => {
+	describe('should return correct metric labels for', () => {
 		it('a typical request and response', () => {
 			const mockReq = {
 				method: 'GET',
