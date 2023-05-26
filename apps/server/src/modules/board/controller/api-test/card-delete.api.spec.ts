@@ -2,14 +2,14 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode, TextElementNode } from '@shared/domain';
+import { CardNode, RichTextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	mapUserToCurrentUser,
-	textElementNodeFactory,
+	richTextElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -76,13 +76,13 @@ describe(`card delete (api)`, () => {
 		const columnBoardNode = columnBoardNodeFactory.buildWithId();
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const textElementNode = textElementNodeFactory.buildWithId({ parent: cardNode });
+		const richTextElementNode = richTextElementNodeFactory.buildWithId({ parent: cardNode });
 		const siblingCardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		await em.persistAndFlush([user, cardNode, columnNode, siblingCardNode, textElementNode]);
+		await em.persistAndFlush([user, cardNode, columnNode, siblingCardNode, richTextElementNode]);
 		em.clear();
 
-		return { user, cardNode, columnBoardNode, columnNode, siblingCardNode, textElementNode };
+		return { user, cardNode, columnBoardNode, columnNode, siblingCardNode, richTextElementNode };
 	};
 
 	describe('with valid user', () => {
@@ -105,12 +105,12 @@ describe(`card delete (api)`, () => {
 		});
 
 		it('should actually delete elements of the card', async () => {
-			const { user, cardNode, textElementNode } = await setup();
+			const { user, cardNode, richTextElementNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
 			await api.delete(cardNode.id);
 
-			await expect(em.findOneOrFail(TextElementNode, textElementNode.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(RichTextElementNode, richTextElementNode.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {

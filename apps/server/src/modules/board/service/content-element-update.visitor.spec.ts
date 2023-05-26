@@ -1,12 +1,13 @@
+import { InputFormat } from '@shared/domain';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
 	fileElementFactory,
-	textElementFactory,
+	richTextElementFactory,
 } from '@shared/testing';
+import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
-import { FileContentBody, TextContentBody } from '../controller/dto';
 
 describe(ContentElementUpdateVisitor.name, () => {
 	describe('when visiting an unsupported component', () => {
@@ -14,8 +15,9 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const board = columnBoardFactory.build();
 			const column = columnFactory.build();
 			const card = cardFactory.build();
-			const content = new TextContentBody();
+			const content = new RichTextContentBody();
 			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
 			return { board, column, card, updater };
@@ -43,28 +45,29 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a text element using the wrong content', () => {
+	describe('when visiting a rich text element using the wrong content', () => {
 		const setup = () => {
-			const textElement = textElementFactory.build();
+			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { textElement, updater };
+			return { richTextElement, updater };
 		};
 
 		it('should throw an error', () => {
-			const { textElement, updater } = setup();
+			const { richTextElement, updater } = setup();
 
-			expect(() => updater.visitTextElement(textElement)).toThrow();
+			expect(() => updater.visitRichTextElement(richTextElement)).toThrow();
 		});
 	});
 
 	describe('when visiting a file element using the wrong content', () => {
 		const setup = () => {
 			const fileElement = fileElementFactory.build();
-			const content = new TextContentBody();
+			const content = new RichTextContentBody();
 			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
 			return { fileElement, updater };

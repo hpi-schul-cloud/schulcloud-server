@@ -1,6 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cardFactory, columnFactory, textElementFactory } from '@shared/testing/factory/domainobject';
+import { cardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -156,7 +156,7 @@ describe(BoardDoService.name, () => {
 	describe('deleteWithDescendants', () => {
 		describe('when deleting an element', () => {
 			const setup = () => {
-				const elements = textElementFactory.buildList(3);
+				const elements = richTextElementFactory.buildList(3);
 				const card = cardFactory.build({ children: elements });
 				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
 

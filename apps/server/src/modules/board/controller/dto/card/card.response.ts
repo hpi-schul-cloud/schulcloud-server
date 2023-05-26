@@ -1,10 +1,11 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
-import { AnyContentElementResponse, TextElementResponse } from '../element';
+import { AnyContentElementResponse } from '../element';
+import { RichTextElementResponse } from '../element/rich-text-element.response';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
 
-@ApiExtraModels(TextElementResponse)
+@ApiExtraModels(RichTextElementResponse)
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
@@ -30,7 +31,7 @@ export class CardResponse {
 	@ApiProperty({
 		type: 'array',
 		items: {
-			oneOf: [{ $ref: getSchemaPath(TextElementResponse) }],
+			oneOf: [{ $ref: getSchemaPath(RichTextElementResponse) }],
 		},
 	})
 	elements: AnyContentElementResponse[];
