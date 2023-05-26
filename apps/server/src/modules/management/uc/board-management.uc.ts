@@ -1,9 +1,13 @@
-/* istanbul ignore file */
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReferenceType, BoardNode, Course, EntityId } from '@shared/domain';
+import { BoardExternalReferenceType, BoardNode, Course, EntityId, InputFormat } from '@shared/domain';
 import { ConsoleWriterService } from '@shared/infra/console';
-import { cardNodeFactory, columnBoardNodeFactory, columnNodeFactory, textElementNodeFactory } from '@shared/testing';
+import {
+	cardNodeFactory,
+	columnBoardNodeFactory,
+	columnNodeFactory,
+	richTextElementNodeFactory,
+} from '@shared/testing';
 
 @Injectable()
 export class BoardManagementUc {
@@ -11,7 +15,7 @@ export class BoardManagementUc {
 
 	async createBoard(courseId: EntityId): Promise<EntityId | undefined> {
 		if (!(await this.doesCourseExist(courseId))) {
-			return;
+			return undefined;
 		}
 
 		const context = { type: BoardExternalReferenceType.Course, id: courseId };
@@ -55,9 +59,10 @@ export class BoardManagementUc {
 
 	private createElements(amount: number, parent: BoardNode): BoardNode[] {
 		return this.generateArray(amount, (i) =>
-			textElementNodeFactory.build({
+			richTextElementNodeFactory.build({
 				parent,
-				text: `Text ${i + 1}`,
+				text: `<p><b>Text</b> ${i + 1}</p>`,
+				inputFormat: InputFormat.RICH_TEXT_CK5,
 				position: i,
 			})
 		);

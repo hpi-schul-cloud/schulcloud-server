@@ -7,6 +7,7 @@ export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, Column
 	ColumnBoardNode,
 	({ sequence }) => {
 		return {
+			title: `columnBoard #${sequence}`,
 			context: {
 				type: BoardExternalReferenceType.Course,
 				id: new ObjectId().toHexString(),

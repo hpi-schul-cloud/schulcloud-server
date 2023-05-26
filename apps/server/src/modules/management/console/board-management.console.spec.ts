@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@shared/infra/console';
 import { ObjectId } from 'bson';
-import { BoardManagementUc } from '../uc';
+import { BoardManagementUc } from '../uc/board-management.uc';
 import { BoardManagementConsole } from './board-management.console';
 
 describe(BoardManagementConsole.name, () => {

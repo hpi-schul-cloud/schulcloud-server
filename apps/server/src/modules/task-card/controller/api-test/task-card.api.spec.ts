@@ -74,14 +74,14 @@ describe('Task-Card Controller (API)', () => {
 							content: {
 								type: 'richText',
 								value: 'rich 2',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 						{
 							content: {
 								type: 'richText',
 								value: 'rich 2',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 					],
@@ -294,14 +294,14 @@ describe('Task-Card Controller (API)', () => {
 							content: {
 								type: 'richText',
 								value: 'rich updated',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 						{
 							content: {
 								type: 'richText',
 								value: 'rich added',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 					],

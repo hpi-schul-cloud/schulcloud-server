@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, RichTextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -10,7 +10,7 @@ import {
 	columnNodeFactory,
 	courseFactory,
 	mapUserToCurrentUser,
-	textElementNodeFactory,
+	richTextElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -81,8 +81,8 @@ describe(`content element delete (api)`, () => {
 		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const element = textElementNodeFactory.buildWithId({ parent: cardNode });
-		const sibling = textElementNodeFactory.buildWithId({ parent: cardNode });
+		const element = richTextElementNodeFactory.buildWithId({ parent: cardNode });
+		const sibling = richTextElementNodeFactory.buildWithId({ parent: cardNode });
 
 		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
 		em.clear();
@@ -106,7 +106,7 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			await expect(em.findOneOrFail(TextElementNode, element.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(RichTextElementNode, element.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
@@ -115,7 +115,7 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			const siblingFromDb = await em.findOneOrFail(TextElementNode, sibling.id);
+			const siblingFromDb = await em.findOneOrFail(RichTextElementNode, sibling.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 	});

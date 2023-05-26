@@ -6,7 +6,7 @@ import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
-	textElementFactory,
+	richTextElementFactory,
 } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -98,11 +98,11 @@ describe(CardService.name, () => {
 			});
 
 			it('should throw an error if some DOs are not cards', async () => {
-				const textElements = textElementFactory.buildList(2);
-				const textElementIds = textElements.map((t) => t.id);
-				boardDoRepo.findByIds.mockResolvedValue(textElements);
+				const richTextElements = richTextElementFactory.buildList(2);
+				const richTextElementIds = richTextElements.map((t) => t.id);
+				boardDoRepo.findByIds.mockResolvedValue(richTextElements);
 
-				await expect(service.findByIds(textElementIds)).rejects.toThrow();
+				await expect(service.findByIds(richTextElementIds)).rejects.toThrow();
 			});
 		});
 	});

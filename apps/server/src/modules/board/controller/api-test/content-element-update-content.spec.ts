@@ -1,16 +1,17 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, TextElementNode } from '@shared/domain';
+import { sanitizeRichText } from '@shared/controller';
+import { BoardExternalReferenceType, InputFormat, RichTextElementNode } from '@shared/domain';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
 	courseFactory,
-	textElementNodeFactory,
+	richTextElementNodeFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 
@@ -51,7 +52,7 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const element = textElementNodeFactory.buildWithId({ parent: parentCard });
+			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 
 			await em.persistAndFlush([teacherAccount, teacherUser, parentCard, column, columnBoardNode, element]);
 			em.clear();
@@ -64,12 +65,9 @@ describe(`content element update content (api)`, () => {
 		it('should return status 204', async () => {
 			const { loggedInClient, element } = await setup();
 
-			const response = await loggedInClient
-				.put(`${element.id}/content`, {
-					data: { content: { text: 'hello world' }, type: 'text' },
-				})
-				.set('myheader', 'foo')
-				.query({ foo: 'bar' });
+			const response = await loggedInClient.put(`${element.id}/content`, {
+				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+			});
 
 			expect(response.statusCode).toEqual(204);
 		});
@@ -77,15 +75,33 @@ describe(`content element update content (api)`, () => {
 		it('should actually change content of the element', async () => {
 			const { loggedInClient, element } = await setup();
 
-			await loggedInClient.put(`${element.id}/content`, { data: { content: { text: 'hello world' }, type: 'text' } });
-			const result = await em.findOneOrFail(TextElementNode, element.id);
+			await loggedInClient.put(`${element.id}/content`, {
+				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+			});
+			const result = await em.findOneOrFail(RichTextElementNode, element.id);
 
 			expect(result.text).toEqual('hello world');
+		});
+
+		it('should sanitize rich text before changing content of the element', async () => {
+			const { loggedInClient, element } = await setup();
+
+			const text = '<iframe>rich text 1</iframe> some more text';
+
+			const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
+
+			await loggedInClient.put(`${element.id}/content`, {
+				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
+			});
+			const result = await em.findOneOrFail(RichTextElementNode, element.id);
+
+			expect(result.text).toEqual(sanitizedText);
 		});
 	});
 
 	describe('with invalid user', () => {
 		const setup = async () => {
+			await cleanupCollections(em);
 			const { teacherUser: invalidTeacherUser, teacherAccount: invalidTeacherAccount } =
 				UserAndAccountTestFactory.buildTeacher();
 
@@ -98,7 +114,7 @@ describe(`content element update content (api)`, () => {
 
 			const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 			const parentCard = cardNodeFactory.buildWithId({ parent: column });
-			const element = textElementNodeFactory.buildWithId({ parent: parentCard });
+			const element = richTextElementNodeFactory.buildWithId({ parent: parentCard });
 
 			await em.persistAndFlush([parentCard, column, columnBoardNode, element]);
 			em.clear();
@@ -112,7 +128,7 @@ describe(`content element update content (api)`, () => {
 			const { loggedInClient, element } = await setup();
 
 			const response = await loggedInClient.put(`${element.id}/content`, {
-				data: { content: { text: 'hello world' }, type: 'text' },
+				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
 			});
 
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);

@@ -127,7 +127,7 @@ describe(`board lookup (api)`, () => {
 	});
 
 	describe('with invalid user', () => {
-		it('should return status 200', async () => {
+		it('should return status 403', async () => {
 			const { columnBoardNode } = await setup();
 
 			const invalidUser = userFactory.build();

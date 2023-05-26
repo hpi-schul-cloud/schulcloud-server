@@ -123,7 +123,7 @@ describe(BoardDoAuthorizableService.name, () => {
 			});
 		});
 
-		describe('when trying to create a boardDoAuthorizable on a column', () => {
+		describe('when trying to create a boardDoAuthorizable on a column without a columnboard as root', () => {
 			const setup = () => {
 				const roles = roleFactory.buildList(1, {});
 				const teacher = userFactory.buildWithId({ roles });

@@ -36,7 +36,7 @@ describe(ColumnBoard.name, () => {
 	});
 
 	describe('set context', () => {
-		it('should store context', async () => {
+		it('should store context', () => {
 			const columnBoard = columnBoardFactory.build();
 
 			const context = { type: BoardExternalReferenceType.Course, id: new ObjectId().toHexString() };

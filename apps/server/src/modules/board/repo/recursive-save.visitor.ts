@@ -13,8 +13,8 @@ import {
 	EntityId,
 	FileElement,
 	FileElementNode,
-	TextElement,
-	TextElementNode,
+	RichTextElement,
+	RichTextElementNode,
 } from '@shared/domain';
 
 type ParentData = {
@@ -85,18 +85,19 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(card, boardNode);
 	}
 
-	visitTextElement(textElement: TextElement): void {
-		const parentData = this.parentsMap.get(textElement.id);
+	visitRichTextElement(richTextElement: RichTextElement): void {
+		const parentData = this.parentsMap.get(richTextElement.id);
 
-		const boardNode = new TextElementNode({
-			id: textElement.id,
-			text: textElement.text,
+		const boardNode = new RichTextElementNode({
+			id: richTextElement.id,
+			text: richTextElement.text,
+			inputFormat: richTextElement.inputFormat,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(textElement, boardNode);
+		this.visitChildren(richTextElement, boardNode);
 	}
 
 	visitFileElement(fileElement: FileElement): void {
