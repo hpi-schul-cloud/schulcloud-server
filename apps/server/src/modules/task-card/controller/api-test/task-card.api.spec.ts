@@ -71,14 +71,14 @@ describe('Task-Card Controller (API)', () => {
 							content: {
 								type: 'richText',
 								value: 'rich 2',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 						{
 							content: {
 								type: 'richText',
 								value: 'rich 2',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 					],
@@ -102,7 +102,7 @@ describe('Task-Card Controller (API)', () => {
 				expect(responseTaskCard.task.status.isDraft).toEqual(false);
 			});
 
-			it('should sanitize richtext on create with inputformat ck5', async () => {
+			it('should sanitize rich text on create with inputformat ck5', async () => {
 				const { account, course } = await setup();
 
 				const text = '<iframe>rich text 1</iframe> some more text';
@@ -285,14 +285,14 @@ describe('Task-Card Controller (API)', () => {
 							content: {
 								type: 'richText',
 								value: 'rich updated',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 						{
 							content: {
 								type: 'richText',
 								value: 'rich added',
-								inputFormat: 'richtext_ck5',
+								inputFormat: 'richTextCk5',
 							},
 						},
 					],
@@ -313,7 +313,7 @@ describe('Task-Card Controller (API)', () => {
 				expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
 			});
 
-			it('should sanitize richtext on update with inputformat ck5', async () => {
+			it('should sanitize rich text on update with inputformat ck5', async () => {
 				const { account, taskCard, course } = await setup();
 
 				const text = '<iframe>rich text 1</iframe> some more text';
