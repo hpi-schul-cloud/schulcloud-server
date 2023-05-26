@@ -10,6 +10,14 @@ export class FileElement extends BoardComposite<FileElementProps> {
 		this.props.caption = value;
 	}
 
+	get fileName(): string {
+		return this.props.fileName;
+	}
+
+	set fileName(value: string) {
+		this.props.fileName = value;
+	}
+
 	isAllowedAsChild(): boolean {
 		return false;
 	}
@@ -25,4 +33,5 @@ export class FileElement extends BoardComposite<FileElementProps> {
 
 export interface FileElementProps extends BoardCompositeProps {
 	caption: string;
+	fileName: string;
 }

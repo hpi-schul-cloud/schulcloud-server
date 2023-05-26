@@ -95,6 +95,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new FileElement({
 			id: boardNode.id,
 			caption: boardNode.caption,
+			fileName: boardNode.fileName,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

@@ -46,6 +46,7 @@ export class ContentElementFactory {
 		const element = new FileElement({
 			id: new ObjectId().toHexString(),
 			caption: '',
+			fileName: '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

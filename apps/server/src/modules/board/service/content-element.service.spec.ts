@@ -199,6 +199,7 @@ describe(ContentElementService.name, () => {
 
 				const content = new FileContentBody();
 				content.caption = 'this has been updated';
+				content.fileName = 'this has been updated';
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 
@@ -211,6 +212,7 @@ describe(ContentElementService.name, () => {
 				await service.update(fileElement, content);
 
 				expect(fileElement.caption).toEqual(content.caption);
+				expect(fileElement.fileName).toEqual(content.fileName);
 			});
 
 			it('should persist the element', async () => {

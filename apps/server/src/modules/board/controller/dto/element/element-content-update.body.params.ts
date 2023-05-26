@@ -27,6 +27,10 @@ export class FileContentBody {
 	@IsString()
 	@ApiProperty({})
 	caption!: string;
+
+	@IsString()
+	@ApiProperty({})
+	fileName!: string;
 }
 
 export class RichTextElementContentBody extends ElementContentBody {

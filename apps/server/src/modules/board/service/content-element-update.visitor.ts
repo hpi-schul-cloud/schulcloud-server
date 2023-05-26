@@ -43,6 +43,7 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	visitFileElement(fileElement: FileElement): void {
 		if (this.content instanceof FileContentBody) {
 			fileElement.caption = this.content.caption;
+			fileElement.fileName = this.content.fileName;
 		} else {
 			this.throwNotHandled(fileElement);
 		}

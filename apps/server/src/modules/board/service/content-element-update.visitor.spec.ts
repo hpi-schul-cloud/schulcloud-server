@@ -50,6 +50,7 @@ describe(ContentElementUpdateVisitor.name, () => {
 			const richTextElement = richTextElementFactory.build();
 			const content = new FileContentBody();
 			content.caption = 'a caption';
+			content.fileName = 'a file name';
 			const updater = new ContentElementUpdateVisitor(content);
 
 			return { richTextElement, updater };
