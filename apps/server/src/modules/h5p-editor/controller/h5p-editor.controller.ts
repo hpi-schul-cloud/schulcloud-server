@@ -3,16 +3,19 @@ import {
 	Controller,
 	ForbiddenException,
 	Get,
+	HttpStatus,
 	InternalServerErrorException,
 	Param,
 	Post,
 	Query,
 	Req,
+	Res,
+	StreamableFile,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import { H5PEditorUc } from '../uc/h5p.uc';
 import { GetH5PAjaxParams } from './dto/h5p-ajax.params';
@@ -75,7 +78,9 @@ export class H5PEditorController {
 
 	@Get('libraries/:ubername/:file(*)')
 	async getLibraryFile(@Param() params: GetH5PLibraryFileParams) {
-		return Promise.resolve(`Library Name: ${params.ubername} | File: ${params.file}`);
+		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(params.ubername, params.file);
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
 	@Get('content/:id')
@@ -84,8 +89,27 @@ export class H5PEditorController {
 	}
 
 	@Get('content/:id/:file(*)')
-	async getContentFile(@Param() params: GetH5PContentFileParams) {
-		return Promise.resolve(`Content ID: ${params.id} | File: ${params.file}`);
+	async getContentFile(@Param() params: GetH5PContentFileParams, @Req() req: Request, @Res() res: Response) {
+		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
+			params.id,
+			params.file,
+			req
+		);
+
+		if (contentRange) {
+			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
+
+			res.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': contentRangeHeader,
+			});
+
+			res.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			res.status(HttpStatus.OK);
+		}
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
 	@Get('temporary/:file')
@@ -95,7 +119,15 @@ export class H5PEditorController {
 
 	@Get('ajax')
 	async getAjax(@Query() query: GetH5PAjaxParams) {
-		return Promise.resolve(`Test: ${JSON.stringify(query)}`);
+		const response = this.h5pEditorUc.getAjax(
+			query.action,
+			query.machineName,
+			query.majorVersion,
+			query.minorVersion,
+			query.language
+		);
+
+		return response;
 	}
 
 	@Post('ajax')
@@ -108,8 +140,9 @@ export class H5PEditorController {
 
 		// Body
 		// - files
+		const result = await this.h5pEditorUc.postAjax('');
 
-		return Promise.resolve('Dummy');
+		return result;
 	}
 
 	@Get('core/:file(*)')
