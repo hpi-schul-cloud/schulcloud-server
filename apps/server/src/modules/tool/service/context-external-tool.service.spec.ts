@@ -51,9 +51,11 @@ describe('ContextExternalToolService', () => {
 	describe('deleteBySchoolExternalToolId is called', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-				const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.build();
-				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				const schoolExternalTool: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
+				const contextExternalTool1: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
 
 				return {
 					schoolExternalTool,
@@ -73,11 +75,10 @@ describe('ContextExternalToolService', () => {
 
 			it('should call deleteBySchoolExternalToolIds()', async () => {
 				const { schoolExternalToolId, contextExternalTool1, contextExternalTool2 } = setup();
-				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
 
 				await service.deleteBySchoolExternalToolId(schoolExternalToolId);
 
-				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1.id, contextExternalTool2.id]);
+				expect(contextExternalToolRepo.delete).toHaveBeenCalledWith([contextExternalTool1, contextExternalTool2]);
 			});
 		});
 	});
