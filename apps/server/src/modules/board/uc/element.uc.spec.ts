@@ -1,20 +1,32 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputFormat } from '@shared/domain';
+import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
 import { fileElementFactory, richTextElementFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ContentElementService } from '../service';
+import { AuthorizationService } from '@src/modules/authorization';
+import { ObjectId } from 'bson';
+import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
 	let module: TestingModule;
 	let uc: ElementUc;
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let elementService: DeepMocked<ContentElementService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ElementUc,
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
+				},
 				{
 					provide: ContentElementService,
 					useValue: createMock<ContentElementService>(),
@@ -27,6 +39,12 @@ describe(ElementUc.name, () => {
 		}).compile();
 
 		uc = module.get(ElementUc);
+		authorizationService = module.get(AuthorizationService);
+		authorizationService.checkPermission.mockImplementation(() => {});
+		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
+		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+		);
 		elementService = module.get(ContentElementService);
 		await setupEntities();
 	});

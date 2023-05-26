@@ -2,12 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, RichTextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	richTextElementNodeFactory,
 	userFactory,
@@ -73,8 +74,12 @@ describe(`content element move (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const column = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const parentCard = cardNodeFactory.buildWithId({ parent: column });
 		const targetCard = cardNodeFactory.buildWithId({ parent: column });
@@ -109,5 +114,17 @@ describe(`content element move (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with valid user', () => {
+		it('should return status 403', async () => {
+			const { element, targetCard } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.move(element.id, targetCard.id, 4);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });
