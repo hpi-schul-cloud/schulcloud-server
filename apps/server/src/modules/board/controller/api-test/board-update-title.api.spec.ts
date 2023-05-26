@@ -2,8 +2,14 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnBoardNode } from '@shared/domain';
-import { cleanupCollections, columnBoardNodeFactory, mapUserToCurrentUser, userFactory } from '@shared/testing';
+import { BoardExternalReferenceType, ColumnBoardNode } from '@shared/domain';
+import {
+	cleanupCollections,
+	columnBoardNodeFactory,
+	courseFactory,
+	mapUserToCurrentUser,
+	userFactory,
+} from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
@@ -65,10 +71,14 @@ describe(`board update title (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 
-		await em.persistAndFlush([user, columnBoardNode]);
+		await em.persistAndFlush([columnBoardNode]);
 		em.clear();
 
 		return { user, columnBoardNode };
@@ -98,5 +108,19 @@ describe(`board update title (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { columnBoardNode } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const newTitle = 'new title';
+
+			const response = await api.updateBoardTitle(columnBoardNode.id, newTitle);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });

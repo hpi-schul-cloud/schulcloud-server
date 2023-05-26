@@ -1,4 +1,5 @@
 import { ConsoleWriterService } from '@shared/infra/console';
+import { ObjectId } from 'bson';
 import { Command, Console } from 'nestjs-console';
 import { BoardManagementUc } from '../uc/board-management.uc';
 
@@ -7,14 +8,18 @@ export class BoardManagementConsole {
 	constructor(private consoleWriter: ConsoleWriterService, private boardManagementUc: BoardManagementUc) {}
 
 	@Command({
-		command: 'create-boards',
-		options: [],
-		description: 'create some boards',
+		command: 'create-board [courseId]',
+		description: 'create a multi-column-board',
 	})
-	async createBoards(): Promise<string> {
-		const boardId = await this.boardManagementUc.createBoards();
-		const report = `creation of boards is completed (${boardId ?? ''})`;
-		this.consoleWriter.info(report);
-		return report;
+	async createBoard(courseId = ''): Promise<void> {
+		if (!ObjectId.isValid(courseId)) {
+			this.consoleWriter.info('Error: please provide a valid courseId this board should be assigned to.');
+			return;
+		}
+
+		const boardId = await this.boardManagementUc.createBoard(courseId);
+		if (boardId) {
+			this.consoleWriter.info(`Success: board creation is completed! The new boardId is "${boardId ?? ''}"`);
+		}
 	}
 }

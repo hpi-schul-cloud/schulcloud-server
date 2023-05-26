@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotImplementedException } fro
 import { BaseDO, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import {
-	BoardNodeRule,
+	BoardDoRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
@@ -31,7 +31,7 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardNodeRule: BoardNodeRule
+		private readonly boardDoRule: BoardDoRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -44,7 +44,7 @@ export class RuleManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-			this.boardNodeRule,
+			this.boardDoRule,
 		];
 	}
 

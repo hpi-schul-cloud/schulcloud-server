@@ -1,5 +1,5 @@
+export * from './board-do-authorizable.service';
 export * from './board-do.service';
-export * from './board-node.service';
 export * from './card.service';
 export * from './column-board.service';
 export * from './column.service';

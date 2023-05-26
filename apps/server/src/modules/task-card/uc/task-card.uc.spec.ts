@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { CardType, Course, InputFormat, Permission, TaskCard, TaskWithStatusVo, User } from '@shared/domain';
 import { CardElementType, RichTextCardElement } from '@shared/domain/entity/card-element.entity';
-import { RichText } from '@shared/domain/types/richtext.types';
+import { RichText } from '@shared/domain/types/rich-text.types';
 import { CardElementRepo, CourseRepo, RichTextCardElementRepo, TaskCardRepo, UserRepo } from '@shared/repo';
 import {
 	courseFactory,
@@ -172,7 +172,7 @@ describe('TaskCardUc', () => {
 	describe('create', () => {
 		let taskCardCreateParams: ITaskCardCRUD;
 		const title = 'text title';
-		const richText = ['test richtext 1', 'test richtext 2'];
+		const richText = ['test rich text 1', 'test rich text 2'];
 		const tomorrow = new Date(Date.now() + 86400000);
 		const inTwoDays = new Date(Date.now() + 172800000);
 		const inThreeDays = new Date(Date.now() + 259200000);
@@ -382,7 +382,7 @@ describe('TaskCardUc', () => {
 	describe('update', () => {
 		let taskCardUpdateParams: ITaskCardCRUD;
 		const title = 'changed text title';
-		const richText = ['changed richtext 1', 'changed richtext 2'];
+		const richText = ['changed rich text 1', 'changed rich text 2'];
 		const tomorrow = new Date(Date.now() + 86400000);
 		const inTwoDays = new Date(Date.now() + 172800000);
 		const inThreeDays = new Date(Date.now() + 259200000);
