@@ -3,10 +3,8 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroomElement } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import { BoardElement, BoardElementType } from './boardelement.entity';
+import { BoardElement, BoardElementReference } from './boardelement.entity';
 import type { Course } from './course.entity';
-import type { Lesson } from './lesson.entity';
-import type { Task } from './task.entity';
 
 export type BoardProps = {
 	references: BoardElement[];
@@ -65,60 +63,24 @@ export class Board extends BaseEntityWithTimestamps {
 		return element;
 	}
 
-	syncTasksFromList(taskList: Task[]) {
-		// should this be in an external domain service, to not having to know about tasks?
-		this.removeTasksNotInList(taskList);
-		this.addTasksOnList(taskList);
+	syncBoardElementReferences(boardElementTargets: BoardElementReference[]) {
+		this.removeDeletedReferences(boardElementTargets);
+		this.appendNotContainedBoardElements(boardElementTargets);
 	}
 
-	syncLessonsFromList(lessonList: Lesson[]) {
-		this.removeLessonsNotInList(lessonList);
-		this.addLessonsOnList(lessonList);
+	private removeDeletedReferences(boardElementTargets: BoardElementReference[]) {
+		const references = this.references.getItems();
+		const onlyExistingReferences = references.filter((ref) => boardElementTargets.includes(ref.target));
+		this.references.set(onlyExistingReferences);
 	}
 
-	private removeTasksNotInList(taskList: Task[]) {
-		const taskReferences = this.references.getItems().filter((ref) => ref.boardElementType === BoardElementType.Task);
-		taskReferences.forEach((reference) => {
-			// TODO: use typescript guard
-			if (!taskList.includes(reference.target as Task)) {
-				this.references.remove(reference);
-			}
-		});
-	}
+	private appendNotContainedBoardElements(boardElementTargets: BoardElementReference[]): void {
+		const references = this.references.getItems();
+		const isNotContained = (element) => !references.some((ref) => ref.target === element);
+		const mapToBoardElement = (target) => BoardElement.FromBoardElementTarget(target);
 
-	private removeLessonsNotInList(lessonList: Lesson[]) {
-		const lessonReferences = this.references
-			.getItems()
-			.filter((ref) => ref.boardElementType === BoardElementType.Lesson);
-		lessonReferences.forEach((reference) => {
-			// TODO: use typescript guard
-			if (!lessonList.includes(reference.target as Lesson)) {
-				this.references.remove(reference);
-			}
-		});
-	}
-
-	private addTasksOnList(taskList: Task[]) {
-		const current = this.references.getItems();
-		const tasksToAdd = taskList.filter((task) => {
-			const contained = current.find((ref) => ref.boardElementType === BoardElementType.Task && ref.target === task);
-			return !contained;
-		});
-		const elementsToAdd = tasksToAdd.map((task) => BoardElement.FromTask(task));
-		const newList = [...elementsToAdd, ...current];
-		this.references.set(newList);
-	}
-
-	private addLessonsOnList(lessonList: Lesson[]) {
-		const current = this.references.getItems();
-		const lessonsToAdd = lessonList.filter((lesson) => {
-			const contained = current.find(
-				(ref) => ref.boardElementType === BoardElementType.Lesson && ref.target === lesson
-			);
-			return !contained;
-		});
-		const elementsToAdd = lessonsToAdd.map((lesson) => BoardElement.FromLesson(lesson));
-		const newList = [...elementsToAdd, ...current];
+		const elementsToAdd = boardElementTargets.filter(isNotContained).map(mapToBoardElement);
+		const newList = [...elementsToAdd, ...references];
 		this.references.set(newList);
 	}
 }

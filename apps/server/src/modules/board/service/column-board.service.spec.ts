@@ -46,7 +46,7 @@ describe(ColumnBoardService.name, () => {
 		return { board, boardId, column };
 	};
 
-	describe('finding a board', () => {
+	describe('findById', () => {
 		it('should call the board do repository', async () => {
 			const { boardId, board } = setup();
 			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
@@ -66,7 +66,19 @@ describe(ColumnBoardService.name, () => {
 		});
 	});
 
-	describe('deleting a board', () => {
+	describe('findAllByParentReference', () => {
+		it.todo('should return boards that are referencing the given course', async () => {
+			// WIP : BC-3573 : add test
+		});
+	});
+
+	describe('create', () => {
+		it.todo('should create a fresh column board referencing the given course', async () => {
+			// WIP : BC-3573 : add test
+		});
+	});
+
+	describe('delete', () => {
 		it('should call the service to delete the board', async () => {
 			const { board } = setup();
 

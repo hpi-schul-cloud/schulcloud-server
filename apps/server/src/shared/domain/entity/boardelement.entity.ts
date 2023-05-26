@@ -1,14 +1,16 @@
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
-import { Lesson } from './lesson.entity';
-import { Task } from './task.entity';
+import { ColumnBoard } from '../domainobject';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { Lesson } from './lesson.entity';
+import { Task } from './task.entity';
 
-export type BoardElementReference = Task | Lesson;
+export type BoardElementReference = Task | Lesson | ColumnBoard;
 
 export enum BoardElementType {
 	'Task' = 'task',
 	'Lesson' = 'lesson',
+	'ColumnBoard' = 'columnboard',
 }
 
 export type BoardElementProps = {
@@ -32,15 +34,32 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 		Object.assign(this, { target: props.target });
 	}
 
-	static FromTask(task: Task): BoardElement {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	static FromBoardElementTarget(boardElementTarget: BoardElementReference): BoardElement {
+		if (boardElementTarget instanceof Task) {
+			return BoardElement.FromTask(boardElementTarget);
+		} else if (boardElementTarget instanceof Lesson) {
+			return BoardElement.FromLesson(boardElementTarget);
+		} else if (boardElementTarget instanceof ColumnBoard) {
+			return BoardElement.FromColumnBoard(boardElementTarget);
+		} else {
+			throw new Error('not a valid boardElementReference');
+		}
+	}
+
+	static FromTask(task: Task): TaskBoardElement {
 		const element = new TaskBoardElement({ target: task });
 		return element;
 	}
 
-	static FromLesson(lesson: Lesson): BoardElement {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+	static FromLesson(lesson: Lesson): LessonBoardElement {
 		const element = new LessonBoardElement({ target: lesson });
+		return element;
+	}
+
+	static FromColumnBoard(columnBoard: ColumnBoard): ColumnboardBoardElement {
+		console.log('FromColumnBoard', columnBoard);
+		const element = new ColumnboardBoardElement({ target: columnBoard });
+		console.log('element', element);
 		return element;
 	}
 }
@@ -68,4 +87,15 @@ export class LessonBoardElement extends BoardElement {
 
 	@ManyToOne('Lesson')
 	target!: Lesson;
+}
+
+@Entity({ discriminatorValue: BoardElementType.ColumnBoard })
+export class ColumnboardBoardElement extends BoardElement {
+	constructor(props: { target: ColumnBoard }) {
+		super(props);
+		this.boardElementType = BoardElementType.ColumnBoard;
+	}
+
+	@ManyToOne('ColumnBoard')
+	target!: ColumnBoard;
 }

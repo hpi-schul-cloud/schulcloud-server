@@ -56,7 +56,8 @@ export class BoardCopyService {
 		destinationCourse: Course
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
-			if (element.target === undefined || element.target.name === undefined) {
+			// WIP : BC-3573 :  check what needs to be done for BoardElementType.ColumnBoard and decide: do || not-do
+			if (element.target === undefined) {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
 

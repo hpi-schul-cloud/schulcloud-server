@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { ColumnBoardService } from '@src/modules/board';
 import { TaskService } from '@src/modules/task/service';
 import { RoomsService } from './rooms.service';
 
@@ -11,6 +12,7 @@ describe('rooms service', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let taskService: DeepMocked<TaskService>;
 	let boardRepo: DeepMocked<BoardRepo>;
+	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -34,11 +36,16 @@ describe('rooms service', () => {
 					provide: BoardRepo,
 					useValue: createMock<BoardRepo>(),
 				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
+				},
 			],
 		}).compile();
 		roomsService = module.get(RoomsService);
 		lessonRepo = module.get(LessonRepo);
 		taskService = module.get(TaskService);
+		columnBoardService = module.get(ColumnBoardService);
 		boardRepo = module.get(BoardRepo);
 	});
 
@@ -50,13 +57,11 @@ describe('rooms service', () => {
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });
 
-			board.syncLessonsFromList(lessons);
-			board.syncTasksFromList(tasks);
+			board.syncBoardElementReferences([...tasks, ...lessons]);
 
 			const tasksSpy = taskService.findBySingleParent.mockResolvedValue([tasks, 3]);
 			const lessonsSpy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, 3]);
-			const syncLessonsSpy = jest.spyOn(board, 'syncLessonsFromList');
-			const syncTasksSpy = jest.spyOn(board, 'syncTasksFromList');
+			const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
 			const saveSpy = boardRepo.save.mockResolvedValue();
 
 			return {
@@ -67,8 +72,7 @@ describe('rooms service', () => {
 				lessons,
 				lessonsSpy,
 				tasksSpy,
-				syncLessonsSpy,
-				syncTasksSpy,
+				syncBoardElementReferencesSpy,
 				saveSpy,
 			};
 		};
@@ -85,16 +89,10 @@ describe('rooms service', () => {
 			expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id);
 		});
 
-		it('should sync boards lessons with fetched lessons', async () => {
-			const { board, room, user, lessons, syncLessonsSpy } = setup();
+		it('should sync boards lessons with fetched tasks and lessons', async () => {
+			const { board, room, user, tasks, lessons, syncBoardElementReferencesSpy } = setup();
 			await roomsService.updateBoard(board, room.id, user.id);
-			expect(syncLessonsSpy).toHaveBeenCalledWith(lessons);
-		});
-
-		it('should sync boards tasks with fetched tasks', async () => {
-			const { board, room, user, tasks, syncTasksSpy } = setup();
-			await roomsService.updateBoard(board, room.id, user.id);
-			expect(syncTasksSpy).toHaveBeenCalledWith(tasks);
+			expect(syncBoardElementReferencesSpy).toHaveBeenCalledWith([...lessons, ...tasks]);
 		});
 
 		it('should persist board', async () => {

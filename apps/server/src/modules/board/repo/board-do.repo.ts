@@ -1,6 +1,13 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
+import {
+	AnyBoardDo,
+	BoardExternalReferenceType,
+	BoardNode,
+	ColumnBoard,
+	ColumnBoardNode,
+	EntityId,
+} from '@shared/domain';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -54,6 +61,25 @@ export class BoardDoRepo {
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
+	}
+
+	async findByExternalParentId(parentId: EntityId, depth?: number): Promise<ColumnBoard[]> {
+		const _contextId = new ObjectId(parentId);
+		const boardNodes = await this.em.find(ColumnBoardNode, {
+			_contextId,
+			_contextType: BoardExternalReferenceType.Course,
+		});
+
+		const promises = boardNodes.map((boardNode) => {
+			return this.boardNodeRepo.findDescendants(boardNode, depth).then((descendants) => {
+				const columnBoard = new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
+				return columnBoard as ColumnBoard;
+			});
+		});
+
+		const domainObjects = await Promise.all(promises);
+
+		return domainObjects;
 	}
 
 	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {

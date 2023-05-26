@@ -1,6 +1,6 @@
-import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { columnBoardFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { BoardElementType } from '.';
-import { LessonBoardElement, TaskBoardElement } from './boardelement.entity';
+import { ColumnboardBoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 
 describe('TaskBoardElementEntity', () => {
 	beforeAll(async () => {
@@ -30,6 +30,22 @@ describe('LessonBoardElementEntity', () => {
 			const boardElement = new LessonBoardElement({ target: lesson });
 
 			expect(boardElement.boardElementType).toEqual(BoardElementType.Lesson);
+		});
+	});
+});
+
+describe('ColumnboardBoardElementEntity', () => {
+	beforeAll(async () => {
+		await setupEntities();
+	});
+
+	describe('constructor', () => {
+		it('should have correct type', () => {
+			const columnBoard = columnBoardFactory.build();
+
+			const boardElement = new ColumnboardBoardElement({ target: columnBoard });
+
+			expect(boardElement.boardElementType).toEqual(BoardElementType.ColumnBoard);
 		});
 	});
 });

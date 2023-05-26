@@ -1,6 +1,14 @@
-import { TaskBoardElement, LessonBoardElement, Task, Lesson } from '@shared/domain';
-import { lessonFactory } from './lesson.factory';
+import {
+	ColumnBoard,
+	ColumnboardBoardElement,
+	Lesson,
+	LessonBoardElement,
+	Task,
+	TaskBoardElement,
+} from '@shared/domain';
 import { BaseFactory } from './base.factory';
+import { columnBoardFactory } from './domainobject';
+import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
@@ -13,5 +21,12 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 	LessonBoardElement,
 	() => {
 		return { target: lessonFactory.build() };
+	}
+);
+
+export const columnboardBoardElementFactory = BaseFactory.define<ColumnboardBoardElement, { target: ColumnBoard }>(
+	ColumnboardBoardElement,
+	() => {
+		return { target: columnBoardFactory.build() };
 	}
 );

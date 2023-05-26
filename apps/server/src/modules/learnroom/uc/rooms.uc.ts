@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardService } from '../service/legacy-board-service';
 import { RoomsService } from '../service/rooms.service';
 import { RoomBoardDTO } from '../types/room-board.types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
@@ -14,13 +15,14 @@ export class RoomsUc {
 		private readonly boardRepo: BoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
-		private readonly roomsService: RoomsService
+		private readonly roomsService: RoomsService,
+		private readonly legacyBoardService: LegacyBoardService
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
 		const course = await this.courseRepo.findOne(roomId, userId);
-		let board = await this.boardRepo.findByCourseId(course.id);
+		let board = await this.legacyBoardService.findByCourseId(course.id);
 
 		board = await this.roomsService.updateBoard(board, roomId, userId);
 
@@ -39,7 +41,7 @@ export class RoomsUc {
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
-		const board = await this.boardRepo.findByCourseId(course.id);
+		const board = await this.legacyBoardService.findByCourseId(course.id);
 		const element = board.getByTargetId(elementId);
 		if (visibility) {
 			element.publish();
@@ -55,7 +57,7 @@ export class RoomsUc {
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
-		const board = await this.boardRepo.findByCourseId(course.id);
+		const board = await this.legacyBoardService.findByCourseId(course.id);
 		board.reorderElements(orderedList);
 		await this.boardRepo.save(board);
 	}
