@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	Body,
 	Controller,
 	ForbiddenException,
 	Get,
@@ -11,14 +12,22 @@ import {
 	Req,
 	Res,
 	StreamableFile,
+	UploadedFiles,
+	UseInterceptors,
 } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 
 import { H5PEditorUc } from '../uc/h5p.uc';
-import { GetH5PAjaxParams } from './dto/h5p-ajax.params';
+import {
+	GetH5PAjaxParams,
+	H5PAjaxPostBody,
+	H5PAjaxPostBodyTransformPipe,
+	PostH5PAjaxQueryParams,
+} from './dto/h5p-ajax.params';
 import { GetH5PContentFileParams } from './dto/h5p-content-file.params';
 import { GetH5PLibraryFileParams } from './dto/h5p-library-file.params';
 import { GetH5PStaticCoreFileParams, GetH5PStaticEditorCoreFileParams } from './dto/h5p-static-files.params';
@@ -77,15 +86,19 @@ export class H5PEditorController {
 	// - static files for editor	(e.g. GET `/editor/*`)
 
 	@Get('libraries/:ubername/:file(*)')
-	async getLibraryFile(@Param() params: GetH5PLibraryFileParams) {
+	async getLibraryFile(@Param() params: GetH5PLibraryFileParams, @Req() req: Request) {
 		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(params.ubername, params.file);
+
+		req.on('close', () => data.destroy());
 
 		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
 	@Get('content/:id')
 	async getContentParameters(@Param('id') id: string) {
-		return Promise.resolve(`Content ID: ${id}`);
+		const content = await this.h5pEditorUc.getContentParameters(id);
+
+		return content;
 	}
 
 	@Get('content/:id/:file(*)')
@@ -109,12 +122,31 @@ export class H5PEditorController {
 			res.status(HttpStatus.OK);
 		}
 
+		req.on('close', () => data.destroy());
+
 		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
 	@Get('temporary/:file')
-	async getTemporaryFile(@Param('file') file: string) {
-		return Promise.resolve(`Temporary File ID: ${file}`);
+	async getTemporaryFile(@Param('file') file: string, @Req() req: Request, @Res() res: Response) {
+		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(file, req);
+
+		if (contentRange) {
+			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
+
+			res.set({
+				'Accept-Ranges': 'bytes',
+				'Content-Range': contentRangeHeader,
+			});
+
+			res.status(HttpStatus.PARTIAL_CONTENT);
+		} else {
+			res.status(HttpStatus.OK);
+		}
+
+		req.on('close', () => data.destroy());
+
+		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
 	@Get('ajax')
@@ -131,7 +163,23 @@ export class H5PEditorController {
 	}
 
 	@Post('ajax')
-	async postAjax(@Req() req: Request) {
+	@UseInterceptors(
+		AnyFilesInterceptor({
+			limits: { files: 2 },
+			fileFilter: (_req, file, callback) => {
+				if (['file', 'h5p'].includes(file.fieldname)) {
+					callback(null, true);
+				} else {
+					callback(new BadRequestException('File not allowed'), false);
+				}
+			},
+		})
+	)
+	async postAjax(
+		@Body(H5PAjaxPostBodyTransformPipe) body: H5PAjaxPostBody,
+		@Query() query: PostH5PAjaxQueryParams,
+		@UploadedFiles() files: Express.Multer.File[]
+	) {
 		// Query
 		// - action
 		// - language?
@@ -140,7 +188,8 @@ export class H5PEditorController {
 
 		// Body
 		// - files
-		const result = await this.h5pEditorUc.postAjax('');
+
+		const result = await this.h5pEditorUc.postAjax(query, body, files);
 
 		return result;
 	}

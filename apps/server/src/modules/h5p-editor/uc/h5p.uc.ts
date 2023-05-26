@@ -1,8 +1,10 @@
 import { H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import busboy from 'busboy';
 import { Request } from 'express';
 import { Readable } from 'stream';
 
+import { H5PAjaxPostBody, PostH5PAjaxQueryParams } from '../controller/dto/h5p-ajax.params';
 import { H5PEditorService } from '../service/h5p-editor.service';
 import { H5PPlayerService } from '../service/h5p-player.service';
 
@@ -12,8 +14,8 @@ const dummyUser = {
 	canInstallRecommended: true,
 	canUpdateAndInstallLibraries: true,
 	email: '',
-	id: '',
-	name: '',
+	id: 'dummyId',
+	name: 'Dummy User',
 	type: '',
 };
 
@@ -21,7 +23,7 @@ const dummyUser = {
 export class H5PEditorUc {
 	private h5pAjaxEndpoint: H5PAjaxEndpoint;
 
-	constructor(private h5pEditorService: H5PEditorService, private h5pPlayerService: H5PPlayerService) {
+	constructor(public readonly h5pEditorService: H5PEditorService, private h5pPlayerService: H5PPlayerService) {
 		this.h5pAjaxEndpoint = new H5PAjaxEndpoint(h5pEditorService.h5pEditor);
 	}
 
@@ -83,11 +85,47 @@ export class H5PEditorUc {
 		}
 	}
 
-	// Todo
-	public async postAjax(action: string) {
-		const result = this.h5pAjaxEndpoint.postAjax(action);
+	public async postAjax(query: PostH5PAjaxQueryParams, body: H5PAjaxPostBody, files: Express.Multer.File[]) {
+		try {
+			const filesFile = files.find((file) => file.fieldname === 'file');
+			const libraryUploadFile = files.find((file) => file.fieldname === 'h5p');
 
-		return result;
+			const result = await this.h5pAjaxEndpoint.postAjax(
+				query.action,
+				body,
+				undefined, // Todo: Language
+				dummyUser, // Todo: User
+				filesFile && {
+					data: filesFile.buffer,
+					mimetype: filesFile.mimetype,
+					name: filesFile.originalname,
+					size: filesFile.size,
+				},
+				undefined, // Todo: Translation callback
+				undefined, // Todo: Id
+				libraryUploadFile && {
+					data: libraryUploadFile.buffer,
+					mimetype: libraryUploadFile.mimetype,
+					name: libraryUploadFile.originalname,
+					size: libraryUploadFile.size,
+				},
+				undefined // Todo: HubID?
+			);
+
+			return result;
+		} catch (err) {
+			throw this.mapH5pError(err);
+		}
+	}
+
+	public async getContentParameters(contentId: string) {
+		try {
+			const result = await this.h5pAjaxEndpoint.getContentParameters(contentId, dummyUser);
+
+			return result;
+		} catch (err) {
+			throw this.mapH5pError(err);
+		}
 	}
 
 	public async getContentFile(
@@ -100,28 +138,64 @@ export class H5PEditorUc {
 		contentLength: number;
 		contentRange?: { start: number; end: number };
 	}> {
-		const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getContentFile(
-			contentId,
-			file,
-			dummyUser,
-			this.getRange(req)
-		);
+		try {
+			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getContentFile(
+				contentId,
+				file,
+				dummyUser,
+				this.getRange(req)
+			);
 
-		return {
-			data: stream,
-			contentType: mimetype,
-			contentLength: stats.size,
-			contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
-		};
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: stats.size,
+				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
+			};
+		} catch (err) {
+			throw this.mapH5pError(err);
+		}
 	}
 
 	public async getLibraryFile(ubername: string, file: string) {
-		const { mimetype, stats, stream } = await this.h5pAjaxEndpoint.getLibraryFile(ubername, file);
+		try {
+			const { mimetype, stats, stream } = await this.h5pAjaxEndpoint.getLibraryFile(ubername, file);
 
-		return {
-			data: stream,
-			contentType: mimetype,
-			contentLength: stats.size,
-		};
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: stats.size,
+			};
+		} catch (err) {
+			throw this.mapH5pError(err);
+		}
+	}
+
+	public async getTemporaryFile(
+		file: string,
+		req: Request
+	): Promise<{
+		data: Readable;
+		contentType: string;
+		contentLength: number;
+		contentRange?: { start: number; end: number };
+	}> {
+		try {
+			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
+				file,
+				dummyUser,
+				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
+				this.getRange(req)
+			);
+
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: stats.size,
+				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
+			};
+		} catch (err) {
+			throw this.mapH5pError(err);
+		}
 	}
 }
