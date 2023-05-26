@@ -132,7 +132,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:16</a></div>
                             </td>
                         </tr>
 
@@ -231,8 +231,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -302,8 +302,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:41</a></div>
                 </td>
             </tr>
 
@@ -373,8 +373,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="23"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:23</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="24"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -454,8 +454,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="82"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:82</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:83</a></div>
                 </td>
             </tr>
 
@@ -523,8 +523,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:79</a></div>
                 </td>
             </tr>
 
@@ -594,8 +594,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:56</a></div>
                 </td>
             </tr>
 
@@ -665,8 +665,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/authentication/services/authentication.service.ts:75</a></div>
                 </td>
             </tr>
 
@@ -720,7 +720,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
@@ -730,6 +730,7 @@ import type { IServerConfig } from &#x27;@src/modules/server&#x27;;
 import { randomUUID } from &#x27;crypto&#x27;;
 import jwt, { JwtPayload } from &#x27;jsonwebtoken&#x27;;
 import { BruteForceError } from &#x27;../errors/brute-force.error&#x27;;
+import { UnauthorizedLoggableException } from &#x27;../errors/unauthorized.loggable-exception&#x27;;
 import { CreateJwtPayload } from &#x27;../interface/jwt-payload&#x27;;
 import { LoginDto } from &#x27;../uc/dto&#x27;;
 
@@ -753,7 +754,7 @@ export class AuthenticationService {
 		}
 
 		if (!account) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedLoggableException(username, systemId);
 		}
 
 		return account;
