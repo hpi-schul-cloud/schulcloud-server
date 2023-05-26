@@ -2,11 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { ColumnBoardNode, ColumnNode, EntityId } from '@shared/domain';
+import { BoardExternalReferenceType, ColumnBoardNode, ColumnNode, EntityId } from '@shared/domain';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
@@ -71,11 +72,19 @@ describe(`board delete (api)`, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const user = userFactory.build();
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 
-		await em.persistAndFlush([user, columnBoardNode, columnNode]);
+		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
+
+		const columnBoardNode = columnBoardNodeFactory.build({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
+		await em.persistAndFlush([columnBoardNode]);
+
+		const columnNode = columnNodeFactory.build({ parent: columnBoardNode });
+		await em.persistAndFlush([columnNode]);
+
 		em.clear();
 
 		return { user, columnBoardNode, columnNode };
@@ -110,5 +119,17 @@ describe(`board delete (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { columnBoardNode } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.delete(columnBoardNode.id);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });

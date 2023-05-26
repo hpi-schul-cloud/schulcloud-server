@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId, Submission } from '@shared/domain';
 import { SubmissionRepo } from '@shared/repo';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
 @Injectable()
 export class SubmissionService {
@@ -21,8 +21,7 @@ export class SubmissionService {
 	}
 
 	async delete(submission: Submission): Promise<void> {
-		const params = FileParamBuilder.build(submission.school.id, submission);
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(params);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(submission.id);
 
 		await this.submissionRepo.delete(submission);
 	}

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Submission, User } from '@shared/domain/entity';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
-import { Action, AuthorizableObject, AuthorizationContext, Rule } from '@src/modules/authorization/types';
+import { Action, AuthorizationContext, Rule } from '@src/modules/authorization/types';
 import { TaskRule } from './task.rule';
 
 @Injectable()
 export class SubmissionRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly taskRule: TaskRule) {}
 
-	public isApplicable(user: User, entity: AuthorizableObject): boolean {
+	public isApplicable(user: User, entity: Submission): boolean {
 		const isMatched = entity instanceof Submission;
 
 		return isMatched;

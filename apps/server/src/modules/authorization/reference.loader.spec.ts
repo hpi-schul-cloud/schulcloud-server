@@ -15,9 +15,9 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeService } from '@src/modules/board';
+import { BoardDoAuthorizableService } from '@src/modules/board';
 import { ReferenceLoader } from './reference.loader';
-import { AllowedAuthorizationEntityType } from './types';
+import { AuthorizableReferenceType } from './types';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -30,7 +30,7 @@ describe('reference.loader', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let boardNodeService: DeepMocked<BoardNodeService>;
+	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -76,8 +76,8 @@ describe('reference.loader', () => {
 					useValue: createMock<SchoolExternalToolRepo>(),
 				},
 				{
-					provide: BoardNodeService,
-					useValue: createMock<BoardNodeService>(),
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
 				},
 			],
 		}).compile();
@@ -92,7 +92,7 @@ describe('reference.loader', () => {
 		teamsRepo = await module.get(TeamsRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
-		boardNodeService = await module.get(BoardNodeService);
+		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
 	});
 
 	afterEach(() => {
@@ -105,77 +105,77 @@ describe('reference.loader', () => {
 
 	describe('loadEntity', () => {
 		it('should call taskRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.Task, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Task, entityId);
 
 			expect(taskRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call courseRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.Course, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Course, entityId);
 
 			expect(courseRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call courseGroupRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.CourseGroup, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.CourseGroup, entityId);
 
 			expect(courseGroupRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.School, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.School, entityId);
 
 			expect(schoolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call userRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
 			expect(userRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call lessonRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.Lesson, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Lesson, entityId);
 
 			expect(lessonRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call teamsRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.Team, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Team, entityId);
 
 			expect(teamsRepo.findById).toBeCalledWith(entityId, true);
 		});
 
 		it('should call submissionRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.Submission, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.Submission, entityId);
 
 			expect(submissionRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call schoolExternalToolRepo.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.SchoolExternalTool, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.SchoolExternalTool, entityId);
 
 			expect(schoolExternalToolRepo.findById).toBeCalledWith(entityId);
 		});
 
 		it('should call findNodeService.findById', async () => {
-			await service.loadEntity(AllowedAuthorizationEntityType.BoardNode, entityId);
+			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
-			expect(boardNodeService.findById).toBeCalledWith(entityId);
+			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
 		});
 
-		it('should return entity', async () => {
+		it('should return authorizable object', async () => {
 			const user = userFactory.build();
 			userRepo.findById.mockResolvedValue(user);
 
-			const result = await service.loadEntity(AllowedAuthorizationEntityType.User, entityId);
+			const result = await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
 			expect(result).toBe(user);
 		});
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
-				service.loadEntity('NotAllowedEntityType' as AllowedAuthorizationEntityType, entityId)
+				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
 		});
 	});
@@ -199,7 +199,7 @@ describe('reference.loader', () => {
 				expect(userRepo.findById).toBeCalledWith(user.id, true);
 			});
 
-			it('should return user entity', async () => {
+			it('should return user', async () => {
 				const { user } = setup();
 
 				const result = await service.getUserWithPermissions(user.id);

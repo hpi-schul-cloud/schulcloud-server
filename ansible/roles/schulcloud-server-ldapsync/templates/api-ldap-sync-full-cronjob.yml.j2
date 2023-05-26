@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
@@ -12,16 +12,14 @@ spec:
     spec:
       activeDeadlineSeconds: {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }}
       template:
-        metadata:
-          labels:
-            app: api-ldapsync-cronjob
         spec:
           containers:
           - name: api-ldapsync-cronjob
-            image: schulcloud/infra-tools:latest
+            image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
             envFrom:
+            - configMapRef:
+                name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['/bin/sh','-c']
-            args: ['curl --max-time {{ SERVER_LDAP_SYNC_FULL_CRONJOB_TIMEOUT|default("39600", true) }} -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_LDAP_SYNC_SVC|default("api-ldapsync-svc", true) }}:3030/api/v1/sync?target=ldap&forceFullSync=true" | python3 -m json.tool']
+            command: ['/schulcloud-server/scripts/ldapSync.sh']
           restartPolicy: OnFailure

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules';
+import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ToolContextType } from '../interface';
@@ -90,7 +90,7 @@ describe('ContextExternalToolUc', () => {
 
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
-					AllowedAuthorizationEntityType.Course,
+					AuthorizableReferenceType.Course,
 					contextExternalTool.contextId,
 					context
 				);
@@ -102,6 +102,52 @@ describe('ContextExternalToolUc', () => {
 				await uc.createContextExternalTool(userId, contextExternalTool);
 
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+		});
+	});
+
+	describe('deleteContextExternalTool is called', () => {
+		describe('when contextExternalTool is given and user has permission ', () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
+
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId();
+
+				const context = {
+					action: Action.write,
+					requiredPermissions: [Permission.CONTEXT_TOOL_ADMIN],
+				};
+
+				authorizationService.checkPermissionByReferences.mockResolvedValue();
+				contextExternalToolService.getContextExternalToolById.mockResolvedValue(contextExternalTool);
+
+				return {
+					contextExternalTool,
+					contextExternalToolId: contextExternalTool.id as EntityId,
+					userId,
+					context,
+				};
+			};
+
+			it('should call contextExternalToolService', async () => {
+				const { contextExternalTool, contextExternalToolId, userId } = setup();
+
+				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+
+				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should call authorizationService', async () => {
+				const { contextExternalTool, contextExternalToolId, userId, context } = setup();
+
+				await uc.deleteContextExternalTool(userId, contextExternalToolId);
+
+				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+					userId,
+					AuthorizableReferenceType.Course,
+					contextExternalTool.contextId,
+					context
+				);
 			});
 		});
 	});

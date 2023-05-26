@@ -116,32 +116,43 @@ describe('FilesStorageClientAdapterService', () => {
 	});
 
 	describe('deleteFilesOfParent', () => {
-		it('Should call all steps.', async () => {
-			const schoolId = 'school123';
-			const task = taskFactory.buildWithId();
+		describe('when files are deleted successfully', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
 
-			const param = FileParamBuilder.build(schoolId, task);
+				const spy = jest
+					.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+					.mockImplementation(() => []);
 
-			const spy = jest
-				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
-				.mockImplementation(() => []);
+				return { parentId, spy };
+			};
 
-			await service.deleteFilesOfParent(param);
+			it('Should call all steps.', async () => {
+				const { parentId, spy } = setup();
 
-			expect(client.deleteFilesOfParent).toHaveBeenCalledWith(param);
-			expect(spy).toBeCalled();
+				await service.deleteFilesOfParent(parentId);
 
-			spy.mockRestore();
+				expect(client.deleteFilesOfParent).toHaveBeenCalledWith(parentId);
+				expect(spy).toBeCalled();
+
+				spy.mockRestore();
+			});
 		});
 
-		it('Should call error mapper if throw an error.', async () => {
-			const schoolId = 'school123';
-			const task = taskFactory.buildWithId();
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
 
-			const param = FileParamBuilder.build(schoolId, task);
-			client.deleteFilesOfParent.mockRejectedValue(new Error());
+				client.deleteFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.deleteFilesOfParent(param)).rejects.toThrowError();
+				return { parentId };
+			};
+
+			it('Should call error mapper if throw an error.', async () => {
+				const { parentId } = setup();
+
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
+			});
 		});
 	});
 });

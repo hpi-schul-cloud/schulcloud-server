@@ -1,12 +1,12 @@
-import { AllowedAuthorizationEntityType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@src/modules/authorization';
 import { ToolContextType } from '../../interface';
 
-const typeMapping: Record<ToolContextType, AllowedAuthorizationEntityType> = {
-	[ToolContextType.COURSE]: AllowedAuthorizationEntityType.Course,
+const typeMapping: Record<ToolContextType, AuthorizableReferenceType> = {
+	[ToolContextType.COURSE]: AuthorizableReferenceType.Course,
 };
 
 export class ContextTypeMapper {
-	static mapContextTypeToAllowedAuthorizationEntityType(type: ToolContextType): AllowedAuthorizationEntityType {
+	static mapContextTypeToAllowedAuthorizationEntityType(type: ToolContextType): AuthorizableReferenceType {
 		return typeMapping[type];
 	}
 }
