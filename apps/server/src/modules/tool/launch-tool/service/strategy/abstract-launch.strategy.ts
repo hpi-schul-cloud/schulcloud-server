@@ -1,11 +1,4 @@
 import {
-	LaunchRequestMethod,
-	PropertyDataDO,
-	PropertyLocation,
-	ToolLaunchDataDO,
-	ToolLaunchRequestDO,
-} from '@shared/domain/domainobject/tool/launch';
-import {
 	ContextExternalToolDO,
 	CustomParameterDO,
 	CustomParameterEntryDO,
@@ -17,58 +10,59 @@ import {
 	SchoolExternalToolDO,
 } from '@shared/domain';
 import { URLSearchParams } from 'url';
+import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ToolLaunchMapper } from '../../mapper/tool-launch.mapper';
+import { ToolLaunchMapper } from '../../mapper';
 import { ToolContextType } from '../../../interface';
 
 export abstract class AbstractLaunchStrategy {
-	public createLaunchData(data: IToolLaunchParams): ToolLaunchDataDO {
-		const launchData: ToolLaunchDataDO = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
+	public createLaunchData(data: IToolLaunchParams): ToolLaunchData {
+		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
 		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
-		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.config));
+		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.externalToolDO.config));
 
 		return launchData;
 	}
 
-	protected abstract buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyDataDO[];
+	protected abstract buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[];
 
-	protected abstract buildToolLaunchRequestPayload(properties: PropertyDataDO[]): string;
+	protected abstract buildToolLaunchRequestPayload(properties: PropertyData[]): string;
 
-	public createLaunchRequest(toolLaunchDataDO: ToolLaunchDataDO): ToolLaunchRequestDO {
+	public createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest {
 		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(toolLaunchDataDO.properties);
 		const url: string = this.buildUrl(toolLaunchDataDO);
 		const payload: string = this.buildToolLaunchRequestPayload(toolLaunchDataDO.properties);
 
-		const toolLaunchRequestDO: ToolLaunchRequestDO = {
+		const toolLaunchRequestDO: ToolLaunchRequest = new ToolLaunchRequest({
 			method: requestMethod,
 			url,
 			payload,
 			openNewTab: toolLaunchDataDO.openNewTab,
-		};
+		});
 
 		return toolLaunchRequestDO;
 	}
 
-	private buildUrl(toolLaunchDataDO: ToolLaunchDataDO): string {
+	private buildUrl(toolLaunchDataDO: ToolLaunchData): string {
 		const { baseUrl } = toolLaunchDataDO;
 
-		const pathProperties: PropertyDataDO[] = toolLaunchDataDO.properties.filter(
-			(property: PropertyDataDO) => property.location === PropertyLocation.PATH
+		const pathProperties: PropertyData[] = toolLaunchDataDO.properties.filter(
+			(property: PropertyData) => property.location === PropertyLocation.PATH
 		);
-		const queryProperties: PropertyDataDO[] = toolLaunchDataDO.properties.filter(
-			(property: PropertyDataDO) => property.location === PropertyLocation.QUERY
+		const queryProperties: PropertyData[] = toolLaunchDataDO.properties.filter(
+			(property: PropertyData) => property.location === PropertyLocation.QUERY
 		);
 
 		const url = new URL(baseUrl);
 
 		if (pathProperties.length > 0) {
-			const pathParams: string = pathProperties.map((property: PropertyDataDO) => `${property.value}`).join('/');
+			const pathParams: string = pathProperties.map((property: PropertyData) => `${property.value}`).join('/');
 			url.pathname = url.pathname.endsWith('/') ? `${url.pathname}${pathParams}` : `${url.pathname}/${pathParams}`;
 		}
 
 		if (queryProperties.length > 0) {
 			const queryParams: URLSearchParams = new URLSearchParams();
-			queryProperties.forEach((property: PropertyDataDO) => queryParams.append(property.name, property.value));
+			queryProperties.forEach((property: PropertyData) => queryParams.append(property.name, property.value));
 
 			url.search += queryParams.toString();
 		}
@@ -77,9 +71,9 @@ export abstract class AbstractLaunchStrategy {
 		return urlString;
 	}
 
-	private determineLaunchRequestMethod(properties: PropertyDataDO[]): LaunchRequestMethod {
+	private determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		const hasBodyProperty: boolean = properties.some(
-			(property: PropertyDataDO) => property.location === PropertyLocation.BODY
+			(property: PropertyData) => property.location === PropertyLocation.BODY
 		);
 
 		const launchRequestMethod: LaunchRequestMethod = hasBodyProperty
@@ -89,8 +83,8 @@ export abstract class AbstractLaunchStrategy {
 		return launchRequestMethod;
 	}
 
-	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchDataDO {
-		const launchData = new ToolLaunchDataDO({
+	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchData {
+		const launchData = new ToolLaunchData({
 			baseUrl: externalToolDO.config.baseUrl,
 			type: ToolLaunchMapper.mapToToolLaunchDataType(externalToolDO.config.type),
 			properties: [],
@@ -100,8 +94,8 @@ export abstract class AbstractLaunchStrategy {
 		return launchData;
 	}
 
-	private buildToolLaunchDataFromTools(data: IToolLaunchParams): PropertyDataDO[] {
-		const propertyData: PropertyDataDO[] = [];
+	private buildToolLaunchDataFromTools(data: IToolLaunchParams): PropertyData[] {
+		const propertyData: PropertyData[] = [];
 		const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = data;
 		const customParameters = externalToolDO.parameters || [];
 
@@ -117,7 +111,7 @@ export abstract class AbstractLaunchStrategy {
 	}
 
 	private addParameters(
-		propertyData: PropertyDataDO[],
+		propertyData: PropertyData[],
 		customParameterDOs: CustomParameterDO[],
 		scopes: { scope: CustomParameterScope; params: CustomParameterEntryDO[] }[],
 		schoolExternalToolDO: SchoolExternalToolDO,
@@ -143,7 +137,7 @@ export abstract class AbstractLaunchStrategy {
 	private handleParametersToInclude(
 		parametersToInclude: CustomParameterDO[],
 		params: CustomParameterEntryDO[],
-		propertyData: PropertyDataDO[],
+		propertyData: PropertyData[],
 		schoolExternalToolDO: SchoolExternalToolDO,
 		contextExternalToolDO: ContextExternalToolDO
 	): void {
@@ -186,7 +180,7 @@ export abstract class AbstractLaunchStrategy {
 	}
 
 	private addProperty(
-		propertyData: PropertyDataDO[],
+		propertyData: PropertyData[],
 		propertyName: string,
 		value: string | undefined,
 		customParameterLocation: CustomParameterLocation

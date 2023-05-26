@@ -7,7 +7,6 @@ import {
 	ContextExternalToolType,
 	Course,
 	ExternalTool,
-	LaunchRequestMethod,
 	Permission,
 	Role,
 	School,
@@ -33,6 +32,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { ServerTestModule } from '@src/modules/server';
 import { ToolLaunchParams } from '../dto/tool-launch.params';
 import { ToolLaunchRequestResponse } from '../dto/tool-launch-request.response';
+import { LaunchRequestMethod } from '../../types';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;

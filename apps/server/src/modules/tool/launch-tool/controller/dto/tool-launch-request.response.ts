@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LaunchRequestMethod } from '@shared/domain/domainobject/tool/launch/launch-request-method';
+import { LaunchRequestMethod } from '../../types/launch-request-method';
 
 export class ToolLaunchRequestResponse {
 	@ApiProperty({

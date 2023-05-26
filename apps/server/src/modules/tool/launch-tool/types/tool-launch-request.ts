@@ -1,6 +1,6 @@
 import { LaunchRequestMethod } from './launch-request-method';
 
-export class ToolLaunchRequestDO {
+export class ToolLaunchRequest {
 	method!: LaunchRequestMethod;
 
 	url!: string;
@@ -9,7 +9,7 @@ export class ToolLaunchRequestDO {
 
 	openNewTab: boolean;
 
-	constructor(props: ToolLaunchRequestDO) {
+	constructor(props: ToolLaunchRequest) {
 		this.url = props.url;
 		this.method = props.method;
 		this.payload = props.payload;

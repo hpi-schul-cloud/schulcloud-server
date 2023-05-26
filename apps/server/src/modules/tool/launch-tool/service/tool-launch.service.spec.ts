@@ -1,31 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool/context-external-tool.do';
-import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import {
 	basicToolConfigDOFactory,
 	contextExternalToolDOFactory,
 	externalToolDOFactory,
-	lti11ToolConfigDOFactory,
-	oauth2ToolConfigDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing';
-import {
-	BasicToolConfigDO,
-	ExternalToolDO,
-	Lti11ToolConfigDO,
-	Oauth2ToolConfigDO,
-	SchoolExternalToolDO,
-	ToolConfigType,
-	ToolLaunchDataType,
-	ToolLaunchRequestDO,
-} from '@shared/domain';
-import { ToolLaunchDataDO } from '@shared/domain/domainobject/tool/launch';
-import { toolLaunchDataFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-data.factory';
-import { toolLaunchRequestFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-request.factory';
+import { BasicToolConfigDO, ExternalToolDO, SchoolExternalToolDO, ToolConfigType } from '@shared/domain';
 import { ToolLaunchService } from './tool-launch.service';
 import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { BasicToolLaunchStrategy, IToolLaunchParams } from './strategy';
+import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 
 describe('ToolLaunchService', () => {
 	let module: TestingModule;
@@ -80,12 +67,16 @@ describe('ToolLaunchService', () => {
 					config: basicToolConfigDO,
 				});
 
-				const launchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build();
+				const launchDataDO: ToolLaunchData = new ToolLaunchData({
+					type: ToolLaunchDataType.BASIC,
+					baseUrl: 'https://www.basic-baseurl.com/',
+					properties: [],
+					openNewTab: false,
+				});
 
 				const launchParams: IToolLaunchParams = {
 					externalToolDO,
 					schoolExternalToolDO,
-					config: basicToolConfigDO,
 					contextExternalToolDO,
 				};
 
@@ -102,7 +93,7 @@ describe('ToolLaunchService', () => {
 			it('should return launchData', async () => {
 				const { launchParams, launchDataDO } = setup();
 
-				const result: ToolLaunchDataDO = await service.getLaunchData(launchParams.contextExternalToolDO);
+				const result: ToolLaunchData = await service.getLaunchData(launchParams.contextExternalToolDO);
 
 				expect(result).toEqual(launchDataDO);
 			});
@@ -134,134 +125,6 @@ describe('ToolLaunchService', () => {
 			});
 		});
 
-		describe('when the tool config type is LTI11', () => {
-			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
-					.build();
-				const lti11ToolConfigDO: Lti11ToolConfigDO = lti11ToolConfigDOFactory.build();
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
-					config: lti11ToolConfigDO,
-				});
-
-				const launchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build();
-
-				const launchParams: IToolLaunchParams = {
-					externalToolDO,
-					schoolExternalToolDO,
-					config: lti11ToolConfigDO,
-					contextExternalToolDO,
-				};
-
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
-				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-
-				return {
-					launchDataDO,
-					launchParams,
-				};
-			};
-
-			it('should throw NotImplementedException for LTI11 tool config', async () => {
-				const { launchParams } = setup();
-
-				const func = () => service.getLaunchData(launchParams.contextExternalToolDO);
-
-				await expect(func()).rejects.toThrow(new NotImplementedException('LTI 1.1 launch is not implemented yet'));
-			});
-
-			it('should call getSchoolExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData(launchParams.contextExternalToolDO);
-				} catch (exception) {
-					/* Do nothing */
-				}
-
-				expect(schoolExternalToolService.getSchoolExternalToolById).toHaveBeenCalledWith(
-					launchParams.schoolExternalToolDO.id
-				);
-			});
-
-			it('should call findExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData(launchParams.contextExternalToolDO);
-				} catch (exception) {
-					/* Do nothing */
-				}
-
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalToolDO.toolId);
-			});
-		});
-
-		describe('when the tool config type is Oauth2', () => {
-			const setup = () => {
-				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory
-					.withSchoolExternalToolRef(schoolExternalToolDO.id as string)
-					.build();
-				const oauth2ToolConfigDO: Oauth2ToolConfigDO = oauth2ToolConfigDOFactory.build();
-				const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
-					config: oauth2ToolConfigDO,
-				});
-
-				const launchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build();
-
-				const launchParams: IToolLaunchParams = {
-					externalToolDO,
-					schoolExternalToolDO,
-					config: oauth2ToolConfigDO,
-					contextExternalToolDO,
-				};
-
-				schoolExternalToolService.getSchoolExternalToolById.mockResolvedValue(schoolExternalToolDO);
-				externalToolService.findExternalToolById.mockResolvedValue(externalToolDO);
-
-				return {
-					launchDataDO,
-					launchParams,
-				};
-			};
-
-			it('should throw NotImplementedException for Oauth2 tool config', async () => {
-				const { launchParams } = setup();
-
-				const func = () => service.getLaunchData(launchParams.contextExternalToolDO);
-
-				await expect(func()).rejects.toThrow(new NotImplementedException('OAuth2 launch is not implemented yet'));
-			});
-
-			it('should call getSchoolExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData(launchParams.contextExternalToolDO);
-				} catch (exception) {
-					/* Do nothing */
-				}
-
-				expect(schoolExternalToolService.getSchoolExternalToolById).toHaveBeenCalledWith(
-					launchParams.schoolExternalToolDO.id
-				);
-			});
-
-			it('should call findExternalToolById', async () => {
-				const { launchParams } = setup();
-
-				try {
-					await service.getLaunchData(launchParams.contextExternalToolDO);
-				} catch (exception) {
-					/* Do nothing */
-				}
-
-				expect(externalToolService.findExternalToolById).toHaveBeenCalledWith(launchParams.schoolExternalToolDO.toolId);
-			});
-		});
-
 		describe('when the tool config type is unknown', () => {
 			const setup = () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
@@ -274,7 +137,6 @@ describe('ToolLaunchService', () => {
 				const launchParams: IToolLaunchParams = {
 					externalToolDO,
 					schoolExternalToolDO,
-					config: externalToolDO.config,
 					contextExternalToolDO,
 				};
 
@@ -324,35 +186,34 @@ describe('ToolLaunchService', () => {
 
 	describe('generateLaunchRequest', () => {
 		it('should generate launch request for BASIC type', () => {
-			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.BASIC });
+			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
+				type: ToolLaunchDataType.BASIC,
+				baseUrl: 'https://www.basic-baseurl.com/',
+				properties: [],
+				openNewTab: false,
+			});
 
-			const expectedLaunchRequest: ToolLaunchRequestDO = toolLaunchRequestFactory.build();
+			const expectedLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
+				method: LaunchRequestMethod.GET,
+				url: 'https://example.com/tool-launch',
+				payload: '{ "key": "value" }',
+				openNewTab: false,
+			});
 			basicToolLaunchStrategy.createLaunchRequest.mockReturnValue(expectedLaunchRequest);
 
-			const result: ToolLaunchRequestDO = service.generateLaunchRequest(toolLaunchDataDO);
+			const result: ToolLaunchRequest = service.generateLaunchRequest(toolLaunchDataDO);
 
 			expect(result).toEqual(expectedLaunchRequest);
 			expect(basicToolLaunchStrategy.createLaunchRequest).toHaveBeenCalledWith(toolLaunchDataDO);
 		});
 
-		it('should throw NotImplementedException for LTI11 type', () => {
-			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.LTI11 });
-
-			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
-
-			expect(() => func()).toThrow(new NotImplementedException('LTI 1.1 launch is not implemented yet'));
-		});
-
-		it('should throw NotImplementedException for OAUTH2 type', () => {
-			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: ToolLaunchDataType.OAUTH2 });
-
-			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
-
-			expect(() => func()).toThrow(new NotImplementedException('OAuth2 launch is not implemented yet'));
-		});
-
 		it('should throw InternalServerErrorException for unknown type', () => {
-			const toolLaunchDataDO: ToolLaunchDataDO = toolLaunchDataFactory.build({ type: undefined });
+			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
+				type: 'unknown' as ToolLaunchDataType,
+				baseUrl: 'https://www.basic-baseurl.com/',
+				properties: [],
+				openNewTab: false,
+			});
 
 			const func = () => service.generateLaunchRequest(toolLaunchDataDO);
 

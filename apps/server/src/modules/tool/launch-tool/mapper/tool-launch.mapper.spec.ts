@@ -1,7 +1,6 @@
 import { CustomParameterLocation, ToolConfigType, ToolLaunchRequestDO } from '@shared/domain';
-import { PropertyLocation } from '@shared/domain/domainobject/tool/launch';
-import { ToolLaunchDataType } from '@shared/domain/domainobject/tool/launch/tool-launch-data-type';
 import { toolLaunchRequestFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-request.factory';
+import { PropertyLocation, ToolLaunchDataType } from '../types';
 import { ToolLaunchMapper } from './tool-launch.mapper';
 import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
 

@@ -1,16 +1,16 @@
-import { PropertyDataDO } from './property-data.do';
+import { PropertyData } from './property-data';
 import { ToolLaunchDataType } from './tool-launch-data-type';
 
-export class ToolLaunchDataDO {
+export class ToolLaunchData {
 	baseUrl: string;
 
 	type: ToolLaunchDataType;
 
-	properties: PropertyDataDO[];
+	properties: PropertyData[];
 
 	openNewTab: boolean;
 
-	constructor(props: ToolLaunchDataDO) {
+	constructor(props: ToolLaunchData) {
 		this.baseUrl = props.baseUrl;
 		this.type = props.type;
 		this.properties = props.properties;

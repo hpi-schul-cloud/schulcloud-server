@@ -1,6 +1,7 @@
-import { basicToolConfigDOFactory, propertyDataDOFactory } from '@shared/testing';
-import { BasicToolConfigDO, PropertyDataDO, PropertyLocation } from '@shared/domain';
+import { basicToolConfigDOFactory } from '@shared/testing';
+import { BasicToolConfigDO } from '@shared/domain';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
+import { PropertyData, PropertyLocation } from '../../types';
 
 describe('BasicToolLaunchStrategy', () => {
 	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
@@ -11,19 +12,19 @@ describe('BasicToolLaunchStrategy', () => {
 
 	describe('buildToolLaunchRequestPayload', () => {
 		const setup = () => {
-			const property1: PropertyDataDO = propertyDataDOFactory.build({
+			const property1: PropertyData = new PropertyData({
 				name: 'param1',
 				value: 'value1',
 				location: PropertyLocation.BODY,
 			});
 
-			const property2: PropertyDataDO = propertyDataDOFactory.build({
+			const property2: PropertyData = new PropertyData({
 				name: 'param2',
 				value: 'value2',
 				location: PropertyLocation.BODY,
 			});
 
-			const property3: PropertyDataDO = propertyDataDOFactory.build({
+			const property3: PropertyData = new PropertyData({
 				name: 'param2',
 				value: 'value2',
 				location: PropertyLocation.PATH,
@@ -55,7 +56,7 @@ describe('BasicToolLaunchStrategy', () => {
 		it('should build the tool launch data from the basic tool config correctly', () => {
 			const { basicToolConfig } = setup();
 
-			const result: PropertyDataDO[] = basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(basicToolConfig);
+			const result: PropertyData[] = basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(basicToolConfig);
 
 			expect(result).toEqual([]);
 		});

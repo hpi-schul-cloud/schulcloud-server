@@ -1,6 +1,5 @@
-import { CustomParameterLocation, ToolConfigType, ToolLaunchRequestDO } from '@shared/domain';
-import { PropertyLocation } from '@shared/domain/domainobject/tool/launch';
-import { ToolLaunchDataType } from '@shared/domain/domainobject/tool/launch/tool-launch-data-type';
+import { CustomParameterLocation, ToolConfigType } from '@shared/domain';
+import { PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
 
 const customToParameterLocationMapping: Record<CustomParameterLocation, PropertyLocation> = {
@@ -15,6 +14,12 @@ const toolConfigTypeToToolLaunchDataTypeMapping: Record<ToolConfigType, ToolLaun
 	[ToolConfigType.OAUTH2]: ToolLaunchDataType.OAUTH2,
 };
 
+const toolLaunchDataTypeToToolConfigTypeMapping: Record<ToolLaunchDataType, ToolConfigType> = Object.entries(
+	toolConfigTypeToToolLaunchDataTypeMapping
+).reduce((acc: Record<ToolLaunchDataType, ToolConfigType>, [key, value]) => {
+	return { ...acc, [value]: key as ToolConfigType };
+}, {} as Record<ToolLaunchDataType, ToolConfigType>);
+
 export class ToolLaunchMapper {
 	static mapToParameterLocation(location: CustomParameterLocation): PropertyLocation {
 		const mappedLocation = customToParameterLocationMapping[location];
@@ -26,8 +31,13 @@ export class ToolLaunchMapper {
 		return mappedType;
 	}
 
-	static mapToToolLaunchRequestResponse(toolLaunchRequestDO: ToolLaunchRequestDO): ToolLaunchRequestResponse {
-		const { method, url, payload, openNewTab } = toolLaunchRequestDO;
+	static mapToToolConfigType(launchDataType: ToolLaunchDataType): ToolConfigType {
+		const mappedType = toolLaunchDataTypeToToolConfigTypeMapping[launchDataType];
+		return mappedType;
+	}
+
+	static mapToToolLaunchRequestResponse(toolLaunchRequest: ToolLaunchRequest): ToolLaunchRequestResponse {
+		const { method, url, payload, openNewTab } = toolLaunchRequest;
 
 		const response = new ToolLaunchRequestResponse({
 			method,

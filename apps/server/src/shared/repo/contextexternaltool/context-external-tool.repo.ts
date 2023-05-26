@@ -1,6 +1,6 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Injectable } from '@nestjs/common';
 import {
 	ContextExternalTool,
 	ContextExternalToolDO,

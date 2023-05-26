@@ -1,14 +1,18 @@
-import { ExternalToolConfigDO, PropertyDataDO, PropertyLocation } from '@shared/domain';
+import { ExternalToolConfigDO } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
+import { PropertyData, PropertyLocation } from '../../types';
+import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
-export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
+@Injectable()
+export class BasicToolLaunchStrategy extends AbstractLaunchStrategy implements IToolLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyDataDO[] {
+	buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
 		return [];
 	}
 
-	buildToolLaunchRequestPayload(properties: PropertyDataDO[]): string {
-		const bodyProperties = properties.filter((property: PropertyDataDO) => property.location === PropertyLocation.BODY);
+	buildToolLaunchRequestPayload(properties: PropertyData[]): string {
+		const bodyProperties = properties.filter((property: PropertyData) => property.location === PropertyLocation.BODY);
 		const payload: Record<string, string> = {};
 
 		for (const property of bodyProperties) {
