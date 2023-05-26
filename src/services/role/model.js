@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const {
-	database: { enableAuditLog },
-	Cache,
-} = require('../../utils');
+const { Cache } = require('../../utils');
 
 const { Schema } = mongoose;
 
