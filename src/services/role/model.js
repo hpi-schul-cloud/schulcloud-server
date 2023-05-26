@@ -96,8 +96,6 @@ roleSchema.virtual('displayName').get(function get() {
 
 roleSchema.plugin(leanVirtuals);
 
-enableAuditLog(roleSchema);
-
 const roleModel = mongoose.model('role', roleSchema);
 
 module.exports = roleModel;
