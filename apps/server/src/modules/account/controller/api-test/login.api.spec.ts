@@ -6,6 +6,7 @@ import { Account, RoleName, School, System, User } from '@shared/domain';
 import { accountFactory, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { LdapAuthorizationBodyParams } from '@src/modules/authentication/controllers/dto';
+import jwt from 'jsonwebtoken';
 
 const schoolExternalId = 'mockSchoolExternalId';
 const ldapAccountUserName = 'ldapAccountUserName';
@@ -119,7 +120,8 @@ describe('Login Controller (e2e)', () => {
 		let system: System;
 
 		beforeAll(async () => {
-			system = systemFactory.withLdapConfig().buildWithId({});
+			const ldapRootPath = 'rootPath';
+			system = systemFactory.withLdapConfig({ rootPath: ldapRootPath }).buildWithId({});
 			school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
@@ -127,7 +129,7 @@ describe('Login Controller (e2e)', () => {
 
 			account = accountFactory.buildWithId({
 				userId: user.id,
-				username: `${schoolExternalId}/${ldapAccountUserName.trim().toLowerCase()}`,
+				username: `${ldapRootPath}/${ldapAccountUserName}`.toLowerCase(),
 				systemId: system.id,
 			});
 
@@ -148,17 +150,24 @@ describe('Login Controller (e2e)', () => {
 					systemId: system.id,
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
-
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				const token = response.body.accessToken;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const decodedToken = jwt.decode(token);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body.accessToken).toBeDefined();
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
 			});
 		});
 
 		describe('when user login fails', () => {
 			it('should return error response', async () => {
-				const params = {
+				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
 					password: 'wrongPassword',
+					schoolId: school.id,
+					systemId: system.id,
 				};
 				await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params).expect(401);
 			});
