@@ -1,6 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EntityId } from '@shared/domain';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { LegacyLogger } from '@src/core/logger';
 import {
@@ -51,7 +52,7 @@ export class FilesStorageProducer {
 		return response.message || [];
 	}
 
-	async deleteFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
+	async deleteFilesOfParent(payload: EntityId): Promise<IFileDO[]> {
 		this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
 		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
 			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
@@ -71,7 +72,7 @@ export class FilesStorageProducer {
 		}
 	}
 
-	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams) {
+	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams | EntityId) {
 		return {
 			exchange: FilesStorageExchange,
 			routingKey: event,

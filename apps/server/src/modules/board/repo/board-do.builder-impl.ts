@@ -6,9 +6,9 @@ import type {
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	TextElementNode,
+	RichTextElementNode,
 } from '@shared/domain';
-import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, TextElement } from '@shared/domain';
+import { AnyBoardDo, BoardNodeType, Card, Column, ColumnBoard, FileElement, RichTextElement } from '@shared/domain';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -35,6 +35,7 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 			children: columns,
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
+			context: boardNode.context,
 		});
 
 		return columnBoard;
@@ -56,9 +57,12 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	}
 
 	public buildCard(boardNode: CardNode): Card {
-		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.TEXT_ELEMENT, BoardNodeType.FILE_ELEMENT]);
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.FILE_ELEMENT,
+		]);
 
-		const elements = this.buildChildren<TextElement>(boardNode);
+		const elements = this.buildChildren<RichTextElement>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -71,12 +75,13 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return card;
 	}
 
-	public buildTextElement(boardNode: TextElementNode): TextElement {
+	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
 		this.ensureLeafNode(boardNode);
 
-		const element = new TextElement({
+		const element = new RichTextElement({
 			id: boardNode.id,
 			text: boardNode.text,
+			inputFormat: boardNode.inputFormat,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,

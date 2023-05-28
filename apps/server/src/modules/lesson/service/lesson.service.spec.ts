@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LessonRepo } from '@shared/repo';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { FileRecordParentType } from '@src/modules/files-storage/entity/filerecord.entity';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
@@ -49,15 +48,10 @@ describe('LessonService', () => {
 
 	it('delete lesson', async () => {
 		const lesson = lessonFactory.buildWithId();
-		const parentType = FileRecordParentType.Lesson;
 
 		await lessonService.deleteLesson(lesson);
 
-		expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith({
-			schoolId: null,
-			parentType,
-			parentId: lesson.id,
-		});
+		expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(lesson.id);
 
 		expect(lessonRepo.delete).toHaveBeenCalledWith(lesson);
 	});
