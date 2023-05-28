@@ -49,10 +49,9 @@ describe('getAPIResponseTimeMetricLabels', () => {
 describe('createAPIResponseTimeMetricMiddleware', () => {
 	describe('should create a middleware that should', () => {
 		const app = express();
-		const middleware = createAPIResponseTimeMetricMiddleware();
 
 		beforeAll(() => {
-			app.use(middleware);
+			app.use(createAPIResponseTimeMetricMiddleware());
 			app.use(express.json());
 			app.get('/sayHello', (req, res) => {
 				res.set('Test-Header', 'test_header_value');
