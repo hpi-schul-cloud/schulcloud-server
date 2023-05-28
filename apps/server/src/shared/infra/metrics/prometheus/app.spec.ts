@@ -14,8 +14,9 @@ describe('createPrometheusMetricsApp', () => {
 				`status_code="200"}`;
 			const app = createPrometheusMetricsApp(testMetricsRoute, true, true);
 
-			let response = await request(app).get(testMetricsRoute);
-			response = await request(app).get(testMetricsRoute);
+			// Call the metrics route two times in a row to also get a metrics route metrics (once).
+			await request(app).get(testMetricsRoute);
+			const response = await request(app).get(testMetricsRoute);
 
 			expect(response.statusCode).toBe(200);
 			expect(response.text).toContain(exampleDefaultMetricName);
