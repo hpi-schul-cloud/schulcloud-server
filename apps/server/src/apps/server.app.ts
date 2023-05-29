@@ -20,7 +20,10 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import legacyAppPromise = require('../../../../src/app');
 
-import { addPrometheusMetricsMiddlewares, createAndStartPrometheusMetricsApp } from './helpers/prometheus-metrics';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from './helpers/prometheus-metrics';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -78,7 +81,7 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
-	addPrometheusMetricsMiddlewares(logger, rootExpress);
+	addPrometheusMetricsMiddlewaresIfEnabled(logger, rootExpress);
 
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -105,7 +108,7 @@ async function bootstrap() {
 	rootExpress.listen(port, () => {
 		logger.log(new LoggableMessage(`Main app successfully started listening on port ${port}`));
 
-		createAndStartPrometheusMetricsApp(logger);
+		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
 
 	console.log('#################################');

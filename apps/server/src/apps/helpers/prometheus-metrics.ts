@@ -7,7 +7,7 @@ import {
 	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
 
-export const addPrometheusMetricsMiddlewares = (logger: Logger, app: Express) => {
+export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Express) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
 			new LoggableMessage('Prometheus metrics feature is disabled, no metrics middlewares will be added to the app')
@@ -21,7 +21,7 @@ export const addPrometheusMetricsMiddlewares = (logger: Logger, app: Express) =>
 	logger.debug(new LoggableMessage('API response time metric middleware successfully added to the app'));
 };
 
-export const createAndStartPrometheusMetricsApp = (logger: Logger) => {
+export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
 			new LoggableMessage('Prometheus metrics feature is disabled, Prometheus metrics app will not be created')
