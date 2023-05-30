@@ -18,10 +18,8 @@ export class RoomsService {
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 		const courseColumnBoards = await this.columnBoardService.findAllByParentReference(roomId);
 
-		// const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoards];
-		// WIP : BC-3573 : saving the board throws error, when columnBoards are included... don't know why
+		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoards];
 
-		const boardElementTargets = [...courseLessons, ...courseTasks];
 		board.syncBoardElementReferences(boardElementTargets);
 
 		await this.boardRepo.save(board);

@@ -3,8 +3,6 @@ import { Column } from './column.do';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReference } from './types';
 
 export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
-	hidden = false; // WIP : BC-3573 :  implement in entity-object
-
 	get title(): string {
 		return this.props.title;
 	}
@@ -32,14 +30,6 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 
 	async acceptAsync(visitor: BoardCompositeVisitorAsync): Promise<void> {
 		await visitor.visitColumnBoardAsync(this);
-	}
-
-	publish() {
-		this.hidden = false;
-	}
-
-	unpublish() {
-		this.hidden = true;
 	}
 }
 

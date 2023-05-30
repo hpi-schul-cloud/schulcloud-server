@@ -28,6 +28,17 @@ export class ColumnBoardNode extends BoardNode {
 		};
 	}
 
+	@Property()
+	hidden = false; // WIP : BC-3573 : remove from ColumnBoardNode
+
+	publish() {
+		this.hidden = false;
+	}
+
+	unpublish() {
+		this.hidden = true;
+	}
+
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject = builder.buildColumnBoard(this);
 		return domainObject;

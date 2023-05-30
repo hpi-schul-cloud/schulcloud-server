@@ -189,12 +189,6 @@ describe(BoardDoRepo.name, () => {
 		});
 	});
 
-	describe('findByExternalParentId', () => {
-		it.todo('should return boards that are referencing the given course', async () => {
-			// WIP : BC-3573 : add test
-		});
-	});
-
 	describe('getAncestorIds', () => {
 		describe('when having only a root boardnode', () => {
 			const setup = async () => {

@@ -1,11 +1,11 @@
 import { Entity, Enum, ManyToOne } from '@mikro-orm/core';
-import { ColumnBoard } from '../domainobject';
+import { ColumnBoardNode } from '../entity/boardnode/column-board-node.entity';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Lesson } from './lesson.entity';
 import { Task } from './task.entity';
 
-export type BoardElementReference = Task | Lesson | ColumnBoard;
+export type BoardElementReference = Task | Lesson | ColumnBoardNode;
 
 export enum BoardElementType {
 	'Task' = 'task',
@@ -39,7 +39,7 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 			return BoardElement.FromTask(boardElementTarget);
 		} else if (boardElementTarget instanceof Lesson) {
 			return BoardElement.FromLesson(boardElementTarget);
-		} else if (boardElementTarget instanceof ColumnBoard) {
+		} else if (boardElementTarget instanceof ColumnBoardNode) {
 			return BoardElement.FromColumnBoard(boardElementTarget);
 		} else {
 			throw new Error('not a valid boardElementReference');
@@ -56,10 +56,8 @@ export abstract class BoardElement extends BaseEntityWithTimestamps {
 		return element;
 	}
 
-	static FromColumnBoard(columnBoard: ColumnBoard): ColumnboardBoardElement {
-		console.log('FromColumnBoard', columnBoard);
-		const element = new ColumnboardBoardElement({ target: columnBoard });
-		console.log('element', element);
+	static FromColumnBoard(columnBoardNode: ColumnBoardNode): ColumnboardBoardElement {
+		const element = new ColumnboardBoardElement({ target: columnBoardNode });
 		return element;
 	}
 }
@@ -91,11 +89,11 @@ export class LessonBoardElement extends BoardElement {
 
 @Entity({ discriminatorValue: BoardElementType.ColumnBoard })
 export class ColumnboardBoardElement extends BoardElement {
-	constructor(props: { target: ColumnBoard }) {
+	constructor(props: { target: ColumnBoardNode }) {
 		super(props);
 		this.boardElementType = BoardElementType.ColumnBoard;
 	}
 
-	@ManyToOne('ColumnBoard')
-	target!: ColumnBoard;
+	@ManyToOne('ColumnBoardNode')
+	target!: ColumnBoardNode;
 }
