@@ -1,10 +1,16 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ILearnroomElement } from '../interface';
-import { EntityId } from '../types';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { ILearnroomElement } from '../../interface';
+import { EntityId } from '../../types';
+import { BaseEntityWithTimestamps } from '../base.entity';
 import { BoardElement, BoardElementReference } from './boardelement.entity';
-import type { Course } from './course.entity';
+import type { Course } from '../course.entity';
+import { Task } from '../task.entity';
+import { LessonBoardElement } from './lesson-boardelement.entity';
+import { Lesson } from '../lesson.entity';
+import { TaskBoardElement } from './task-boardelement.entity';
+import { ColumnboardBoardElement } from './column-board-boardelement';
+import { ColumnBoardTarget } from './column-board-target.entity';
 
 export type BoardProps = {
 	references: BoardElement[];
@@ -76,11 +82,24 @@ export class Board extends BaseEntityWithTimestamps {
 
 	private appendNotContainedBoardElements(boardElementTargets: BoardElementReference[]): void {
 		const references = this.references.getItems();
-		const isNotContained = (element) => !references.some((ref) => ref.target === element);
-		const mapToBoardElement = (target) => BoardElement.FromBoardElementTarget(target);
+		const isNotContained = (element: BoardElementReference) => !references.some((ref) => ref.target === element);
+		const mapToBoardElement = (target: BoardElementReference) => this.createBoardElementFor(target);
 
 		const elementsToAdd = boardElementTargets.filter(isNotContained).map(mapToBoardElement);
 		const newList = [...elementsToAdd, ...references];
 		this.references.set(newList);
+	}
+
+	private createBoardElementFor(boardElementTarget: BoardElementReference): BoardElement {
+		if (boardElementTarget instanceof Task) {
+			return new TaskBoardElement({ target: boardElementTarget });
+		}
+		if (boardElementTarget instanceof Lesson) {
+			return new LessonBoardElement({ target: boardElementTarget });
+		}
+		if (boardElementTarget instanceof ColumnBoardTarget) {
+			return new ColumnboardBoardElement({ target: boardElementTarget });
+		}
+		throw new Error('not a valid boardElementReference');
 	}
 }

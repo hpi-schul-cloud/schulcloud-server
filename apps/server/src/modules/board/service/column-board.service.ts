@@ -1,12 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import {
-	BoardExternalReference,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	ColumnBoardNode,
-	EntityId,
-} from '@shared/domain';
+import { BoardExternalReference, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -25,13 +19,10 @@ export class ColumnBoardService {
 		return board;
 	}
 
-	async findAllByParentReference(parentId: EntityId): Promise<ColumnBoardNode[]> {
-		const _contextId = new ObjectId(parentId);
-		const boardNodes = await this.em.find(ColumnBoardNode, {
-			_contextId,
-			_contextType: BoardExternalReferenceType.Course,
-		});
-		return boardNodes;
+	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
+		const ids = this.boardDoRepo.findIdsByExternalReference(reference);
+
+		return ids;
 	}
 
 	async create(context: BoardExternalReference): Promise<ColumnBoard> {

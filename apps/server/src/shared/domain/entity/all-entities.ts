@@ -1,7 +1,5 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
-import { Board } from './board.entity';
-import { BoardElement, ColumnboardBoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, RichTextElementNode } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
@@ -10,6 +8,14 @@ import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
+import {
+	Board,
+	BoardElement,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
+	LessonBoardElement,
+	TaskBoardElement,
+} from './legacy-board';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
@@ -36,6 +42,7 @@ export const ALL_ENTITIES = [
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
+	ColumnBoardTarget,
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,

@@ -1,6 +1,9 @@
-import { columnBoardFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementType } from '.';
-import { ColumnboardBoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
+import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
+import { BoardElementType, ColumnboardBoardElement } from './boardelement.entity';
+import { ColumnBoardTarget } from './column-board-target.entity';
+import { LessonBoardElement } from './lesson-boardelement.entity';
+import { TaskBoardElement } from './task-boardelement.entity';
 
 describe('TaskBoardElementEntity', () => {
 	beforeAll(async () => {
@@ -41,7 +44,7 @@ describe('ColumnboardBoardElementEntity', () => {
 
 	describe('constructor', () => {
 		it('should have correct type', () => {
-			const columnBoard = columnBoardFactory.build();
+			const columnBoard = new ColumnBoardTarget({ columnBoardId: new ObjectId().toHexString() });
 
 			const boardElement = new ColumnboardBoardElement({ target: columnBoard });
 

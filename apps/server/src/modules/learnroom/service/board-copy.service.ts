@@ -1,5 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from '@shared/domain';
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	ColumnBoardTarget,
+	Course,
+	isLesson,
+	isTask,
+	Lesson,
+	LessonBoardElement,
+	Task,
+	TaskBoardElement,
+	User,
+} from '@shared/domain';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@src/modules/copy-helper';
@@ -101,10 +114,16 @@ export class BoardCopyService {
 		const references: BoardElement[] = [];
 		statuses.forEach((status) => {
 			if (status.copyEntity instanceof Task) {
-				references.push(BoardElement.FromTask(status.copyEntity));
+				const taskElement = new TaskBoardElement({ target: status.copyEntity });
+				references.push(taskElement);
 			}
 			if (status.copyEntity instanceof Lesson) {
-				references.push(BoardElement.FromLesson(status.copyEntity));
+				const lessonElement = new LessonBoardElement({ target: status.copyEntity });
+				references.push(lessonElement);
+			}
+			if (status.copyEntity instanceof ColumnBoardTarget) {
+				const columnBoardElement = new ColumnBoardTarget({ target: status.copyEntity });
+				references.push(columnBoardElement);
 			}
 		});
 		return references;
