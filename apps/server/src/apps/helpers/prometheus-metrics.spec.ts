@@ -86,56 +86,45 @@ describe('addPrometheusMetricsMiddlewaresIfEnabled', () => {
 });
 
 describe('createAndStartPrometheusMetricsAppIfEnabled', () => {
-	describe('should create Prometheus metrics app and run listen with configured port', () => {
+	describe('should create Prometheus metrics app and run it', () => {
 		const testPort = 9000;
+		const testLoggerSpy = jest.spyOn(testLogger, 'log');
 
 		let appMockListenFn: jest.Mock;
 
 		beforeEach(() => {
+			testLoggerSpy.mockClear();
 			appMockListenFn = jest.fn();
 
 			(createPrometheusMetricsApp as jest.Mock).mockClear();
 			(createPrometheusMetricsApp as jest.Mock).mockReturnValue({ listen: appMockListenFn });
 		});
 
-		it('with all the other features enabled', () => {
-			Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
-			Configuration.set('PROMETHEUS_METRICS_PORT', testPort);
-			Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', true);
-			Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', true);
-			PrometheusMetricsConfig.reload();
+		it.each([
+			[true, true],
+			[false, false],
+			[true, false],
+			[false, true],
+		])(
+			"with collecting default metrics set to '%s' and collecting metrics route metrics set to '%s'",
+			(collectDefaultMetrics: boolean, collectMetricsRouteMetrics: boolean) => {
+				Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
+				Configuration.set('PROMETHEUS_METRICS_PORT', testPort);
+				Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', collectDefaultMetrics);
+				Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', collectMetricsRouteMetrics);
+				PrometheusMetricsConfig.reload();
 
-			createAndStartPrometheusMetricsAppIfEnabled(testLogger);
+				createAndStartPrometheusMetricsAppIfEnabled(testLogger);
 
-			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
-			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
+				expect(createPrometheusMetricsApp).toBeCalledTimes(1);
+				expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
 
-			// Also test logging info message about running Prometheus metrics app.
-			const testLoggerSpy = jest.spyOn(testLogger, 'log');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-			appMockListenFn.mock.lastCall[1]();
-			expect(testLoggerSpy).toBeCalledTimes(1);
-			testLoggerSpy.mockClear();
-		});
-
-		it('even with all the other features disabled', () => {
-			Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
-			Configuration.set('PROMETHEUS_METRICS_PORT', testPort);
-			Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', false);
-			Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', false);
-			PrometheusMetricsConfig.reload();
-
-			createAndStartPrometheusMetricsAppIfEnabled(testLogger);
-
-			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
-			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
-
-			const testLoggerSpy = jest.spyOn(testLogger, 'log');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-			appMockListenFn.mock.lastCall[1]();
-			expect(testLoggerSpy).toBeCalledTimes(1);
-			testLoggerSpy.mockClear();
-		});
+				// Also test logging info message about running Prometheus metrics app.
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+				appMockListenFn.mock.lastCall[1]();
+				expect(testLoggerSpy).toBeCalledTimes(1);
+			}
+		);
 	});
 
 	it('should not create Prometheus metrics app if the whole feature is not enabled', () => {
