@@ -1,5 +1,5 @@
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
 
 import { PrometheusMetricsConfig } from './config';
 
