@@ -1,8 +1,7 @@
-import { CustomParameterLocation, ToolConfigType, ToolLaunchRequestDO } from '@shared/domain';
-import { toolLaunchRequestFactory } from '@shared/testing/factory/domainobject/tool/tool-launch-request.factory';
-import { PropertyLocation, ToolLaunchDataType } from '../types';
-import { ToolLaunchMapper } from './tool-launch.mapper';
+import { CustomParameterLocation, ToolConfigType } from '@shared/domain';
 import { ToolLaunchRequestResponse } from '../controller/dto/tool-launch-request.response';
+import { LaunchRequestMethod, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
+import { ToolLaunchMapper } from './tool-launch.mapper';
 
 describe('ToolLaunchMapper', () => {
 	describe('mapToParameterLocation', () => {
@@ -29,15 +28,20 @@ describe('ToolLaunchMapper', () => {
 
 	describe('mapToToolLaunchRequestResponse', () => {
 		it('should map ToolLaunchRequestDO to ToolLaunchRequestResponse', () => {
-			const toolLaunchRequestDO: ToolLaunchRequestDO = toolLaunchRequestFactory.build();
+			const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
+				method: LaunchRequestMethod.GET,
+				url: 'url',
+				openNewTab: true,
+				payload: 'payload',
+			});
 
-			const result: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequestDO);
+			const result: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
 
 			expect(result).toEqual({
-				method: toolLaunchRequestDO.method,
-				url: toolLaunchRequestDO.url,
-				payload: toolLaunchRequestDO.payload,
-				openNewTab: toolLaunchRequestDO.openNewTab,
+				method: toolLaunchRequest.method,
+				url: toolLaunchRequest.url,
+				payload: toolLaunchRequest.payload,
+				openNewTab: toolLaunchRequest.openNewTab,
 			});
 		});
 	});
