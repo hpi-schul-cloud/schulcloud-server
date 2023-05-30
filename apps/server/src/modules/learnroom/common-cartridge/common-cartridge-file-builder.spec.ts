@@ -13,7 +13,7 @@ describe('CommonCartridgeFileBuilder', () => {
 	const fileBuilderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
-		currentYear: 'Placeholder Current Year',
+		creationYear: 'Placeholder Current Year',
 		title: 'file-title',
 	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
@@ -64,7 +64,7 @@ describe('CommonCartridgeFileBuilder', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
 				expect(manifest).toContain(organizationProps.identifier);
 				expect(manifest).toContain(fileBuilderOptions.copyrightOwners);
-				expect(manifest).toContain(fileBuilderOptions.currentYear);
+				expect(manifest).toContain(fileBuilderOptions.creationYear);
 				expect(manifest).toContain(organizationProps.title);
 			});
 		});

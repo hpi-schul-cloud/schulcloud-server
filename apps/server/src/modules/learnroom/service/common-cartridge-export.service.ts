@@ -20,11 +20,7 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(
-		courseId: EntityId,
-		userId: EntityId,
-		version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0
-	): Promise<Buffer> {
+	async exportCourse(courseId: EntityId, userId: EntityId, version: string): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 		const builder = new CommonCartridgeFileBuilder({
@@ -32,7 +28,7 @@ export class CommonCartridgeExportService {
 			title: course.name,
 			version,
 			copyrightOwners: this.mapCourseTeachersToCopyrightOwners(course),
-			currentYear: course.createdAt.getFullYear().toString(),
+			creationYear: course.createdAt.getFullYear().toString(),
 		});
 		lessons.forEach((lesson) => {
 			const organizationBuilder = builder.addOrganization(this.mapLessonToOrganization(lesson, version));

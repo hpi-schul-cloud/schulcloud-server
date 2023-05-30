@@ -37,10 +37,11 @@ export class CourseController {
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
+		@Param() version: string,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId);
+		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, version);
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',
