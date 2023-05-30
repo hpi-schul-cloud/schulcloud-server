@@ -1,9 +1,9 @@
-import { H5PAjaxEndpoint, H5pError } from '@lumieducation/h5p-server';
+import { H5PAjaxEndpoint, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import busboy from 'busboy';
 import { Request } from 'express';
 import { Readable } from 'stream';
 
+import { ICurrentUser } from '@src/modules/authentication';
 import { H5PAjaxPostBody, PostH5PAjaxQueryParams } from '../controller/dto/h5p-ajax.params';
 import { H5PEditorService } from '../service/h5p-editor.service';
 import { H5PPlayerService } from '../service/h5p-player.service';
@@ -197,5 +197,79 @@ export class H5PEditorUc {
 		} catch (err) {
 			throw this.mapH5pError(err);
 		}
+	}
+
+	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise<string> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const h5pPlayerHtml: string = await this.h5pPlayerService.h5pPlayer.render(contentId, user);
+		return h5pPlayerHtml;
+	}
+
+	public async createH5PEditor(currentUser: ICurrentUser, language: string): Promise<string> {
+		// TODO: await this.checkPermission...
+		const contentId = 'undefined';
+		const createdH5PEditor: Promise<string> = this.editH5pContent(currentUser, contentId, language);
+		return createdH5PEditor;
+	}
+
+	public async editH5pContent(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const createdH5PEditor: string = await this.h5pEditorService.h5pEditor.render(contentId, language, user);
+
+		return createdH5PEditor;
+	}
+
+	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise<boolean> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+		let deletedContent = false;
+		try {
+			await this.h5pEditorService.h5pEditor.deleteContent(contentId, user);
+			deletedContent = true;
+		} catch (error) {
+			deletedContent = false;
+			throw new Error(error as string);
+		}
+
+		return deletedContent;
+	}
+
+	public async saveH5pContent(
+		currentUser: ICurrentUser,
+		contentId: string,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string
+	): Promise<string> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+
+		const newContentId = await this.h5pEditorService.h5pEditor.saveOrUpdateContent(
+			contentId,
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+
+		return newContentId;
+	}
+
+	private changeUserType(currentUser: ICurrentUser): IUser {
+		// TODO: declare IUser (e.g. add roles, schoolId, etc.)
+		const user: IUser = {
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+			email: '',
+			id: currentUser.userId,
+			name: '',
+			type: '',
+		};
+		return user;
 	}
 }

@@ -18,7 +18,8 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { Authenticate } from '@src/modules/authentication/decorator/auth.decorator';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 
 import { H5PEditorUc } from '../uc/h5p.uc';
@@ -29,6 +30,7 @@ import {
 	PostH5PAjaxQueryParams,
 } from './dto/h5p-ajax.params';
 import { GetH5PContentFileParams } from './dto/h5p-content-file.params';
+import { GetH5PContentParams, PostH5PContentParams } from './dto/h5p-editor.params';
 import { GetH5PLibraryFileParams } from './dto/h5p-library-file.params';
 import { GetH5PStaticCoreFileParams, GetH5PStaticEditorCoreFileParams } from './dto/h5p-static-files.params';
 
@@ -60,10 +62,11 @@ export class H5PEditorController {
 	@ApiResponse({ status: 400, type: BadRequestException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
-	@Get('/:contentId/play')
-	async getPlayer() {
+	@Get('/play/:contentId')
+	async getPlayer(@CurrentUser() currentUser: ICurrentUser, @Param() params: GetH5PContentParams) {
+		return this.h5pEditorUc.getH5pPlayer(currentUser, params.contentId);
 		// Dummy Response
-		return Promise.resolve(dummyResponse('H5P Player Dummy'));
+		// return Promise.resolve(dummyResponse('H5P Player Dummy'));
 	}
 
 	@ApiOperation({ summary: 'Return dummy HTML for testing' })
@@ -194,15 +197,47 @@ export class H5PEditorController {
 		return result;
 	}
 
-	@Get('core/:file(*)')
-	async getCoreFiles(@Param() params: GetH5PStaticCoreFileParams) {
-		// Static files?
-		return Promise.resolve(`Test: ${JSON.stringify(params)}`);
+	@Get('/create')
+	async createNewEditor(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: GetH5PContentParams
+	): Promise<string> {
+		const response = this.h5pEditorUc.createH5PEditor(currentUser, params.language);
+		return response;
 	}
 
-	@Get('editor/:ubername/:file(*)')
-	async getEditorCoreFiles(@Param() params: GetH5PStaticEditorCoreFileParams) {
-		// Static files?
-		return Promise.resolve(`Test: ${JSON.stringify(params)}`);
+	@Get('/edit-h5p/:contentId')
+	async editH5pContent(
+		@Param() params: GetH5PContentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<string> {
+		const response = this.h5pEditorUc.editH5pContent(currentUser, params.contentId, params.language);
+		return response;
+	}
+
+	@Post('/delete/:contentId')
+	async deleteH5pContent(
+		@Param() params: GetH5PContentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		const deleteSuccessfull = this.h5pEditorUc.deleteH5pContent(currentUser, params.contentId);
+
+		return deleteSuccessfull;
+	}
+
+	@Post('/save/:contentId')
+	async saveH5pContent(
+		@Param() params: PostH5PContentParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<string> {
+		const newContentId = this.h5pEditorUc.saveH5pContent(
+			currentUser,
+			params.contentId,
+			params.params,
+			params.metadata,
+			params.mainLibraryUbername
+		);
+
+		return newContentId;
 	}
 }
