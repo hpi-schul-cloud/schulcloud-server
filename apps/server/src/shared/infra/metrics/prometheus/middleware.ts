@@ -17,7 +17,7 @@ class RequestInfo {
 
 	constructor(req: Request) {
 		this.method = req.method;
-		this.baseUrl = req.baseUrl;
+		this.baseUrl = req.baseUrl === undefined ? '' : req.baseUrl;
 		this.fullPath = this.baseUrl;
 
 		if (this.hasPath(req.route)) {
