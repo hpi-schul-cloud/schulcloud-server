@@ -109,6 +109,13 @@ describe('createAndStartPrometheusMetricsAppIfEnabled', () => {
 
 			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
 			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
+
+			// Also test logging info message about running Prometheus metrics app.
+			const testLoggerSpy = jest.spyOn(testLogger, 'log');
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+			appMockListenFn.mock.lastCall[1]();
+			expect(testLoggerSpy).toBeCalledTimes(1);
+			testLoggerSpy.mockClear();
 		});
 
 		it('even with all the other features disabled', () => {
@@ -122,6 +129,12 @@ describe('createAndStartPrometheusMetricsAppIfEnabled', () => {
 
 			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
 			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
+
+			const testLoggerSpy = jest.spyOn(testLogger, 'log');
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+			appMockListenFn.mock.lastCall[1]();
+			expect(testLoggerSpy).toBeCalledTimes(1);
+			testLoggerSpy.mockClear();
 		});
 	});
 
