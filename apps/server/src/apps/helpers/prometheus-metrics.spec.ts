@@ -1,70 +1,136 @@
 import { createMock } from '@golevelup/ts-jest';
 
-import express, { Request, Response, NextFunction, RequestHandler } from 'express';
+import express, { Request, Response, NextFunction, RequestHandler, Express } from 'express';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { Logger } from '@src/core/logger';
-import { PrometheusMetricsConfig, createAPIResponseTimeMetricMiddleware } from '@shared/infra/metrics';
-import { addPrometheusMetricsMiddlewaresIfEnabled } from './prometheus-metrics';
+import {
+	PrometheusMetricsConfig,
+	createAPIResponseTimeMetricMiddleware,
+	createPrometheusMetricsApp,
+} from '@shared/infra/metrics';
+import {
+	addPrometheusMetricsMiddlewaresIfEnabled,
+	createAndStartPrometheusMetricsAppIfEnabled,
+} from './prometheus-metrics';
 
 jest.mock('@shared/infra/metrics', () => {
-	const mockedMiddleware: RequestHandler = (_req: Request, _res: Response, next: NextFunction) => {
+	const moduleMock: unknown = {
+		...jest.requireActual('@shared/infra/metrics'),
+		createAPIResponseTimeMetricMiddleware: jest.fn(),
+		createPrometheusMetricsApp: jest.fn(),
+	};
+
+	return moduleMock;
+});
+
+const testLogger = createMock<Logger>();
+
+let configBefore: IConfig;
+
+beforeAll(() => {
+	configBefore = Configuration.toObject({ plainSecrets: true });
+});
+
+beforeEach(() => {
+	Configuration.reset(configBefore);
+
+	const middlewareMock: RequestHandler = (_req: Request, _res: Response, next: NextFunction) => {
 		next();
 	};
 
-	const mockedModule: unknown = {
-		...jest.requireActual('@shared/infra/metrics'),
-		createAPIResponseTimeMetricMiddleware: jest.fn().mockReturnValue(mockedMiddleware),
-	};
+	(createAPIResponseTimeMetricMiddleware as jest.Mock).mockClear();
+	(createAPIResponseTimeMetricMiddleware as jest.Mock).mockReturnValue(middlewareMock);
 
-	return mockedModule;
+	const appMock = { listen: jest.fn() };
+
+	(createPrometheusMetricsApp as jest.Mock).mockClear();
+	(createPrometheusMetricsApp as jest.Mock).mockReturnValue(appMock);
+});
+
+afterAll(() => {
+	Configuration.reset(configBefore);
 });
 
 describe('addPrometheusMetricsMiddlewaresIfEnabled', () => {
-	const testLogger = createMock<Logger>();
-
-	let configBefore: IConfig;
-
-	beforeAll(() => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
-	});
+	let testApp: Express;
+	let testAppUseSpy: jest.SpyInstance;
 
 	beforeEach(() => {
-		Configuration.reset(configBefore);
-	});
-
-	afterAll(() => {
-		Configuration.reset(configBefore);
-	});
-
-	it('should not create the API response time metric middleware and should not add it to the given app', () => {
-		// To not create setters in the PrometheusMetricsConfig just for the unit tests
-		// purpose, we will disable the Prometheus metrics feature the way it should be
-		// disabled in a real app which is via the app configuration.
-		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', false);
-		PrometheusMetricsConfig.reload();
-
-		const testApp = express();
-
-		const appUseSpy = jest.spyOn(testApp, 'use');
-
-		addPrometheusMetricsMiddlewaresIfEnabled(testLogger, testApp);
-
-		expect(createAPIResponseTimeMetricMiddleware).not.toBeCalled();
-		expect(appUseSpy).not.toBeCalled();
+		testApp = express();
+		testAppUseSpy = jest.spyOn(testApp, 'use');
 	});
 
 	it('should create the API response time metric middleware and should add it to the given app', () => {
+		// To not create setters in the PrometheusMetricsConfig just for the unit tests
+		// purpose, we will enable the Prometheus metrics feature the way it should be
+		// enabled in a real app which is via the app configuration.
 		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
 		PrometheusMetricsConfig.reload();
-
-		const testApp = express();
-
-		const appUseSpy = jest.spyOn(testApp, 'use');
 
 		addPrometheusMetricsMiddlewaresIfEnabled(testLogger, testApp);
 
 		expect(createAPIResponseTimeMetricMiddleware).toBeCalled();
-		expect(appUseSpy).toBeCalled();
+		expect(testAppUseSpy).toBeCalled();
+	});
+
+	it('should not create the API response time metric middleware and should not add it to the given app', () => {
+		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', false);
+		PrometheusMetricsConfig.reload();
+
+		addPrometheusMetricsMiddlewaresIfEnabled(testLogger, testApp);
+
+		expect(createAPIResponseTimeMetricMiddleware).not.toBeCalled();
+		expect(testAppUseSpy).not.toBeCalled();
+	});
+});
+
+describe('createAndStartPrometheusMetricsAppIfEnabled', () => {
+	describe('should create Prometheus metrics app and run listen with configured port', () => {
+		const testPort = 9000;
+
+		let appMockListenFn: jest.Mock;
+
+		beforeEach(() => {
+			appMockListenFn = jest.fn();
+
+			(createPrometheusMetricsApp as jest.Mock).mockClear();
+			(createPrometheusMetricsApp as jest.Mock).mockReturnValue({ listen: appMockListenFn });
+		});
+
+		it('with all the other features enabled', () => {
+			Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
+			Configuration.set('PROMETHEUS_METRICS_PORT', testPort);
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', true);
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', true);
+			PrometheusMetricsConfig.reload();
+
+			createAndStartPrometheusMetricsAppIfEnabled(testLogger);
+
+			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
+			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
+		});
+
+		it('even with all the other features disabled', () => {
+			Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', true);
+			Configuration.set('PROMETHEUS_METRICS_PORT', testPort);
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS', false);
+			Configuration.set('PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS', false);
+			PrometheusMetricsConfig.reload();
+
+			createAndStartPrometheusMetricsAppIfEnabled(testLogger);
+
+			expect(createPrometheusMetricsApp).toBeCalledTimes(1);
+			expect(appMockListenFn).toHaveBeenLastCalledWith(testPort, expect.any(Function));
+		});
+	});
+
+	it('should not create Prometheus metrics app if the whole feature is not enabled', () => {
+		Configuration.set('FEATURE_PROMETHEUS_METRICS_ENABLED', false);
+		PrometheusMetricsConfig.reload();
+
+		createAndStartPrometheusMetricsAppIfEnabled(testLogger);
+
+		expect(createPrometheusMetricsApp).not.toBeCalled();
 	});
 });
