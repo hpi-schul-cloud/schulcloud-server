@@ -1,7 +1,6 @@
-import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
-import { BoardElementType, ColumnboardBoardElement } from './boardelement.entity';
-import { ColumnBoardTarget } from './column-board-target.entity';
+import { columnBoardTargetFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { BoardElementType } from './boardelement.entity';
+import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
 
@@ -44,9 +43,9 @@ describe('ColumnboardBoardElementEntity', () => {
 
 	describe('constructor', () => {
 		it('should have correct type', () => {
-			const columnBoard = new ColumnBoardTarget({ columnBoardId: new ObjectId().toHexString() });
+			const columnBoardTarget = columnBoardTargetFactory.build({ title: 'target', published: true });
 
-			const boardElement = new ColumnboardBoardElement({ target: columnBoard });
+			const boardElement = new ColumnboardBoardElement({ target: columnBoardTarget });
 
 			expect(boardElement.boardElementType).toEqual(BoardElementType.ColumnBoard);
 		});
