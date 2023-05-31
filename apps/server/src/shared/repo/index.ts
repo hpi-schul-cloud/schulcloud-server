@@ -28,6 +28,7 @@ export * from './system';
 export * from './task';
 export * from './teams';
 export * from './user';
+export * from './userloginmigration';
 export * from './videoconference';
 export * from './contextexternaltool';
 export * from './externaltool';
