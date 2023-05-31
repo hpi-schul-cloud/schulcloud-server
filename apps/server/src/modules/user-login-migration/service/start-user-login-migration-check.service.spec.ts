@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolService } from '@src/modules/school';
-import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory } from '@shared/testing';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { Action, AuthorizationService } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { StartUserLoginMigrationError } from '../error';
@@ -18,6 +18,8 @@ describe('StartUserLoginMigrationCheckService', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				StartUserLoginMigrationCheckService,
@@ -67,27 +69,24 @@ describe('StartUserLoginMigrationCheckService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				const context = {
+					action: Action.write,
+					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				};
+
+				authorizationService.checkPermission.mockReturnThis();
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
 				schoolService.getSchoolById.mockResolvedValue(school);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId, migration, schoolId: school.id as string, school, context };
 			};
 
 			it('should call checkPermission', async () => {
-				const { userId, schoolId } = setup();
+				const { userId, school, context } = setup();
 
-				await service.checkPreconditions(userId, schoolId);
+				await service.checkPreconditions(userId, school.id as string);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AllowedAuthorizationEntityType.School,
-					schoolId,
-					{
-						action: Action.write,
-						requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					}
-				);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(userId, school, context);
 			});
 
 			it('should get school by id ', async () => {
@@ -109,7 +108,10 @@ describe('StartUserLoginMigrationCheckService', () => {
 
 		describe('when school has no officialSchoolNumber', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				school.officialSchoolNumber = undefined;
+
+				const user: User = userFactory.buildWithId();
 
 				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
@@ -117,22 +119,21 @@ describe('StartUserLoginMigrationCheckService', () => {
 					startedAt: new Date(),
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-				school.officialSchoolNumber = undefined;
-
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				schoolService.getSchoolById.mockResolvedValue(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.checkPermission.mockReturnThis();
 				schoolService.getSchoolById.mockResolvedValue(school);
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(null);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { user, migration, schoolId: school.id as string };
 			};
 
 			it('should throw ForbiddenException ', async () => {
-				const { userId, schoolId } = setup();
+				const { schoolId, user } = setup();
 
-				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
+				await expect(service.checkPreconditions(user.id, schoolId)).rejects.toThrow(
 					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
 				);
 			});
@@ -152,7 +153,7 @@ describe('StartUserLoginMigrationCheckService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.schoolId });
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				authorizationService.checkPermission.mockReturnThis();
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
@@ -183,7 +184,7 @@ describe('StartUserLoginMigrationCheckService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
-				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
+				authorizationService.checkPermission.mockReturnThis();
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(migration);
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
