@@ -8,6 +8,8 @@ import {
 	AuthorizationLoaderService,
 	AuthorizationService,
 } from '@src/modules/authorization';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ContextTypeMapper } from './mapper';
 
 @Injectable()
@@ -23,12 +25,27 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 			id: contextExternalToolId,
 		});
 
+		if (contextExternalTools.length === 0) {
+			throw new NotFoundException(`ContextExternalTool with id ${contextExternalToolId} not found`);
+		}
+
 		return contextExternalTools[0];
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
+		const newContextExternalTool: ContextExternalToolDO = new ContextExternalToolDO({
+			contextToolName: contextExternalTool.contextToolName,
+			contextId: contextExternalTool.contextId,
+			contextType: contextExternalTool.contextType,
+			toolVersion: contextExternalTool.toolVersion,
+			parameters: contextExternalTool.parameters,
+			schoolToolRef: contextExternalTool.schoolToolRef,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
 		const createdContextExternalTool: ContextExternalToolDO = await this.contextExternalToolRepo.save(
-			contextExternalTool
+			newContextExternalTool
 		);
 
 		return createdContextExternalTool;

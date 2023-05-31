@@ -8,6 +8,7 @@ import {
 } from '@shared/testing/factory/domainobject/';
 import { ContextExternalToolDO, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../interface';
 
@@ -134,6 +135,17 @@ describe('ContextExternalToolService', () => {
 				);
 
 				expect(result).toEqual(contextExternalTool);
+			});
+		});
+
+		describe('when contextExternalTool could not be found', () => {
+			it('should throw a not found exception', async () => {
+				const id = 'someId';
+				contextExternalToolRepo.find.mockResolvedValue([]);
+
+				const func = () => service.getContextExternalToolById(id);
+
+				await expect(func()).rejects.toThrow(new NotFoundException(`ContextExternalTool with id ${id} not found`));
 			});
 		});
 	});
