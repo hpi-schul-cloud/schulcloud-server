@@ -102,13 +102,6 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getPublicSchool" >getPublicSchool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#setMigration" >setMigration</a>
@@ -164,8 +157,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/school/controller/school.controller.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/school/controller/school.controller.ts:49</a></div>
                 </td>
             </tr>
 
@@ -229,87 +222,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getPublicSchool"></a>
-                    <span class="name">
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier"></span>
-                        <span class="modifier">Async</span>
-                        <span ><b>getPublicSchool</b></span>
-                        <a href="#getPublicSchool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getPublicSchool(query: <a href="../classes/SchoolQueryParams.html" target="_self">SchoolQueryParams</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get(&#x27;public&#x27;)<br />@ApiOkResponse({description: &#x27;Public Schooldata found and returned&#x27;, type: PublicSchoolResponse})<br />@ApiNotFoundResponse({description: &#x27;Schooldata not found for given query&#x27;})<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="65"
-                            class="link-to-prism">apps/server/src/modules/school/controller/school.controller.ts:65</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>query</td>
-                                    <td>
-                                                <code><a href="../classes/SchoolQueryParams.html" target="_self" >SchoolQueryParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../entitys/School.html" target="_self" >Promise&lt;PublicSchoolResponse&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="setMigration"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -339,8 +251,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/school/controller/school.controller.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/school/controller/school.controller.ts:26</a></div>
                 </td>
             </tr>
 
@@ -416,22 +328,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Param, Put } from &#x27;@nestjs/common&#x27;;
+import {
 	ApiFoundResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from &#x27;@nestjs/swagger&#x27;;
-import { Body, Controller, Get, Param, Put, Query } from &#x27;@nestjs/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
+import { MigrationMapper } from &#x27;../mapper/migration.mapper&#x27;;
+import { OauthMigrationDto } from &#x27;../uc/dto/oauth-migration.dto&#x27;;
 import { SchoolUc } from &#x27;../uc/school.uc&#x27;;
 import { MigrationBody, MigrationResponse, SchoolParams } from &#x27;./dto&#x27;;
-import { MigrationMapper } from &#x27;../mapper/migration.mapper&#x27;;
-import { OauthMigrationDto } from &#x27;../dto/oauth-migration.dto&#x27;;
-import { PublicSchoolResponse } from &#x27;./dto/public.school.response&#x27;;
-import { SchoolQueryParams } from &#x27;./dto/school.query.params&#x27;;
 
 @ApiTags(&#x27;School&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -475,14 +385,6 @@ export class SchoolController {
 		const result: MigrationResponse &#x3D; this.migrationMapper.mapDtoToResponse(migrationDto);
 
 		return result;
-	}
-
-	@Get(&#x27;public&#x27;)
-	@ApiOkResponse({ description: &#x27;Public Schooldata found and returned&#x27;, type: PublicSchoolResponse })
-	@ApiNotFoundResponse({ description: &#x27;Schooldata not found for given query&#x27; })
-	async getPublicSchool(@Query() query: SchoolQueryParams): Promise&lt;PublicSchoolResponse&gt; {
-		const response: PublicSchoolResponse &#x3D; await this.schoolUc.getPublicSchoolData(query.schoolnumber ?? &#x27;&#x27;);
-		return response;
 	}
 }
 </code></pre>

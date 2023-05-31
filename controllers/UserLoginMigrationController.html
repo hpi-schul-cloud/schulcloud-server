@@ -247,8 +247,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="56"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:56</a></div>
                 </td>
             </tr>
 
@@ -324,7 +324,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Controller, Get, Query, Post, Body } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Post, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
@@ -353,14 +353,12 @@ export class UserLoginMigrationController {
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
-		// TODO: N21-822 add pagination and sorting
 	): Promise&lt;UserLoginMigrationSearchListResponse&gt; {
 		const userLoginMigrationQuery: UserLoginMigrationQuery &#x3D; UserLoginMigrationMapper.mapSearchParamsToQuery(params);
 
 		const migrationPage: Page&lt;UserLoginMigrationDO&gt; &#x3D; await this.userLoginMigrationUc.getMigrations(
 			user.userId,
-			userLoginMigrationQuery,
-			{}
+			userLoginMigrationQuery
 		);
 
 		const migrationResponses: UserLoginMigrationResponse[] &#x3D; migrationPage.data.map(
