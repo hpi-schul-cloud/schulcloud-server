@@ -114,7 +114,6 @@
 		"@nestjs/microservices": "^9.2.1",
 		"@nestjs/passport": "^9.0.0",
 		"@nestjs/platform-express": "^9.2.1",
-		"@nestjs/serve-static": "^3.0.1",
 		"@nestjs/swagger": "^6.2.1",
 		"@types/cache-manager-redis-store": "^2.0.1",
 		"@types/connect-redis": "^0.0.19",
