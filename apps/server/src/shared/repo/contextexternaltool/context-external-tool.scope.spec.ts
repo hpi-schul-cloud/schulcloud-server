@@ -11,6 +11,25 @@ describe('CourseExternalToolScope', () => {
 		scope.allowEmptyQuery(true);
 	});
 
+	describe('byId is called', () => {
+		describe('when id parameter is undefined', () => {
+			it('should return scope without added id to query', () => {
+				scope.byId(undefined);
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when id parameter is defined', () => {
+			it('should return scope with added id to query', () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				scope.byId(schoolExternalTool.id);
+
+				expect(scope.query).toEqual({ id: schoolExternalTool.id });
+			});
+		});
+	});
+
 	describe('bySchoolToolId is called', () => {
 		describe('when schoolToolId parameter is undefined', () => {
 			it('should return scope without added schoolToolId to query', () => {

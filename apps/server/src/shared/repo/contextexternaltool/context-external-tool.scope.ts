@@ -3,6 +3,14 @@ import { ContextExternalTool, EntityId } from '@shared/domain';
 import { ToolContextType } from '../../../modules/tool/interface';
 
 export class ContextExternalToolScope extends Scope<ContextExternalTool> {
+	byId(id: EntityId | undefined): ContextExternalToolScope {
+		if (id !== undefined) {
+			this.addQuery({ id });
+		}
+
+		return this;
+	}
+
 	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !== undefined) {
 			this.addQuery({ schoolTool: schoolToolId });

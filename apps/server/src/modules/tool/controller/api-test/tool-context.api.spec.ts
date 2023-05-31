@@ -1,13 +1,23 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalTool, Course, Permission, Role, RoleName, SchoolExternalTool, User } from '@shared/domain';
+import {
+	ContextExternalTool,
+	Course,
+	Permission,
+	Role,
+	RoleName,
+	School,
+	SchoolExternalTool,
+	User,
+} from '@shared/domain';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
 	schoolExternalToolFactory,
+	schoolFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -68,12 +78,14 @@ describe('ToolContextController (API)', () => {
 					permissions: [Permission.CONTEXT_TOOL_ADMIN],
 				});
 
-				const teacher: User = userFactory.buildWithId({ roles: [teacherRole] });
+				const school: School = schoolFactory.buildWithId();
+				const teacher: User = userFactory.buildWithId({ roles: [teacherRole], school });
 
-				const course: Course = courseFactory.buildWithId({ teachers: [teacher] });
+				const course: Course = courseFactory.buildWithId({ teachers: [teacher], school });
 
 				const paramEntry = { name: 'name', value: 'value' };
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+					school,
 					schoolParameters: [paramEntry],
 					toolVersion: 1,
 				});
@@ -87,7 +99,7 @@ describe('ToolContextController (API)', () => {
 					toolVersion: 1,
 				};
 
-				await em.persistAndFlush([teacherRole, course, teacher, schoolExternalTool]);
+				await em.persistAndFlush([teacherRole, course, school, teacher, schoolExternalTool]);
 				em.clear();
 
 				return {
@@ -178,12 +190,14 @@ describe('ToolContextController (API)', () => {
 					permissions: [Permission.CONTEXT_TOOL_ADMIN],
 				});
 
-				const teacher: User = userFactory.buildWithId({ roles: [teacherRole] });
+				const school: School = schoolFactory.buildWithId();
+				const teacher: User = userFactory.buildWithId({ roles: [teacherRole], school });
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacher] });
 
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolVersion: 1,
+					school,
 				});
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					contextId: course.id,

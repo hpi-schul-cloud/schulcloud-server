@@ -116,7 +116,10 @@ describe('ContextExternalToolRepo', () => {
 					contextToolName: 'displayName',
 					contextId: new ObjectId().toHexString(),
 					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
-					schoolToolId: new ObjectId().toHexString(),
+					schoolToolRef: {
+						schoolToolId: new ObjectId().toHexString(),
+						schoolId: undefined,
+					},
 					toolVersion: 1,
 				});
 
@@ -145,7 +148,9 @@ describe('ContextExternalToolRepo', () => {
 					contextToolName: 'displayName',
 					contextId: new ObjectId().toHexString(),
 					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
-					schoolToolId: new ObjectId().toHexString(),
+					schoolToolRef: {
+						schoolToolId: new ObjectId().toHexString(),
+					},
 					toolVersion: 1,
 				});
 
@@ -165,14 +170,22 @@ describe('ContextExternalToolRepo', () => {
 		describe('when matches found for schoolToolId', () => {
 			it('should return correct results', async () => {
 				const { schoolExternalTool1 } = await setup();
-
-				const query: ContextExternalToolQuery = {
-					schoolToolId: schoolExternalTool1.id,
-				};
+				const query: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalTool1.id, schoolExternalTool1.school.id)
+					.build({ contextId: undefined });
 
 				const result: ContextExternalToolDO[] = await repo.find(query);
 
-				expect(result[0].schoolToolId).toEqual(schoolExternalTool1.id);
+				expect(result[0].schoolToolRef.schoolToolId).toEqual(schoolExternalTool1.id);
+			});
+
+			it('should return all dos', async () => {
+				await setup();
+				const query: ContextExternalToolQuery = {};
+
+				const result: ContextExternalToolDO[] = await repo.find(query);
+
+				expect(result.length).toBeGreaterThan(0);
 			});
 		});
 
@@ -197,6 +210,12 @@ describe('ContextExternalToolRepo', () => {
 				const query: ContextExternalToolQuery = {
 					contextType: ToolContextType.COURSE,
 				};
+				it('should return all dos', async () => {
+					const { contextExternalTool1 } = await setup();
+					const query: ContextExternalToolQuery = {
+						schoolToolRef: { schoolToolId: contextExternalTool1.schoolTool.id },
+						contextId: contextExternalTool1.contextId,
+					};
 
 				const result: ContextExternalToolDO[] = await repo.find(query);
 
@@ -212,6 +231,11 @@ describe('ContextExternalToolRepo', () => {
 					contextType: ToolContextType.COURSE,
 				};
 
+			it('should throw error ', async () => {
+				const { schoolExternalTool, unknownContextExternalTool } = await contextSetup();
+				const query: ContextExternalToolDO = contextExternalToolDOFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id, 'schoolId')
+					.build({ contextId: unknownContextExternalTool.contextId });
 				const result: ContextExternalToolDO[] = await repo.find(query);
 
 				expect(result).toEqual([]);
