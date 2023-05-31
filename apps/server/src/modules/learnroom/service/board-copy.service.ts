@@ -3,6 +3,7 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
+	ColumnboardBoardElement,
 	ColumnBoardTarget,
 	Course,
 	isLesson,
@@ -122,7 +123,7 @@ export class BoardCopyService {
 				references.push(lessonElement);
 			}
 			if (status.copyEntity instanceof ColumnBoardTarget) {
-				const columnBoardElement = new ColumnBoardTarget({ target: status.copyEntity });
+				const columnBoardElement = new ColumnboardBoardElement({ target: status.copyEntity });
 				references.push(columnBoardElement);
 			}
 		});
