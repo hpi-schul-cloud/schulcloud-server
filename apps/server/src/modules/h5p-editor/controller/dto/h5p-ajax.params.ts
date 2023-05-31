@@ -76,6 +76,10 @@ export class PostH5PAjaxQueryParams {
 	@IsString()
 	@IsOptional()
 	language?: string;
+
+	@IsString()
+	@IsOptional()
+	id?: string;
 }
 
 class H5PAjaxPostBodyLibraries {
@@ -120,7 +124,7 @@ export class H5PAjaxPostBodyTransformPipe implements PipeTransform {
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(H5PAjaxPostBodyLibraryParameters, value);
 			} else {
-				throw new BadRequestException('Invalid body');
+				return undefined;
 			}
 
 			const validation = await validate(transformed);

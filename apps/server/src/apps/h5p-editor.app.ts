@@ -22,8 +22,11 @@ async function bootstrap() {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 
+	const oneHourInMs = 1000 * 60 * 60;
+
 	nestExpressAdapter.useStaticAssets(path.join(__dirname, '../static-assets/h5p'), {
 		prefix: '/h5p-editor',
+		maxAge: oneHourInMs,
 	});
 
 	const nestApp = await NestFactory.create(H5PEditorModule, nestExpressAdapter);

@@ -97,14 +97,14 @@ export class H5PEditorController {
 		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
-	@Get('content/:id')
+	@Get('params/:id')
 	async getContentParameters(@Param('id') id: string) {
 		const content = await this.h5pEditorUc.getContentParameters(id);
 
 		return content;
 	}
 
-	@Get('content/:id/:file(*)')
+	@Get('params/:id/:file(*)')
 	async getContentFile(@Param() params: GetH5PContentFileParams, @Req() req: Request, @Res() res: Response) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
 			params.id,
@@ -198,11 +198,9 @@ export class H5PEditorController {
 	}
 
 	@Get('/create')
-	async createNewEditor(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: GetH5PContentParams
-	): Promise<string> {
-		const response = this.h5pEditorUc.createH5PEditor(currentUser, params.language);
+	async createNewEditor(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		// Todo: Get user language
+		const response = this.h5pEditorUc.createH5PEditor(currentUser, 'de');
 		return response;
 	}
 

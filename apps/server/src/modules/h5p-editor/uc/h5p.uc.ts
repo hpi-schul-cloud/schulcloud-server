@@ -59,7 +59,7 @@ export class H5PEditorUc {
 			return new HttpException(error.message, error.httpStatusCode);
 		}
 
-		return new InternalServerErrorException(error);
+		return new InternalServerErrorException({ error });
 	}
 
 	public async getAjax(
@@ -85,10 +85,10 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async postAjax(query: PostH5PAjaxQueryParams, body: H5PAjaxPostBody, files: Express.Multer.File[]) {
+	public async postAjax(query: PostH5PAjaxQueryParams, body: H5PAjaxPostBody, files?: Express.Multer.File[]) {
 		try {
-			const filesFile = files.find((file) => file.fieldname === 'file');
-			const libraryUploadFile = files.find((file) => file.fieldname === 'h5p');
+			const filesFile = files?.find((file) => file.fieldname === 'file');
+			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
 
 			const result = await this.h5pAjaxEndpoint.postAjax(
 				query.action,
@@ -101,8 +101,8 @@ export class H5PEditorUc {
 					name: filesFile.originalname,
 					size: filesFile.size,
 				},
+				query.id,
 				undefined, // Todo: Translation callback
-				undefined, // Todo: Id
 				libraryUploadFile && {
 					data: libraryUploadFile.buffer,
 					mimetype: libraryUploadFile.mimetype,
@@ -209,7 +209,7 @@ export class H5PEditorUc {
 
 	public async createH5PEditor(currentUser: ICurrentUser, language: string): Promise<string> {
 		// TODO: await this.checkPermission...
-		const contentId = 'undefined';
+		const contentId = undefined as unknown as string;
 		const createdH5PEditor: Promise<string> = this.editH5pContent(currentUser, contentId, language);
 		return createdH5PEditor;
 	}
