@@ -628,11 +628,18 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('when seeding database from factories', () => {
-		it('should seed database with factories', async () => {
-			const accountData = collectionSeedData.filter((c) => c.collectionName === 'accounts').at(0)?.data;
-			expect(accountData).toBeDefined();
+		it('should seed database with roles', async () => {
+			const roleData = collectionSeedData.filter((c) => c.collectionName === 'roles').at(0)?.data;
+			expect(roleData).toBeDefined();
+			expect(roleData?.length).toBe(16);
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
 			expect(collectionsSeeded).toStrictEqual(collectionSeedData.map((c) => `${c.collectionName}:${c.data.length}`));
 		});
+		// it('should seed database with factories', async () => {
+		// 	const accountData = collectionSeedData.filter((c) => c.collectionName === 'accounts').at(0)?.data;
+		// 	expect(accountData).toBeDefined();
+		// 	const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
+		// 	expect(collectionsSeeded).toStrictEqual(collectionSeedData.map((c) => `${c.collectionName}:${c.data.length}`));
+		// });
 	});
 });
