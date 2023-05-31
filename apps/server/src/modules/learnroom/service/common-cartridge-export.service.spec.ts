@@ -94,7 +94,7 @@ describe('CommonCartridgeExportService', () => {
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
 			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
-			archive = new AdmZip(await courseExportService.exportCourse(course.id, ''));
+			archive = new AdmZip(await courseExportService.exportCourse(course.id, '', ''));
 		});
 
 		it('should create manifest file', () => {

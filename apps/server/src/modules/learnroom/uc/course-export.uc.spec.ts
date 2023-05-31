@@ -37,7 +37,7 @@ describe('CourseExportUc', () => {
 		it('should check for permissions', async () => {
 			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 
-			await expect(courseExportUc.exportCourse('', '')).resolves.not.toThrow();
+			await expect(courseExportUc.exportCourse('', '', '')).resolves.not.toThrow();
 			expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 		});
 
@@ -45,7 +45,7 @@ describe('CourseExportUc', () => {
 			courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
 			authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 
-			await expect(courseExportUc.exportCourse('', '')).resolves.toBeInstanceOf(Buffer);
+			await expect(courseExportUc.exportCourse('', '', '')).resolves.toBeInstanceOf(Buffer);
 		});
 	});
 });
