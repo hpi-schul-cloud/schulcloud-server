@@ -8,7 +8,6 @@ import {
 	ICommonCartridgeOrganizationProps,
 	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
-	CommonCartridgeVersion,
 	CommonCartridgeResourceType,
 } from '../common-cartridge';
 
@@ -53,7 +52,7 @@ export class CommonCartridgeExportService {
 		return builder.build();
 	}
 
-	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
+	private mapLessonToOrganization(lesson: Lesson, version: string): ICommonCartridgeOrganizationProps {
 		return {
 			identifier: `i${lesson.id}`,
 			version,
@@ -65,7 +64,7 @@ export class CommonCartridgeExportService {
 	private mapContentToResource(
 		lessonId: string,
 		content: IComponentProperties,
-		version: CommonCartridgeVersion
+		version: string
 	): ICommonCartridgeResourceProps | undefined {
 		if (content.component === ComponentType.TEXT) {
 			return {

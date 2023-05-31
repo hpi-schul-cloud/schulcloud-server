@@ -1,11 +1,11 @@
 import { Builder } from 'xml2js';
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { ICommonCartridgeFile } from './common-cartridge-file.interface';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from './common-cartridge-enums';
+import { CommonCartridgeResourceType } from './common-cartridge-enums';
 
 export type ICommonCartridgeWebLinkResourceProps = {
 	type: CommonCartridgeResourceType.WEB_LINK;
-	version: CommonCartridgeVersion;
+	version: string;
 	identifier: string;
 	href: string;
 	title: string;

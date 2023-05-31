@@ -37,7 +37,7 @@ export class CourseController {
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
-		@Param() version: string,
+		@Param('version') version: string,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
