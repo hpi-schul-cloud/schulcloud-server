@@ -3,6 +3,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules';
+import { LegacyLogger } from '@src/core/logger';
+import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
 import { ToolContextType } from '../interface';
@@ -26,6 +28,10 @@ describe('ContextExternalToolUc', () => {
 				{
 					provide: ContextExternalToolValidationService,
 					useValue: createMock<ContextExternalToolValidationService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -132,16 +138,71 @@ describe('ContextExternalToolUc', () => {
 
 	describe('getContextExternalToolsForContext is called', () => {
 		describe('when parameters are given and user has permission ', () => {
-			it('should call contextExternalToolService', async () => {
+			const setup = () => {
+				const userId: EntityId = 'userId';
 				const contextId: EntityId = 'contextId';
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
-				await uc.getContextExternalToolsForContext('userId', contextType, contextId);
+				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+					contextType: ToolContextType.COURSE,
+					contextToolName: 'Course',
+					contextId: 'contextId',
+				});
+
+				contextExternalToolService.getContextExternalToolsForContext.mockResolvedValue([contextExternalTool]);
+				contextExternalToolService.ensureContextPermissions.mockResolvedValue(Promise.resolve());
+
+				return {
+					contextExternalTool,
+					userId,
+					contextId,
+					contextType,
+				};
+			};
+
+			it('should call contextExternalToolService', async () => {
+				const { userId, contextType, contextId } = setup();
+
+				await uc.getContextExternalToolsForContext(userId, contextType, contextId);
 
 				expect(contextExternalToolService.getContextExternalToolsForContext).toHaveBeenCalledWith(
 					contextType,
 					contextId
 				);
+			});
+
+			it('should call contextExternalToolService to ensure permissions', async () => {
+				const { userId, contextType, contextId, contextExternalTool } = setup();
+
+				await uc.getContextExternalToolsForContext(userId, contextType, contextId);
+
+				expect(contextExternalToolService.ensureContextPermissions).toHaveBeenCalledWith(userId, contextExternalTool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+					action: Action.read,
+				});
+			});
+
+			it('should handle ForbiddenLoggableException and not include the tool in the response', async () => {
+				const { userId, contextType, contextId } = setup();
+
+				contextExternalToolService.ensureContextPermissions.mockRejectedValue(
+					new ForbiddenLoggableException(userId, 'contextExternalTool', {
+						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+						action: Action.read,
+					})
+				);
+
+				const tools = await uc.getContextExternalToolsForContext(userId, contextType, contextId);
+
+				expect(tools).toEqual([]);
+			});
+
+			it('should rethrow any exception other than ForbiddenLoggableException', async () => {
+				const { userId, contextType, contextId } = setup();
+
+				contextExternalToolService.ensureContextPermissions.mockRejectedValue(new Error());
+
+				await expect(uc.getContextExternalToolsForContext(userId, contextType, contextId)).rejects.toThrow(Error);
 			});
 		});
 	});
