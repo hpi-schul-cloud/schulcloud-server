@@ -20,7 +20,7 @@ import { UserService } from '@src/modules/user';
 import { UserMigrationService } from '@src/modules/user-login-migration';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
 import { SchoolMigrationService } from '@src/modules/user-login-migration/service';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';
 import { OAuthProcessDto } from '../service/dto';
@@ -120,7 +120,7 @@ describe('OAuthUc', () => {
 			const oauthConfig: OauthConfigDto = new OauthConfigDto({
 				clientId: '12345',
 				clientSecret: 'mocksecret',
-				tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+				tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 				grantType: 'authorization_code',
 				scope: 'openid uuid',
 				responseType: 'code',
@@ -317,7 +317,7 @@ describe('OAuthUc', () => {
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
 						clientSecret: 'mocksecret',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
 						scope: 'openid uuid',
 						responseType: 'code',
@@ -401,7 +401,7 @@ describe('OAuthUc', () => {
 					const oauthConfig: OauthConfigDto = new OauthConfigDto({
 						clientId: '12345',
 						clientSecret: 'mocksecret',
-						tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
+						tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 						grantType: 'authorization_code',
 						scope: 'openid uuid',
 						responseType: 'code',

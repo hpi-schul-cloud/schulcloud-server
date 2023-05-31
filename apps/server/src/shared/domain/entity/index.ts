@@ -26,4 +26,5 @@ export * from './task.entity';
 export * from './team.entity';
 export * from './tools';
 export * from './user.entity';
+export * from './user-login-migration.entity';
 export * from './video-conference.entity';
