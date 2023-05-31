@@ -136,7 +136,7 @@
                             <a href="#CustomParameterScope" title="apps/server/src/shared/domain/entity/tools/external-tool/custom-parameter/custom-parameter-scope.enum.ts" ><b>CustomParameterScope</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-scope.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#CustomParameterScopeParams" title="apps/server/src/modules/tool/interface/custom-parameter-scope.enum.ts" ><b>CustomParameterScopeParams</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-scope.enum.ts)</a>
+                            <a href="#CustomParameterScopeTypeParams" title="apps/server/src/modules/tool/interface/custom-parameter-scope-type.enum.ts" ><b>CustomParameterScopeTypeParams</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-scope-type.enum.ts)</a>
                         </li>
                         <li>
                             <a href="#CustomParameterType" title="apps/server/src/shared/domain/entity/tools/external-tool/custom-parameter/custom-parameter-type.enum.ts" ><b>CustomParameterType</b>&nbsp;&nbsp;&nbsp;(apps/.../custom-parameter-type.enum.ts)</a>
@@ -151,7 +151,7 @@
                             <a href="#ErrorType" title="apps/server/src/modules/files-storage/error/error-status.enum.ts" ><b>ErrorType</b>&nbsp;&nbsp;&nbsp;(apps/.../error-status.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#ExternalToolSortOrder" title="apps/server/src/modules/tool/controller/dto/request/external-tool-sort.params.ts" ><b>ExternalToolSortOrder</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-sort.params.ts)</a>
+                            <a href="#ExternalToolSortBy" title="apps/server/src/modules/tool/controller/dto/request/external-tool-sort.params.ts" ><b>ExternalToolSortBy</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-sort.params.ts)</a>
                         </li>
                         <li>
                             <a href="#FileRecordParentType" title="apps/server/src/modules/files-storage/entity/filerecord.entity.ts" ><b>FileRecordParentType</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.entity.ts)</a>
@@ -182,6 +182,9 @@
                         </li>
                         <li>
                             <a href="#LanguageType" title="apps/server/src/shared/domain/entity/user.entity.ts" ><b>LanguageType</b>&nbsp;&nbsp;&nbsp;(apps/.../user.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LaunchRequestMethod" title="apps/server/src/modules/tool/launch-tool/types/launch-request-method.ts" ><b>LaunchRequestMethod</b>&nbsp;&nbsp;&nbsp;(apps/.../launch-request-method.ts)</a>
                         </li>
                         <li>
                             <a href="#LearnroomTypes" title="apps/server/src/shared/domain/types/learnroom.types.ts" ><b>LearnroomTypes</b>&nbsp;&nbsp;&nbsp;(apps/.../learnroom.types.ts)</a>
@@ -230,6 +233,9 @@
                         </li>
                         <li>
                             <a href="#Permission" title="apps/server/src/shared/domain/interface/permission.enum.ts" ><b>Permission</b>&nbsp;&nbsp;&nbsp;(apps/.../permission.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PropertyLocation" title="apps/server/src/modules/tool/launch-tool/types/property-location.ts" ><b>PropertyLocation</b>&nbsp;&nbsp;&nbsp;(apps/.../property-location.ts)</a>
                         </li>
                         <li>
                             <a href="#RoleName" title="apps/server/src/shared/domain/interface/rolename.enum.ts" ><b>RoleName</b>&nbsp;&nbsp;&nbsp;(apps/.../rolename.enum.ts)</a>
@@ -302,6 +308,9 @@
                         </li>
                         <li>
                             <a href="#ToolContextType" title="apps/server/src/modules/tool/interface/tool-context-type.enum.ts" ><b>ToolContextType</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-context-type.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ToolLaunchDataType" title="apps/server/src/modules/tool/launch-tool/types/tool-launch-data-type.ts" ><b>ToolLaunchDataType</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch-data-type.ts)</a>
                         </li>
                         <li>
                             <a href="#UserRole" title="apps/server/src/modules/user-import/controller/dto/user-role.ts" ><b>UserRole</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role.ts)</a>
@@ -483,6 +492,16 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>boardnodes</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ContextExternalTool
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>context_external_tools</code>
                             </td>
                         </tr>
             </tbody>
@@ -1537,25 +1556,25 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;COURSE
+                                &nbsp;CONTEXT
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>course</code>
+                                <i>Value : </i><code>context</code>
                             </td>
                         </tr>
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/tool/interface/custom-parameter-scope.enum.ts</h3>
+    <h3>apps/server/src/modules/tool/interface/custom-parameter-scope-type.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="CustomParameterScopeParams"></a>
-                        <span class="name "><b>CustomParameterScopeParams</b><a href="#CustomParameterScopeParams"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="CustomParameterScopeTypeParams"></a>
+                        <span class="name "><b>CustomParameterScopeTypeParams</b><a href="#CustomParameterScopeTypeParams"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
@@ -1580,12 +1599,12 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;COURSE
+                                &nbsp;CONTEXT
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>course</code>
+                                <i>Value : </i><code>context</code>
                             </td>
                         </tr>
             </tbody>
@@ -1869,8 +1888,8 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="ExternalToolSortOrder"></a>
-                        <span class="name "><b>ExternalToolSortOrder</b><a href="#ExternalToolSortOrder"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="ExternalToolSortBy"></a>
+                        <span class="name "><b>ExternalToolSortBy</b><a href="#ExternalToolSortBy"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
@@ -2515,6 +2534,39 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>uk</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/tool/launch-tool/types/launch-request-method.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="LaunchRequestMethod"></a>
+                        <span class="name "><b>LaunchRequestMethod</b><a href="#LaunchRequestMethod"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;GET
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>GET</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;POST
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>POST</code>
                             </td>
                         </tr>
             </tbody>
@@ -3436,6 +3488,16 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>CONTEXT_TOOL_ADMIN</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;CONTEXT_TOOL_USER
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>CONTEXT_TOOL_USER</code>
                             </td>
                         </tr>
                         <tr>
@@ -4691,6 +4753,49 @@
             </tbody>
         </table>
 </section>
+    <h3>apps/server/src/modules/tool/launch-tool/types/property-location.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="PropertyLocation"></a>
+                        <span class="name "><b>PropertyLocation</b><a href="#PropertyLocation"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;PATH
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>path</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BODY
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>body</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;QUERY
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>query</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
     <h3>apps/server/src/shared/domain/interface/rolename.enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
@@ -5819,6 +5924,49 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>course</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <h3>apps/server/src/modules/tool/launch-tool/types/tool-launch-data-type.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ToolLaunchDataType"></a>
+                        <span class="name "><b>ToolLaunchDataType</b><a href="#ToolLaunchDataType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;BASIC
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>basic</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;OAUTH2
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>oauth2</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;LTI11
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>lti11</code>
                             </td>
                         </tr>
             </tbody>

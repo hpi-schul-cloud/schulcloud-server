@@ -119,7 +119,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#byContextIdAndSchoolToolId" >byContextIdAndSchoolToolId</a>
+                                <a href="#byContextId" >byContextId</a>
+                            </li>
+                            <li>
+                                <a href="#byId" >byId</a>
                             </li>
                             <li>
                                 <a href="#bySchoolToolId" >bySchoolToolId</a>
@@ -266,24 +269,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="byContextIdAndSchoolToolId"></a>
+                    <a name="byContextId"></a>
                     <span class="name">
-                        <span ><b>byContextIdAndSchoolToolId</b></span>
-                        <a href="#byContextIdAndSchoolToolId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>byContextId</b></span>
+                        <a href="#byContextId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>byContextIdAndSchoolToolId(contextId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+<code>byContextId(contextId: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:20</a></div>
                 </td>
             </tr>
 
@@ -306,7 +309,7 @@
                                 <tr>
                                     <td>contextId</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
                                     </td>
 
                                     <td>
@@ -315,10 +318,67 @@
 
 
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ContextExternalToolScope.html" target="_self" >ContextExternalToolScope</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="byId"></a>
+                    <span class="name">
+                        <span ><b>byId</b></span>
+                        <a href="#byId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>byId(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="5"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:5</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
                                 <tr>
-                                    <td>schoolToolId</td>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
                                     </td>
 
                                     <td>
@@ -363,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="5"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:5</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.scope.ts:13</a></div>
                 </td>
             </tr>
 
@@ -576,6 +636,14 @@
 import { ContextExternalTool, EntityId } from &#x27;@shared/domain&#x27;;
 
 export class ContextExternalToolScope extends Scope&lt;ContextExternalTool&gt; {
+	byId(id: EntityId | undefined): ContextExternalToolScope {
+		if (id !&#x3D;&#x3D; undefined) {
+			this.addQuery({ id });
+		}
+
+		return this;
+	}
+
 	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !&#x3D;&#x3D; undefined) {
 			this.addQuery({ schoolTool: schoolToolId });
@@ -583,8 +651,10 @@ export class ContextExternalToolScope extends Scope&lt;ContextExternalTool&gt; {
 		return this;
 	}
 
-	byContextIdAndSchoolToolId(contextId: EntityId, schoolToolId: EntityId): ContextExternalToolScope {
-		this.addQuery({ $and: [{ contextId }, { schoolTool: schoolToolId }] });
+	byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
+		if (contextId !&#x3D;&#x3D; undefined) {
+			this.addQuery({ contextId });
+		}
 
 		return this;
 	}

@@ -126,12 +126,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>)</code>
+<code>constructor(courseRule: <a href="../injectables/CourseRule.html" target="_self">CourseRule</a>, courseGroupRule: <a href="../injectables/CourseGroupRule.html" target="_self">CourseGroupRule</a>, lessonRule: <a href="../injectables/LessonRule.html" target="_self">LessonRule</a>, schoolRule: <a href="../injectables/SchoolRule.html" target="_self">SchoolRule</a>, taskRule: <a href="../injectables/TaskRule.html" target="_self">TaskRule</a>, taskCardRule: <a href="../injectables/TaskCardRule.html" target="_self">TaskCardRule</a>, userRule: <a href="../injectables/UserRule.html" target="_self">UserRule</a>, teamRule: <a href="../injectables/TeamRule.html" target="_self">TeamRule</a>, submissionRule: <a href="../injectables/SubmissionRule.html" target="_self">SubmissionRule</a>, schoolExternalToolRule: <a href="../injectables/SchoolExternalToolRule.html" target="_self">SchoolExternalToolRule</a>, boardDoRule: <a href="../injectables/BoardDoRule.html" target="_self">BoardDoRule</a>, contextExternalToolRule: <a href="../injectables/ContextExternalToolRule.html" target="_self">ContextExternalToolRule</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -280,6 +280,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>contextExternalToolRule</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContextExternalToolRule.html" target="_self" >ContextExternalToolRule</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -316,8 +328,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="58"
-                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:58</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:61</a></div>
                 </td>
             </tr>
 
@@ -387,8 +399,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="51"
-                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:51</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:54</a></div>
                 </td>
             </tr>
 
@@ -487,7 +499,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:21</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/authorization/rule-manager.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -516,6 +528,7 @@ import {
 	TeamRule,
 	UserRule,
 } from &#x27;@shared/domain/rules&#x27;;
+import { ContextExternalToolRule } from &#x27;@shared/domain/rules/context-external-tool.rule&#x27;;
 import { AuthorizationContext, Rule } from &#x27;./types&#x27;;
 
 @Injectable()
@@ -533,7 +546,8 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardDoRule: BoardDoRule
+		private readonly boardDoRule: BoardDoRule,
+		private readonly contextExternalToolRule: ContextExternalToolRule
 	) {
 		this.rules &#x3D; [
 			this.courseRule,
@@ -547,6 +561,7 @@ export class RuleManager {
 			this.submissionRule,
 			this.schoolExternalToolRule,
 			this.boardDoRule,
+			this.contextExternalToolRule,
 		];
 	}
 

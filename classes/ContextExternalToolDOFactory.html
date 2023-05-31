@@ -112,7 +112,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#withSchoolToolId" >withSchoolToolId</a>
+                                <a href="#withSchoolExternalToolRef" >withSchoolExternalToolRef</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -218,16 +218,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="withSchoolToolId"></a>
+                    <a name="withSchoolExternalToolRef"></a>
                     <span class="name">
-                        <span ><b>withSchoolToolId</b></span>
-                        <a href="#withSchoolToolId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>withSchoolExternalToolRef</b></span>
+                        <a href="#withSchoolExternalToolRef"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>withSchoolToolId(schoolToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>withSchoolExternalToolRef(schoolToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolId?: string | undefined)</code>
                 </td>
             </tr>
 
@@ -263,6 +263,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                            <code>string | undefined</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -1328,9 +1340,9 @@ import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 class ContextExternalToolDOFactory extends DoBaseFactory&lt;ContextExternalToolDO, ContextExternalToolDO&gt; {
-	withSchoolToolId(schoolToolId: string): this {
+	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial&lt;ContextExternalToolDO&gt; &#x3D; {
-			schoolToolId,
+			schoolToolRef: { schoolToolId, schoolId },
 		};
 		return this.params(params);
 	}
@@ -1340,12 +1352,14 @@ export const contextExternalToolDOFactory &#x3D; ContextExternalToolDOFactory.de
 	ContextExternalToolDO,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			schoolToolId: &#x60;schoolToolId-${sequence}&#x60;,
+			updatedAt: new Date(),
+			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
 			contextId: &#x27;courseId&#x27;,
 			contextType: ToolContextType.COURSE,
 			contextToolName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,
+			createdAt: new Date(),
 		};
 	}
 );

@@ -97,6 +97,14 @@
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ensureContextPermissions" >ensureContextPermissions</a>
+                            </li>
+                            <li>
+                                <a href="#findById" >findById</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#getContextExternalToolById" >getContextExternalToolById</a>
                             </li>
@@ -118,12 +126,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>)</code>
+<code>constructor(contextExternalToolRepo: <a href="../injectables/ContextExternalToolRepo.html" target="_self">ContextExternalToolRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -145,6 +153,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ContextExternalToolRepo.html" target="_self" >ContextExternalToolRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -188,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:34</a></div>
                 </td>
             </tr>
 
@@ -259,8 +279,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:53</a></div>
                 </td>
             </tr>
 
@@ -330,8 +350,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:63</a></div>
                 </td>
             </tr>
 
@@ -383,6 +403,171 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="ensureContextPermissions"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ensureContextPermissions</b></span>
+                        <a href="#ensureContextPermissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ensureContextPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalToolDO: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:67</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextExternalToolDO</td>
+                                    <td>
+                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>context</td>
+                                    <td>
+                                                <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findById"></a>
+                    <span class="name">
+                        <span ><b>findById</b></span>
+                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>findById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:89</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getContextExternalToolById"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -401,8 +586,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/tool/service/context-external-tool.service.ts:22</a></div>
                 </td>
             </tr>
 
@@ -456,24 +641,53 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
-import { ContextExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ContextExternalToolDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
+import { ContextExternalToolRepo } from &#x27;@shared/repo&#x27;;
+import {
+	AuthorizableReferenceType,
+	AuthorizationContext,
+	AuthorizationLoaderService,
+	AuthorizationService,
+} from &#x27;@src/modules/authorization&#x27;;
+import { NotFoundException } from &#x27;@nestjs/common/exceptions/not-found.exception&#x27;;
+import { ContextTypeMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
-export class ContextExternalToolService {
-	constructor(private readonly contextExternalToolRepo: ContextExternalToolRepo) {}
+export class ContextExternalToolService implements AuthorizationLoaderService {
+	constructor(
+		private readonly contextExternalToolRepo: ContextExternalToolRepo,
+		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService))
+		private readonly authorizationService: AuthorizationService
+	) {}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise&lt;ContextExternalToolDO&gt; {
-		const contextExternalTool &#x3D; await this.contextExternalToolRepo.findById(contextExternalToolId);
+		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
+			id: contextExternalToolId,
+		});
 
-		return contextExternalTool;
+		if (contextExternalTools.length &#x3D;&#x3D;&#x3D; 0) {
+			throw new NotFoundException(&#x60;ContextExternalTool with id ${contextExternalToolId} not found&#x60;);
+		}
+
+		return contextExternalTools[0];
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;ContextExternalToolDO&gt; {
+		const newContextExternalTool: ContextExternalToolDO &#x3D; new ContextExternalToolDO({
+			contextToolName: contextExternalTool.contextToolName,
+			contextId: contextExternalTool.contextId,
+			contextType: contextExternalTool.contextType,
+			toolVersion: contextExternalTool.toolVersion,
+			parameters: contextExternalTool.parameters,
+			schoolToolRef: contextExternalTool.schoolToolRef,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+
 		const createdContextExternalTool: ContextExternalToolDO &#x3D; await this.contextExternalToolRepo.save(
-			contextExternalTool
+			newContextExternalTool
 		);
 
 		return createdContextExternalTool;
@@ -481,7 +695,9 @@ export class ContextExternalToolService {
 
 	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
 		const contextExternalTools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolRepo.find({
-			schoolToolId: schoolExternalToolId,
+			schoolToolRef: {
+				schoolToolId: schoolExternalToolId,
+			},
 		});
 
 		await this.contextExternalToolRepo.delete(contextExternalTools);
@@ -489,6 +705,32 @@ export class ContextExternalToolService {
 
 	async deleteContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise&lt;void&gt; {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
+	}
+
+	public async ensureContextPermissions(
+		userId: EntityId,
+		contextExternalToolDO: ContextExternalToolDO,
+		context: AuthorizationContext
+	): Promise&lt;void&gt; {
+		if (contextExternalToolDO.id) {
+			await this.authorizationService.checkPermissionByReferences(
+				userId,
+				AuthorizableReferenceType.ContextExternalTool,
+				contextExternalToolDO.id,
+				context
+			);
+		}
+
+		await this.authorizationService.checkPermissionByReferences(
+			userId,
+			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextType),
+			contextExternalToolDO.contextId,
+			context
+		);
+	}
+
+	findById(id: EntityId): Promise&lt;ContextExternalToolDO&gt; {
+		return this.getContextExternalToolById(id);
 	}
 }
 </code></pre>

@@ -285,7 +285,7 @@ export class SchoolExternalTool extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	tool: ExternalTool;
 
-	@ManyToOne()
+	@ManyToOne(() &#x3D;&gt; School, { eager: true })
 	school: School;
 
 	@Embedded(() &#x3D;&gt; CustomParameterEntry, { array: true })

@@ -1,0 +1,600 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >ToolLaunchService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#strategies" >strategies</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#generateLaunchRequest" >generateLaunchRequest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLaunchData" >getLaunchData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#loadToolHierarchy" >loadToolHierarchy</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, basicToolLaunchStrategy: <a href="../interfaces/IToolLaunchStrategy.html" target="_self">IToolLaunchStrategy</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:11</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>schoolExternalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolExternalToolService.html" target="_self" >SchoolExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>externalToolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ExternalToolService.html" target="_self" >ExternalToolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>basicToolLaunchStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IToolLaunchStrategy.html" target="_self" >IToolLaunchStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateLaunchRequest"></a>
+                    <span class="name">
+                        <span ><b>generateLaunchRequest</b></span>
+                        <a href="#generateLaunchRequest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>generateLaunchRequest(toolLaunchDataDO: <a href="../classes/ToolLaunchData.html" target="_self">ToolLaunchData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:22</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>toolLaunchDataDO</td>
+                                    <td>
+                                                <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >ToolLaunchRequest</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLaunchData"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getLaunchData</b></span>
+                        <a href="#getLaunchData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLaunchData(contextExternalToolDO: <a href="../classes/ContextExternalToolDO.html" target="_self">ContextExternalToolDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:35</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>contextExternalToolDO</td>
+                                    <td>
+                                                <code><a href="../classes/ContextExternalToolDO.html" target="_self" >ContextExternalToolDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >Promise&lt;ToolLaunchData&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadToolHierarchy"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>loadToolHierarchy</b></span>
+                        <a href="#loadToolHierarchy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadToolHierarchy(schoolExternalToolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolExternalToolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="strategies"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>strategies</b></span>
+                        <a href="#strategies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/IToolLaunchStrategy.html" target="_self" >Map&lt;ToolConfigType | IToolLaunchStrategy&gt;</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/tool-launch.service.ts:11</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from &#x27;@shared/domain&#x27;;
+import { ExternalToolService, SchoolExternalToolService } from &#x27;../../service&#x27;;
+import { ToolConfigType } from &#x27;../../interface&#x27;;
+import { BasicToolLaunchStrategy, IToolLaunchStrategy } from &#x27;./strategy&#x27;;
+import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
+import { ToolLaunchMapper } from &#x27;../mapper&#x27;;
+
+@Injectable()
+export class ToolLaunchService {
+	private strategies: Map&lt;ToolConfigType, IToolLaunchStrategy&gt;;
+
+	constructor(
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly externalToolService: ExternalToolService,
+		@Inject(BasicToolLaunchStrategy) private basicToolLaunchStrategy: IToolLaunchStrategy
+	) {
+		this.strategies &#x3D; new Map();
+		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
+	}
+
+	generateLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest {
+		const toolConfigType: ToolConfigType &#x3D; ToolLaunchMapper.mapToToolConfigType(toolLaunchDataDO.type);
+		const strategy &#x3D; this.strategies.get(toolConfigType);
+
+		if (!strategy) {
+			throw new InternalServerErrorException(&#x27;Unknown tool launch data type&#x27;);
+		}
+
+		const launchRequest: ToolLaunchRequest &#x3D; strategy.createLaunchRequest(toolLaunchDataDO);
+
+		return launchRequest;
+	}
+
+	async getLaunchData(contextExternalToolDO: ContextExternalToolDO): Promise&lt;ToolLaunchData&gt; {
+		const schoolExternalToolId &#x3D; contextExternalToolDO.schoolToolRef.schoolToolId;
+
+		const { externalToolDO, schoolExternalToolDO } &#x3D; await this.loadToolHierarchy(schoolExternalToolId);
+
+		const strategy &#x3D; this.strategies.get(externalToolDO.config.type);
+		if (!strategy) {
+			throw new InternalServerErrorException(&#x27;Unknown tool config type&#x27;);
+		}
+
+		const launchData: ToolLaunchData &#x3D; strategy.createLaunchData({
+			externalToolDO,
+			schoolExternalToolDO,
+			contextExternalToolDO,
+		});
+
+		return launchData;
+	}
+
+	private async loadToolHierarchy(
+		schoolExternalToolId: string
+	): Promise&lt;{ schoolExternalToolDO: SchoolExternalToolDO; externalToolDO: ExternalToolDO }&gt; {
+		const schoolExternalToolDO: SchoolExternalToolDO &#x3D; await this.schoolExternalToolService.getSchoolExternalToolById(
+			schoolExternalToolId
+		);
+
+		const externalToolDO: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(
+			schoolExternalToolDO.toolId
+		);
+
+		return {
+			schoolExternalToolDO,
+			externalToolDO,
+		};
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'ToolLaunchService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
