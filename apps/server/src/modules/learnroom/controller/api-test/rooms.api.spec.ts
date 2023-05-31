@@ -4,7 +4,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Permission, Task } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
 import {
 	boardFactory,
 	cleanupCollections,
@@ -15,6 +14,7 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { CopyApiResponse } from '@src/modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
@@ -86,7 +86,7 @@ describe('Rooms Controller (API)', () => {
 			const course = courseFactory.build({ teachers: [teacher] });
 			const board = boardFactory.buildWithId({ course });
 			const task = taskFactory.draft().build({ course });
-			board.syncTasksFromList([task]);
+			board.syncBoardElementReferences([task]);
 
 			await em.persistAndFlush([course, board, task]);
 			em.clear();
@@ -107,7 +107,7 @@ describe('Rooms Controller (API)', () => {
 			const course = courseFactory.build({ teachers: [teacher] });
 			const board = boardFactory.buildWithId({ course });
 			const task = taskFactory.draft().build({ course });
-			board.syncTasksFromList([task]);
+			board.syncBoardElementReferences([task]);
 
 			await em.persistAndFlush([course, board, task]);
 			em.clear();
@@ -127,7 +127,7 @@ describe('Rooms Controller (API)', () => {
 			const course = courseFactory.build({ teachers: [teacher] });
 			const board = boardFactory.buildWithId({ course });
 			const task = taskFactory.build({ course });
-			board.syncTasksFromList([task]);
+			board.syncBoardElementReferences([task]);
 
 			await em.persistAndFlush([course, board, task]);
 			em.clear();
@@ -150,8 +150,7 @@ describe('Rooms Controller (API)', () => {
 			const board = boardFactory.buildWithId({ course });
 			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
-			board.syncTasksFromList(tasks);
-			board.syncLessonsFromList(lessons);
+			board.syncBoardElementReferences([...tasks, ...lessons]);
 
 			await em.persistAndFlush([course, board, ...tasks, ...lessons]);
 			em.clear();
@@ -238,8 +237,7 @@ describe('Rooms Controller (API)', () => {
 			const board = boardFactory.buildWithId({ course });
 			const tasks = taskFactory.buildList(3, { course });
 			const lessons = lessonFactory.buildList(3, { course });
-			board.syncTasksFromList(tasks);
-			board.syncLessonsFromList(lessons);
+			board.syncBoardElementReferences([...tasks, ...lessons]);
 
 			await em.persistAndFlush([course, board, ...tasks, ...lessons]);
 			em.clear();

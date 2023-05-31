@@ -87,7 +87,7 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
-				board.syncTasksFromList(tasks);
+				board.syncBoardElementReferences(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
 			});
 
@@ -159,7 +159,7 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
-				board.syncTasksFromList(tasks);
+				board.syncBoardElementReferences(tasks);
 				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
 			});
 
@@ -198,7 +198,7 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
-				board.syncLessonsFromList(lessons);
+				board.syncBoardElementReferences(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
@@ -241,7 +241,7 @@ describe('RoomBoardDTOMapper', () => {
 				taskFactory.buildList(1, { course: room, lesson });
 				taskFactory.buildList(3, { course: room, lesson, availableDate: inOneDay });
 				taskFactory.draft().buildList(5, { course: room, lesson });
-				board.syncLessonsFromList([lesson]);
+				board.syncBoardElementReferences([lesson]);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
@@ -319,7 +319,7 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
-				board.syncLessonsFromList(lessons);
+				board.syncBoardElementReferences(lessons);
 				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
 			});
 
