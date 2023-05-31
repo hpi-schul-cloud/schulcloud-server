@@ -1,16 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import {
+	AnyBoardDo,
 	Board,
 	BoardElement,
 	BoardElementType,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
+	EntityId,
 	ITaskStatus,
 	Lesson,
 	Task,
 	TaskWithStatusVo,
 	User,
 } from '@shared/domain';
-import { LessonMetaData, RoomBoardDTO, RoomBoardElementDTO, RoomBoardElementTypes } from '../types/room-board.types';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { Action } from '@src/modules/authorization/types/action.enum';
+import { BoardDoAuthorizableService } from '@src/modules/board';
+import {
+	ColumnBoardMetaData,
+	LessonMetaData,
+	RoomBoardDTO,
+	RoomBoardElementDTO,
+	RoomBoardElementTypes,
+} from '../types/room-board.types';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
 class DtoCreator {
@@ -20,23 +33,33 @@ class DtoCreator {
 
 	user: User;
 
-	authorisationService: RoomsAuthorisationService;
+	authorisationService: AuthorizationService;
+
+	roomAuthorisationService: RoomsAuthorisationService;
+
+	boardDoAuthorizableService: BoardDoAuthorizableService;
 
 	constructor({
 		room,
 		board,
 		user,
 		authorisationService,
+		roomAuthorisationService,
+		boardDoAuthorizableService,
 	}: {
 		room: Course;
 		board: Board;
 		user: User;
-		authorisationService: RoomsAuthorisationService;
+		authorisationService: AuthorizationService;
+		roomAuthorisationService: RoomsAuthorisationService;
+		boardDoAuthorizableService: BoardDoAuthorizableService;
 	}) {
 		this.room = room;
 		this.board = board;
 		this.user = user;
 		this.authorisationService = authorisationService;
+		this.roomAuthorisationService = roomAuthorisationService;
+		this.boardDoAuthorizableService = boardDoAuthorizableService;
 	}
 
 	manufacture(): RoomBoardDTO {
@@ -52,13 +75,26 @@ class DtoCreator {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === BoardElementType.Task) {
-				result = this.authorisationService.hasTaskReadPermission(this.user, element.target as Task);
+				result = this.roomAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			} else if (element.boardElementType === BoardElementType.Lesson) {
-				result = this.authorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+				result = this.roomAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+			} else if (element instanceof ColumnboardBoardElement) {
+				result = true; // WIP : BC-3573 : add permission checks
+				// const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(element.target.columnBoardId);
+				// const context = { action: Action.read, requiredPermissions: [] };
+				// result = this.authorizationService.hasPermission(user, boardDoAuthorizable, context);
 			}
 			return result;
 		});
 		return filtered;
+	}
+
+	private async hasPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(element.targer);
+		const context = { action, requiredPermissions: [] };
+
+		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
 	private isTeacher(): boolean {
@@ -77,6 +113,10 @@ class DtoCreator {
 			}
 			if (element.boardElementType === BoardElementType.Lesson) {
 				const mapped = this.mapLessonElement(element);
+				results.push(mapped);
+			}
+			if (element.boardElementType === BoardElementType.ColumnBoard) {
+				const mapped = this.mapColumnBoardElement(element);
 				results.push(mapped);
 			}
 		});
@@ -120,6 +160,20 @@ class DtoCreator {
 		return { type, content };
 	}
 
+	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
+		const type = RoomBoardElementTypes.COLUMN_BOARD;
+		const columnBoardTarget = element.target as ColumnBoardTarget;
+		const content: ColumnBoardMetaData = {
+			id: columnBoardTarget.id,
+			title: columnBoardTarget.title,
+			createdAt: columnBoardTarget.createdAt,
+			updatedAt: columnBoardTarget.updatedAt,
+			published: columnBoardTarget.published,
+		};
+
+		return { type, content };
+	}
+
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
 		const dto = {
 			roomId: this.room.id,
@@ -136,7 +190,7 @@ export class RoomBoardDTOFactory {
 	constructor(private readonly authorisationService: RoomsAuthorisationService) {}
 
 	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
-		const worker = new DtoCreator({ room, board, user, authorisationService: this.authorisationService });
+		const worker = new DtoCreator({ room, board, user, roomAuthorisationService: this.authorisationService });
 		const result = worker.manufacture();
 		return result;
 	}

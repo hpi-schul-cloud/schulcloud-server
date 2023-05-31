@@ -47,13 +47,22 @@ export class RoomsService {
 			_columnBoardId: { $in: columnBoardIds },
 		} as unknown as FilterQuery<ColumnBoardTarget>);
 
-		const missingIds = columnBoardIds.filter((id) => !existingTargets.some((target) => target.columnBoardId === id));
-		const missingTargets = missingIds.map((id) => {
-			const target = new ColumnBoardTarget({ columnBoardId: id });
+		const titlesMap = await this.columnBoardService.getColumnBoardTitlesById(columnBoardIds);
+
+		const columnBoardTargets = columnBoardIds.map((id) => {
+			const title = titlesMap[id] ?? '';
+			let target = existingTargets.find((item) => item.columnBoardId === id);
+			if (target) {
+				target.title = title;
+			} else {
+				target = new ColumnBoardTarget({ columnBoardId: id, title });
+			}
 			this.em.persist(target);
 			return target;
 		});
+
 		await this.em.flush();
-		return [...existingTargets, ...missingTargets];
+
+		return columnBoardTargets;
 	}
 }

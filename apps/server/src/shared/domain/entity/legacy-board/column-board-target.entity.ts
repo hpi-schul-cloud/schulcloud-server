@@ -4,12 +4,21 @@ import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseEntityWithTimestamps } from '../base.entity';
 
+type ColumnBoardTargetProps = {
+	columnBoardId: EntityId;
+	title?: string;
+};
+
 @Entity()
 export class ColumnBoardTarget extends BaseEntityWithTimestamps implements ILearnroomElement {
-	constructor(props: { columnBoardId: EntityId }) {
+	constructor(props: ColumnBoardTargetProps) {
 		super();
 		this._columnBoardId = new ObjectId(props.columnBoardId);
+		this.title = props.title ?? '';
 	}
+
+	@Property()
+	title: string;
 
 	publish(): void {
 		this.published = true;
