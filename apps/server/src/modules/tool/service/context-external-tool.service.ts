@@ -9,7 +9,6 @@ import {
 	AuthorizationService,
 } from '@src/modules/authorization';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { ContextTypeMapper } from './mapper';
 
 @Injectable()
