@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementFactory, ContentElementType, FileElement, TextElement } from '@shared/domain';
+import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, fileElementFactory, textElementFactory } from '@shared/testing/factory/domainobject';
-import { FileContentBody, TextContentBody } from '../controller/dto';
+import { cardFactory, fileElementFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
+import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -48,20 +48,20 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('findById', () => {
-		describe('when trying get TextElement by id', () => {
+		describe('when trying get RichTextElement by id', () => {
 			const setup = () => {
-				const textElement = textElementFactory.build();
-				boardDoRepo.findById.mockResolvedValue(textElement);
+				const richTextElement = richTextElementFactory.build();
+				boardDoRepo.findById.mockResolvedValue(richTextElement);
 
-				return { textElement };
+				return { richTextElement };
 			};
 
-			it('should return instance of TextElement', async () => {
-				const { textElement } = setup();
+			it('should return instance of RichTextElement', async () => {
+				const { richTextElement } = setup();
 
-				const result = await service.findById(textElement.id);
+				const result = await service.findById(richTextElement.id);
 
-				expect(result).toBeInstanceOf(TextElement);
+				expect(result).toBeInstanceOf(RichTextElement);
 			});
 		});
 
@@ -103,36 +103,36 @@ describe(ContentElementService.name, () => {
 			const setup = () => {
 				const card = cardFactory.build();
 				const cardId = card.id;
-				const textElement = textElementFactory.build();
+				const richTextElement = richTextElementFactory.build();
 
-				contentElementFactory.build.mockReturnValue(textElement);
+				contentElementFactory.build.mockReturnValue(richTextElement);
 
-				return { card, cardId, textElement };
+				return { card, cardId, richTextElement };
 			};
 
 			it('should call getElement method of ContentElementProvider', async () => {
 				const { card } = setup();
 
-				await service.create(card, ContentElementType.TEXT);
+				await service.create(card, ContentElementType.RICH_TEXT);
 
-				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.TEXT);
+				expect(contentElementFactory.build).toHaveBeenCalledWith(ContentElementType.RICH_TEXT);
 			});
 
 			it('should call addChild method of parent element', async () => {
-				const { card, textElement } = setup();
+				const { card, richTextElement } = setup();
 				const spy = jest.spyOn(card, 'addChild');
 
-				await service.create(card, ContentElementType.TEXT);
+				await service.create(card, ContentElementType.RICH_TEXT);
 
-				expect(spy).toHaveBeenCalledWith(textElement);
+				expect(spy).toHaveBeenCalledWith(richTextElement);
 			});
 
 			it('should call save method of boardDo repo', async () => {
-				const { card, textElement } = setup();
+				const { card, richTextElement } = setup();
 
-				await service.create(card, ContentElementType.TEXT);
+				await service.create(card, ContentElementType.RICH_TEXT);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith([textElement], card);
+				expect(boardDoRepo.save).toHaveBeenCalledWith([richTextElement], card);
 			});
 		});
 	});
@@ -140,7 +140,7 @@ describe(ContentElementService.name, () => {
 	describe('delete', () => {
 		describe('when deleting an element', () => {
 			it('should call the service', async () => {
-				const element = textElementFactory.build();
+				const element = richTextElementFactory.build();
 
 				await service.delete(element);
 
@@ -153,7 +153,7 @@ describe(ContentElementService.name, () => {
 		describe('when moving an element', () => {
 			it('should call the service', async () => {
 				const targetParent = cardFactory.build();
-				const element = textElementFactory.build();
+				const element = richTextElementFactory.build();
 
 				await service.move(element, targetParent, 3);
 
@@ -163,31 +163,33 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('update', () => {
-		describe('when element is a text element', () => {
+		describe('when element is a rich text element', () => {
 			const setup = () => {
-				const textElement = textElementFactory.build();
-				const content = new TextContentBody();
-				content.text = 'this has been updated';
+				const richTextElement = richTextElementFactory.build();
+				const content = new RichTextContentBody();
+				content.text = '<p>this has been updated</p>';
+				content.inputFormat = InputFormat.RICH_TEXT_CK5;
 				const card = cardFactory.build();
 				boardDoRepo.findParentOfId.mockResolvedValue(card);
 
-				return { textElement, content, card };
+				return { richTextElement, content, card };
 			};
 
 			it('should update the element', async () => {
-				const { textElement, content } = setup();
+				const { richTextElement, content } = setup();
 
-				await service.update(textElement, content);
+				await service.update(richTextElement, content);
 
-				expect(textElement.text).toEqual(content.text);
+				expect(richTextElement.text).toEqual(content.text);
+				expect(richTextElement.inputFormat).toEqual(InputFormat.RICH_TEXT_CK5);
 			});
 
 			it('should persist the element', async () => {
-				const { textElement, content, card } = setup();
+				const { richTextElement, content, card } = setup();
 
-				await service.update(textElement, content);
+				await service.update(richTextElement, content);
 
-				expect(boardDoRepo.save).toHaveBeenCalledWith(textElement, card);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(richTextElement, card);
 			});
 		});
 

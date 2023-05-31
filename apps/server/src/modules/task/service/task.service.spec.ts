@@ -15,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Action, AuthorizationService } from '@src/modules';
-import { FileParamBuilder, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -134,8 +134,7 @@ describe('TaskService', () => {
 
 			await taskService.delete(task);
 
-			const params = FileParamBuilder.build(task.school.id, task);
-			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(params);
+			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(task.id);
 		});
 
 		it('should call submissionService.delete() for all related submissions', async () => {

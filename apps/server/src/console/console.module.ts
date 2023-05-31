@@ -6,13 +6,12 @@ import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain';
 import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
 import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { FilesModule } from '@src/modules/files';
 import { FileRecord } from '@src/modules/files-storage/entity';
 import { ManagementModule } from '@src/modules/management/management.module';
 import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
-import { BoardModule } from '@src/modules/board';
 import { ServerConsole } from './server.console';
 
 @Module({
@@ -21,7 +20,6 @@ import { ServerConsole } from './server.console';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
-		BoardModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot({

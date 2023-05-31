@@ -1,13 +1,20 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { BoardNodeType, CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode } from '@shared/domain';
+import {
+	BoardNodeType,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	FileElementNode,
+	RichTextElementNode,
+} from '@shared/domain';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
 	fileElementFactory,
-	textElementFactory,
+	richTextElementFactory,
 } from '@shared/testing';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
 
@@ -89,27 +96,27 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 
 		it('should visit the children', () => {
-			const textElement = textElementFactory.build();
-			jest.spyOn(textElement, 'accept');
-			const card = cardFactory.build({ children: [textElement] });
+			const richTextElement = richTextElementFactory.build();
+			jest.spyOn(richTextElement, 'accept');
+			const card = cardFactory.build({ children: [richTextElement] });
 
 			card.accept(visitor);
 
-			expect(textElement.accept).toHaveBeenCalledWith(visitor);
+			expect(richTextElement.accept).toHaveBeenCalledWith(visitor);
 		});
 	});
 
-	describe('when visiting a text element composite', () => {
+	describe('when visiting a rich text element composite', () => {
 		it('should create or update the node', () => {
-			const textElement = textElementFactory.build();
+			const richTextElement = richTextElementFactory.build();
 			jest.spyOn(visitor, 'createOrUpdateBoardNode');
 
-			visitor.visitTextElement(textElement);
+			visitor.visitRichTextElement(richTextElement);
 
-			const expectedNode: Partial<TextElementNode> = {
-				id: textElement.id,
-				type: BoardNodeType.TEXT_ELEMENT,
-				text: textElement.text,
+			const expectedNode: Partial<RichTextElementNode> = {
+				id: richTextElement.id,
+				type: BoardNodeType.RICH_TEXT_ELEMENT,
+				text: richTextElement.text,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

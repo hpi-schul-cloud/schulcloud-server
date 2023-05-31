@@ -5,8 +5,8 @@ import { schoolExternalToolDOFactory } from '@shared/testing/factory/domainobjec
 import { SchoolExternalToolDO } from '@shared/domain/domainobject/tool/school-external-tool.do';
 import { LegacyLogger } from '@src/core/logger';
 import { ToolSchoolController } from './tool-school.controller';
-import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalToolResponseMapper, SchoolExternalToolRequestMapper } from './mapper';
+import { SchoolExternalToolUc } from '../uc/school-external-tool.uc';
+import { SchoolExternalToolResponseMapper } from './mapper/school-external-tool-response.mapper';
 import {
 	SchoolExternalToolIdParams,
 	SchoolExternalToolPostParams,
@@ -15,6 +15,7 @@ import {
 	SchoolExternalToolSearchParams,
 	SchoolExternalToolStatusResponse,
 } from './dto';
+import { SchoolExternalToolRequestMapper } from './mapper/school-external-tool-request.mapper';
 
 describe('ToolSchoolController', () => {
 	let module: TestingModule;

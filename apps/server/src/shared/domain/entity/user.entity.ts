@@ -8,7 +8,7 @@ export enum LanguageType {
 	DE = 'de',
 	EN = 'en',
 	ES = 'es',
-	UA = 'ua',
+	UK = 'uk',
 }
 
 export interface IUserProperties {

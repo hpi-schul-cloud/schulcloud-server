@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
+import { InputFormat } from '@shared/domain/types/input-format.types';
 import { Transform, TransformFnParams } from 'class-transformer';
 import sanitize, { AllowedAttribute } from 'sanitize-html';
-import { InputFormat } from '@shared/domain/types/input-format.types';
 
 export type IInputFormatsConfig = {
 	allowedTags: string[]; // Note: tag names are not case-sensitive
@@ -108,9 +108,8 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 	RichTextCk5: {
 		allowedTags: [
-			'h2',
-			'h3',
 			'h4',
+			'h5',
 			'p',
 			'span',
 			'br',
@@ -142,7 +141,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 			a: ['href', 'name', 'target', 'rel'],
 			figure: ['class'],
 			mark: ['class'],
-			span: ['class'],
+			span: ['class', 'style'],
 		},
 	},
 
@@ -154,7 +153,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
 	switch (inputFormat) {
-		case InputFormat.RICHTEXT_SIMPLE:
+		case InputFormat.RICH_TEXT_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextSimple;
 		case InputFormat.RICH_TEXT:
 			return inputFormatsSanitizeConfig.RichText;

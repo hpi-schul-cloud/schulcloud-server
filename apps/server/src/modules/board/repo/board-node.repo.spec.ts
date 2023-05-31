@@ -6,7 +6,7 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	textElementNodeFactory,
+	richTextElementNodeFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 
@@ -52,7 +52,7 @@ describe('BoardNodeRepo', () => {
 			await em.persistAndFlush(level2);
 			const level2b = cardNodeFactory.buildList(2, { parent: level1[1] });
 			await em.persistAndFlush(level2b);
-			const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
+			const level3 = richTextElementNodeFactory.buildList(2, { parent: level2[1] });
 			await em.persistAndFlush(level3);
 			em.clear();
 
@@ -123,7 +123,7 @@ describe('BoardNodeRepo', () => {
 				await em.persistAndFlush(level1);
 				const level2 = cardNodeFactory.buildList(2, { parent: level1[0] });
 				await em.persistAndFlush(level2);
-				const level3 = textElementNodeFactory.buildList(2, { parent: level2[1] });
+				const level3 = richTextElementNodeFactory.buildList(2, { parent: level2[1] });
 				await em.persistAndFlush(level3);
 				em.clear();
 
@@ -151,11 +151,11 @@ describe('BoardNodeRepo', () => {
 				await em.persistAndFlush([column0, column1, column2]);
 				const [card00, card01] = cardNodeFactory.buildList(2, { parent: column0 });
 				await em.persistAndFlush([card00, card01]);
-				const [text000, text001] = textElementNodeFactory.buildList(2, { parent: card00 });
+				const [text000, text001] = richTextElementNodeFactory.buildList(2, { parent: card00 });
 				await em.persistAndFlush([text000, text001]);
 				const [card20, card21] = cardNodeFactory.buildList(2, { parent: column2 });
 				await em.persistAndFlush([card20, card21]);
-				const [text210, text211] = textElementNodeFactory.buildList(2, { parent: card21 });
+				const [text210, text211] = richTextElementNodeFactory.buildList(2, { parent: card21 });
 				await em.persistAndFlush([text210, text211]);
 				em.clear();
 

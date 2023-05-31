@@ -24,7 +24,7 @@
 			"$date": "2023-02-01T09:28:22.450Z"
 		},
         "value": "<p>This is an example description for a card element in the task card.</p><p>Absatz</p><h2>Überschrift 1</h2><h3><br />Überschrift 2</h3><h4><br />Überschrift 3</h4><p>Text <strong>fett</strong><br />Text <i>kursiv</i><br />Text <sup>hochgestellt</sup><br />Text <sub>tiefgestellt</sub><br />Text <s>durchgestrichen</s></p><ul><li>Liste mit Aufzählungszeichen</li><li>Weiterer Punkt<br /> </li></ul><ol><li>Nummerierte Liste</li><li>Zweiter Punkt</li></ol><p> </p><p>Highlight / Markierung:</p><p><mark class=\"marker-yellow\">gelbe Markierung</mark><br /><mark class=\"marker-pink\">pinke Markierung</mark><br /><mark class=\"marker-green\">grüne Markierung</mark><br /><mark class=\"marker-blue\">blaue Markierung</mark></p><p><a href=\"https://dbildungscloud.de/\">Link</a><br /> </p><p>Tabelle:</p><figure class=\"table\"><table><tbody><tr><td>Zelle 1-1</td><td>Zelle 1-2</td></tr><tr><td>Zelle 2-1</td><td>Zelle 2-2</td></tr></tbody></table></figure><p><br />Formel:</p><p><span class=\"math-tex\">\\(f(x) = x^2 +  x\\)</span><br /> </p><p>Linie:</p><hr /><blockquote><p><br />Zitat</p></blockquote><p><br />Das hier ist ein <code>inline-Code</code> mitten im Text.</p>",
-        "inputFormat": "richtext_ck5"
+        "inputFormat": "richTextCk5"
 	},
     {
 		"_id": {
@@ -51,7 +51,7 @@
 			"$date": "2023-02-01T09:37:00.103Z"
 		},
         "value": "<p><u>Berechne</u> den <i>folgenden</i> <strong>Logarithmus</strong>: (<s>kein</s> <mark class=\"marker-pink\">Taschenrechner</mark>)</p><span class=\"math-tex\">\\[log_{0,5}\\frac{1}{4}\\]</span>",
-        "inputFormat": "richtext_ck5"
+        "inputFormat": "richTextCk5"
 	},
     {
 		"_id": {
@@ -65,6 +65,6 @@
 			"$date": "2023-02-01T11:16:23.815Z"
 		},
         "value": "<p>Lorem ipsum dolor sit <sup>amet</sup>, consectetuer adipiscing <sub>elit</sub>. Aenean commodo ligula eget dolor. Aenean massa:</p><p><strong>Berechne</strong> <span class=\"math-tex\">\\(x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}\\)</span> <strong>und trage das Ergebnis ein.</strong></p><p>Cum sociis natoque penatibus et magnis dis parturient montes:</p><span class=\"math-tex\">\\[x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}\\]</span><p><mark class=\"marker-green\">Cras dapibus.</mark> Vivamus <i>elementum </i>semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, <strong>consequat vitae</strong>, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.</p><span class=\"math-tex\">\\[3 &lt; 4\\]</span><p><code>const header = document.getElementById('header');</code></p>",
-        "inputFormat": "richtext_ck5"
+        "inputFormat": "richTextCk5"
 	}
 ]

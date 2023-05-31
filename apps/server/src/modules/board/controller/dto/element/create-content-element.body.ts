@@ -9,6 +9,7 @@ export class CreateContentElementBody {
 		enum: ContentElementType,
 		required: true,
 		nullable: false,
+		enumName: 'ContentElementType',
 	})
 	type!: ContentElementType;
 }

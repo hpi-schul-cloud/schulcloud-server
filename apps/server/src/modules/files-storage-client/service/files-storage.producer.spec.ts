@@ -134,39 +134,52 @@ describe('FilesStorageProducer', () => {
 	});
 
 	describe('deleteFilesOfParent', () => {
-		const param = {
-			parentType: FileRecordParentType.Task,
-			schoolId: 'school123',
-			parentId: '633d5acdda646580679dc448',
-		};
+		describe('when files are deleted successfully', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
+				amqpConnection.request.mockResolvedValue({ message: [] });
 
-		it('should call all steps.', async () => {
-			amqpConnection.request.mockResolvedValue({ message: [] });
-
-			const res = await service.deleteFilesOfParent(param);
-
-			const expectedParams = {
-				exchange: FilesStorageExchange,
-				routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
-				payload: param,
-				timeout,
+				return { parentId };
 			};
 
-			expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
-			expect(res).toEqual([]);
+			it('should call all steps.', async () => {
+				const { parentId } = setup();
+
+				const res = await service.deleteFilesOfParent(parentId);
+
+				const expectedParams = {
+					exchange: FilesStorageExchange,
+					routingKey: FilesStorageEvents.DELETE_FILES_OF_PARENT,
+					payload: parentId,
+					timeout,
+				};
+
+				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+				expect(res).toEqual([]);
+			});
 		});
 
-		it('should call error mapper if throw an error.', async () => {
-			const spy = jest
-				.spyOn(ErrorMapper, 'mapErrorToDomainError')
-				.mockImplementation(() => new InternalServerErrorException());
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const parentId = new ObjectId().toHexString();
 
-			amqpConnection.request.mockResolvedValue({ error: new Error() });
+				const spy = jest
+					.spyOn(ErrorMapper, 'mapErrorToDomainError')
+					.mockImplementation(() => new InternalServerErrorException());
 
-			await expect(service.deleteFilesOfParent(param)).rejects.toThrowError();
-			expect(spy).toBeCalled();
+				amqpConnection.request.mockResolvedValue({ error: new Error() });
 
-			spy.mockRestore();
+				return { parentId, spy };
+			};
+
+			it('should call error mapper if throw an error.', async () => {
+				const { parentId, spy } = setup();
+
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
+				expect(spy).toBeCalled();
+
+				spy.mockRestore();
+			});
 		});
 	});
 });
