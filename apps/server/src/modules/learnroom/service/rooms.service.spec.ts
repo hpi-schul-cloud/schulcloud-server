@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
@@ -12,7 +13,6 @@ describe('rooms service', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let taskService: DeepMocked<TaskService>;
 	let boardRepo: DeepMocked<BoardRepo>;
-	let columnBoardService: DeepMocked<ColumnBoardService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -40,12 +40,15 @@ describe('rooms service', () => {
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
 				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
+				},
 			],
 		}).compile();
 		roomsService = module.get(RoomsService);
 		lessonRepo = module.get(LessonRepo);
 		taskService = module.get(TaskService);
-		columnBoardService = module.get(ColumnBoardService);
 		boardRepo = module.get(BoardRepo);
 	});
 
