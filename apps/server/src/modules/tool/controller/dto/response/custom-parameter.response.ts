@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
 	CustomParameterLocationParams,
-	CustomParameterScopeParams,
+	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 } from '../../../interface';
 
@@ -24,8 +24,8 @@ export class CustomParameterResponse {
 	@ApiPropertyOptional()
 	regexComment?: string;
 
-	@ApiProperty({ enum: CustomParameterScopeParams })
-	scope: CustomParameterScopeParams;
+	@ApiProperty({ enum: CustomParameterScopeTypeParams })
+	scope: CustomParameterScopeTypeParams;
 
 	@ApiProperty({ enum: CustomParameterLocationParams })
 	location: CustomParameterLocationParams;

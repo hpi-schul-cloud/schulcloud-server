@@ -7,22 +7,26 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/tool';
-import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeTypeParams,
+	CustomParameterTypeParams,
+} from '../../interface';
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
+	ExternalToolConfigurationTemplateResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
-	ExternalToolConfigurationTemplateResponse,
 } from '../dto';
 
-const scopeMapping: Record<CustomParameterScope, CustomParameterScopeParams> = {
-	[CustomParameterScope.GLOBAL]: CustomParameterScopeParams.GLOBAL,
-	[CustomParameterScope.COURSE]: CustomParameterScopeParams.COURSE,
-	[CustomParameterScope.SCHOOL]: CustomParameterScopeParams.SCHOOL,
+const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
+	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
+	[CustomParameterScope.SCHOOL]: CustomParameterScopeTypeParams.SCHOOL,
+	[CustomParameterScope.CONTEXT]: CustomParameterScopeTypeParams.CONTEXT,
 };
 
 const locationMapping: Record<CustomParameterLocation, CustomParameterLocationParams> = {
