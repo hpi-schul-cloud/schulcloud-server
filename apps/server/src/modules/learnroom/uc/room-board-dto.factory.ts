@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import {
-	AnyBoardDo,
 	Board,
 	BoardElement,
 	BoardElementType,
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
 	Course,
-	EntityId,
 	ITaskStatus,
 	Lesson,
+	Permission,
 	Task,
 	TaskWithStatusVo,
 	User,
@@ -35,7 +34,7 @@ class DtoCreator {
 
 	authorisationService: AuthorizationService;
 
-	roomAuthorisationService: RoomsAuthorisationService;
+	roomsAuthorisationService: RoomsAuthorisationService;
 
 	boardDoAuthorizableService: BoardDoAuthorizableService;
 
@@ -44,21 +43,21 @@ class DtoCreator {
 		board,
 		user,
 		authorisationService,
-		roomAuthorisationService,
+		roomsAuthorisationService,
 		boardDoAuthorizableService,
 	}: {
 		room: Course;
 		board: Board;
 		user: User;
 		authorisationService: AuthorizationService;
-		roomAuthorisationService: RoomsAuthorisationService;
+		roomsAuthorisationService: RoomsAuthorisationService;
 		boardDoAuthorizableService: BoardDoAuthorizableService;
 	}) {
 		this.room = room;
 		this.board = board;
 		this.user = user;
 		this.authorisationService = authorisationService;
-		this.roomAuthorisationService = roomAuthorisationService;
+		this.roomsAuthorisationService = roomsAuthorisationService;
 		this.boardDoAuthorizableService = boardDoAuthorizableService;
 	}
 
@@ -75,26 +74,18 @@ class DtoCreator {
 		const filtered = elements.filter((element) => {
 			let result = false;
 			if (element.boardElementType === BoardElementType.Task) {
-				result = this.roomAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
+				result = this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			} else if (element.boardElementType === BoardElementType.Lesson) {
-				result = this.roomAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
 			} else if (element instanceof ColumnboardBoardElement) {
-				result = true; // WIP : BC-3573 : add permission checks
-				// const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(element.target.columnBoardId);
-				// const context = { action: Action.read, requiredPermissions: [] };
-				// result = this.authorizationService.hasPermission(user, boardDoAuthorizable, context);
+				result = this.authorisationService.hasPermission(this.user, this.room, {
+					action: Action.read,
+					requiredPermissions: [Permission.COURSE_VIEW],
+				});
 			}
 			return result;
 		});
 		return filtered;
-	}
-
-	private async hasPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.findById(element.targer);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
 	private isTeacher(): boolean {
@@ -187,10 +178,21 @@ class DtoCreator {
 
 @Injectable()
 export class RoomBoardDTOFactory {
-	constructor(private readonly authorisationService: RoomsAuthorisationService) {}
+	constructor(
+		private readonly authorisationService: AuthorizationService,
+		private readonly roomsAuthorisationService: RoomsAuthorisationService,
+		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
+	) {}
 
 	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
-		const worker = new DtoCreator({ room, board, user, roomAuthorisationService: this.authorisationService });
+		const worker = new DtoCreator({
+			room,
+			board,
+			user,
+			authorisationService: this.authorisationService,
+			roomsAuthorisationService: this.roomsAuthorisationService,
+			boardDoAuthorizableService: this.boardDoAuthorizableService,
+		});
 		const result = worker.manufacture();
 		return result;
 	}
