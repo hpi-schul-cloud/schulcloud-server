@@ -25,10 +25,12 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 			school: schoolId,
 		});
 
-		const userLoginMigrationDO: UserLoginMigrationDO | null = userLoginMigration
-			? this.mapEntityToDO(userLoginMigration)
-			: null;
-		return userLoginMigrationDO;
+		if (userLoginMigration) {
+			const userLoginMigrationDO = this.mapEntityToDO(userLoginMigration);
+			return userLoginMigrationDO;
+		}
+
+		return null;
 	}
 
 	mapEntityToDO(entity: UserLoginMigration): UserLoginMigrationDO {

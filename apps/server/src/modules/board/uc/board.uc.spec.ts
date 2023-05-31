@@ -1,15 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/board';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { BoardDoService, CardService, ColumnService } from '../service';
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { ObjectId } from 'bson';
+import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { CardService } from '../service/card.service';
 import { ColumnBoardService } from '../service/column-board.service';
+import { ColumnService } from '../service/column.service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;
 	let uc: BoardUc;
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnService: DeepMocked<ColumnService>;
 	let cardService: DeepMocked<CardService>;
@@ -19,8 +27,16 @@ describe(BoardUc.name, () => {
 			providers: [
 				BoardUc,
 				{
-					provide: BoardDoService,
-					useValue: createMock<BoardDoService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: BoardDoAuthorizableService,
+					useValue: createMock<BoardDoAuthorizableService>(),
+				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -31,10 +47,6 @@ describe(BoardUc.name, () => {
 					useValue: createMock<ColumnService>(),
 				},
 				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
-				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -42,6 +54,8 @@ describe(BoardUc.name, () => {
 		}).compile();
 
 		uc = module.get(BoardUc);
+		authorizationService = module.get(AuthorizationService);
+		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnBoardService = module.get(ColumnBoardService);
 		columnService = module.get(ColumnService);
 		cardService = module.get(CardService);
@@ -52,18 +66,31 @@ describe(BoardUc.name, () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	const setup = () => {
+		jest.clearAllMocks();
 		const user = userFactory.buildWithId();
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
 		const card = cardFactory.build();
+		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+			id: board.id,
+		});
+
+		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
 		return { user, board, boardId, column, card };
 	};
 
 	describe('findBoard', () => {
-		describe('when finding a board', () => {
+		describe('when loading a board and having required permission', () => {
 			it('should call the service', async () => {
 				const { user, boardId } = setup();
 
@@ -77,27 +104,22 @@ describe(BoardUc.name, () => {
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const result = await uc.findBoard(user.id, board.id);
+
 				expect(result).toEqual(board);
 			});
 		});
-	});
 
-	describe('createBoard', () => {
-		describe('when creating a board', () => {
-			it('should call the service', async () => {
-				const { user } = setup();
-
-				await uc.createBoard(user.id);
-
-				expect(columnBoardService.create).toHaveBeenCalled();
-			});
-
+		describe('when loading a board without having permissions', () => {
 			it('should return the column board object', async () => {
-				const { user, board } = setup();
-				columnBoardService.create.mockResolvedValueOnce(board);
+				const { board } = setup();
+				columnBoardService.findById.mockResolvedValueOnce(board);
 
-				const result = await uc.createBoard(user.id);
-				expect(result).toEqual(board);
+				const fakeUserId = new ObjectId().toHexString();
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
+
+				await expect(uc.findBoard(fakeUserId, board.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});
@@ -114,7 +136,6 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to delete the board', async () => {
 				const { user, board } = setup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -135,7 +156,6 @@ describe(BoardUc.name, () => {
 
 			it('should call the service to update the board title', async () => {
 				const { user, board } = setup();
-				columnBoardService.findById.mockResolvedValueOnce(board);
 				const newTitle = 'new title';
 
 				await uc.updateBoardTitle(user.id, board.id, newTitle);
@@ -161,7 +181,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createColumn(user.id, board.id);
 
-				expect(columnService.create).toHaveBeenCalledWith(board.id);
+				expect(columnService.create).toHaveBeenCalledWith(board);
 			});
 
 			it('should return the column board object', async () => {
@@ -169,6 +189,7 @@ describe(BoardUc.name, () => {
 				columnService.create.mockResolvedValueOnce(column);
 
 				const result = await uc.createColumn(user.id, board.id);
+
 				expect(result).toEqual(column);
 			});
 		});
@@ -254,7 +275,7 @@ describe(BoardUc.name, () => {
 
 				await uc.createCard(user.id, column.id);
 
-				expect(cardService.create).toHaveBeenCalledWith(column.id);
+				expect(cardService.create).toHaveBeenCalledWith(column);
 			});
 
 			it('should return the card object', async () => {

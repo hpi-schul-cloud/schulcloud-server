@@ -36,7 +36,7 @@ export class UserLoginMigrationService {
 				throw new UnprocessableEntityException(`School ${schoolId} has no UserLoginMigration`);
 			}
 
-			userLoginMigration = await this.createNewMigration(schoolId, schoolDo);
+			userLoginMigration = await this.createNewMigration(schoolDo);
 
 			this.enableOauthMigrationFeature(schoolDo);
 			await this.schoolService.save(schoolDo);
@@ -66,7 +66,7 @@ export class UserLoginMigrationService {
 	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
-		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolId, schoolDo);
+		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
 
 		this.enableOauthMigrationFeature(schoolDo);
 		await this.schoolService.save(schoolDo);
@@ -76,29 +76,26 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private async createNewMigration(schoolId: EntityId, school: SchoolDO): Promise<UserLoginMigrationDO> {
+	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
-		const sanisSystem: SystemDto | undefined = oauthSystems.find(
-			(system: SystemDto): boolean => system.alias === 'SANIS'
-		);
+		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
 
 		if (!sanisSystem) {
 			throw new InternalServerErrorException('Cannot find SANIS system');
 		}
 
-		const systemIds: EntityId[] = school.systems
-			? school.systems.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string))
-			: [];
-		const sourceSystemId = systemIds.length >= 1 ? systemIds[0] : undefined;
+		const systemIds: EntityId[] =
+			school.systems?.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string)) || [];
+		const sourceSystemId = systemIds[0];
 
-		const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-			schoolId,
+		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
+			schoolId: school.id as string,
 			targetSystemId: sanisSystem.id as string,
 			sourceSystemId,
 			startedAt: new Date(),
 		});
 
-		return userLoginMigration;
+		return userLoginMigrationDO;
 	}
 
 	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
