@@ -1,16 +1,13 @@
 /* eslint-disable no-template-curly-in-string */
-import { LdapConfig, OidcConfig } from '@shared/domain';
+import { ISystemProperties } from '@shared/domain';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { systemFactory } from '@shared/testing';
+import { DeepPartial } from 'fishery';
 
-type SystemPartial = {
-	id: string;
+type SystemPartial = DeepPartial<ISystemProperties> & {
+	id?: string;
 	createdAt?: string;
 	updatedAt?: string;
-	type: string;
-	provisioningStrategy: string;
-	alias: string;
-	displayName: string;
-	oidcConfig: OidcConfig;
-	ldapConfig: LdapConfig;
 };
 
 const data: SystemPartial[] = [
@@ -18,7 +15,7 @@ const data: SystemPartial[] = [
 		id: '62c7f233f35a554ba3ed42f1',
 		updatedAt: '2022-07-12T14:01:58.588Z',
 		type: 'ldap',
-		provisioningStrategy: 'oidc',
+		provisioningStrategy: SystemProvisioningStrategy.OIDC,
 		alias: 'oidcmock',
 		displayName: 'OIDCMOCK',
 		oidcConfig: {
@@ -66,4 +63,17 @@ const data: SystemPartial[] = [
 	},
 ];
 
-const systems = data.map((system) => {});
+const systems = data.map((d) => {
+	const params: DeepPartial<ISystemProperties> = {
+		alias: d.alias,
+		displayName: d.displayName,
+		type: d.type,
+		provisioningStrategy: d.provisioningStrategy,
+		oidcConfig: d.oidcConfig,
+		ldapConfig: d.ldapConfig,
+		oauthConfig: d.oauthConfig,
+		provisioningUrl: d.provisioningUrl,
+		url: d.url,
+	};
+	const system = systemFactory.buildWithId(params, d.id);
+});
