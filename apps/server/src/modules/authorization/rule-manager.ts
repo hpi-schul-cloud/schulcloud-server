@@ -14,6 +14,7 @@ import {
 	TeamRule,
 	UserRule,
 } from '@shared/domain/rules';
+import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
 import { AuthorizationContext, Rule } from './types';
 
 @Injectable()
@@ -31,7 +32,8 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardDoRule: BoardDoRule
+		private readonly boardDoRule: BoardDoRule,
+		private readonly contextExternalToolRule: ContextExternalToolRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -45,6 +47,7 @@ export class RuleManager {
 			this.submissionRule,
 			this.schoolExternalToolRule,
 			this.boardDoRule,
+			this.contextExternalToolRule,
 		];
 	}
 

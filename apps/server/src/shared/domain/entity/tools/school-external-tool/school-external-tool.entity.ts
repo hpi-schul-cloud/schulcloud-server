@@ -16,7 +16,7 @@ export class SchoolExternalTool extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	tool: ExternalTool;
 
-	@ManyToOne()
+	@ManyToOne(() => School, { eager: true })
 	school: School;
 
 	@Embedded(() => CustomParameterEntry, { array: true })

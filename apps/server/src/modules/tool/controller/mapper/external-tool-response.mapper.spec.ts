@@ -10,7 +10,7 @@ import {
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import {
 	CustomParameterLocationParams,
-	CustomParameterScopeParams,
+	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	LtiMessageType,
 	LtiPrivacyPermission,
@@ -52,7 +52,7 @@ describe('ExternalToolResponseMapper', () => {
 			description: 'description',
 			defaultValue: 'mockDefault',
 			location: CustomParameterLocationParams.PATH,
-			scope: CustomParameterScopeParams.SCHOOL,
+			scope: CustomParameterScopeTypeParams.SCHOOL,
 			type: CustomParameterTypeParams.STRING,
 			regex: 'mockRegex',
 			regexComment: 'mockComment',
@@ -252,7 +252,7 @@ describe('ExternalToolResponseMapper', () => {
 					logoUrl: 'logoUrl',
 					parameters: [
 						new CustomParameterResponse({
-							scope: CustomParameterScopeParams.SCHOOL,
+							scope: CustomParameterScopeTypeParams.SCHOOL,
 							type: CustomParameterTypeParams.STRING,
 							location: CustomParameterLocationParams.PATH,
 							name: 'customParameter',

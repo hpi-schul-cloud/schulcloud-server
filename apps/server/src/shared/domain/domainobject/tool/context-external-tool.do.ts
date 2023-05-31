@@ -1,9 +1,10 @@
 import { ToolContextType } from '@src/modules/tool/interface';
 import { BaseDO } from '../base.do';
 import { CustomParameterEntryDO } from './custom-parameter-entry.do';
+import { SchoolExternalToolRefDO } from './school-external-tool-ref.do';
 
 export class ContextExternalToolDO extends BaseDO {
-	schoolToolId: string;
+	schoolToolRef: SchoolExternalToolRefDO;
 
 	contextId: string;
 
@@ -21,7 +22,7 @@ export class ContextExternalToolDO extends BaseDO {
 
 	constructor(domainObject: ContextExternalToolDO) {
 		super(domainObject.id);
-		this.schoolToolId = domainObject.schoolToolId;
+		this.schoolToolRef = domainObject.schoolToolRef;
 		this.contextId = domainObject.contextId;
 		this.contextType = domainObject.contextType;
 		this.contextToolName = domainObject.contextToolName;

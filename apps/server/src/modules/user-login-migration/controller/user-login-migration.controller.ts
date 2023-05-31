@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
@@ -27,14 +27,12 @@ export class UserLoginMigrationController {
 	async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
-		// TODO: N21-822 add pagination and sorting
 	): Promise<UserLoginMigrationSearchListResponse> {
 		const userLoginMigrationQuery: UserLoginMigrationQuery = UserLoginMigrationMapper.mapSearchParamsToQuery(params);
 
 		const migrationPage: Page<UserLoginMigrationDO> = await this.userLoginMigrationUc.getMigrations(
 			user.userId,
-			userLoginMigrationQuery,
-			{}
+			userLoginMigrationQuery
 		);
 
 		const migrationResponses: UserLoginMigrationResponse[] = migrationPage.data.map(
