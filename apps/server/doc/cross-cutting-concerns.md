@@ -4,63 +4,43 @@ The cross cutting topics are implemented within of the core-module.
 
 ## Logging
 
-For logging use the logger ServerLogger, provided by the logger module. It is hooked up in the application on startup, replacing the default logger and can be transient injected into any provider by additionally define set a context into the logger.
+For logging use the Logger, provided by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its injection scope is transient, so you can set a context when you inject it.
+
+For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called loggables. If you want to log something you have to use or create a loggable that implements the Loggable interface.
 
 ```TypeScript
-// add Logger module to your feature module imports or unit tests
-import { LoggerModule } from '@src/core/logger';
-// ...
-imports: [LoggerModule],
+export class YourLoggable implements Loggable {
+	constructor(private readonly userId: EntityId) {}
+
+	getLogMessage(): LogMessage {
+		return {
+			message: 'This is foo bar ärgerlich.',
+			data: { userId: this.userId, },
+		};
+	}
+}
 
 ```
 
 ```TypeScript
-// within of a provider (use-case, service, ...)
+import { Logger } from '@src/core/logger';
 
-// import the server logger service
-import { ServerLogger } from '@src/core/logger';
-
-@Injectable()
 export class YourUc {
-	constructor(
-		// initialize a ServerLogger
-		private logger: ServerLogger
-	) {
-        // set the context by this class name (here: 'YourUc')
+	constructor(private logger: Logger) {
 		this.logger.setContext(YourUc.name);
 	}
 
-	async sampleUcMethod(params) {
-        this.logger.log(`start do something...`);
+	public sampleUcMethod(user) {
+		this.logger.log(new YourLoggable(userId: user.id));
 		// ...
-        this.logger.log(`finished successfully to do something...`);
 	}
 ```
 
 This produces a logging output like
 
 ```
-[Nest] NUMBER - TIME   [YourUc] start do something...
-[Nest] NUMBER - TIME   [YourUc] finished successfully to do something...
+[Nest] Info - 2023-05-31 15:20:30.888   [YourUc] This is foo bar ärgerlich.
 ```
-
-Later we can filter the log for a single [context].
-
-A logger does implement the LoggerService interface:
-
-```TypeScript
-interface LoggerService {
-    log(message: any, context?: string): any;
-    error(message: any, trace?: string, context?: string): any;
-    warn(message: any, context?: string): any;
-    debug?(message: any, context?: string): any;
-    verbose?(message: any, context?: string): any;
-}
-```
-
-Only a string should be provided as a single parameter by default. Ensure not putting complex objects into a log. Think about persisting more complex results for later analysis into a database.
-
-Optionally in the second parameter, the context can be overridden only.
 
 ## Exception Handling
 
