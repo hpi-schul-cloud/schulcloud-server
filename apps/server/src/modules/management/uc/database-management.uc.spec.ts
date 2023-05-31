@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProvider, System } from '@shared/domain';
+import { Role, StorageProvider, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import {
 	DefaultEncryptionService,
@@ -629,7 +629,7 @@ describe('DatabaseManagementService', () => {
 
 	describe('when seeding database from factories', () => {
 		it('should seed database with roles', async () => {
-			const roleData = collectionSeedData.filter((c) => c.collectionName === 'roles').at(0)?.data;
+			const roleData = collectionSeedData.filter((c) => c.collectionName === 'roles').at(0)?.data as Role[];
 			expect(roleData).toBeDefined();
 			expect(roleData?.length).toBe(16);
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();

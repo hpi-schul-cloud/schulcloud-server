@@ -24,7 +24,11 @@ export class Role extends BaseEntityWithTimestamps {
 		super();
 		this.name = props.name;
 		if (props.permissions) this.permissions = props.permissions;
-		if (props.roles) this.roles.set(props.roles);
+		if (props.roles) {
+			this.roles = new Collection<Role>(this, props.roles);
+		} else {
+			this.roles = new Collection<Role>(this);
+		}
 	}
 
 	public resolvePermissions(): string[] {
