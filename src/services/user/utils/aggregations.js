@@ -125,8 +125,8 @@ const getConsentStatusSwitch = () => {
 		consentCaseOk.push(
 			{
 				$and: [
-					{ '$consent.userConsent.privacyConsent': { $exists: true} },
-					{ '$consent.userConsent.termsOfUseConsent': { $exists: true} },
+					{ $gt: ['$consent.userConsent.privacyConsent', null] },
+					{ $gt: ['$consent.userConsent.termsOfUseConsent', null] },
 				],
 			},)
 	}
