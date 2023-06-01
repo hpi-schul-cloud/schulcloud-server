@@ -2,6 +2,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	Headers,
 	HttpStatus,
 	INestApplication,
 	Patch,
@@ -17,28 +18,28 @@ import { TestApiClient } from './test-api-client';
 @Controller('')
 class TestController {
 	@Delete(':id')
-	async delete() {
-		return Promise.resolve({ method: 'delete' });
+	async delete(@Headers('authorization') authorization: string) {
+		return Promise.resolve({ method: 'delete', authorization });
 	}
 
 	@Post()
-	async post() {
-		return Promise.resolve({ method: 'post' });
+	async post(@Headers('authorization') authorization: string) {
+		return Promise.resolve({ method: 'post', authorization });
 	}
 
 	@Get(':id')
-	async get() {
-		return Promise.resolve({ method: 'get' });
+	async get(@Headers('authorization') authorization: string) {
+		return Promise.resolve({ method: 'get', authorization });
 	}
 
 	@Put()
-	async put() {
-		return Promise.resolve({ method: 'put' });
+	async put(@Headers('authorization') authorization: string) {
+		return Promise.resolve({ method: 'put', authorization });
 	}
 
 	@Patch(':id')
-	async patch() {
-		return Promise.resolve({ method: 'patch' });
+	async patch(@Headers('authorization') authorization: string) {
+		return Promise.resolve({ method: 'patch', authorization });
 	}
 
 	@Post('/authentication/local')
@@ -74,16 +75,16 @@ describe(TestApiClient.name, () => {
 		});
 
 		const setup = () => {
-			const request = new TestApiClient(app, '');
+			const testApiClient = new TestApiClient(app, '');
 			const account = accountFactory.build();
 
-			return { request, account };
+			return { testApiClient, account };
 		};
 
 		it('should throw an error', async () => {
-			const { request, account } = setup();
+			const { testApiClient, account } = setup();
 
-			await expect(() => request.getJwt(account)).rejects.toThrowError();
+			await expect(() => testApiClient.login(account)).rejects.toThrowError();
 		});
 	});
 
@@ -105,130 +106,129 @@ describe(TestApiClient.name, () => {
 		});
 
 		const setup = () => {
-			const request = new TestApiClient(app, '');
+			const testApiClient = new TestApiClient(app, '');
 			const account = accountFactory.build();
 			const id = new ObjectId().toHexString();
 
-			const spy = jest.spyOn(request, 'getJwt');
-
-			return { request, spy, account, id };
+			return { testApiClient, account, id };
 		};
 
-		describe('getJwt', () => {
-			it('should return "invalidJwt" if no account is passed', async () => {
-				const { request } = setup();
+		describe('login', () => {
+			it('should store formatted jwt', async () => {
+				const { testApiClient, account } = setup();
 
-				const result = await request.getJwt();
+				const loggedInClient = await testApiClient.login(account);
 
-				expect(result).toEqual('invalidJwt');
+				// eslint-disable-next-line @typescript-eslint/dot-notation
+				expect(loggedInClient['formattedJwt']).toEqual('Bearer 123');
 			});
 
-			it('should return well formed jwt by passing the account', async () => {
-				const { request, account } = setup();
+			it('should fork the client', async () => {
+				const { testApiClient, account } = setup();
 
-				const result = await request.getJwt(account);
+				const loggedInClient = await testApiClient.login(account);
 
-				expect(result).toEqual('Bearer 123');
+				expect(loggedInClient).not.toStrictEqual(testApiClient);
 			});
 		});
 
 		describe('get', () => {
 			it('should resolve requests', async () => {
-				const { request, spy, id } = setup();
+				const { testApiClient, id } = setup();
 
-				const result = await request.get(id);
+				const result = await testApiClient.get(id);
 
-				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
-				expect(result.body).toEqual({ method: 'get' });
+				expect(result.body).toEqual(expect.objectContaining({ method: 'get' }));
 			});
 
-			it('should pass accout to getJwt request', async () => {
-				const { request, spy, account, id } = setup();
+			it('should pass the bearer token', async () => {
+				const { testApiClient, account, id } = setup();
 
-				await request.get(id, account);
+				const loggedInClient = await testApiClient.login(account);
+				const result = await loggedInClient.get(id);
 
-				expect(spy).toBeCalledWith(account);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
 			});
 		});
 
 		describe('post', () => {
 			it('should resolve requests', async () => {
-				const { request, spy } = setup();
+				const { testApiClient } = setup();
 
-				const result = await request.post();
+				const result = await testApiClient.post();
 
-				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.CREATED);
-				expect(result.body).toEqual({ method: 'post' });
+				expect(result.body).toEqual(expect.objectContaining({ method: 'post' }));
 			});
 
-			it('should pass accout to getJwt request', async () => {
-				const { request, spy, account } = setup();
+			it('should pass the bearer token', async () => {
+				const { testApiClient, account } = setup();
 
-				await request.post('', {}, account);
+				const loggedInClient = await testApiClient.login(account);
+				const result = await loggedInClient.post();
 
-				expect(spy).toBeCalledWith(account);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
 			});
 		});
 
 		describe('delete', () => {
 			it('should resolve requests', async () => {
-				const { request, spy, id } = setup();
+				const { testApiClient, id } = setup();
 
-				const result = await request.delete(id);
+				const result = await testApiClient.delete(id);
 
-				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
-				expect(result.body).toEqual({ method: 'delete' });
+				expect(result.body).toEqual(expect.objectContaining({ method: 'delete' }));
 			});
 
-			it('should pass accout to getJwt request', async () => {
-				const { request, spy, account, id } = setup();
+			it('should pass the bearer token', async () => {
+				const { testApiClient, account, id } = setup();
 
-				await request.delete(id, account);
+				const loggedInClient = await testApiClient.login(account);
+				const result = await loggedInClient.delete(id);
 
-				expect(spy).toBeCalledWith(account);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
 			});
 		});
 
 		describe('put', () => {
 			it('should resolve requests', async () => {
-				const { request, spy } = setup();
+				const { testApiClient } = setup();
 
-				const result = await request.put();
+				const result = await testApiClient.put();
 
-				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
-				expect(result.body).toEqual({ method: 'put' });
+				expect(result.body).toEqual(expect.objectContaining({ method: 'put' }));
 			});
 
-			it('should pass accout to getJwt request', async () => {
-				const { request, spy, account } = setup();
+			it('should pass the bearer token', async () => {
+				const { testApiClient, account } = setup();
 
-				await request.put('', {}, account);
+				const loggedInClient = await testApiClient.login(account);
+				const result = await loggedInClient.put();
 
-				expect(spy).toBeCalledWith(account);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
 			});
 		});
 
 		describe('patch', () => {
 			it('should resolve requests', async () => {
-				const { request, spy, id } = setup();
+				const { testApiClient, id } = setup();
 
-				const result = await request.patch(id);
+				const result = await testApiClient.patch(id);
 
-				expect(spy).toBeCalled();
 				expect(result.statusCode).toEqual(HttpStatus.OK);
-				expect(result.body).toEqual({ method: 'patch' });
+				expect(result.body).toEqual(expect.objectContaining({ method: 'patch' }));
 			});
 
-			it('should pass accout to getJwt request', async () => {
-				const { request, spy, account, id } = setup();
+			it('should pass the bearer token', async () => {
+				const { testApiClient, account, id } = setup();
 
-				await request.patch(id, {}, account);
+				const loggedInClient = await testApiClient.login(account);
+				const result = await loggedInClient.patch(id);
 
-				expect(spy).toBeCalledWith(account);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer 123' }));
 			});
 		});
 	});
