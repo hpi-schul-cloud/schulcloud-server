@@ -3,6 +3,7 @@ import {
 	boardFactory,
 	columnboardBoardElementFactory,
 	columnBoardFactory,
+	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
@@ -170,6 +171,16 @@ describe('Board Entity', () => {
 			board.syncBoardElementReferences([existinglesson, lesson]);
 
 			expect(board.references[0].target.id).toEqual(lesson.id);
+		});
+
+		describe('when board element has an invalid type', () => {
+			it('should throw an error', () => {
+				const course = courseFactory.buildWithId();
+				const board = boardFactory.buildWithId({ references: [] });
+
+				// @ts-expect-error invalid target type
+				expect(() => board.syncBoardElementReferences([course])).toThrow();
+			});
 		});
 	});
 });

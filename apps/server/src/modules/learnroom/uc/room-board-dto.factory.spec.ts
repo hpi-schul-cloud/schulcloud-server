@@ -1,7 +1,15 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
-import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	boardFactory,
+	columnBoardTargetFactory,
+	courseFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
@@ -10,7 +18,8 @@ import { RoomsAuthorisationService } from './rooms.authorisation.service';
 describe(RoomBoardDTOFactory.name, () => {
 	let module: TestingModule;
 	let mapper: RoomBoardDTOFactory;
-	let authorisationService: RoomsAuthorisationService;
+	let roomsAuthorisationService: RoomsAuthorisationService;
+	let authorisationService: DeepMocked<AuthorizationService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -38,7 +47,8 @@ describe(RoomBoardDTOFactory.name, () => {
 			],
 		}).compile();
 
-		authorisationService = module.get(RoomsAuthorisationService);
+		roomsAuthorisationService = module.get(RoomsAuthorisationService);
+		authorisationService = module.get(AuthorizationService);
 		mapper = module.get(RoomBoardDTOFactory);
 		await setupEntities();
 	});
@@ -91,7 +101,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncBoardElementReferences(tasks);
-				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
+				jest.spyOn(roomsAuthorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set each allowed task for teacher', () => {
@@ -163,7 +173,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
 				board.syncBoardElementReferences(tasks);
-				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
+				jest.spyOn(roomsAuthorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
 			});
 
 			it('should not set forbidden tasks for student', () => {
@@ -202,7 +212,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncBoardElementReferences(lessons);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set lessons for student', () => {
@@ -245,7 +255,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				taskFactory.buildList(3, { course: room, lesson, availableDate: inOneDay });
 				taskFactory.draft().buildList(5, { course: room, lesson });
 				board.syncBoardElementReferences([lesson]);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set number of published tasks for student', () => {
@@ -323,7 +333,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
 				board.syncBoardElementReferences(lessons);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
 			});
 
 			it('should not set forbidden tasks for student', () => {
@@ -339,6 +349,26 @@ describe(RoomBoardDTOFactory.name, () => {
 			it('should not set forbidden tasks for substitutionTeacher', () => {
 				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				expect(result.elements.length).toEqual(0);
+			});
+		});
+
+		describe('when board contains allowed column boards', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const room = courseFactory.build();
+				const board = boardFactory.buildWithId({ course: room });
+				const columnBoards = columnBoardTargetFactory.buildList(3);
+				board.syncBoardElementReferences(columnBoards);
+
+				authorisationService.hasPermission.mockReturnValue(true);
+
+				return { user, room, board };
+			};
+
+			it('should set lessons for student', () => {
+				const { user, room, board } = setup();
+				const result = mapper.createDTO({ room, board, user });
+				expect(result.elements.length).toEqual(3);
 			});
 		});
 	});

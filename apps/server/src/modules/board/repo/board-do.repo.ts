@@ -53,10 +53,6 @@ export class BoardDoRepo {
 		const ids = Array.isArray(id) ? id : [id];
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
-		if (boardNodes === undefined) {
-			return {};
-		}
-
 		const titlesMap = boardNodes.reduce((map, node) => {
 			map[node.id] = node.title ?? '';
 			return map;
