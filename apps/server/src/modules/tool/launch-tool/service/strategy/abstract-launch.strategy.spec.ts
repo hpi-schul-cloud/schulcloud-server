@@ -150,7 +150,7 @@ describe('AbstractLaunchStrategy', () => {
 					},
 					{
 						name: contextCustomParameter.name,
-						value: launchParams.contextExternalToolDO.contextId,
+						value: launchParams.contextExternalToolDO.contextRef.id,
 						location: PropertyLocation.BODY,
 					},
 					{
@@ -285,7 +285,7 @@ describe('AbstractLaunchStrategy', () => {
 				properties: [
 					{
 						name: contextCustomParameter.name,
-						value: launchParams.contextExternalToolDO.contextId,
+						value: launchParams.contextExternalToolDO.contextRef.id,
 						location: PropertyLocation.BODY,
 					},
 					{
