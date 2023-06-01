@@ -92,6 +92,7 @@ export class RoomBoardResponseMapper {
 	private mapColumnBoard = (columnBoardInfo: ColumnBoardMetaData): BoardElementResponse => {
 		const mappedColumnBoard = new BoardColumnBoardResponse({
 			id: columnBoardInfo.id,
+			columnBoardId: columnBoardInfo.columnBoardId,
 			title: columnBoardInfo.title,
 			published: columnBoardInfo.published,
 			createdAt: columnBoardInfo.createdAt,

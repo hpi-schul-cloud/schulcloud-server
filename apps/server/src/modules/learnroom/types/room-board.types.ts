@@ -27,6 +27,7 @@ export type LessonMetaData = {
 
 export type ColumnBoardMetaData = {
 	id: EntityId;
+	columnBoardId: EntityId;
 	title: string;
 	published: boolean;
 	createdAt: Date;
