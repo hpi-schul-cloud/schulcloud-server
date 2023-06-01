@@ -267,15 +267,23 @@ describe('ToolContextController (API)', () => {
 		const setup = async () => {
 			const userRole: Role = roleFactory.build({
 				name: RoleName.USER,
-				// TODO N21-534 use CONTEXT_TOOL_USER permission
-				permissions: [Permission.CONTEXT_TOOL_ADMIN],
+				permissions: [Permission.CONTEXT_TOOL_USER],
 			});
 
-			const user: User = userFactory.buildWithId({ roles: [userRole] });
+			const school: School = schoolFactory.buildWithId();
+			const otherSchool: School = schoolFactory.buildWithId();
 
-			const course: Course = courseFactory.buildWithId({ students: [user], teachers: [user] });
+			const user: User = userFactory.buildWithId({ roles: [userRole], school });
+			const userFromOtherSchool: User = userFactory.buildWithId({ roles: [userRole], school: otherSchool });
+
+			const course: Course = courseFactory.buildWithId({
+				students: [user],
+				teachers: [user, userFromOtherSchool],
+				school,
+			});
 
 			const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				school,
 				toolVersion: 1,
 			});
 			const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
@@ -286,6 +294,7 @@ describe('ToolContextController (API)', () => {
 
 			const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 				toolVersion: 1,
+				school,
 			});
 			const contextExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
 				contextId: course.id,
@@ -293,14 +302,29 @@ describe('ToolContextController (API)', () => {
 				toolVersion: 1,
 			});
 
+			const schoolExternalToolFromOtherSchool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				school: otherSchool,
+				toolVersion: 1,
+			});
+			const contextExternalToolFromOtherSchool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				contextId: course.id,
+				schoolTool: schoolExternalToolFromOtherSchool,
+				toolVersion: 1,
+			});
+
 			em.persist([
 				userRole,
+				school,
+				otherSchool,
 				course,
 				user,
+				userFromOtherSchool,
 				schoolExternalTool1,
 				contextExternalTool1,
 				schoolExternalTool2,
 				contextExternalTool2,
+				schoolExternalToolFromOtherSchool,
+				contextExternalToolFromOtherSchool,
 			]);
 			await em.flush();
 			em.clear();
@@ -316,7 +340,7 @@ describe('ToolContextController (API)', () => {
 		};
 
 		describe('when user is authorized and has the required permissions', () => {
-			it('should return context external tools', async () => {
+			it('should return context external tools he has permission for', async () => {
 				const { contextExternalTool1, contextExternalTool2 } = await setup();
 
 				const response: Response = await request(app.getHttpServer()).get(
@@ -370,14 +394,19 @@ describe('ToolContextController (API)', () => {
 			});
 
 			describe('when user has not the required permission', () => {
-				it('should return forbidden', async () => {
+				it('should return response with no tools', async () => {
 					const { contextExternalTool1, userRole } = await setup();
 					userRole.permissions = [];
 					await em.persistAndFlush(userRole);
 
-					await request(app.getHttpServer())
-						.get(`${basePath}/${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`)
-						.expect(HttpStatus.FORBIDDEN);
+					const response: Response = await request(app.getHttpServer()).get(
+						`${basePath}/${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+					);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual<ContextExternalToolSearchListResponse>({
+						data: [],
+					});
 				});
 			});
 		});
