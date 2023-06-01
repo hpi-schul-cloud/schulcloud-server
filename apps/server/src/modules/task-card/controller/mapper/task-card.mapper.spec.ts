@@ -90,7 +90,7 @@ describe('task-card mapper', () => {
 
 			const cardElementRichText = new RichTextCardElementParam();
 			cardElementRichText.type = CardElementType.RichText;
-			cardElementRichText.value = 'richtext';
+			cardElementRichText.value = 'rich text';
 			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 			const params = {
@@ -108,7 +108,7 @@ describe('task-card mapper', () => {
 
 			const expectedDto = {
 				title: 'test-title',
-				text: [new RichText({ content: 'richtext', type: InputFormat.RICH_TEXT_CK5 })],
+				text: [new RichText({ content: 'rich text', type: InputFormat.RICH_TEXT_CK5 })],
 				courseId: params.courseId,
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
@@ -122,12 +122,12 @@ describe('task-card mapper', () => {
 
 			const cardElementRichText1 = new RichTextCardElementParam();
 			cardElementRichText1.type = CardElementType.RichText;
-			cardElementRichText1.value = 'update richtext 1';
+			cardElementRichText1.value = 'update rich text 1';
 			cardElementRichText1.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 			const cardElementRichText2 = new RichTextCardElementParam();
 			cardElementRichText2.type = CardElementType.RichText;
-			cardElementRichText2.value = 'update richtext 2';
+			cardElementRichText2.value = 'update rich text 2';
 			cardElementRichText2.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 			const params = {
@@ -149,8 +149,8 @@ describe('task-card mapper', () => {
 			const expectedDto = {
 				title: 'update title',
 				text: [
-					new RichText({ content: 'update richtext 1', type: InputFormat.RICH_TEXT_CK5 }),
-					new RichText({ content: 'update richtext 2', type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: 'update rich text 1', type: InputFormat.RICH_TEXT_CK5 }),
+					new RichText({ content: 'update rich text 2', type: InputFormat.RICH_TEXT_CK5 }),
 				],
 				visibleAtDate: tomorrow,
 				dueDate: inTwoDays,
@@ -164,7 +164,7 @@ describe('task-card mapper', () => {
 
 			const cardElementRichText = new RichTextCardElementParam();
 			cardElementRichText.type = CardElementType.RichText;
-			cardElementRichText.value = 'richtext';
+			cardElementRichText.value = 'rich text';
 			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 			const params = {
@@ -186,7 +186,7 @@ describe('task-card mapper', () => {
 
 			const cardElementRichText = new RichTextCardElementParam();
 			cardElementRichText.type = CardElementType.RichText;
-			cardElementRichText.value = 'richtext';
+			cardElementRichText.value = 'rich text';
 			cardElementRichText.inputFormat = InputFormat.RICH_TEXT_CK5;
 
 			const params = {
