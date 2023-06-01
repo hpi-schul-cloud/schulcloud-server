@@ -10,7 +10,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
-import { collectionSeedData } from '../seed-data';
+import { generateSeedData } from '../seed-data';
 
 export interface ICollectionFilePath {
 	filePath: string;
@@ -159,7 +159,7 @@ export class DatabaseManagementUc {
 
 	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
 		const seededCollectionsWithAmount = await Promise.all(
-			collectionSeedData
+			generateSeedData()
 				.filter((data) => {
 					if (collections && collections.length > 0) {
 						return collections.includes(data.collectionName);
@@ -175,8 +175,12 @@ export class DatabaseManagementUc {
 						// TODO: this.encryptSecrets(collectionName, jsonDocuments); , once we include the related collections
 					}
 					await this.dropCollectionIfExists(collectionName);
-
-					await this.databaseManagementService.getDatabaseCollection(collectionName).insertMany(data);
+					console.log('debug 1');
+					// await this.databaseManagementService.getDatabaseCollection(collectionName).insertMany(data);
+					await this.databaseManagementService
+						.getDatabaseCollection(collectionName)
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return
+						.insertMany(data.map((d) => JSON.parse(JSON.stringify(d))));
 					return `${collectionName}:${data.length}`;
 				})
 		);
@@ -196,7 +200,7 @@ export class DatabaseManagementUc {
 	): Promise<string[]> {
 		// TODO: once all collection seed generation is moved to factories, seedDatabaseCollectionsFromFileSystem will be removed
 		// currently we first seed from factories and seed the remaining collections from the filesystem
-		const collectionsGeneratedByFactories = collectionSeedData.map(({ collectionName }) => collectionName);
+		const collectionsGeneratedByFactories = generateSeedData().map(({ collectionName }) => collectionName);
 		const seededCollectionsWithAmount: string[] = seedAlsoFromFactories
 			? await this.seedDatabaseCollectionsFromFactories(collections)
 			: [];

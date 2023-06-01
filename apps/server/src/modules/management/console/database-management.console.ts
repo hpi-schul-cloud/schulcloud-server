@@ -5,6 +5,7 @@ import { DatabaseManagementUc } from '../uc/database-management.uc';
 interface Options {
 	collection?: string;
 	override?: boolean;
+	onlyfactories?: boolean;
 }
 
 @Console({ command: 'database', description: 'database setup console' })
@@ -19,12 +20,20 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: 'filter for a single <collection>',
 			},
+			{
+				flags: '-o, --onlyfactories',
+				required: false,
+				description: 'seed from factories only',
+			},
 		],
 		description: 'reset database collections with seed data from filesystem',
 	})
 	async seedCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
-		const collections = await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter, true);
+
+		const collections = options.onlyfactories
+			? await this.databaseManagementUc.seedDatabaseCollectionsFromFactories(filter)
+			: await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter, true);
 		const report = JSON.stringify(collections);
 		this.consoleWriter.info(report);
 		return collections;

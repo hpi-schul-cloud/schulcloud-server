@@ -63,7 +63,7 @@ const data: SystemPartial[] = [
 	},
 ];
 
-const systems = data.map((d) => {
+export const systems = data.map((d) => {
 	const params: DeepPartial<ISystemProperties> = {
 		alias: d.alias,
 		displayName: d.displayName,
@@ -76,4 +76,9 @@ const systems = data.map((d) => {
 		url: d.url,
 	};
 	const system = systemFactory.buildWithId(params, d.id);
+
+	if (d.createdAt) system.createdAt = new Date(d.createdAt);
+	if (d.updatedAt) system.updatedAt = new Date(d.updatedAt);
+
+	return system;
 });

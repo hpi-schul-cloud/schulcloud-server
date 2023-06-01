@@ -1,10 +1,17 @@
-import { Accounts } from './Accounts';
-import { Roles } from './roles';
+import { BaseEntity } from '@shared/domain';
+import { generateRole } from './roles';
 
-export const collectionSeedData = [
-	{ collectionName: 'roles', data: Roles },
+export function generateSeedData() {
+	// await setupEntities();
+	let collections: { collectionName: string; data: BaseEntity[] }[] = [];
+	// create school related collections
+	// system
+	// federalstate
+	// years
 	// schule,
-	// user
-	// account
-	{ collectionName: 'accounts', data: Accounts },
-];
+
+	// create user related collections
+	collections = collections.concat({ collectionName: 'roles', data: generateRole() });
+
+	return collections;
+}

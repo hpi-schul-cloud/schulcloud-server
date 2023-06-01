@@ -23,6 +23,8 @@ describe('Role Entity', () => {
 
 		it('should create a user when passing required properties', () => {
 			const role = new Role({ name: RoleName.DEMO });
+			const r = roleFactory.build();
+			console.log(r);
 
 			expect(role).toBeInstanceOf(Role);
 		});

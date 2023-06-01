@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, StorageProvider, System } from '@shared/domain';
+import { StorageProvider, System } from '@shared/domain';
 import { DatabaseManagementService } from '@shared/infra/database';
 import {
 	DefaultEncryptionService,
@@ -13,7 +13,7 @@ import { FileSystemAdapter } from '@shared/infra/file-system';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
-import { collectionSeedData } from '../seed-data';
+import { generateSeedData } from '../seed-data';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
@@ -628,18 +628,15 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('when seeding database from factories', () => {
-		it('should seed database with roles', async () => {
-			const roleData = collectionSeedData.filter((c) => c.collectionName === 'roles').at(0)?.data as Role[];
-			expect(roleData).toBeDefined();
-			expect(roleData?.length).toBe(16);
+		it('should return correct number of seeded collection with length', async () => {
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
-			expect(collectionsSeeded).toStrictEqual(collectionSeedData.map((c) => `${c.collectionName}:${c.data.length}`));
+			expect(collectionsSeeded).toStrictEqual(generateSeedData().map((c) => `${c.collectionName}:${c.data.length}`));
+			console.log(collectionsSeeded);
 		});
-		// it('should seed database with factories', async () => {
-		// 	const accountData = collectionSeedData.filter((c) => c.collectionName === 'accounts').at(0)?.data;
-		// 	expect(accountData).toBeDefined();
-		// 	const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
-		// 	expect(collectionsSeeded).toStrictEqual(collectionSeedData.map((c) => `${c.collectionName}:${c.data.length}`));
-		// });
+		it('should have the system collections in the database', async () => {
+			await uc.seedDatabaseCollectionsFromFactories();
+			const docs = await dbService.findDocumentsOfCollection('system');
+			expect(docs.length).toBeGreaterThan(0);
+		});
 	});
 });

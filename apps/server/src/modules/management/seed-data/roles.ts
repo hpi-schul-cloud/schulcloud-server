@@ -1,6 +1,5 @@
 // All user accounts are organized by school in a single array
 
-import { Collection } from '@mikro-orm/core';
 import { IRoleProperties, Permission, Role, RoleName } from '@shared/domain';
 import { roleFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
@@ -433,33 +432,38 @@ const roleOrder = [
 	'expert',
 ];
 
-export const rolesByName = {} as Record<RoleName, Role>;
+export function generateRole() {
+	// cache the results for later use
+	const rolesByName = {} as Record<RoleName, Role>;
 
-// create the roles in order
-export const Roles = roleOrder.map((roleName) => {
-	const partial = roleSeedData[roleName];
-	if (!partial) {
-		throw new Error(`Role ${roleName} not found`);
-	}
-	const subRoles = partial.roles.map((rName) => rolesByName[rName]);
-	if (subRoles.some((r) => !r)) {
-		throw new Error(`Role ${roleName} depends on non existing role`);
-	}
-	const params: DeepPartial<IRoleProperties> = {
-		name: partial.name,
-		permissions: partial.permissions,
-	};
+	// create the roles in order
+	return roleOrder.map((roleName) => {
+		const partial = roleSeedData[roleName];
+		if (!partial) {
+			throw new Error(`Role ${roleName} not found`);
+		}
+		const subRoles = partial.roles.map((rName) => rolesByName[rName]);
+		if (subRoles.some((r) => !r)) {
+			throw new Error(`Role ${roleName} depends on non existing role`);
+		}
+		const params: DeepPartial<IRoleProperties> = {
+			name: partial.name,
+			permissions: partial.permissions,
+			roles: subRoles,
+		};
 
-	const role = roleFactory.build(params);
-	if (partial.createdAt) {
-		role.createdAt = new Date(partial.createdAt);
-	}
-	if (partial.updatedAt) {
-		role.updatedAt = new Date(partial.updatedAt);
-	}
-	// workaround error when setting roles in factory
-	if (subRoles.length > 0) role.roles = new Collection<Role, object>(role, subRoles);
+		const role = roleFactory.build(params);
+		if (partial.createdAt) {
+			role.createdAt = new Date(partial.createdAt);
+		}
+		if (partial.updatedAt) {
+			role.updatedAt = new Date(partial.updatedAt);
+		}
+		// workaround error when setting roles in factory
+		// if (subRoles.length > 0) role.roles = new Collection<Role, object>(role, subRoles);
 
-	rolesByName[roleName] = role;
-	return role;
-});
+		rolesByName[roleName] = role;
+		// console.log(JSON.parse(JSON.stringify(role)));
+		return role;
+	});
+}
