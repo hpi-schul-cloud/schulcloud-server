@@ -1,3 +1,3 @@
-export * from './get.url.params';
+export * from './get.params';
 export * from './post.body.params';
-export * from './post.url.params';
+export * from './post.params';

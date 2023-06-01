@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class GetH5PContentFileParams {
+export class LibraryFileUrlParams {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	id!: string;
+	ubername!: string;
 
 	@ApiProperty()
 	@IsString()

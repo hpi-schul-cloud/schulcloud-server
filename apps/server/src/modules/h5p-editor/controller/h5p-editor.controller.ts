@@ -31,11 +31,11 @@ import {
 	AjaxPostBodyParamsFilesInterceptor,
 	AjaxPostBodyParamsTransformPipe,
 	AjaxPostQueryParams,
-	GetH5PContentFileParams,
+	ContentFileUrlParams,
 	GetH5PContentParams,
+	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 	PostH5PContentParams,
-	GetH5PLibraryFileParams,
 } from './dto';
 
 // Dummy html response so we can test i-frame integration
@@ -93,7 +93,7 @@ export class H5PEditorController {
 	// - static files for editor	(e.g. GET `/editor/*`)
 
 	@Get('libraries/:ubername/:file(*)')
-	async getLibraryFile(@Param() params: GetH5PLibraryFileParams, @Req() req: Request) {
+	async getLibraryFile(@Param() params: LibraryFileUrlParams, @Req() req: Request) {
 		const { data, contentType, contentLength } = await this.h5pEditorUc.getLibraryFile(params.ubername, params.file);
 
 		req.on('close', () => data.destroy());
@@ -109,7 +109,7 @@ export class H5PEditorController {
 	}
 
 	@Get('params/:id/:file(*)')
-	async getContentFile(@Param() params: GetH5PContentFileParams, @Req() req: Request, @Res() res: Response) {
+	async getContentFile(@Param() params: ContentFileUrlParams, @Req() req: Request, @Res() res: Response) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
 			params.id,
 			params.file,
@@ -159,7 +159,6 @@ export class H5PEditorController {
 	@Get('ajax')
 	async getAjax(@Query() query: AjaxGetQueryParams) {
 		const response = this.h5pEditorUc.getAjax(query);
-
 		return response;
 	}
 
@@ -183,6 +182,7 @@ export class H5PEditorController {
 
 	@Post('/create')
 	async createNewContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
+		// Todo: Move to UC
 		const response = await this.h5pEditorUc.h5pEditorService.h5pEditor.saveOrUpdateContentReturnMetaData(
 			undefined as unknown as string,
 			// @ts-ignore
@@ -190,6 +190,7 @@ export class H5PEditorController {
 			// @ts-ignore
 			body.params.metadata as IContentMetadata,
 			body.library,
+			// Todo: User
 			{
 				canCreateRestricted: true,
 				canInstallRecommended: true,
