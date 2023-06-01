@@ -15,7 +15,6 @@ import {
 } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { Action } from '@src/modules/authorization/types/action.enum';
-import { BoardDoAuthorizableService } from '@src/modules/board';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -36,29 +35,24 @@ class DtoCreator {
 
 	roomsAuthorisationService: RoomsAuthorisationService;
 
-	boardDoAuthorizableService: BoardDoAuthorizableService;
-
 	constructor({
 		room,
 		board,
 		user,
 		authorisationService,
 		roomsAuthorisationService,
-		boardDoAuthorizableService,
 	}: {
 		room: Course;
 		board: Board;
 		user: User;
 		authorisationService: AuthorizationService;
 		roomsAuthorisationService: RoomsAuthorisationService;
-		boardDoAuthorizableService: BoardDoAuthorizableService;
 	}) {
 		this.room = room;
 		this.board = board;
 		this.user = user;
 		this.authorisationService = authorisationService;
 		this.roomsAuthorisationService = roomsAuthorisationService;
-		this.boardDoAuthorizableService = boardDoAuthorizableService;
 	}
 
 	manufacture(): RoomBoardDTO {
@@ -181,8 +175,7 @@ class DtoCreator {
 export class RoomBoardDTOFactory {
 	constructor(
 		private readonly authorisationService: AuthorizationService,
-		private readonly roomsAuthorisationService: RoomsAuthorisationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService
+		private readonly roomsAuthorisationService: RoomsAuthorisationService
 	) {}
 
 	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
@@ -192,7 +185,6 @@ export class RoomBoardDTOFactory {
 			user,
 			authorisationService: this.authorisationService,
 			roomsAuthorisationService: this.roomsAuthorisationService,
-			boardDoAuthorizableService: this.boardDoAuthorizableService,
 		});
 		const result = worker.manufacture();
 		return result;

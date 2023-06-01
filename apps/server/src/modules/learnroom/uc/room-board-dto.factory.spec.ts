@@ -1,11 +1,13 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
-describe('RoomBoardDTOMapper', () => {
+describe(RoomBoardDTOFactory.name, () => {
 	let module: TestingModule;
 	let mapper: RoomBoardDTOFactory;
 	let authorisationService: RoomsAuthorisationService;
@@ -32,6 +34,7 @@ describe('RoomBoardDTOMapper', () => {
 						},
 					},
 				},
+				{ provide: AuthorizationService, useValue: createMock<AuthorizationService>() },
 			],
 		}).compile();
 
