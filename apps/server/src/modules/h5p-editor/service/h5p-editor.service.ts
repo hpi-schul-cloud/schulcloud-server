@@ -19,6 +19,7 @@ export class H5PEditorService {
 
 		const config: H5PConfig = new H5PConfig(undefined, {
 			baseUrl: '/api/v3/h5p-editor',
+			contentUserStateSaveInterval: false,
 		});
 
 		const urlGenerator = new UrlGenerator(config);
