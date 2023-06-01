@@ -15,7 +15,7 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board/board.module';
+import { BoardModule } from '../board';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
