@@ -2,14 +2,14 @@ import { SortingParams } from '@shared/controller';
 import { IsEnum, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export enum ExternalToolSortOrder {
+export enum ExternalToolSortBy {
 	ID = 'id',
 	NAME = 'name',
 }
 
-export class SortExternalToolParams extends SortingParams<ExternalToolSortOrder> {
+export class SortExternalToolParams extends SortingParams<ExternalToolSortBy> {
 	@IsOptional()
-	@IsEnum(ExternalToolSortOrder)
-	@ApiPropertyOptional({ enum: ExternalToolSortOrder })
-	sortBy?: ExternalToolSortOrder;
+	@IsEnum(ExternalToolSortBy)
+	@ApiPropertyOptional({ enum: ExternalToolSortBy })
+	sortBy?: ExternalToolSortBy;
 }

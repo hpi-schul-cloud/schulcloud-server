@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ALL_RULES } from '@shared/domain/rules';
 import { FeathersModule } from '@shared/infra/feathers';
 import {
@@ -23,7 +23,7 @@ import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
 
 @Module({
-	imports: [FeathersModule, BoardModule, LoggerModule, SchoolModule, ToolModule],
+	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), BoardModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
