@@ -155,7 +155,7 @@ class DtoCreator {
 		const type = RoomBoardElementTypes.COLUMN_BOARD;
 		const columnBoardTarget = element.target as ColumnBoardTarget;
 		const content: ColumnBoardMetaData = {
-			id: columnBoardTarget.id,
+			id: columnBoardTarget.columnBoardId,
 			title: columnBoardTarget.title,
 			createdAt: columnBoardTarget.createdAt,
 			updatedAt: columnBoardTarget.updatedAt,
