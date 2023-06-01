@@ -2,14 +2,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { TextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, RichTextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
-	textElementNodeFactory,
+	richTextElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -72,12 +73,16 @@ describe(`content element delete (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-		const element = textElementNodeFactory.buildWithId({ parent: cardNode });
-		const sibling = textElementNodeFactory.buildWithId({ parent: cardNode });
+		const element = richTextElementNodeFactory.buildWithId({ parent: cardNode });
+		const sibling = richTextElementNodeFactory.buildWithId({ parent: cardNode });
 
 		await em.persistAndFlush([user, columnBoardNode, columnNode, cardNode, element, sibling]);
 		em.clear();
@@ -101,7 +106,7 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			await expect(em.findOneOrFail(TextElementNode, element.id)).rejects.toThrow();
+			await expect(em.findOneOrFail(RichTextElementNode, element.id)).rejects.toThrow();
 		});
 
 		it('should not delete siblings', async () => {
@@ -110,10 +115,22 @@ describe(`content element delete (api)`, () => {
 
 			await api.delete(element.id);
 
-			const siblingFromDb = await em.findOneOrFail(TextElementNode, sibling.id);
+			const siblingFromDb = await em.findOneOrFail(RichTextElementNode, sibling.id);
 			expect(siblingFromDb).toBeDefined();
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with valid user', () => {
+		it('should return status 403', async () => {
+			const { element } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.delete(element.id);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });

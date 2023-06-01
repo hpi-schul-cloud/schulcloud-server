@@ -1,14 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
-import { cardFactory, textElementFactory } from '@shared/testing';
+import { cardFactory, richTextElementFactory } from '@shared/testing';
 import { Card } from './card.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 describe(Card.name, () => {
 	describe('isAllowedAsChild', () => {
-		it('should allow text element objects', () => {
+		it('should allow rich text element objects', () => {
 			const card = cardFactory.build();
-			const textElement = textElementFactory.build();
-			expect(card.isAllowedAsChild(textElement)).toBe(true);
+			const richTextElement = richTextElementFactory.build();
+			expect(card.isAllowedAsChild(richTextElement)).toBe(true);
 		});
 	});
 
