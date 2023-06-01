@@ -1166,6 +1166,11 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"FEATURE_TREAT_USER_AS_REGISTERED_WITHOUT_CONSENTS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Determines if user should be seen as registered even without consents set to true."
 		}
 	},
 	"required": [
