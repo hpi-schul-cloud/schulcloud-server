@@ -20,15 +20,15 @@ export class ColumnBoardService {
 		return ids;
 	}
 
-	async getColumnBoardTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
+	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
 		const titleMap = this.boardDoRepo.getTitleById(boardIds);
 		return titleMap;
 	}
 
-	async create(context: BoardExternalReference): Promise<ColumnBoardInfo> {
+	async create(context: BoardExternalReference, title = ''): Promise<ColumnBoardInfo> {
 		const board = new ColumnBoard({
 			id: new ObjectId().toHexString(),
-			title: '',
+			title,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

@@ -47,7 +47,7 @@ export class RoomsService {
 			_columnBoardId: { $in: columnBoardIds },
 		} as unknown as FilterQuery<ColumnBoardTarget>);
 
-		const titlesMap = await this.columnBoardService.getColumnBoardTitlesById(columnBoardIds);
+		const titlesMap = await this.columnBoardService.getBoardObjectTitlesById(columnBoardIds);
 
 		const columnBoardTargets = columnBoardIds.map((id) => {
 			const title = titlesMap[id] ?? '';

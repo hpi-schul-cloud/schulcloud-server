@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoard } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '@shared/domain';
+import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
@@ -66,15 +67,44 @@ describe(ColumnBoardService.name, () => {
 		});
 	});
 
-	describe('findAllByParentReference', () => {
-		it.todo('should return boards that are referencing the given course', async () => {
-			// WIP : BC-3573 : add test
+	describe('getBoardObjectTitlesById', () => {
+		describe('when asking for a list of boardObject-ids', () => {
+			const setupBoards = () => {
+				return {
+					boardNodes: columnBoardNodeFactory.buildListWithId(3),
+				};
+			};
+
+			it('should call the boardDoRepo.getTitleById with the same parameters', async () => {
+				const { boardNodes } = setupBoards();
+				const ids = boardNodes.map((n) => n.id);
+
+				await service.getBoardObjectTitlesById(ids);
+
+				expect(boardDoRepo.getTitleById).toHaveBeenCalledWith(ids);
+			});
 		});
 	});
 
 	describe('create', () => {
-		it.todo('should create a fresh column board referencing the given course', async () => {
-			// WIP : BC-3573 : add test
+		const setupBoards = () => {
+			const context: BoardExternalReference = {
+				type: BoardExternalReferenceType.Course,
+				id: new ObjectId().toHexString(),
+			};
+
+			return { context };
+		};
+
+		describe('when creating a fresh column board', () => {
+			it('should return a columnBoardInfo of that board', async () => {
+				const { context } = setupBoards();
+				const title = `Mainboard ${Math.random().toString()}`;
+
+				const columnBoardInfo = await service.create(context, title);
+
+				expect(columnBoardInfo).toEqual(expect.objectContaining({ title }));
+			});
 		});
 	});
 

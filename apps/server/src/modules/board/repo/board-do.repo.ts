@@ -58,7 +58,7 @@ export class BoardDoRepo {
 		}
 
 		const titlesMap = boardNodes.reduce((map, node) => {
-			map[node.id] = node.title;
+			map[node.id] = node.title ?? '';
 			return map;
 		}, {});
 
