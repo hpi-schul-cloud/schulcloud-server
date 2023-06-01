@@ -8,6 +8,10 @@ import { AuthenticationModule } from '@src/modules/authentication/authentication
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { H5PEditorModule } from './h5p-editor.module';
+import { H5PEditorUc } from './uc/h5p.uc';
+import { H5PEditorController } from './controller';
+import { H5PPlayerService } from './service/h5p-player.service';
+import { H5PEditorService } from './service/h5p-editor.service';
 
 const imports = [
 	H5PEditorModule,
@@ -18,8 +22,8 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 ];
-const controllers = [];
-const providers = [];
+const controllers = [H5PEditorController];
+const providers = [H5PEditorUc, H5PPlayerService, H5PEditorService];
 @Module({
 	imports,
 	controllers,

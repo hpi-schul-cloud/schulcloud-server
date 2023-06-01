@@ -173,7 +173,7 @@ export class H5PEditorController {
 		return result;
 	}
 
-	@Get('/create')
+	@Get('/createNew')
 	async createNewEditor(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		// Todo: Get user language
 		const response = this.h5pEditorUc.createH5PEditor(currentUser, 'de');
