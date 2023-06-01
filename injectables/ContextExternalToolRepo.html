@@ -197,7 +197,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:25</a></div>
                             </td>
                         </tr>
 
@@ -286,8 +286,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:60</a></div>
                 </td>
             </tr>
 
@@ -357,8 +357,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:42</a></div>
                 </td>
             </tr>
 
@@ -432,7 +432,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:37</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:38</a></code>
 </div>
                 </td>
             </tr>
@@ -503,8 +503,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:49</a></div>
                 </td>
             </tr>
 
@@ -574,8 +574,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="110"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:110</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="115"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:115</a></div>
                 </td>
             </tr>
 
@@ -645,8 +645,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="101"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:101</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="106"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:106</a></div>
                 </td>
             </tr>
 
@@ -720,7 +720,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:90</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:95</a></code>
 </div>
                 </td>
             </tr>
@@ -795,7 +795,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:71</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:72</a></code>
 </div>
                 </td>
             </tr>
@@ -1644,7 +1644,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:33</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:34</a></div>
                                 </td>
                             </tr>
 
@@ -1661,6 +1661,7 @@ import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	ContextExternalTool,
 	ContextExternalToolDO,
+	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
 } from &#x27;@shared/domain&#x27;;
@@ -1718,8 +1719,8 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 
 		scope.byId(query.id);
 		scope.bySchoolToolId(query.schoolToolRef?.schoolToolId);
-		scope.byContextId(query.contextId);
-
+		scope.byContextId(query.context?.id);
+		scope.byContextType(query.context?.type);
 		scope.allowEmptyQuery(true);
 
 		return scope;
@@ -1731,11 +1732,15 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 			schoolToolId: entity.schoolTool.id,
 		});
 
+		const contextRef: ContextRef &#x3D; new ContextRef({
+			id: entity.contextId,
+			type: this.mapContextTypeToDoType(entity.contextType),
+		});
+
 		return new ContextExternalToolDO({
 			id: entity.id,
 			schoolToolRef,
-			contextId: entity.contextId,
-			contextType: this.mapContextTypeToDoType(entity.contextType),
+			contextRef,
 			contextToolName: entity.contextToolName,
 			toolVersion: entity.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
@@ -1746,8 +1751,8 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 
 	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
 		return {
-			contextId: entityDO.contextId,
-			contextType: this.mapContextTypeToEntityType(entityDO.contextType),
+			contextId: entityDO.contextRef.id,
+			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			contextToolName: entityDO.contextToolName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,

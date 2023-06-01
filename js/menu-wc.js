@@ -2613,6 +2613,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContentElementUrlParams.html" data-type="entity-link" >ContentElementUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextExternalToolContextParams.html" data-type="entity-link" >ContextExternalToolContextParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ContextExternalToolDO.html" data-type="entity-link" >ContextExternalToolDO</a>
                             </li>
                             <li class="link">
@@ -2635,6 +2638,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ContextExternalToolScope.html" data-type="entity-link" >ContextExternalToolScope</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContextExternalToolSearchListResponse.html" data-type="entity-link" >ContextExternalToolSearchListResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ContextRef.html" data-type="entity-link" >ContextRef</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ContextTypeMapper.html" data-type="entity-link" >ContextTypeMapper</a>

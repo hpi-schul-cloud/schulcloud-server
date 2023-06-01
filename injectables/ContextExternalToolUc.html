@@ -92,6 +92,15 @@
                                     <span class="modifier">Async</span>
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#filterToolsWithPermissions" >filterToolsWithPermissions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getContextExternalToolsForContext" >getContextExternalToolsForContext</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -110,12 +119,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, contextExternalToolValidationService: <a href="../injectables/ContextExternalToolValidationService.html" target="_self">ContextExternalToolValidationService</a>)</code>
+<code>constructor(contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, contextExternalToolValidationService: <a href="../injectables/ContextExternalToolValidationService.html" target="_self">ContextExternalToolValidationService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -149,6 +158,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/ContextExternalToolValidationService.html" target="_self" >ContextExternalToolValidationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -192,8 +213,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:18</a></div>
                 </td>
             </tr>
 
@@ -275,8 +296,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:36</a></div>
                 </td>
             </tr>
 
@@ -336,6 +357,185 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterToolsWithPermissions"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>filterToolsWithPermissions</b></span>
+                        <a href="#filterToolsWithPermissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterToolsWithPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, tools: ContextExternalToolDO[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:60</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>tools</td>
+                                    <td>
+                                            <code>ContextExternalToolDO[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolDO[]&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getContextExternalToolsForContext"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getContextExternalToolsForContext</b></span>
+                        <a href="#getContextExternalToolsForContext"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContextExternalToolsForContext(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextType: <a href="../undefineds/ToolContextType.html" target="_self">ToolContextType</a>, contextId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/context-external-tool.uc.ts:50</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextType</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ToolContextType" target="_self" >ToolContextType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>contextId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -343,16 +543,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { ContextExternalToolDO, EntityId, Permission } from &#x27;@shared/domain&#x27;;
+import { ContextExternalToolDO, ContextRef, EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { Action } from &#x27;@src/modules/authorization&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { ForbiddenLoggableException } from &#x27;@src/modules/authorization/errors/forbidden.loggable-exception&#x27;;
 import { ContextExternalTool } from &#x27;./dto&#x27;;
 import { ContextExternalToolService, ContextExternalToolValidationService } from &#x27;../service&#x27;;
+import { ToolContextType } from &#x27;../interface&#x27;;
 
 @Injectable()
 export class ContextExternalToolUc {
 	constructor(
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly contextExternalToolValidationService: ContextExternalToolValidationService
+		private readonly contextExternalToolValidationService: ContextExternalToolValidationService,
+		private readonly logger: LegacyLogger
 	) {}
 
 	async createContextExternalTool(
@@ -385,6 +589,44 @@ export class ContextExternalToolUc {
 		const promise: Promise&lt;void&gt; &#x3D; this.contextExternalToolService.deleteContextExternalTool(tool);
 
 		return promise;
+	}
+
+	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
+		const tools: ContextExternalToolDO[] &#x3D; await this.contextExternalToolService.findAllByContext(
+			new ContextRef({ id: contextId, type: contextType })
+		);
+
+		const toolsWithPermission: ContextExternalToolDO[] &#x3D; await this.filterToolsWithPermissions(userId, tools);
+
+		return toolsWithPermission;
+	}
+
+	private async filterToolsWithPermissions(
+		userId: EntityId,
+		tools: ContextExternalToolDO[]
+	): Promise&lt;ContextExternalToolDO[]&gt; {
+		const toolPromises &#x3D; tools.map(async (tool) &#x3D;&gt; {
+			try {
+				await this.contextExternalToolService.ensureContextPermissions(userId, tool, {
+					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
+					action: Action.read,
+				});
+
+				return tool;
+			} catch (error) {
+				if (error instanceof ForbiddenLoggableException) {
+					this.logger.debug(&#x60;User ${userId} does not have permission for tool ${tool.id ?? &#x27;undefined&#x27;}&#x60;);
+					return null;
+				}
+				throw error;
+			}
+		});
+
+		const toolsWithPermission &#x3D; await Promise.all(toolPromises);
+		const filteredTools: ContextExternalToolDO[] &#x3D; toolsWithPermission.filter(
+			(tool) &#x3D;&gt; tool !&#x3D;&#x3D; null
+		) as ContextExternalToolDO[];
+		return filteredTools;
 	}
 }
 </code></pre>

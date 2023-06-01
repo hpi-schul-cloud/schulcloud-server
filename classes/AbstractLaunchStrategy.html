@@ -1360,9 +1360,9 @@ export abstract class AbstractLaunchStrategy {
 
 		if (
 			customParameter.type &#x3D;&#x3D;&#x3D; CustomParameterType.AUTO_COURSEID &amp;&amp;
-			contextExternalToolDO.contextType &#x3D;&#x3D;&#x3D; ToolContextType.COURSE
+			contextExternalToolDO.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.COURSE
 		) {
-			return contextExternalToolDO.contextId;
+			return contextExternalToolDO.contextRef.id;
 		}
 
 		const parameterValue &#x3D;

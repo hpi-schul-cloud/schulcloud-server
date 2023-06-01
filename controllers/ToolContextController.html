@@ -96,6 +96,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createContextExternalTool" >createContextExternalTool</a>
                             </li>
@@ -103,8 +104,19 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteContextExternalTool" >deleteContextExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getContextExternalToolsForContext" >getContextExternalToolsForContext</a>
                             </li>
                         </ul>
                     </td>
@@ -135,6 +147,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>createContextExternalTool</b></span>
                         <a href="#createContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -152,14 +165,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The ContextExternalTool has been successfully created.&#x27;, type: ContextExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br /></code>
+                    <code>@Post()<br />@ApiCreatedResponse({description: &#x27;The ContextExternalTool has been successfully created.&#x27;, type: ContextExternalToolResponse})<br />@ApiForbiddenResponse()<br />@ApiUnprocessableEntityResponse()<br />@ApiUnauthorizedResponse()<br />@ApiResponse({status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27;})<br />@ApiOperation({summary: &#x27;Creates a ContextExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:45</a></div>
                 </td>
             </tr>
 
@@ -228,6 +241,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>deleteContextExternalTool</b></span>
                         <a href="#deleteContextExternalTool"><span class="icon ion-ios-link"></span></a>
@@ -245,14 +259,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Delete(&#x27;:contextExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br /></code>
+                    <code>@Delete(&#x27;:contextExternalToolId&#x27;)<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOperation({summary: &#x27;Deletes a ContextExternalTool&#x27;})<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="57"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:57</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:68</a></div>
                 </td>
             </tr>
 
@@ -312,25 +326,130 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getContextExternalToolsForContext"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>getContextExternalToolsForContext</b></span>
+                        <a href="#getContextExternalToolsForContext"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContextExternalToolsForContext(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ContextExternalToolContextParams.html" target="_self">ContextExternalToolContextParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:contextType/:contextId&#x27;)<br />@ApiBearerAuth()<br />@ApiForbiddenResponse()<br />@ApiUnauthorizedResponse()<br />@ApiOkResponse({description: &#x27;Returns a list of ContextExternalTools for the given context&#x27;, type: undefined})<br />@ApiOperation({summary: &#x27;Returns a list of ContextExternalTools for the given context&#x27;})<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="88"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool-context.controller.ts:88</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>params</td>
+                                    <td>
+                                                <code><a href="../classes/ContextExternalToolContextParams.html" target="_self" >ContextExternalToolContextParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;ContextExternalToolSearchListResponse&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	ApiBearerAuth,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiOkResponse,
+	ApiOperation,
 	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
-import { Body, Controller, Post, Delete, Param } from &#x27;@nestjs/common&#x27;;
+import { Body, Controller, Delete, Get, Param, Post } from &#x27;@nestjs/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { ContextExternalToolDO } from &#x27;@shared/domain&#x27;;
-import { ContextExternalToolIdParams, ContextExternalToolPostParams, ContextExternalToolResponse } from &#x27;./dto&#x27;;
+import {
+	ContextExternalToolIdParams,
+	ContextExternalToolPostParams,
+	ContextExternalToolResponse,
+	ContextExternalToolContextParams,
+	ContextExternalToolSearchListResponse,
+} from &#x27;./dto&#x27;;
 import { ContextExternalToolUc } from &#x27;../uc&#x27;;
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from &#x27;./mapper&#x27;;
 import { ContextExternalTool } from &#x27;../uc/dto&#x27;;
@@ -350,6 +469,7 @@ export class ToolContextController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
+	@ApiOperation({ summary: &#x27;Creates a ContextExternalTool&#x27; })
 	async createContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: ContextExternalToolPostParams
@@ -372,6 +492,7 @@ export class ToolContextController {
 	@Delete(&#x27;:contextExternalToolId&#x27;)
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: &#x27;Deletes a ContextExternalTool&#x27; })
 	async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
@@ -381,6 +502,39 @@ export class ToolContextController {
 		this.logger.debug(
 			&#x60;ContextExternalTool with id ${params.contextExternalToolId} was deleted by user with id ${currentUser.userId}&#x60;
 		);
+	}
+
+	@Get(&#x27;:contextType/:contextId&#x27;)
+	@ApiBearerAuth()
+	@ApiForbiddenResponse()
+	@ApiUnauthorizedResponse()
+	@ApiOkResponse({
+		description: &#x27;Returns a list of ContextExternalTools for the given context&#x27;,
+		type: [ContextExternalToolSearchListResponse],
+	})
+	@ApiOperation({ summary: &#x27;Returns a list of ContextExternalTools for the given context&#x27; })
+	async getContextExternalToolsForContext(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolContextParams
+	): Promise&lt;ContextExternalToolSearchListResponse&gt; {
+		const contextExternalTools: ContextExternalTool[] &#x3D;
+			await this.contextExternalToolUc.getContextExternalToolsForContext(
+				currentUser.userId,
+				params.contextType,
+				params.contextId
+			);
+
+		const mappedTools: ContextExternalToolResponse[] &#x3D; contextExternalTools.map(
+			(tool: ContextExternalToolDO): ContextExternalToolResponse &#x3D;&gt;
+				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
+		);
+
+		this.logger.debug(
+			&#x60;User with id ${currentUser.userId} fetched ContextExternalTools for contextType: ${params.contextType} and contextId: ${params.contextId}&#x60;
+		);
+
+		const response: ContextExternalToolSearchListResponse &#x3D; new ContextExternalToolSearchListResponse(mappedTools);
+		return response;
 	}
 }
 </code></pre>

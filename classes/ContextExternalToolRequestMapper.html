@@ -211,8 +211,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/context-external-tool-request.mapper.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="22"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/mapper/context-external-tool-request.mapper.ts:22</a></div>
                 </td>
             </tr>
 
@@ -278,12 +278,14 @@ export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
 		return {
 			id: &#x27;&#x27;,
+			contextToolName: request.contextToolName ?? &#x27;&#x27;,
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
-			contextToolName: request.contextToolName ?? &#x27;&#x27;,
-			contextType: request.contextType,
-			contextId: request.contextId,
+			contextRef: {
+				id: request.contextId,
+				type: request.contextType,
+			},
 			toolVersion: request.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};

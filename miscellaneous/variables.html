@@ -2591,8 +2591,7 @@ must use @ApiProperty</p>
 		return {
 			updatedAt: new Date(),
 			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
-			contextId: &#x27;courseId&#x27;,
-			contextType: ToolContextType.COURSE,
+			contextRef: { id: &#x27;courseId&#x27;, type: ToolContextType.COURSE },
 			contextToolName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,

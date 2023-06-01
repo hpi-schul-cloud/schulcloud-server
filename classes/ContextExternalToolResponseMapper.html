@@ -277,9 +277,9 @@ export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse &#x3D; new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? &#x27;&#x27;,
-			contextId: contextExternalTool.contextId,
+			contextId: contextExternalTool.contextRef.id,
+			contextType: contextExternalTool.contextRef.type,
 			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
-			contextType: contextExternalTool.contextType,
 			contextToolName: contextExternalTool.contextToolName,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
