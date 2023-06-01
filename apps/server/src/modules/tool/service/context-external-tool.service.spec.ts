@@ -91,6 +91,7 @@ describe('ContextExternalToolService', () => {
 	describe('createContextExternalTool is called', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
+				jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
 				return {
