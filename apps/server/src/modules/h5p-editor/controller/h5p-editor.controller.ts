@@ -15,24 +15,28 @@ import {
 	UploadedFiles,
 	UseInterceptors,
 } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 
+import { IContentMetadata } from '@lumieducation/h5p-server';
+
 import { H5PEditorUc } from '../uc/h5p.uc';
+
 import {
-	GetH5PAjaxParams,
-	H5PAjaxPostBody,
-	H5PAjaxPostBodyTransformPipe,
-	PostH5PAjaxQueryParams,
-} from './dto/h5p-ajax.params';
-import { GetH5PContentFileParams } from './dto/h5p-content-file.params';
-import { GetH5PContentParams, PostH5PContentParams } from './dto/h5p-editor.params';
-import { GetH5PLibraryFileParams } from './dto/h5p-library-file.params';
-import { GetH5PStaticCoreFileParams, GetH5PStaticEditorCoreFileParams } from './dto/h5p-static-files.params';
+	AjaxGetQueryParams,
+	AjaxPostBodyParams,
+	AjaxPostBodyParamsFilesInterceptor,
+	AjaxPostBodyParamsTransformPipe,
+	AjaxPostQueryParams,
+	GetH5PContentFileParams,
+	GetH5PContentParams,
+	PostH5PContentCreateParams,
+	PostH5PContentParams,
+	GetH5PLibraryFileParams,
+} from './dto';
 
 // Dummy html response so we can test i-frame integration
 const dummyResponse = (title: string) => `
@@ -153,47 +157,20 @@ export class H5PEditorController {
 	}
 
 	@Get('ajax')
-	async getAjax(@Query() query: GetH5PAjaxParams) {
-		const response = this.h5pEditorUc.getAjax(
-			query.action,
-			query.machineName,
-			query.majorVersion,
-			query.minorVersion,
-			query.language
-		);
+	async getAjax(@Query() query: AjaxGetQueryParams) {
+		const response = this.h5pEditorUc.getAjax(query);
 
 		return response;
 	}
 
 	@Post('ajax')
-	@UseInterceptors(
-		AnyFilesInterceptor({
-			limits: { files: 2 },
-			fileFilter: (_req, file, callback) => {
-				if (['file', 'h5p'].includes(file.fieldname)) {
-					callback(null, true);
-				} else {
-					callback(new BadRequestException('File not allowed'), false);
-				}
-			},
-		})
-	)
+	@UseInterceptors(AjaxPostBodyParamsFilesInterceptor)
 	async postAjax(
-		@Body(H5PAjaxPostBodyTransformPipe) body: H5PAjaxPostBody,
-		@Query() query: PostH5PAjaxQueryParams,
+		@Body(AjaxPostBodyParamsTransformPipe) body: AjaxPostBodyParams,
+		@Query() query: AjaxPostQueryParams,
 		@UploadedFiles() files: Express.Multer.File[]
 	) {
-		// Query
-		// - action
-		// - language?
-		// - id
-		// - hubId
-
-		// Body
-		// - files
-
 		const result = await this.h5pEditorUc.postAjax(query, body, files);
-
 		return result;
 	}
 
@@ -204,12 +181,36 @@ export class H5PEditorController {
 		return response;
 	}
 
+	@Post('/create')
+	async createNewContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
+		const response = await this.h5pEditorUc.h5pEditorService.h5pEditor.saveOrUpdateContentReturnMetaData(
+			undefined as unknown as string,
+			// @ts-ignore
+			body.params.params,
+			// @ts-ignore
+			body.params.metadata as IContentMetadata,
+			body.library,
+			{
+				canCreateRestricted: true,
+				canInstallRecommended: true,
+				canUpdateAndInstallLibraries: true,
+				email: '',
+				id: 'abc',
+				name: 'abc',
+				type: '',
+			}
+		);
+
+		return response;
+	}
+
 	@Get('/edit-h5p/:contentId')
 	async editH5pContent(
 		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<string> {
-		const response = this.h5pEditorUc.editH5pContent(currentUser, params.contentId, params.language);
+		// Todo: Get user language
+		const response = this.h5pEditorUc.editH5pContent(currentUser, params.contentId, 'de');
 		return response;
 	}
 

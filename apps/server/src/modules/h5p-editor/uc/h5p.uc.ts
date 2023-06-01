@@ -1,12 +1,11 @@
 import { H5PAjaxEndpoint, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
 
-import { ICurrentUser } from '@src/modules/authentication';
-import { H5PAjaxPostBody, PostH5PAjaxQueryParams } from '../controller/dto/h5p-ajax.params';
-import { H5PEditorService } from '../service/h5p-editor.service';
-import { H5PPlayerService } from '../service/h5p-player.service';
+import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
+import { H5PEditorService, H5PPlayerService } from '../service';
 
 // ToDo
 const dummyUser = {
@@ -62,20 +61,14 @@ export class H5PEditorUc {
 		return new InternalServerErrorException({ error });
 	}
 
-	public async getAjax(
-		action: string,
-		machineName?: string,
-		majorVersion?: string,
-		minorVersion?: string,
-		language?: string
-	) {
+	public async getAjax(query: AjaxGetQueryParams) {
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
-				action,
-				machineName,
-				majorVersion,
-				minorVersion,
-				language,
+				query.action,
+				query.machineName,
+				query.majorVersion,
+				query.minorVersion,
+				query.language,
 				dummyUser
 			);
 
@@ -85,7 +78,7 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async postAjax(query: PostH5PAjaxQueryParams, body: H5PAjaxPostBody, files?: Express.Multer.File[]) {
+	public async postAjax(query: AjaxPostQueryParams, body: AjaxPostBodyParams, files?: Express.Multer.File[]) {
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
 			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
