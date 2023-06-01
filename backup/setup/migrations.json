@@ -210,6 +210,17 @@
 	},
 	{
 		"_id": {
+			"$oid": "644a5cc76018bf037415806a"
+		},
+		"state": "up",
+		"name": "move-school-migration-attributes-to-entity",
+		"createdAt": {
+			"$date": "2023-04-27T11:30:15.605Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "644bc358c994f501e40c73e0"
 		},
 		"state": "up",
@@ -227,6 +238,17 @@
 		"name": "remove-leave-team-permission-from-user",
 		"createdAt": {
 			"$date": "2023-05-05T07:26:34.051Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "646365887db4bf4c882a8514"
+		},
+		"state": "up",
+		"name": "add-context-tool-user-to-user",
+		"createdAt": {
+			"$date": "2023-05-16T11:09:04.602Z"
 		},
 		"__v": 0
 	}
