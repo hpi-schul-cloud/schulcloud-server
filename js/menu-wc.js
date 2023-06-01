@@ -4235,9 +4235,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AcceptLoginRequestBody.html" data-type="entity-link" >AcceptLoginRequestBody</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/AccountInternalParams.html" data-type="entity-link" >AccountInternalParams</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/AccountParams.html" data-type="entity-link" >AccountParams</a>
                             </li>
                             <li class="link">

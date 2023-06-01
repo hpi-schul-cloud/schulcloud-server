@@ -90,13 +90,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Permission, Role, School, EntityId, Account, User, BaseEntity } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, Permission, School, User } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import _ from &#x27;lodash&#x27;;
-import { userPermissions, studentPermissions, teacherPermissions, adminPermissions } from &#x27;../user-role-permissions&#x27;;
 import { accountFactory } from &#x27;./account.factory&#x27;;
-import { roleFactory } from &#x27;./role.factory&#x27;;
-import { schoolFactory } from &#x27;./school.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
 
 interface UserParams {
@@ -111,90 +108,57 @@ interface AccountParams {
 	systemId?: EntityId | ObjectId;
 }
 
-interface AccountInternalParams {
-	userId: EntityId;
-	username?: string;
-	systemId?: EntityId | ObjectId;
-}
-
 export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
-	private static checkIdExists(entity: BaseEntity): void | Error {
-		if (!entity.id) {
-			throw new Error(&#x27;Entity does not have an id.&#x27;);
-		}
-	}
-
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const { firstName, lastName, email } &#x3D; params;
-		const school &#x3D; params.school || schoolFactory.build();
-
-		const userParams: UserParams &#x3D; { school };
-		if (firstName) userParams.firstName &#x3D; firstName;
-		if (lastName) userParams.lastName &#x3D; lastName;
-		if (email) userParams.email &#x3D; email;
-
+		const userParams &#x3D; _.pick(params, &#x27;firstName&#x27;, &#x27;lastName&#x27;, &#x27;email&#x27;, &#x27;school&#x27;);
 		return userParams;
 	}
 
-	private static getAccountParams(params: UserAndAccountParams, user: User): AccountInternalParams {
-		UserAndAccountTestFactory.checkIdExists(user);
-		const { username, systemId } &#x3D; params;
-
-		const accountParams: AccountInternalParams &#x3D; { userId: user.id };
-		if (username) accountParams.username &#x3D; username;
-		if (systemId) accountParams.systemId &#x3D; systemId;
-
-		return accountParams;
-	}
-
-	public static buildUser(
-		role: Role,
-		params: UserAndAccountParams &#x3D; {}
-	): { account: Account; user: User; school: School } {
-		UserAndAccountTestFactory.checkIdExists(role);
-
-		const userParams &#x3D; UserAndAccountTestFactory.getUserParams(params);
-		const user &#x3D; userFactory.withRole(role).buildWithId(userParams);
-
-		const accountParams &#x3D; UserAndAccountTestFactory.getAccountParams(params, user);
-		const account &#x3D; accountFactory.build(accountParams);
-
-		return { account, user, school: user.school };
+	private static buildAccount(user: User, params: UserAndAccountParams &#x3D; {}): Account {
+		const accountParams &#x3D; _.pick(params, &#x27;username&#x27;, &#x27;systemId&#x27;);
+		const account &#x3D; accountFactory.withUser(user).build(accountParams);
+		return account;
 	}
 
 	public static buildStudent(
 		params: UserAndAccountParams &#x3D; {},
 		additionalPermissions: Permission[] &#x3D; []
-	): { studentAccount: Account; studentUser: User; school: School } {
-		const permissions &#x3D; _.union(userPermissions, studentPermissions, additionalPermissions);
-		const studentRole &#x3D; roleFactory.buildWithId({ permissions });
-		const { account, user, school } &#x3D; UserAndAccountTestFactory.buildUser(studentRole, params);
+	): {
+		studentAccount: Account;
+		studentUser: User;
+	} {
+		const user &#x3D; userFactory
+			.asStudent(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account &#x3D; UserAndAccountTestFactory.buildAccount(user, params);
 
-		return { studentAccount: account, studentUser: user, school };
+		return { studentAccount: account, studentUser: user };
 	}
 
 	public static buildTeacher(
 		params: UserAndAccountParams &#x3D; {},
 		additionalPermissions: Permission[] &#x3D; []
-	): { teacherAccount: Account; teacherUser: User; school: School } {
-		const permissions &#x3D; _.union(userPermissions, teacherPermissions, additionalPermissions);
-		const teacherRole &#x3D; roleFactory.buildWithId({ permissions });
-		const { account, user, school } &#x3D; UserAndAccountTestFactory.buildUser(teacherRole, params);
+	): { teacherAccount: Account; teacherUser: User } {
+		const user &#x3D; userFactory
+			.asTeacher(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account &#x3D; UserAndAccountTestFactory.buildAccount(user, params);
 
-		return { teacherAccount: account, teacherUser: user, school };
+		return { teacherAccount: account, teacherUser: user };
 	}
 
 	public static buildAdmin(
 		params: UserAndAccountParams &#x3D; {},
 		additionalPermissions: Permission[] &#x3D; []
-	): { adminAccount: Account; adminUser: User; school: School } {
-		const permissions &#x3D; _.union(userPermissions, adminPermissions, additionalPermissions);
-		const adminRole &#x3D; roleFactory.buildWithId({ permissions });
-		const { account, user, school } &#x3D; UserAndAccountTestFactory.buildUser(adminRole, params);
+	): { adminAccount: Account; adminUser: User } {
+		const user &#x3D; userFactory
+			.asAdmin(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account &#x3D; UserAndAccountTestFactory.buildAccount(user, params);
 
-		return { adminAccount: account, adminUser: user, school };
+		return { adminAccount: account, adminUser: user };
 	}
 }
 </code></pre>

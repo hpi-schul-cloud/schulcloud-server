@@ -115,6 +115,9 @@
                                 <a href="#withSystemId" >withSystemId</a>
                             </li>
                             <li>
+                                <a href="#withUser" >withUser</a>
+                            </li>
+                            <li>
                                 <a href="#afterBuild" >afterBuild</a>
                             </li>
                             <li>
@@ -233,8 +236,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:9</a></div>
                 </td>
             </tr>
 
@@ -258,6 +261,68 @@
                                     <td>id</td>
                                     <td>
                                                 <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | ObjectId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="withUser"></a>
+                    <span class="name">
+                        <span ><b>withUser</b></span>
+                        <a href="#withUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withUser(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/account.factory.ts:15</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user</td>
+                                    <td>
+                                                <code><a href="../interfaces/User.html" target="_self" >User</a></code>
                                     </td>
 
                                     <td>
@@ -1322,7 +1387,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, IAccountProperties } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Account, EntityId, IAccountProperties, User } from &#x27;@shared/domain&#x27;;
 
 import { ObjectId } from &#x27;bson&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
@@ -1331,6 +1396,16 @@ import { BaseFactory } from &#x27;./base.factory&#x27;;
 class AccountFactory extends BaseFactory&lt;Account, IAccountProperties&gt; {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial&lt;IAccountProperties&gt; &#x3D; { systemId: id };
+
+		return this.params(params);
+	}
+
+	withUser(user: User): this {
+		if (!user.id) {
+			throw new Error(&#x27;User does not have an id.&#x27;);
+		}
+
+		const params: DeepPartial&lt;IAccountProperties&gt; &#x3D; { userId: user.id };
 
 		return this.params(params);
 	}
