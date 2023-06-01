@@ -1,4 +1,3 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReference, ColumnBoard, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
@@ -7,11 +6,7 @@ import { BoardDoService } from './board-do.service';
 
 @Injectable()
 export class ColumnBoardService {
-	constructor(
-		private readonly boardDoRepo: BoardDoRepo,
-		private readonly boardDoService: BoardDoService,
-		private readonly em: EntityManager
-	) {}
+	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
 
 	async findById(boardId: EntityId): Promise<ColumnBoard> {
 		const board = await this.boardDoRepo.findByClassAndId(ColumnBoard, boardId);

@@ -1,6 +1,7 @@
 import { lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { BoardElementType, ColumnboardBoardElement } from './boardelement.entity';
+import { BoardElementType } from './boardelement.entity';
+import { ColumnboardBoardElement } from './column-board-boardelement';
 import { ColumnBoardTarget } from './column-board-target.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
