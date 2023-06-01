@@ -6,7 +6,7 @@ export class ContextExternalToolResponseMapper {
 		const mapped: ContextExternalToolResponse = new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? '',
 			contextId: contextExternalTool.contextId,
-			schoolToolId: contextExternalTool.schoolToolId,
+			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
 			contextType: contextExternalTool.contextType,
 			contextToolName: contextExternalTool.contextToolName,
 			toolVersion: contextExternalTool.toolVersion,

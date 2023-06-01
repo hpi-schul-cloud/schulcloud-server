@@ -2,6 +2,14 @@ import { Scope } from '@shared/repo';
 import { ContextExternalTool, EntityId } from '@shared/domain';
 
 export class ContextExternalToolScope extends Scope<ContextExternalTool> {
+	byId(id: EntityId | undefined): ContextExternalToolScope {
+		if (id !== undefined) {
+			this.addQuery({ id });
+		}
+
+		return this;
+	}
+
 	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !== undefined) {
 			this.addQuery({ schoolTool: schoolToolId });
@@ -9,8 +17,10 @@ export class ContextExternalToolScope extends Scope<ContextExternalTool> {
 		return this;
 	}
 
-	byContextIdAndSchoolToolId(contextId: EntityId, schoolToolId: EntityId): ContextExternalToolScope {
-		this.addQuery({ $and: [{ contextId }, { schoolTool: schoolToolId }] });
+	byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
+		if (contextId !== undefined) {
+			this.addQuery({ contextId });
+		}
 
 		return this;
 	}

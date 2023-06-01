@@ -15,6 +15,7 @@ import { FwuLearningContentsController } from './controller/fwu-learning-content
 import { config, s3Config } from './fwu-learning-contents.config';
 import { S3Config } from './interface/config';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
+import { FilesStorageAMQPModule } from '../files-storage/files-storage-amqp.module';
 
 const providers = [
 	{
@@ -54,6 +55,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		CoreModule,
 		LoggerModule,
 		HttpModule,
+		FilesStorageAMQPModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
