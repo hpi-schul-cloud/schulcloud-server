@@ -1,8 +1,11 @@
-import { IUserProperties, Role, RoleName, User } from '@shared/domain';
+/* istanbul ignore file */
+import { IUserProperties, Role, Permission, RoleName, User } from '@shared/domain';
 import { DeepPartial } from 'fishery';
+import _ from 'lodash';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
+import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';
 
 class UserFactory extends BaseFactory<User, IUserProperties> {
 	withRoleByName(name: RoleName): this {
@@ -12,6 +15,33 @@ class UserFactory extends BaseFactory<User, IUserProperties> {
 	}
 
 	withRole(role: Role): this {
+		const params: DeepPartial<IUserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	asStudent(additionalPermissions: Permission[] = []): this {
+		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
+		const role = roleFactory.buildWithId({ permissions });
+
+		const params: DeepPartial<IUserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	asTeacher(additionalPermissions: Permission[] = []): this {
+		const permissions = _.union(userPermissions, teacherPermissions, additionalPermissions);
+		const role = roleFactory.buildWithId({ permissions });
+
+		const params: DeepPartial<IUserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	asAdmin(additionalPermissions: Permission[] = []): this {
+		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
+		const role = roleFactory.buildWithId({ permissions });
+
 		const params: DeepPartial<IUserProperties> = { roles: [role] };
 
 		return this.params(params);
