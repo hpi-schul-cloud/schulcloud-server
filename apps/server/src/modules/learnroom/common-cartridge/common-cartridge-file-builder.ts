@@ -17,7 +17,7 @@ export type ICommonCartridgeFileBuilderOptions = {
 	title: string;
 	copyrightOwners: string;
 	creationYear: string;
-	version?: string;
+	version: CommonCartridgeVersion;
 };
 
 export interface ICommonCartridgeOrganizationBuilder {
@@ -96,7 +96,7 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 					title: this.options.title,
 					copyrightOwners: this.options.copyrightOwners,
 					creationYear: this.options.creationYear,
-					version: this.options.version || CommonCartridgeVersion.V_1_1_0,
+					version: this.options.version,
 				},
 				organizations,
 				resources

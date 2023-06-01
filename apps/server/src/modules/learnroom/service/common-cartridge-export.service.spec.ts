@@ -7,6 +7,7 @@ import { CourseService } from '@src/modules/learnroom/service/course.service';
 import { LessonService } from '@src/modules/lesson/service';
 import { TaskService } from '@src/modules/task/service/task.service';
 import AdmZip from 'adm-zip';
+import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -89,12 +90,13 @@ describe('CommonCartridgeExportService', () => {
 				component: ComponentType.TEXT,
 				content: textContent,
 			};
+			const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
 			lesson.contents = [lessonContent];
 			lessonServiceMock.findById.mockResolvedValueOnce(lesson);
 			courseServiceMock.findById.mockResolvedValueOnce(course);
 			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
 			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
-			archive = new AdmZip(await courseExportService.exportCourse(course.id, '', ''));
+			archive = new AdmZip(await courseExportService.exportCourse(course.id, '', version));
 		});
 
 		it('should create manifest file', () => {

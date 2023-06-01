@@ -7,7 +7,7 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { CourseUc } from '../uc/course.uc';
 import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseMetadataListResponse, CourseUrlParams } from './dto';
+import { CourseMetadataListResponse, CourseUrlParams, CourseQueryParams } from './dto';
 import { CourseMapper } from '../mapper/course.mapper';
 
 @ApiTags('Courses')
@@ -37,11 +37,11 @@ export class CourseController {
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
-		@Param('version') version: string,
+		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		if (!this.configService.get<boolean>('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) throw new NotFoundException();
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, version);
+		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
 		response.set({
 			'Content-Type': 'application/zip',
 			'Content-Disposition': 'attachment;',

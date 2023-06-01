@@ -9,6 +9,7 @@ import {
 	ICommonCartridgeResourceProps,
 	CommonCartridgeFileBuilder,
 	CommonCartridgeResourceType,
+	CommonCartridgeVersion,
 } from '../common-cartridge';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class CommonCartridgeExportService {
 		private readonly taskService: TaskService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: string): Promise<Buffer> {
+	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 		const builder = new CommonCartridgeFileBuilder({
@@ -52,7 +53,7 @@ export class CommonCartridgeExportService {
 		return builder.build();
 	}
 
-	private mapLessonToOrganization(lesson: Lesson, version: string): ICommonCartridgeOrganizationProps {
+	private mapLessonToOrganization(lesson: Lesson, version: CommonCartridgeVersion): ICommonCartridgeOrganizationProps {
 		return {
 			identifier: `i${lesson.id}`,
 			version,
@@ -64,7 +65,7 @@ export class CommonCartridgeExportService {
 	private mapContentToResource(
 		lessonId: string,
 		content: IComponentProperties,
-		version: string
+		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
 		if (content.component === ComponentType.TEXT) {
 			return {

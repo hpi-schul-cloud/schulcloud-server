@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { CourseExportUc } from '@src/modules/learnroom/uc/course-export.uc';
 import { CourseController } from './course.controller';
 import { CourseUc } from '../uc/course.uc';
-import { CourseUrlParams } from './dto';
+import { CourseUrlParams, CourseQueryParams } from './dto';
 import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CourseController', () => {
@@ -86,7 +86,7 @@ describe('CourseController', () => {
 		it('should return an imscc file', async () => {
 			configServiceMock.get.mockReturnValueOnce(true);
 			const { courseUrlParams } = setup();
-			const version = CommonCartridgeVersion.V_1_1_0;
+			const version: CourseQueryParams = { version: CommonCartridgeVersion.V_1_1_0 };
 			courseExportUcMock.exportCourse.mockResolvedValueOnce({} as Buffer);
 
 			await expect(
@@ -97,7 +97,7 @@ describe('CourseController', () => {
 		});
 		it('should return not found if feature is disabled', async () => {
 			const { courseUrlParams } = setup();
-			const version = CommonCartridgeVersion.V_1_1_0;
+			const version: CourseQueryParams = { version: CommonCartridgeVersion.V_1_1_0 };
 			configServiceMock.get.mockReturnValueOnce(false);
 			await expect(
 				controller.exportCourse({ userId: 'userId' } as ICurrentUser, courseUrlParams, version, {

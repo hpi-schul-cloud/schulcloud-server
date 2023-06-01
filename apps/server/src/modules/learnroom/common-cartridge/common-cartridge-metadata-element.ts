@@ -1,10 +1,11 @@
 import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeMetadataProps = {
 	title: string;
 	copyrightOwners: string;
 	creationYear: string;
-	version: string;
+	version: CommonCartridgeVersion;
 };
 
 export class CommonCartridgeMetadataElement implements ICommonCartridgeElement {

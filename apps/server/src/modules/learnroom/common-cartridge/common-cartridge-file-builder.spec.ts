@@ -15,6 +15,7 @@ describe('CommonCartridgeFileBuilder', () => {
 		copyrightOwners: 'Placeholder Copyright',
 		creationYear: 'Placeholder Current Year',
 		title: 'file-title',
+		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
