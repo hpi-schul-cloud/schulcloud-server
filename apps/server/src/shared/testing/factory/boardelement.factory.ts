@@ -1,6 +1,7 @@
 import {
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	EntityId,
 	Lesson,
 	LessonBoardElement,
 	Task,
@@ -24,9 +25,21 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 	}
 );
 
+export const columnBoardTargetFactory = BaseFactory.define<
+	ColumnBoardTarget,
+	{ columnBoardId: EntityId; title: string; published: boolean }
+>(ColumnBoardTarget, ({ sequence }) => {
+	return {
+		columnBoardId: new ObjectId().toHexString(),
+		title: `columnBoardTarget #${sequence}`,
+		published: false,
+	};
+});
+
 export const columnboardBoardElementFactory = BaseFactory.define<
 	ColumnboardBoardElement,
 	{ target: ColumnBoardTarget }
 >(ColumnboardBoardElement, () => {
-	return { target: new ColumnBoardTarget({ columnBoardId: new ObjectId().toHexString() }) };
+	const target = columnBoardTargetFactory.build();
+	return { target };
 });

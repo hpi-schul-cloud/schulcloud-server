@@ -49,6 +49,22 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
+	async getTitleById(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
+		const ids = Array.isArray(id) ? id : [id];
+		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
+
+		if (boardNodes === undefined) {
+			return {};
+		}
+
+		const titlesMap = boardNodes.reduce((map, node) => {
+			map[node.id] = node.title;
+			return map;
+		}, {});
+
+		return titlesMap;
+	}
+
 	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
 		const boardNodes = await this.em.find(ColumnBoardNode, {
 			_contextId: new ObjectId(reference.id),

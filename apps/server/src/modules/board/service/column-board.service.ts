@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardExternalReference, ColumnBoard, EntityId } from '@shared/domain';
+import { BoardExternalReference, ColumnBoard, ColumnBoardInfo, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -20,7 +20,12 @@ export class ColumnBoardService {
 		return ids;
 	}
 
-	async create(context: BoardExternalReference): Promise<ColumnBoard> {
+	async getColumnBoardTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
+		const titleMap = this.boardDoRepo.getTitleById(boardIds);
+		return titleMap;
+	}
+
+	async create(context: BoardExternalReference): Promise<ColumnBoardInfo> {
 		const board = new ColumnBoard({
 			id: new ObjectId().toHexString(),
 			title: '',
@@ -31,7 +36,15 @@ export class ColumnBoardService {
 		});
 
 		await this.boardDoRepo.save(board);
-		return board;
+
+		const columnBoardInfo: ColumnBoardInfo = {
+			id: board.id,
+			title: board.title,
+			createdAt: board.createdAt,
+			updatedAt: board.updatedAt,
+		};
+
+		return columnBoardInfo;
 	}
 
 	async delete(board: ColumnBoard): Promise<void> {
