@@ -25,6 +25,7 @@ import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
 import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
+import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -73,5 +74,6 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	TeamUser,
 	User,
+	UserLoginMigration,
 	VideoConference,
 ];
