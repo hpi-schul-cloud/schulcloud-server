@@ -130,10 +130,12 @@ describe('StartUserLoginMigrationCheckService', () => {
 				return { user, migration, schoolId: school.id as string };
 			};
 
-			it('should throw ForbiddenException ', async () => {
+			it('should throw StartUserLoginMigrationError ', async () => {
 				const { schoolId, user } = setup();
 
-				await expect(service.checkPreconditions(user.id, schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(user.id, schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
 				);
 			});
@@ -164,7 +166,9 @@ describe('StartUserLoginMigrationCheckService', () => {
 			it('should throw StartUserLoginMigrationError ', async () => {
 				const { userId, migration } = setup();
 
-				await expect(service.checkPreconditions(userId, migration.schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, migration.schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already finished the migration.`
 					)
@@ -195,7 +199,9 @@ describe('StartUserLoginMigrationCheckService', () => {
 			it('should throw StartUserLoginMigrationError ', async () => {
 				const { userId, migration } = setup();
 
-				await expect(service.checkPreconditions(userId, migration.schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, migration.schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)
