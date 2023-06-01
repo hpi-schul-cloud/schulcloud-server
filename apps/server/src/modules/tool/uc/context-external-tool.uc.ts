@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { ContextExternalToolDO, ContextRef, EntityId, Permission } from '@shared/domain';
 import { Action } from '@src/modules/authorization';
 import { LegacyLogger } from '@src/core/logger';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
@@ -48,9 +48,8 @@ export class ContextExternalToolUc {
 	}
 
 	async getContextExternalToolsForContext(userId: EntityId, contextType: ToolContextType, contextId: string) {
-		const tools: ContextExternalToolDO[] = await this.contextExternalToolService.getContextExternalToolsForContext(
-			contextType,
-			contextId
+		const tools: ContextExternalToolDO[] = await this.contextExternalToolService.findAllByContext(
+			new ContextRef({ id: contextId, type: contextType })
 		);
 
 		const toolsWithPermission: ContextExternalToolDO[] = await this.filterToolsWithPermissions(userId, tools);

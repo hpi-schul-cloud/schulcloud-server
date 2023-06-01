@@ -6,7 +6,7 @@ import {
 	schoolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, Permission, SchoolExternalToolDO } from '@shared/domain';
+import { ContextExternalToolDO, ContextRef, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ContextExternalToolService } from './context-external-tool.service';
@@ -204,7 +204,7 @@ describe('ContextExternalToolService', () => {
 
 			it('should check permission by reference for the dependent context of the context external tool', async () => {
 				const { userId, contextExternalTool } = setup();
-				contextExternalTool.contextType = ToolContextType.COURSE;
+				contextExternalTool.contextRef.type = ToolContextType.COURSE;
 
 				await service.ensureContextPermissions(userId, contextExternalTool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
@@ -214,7 +214,7 @@ describe('ContextExternalToolService', () => {
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					AuthorizableReferenceType.Course,
-					contextExternalTool.contextId,
+					contextExternalTool.contextRef.id,
 					{
 						action: Action.read,
 						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
@@ -278,11 +278,14 @@ describe('ContextExternalToolService', () => {
 	describe('getContextExternalToolsForContext is called', () => {
 		describe('when contextType and contextId are given', () => {
 			it('should call the repository', async () => {
-				await service.getContextExternalToolsForContext(ToolContextType.COURSE, 'contextId');
+				const contextRef: ContextRef = new ContextRef({ type: ToolContextType.COURSE, id: 'contextId' });
+				await service.findAllByContext(contextRef);
 
 				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
-					contextType: ToolContextType.COURSE,
-					contextId: 'contextId',
+					context: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
 				});
 			});
 
@@ -290,10 +293,7 @@ describe('ContextExternalToolService', () => {
 				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
 				contextExternalToolRepo.find.mockResolvedValue([contextExternalToolDO]);
 
-				const result: ContextExternalToolDO[] = await service.getContextExternalToolsForContext(
-					contextExternalToolDO.contextType,
-					contextExternalToolDO.contextId
-				);
+				const result: ContextExternalToolDO[] = await service.findAllByContext(contextExternalToolDO.contextRef);
 
 				expect(result).toEqual([contextExternalToolDO]);
 			});

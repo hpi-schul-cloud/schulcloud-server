@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	ContextExternalTool,
 	ContextExternalToolDO,
+	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
 } from '@shared/domain';
@@ -61,8 +62,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 		scope.byId(query.id);
 		scope.bySchoolToolId(query.schoolToolRef?.schoolToolId);
-		scope.byContextId(query.contextId);
-		scope.byContextType(query.contextType);
+		scope.byContextId(query.context?.id);
+		scope.byContextType(query.context?.type);
 		scope.allowEmptyQuery(true);
 
 		return scope;
@@ -74,11 +75,15 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			schoolToolId: entity.schoolTool.id,
 		});
 
+		const contextRef: ContextRef = new ContextRef({
+			id: entity.contextId,
+			type: this.mapContextTypeToDoType(entity.contextType),
+		});
+
 		return new ContextExternalToolDO({
 			id: entity.id,
 			schoolToolRef,
-			contextId: entity.contextId,
-			contextType: this.mapContextTypeToDoType(entity.contextType),
+			contextRef,
 			contextToolName: entity.contextToolName,
 			toolVersion: entity.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
@@ -89,8 +94,8 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
 		return {
-			contextId: entityDO.contextId,
-			contextType: this.mapContextTypeToEntityType(entityDO.contextType),
+			contextId: entityDO.contextRef.id,
+			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			contextToolName: entityDO.contextToolName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
