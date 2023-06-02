@@ -107,7 +107,11 @@ export class H5PEditorController {
 	}
 
 	@Get('params/:id/:file(*)')
-	async getContentFile(@Param() params: ContentFileUrlParams, @Req() req: Request, @Res() res: Response) {
+	async getContentFile(
+		@Param() params: ContentFileUrlParams,
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response
+	) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
 			params.id,
 			params.file,
@@ -132,8 +136,8 @@ export class H5PEditorController {
 		return new StreamableFile(data, { type: contentType, length: contentLength });
 	}
 
-	@Get('temporary/:file')
-	async getTemporaryFile(@Param('file') file: string, @Req() req: Request, @Res() res: Response) {
+	@Get('temp-files/:file(*)')
+	async getTemporaryFile(@Param('file') file: string, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(file, req);
 
 		if (contentRange) {

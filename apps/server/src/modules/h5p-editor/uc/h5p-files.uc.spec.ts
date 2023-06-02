@@ -12,7 +12,6 @@ import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
 
-
 describe('H5P Files', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
