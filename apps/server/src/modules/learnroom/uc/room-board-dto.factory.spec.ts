@@ -5,8 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
 import {
 	boardFactory,
-	columnBoardTargetFactory,
+	columnboardBoardElementFactory,
 	courseFactory,
+	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
 	taskFactory,
@@ -361,21 +362,36 @@ describe(RoomBoardDTOFactory.name, () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const room = courseFactory.build();
-				const board = boardFactory.buildWithId({ course: room });
-				const columnBoards = columnBoardTargetFactory.buildList(3);
-				board.syncBoardElementReferences(columnBoards);
+				const columnboardBoardElements = columnboardBoardElementFactory.buildList(5);
+				const lessonElement = lessonBoardElementFactory.buildWithId();
+				const board = boardFactory.buildWithId({ references: [lessonElement, ...columnboardBoardElements] });
 
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockReturnValue(true);
 				authorisationService.hasPermission.mockReturnValue(true);
-
-				Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
 
 				return { user, room, board };
 			};
 
-			it('should set lessons for student', () => {
-				const { user, room, board } = setup();
-				const result = mapper.createDTO({ room, board, user });
-				expect(result.elements.length).toEqual(3);
+			describe('when ColumnBoard-feature is disabled', () => {
+				it('should set lessons for student', () => {
+					const { user, room, board } = setup();
+
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', false);
+
+					const result = mapper.createDTO({ room, board, user });
+					expect(result.elements.length).toEqual(1);
+				});
+			});
+
+			describe('when ColumnBoard-feature is enabled', () => {
+				it('should set lessons for student', () => {
+					const { user, room, board } = setup();
+
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
+
+					const result = mapper.createDTO({ room, board, user });
+					expect(result.elements.length).toEqual(6);
+				});
 			});
 		});
 	});
