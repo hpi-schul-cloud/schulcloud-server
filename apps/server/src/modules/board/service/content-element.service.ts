@@ -7,7 +7,7 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from '@shared/domain';
-import {FileContentBody, RichTextContentBody, TaskContentBody} from '../controller/dto';
+import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';

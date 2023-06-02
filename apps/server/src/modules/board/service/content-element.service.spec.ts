@@ -1,10 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
+import {
+	ContentElementFactory,
+	ContentElementType,
+	FileElement,
+	InputFormat,
+	RichTextElement,
+} from '@shared/domain';
 import { setupEntities } from '@shared/testing';
-import { cardFactory, fileElementFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import {
+	cardFactory,
+	fileElementFactory,
+	richTextElementFactory,
+	taskElementFactory,
+} from '@shared/testing/factory/domainobject';
+import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
@@ -219,6 +230,36 @@ describe(ContentElementService.name, () => {
 				await service.update(fileElement, content);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(fileElement, card);
+			});
+		});
+
+		describe('when element is a task element', () => {
+			const setup = () => {
+				const taskElement = taskElementFactory.build();
+
+				const content = new TaskContentBody();
+				content.dueDate = new Date();
+
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { taskElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { taskElement, content } = setup();
+
+				await service.update(taskElement, content);
+
+				expect(taskElement.dueDate).toEqual(content.dueDate);
+			});
+
+			it('should persist the element', async () => {
+				const { taskElement, content, card } = setup();
+
+				await service.update(taskElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(taskElement, card);
 			});
 		});
 	});
