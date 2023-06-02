@@ -118,7 +118,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.getFileRecordsOfParent(userId, params);
 
-				expect(filesStorageService.getFileRecordsOfParent).toHaveBeenCalledWith(params);
+				expect(filesStorageService.getFileRecordsOfParent).toHaveBeenCalledWith(params.parentId);
 			});
 
 			it('should return counted file records', async () => {

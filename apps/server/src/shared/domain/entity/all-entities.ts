@@ -2,11 +2,10 @@ import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
 import { Board } from './board.entity';
 import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
-import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, TextElementNode } from './boardnode';
+import { CardNode, ColumnBoardNode, ColumnNode, FileElementNode, RichTextElementNode } from './boardnode';
 import { BoardNode } from './boardnode/boardnode.entity';
 import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
-import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
@@ -25,6 +24,8 @@ import { System } from './system.entity';
 import { TaskCard } from './task-card.entity';
 import { Task } from './task.entity';
 import { Team, TeamUser } from './team.entity';
+import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
+import { UserLoginMigration } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -37,7 +38,7 @@ export const ALL_ENTITIES = [
 	ColumnBoardNode,
 	ColumnNode,
 	FileElementNode,
-	TextElementNode,
+	RichTextElementNode,
 	Course,
 	ContextExternalTool,
 	CourseGroup,
@@ -73,5 +74,6 @@ export const ALL_ENTITIES = [
 	TeamNews,
 	TeamUser,
 	User,
+	UserLoginMigration,
 	VideoConference,
 ];

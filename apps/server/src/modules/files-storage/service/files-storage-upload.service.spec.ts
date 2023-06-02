@@ -136,7 +136,7 @@ describe('FilesStorageService upload methods', () => {
 
 			await service.uploadFile(userId, params, file);
 
-			expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params);
+			expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params.parentId);
 		});
 
 		it('should call fileRecordRepo.save twice with correct params', async () => {

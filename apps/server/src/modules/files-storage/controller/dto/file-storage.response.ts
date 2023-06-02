@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
 import { FileRecord, FileRecordParentType, ScanStatus } from '../../entity';
+import { API_VERSION_PATH } from '../../files-storage.const';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
+		this.url = `${API_VERSION_PATH}/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;
 		this.size = fileRecord.size;
 		this.securityCheckStatus = fileRecord.securityCheck.status;
 		this.parentId = fileRecord.parentId;
@@ -24,6 +26,9 @@ export class FileRecordResponse {
 
 	@ApiProperty()
 	parentId: string;
+
+	@ApiProperty()
+	url: string;
 
 	@ApiProperty({ enum: ScanStatus })
 	securityCheckStatus: ScanStatus;

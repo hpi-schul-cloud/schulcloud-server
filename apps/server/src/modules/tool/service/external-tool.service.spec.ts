@@ -589,7 +589,7 @@ describe('ExternalToolService', () => {
 					{
 						parameters: [
 							...schoolParameters,
-							...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.COURSE }),
+							...customParameterDOFactory.buildList(1, { scope: CustomParameterScope.CONTEXT }),
 							...customParameterDOFactory.buildList(2, { scope: CustomParameterScope.GLOBAL }),
 						],
 					},

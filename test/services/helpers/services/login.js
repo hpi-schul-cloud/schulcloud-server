@@ -3,8 +3,6 @@ const accountsHelper = require('./accounts');
 const getJwtPayload = (user, account) => {
 	const currentTime = Math.floor(Date.now() / 1000);
 
-	console.log('get JwtPayload user', user);
-
 	return {
 		accountId: account.id ? account.id : account.id,
 		systemId: account.systemId,

@@ -2,6 +2,6 @@ export enum BoardNodeType {
 	COLUMN_BOARD = 'column-board',
 	COLUMN = 'column',
 	CARD = 'card',
-	TEXT_ELEMENT = 'text-element',
+	RICH_TEXT_ELEMENT = 'rich-text-element',
 	FILE_ELEMENT = 'file-element',
 }
