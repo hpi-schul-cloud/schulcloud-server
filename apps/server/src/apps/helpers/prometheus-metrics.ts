@@ -6,6 +6,7 @@ import {
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
+import { AppStartLoggable } from './app-start-loggable';
 
 export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Express) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
@@ -52,10 +53,7 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 
 	prometheusMetricsApp.listen(prometheusMetricsAppPort, () => {
 		logger.log(
-			new LoggableMessage(
-				`Prometheus metrics app successfully started listening on port ${prometheusMetricsAppPort} ` +
-					`(metrics will be available on ${route} route)`
-			)
+			new AppStartLoggable('Prometheus metrics server app', prometheusMetricsAppPort, `${route} --> Prometheus metrics`)
 		);
 	});
 };

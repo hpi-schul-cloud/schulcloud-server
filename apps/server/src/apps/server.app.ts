@@ -24,6 +24,7 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
+import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -106,7 +107,7 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(new LoggableMessage(`Main app successfully started listening on port ${port}`));
+		logger.log(new AppStartLoggable('Main server app', port, '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS'));
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
