@@ -1,5 +1,6 @@
 import { ValidationError } from '@shared/common';
 import { Role, User } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ICurrentUser } from '../interface';
 import { JwtPayload } from '../interface/jwt-payload';
@@ -23,7 +24,7 @@ export class CurrentUserMapper {
 		return {
 			accountId,
 			systemId,
-			roles: user.roles,
+			roles: user.roles.map((roleRef: RoleReference) => roleRef.id),
 			schoolId: user.schoolId,
 			userId: user.id,
 		};

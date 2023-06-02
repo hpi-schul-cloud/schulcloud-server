@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -121,7 +122,7 @@ describe('UserService', () => {
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roles: ['roleId'],
+				roles: [new RoleReference({ id: 'roleId', name: RoleName.STUDENT })],
 				externalId: 'externalUserId',
 			});
 			userDORepo.findById.mockResolvedValue(userDO);
@@ -179,56 +180,32 @@ describe('UserService', () => {
 
 		it('should return only the last name when the user has a protected role', async () => {
 			// Arrange
-			const userDto: UserDto = { roleIds: [role.id], lastName: 'lastName' } as UserDto;
+			const user: UserDO = userDoFactory.buildWithId({
+				roles: [new RoleReference({ id: role.id, name: RoleName.STUDENT })],
+				lastName: 'lastName',
+			});
 
 			// Act
-			const result: string = await service.getDisplayName(userDto);
+			const result: string = await service.getDisplayName(user);
 
 			// Assert
-			expect(result).toEqual(userDto.lastName);
-			expect(roleService.getProtectedRoles).toHaveBeenCalled();
-		});
-
-		it('should return the id when the user has a protected role and the last name is missing', async () => {
-			// Arrange
-			const userDto: UserDto = { roleIds: [role.id], id: 'id' } as UserDto;
-
-			// Act
-			const result: string = await service.getDisplayName(userDto);
-
-			// Assert
-			expect(result).toEqual(userDto.id);
+			expect(result).toEqual(user.lastName);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
 		it('should return the first name and last name when the user has no protected role', async () => {
 			// Arrange
-			const userDto: UserDto = {
-				id: 'id',
+			const user: UserDO = userDoFactory.buildWithId({
+				roles: [new RoleReference({ id: 'unprotectedId', name: RoleName.STUDENT })],
 				lastName: 'lastName',
 				firstName: 'firstName',
-			} as UserDto;
+			});
 
 			// Act
-			const result: string = await service.getDisplayName(userDto);
+			const result: string = await service.getDisplayName(user);
 
 			// Assert
-			expect(result).toEqual(`${userDto.firstName} ${userDto.lastName}`);
-			expect(roleService.getProtectedRoles).toHaveBeenCalled();
-		});
-
-		it('should return the id when the user has no protected role and last name is missing', async () => {
-			// Arrange
-			const userDto: UserDto = {
-				id: 'id',
-				firstName: 'firstName',
-			} as UserDto;
-
-			// Act
-			const result: string = await service.getDisplayName(userDto);
-
-			// Assert
-			expect(result).toEqual(userDto.id);
+			expect(result).toEqual(`${user.firstName} ${user.lastName}`);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 	});
@@ -262,7 +239,7 @@ describe('UserService', () => {
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roles: ['roleId'],
+					roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
 				});
 
 				userDORepo.save.mockResolvedValue(user);
@@ -298,7 +275,7 @@ describe('UserService', () => {
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roles: ['roleId'],
+					roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
 					externalId: 'externalId',
 				});
 

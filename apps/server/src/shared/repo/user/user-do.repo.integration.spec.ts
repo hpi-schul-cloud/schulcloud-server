@@ -3,7 +3,18 @@ import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
+import {
+	IFindOptions,
+	IUserProperties,
+	LanguageType,
+	Role,
+	RoleName,
+	School,
+	SortOrder,
+	System,
+	User,
+} from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -109,7 +120,12 @@ describe('UserRepo', () => {
 			const result: UserDO = await repo.findById(user.id, true);
 
 			expect(result.id).toEqual(user.id);
-			expect(result.roles).toEqual([roles1[0].id]);
+			expect(result.roles).toEqual([
+				{
+					id: roles1[0].id,
+					name: roles1[0].name,
+				},
+			]);
 		});
 
 		it('should throw if user cannot be found', async () => {
@@ -236,7 +252,12 @@ describe('UserRepo', () => {
 					firstName: testEntity.firstName,
 					lastName: testEntity.lastName,
 					schoolId: testEntity.school.id,
-					roleIds: [role.id],
+					roleIds: [
+						{
+							id: role.id,
+							name: role.name,
+						},
+					],
 					ldapDn: testEntity.ldapDn,
 					externalId: testEntity.externalId,
 					importHash: testEntity.importHash,
@@ -261,7 +282,7 @@ describe('UserRepo', () => {
 				email: 'email@email.email',
 				firstName: 'firstName',
 				lastName: 'lastName',
-				roles: [new ObjectId().toHexString()],
+				roles: [new RoleReference({ id: new ObjectId().toHexString(), name: RoleName.USER })],
 				schoolId: new ObjectId().toHexString(),
 				ldapDn: 'ldapDn',
 				externalId: 'externalId',
@@ -282,7 +303,7 @@ describe('UserRepo', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0] })],
+				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				ldapDn: testDO.ldapDn,
 				externalId: testDO.externalId,
 				language: testDO.language,

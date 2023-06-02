@@ -1,14 +1,14 @@
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, LtiPrivacyPermission, PseudonymDO, RoleName, UserDO } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { RoleReference } from '@shared/domain/domainobject';
 import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
 import { UserService } from '@src/modules/user';
-import CryptoJS from 'crypto-js';
-import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
+import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../interface';
 import { ExternalToolService } from '../../../service';
 import { LtiRoleMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
+import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 
@@ -17,7 +17,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly userService: UserService,
-		private readonly pseudonymService: PseudonymService
+		private readonly pseudonymService: PseudonymService,
+		private readonly lti11EncryptionService: Lti11EncryptionService
 	) {
 		super();
 	}
@@ -136,40 +137,13 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const encryptedPayload: Authorization = this.encryptWithOAuth1(key.value, secret.value, url, payload);
+		const signedPayload: Authorization = this.lti11EncryptionService.sign(key.value, secret.value, url, payload);
 
-		return JSON.stringify(encryptedPayload);
+		return JSON.stringify(signedPayload);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		return LaunchRequestMethod.POST;
-	}
-
-	private encryptWithOAuth1(key: string, secret: string, url: string, payload: Record<string, string>): Authorization {
-		const requestData: RequestOptions = {
-			url,
-			method: 'POST',
-			data: payload,
-		};
-
-		const consumer: OAuth = this.createConsumer(key, secret);
-
-		const authorization: Authorization = consumer.authorize(requestData);
-
-		return authorization;
-	}
-
-	private createConsumer(ltiKey: string, ltiSecret: string): OAuth {
-		const oauth: OAuth = new OAuth({
-			consumer: {
-				key: ltiKey,
-				secret: ltiSecret,
-			},
-			signature_method: 'HMAC-SHA1',
-			hash_function: (base_string: string, key: string) =>
-				CryptoJS.HmacSHA1(base_string, key).toString(CryptoJS.enc.Base64),
-		});
-		return oauth;
 	}
 }

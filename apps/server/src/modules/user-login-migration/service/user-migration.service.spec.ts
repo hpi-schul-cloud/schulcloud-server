@@ -9,7 +9,8 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { RoleName, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { schoolDOFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -355,7 +356,7 @@ describe('UserMigrationService', () => {
 				email: 'emailMock',
 				firstName: 'firstNameMock',
 				lastName: 'lastNameMock',
-				roles: ['roleIdMock'],
+				roles: [new RoleReference({ id: 'roleIdMock', name: RoleName.STUDENT })],
 				schoolId: 'schoolMock',
 				externalId: 'currentUserExternalIdMock',
 			});
@@ -366,7 +367,7 @@ describe('UserMigrationService', () => {
 				email: 'emailMock',
 				firstName: 'firstNameMock',
 				lastName: 'lastNameMock',
-				roles: ['roleIdMock'],
+				roles: [new RoleReference({ id: 'roleIdMock', name: RoleName.STUDENT })],
 				schoolId: 'schoolMock',
 				externalId: 'externalUserTargetId',
 				previousExternalId: 'currentUserExternalIdMock',

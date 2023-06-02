@@ -5,7 +5,7 @@ import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalToolConfigDO,
+	EntityId,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
@@ -38,19 +38,23 @@ const expectedPayload = 'payload';
 const launchMethod = LaunchRequestMethod.GET;
 
 class TestLaunchStrategy extends AbstractLaunchStrategy {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected override buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
+	public override buildToolLaunchDataFromConcreteConfig(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		userId: EntityId,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		config: IToolLaunchParams
+	): Promise<PropertyData[]> {
 		// Implement this method with your own logic for the mock launch strategy
-		return [concreteConfigParameter];
+		return Promise.resolve([concreteConfigParameter]);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
+	public buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
 		return expectedPayload;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
+	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
 		return launchMethod;
 	}
 }
@@ -122,7 +126,7 @@ describe('AbstractLaunchStrategy', () => {
 			};
 		};
 
-		it('should return a ToolLaunchDataDO with merged parameters', () => {
+		it('should return a ToolLaunchDataDO with merged parameters', async () => {
 			const {
 				globalCustomParameter,
 				schoolCustomParameter,
@@ -138,7 +142,7 @@ describe('AbstractLaunchStrategy', () => {
 				contextExternalToolDO,
 			};
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -169,7 +173,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with no custom parameters', () => {
+		it('should return a ToolLaunchDataDO with no custom parameters', async () => {
 			const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 			const launchParams: IToolLaunchParams = {
 				externalToolDO,
@@ -180,7 +184,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -196,7 +200,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only global custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only global custom parameters', async () => {
 			const { externalToolDO, schoolExternalToolDO, contextExternalToolDO, globalCustomParameter } = setup();
 			const launchParams: IToolLaunchParams = {
 				externalToolDO,
@@ -207,7 +211,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -228,7 +232,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only school custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only school custom parameters', async () => {
 			const {
 				externalToolDO,
 				schoolExternalToolDO,
@@ -245,7 +249,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [schoolParameterEntry];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -266,7 +270,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only context custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only context custom parameters', async () => {
 			const {
 				externalToolDO,
 				schoolExternalToolDO,
@@ -283,7 +287,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [contextParameterEntry];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,

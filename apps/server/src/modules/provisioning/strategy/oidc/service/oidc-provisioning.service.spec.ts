@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolFeatures } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -159,7 +160,7 @@ describe('OidcProvisioningService', () => {
 				lastName: 'existingLastName',
 				email: 'existingEmail',
 				schoolId: 'existingSchoolId',
-				roles: ['existingRoleId'],
+				roles: [new RoleReference({ id: 'existingRoleId', name: RoleName.USER })],
 				externalId: 'externalUserId',
 			});
 			const savedUser: UserDO = new UserDO({
@@ -168,7 +169,7 @@ describe('OidcProvisioningService', () => {
 				lastName: 'lastName',
 				email: 'email',
 				schoolId,
-				roles: ['roleId'],
+				roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
 				externalId: 'externalUserId',
 			});
 			const externalUser: ExternalUserDto = new ExternalUserDto({

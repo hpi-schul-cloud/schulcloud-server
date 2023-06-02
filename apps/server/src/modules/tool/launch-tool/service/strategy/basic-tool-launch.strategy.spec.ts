@@ -1,7 +1,8 @@
-import { basicToolConfigDOFactory } from '@shared/testing';
-import { BasicToolConfigDO } from '@shared/domain';
+import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
+import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
+import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
-import { PropertyData, PropertyLocation } from '../../types';
+import { IToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
@@ -38,7 +39,7 @@ describe('BasicToolLaunchStrategy', () => {
 		it('should build the tool launch request payload correctly', () => {
 			const { properties } = setup();
 
-			const payload: string = basicToolLaunchStrategy.buildToolLaunchRequestPayload(properties);
+			const payload: string = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
 
 			expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
 		});
@@ -46,19 +47,92 @@ describe('BasicToolLaunchStrategy', () => {
 
 	describe('buildToolLaunchDataFromConcreteConfig', () => {
 		const setup = () => {
-			const basicToolConfig: BasicToolConfigDO = basicToolConfigDOFactory.build({
-				baseUrl: 'https://example.com',
-			});
+			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
+			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
+			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
-			return { basicToolConfig };
+			const data: IToolLaunchParams = {
+				contextExternalToolDO,
+				schoolExternalToolDO,
+				externalToolDO,
+			};
+
+			return { data };
 		};
 
-		it('should build the tool launch data from the basic tool config correctly', () => {
-			const { basicToolConfig } = setup();
+		it('should build the tool launch data from the basic tool config correctly', async () => {
+			const { data } = setup();
 
-			const result: PropertyData[] = basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(basicToolConfig);
+			const result: PropertyData[] = await basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(
+				'userId',
+				data
+			);
 
 			expect(result).toEqual([]);
+		});
+	});
+
+	describe('determineLaunchRequestMethod', () => {
+		describe('when no body property exists', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.PATH,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.QUERY,
+				});
+
+				return {
+					properties: [property1, property2],
+				};
+			};
+
+			it('should return GET', () => {
+				const { properties } = setup();
+
+				const result: LaunchRequestMethod = basicToolLaunchStrategy.determineLaunchRequestMethod(properties);
+
+				expect(result).toEqual(LaunchRequestMethod.GET);
+			});
+		});
+
+		describe('when no body property exists', () => {
+			const setup = () => {
+				const property1: PropertyData = new PropertyData({
+					name: 'param1',
+					value: 'value1',
+					location: PropertyLocation.PATH,
+				});
+
+				const property2: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.QUERY,
+				});
+
+				const property3: PropertyData = new PropertyData({
+					name: 'param2',
+					value: 'value2',
+					location: PropertyLocation.BODY,
+				});
+
+				return {
+					properties: [property1, property2, property3],
+				};
+			};
+
+			it('should return POST', () => {
+				const { properties } = setup();
+
+				const result: LaunchRequestMethod = basicToolLaunchStrategy.determineLaunchRequestMethod(properties);
+
+				expect(result).toEqual(LaunchRequestMethod.POST);
+			});
 		});
 	});
 });

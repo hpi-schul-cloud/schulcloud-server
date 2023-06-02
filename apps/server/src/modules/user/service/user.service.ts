@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
-import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -82,19 +82,15 @@ export class UserService {
 	}
 
 	async getDisplayName(user: UserDO): Promise<string> {
-		const id: string = user.id ? user.id : '';
-
 		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
 		const isProtectedUser: boolean = user.roles.some(
 			(roleRef: RoleReference): boolean =>
 				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id)
 		);
 
-		if (isProtectedUser) {
-			return user.lastName ? user.lastName : id;
-		}
+		const displayName: string = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
 
-		return user.lastName ? `${user.firstName} ${user.lastName}` : id;
+		return displayName;
 	}
 
 	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {

@@ -16,12 +16,13 @@ import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { ExternalToolUc } from '../uc';
-import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
+import { ExternalToolCreate, ExternalToolUpdate } from '../uc/dto';
 import {
-	ExternalToolPostParams,
+	ExternalToolCreateParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
+	ExternalToolUpdateParams,
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
@@ -46,9 +47,9 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
@@ -101,9 +102,9 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,

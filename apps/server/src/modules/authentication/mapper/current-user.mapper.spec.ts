@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { Permission, RoleName } from '@shared/domain';
+import { Permission, RoleName, RoleReference } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '../interface';
@@ -96,14 +96,20 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid and contains roles', () => {
 			it('should return valid ICurrentUser instance without systemId', () => {
-				const roleIds = ['mockRoleId'];
 				const user: UserDO = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
-					roles: roleIds,
+					roles: [
+						new RoleReference({
+							id: 'mockRoleId',
+							name: RoleName.USER,
+						}),
+					],
 				});
+
 				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,

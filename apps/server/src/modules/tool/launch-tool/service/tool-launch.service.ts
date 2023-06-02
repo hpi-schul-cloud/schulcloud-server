@@ -45,7 +45,7 @@ export class ToolLaunchService {
 			throw new InternalServerErrorException('Unknown tool config type');
 		}
 
-		const launchData: ToolLaunchData = strategy.createLaunchData(userId, {
+		const launchData: ToolLaunchData = await strategy.createLaunchData(userId, {
 			externalToolDO,
 			schoolExternalToolDO,
 			contextExternalToolDO,

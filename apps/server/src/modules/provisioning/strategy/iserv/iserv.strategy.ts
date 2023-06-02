@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName, User } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject/role-reference';
+import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
