@@ -4,9 +4,9 @@ import { ToolContextType } from '@src/modules/tool/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolDO> {
-	withSchoolToolId(schoolToolId: string): this {
+	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
 		const params: DeepPartial<ContextExternalToolDO> = {
-			schoolToolId,
+			schoolToolRef: { schoolToolId, schoolId },
 		};
 		return this.params(params);
 	}
@@ -16,12 +16,13 @@ export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
 	ContextExternalToolDO,
 	({ sequence }) => {
 		return {
-			schoolToolId: `schoolToolId-${sequence}`,
-			contextId: 'courseId',
-			contextType: ToolContextType.COURSE,
+			updatedAt: new Date(),
+			schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
+			contextRef: { id: 'courseId', type: ToolContextType.COURSE },
 			contextToolName: 'My Course Tool 1',
 			parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 			toolVersion: 1,
+			createdAt: new Date(),
 		};
 	}
 );
