@@ -7,31 +7,26 @@ describe('AppStartLoggable', () => {
 
 		describe('should return loggable with proper content', () => {
 			it('in case of just a default fields presence', () => {
-				const testLoggable = new AppStartLoggable({ appName: testAppName }).getLogMessage();
+				const testInfo = { appName: testAppName };
+
+				const testLoggable = new AppStartLoggable(testInfo).getLogMessage();
 
 				expect(testLoggable).toHaveProperty('message', expectedLogMessage);
-				expect(testLoggable).toHaveProperty('data', { appName: testAppName });
+				expect(testLoggable).toHaveProperty('data', testInfo);
 			});
 
 			it('in case of both default and non-default fields presence', () => {
-				const testPort = 3030;
-				const testBasePath = '/api/v3';
-				const testMountsDescription = '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS';
-
-				const testLoggable = new AppStartLoggable({
+				const testInfo = {
 					appName: testAppName,
-					port: testPort,
-					basePath: testBasePath,
-					mountsDescription: testMountsDescription,
-				}).getLogMessage();
+					port: 3030,
+					basePath: '/api/v3',
+					mountsDescription: '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS',
+				};
+
+				const testLoggable = new AppStartLoggable(testInfo).getLogMessage();
 
 				expect(testLoggable).toHaveProperty('message', expectedLogMessage);
-				expect(testLoggable).toHaveProperty('data', {
-					appName: testAppName,
-					port: testPort,
-					basePath: testBasePath,
-					mountsDescription: testMountsDescription,
-				});
+				expect(testLoggable).toHaveProperty('data', testInfo);
 			});
 		});
 	});
