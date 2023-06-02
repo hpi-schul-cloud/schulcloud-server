@@ -55,7 +55,7 @@ export class ToolConfigurationController {
 	@ApiOperation({ summary: 'Lists all available tools that can be added for a given context' })
 	@ApiOkResponse({
 		description: 'List of available tools for a context',
-		type: ToolConfigurationListResponse,
+		type: SchoolToolConfigurationListResponse,
 	})
 	public async getAvailableToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
