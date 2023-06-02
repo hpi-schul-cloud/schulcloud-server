@@ -76,7 +76,7 @@ class DtoCreator {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
 			}
 
-			if (element instanceof ColumnboardBoardElement && this.isFeatureFlagActive()) {
+			if (element instanceof ColumnboardBoardElement && this.isColumnBoardFeatureFlagActive()) {
 				result = this.authorisationService.hasPermission(this.user, this.room, {
 					action: Action.read,
 					requiredPermissions: [Permission.COURSE_VIEW],
@@ -87,7 +87,7 @@ class DtoCreator {
 		return filtered;
 	}
 
-	private isFeatureFlagActive() {
+	private isColumnBoardFeatureFlagActive() {
 		const isActive = Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean;
 
 		return isActive;

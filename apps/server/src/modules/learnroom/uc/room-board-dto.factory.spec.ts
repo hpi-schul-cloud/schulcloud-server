@@ -1,4 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
 import {
@@ -20,12 +22,15 @@ describe(RoomBoardDTOFactory.name, () => {
 	let mapper: RoomBoardDTOFactory;
 	let roomsAuthorisationService: RoomsAuthorisationService;
 	let authorisationService: DeepMocked<AuthorizationService>;
+	let configBefore: IConfig;
 
 	afterAll(async () => {
 		await module.close();
+		Configuration.reset(configBefore);
 	});
 
 	beforeAll(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
@@ -361,6 +366,8 @@ describe(RoomBoardDTOFactory.name, () => {
 				board.syncBoardElementReferences(columnBoards);
 
 				authorisationService.hasPermission.mockReturnValue(true);
+
+				Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
 
 				return { user, room, board };
 			};
