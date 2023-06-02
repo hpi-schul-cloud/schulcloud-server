@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
@@ -71,7 +72,7 @@ class DtoCreator {
 				result = this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			} else if (element.boardElementType === BoardElementType.Lesson) {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
-			} else if (element instanceof ColumnboardBoardElement) {
+			} else if (element instanceof ColumnboardBoardElement && this.isFeatureFlagActive()) {
 				result = this.authorisationService.hasPermission(this.user, this.room, {
 					action: Action.read,
 					requiredPermissions: [Permission.COURSE_VIEW],
@@ -80,6 +81,12 @@ class DtoCreator {
 			return result;
 		});
 		return filtered;
+	}
+
+	private isFeatureFlagActive() {
+		const isActive = Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean;
+
+		return isActive;
 	}
 
 	private isTeacher(): boolean {
