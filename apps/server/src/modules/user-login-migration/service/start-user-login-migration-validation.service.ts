@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
-import { StartUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError } from '../error';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class StartUserLoginMigrationValidationService {
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
-		this.hasFinishedMigrationOrThrow(existingUserLoginMigration);
+		this.commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow(existingUserLoginMigration);
 
 		this.hasAlreadyStartedMigrationOrThrow(existingUserLoginMigration);
 	}
@@ -28,22 +28,14 @@ export class StartUserLoginMigrationValidationService {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		if (!schoolDo.officialSchoolNumber) {
-			throw new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`);
+			throw new ModifyUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`);
 		}
 	}
 
 	private hasAlreadyStartedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null): void {
 		if (userLoginMigration) {
-			throw new StartUserLoginMigrationError(
+			throw new ModifyUserLoginMigrationError(
 				`The school with schoolId ${userLoginMigration.schoolId} already started the migration.`
-			);
-		}
-	}
-
-	private hasFinishedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null) {
-		if (userLoginMigration?.finishedAt) {
-			throw new StartUserLoginMigrationError(
-				`The school with schoolId ${userLoginMigration.schoolId} already finished the migration.`
 			);
 		}
 	}

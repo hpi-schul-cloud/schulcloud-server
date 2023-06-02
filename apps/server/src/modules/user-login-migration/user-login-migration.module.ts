@@ -11,8 +11,8 @@ import {
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
+	StartUserLoginMigrationValidationService,
 } from './service';
-import { StartUserLoginMigrationValidationService } from './service/start-user-login-migration-validation.service';
 import { AuthorizationModule } from '../authorization';
 import { CommonUserLoginMigrationService } from './service/common-user-login-migration.service';
 

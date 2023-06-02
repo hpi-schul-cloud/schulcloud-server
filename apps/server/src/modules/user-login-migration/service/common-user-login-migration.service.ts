@@ -3,6 +3,7 @@ import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import { UserLoginMigrationService } from './user-login-migration.service';
+import { ModifyUserLoginMigrationError } from '../error';
 
 @Injectable()
 export class CommonUserLoginMigrationService {
@@ -28,5 +29,13 @@ export class CommonUserLoginMigrationService {
 			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		return existingUserLoginMigration;
+	}
+
+	hasNotFinishedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null): void {
+		if (userLoginMigration?.finishedAt) {
+			throw new ModifyUserLoginMigrationError(
+				`The school with schoolId ${userLoginMigration.schoolId} already finished the migration.`
+			);
+		}
 	}
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { RestartUserLoginMigrationError } from '../error';
+import { RestartUserLoginMigrationError, ModifyUserLoginMigrationError } from '../error';
 
 @Injectable()
 export class RestartUserLoginMigrationValidationService {
@@ -14,9 +14,7 @@ export class RestartUserLoginMigrationValidationService {
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
 		if (existingUserLoginMigration === null) {
-			throw new RestartUserLoginMigrationError(
-				`Existing migration for school with id: ${schoolId} could not be found for restart.`
-			);
+			throw new ModifyUserLoginMigrationError(`Existing migration for school with id: ${schoolId} could not be found.`);
 		}
 
 		this.validateGracePeriod(existingUserLoginMigration);

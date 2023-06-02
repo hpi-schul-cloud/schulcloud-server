@@ -4,7 +4,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory } from '@shared/testing';
 import { UserLoginMigrationService } from '../service';
-import { StartUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
 import { StartUserLoginMigrationValidationService } from '../service/start-user-login-migration-validation.service';
 
@@ -102,7 +102,7 @@ describe('StartUserLoginMigrationUc', () => {
 				});
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const error: StartUserLoginMigrationError = new StartUserLoginMigrationError('');
+				const error: ModifyUserLoginMigrationError = new ModifyUserLoginMigrationError('');
 
 				startUserLoginMigrationCheckService.checkPreconditions.mockRejectedValue(error);
 				userLoginMigrationService.startMigration.mockResolvedValue(migration);
@@ -113,7 +113,7 @@ describe('StartUserLoginMigrationUc', () => {
 			it('should throw ForbiddenException ', async () => {
 				const { userId, schoolId } = setup();
 
-				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(new StartUserLoginMigrationError(''));
+				await expect(uc.startMigration(userId, schoolId)).rejects.toThrow(new ModifyUserLoginMigrationError(''));
 			});
 		});
 	});

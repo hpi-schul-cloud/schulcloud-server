@@ -6,6 +6,7 @@ import { Action, AuthorizationContext, AuthorizationService } from '@src/modules
 import { SchoolService } from '@src/modules/school';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
+import { ModifyUserLoginMigrationError } from '../error';
 
 describe('CommonUserLoginMigrationService', () => {
 	let module: TestingModule;
@@ -104,7 +105,7 @@ describe('CommonUserLoginMigrationService', () => {
 	});
 
 	describe('findExistingUserLoginMigration is called', () => {
-		describe('when context, user and school are given ', () => {
+		describe('when user login migration exist ', () => {
 			const setup = () => {
 				const userId = 'userId';
 
@@ -122,12 +123,66 @@ describe('CommonUserLoginMigrationService', () => {
 				return { userId, migration, schoolId: school.id as string };
 			};
 
-			it('should call findMigrationBySchool', async () => {
+			it('should return user login migration', async () => {
+				const { schoolId, migration } = setup();
+
+				const result = await service.findExistingUserLoginMigration(schoolId);
+
+				expect(result).toEqual(migration);
+			});
+		});
+
+		describe('when user login migration does not exist ', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2022-12-17T03:24:00'),
+					closedAt: new Date('2023-12-17T03:24:00'),
+					finishedAt: new Date('2055-12-17T03:24:00'),
+				});
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
+				userLoginMigration.findMigrationBySchool.mockResolvedValue(null);
+
+				return { userId, migration, schoolId: school.id as string };
+			};
+
+			it('should return null', async () => {
 				const { schoolId } = setup();
 
-				await service.findExistingUserLoginMigration(schoolId);
+				const result = await service.findExistingUserLoginMigration(schoolId);
 
-				expect(userLoginMigration.findMigrationBySchool).toHaveBeenCalledWith(schoolId);
+				expect(result).toEqual(null);
+			});
+		});
+	});
+
+	describe('hasFinishedMigrationOrThrow is called', () => {
+		describe('when migration has already finished', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date(),
+					closedAt: new Date(),
+					finishedAt: new Date(),
+				});
+				return { userId, migration };
+			};
+
+			it('should throw ModifyUserLoginMigrationError ', async () => {
+				const { migration } = setup();
+
+				await expect(service.hasNotFinishedMigrationOrThrow(migration)).rejects.toThrow(
+					new ModifyUserLoginMigrationError(
+						`The school with schoolId ${migration.schoolId} already finished the migration.`
+					)
+				);
 			});
 		});
 	});

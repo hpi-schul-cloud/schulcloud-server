@@ -27,6 +27,7 @@ import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
+import { UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
@@ -741,6 +742,84 @@ describe('UserLoginMigrationController (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
+		});
+	});
+
+	describe('[PUT] /toggle', () => {
+		const setupToggle = async () => {
+			const sourceSystem: System = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+			const targetSystem: System = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+			const school: School = schoolFactory.buildWithId({
+				systems: [sourceSystem],
+				officialSchoolNumber: '12345',
+			});
+
+			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId({
+				school,
+				targetSystem,
+				sourceSystem,
+				startedAt: new Date(2023, 1, 4),
+				closedAt: new Date(2023, 1, 5),
+				finishedAt: new Date(2023, 1, 20),
+			});
+			school.userLoginMigration = userLoginMigration;
+
+			const adminRole = roleFactory.buildWithId({
+				name: RoleName.ADMINISTRATOR,
+				permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+			});
+
+			const user: User = userFactory.buildWithId({ school, roles: [adminRole] });
+
+			await em.persistAndFlush([sourceSystem, targetSystem, school, user, userLoginMigration]);
+
+			currentUser = mapUserToCurrentUser(user);
+
+			return {
+				user,
+				userLoginMigration,
+			};
+		};
+
+		describe('when migration is optional', () => {
+			const setup = async () => {
+				const { userLoginMigration, user } = await setupToggle();
+
+				userLoginMigration.mandatorySince = undefined;
+				await em.persistAndFlush(userLoginMigration);
+
+				return {
+					userLoginMigration,
+					user,
+				};
+			};
+
+			it('it should set migration to mandatory', async () => {
+				await setup();
+				const expectedDate: Date = new Date();
+				jest.useFakeTimers().setSystemTime(expectedDate);
+
+				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toHaveProperty<UserLoginMigrationResponse>('mandatorySince');
+			});
+		});
+
+		describe('when migration is mandatory', () => {
+			it('it should set migration to optional', () => {});
+		});
+
+		describe('when migration is not started', () => {
+			it('should return a bad request', () => {});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should return unauthorized', () => {});
+		});
+
+		describe('when user has not the required permission', () => {
+			it('should return forbidden', () => {});
 		});
 	});
 });

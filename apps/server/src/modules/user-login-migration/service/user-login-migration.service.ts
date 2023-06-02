@@ -7,6 +7,7 @@ import { SystemDto, SystemService } from '@src/modules/system';
 import { UserService } from '@src/modules/user';
 import { RestartUserLoginMigrationError } from '../error';
 import { SchoolMigrationService } from './school-migration.service';
+import { ToggleUserLoginMigrationError } from '../error/toggle-user-login-migration.error';
 
 @Injectable()
 export class UserLoginMigrationService {
@@ -92,6 +93,24 @@ export class UserLoginMigrationService {
 		await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 
 		return updatedUserLoginMigration;
+	}
+
+	async toggleMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (userLoginMigration === null) {
+			throw new ToggleUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for toggling.`);
+		}
+
+		if (!userLoginMigration.mandatorySince) {
+			userLoginMigration.mandatorySince = new Date();
+		} else {
+			userLoginMigration.mandatorySince = undefined;
+		}
+
+		userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
+
+		return userLoginMigration;
 	}
 
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {

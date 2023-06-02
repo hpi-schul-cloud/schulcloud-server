@@ -21,8 +21,9 @@ import {
 } from './dto';
 import { Oauth2MigrationParams } from './dto/oauth2-migration.params';
 import { StartUserLoginMigrationUc } from '../uc/start-user-login-migration.uc';
-import { StartUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError } from '../error';
 import { RestartUserLoginMigrationUc } from '../uc/restart-user-login-migration.uc';
+import { ToggleUserLoginMigrationUc } from '../uc/toggle-user-login-migration.uc';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')
@@ -31,7 +32,8 @@ export class UserLoginMigrationController {
 	constructor(
 		private readonly userLoginMigrationUc: UserLoginMigrationUc,
 		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc,
-		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc
+		private readonly restartUserLoginMigrationUc: RestartUserLoginMigrationUc,
+		private readonly toggleUserLoginMigration: ToggleUserLoginMigrationUc
 	) {}
 
 	@Get()
@@ -67,7 +69,7 @@ export class UserLoginMigrationController {
 	@Post('start')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: StartUserLoginMigrationError,
+		type: ModifyUserLoginMigrationError,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
@@ -86,7 +88,7 @@ export class UserLoginMigrationController {
 	@Put('restart')
 	@ApiBadRequestResponse({
 		description: 'Preconditions for starting user login migration are not met',
-		type: StartUserLoginMigrationError,
+		type: ModifyUserLoginMigrationError,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
@@ -111,5 +113,24 @@ export class UserLoginMigrationController {
 		@Body() body: Oauth2MigrationParams
 	): Promise<void> {
 		await this.userLoginMigrationUc.migrate(jwt, currentUser.userId, body.systemId, body.code, body.redirectUri);
+	}
+
+	@Put('toggle')
+	@ApiBadRequestResponse({
+		description: 'Preconditions for toggle user login migration are not met',
+		type: ModifyUserLoginMigrationError,
+	})
+	@ApiOkResponse({ description: 'Toggle was set', type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	async toggleMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+		const migrationDto: UserLoginMigrationDO = await this.toggleUserLoginMigration.toggleMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse =
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
 	}
 }

@@ -4,7 +4,7 @@ import { SchoolService } from '@src/modules/school';
 import { SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { StartUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 
@@ -67,6 +67,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
+				commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow.mockReturnThis();
 
 				return { userId, migration, schoolId: school.id as string };
 			};
@@ -94,6 +95,14 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				expect(commonUserLoginMigrationService.findExistingUserLoginMigration).toHaveBeenCalledWith(schoolId);
 			});
+
+			it('should check if migration finished ', async () => {
+				const { userId, schoolId, migration } = setup();
+
+				await service.checkPreconditions(userId, schoolId);
+
+				expect(commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow).toHaveBeenCalledWith(migration);
+			});
 		});
 
 		describe('when school has no officialSchoolNumber', () => {
@@ -112,7 +121,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
-				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
+				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
 				return { user, migration, schoolId: school.id as string };
 			};
@@ -123,42 +132,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(user.id, schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
-				);
-			});
-		});
-
-		describe('when migration has already finished', () => {
-			const setup = () => {
-				const userId = 'userId';
-
-				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date(),
-					closedAt: new Date(),
-					finishedAt: new Date(),
-				});
-
-				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.schoolId });
-
-				authorizationService.checkPermission.mockReturnThis();
-				schoolService.getSchoolById.mockResolvedValue(school);
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
-				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
-
-				return { userId, migration };
-			};
-
-			it('should throw StartUserLoginMigrationError ', async () => {
-				const { userId, migration } = setup();
-
-				const func = () => service.checkPreconditions(userId, migration.schoolId);
-
-				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(
-						`The school with schoolId ${migration.schoolId} already finished the migration.`
-					)
+					new ModifyUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
 				);
 			});
 		});
@@ -189,7 +163,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const func = () => service.checkPreconditions(userId, migration.schoolId);
 
 				await expect(func()).rejects.toThrow(
-					new StartUserLoginMigrationError(
+					new ModifyUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)
 				);
