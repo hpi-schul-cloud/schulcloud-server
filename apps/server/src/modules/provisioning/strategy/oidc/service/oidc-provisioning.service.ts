@@ -64,7 +64,7 @@ export class OidcProvisioningService {
 			user.firstName = externalUser.firstName ?? existingUser.firstName;
 			user.lastName = externalUser.lastName ?? existingUser.lastName;
 			user.email = externalUser.email ?? existingUser.email;
-			user.roleIds = roleIds ?? existingUser.roleIds;
+			user.roles = roleIds ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
 		} else {
 			createNewAccount = true;
@@ -80,7 +80,7 @@ export class OidcProvisioningService {
 				firstName: externalUser.firstName ?? '',
 				lastName: externalUser.lastName ?? '',
 				email: externalUser.email ?? '',
-				roleIds: roleIds ?? [],
+				roles: roleIds ?? [],
 				schoolId,
 			});
 		}

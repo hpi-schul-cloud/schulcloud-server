@@ -11,54 +11,32 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions, RoleName, ExternalToolDO, Page } from '@shared/domain';
+import { ExternalToolDO, IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { Authorization } from 'oauth-1.0a';
+import { ExternalToolUc } from '../uc';
 import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
-import { ExternalToolUc } from '../uc/external-tool.uc';
-import { Lti11Uc } from '../uc/lti11.uc';
 import {
 	ExternalToolPostParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
-	Lti11LaunchQuery,
-	Lti11LaunchResponse,
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
 @Controller('tools')
 export class ToolController {
 	constructor(
-		private readonly lti11Uc: Lti11Uc,
-		private readonly lti11ResponseMapper: Lti11ResponseMapper,
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
 		private readonly logger: LegacyLogger
 	) {}
-
-	@Get('lti11/:toolId/launch')
-	async getLti11LaunchParameters(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Query() query: Lti11LaunchQuery
-	): Promise<Lti11LaunchResponse> {
-		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(
-			currentUser.userId,
-			currentUser.roles[0] as RoleName,
-			params.toolId,
-			query.courseId
-		);
-		const mapped: Lti11LaunchResponse = this.lti11ResponseMapper.mapAuthorizationToResponse(authorization);
-		return mapped;
-	}
 
 	@Post()
 	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { RoleName, User } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { RoleService } from '@src/modules/role';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -21,11 +20,7 @@ import { IservMapper } from './iserv-do.mapper';
 
 @Injectable()
 export class IservProvisioningStrategy extends ProvisioningStrategy {
-	constructor(
-		private readonly roleService: RoleService,
-		private readonly schoolService: SchoolService,
-		private readonly userService: UserService
-	) {
+	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {
 		super();
 	}
 
@@ -53,8 +48,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		}
 
 		const ldapSchool: SchoolDO = await this.schoolService.getSchoolById(ldapUser.schoolId);
-		const roleDtos: RoleDto[] = await this.roleService.findByIds(ldapUser.roleIds);
-		const roleNames: RoleName[] = roleDtos.map((role) => role.name);
+		const roleNames: RoleName[] = ldapUser.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
 
 		const externalUser: ExternalUserDto = IservMapper.mapToExternalUserDto(ldapUser, roleNames);
 		const externalSchool: ExternalSchoolDto = IservMapper.mapToExternalSchoolDto(ldapSchool);

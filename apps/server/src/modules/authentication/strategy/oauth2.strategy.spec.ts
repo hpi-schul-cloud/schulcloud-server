@@ -83,7 +83,7 @@ describe('Oauth2Strategy', () => {
 				expect(result).toEqual<ICurrentUser>({
 					systemId,
 					userId: user.id as EntityId,
-					roles: user.roleIds,
+					roles: user.roles,
 					schoolId: user.schoolId,
 					accountId: account.id,
 				});

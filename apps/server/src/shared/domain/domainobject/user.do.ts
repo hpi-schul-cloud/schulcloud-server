@@ -1,6 +1,7 @@
-import { EntityId } from '@shared/domain/types';
 import { LanguageType } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { BaseDO } from './base.do';
+import { RoleReference } from './role-reference';
 
 export class UserDO extends BaseDO {
 	createdAt?: Date;
@@ -13,7 +14,7 @@ export class UserDO extends BaseDO {
 
 	lastName: string;
 
-	roleIds: EntityId[];
+	roles: RoleReference[];
 
 	schoolId: EntityId;
 
@@ -49,7 +50,7 @@ export class UserDO extends BaseDO {
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
-		this.roleIds = domainObject.roleIds;
+		this.roles = domainObject.roles;
 		this.schoolId = domainObject.schoolId;
 		this.ldapDn = domainObject.ldapDn;
 		this.externalId = domainObject.externalId;

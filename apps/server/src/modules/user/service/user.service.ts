@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -80,18 +81,20 @@ export class UserService {
 		return user;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	async getDisplayName(userDto: UserDto): Promise<string> {
-		const id: string = userDto.id ? userDto.id : '';
+	async getDisplayName(user: UserDO): Promise<string> {
+		const id: string = user.id ? user.id : '';
 
 		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
-		const isProtectedUser = protectedRoles.find((role) => (userDto.roleIds || []).includes(role.id || ''));
+		const isProtectedUser: boolean = user.roles.some(
+			(roleRef: RoleReference): boolean =>
+				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id)
+		);
+
 		if (isProtectedUser) {
-			return userDto.lastName ? userDto.lastName : id;
+			return user.lastName ? user.lastName : id;
 		}
-		return userDto.lastName ? `${userDto.firstName} ${userDto.lastName}` : id;
+
+		return user.lastName ? `${user.firstName} ${user.lastName}` : id;
 	}
 
 	async patchLanguage(userId: EntityId, newLanguage: LanguageType): Promise<boolean> {

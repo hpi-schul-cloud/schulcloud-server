@@ -121,7 +121,7 @@ describe('UserService', () => {
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roleIds: ['roleId'],
+				roles: ['roleId'],
 				externalId: 'externalUserId',
 			});
 			userDORepo.findById.mockResolvedValue(userDO);
@@ -262,7 +262,7 @@ describe('UserService', () => {
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roleIds: ['roleId'],
+					roles: ['roleId'],
 				});
 
 				userDORepo.save.mockResolvedValue(user);
@@ -298,7 +298,7 @@ describe('UserService', () => {
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roleIds: ['roleId'],
+					roles: ['roleId'],
 					externalId: 'externalId',
 				});
 

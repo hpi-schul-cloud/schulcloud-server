@@ -159,7 +159,7 @@ describe('OidcProvisioningService', () => {
 				lastName: 'existingLastName',
 				email: 'existingEmail',
 				schoolId: 'existingSchoolId',
-				roleIds: ['existingRoleId'],
+				roles: ['existingRoleId'],
 				externalId: 'externalUserId',
 			});
 			const savedUser: UserDO = new UserDO({
@@ -168,7 +168,7 @@ describe('OidcProvisioningService', () => {
 				lastName: 'lastName',
 				email: 'email',
 				schoolId,
-				roleIds: ['roleId'],
+				roles: ['roleId'],
 				externalId: 'externalUserId',
 			});
 			const externalUser: ExternalUserDto = new ExternalUserDto({

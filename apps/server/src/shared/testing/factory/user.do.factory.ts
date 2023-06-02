@@ -1,6 +1,6 @@
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { BuildOptions, DeepPartial } from 'fishery';
 import { ObjectId } from 'bson';
+import { BuildOptions, DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 class UserDoFactory extends BaseFactory<UserDO, UserDO> {
@@ -18,7 +18,7 @@ export const userDoFactory = UserDoFactory.define(UserDO, ({ sequence }) => {
 		firstName: 'John',
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
-		roleIds: [],
+		roles: [],
 		schoolId: new ObjectId().toString(),
 	};
 });

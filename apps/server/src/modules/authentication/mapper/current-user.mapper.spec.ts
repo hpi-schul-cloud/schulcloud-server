@@ -101,7 +101,7 @@ describe('CurrentUserMapper', () => {
 					id: userId,
 					createdAt: new Date(),
 					updatedAt: new Date(),
-					roleIds,
+					roles: roleIds,
 				});
 				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
 				expect(currentUser).toMatchObject({

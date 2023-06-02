@@ -216,7 +216,7 @@ describe('OAuthUc', () => {
 				firstName: 'firstName',
 				lastName: 'lastame',
 				email: '',
-				roleIds: [],
+				roles: [],
 				schoolId: 'mockSchoolId',
 				externalId: 'mockExternalId',
 			});

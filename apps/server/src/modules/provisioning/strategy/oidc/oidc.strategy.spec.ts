@@ -74,7 +74,7 @@ describe('OidcStrategy', () => {
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roleIds: ['roleId'],
+				roles: ['roleId'],
 				externalId: externalUserId,
 			});
 			const school: SchoolDO = new SchoolDO({

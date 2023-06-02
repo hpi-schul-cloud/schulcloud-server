@@ -35,16 +35,23 @@ const concreteConfigParameter: PropertyData = {
 
 const expectedPayload = 'payload';
 
+const launchMethod = LaunchRequestMethod.GET;
+
 class TestLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
+	protected override buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
 		// Implement this method with your own logic for the mock launch strategy
 		return [concreteConfigParameter];
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected buildToolLaunchRequestPayload(properties: PropertyData[]): string {
+	protected buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
 		return expectedPayload;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	protected override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
+		return launchMethod;
 	}
 }
 
@@ -302,7 +309,7 @@ describe('AbstractLaunchStrategy', () => {
 		const setup = () => {
 			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
 				type: ToolLaunchDataType.BASIC,
-				baseUrl: 'https://www.basic-baseurl.com/',
+				baseUrl: 'https://www.basic-baseurl.com/pre/:pathParam/post',
 				properties: [],
 				openNewTab: false,
 			});
@@ -316,7 +323,7 @@ describe('AbstractLaunchStrategy', () => {
 			const { toolLaunchDataDO } = setup();
 
 			const propertyData1 = new PropertyData({
-				name: 'search',
+				name: 'pathParam',
 				value: 'searchValue',
 				location: PropertyLocation.PATH,
 			});
@@ -331,25 +338,10 @@ describe('AbstractLaunchStrategy', () => {
 
 			expect(result).toEqual<ToolLaunchRequest>({
 				method: LaunchRequestMethod.GET,
-				url: `${toolLaunchDataDO.baseUrl}${propertyData1.value}?${propertyData2.name}=${propertyData2.value}`,
+				url: `https://www.basic-baseurl.com/pre/${propertyData1.value}/post?${propertyData2.name}=${propertyData2.value}`,
 				payload: expectedPayload,
 				openNewTab: toolLaunchDataDO.openNewTab,
 			});
-		});
-
-		it('should create a LaunchRequestDO with POST method when there is a BODY property', () => {
-			const { toolLaunchDataDO } = setup();
-
-			const bodyProperty = new PropertyData({
-				name: 'content',
-				value: 'test content',
-				location: PropertyLocation.BODY,
-			});
-			toolLaunchDataDO.properties = [bodyProperty];
-
-			const result: ToolLaunchRequest = launchStrategy.createLaunchRequest(toolLaunchDataDO);
-
-			expect(result.method).toEqual(LaunchRequestMethod.POST);
 		});
 
 		it('should create a LaunchRequestDO with the correct payload when there are BODY properties', () => {
@@ -376,7 +368,7 @@ describe('AbstractLaunchStrategy', () => {
 			const { toolLaunchDataDO } = setup();
 
 			const pathProperty = new PropertyData({
-				name: 'pathSegment',
+				name: 'pathParam',
 				value: 'segmentValue',
 				location: PropertyLocation.PATH,
 			});
@@ -390,7 +382,7 @@ describe('AbstractLaunchStrategy', () => {
 			const result: ToolLaunchRequest = launchStrategy.createLaunchRequest(toolLaunchDataDO);
 
 			expect(result.url).toEqual(
-				`${toolLaunchDataDO.baseUrl}${pathProperty.value}?${queryProperty.name}=${queryProperty.value}`
+				`https://www.basic-baseurl.com/pre/${pathProperty.value}/post?${queryProperty.name}=${queryProperty.value}`
 			);
 		});
 	});

@@ -1,10 +1,10 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
-import { ExternalToolService, SchoolExternalToolService } from '../../service';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ContextExternalToolDO, EntityId, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
 import { ToolConfigType } from '../../interface';
-import { BasicToolLaunchStrategy, IToolLaunchStrategy } from './strategy';
-import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { ExternalToolService, SchoolExternalToolService } from '../../service';
 import { ToolLaunchMapper } from '../mapper';
+import { ToolLaunchData, ToolLaunchRequest } from '../types';
+import { BasicToolLaunchStrategy, IToolLaunchStrategy, Lti11ToolLaunchStrategy } from './strategy';
 
 @Injectable()
 export class ToolLaunchService {
@@ -13,36 +13,39 @@ export class ToolLaunchService {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
-		@Inject(BasicToolLaunchStrategy) private basicToolLaunchStrategy: IToolLaunchStrategy
+		private readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
+		private readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);
+		this.strategies.set(ToolConfigType.LTI11, lti11ToolLaunchStrategy);
 	}
 
-	generateLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest {
-		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchDataDO.type);
-		const strategy = this.strategies.get(toolConfigType);
+	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
+		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
+		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool launch data type');
 		}
 
-		const launchRequest: ToolLaunchRequest = strategy.createLaunchRequest(toolLaunchDataDO);
+		const launchRequest: ToolLaunchRequest = strategy.createLaunchRequest(toolLaunchData);
 
 		return launchRequest;
 	}
 
-	async getLaunchData(contextExternalToolDO: ContextExternalToolDO): Promise<ToolLaunchData> {
-		const schoolExternalToolId = contextExternalToolDO.schoolToolRef.schoolToolId;
+	async getLaunchData(userId: EntityId, contextExternalToolDO: ContextExternalToolDO): Promise<ToolLaunchData> {
+		const schoolExternalToolId: EntityId = contextExternalToolDO.schoolToolRef.schoolToolId;
 
 		const { externalToolDO, schoolExternalToolDO } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		const strategy = this.strategies.get(externalToolDO.config.type);
+		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalToolDO.config.type);
+
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool config type');
 		}
 
-		const launchData: ToolLaunchData = strategy.createLaunchData({
+		const launchData: ToolLaunchData = strategy.createLaunchData(userId, {
 			externalToolDO,
 			schoolExternalToolDO,
 			contextExternalToolDO,

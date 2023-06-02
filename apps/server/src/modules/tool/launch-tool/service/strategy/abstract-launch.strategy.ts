@@ -5,42 +5,48 @@ import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalToolConfigDO,
+	EntityId,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
 import { URLSearchParams } from 'url';
+import { ToolContextType } from '../../../interface';
+import { ToolLaunchMapper } from '../../mapper';
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
-import { ToolLaunchMapper } from '../../mapper';
-import { ToolContextType } from '../../../interface';
+import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 
-export abstract class AbstractLaunchStrategy {
-	public createLaunchData(data: IToolLaunchParams): ToolLaunchData {
+export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
+	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
 		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
-		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.externalToolDO.config));
+		launchData.properties.push(...(await this.buildToolLaunchDataFromConcreteConfig(userId, data)));
 
 		return launchData;
 	}
 
-	protected abstract buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[];
+	public abstract buildToolLaunchDataFromConcreteConfig(
+		userId: EntityId,
+		config: IToolLaunchParams
+	): Promise<PropertyData[]>;
 
-	protected abstract buildToolLaunchRequestPayload(properties: PropertyData[]): string;
+	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string;
 
-	public createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest {
-		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(toolLaunchDataDO.properties);
-		const url: string = this.buildUrl(toolLaunchDataDO);
-		const payload: string = this.buildToolLaunchRequestPayload(toolLaunchDataDO.properties);
+	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
-		const toolLaunchRequestDO: ToolLaunchRequest = new ToolLaunchRequest({
+	public createLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
+		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(toolLaunchData.properties);
+		const url: string = this.buildUrl(toolLaunchData);
+		const payload: string = this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
+
+		const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
 			method: requestMethod,
 			url,
 			payload,
-			openNewTab: toolLaunchDataDO.openNewTab,
+			openNewTab: toolLaunchData.openNewTab,
 		});
 
-		return toolLaunchRequestDO;
+		return toolLaunchRequest;
 	}
 
 	private buildUrl(toolLaunchDataDO: ToolLaunchData): string {
@@ -56,8 +62,7 @@ export abstract class AbstractLaunchStrategy {
 		const url = new URL(baseUrl);
 
 		if (pathProperties.length > 0) {
-			const pathParams: string = pathProperties.map((property: PropertyData) => `${property.value}`).join('/');
-			url.pathname = url.pathname.endsWith('/') ? `${url.pathname}${pathParams}` : `${url.pathname}/${pathParams}`;
+			this.applyPropertiesToPathParams(url, pathProperties);
 		}
 
 		if (queryProperties.length > 0) {
@@ -67,20 +72,30 @@ export abstract class AbstractLaunchStrategy {
 			url.search += queryParams.toString();
 		}
 
-		const urlString = url.toString();
-		return urlString;
+		return url.toString();
 	}
 
-	private determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
-		const hasBodyProperty: boolean = properties.some(
-			(property: PropertyData) => property.location === PropertyLocation.BODY
-		);
+	private applyPropertiesToPathParams(url: URL, pathProperties: PropertyData[]): void {
+		const trimSlash: string = url.pathname.replace(/^\/+|\/+$/g, '');
+		const pathParams: string[] = trimSlash.split('/');
 
-		const launchRequestMethod: LaunchRequestMethod = hasBodyProperty
-			? LaunchRequestMethod.POST
-			: LaunchRequestMethod.GET;
+		const filledPathParams: string[] = pathParams.map((param: string): string => {
+			let pathParam: string = param;
 
-		return launchRequestMethod;
+			if (param.startsWith(':')) {
+				const foundProperty: PropertyData | undefined = pathProperties.find(
+					(property: PropertyData) => param === `:${property.name}`
+				);
+
+				if (foundProperty) {
+					pathParam = foundProperty.value;
+				}
+			}
+
+			return pathParam;
+		});
+
+		url.pathname = filledPathParams.join('/');
 	}
 
 	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchData {

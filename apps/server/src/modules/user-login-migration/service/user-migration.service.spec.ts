@@ -355,7 +355,7 @@ describe('UserMigrationService', () => {
 				email: 'emailMock',
 				firstName: 'firstNameMock',
 				lastName: 'lastNameMock',
-				roleIds: ['roleIdMock'],
+				roles: ['roleIdMock'],
 				schoolId: 'schoolMock',
 				externalId: 'currentUserExternalIdMock',
 			});
@@ -366,7 +366,7 @@ describe('UserMigrationService', () => {
 				email: 'emailMock',
 				firstName: 'firstNameMock',
 				lastName: 'lastNameMock',
-				roleIds: ['roleIdMock'],
+				roles: ['roleIdMock'],
 				schoolId: 'schoolMock',
 				externalId: 'externalUserTargetId',
 				previousExternalId: 'currentUserExternalIdMock',
