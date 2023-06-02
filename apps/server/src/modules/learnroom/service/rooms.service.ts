@@ -1,10 +1,9 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Board, BoardExternalReferenceType, ColumnBoardTarget, EntityId } from '@shared/domain';
+import { Board, BoardExternalReferenceType, EntityId } from '@shared/domain';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { ColumnBoardService } from '@src/modules/board';
 import { TaskService } from '@src/modules/task/service';
+import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()
 export class RoomsService {
@@ -13,7 +12,7 @@ export class RoomsService {
 		private readonly lessonRepo: LessonRepo,
 		private readonly boardRepo: BoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly em: EntityManager
+		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
@@ -32,7 +31,7 @@ export class RoomsService {
 			columnBoardIds.push(columnBoard.id);
 		}
 
-		const courseColumnBoardTargets = await this.findOrCreateColumnBoardTargets(columnBoardIds);
+		const courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
 
 		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
 
@@ -40,29 +39,5 @@ export class RoomsService {
 
 		await this.boardRepo.save(board);
 		return board;
-	}
-
-	private async findOrCreateColumnBoardTargets(columnBoardIds: string[]): Promise<ColumnBoardTarget[]> {
-		const existingTargets = await this.em.find(ColumnBoardTarget, {
-			_columnBoardId: { $in: columnBoardIds },
-		} as unknown as FilterQuery<ColumnBoardTarget>);
-
-		const titlesMap = await this.columnBoardService.getBoardObjectTitlesById(columnBoardIds);
-
-		const columnBoardTargets = columnBoardIds.map((id) => {
-			const title = titlesMap[id] ?? '';
-			let target = existingTargets.find((item) => item.columnBoardId === id);
-			if (target) {
-				target.title = title;
-			} else {
-				target = new ColumnBoardTarget({ columnBoardId: id, title });
-			}
-			this.em.persist(target);
-			return target;
-		});
-
-		await this.em.flush();
-
-		return columnBoardTargets;
 	}
 }
