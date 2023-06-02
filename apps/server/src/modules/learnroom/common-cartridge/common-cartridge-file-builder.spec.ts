@@ -17,6 +17,13 @@ describe('CommonCartridgeFileBuilder', () => {
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_1_0,
 	};
+	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
+		identifier: 'file-identifier',
+		copyrightOwners: 'Placeholder Copyright',
+		creationYear: 'Placeholder Current Year',
+		title: 'file-title',
+		version: CommonCartridgeVersion.V_1_3_0,
+	};
 	const organizationProps: ICommonCartridgeOrganizationProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
 		identifier: 'organization-identifier',
@@ -133,6 +140,102 @@ describe('CommonCartridgeFileBuilder', () => {
 				type: 'type',
 			});
 			expect(() => element.transform()).not.toThrow();
+		});
+	});
+
+	async function initFileBuilderForCCVersion3() {
+		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
+			webContentResourceProps
+		);
+		fileBuilder
+			.addOrganization(organizationProps)
+			.addResourceToOrganization(ltiResourceProps)
+			.addResourceToOrganization(webLinkResourceProps);
+
+		archive = new AdmZip(await fileBuilder.build());
+	}
+
+	describe('common cartridge version 3', () => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const fileBuilderV3 = initFileBuilderForCCVersion3();
+
+		it('should use common cartridge version 1.3.0', () => {
+			const manifest = getFileContentAsString('imsmanifest.xml');
+			expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
+		});
+	});
+});
+
+describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
+	let archive: AdmZip;
+
+	const getFileContentAsString = (path: string): string | undefined => archive.getEntry(path)?.getData().toString();
+	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
+		identifier: 'file-identifier',
+		copyrightOwners: 'Placeholder Copyright',
+		creationYear: 'Placeholder Current Year',
+		title: 'file-title',
+		version: CommonCartridgeVersion.V_1_3_0,
+	};
+	const organizationProps: ICommonCartridgeOrganizationProps = {
+		version: CommonCartridgeVersion.V_1_3_0,
+		identifier: 'organization-identifier',
+		title: 'organization-title',
+		resources: [],
+	};
+	const ltiResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_3_0,
+		type: CommonCartridgeResourceType.LTI,
+		identifier: 'lti-identifier',
+		href: 'lti-identifier/lti.xml',
+		title: 'lti-title',
+		description: 'lti-description',
+		url: 'https://to-a-lti-tool.tld',
+	};
+	const webContentResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_3_0,
+		type: CommonCartridgeResourceType.WEB_CONTENT,
+		identifier: 'web-content-identifier',
+		href: 'web-content-identifier/web-content.html',
+		title: 'web-content-title',
+		html: '<h1>Text Resource Title</h1><p>Text Resource Description</p>',
+	};
+	const webLinkResourceProps: ICommonCartridgeResourceProps = {
+		version: CommonCartridgeVersion.V_1_3_0,
+		type: CommonCartridgeResourceType.WEB_LINK,
+		identifier: 'web-content-identifier',
+		href: 'web-content-identifier/web-content.xml',
+		title: 'web-link-title',
+		url: 'https://to-a-web-link.tld',
+	};
+
+	beforeAll(async () => {
+		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
+			webContentResourceProps
+		);
+		fileBuilder
+			.addOrganization(organizationProps)
+			.addResourceToOrganization(ltiResourceProps)
+			.addResourceToOrganization(webLinkResourceProps);
+		archive = new AdmZip(await fileBuilder.build());
+	});
+
+	describe('build', () => {
+		describe('when creating common cartridge archive', () => {
+			it('should create manifest file at archive root', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toBeTruthy();
+			});
+
+			it('should create valid manifest file', async () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				await expect(parseStringPromise(manifest as string)).resolves.not.toThrow();
+			});
+
+			it('should use common cartridge version 1.3.0', () => {
+				const manifest = getFileContentAsString('imsmanifest.xml');
+				expect(manifest).toContain(CommonCartridgeVersion.V_1_3_0);
+			});
 		});
 	});
 });
