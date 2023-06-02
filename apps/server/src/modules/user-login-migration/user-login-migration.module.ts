@@ -5,6 +5,7 @@ import { AccountModule } from '@src/modules/account';
 import { SchoolModule } from '@src/modules/school';
 import { SystemModule } from '@src/modules/system';
 import { UserModule } from '@src/modules/user';
+import { AuthorizationModule } from '@src/modules/authorization';
 import {
 	MigrationCheckService,
 	RestartUserLoginMigrationValidationService,
@@ -12,9 +13,8 @@ import {
 	UserLoginMigrationService,
 	UserMigrationService,
 	StartUserLoginMigrationValidationService,
+	CommonUserLoginMigrationService,
 } from './service';
-import { AuthorizationModule } from '../authorization';
-import { CommonUserLoginMigrationService } from './service/common-user-login-migration.service';
 
 @Module({
 	imports: [UserModule, SchoolModule, LoggerModule, AccountModule, SystemModule, AuthorizationModule],
@@ -35,6 +35,7 @@ import { CommonUserLoginMigrationService } from './service/common-user-login-mig
 		UserLoginMigrationService,
 		StartUserLoginMigrationValidationService,
 		RestartUserLoginMigrationValidationService,
+		CommonUserLoginMigrationService,
 	],
 })
 export class UserLoginMigrationModule {}

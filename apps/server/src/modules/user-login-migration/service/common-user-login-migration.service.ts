@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
