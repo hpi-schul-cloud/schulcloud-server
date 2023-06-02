@@ -48,13 +48,15 @@ describe('H5PEditor Controller (api)', () => {
 				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();
 
-				return { studentAccount };
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
 			};
 
 			it('should return the player', async () => {
-				const { studentAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await testApiClient.get('dummyID/play', studentAccount);
+				const response = await loggedInClient.get('dummyID/play');
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toContain('<h1>H5P Player Dummy</h1>');
@@ -86,13 +88,15 @@ describe('H5PEditor Controller (api)', () => {
 				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();
 
-				return { studentAccount };
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
 			};
 
 			it('should return the editor', async () => {
-				const { studentAccount } = await setup();
+				const { loggedInClient } = await setup();
 
-				const response = await testApiClient.get('dummyID/edit', studentAccount);
+				const response = await loggedInClient.get('dummyID/edit');
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toContain('<h1>H5P Editor Dummy</h1>');

@@ -227,23 +227,24 @@ describe('FilesStorageService get methods', () => {
 		describe('WHEN valid files exist', () => {
 			const setup = () => {
 				const { params, fileRecords } = buildFileRecordsWithParams();
-				fileRecordRepo.findBySchoolIdAndParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				const { parentId } = params;
+				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { params, fileRecords };
+				return { parentId, fileRecords };
 			};
 
 			it('should call findBySchoolIdAndParentId with right parameters', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await service.getFileRecordsOfParent(params);
+				await service.getFileRecordsOfParent(parentId);
 
-				expect(fileRecordRepo.findBySchoolIdAndParentId).toHaveBeenNthCalledWith(1, params.schoolId, params.parentId);
+				expect(fileRecordRepo.findByParentId).toHaveBeenNthCalledWith(1, parentId);
 			});
 
 			it('should return the matched fileRecord', async () => {
-				const { params, fileRecords } = setup();
+				const { parentId, fileRecords } = setup();
 
-				const result = await service.getFileRecordsOfParent(params);
+				const result = await service.getFileRecordsOfParent(parentId);
 
 				expect(result).toEqual([fileRecords, 3]);
 			});
@@ -251,17 +252,17 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = buildFileRecordsWithParams();
+				const { parentId } = buildFileRecordsWithParams();
 
-				fileRecordRepo.findBySchoolIdAndParentId.mockRejectedValueOnce(new Error('bla'));
+				fileRecordRepo.findByParentId.mockRejectedValueOnce(new Error('bla'));
 
-				return { params };
+				return { parentId };
 			};
 
 			it('should pass the error', async () => {
-				const { params } = setup();
+				const { parentId } = setup();
 
-				await expect(service.getFileRecordsOfParent(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.getFileRecordsOfParent(parentId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});

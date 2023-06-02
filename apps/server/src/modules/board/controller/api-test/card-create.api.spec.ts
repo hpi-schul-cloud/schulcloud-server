@@ -2,10 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { BoardExternalReferenceType } from '@shared/domain';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
@@ -71,11 +73,16 @@ describe(`card create (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
+
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 
-		await em.persistAndFlush([user, columnBoardNode, columnNode]);
+		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();
 
 		return { user, columnBoardNode, columnNode };
@@ -101,5 +108,16 @@ describe(`card create (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { columnNode } = await setup();
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.post(columnNode.id);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });

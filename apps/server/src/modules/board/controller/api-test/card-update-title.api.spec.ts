@@ -2,12 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode } from '@shared/domain';
+import { BoardExternalReferenceType, CardNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	userFactory,
 } from '@shared/testing';
@@ -72,8 +73,12 @@ describe(`card update title (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
@@ -87,6 +92,7 @@ describe(`card update title (api)`, () => {
 		it('should return status 204', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+
 			const newTitle = 'new title';
 
 			const response = await api.updateCardTitle(cardNode.id, newTitle);
@@ -107,5 +113,19 @@ describe(`card update title (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { cardNode } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const newTitle = 'new title';
+
+			const response = await api.updateCardTitle(cardNode.id, newTitle);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });

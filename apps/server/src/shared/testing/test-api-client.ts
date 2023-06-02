@@ -13,7 +13,6 @@ const headerConst = {
 };
 
 const testReqestConst = {
-	invalid: 'invalidJwt',
 	prefix: 'Bearer',
 	loginPath: '/authentication/local',
 	accessToken: 'accessToken',
@@ -28,9 +27,78 @@ export class TestApiClient {
 
 	private readonly baseRoute: string;
 
-	constructor(app: INestApplication, baseRoute: string) {
+	private readonly formattedJwt: string;
+
+	constructor(app: INestApplication, baseRoute: string, jwt?: string) {
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
+		this.formattedJwt = `${testReqestConst.prefix} ${jwt || ''}`;
+	}
+
+	public get(subPath?: string): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set('authorization', this.formattedJwt);
+
+		return testRequestInstance;
+	}
+
+	public delete(subPath?: string): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.delete(path)
+			.set('authorization', this.formattedJwt);
+
+		return testRequestInstance;
+	}
+
+	public put(subPath?: string, data = {}): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.put(path)
+			.set('authorization', this.formattedJwt)
+			.send(data);
+
+		return testRequestInstance;
+	}
+
+	public patch(subPath?: string, data = {}): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.patch(path)
+			.set('authorization', this.formattedJwt)
+			.send(data);
+
+		return testRequestInstance;
+	}
+
+	public post(subPath?: string, data = {}): supertest.Test {
+		const path = this.getPath(subPath);
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.post(path)
+			.set('authorization', this.formattedJwt)
+			.send(data);
+
+		return testRequestInstance;
+	}
+
+	public async login(account: Account): Promise<this> {
+		const path = testReqestConst.loginPath;
+		const params: { username: string; password: string } = {
+			username: account.username,
+			password: defaultTestPassword,
+		};
+		const response = await supertest(this.app.getHttpServer())
+			.post(path)
+			.set(headerConst.accept, headerConst.json)
+			.send(params);
+
+		const jwtFromResponse = this.getJwtFromResponse(response);
+
+		return new (this.constructor as new (app: INestApplication, baseRoute: string, jwt?: string) => this)(
+			this.app,
+			this.baseRoute,
+			jwtFromResponse
+		);
 	}
 
 	private isSlash(inputPath: string, pos: number): boolean {
@@ -71,119 +139,14 @@ export class TestApiClient {
 		return isAuthenticationResponse;
 	}
 
-	private getFormatedJwt(response: Response): string {
+	private getJwtFromResponse(response: Response): string {
 		if (!this.isAuthenticationResponse(response.body)) {
 			const body = JSON.stringify(response.body);
 			throw new Error(`${testReqestConst.errorMessage} ${body}`);
 		}
-
 		const authenticationResponse = response.body;
 		const jwt = authenticationResponse.accessToken;
-		const formatedJwt = `${testReqestConst.prefix} ${jwt}`;
 
-		return formatedJwt;
-	}
-
-	private getHeader(formatedJwt: string, additionalHeader: Record<string, string> = {}) {
-		const baseHeader = {
-			authorization: formatedJwt,
-			accept: headerConst.json,
-		};
-		const header = Object.assign(baseHeader, additionalHeader);
-
-		return header;
-	}
-
-	public async getJwt(accountWithPassword?: Account): Promise<string> {
-		let formatedJwt: string = testReqestConst.invalid;
-
-		if (accountWithPassword) {
-			const path = testReqestConst.loginPath;
-			const params: { username: string; password: string } = {
-				username: accountWithPassword.username,
-				password: defaultTestPassword,
-			};
-			const response = await supertest(this.app.getHttpServer())
-				.post(path)
-				.set(headerConst.accept, headerConst.json)
-				.send(params);
-
-			formatedJwt = this.getFormatedJwt(response);
-		}
-
-		return formatedJwt;
-	}
-
-	public async get(
-		subPath?: string,
-		account?: Account,
-		query: string | Record<string, string> = {},
-		additionalHeader: Record<string, string> = {}
-	): Promise<supertest.Test> {
-		const path = this.getPath(subPath);
-		const formatedJwt = await this.getJwt(account);
-		const header = this.getHeader(formatedJwt, additionalHeader);
-		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set(header).query(query);
-
-		return testRequestInstance;
-	}
-
-	public async delete(
-		subPath?: string,
-		account?: Account,
-		query: string | Record<string, string> = {},
-		additionalHeader: Record<string, string> = {}
-	): Promise<supertest.Test> {
-		const path = this.getPath(subPath);
-		const formatedJwt = await this.getJwt(account);
-		const header = this.getHeader(formatedJwt, additionalHeader);
-		const testRequestInstance = supertest(this.app.getHttpServer()).delete(path).set(header).query(query);
-
-		return testRequestInstance;
-	}
-
-	public async put(
-		subPath?: string,
-		data = {},
-		account?: Account,
-		query: string | Record<string, string> = {},
-		additionalHeader: Record<string, string> = {}
-	): Promise<supertest.Test> {
-		const path = this.getPath(subPath);
-		const formatedJwt = await this.getJwt(account);
-		const header = this.getHeader(formatedJwt, additionalHeader);
-		const testRequestInstance = supertest(this.app.getHttpServer()).put(path).set(header).query(query).send(data);
-
-		return testRequestInstance;
-	}
-
-	public async patch(
-		subPath?: string,
-		data = {},
-		account?: Account,
-		query: string | Record<string, string> = {},
-		additionalHeader: Record<string, string> = {}
-	): Promise<supertest.Test> {
-		const path = this.getPath(subPath);
-		const formatedJwt = await this.getJwt(account);
-		const header = this.getHeader(formatedJwt, additionalHeader);
-		const testRequestInstance = supertest(this.app.getHttpServer()).patch(path).set(header).query(query).send(data);
-
-		return testRequestInstance;
-	}
-
-	public async post(
-		subPath?: string,
-		data = {},
-		account?: Account,
-		query: string | Record<string, string> = {},
-		additionalHeader: Record<string, string> = {}
-	): Promise<supertest.Test> {
-		const path = this.getPath(subPath);
-		const formatedJwt = await this.getJwt(account);
-		const header = this.getHeader(formatedJwt, additionalHeader);
-		const testRequestInstance = supertest(this.app.getHttpServer()).post(path).set(header).query(query).send(data);
-
-		return testRequestInstance;
+		return jwt;
 	}
 }

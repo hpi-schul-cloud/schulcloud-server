@@ -95,14 +95,31 @@ export class Course
 	}
 
 	public getStudentIds(): EntityId[] {
-		if (!this.students) {
-			throw new InternalServerErrorException('Course.students is undefined. The course need to be populated.');
+		const studentIds = this.extractIds(this.students);
+		return studentIds;
+	}
+
+	public getTeacherIds(): EntityId[] {
+		const teacherIds = this.extractIds(this.teachers);
+		return teacherIds;
+	}
+
+	public getSubstitutionTeacherIds(): EntityId[] {
+		const substitutionTeacherIds = this.extractIds(this.substitutionTeachers);
+		return substitutionTeacherIds;
+	}
+
+	private extractIds(users: Collection<User>): EntityId[] {
+		if (!users) {
+			throw new InternalServerErrorException(
+				`Students, teachers or stubstitution is undefined. The course needs to be populated`
+			);
 		}
 
-		const studentObjectIds = this.students.getIdentifiers('_id');
-		const studentIds = studentObjectIds.map((id): string => id.toString());
+		const objectIds = users.getIdentifiers('_id');
+		const ids = objectIds.map((id): string => id.toString());
 
-		return studentIds;
+		return ids;
 	}
 
 	public getStudentsList(): UsersList[] {
