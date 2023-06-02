@@ -9,20 +9,20 @@ import { Account, Role, School, SchoolYear, System, User } from '@shared/domain'
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
+import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { AuthenticationModule } from '../authentication/authentication.module';
+import { FilesStorageAMQPModule } from '@src/modules/files-storage/files-storage-amqp.module';
+
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config } from './h5p-editor.config';
 import { H5PAjaxEndpointService } from './service';
 import { H5PEditorService } from './service/h5p-editor.service';
 import { H5PPlayerService } from './service/h5p-player.service';
 import { H5PEditorUc } from './uc/h5p.uc';
-import { FilesStorageAMQPModule } from '../files-storage/files-storage-amqp.module';
 
 import { ContentStorage } from './contentStorage/contentStorage';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
-import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -53,7 +53,6 @@ const imports = [
 		// debug: true, // use it for locally debugging of querys
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
-	RabbitMQWrapperTestModule,
 ];
 
 const controllers = [H5PEditorController];

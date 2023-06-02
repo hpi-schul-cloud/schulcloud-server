@@ -8,16 +8,15 @@ import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-
 import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { AuthenticationApiModule } from '@src/modules/authentication/authentication-api.module';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { AuthenticationApiModule } from '../authentication/authentication-api.module';
+
 import { ContentStorage } from './contentStorage/contentStorage';
 import { H5PEditorController } from './controller';
 import { H5PEditorModule } from './h5p-editor.module';
 import { LibraryStorage } from './libraryStorage/libraryStorage';
-import { H5PAjaxEndpointService } from './service';
-import { H5PEditorService } from './service/h5p-editor.service';
-import { H5PPlayerService } from './service/h5p-player.service';
+import { H5PAjaxEndpointService, H5PEditorService, H5PPlayerService } from './service';
 import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
 import { H5PEditorUc } from './uc/h5p.uc';
 
