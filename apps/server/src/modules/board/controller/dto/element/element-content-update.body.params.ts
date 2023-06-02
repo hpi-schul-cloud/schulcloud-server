@@ -13,29 +13,10 @@ export abstract class ElementContentBody {
 	type!: ContentElementType;
 }
 
-export class RichTextContentBody {
-	@IsString()
-	@ApiProperty()
-	text!: string;
-
-	@IsEnum(InputFormat)
-	@ApiProperty()
-	inputFormat!: InputFormat;
-}
-
 export class FileContentBody {
 	@IsString()
 	@ApiProperty({})
 	caption!: string;
-}
-
-export class RichTextElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.RICH_TEXT })
-	type!: ContentElementType.RICH_TEXT;
-
-	@ValidateNested()
-	@ApiProperty()
-	content!: RichTextContentBody;
 }
 
 export class FileElementContentBody extends ElementContentBody {
@@ -47,6 +28,40 @@ export class FileElementContentBody extends ElementContentBody {
 	content!: FileContentBody;
 }
 
+export class RichTextContentBody {
+	@IsString()
+	@ApiProperty()
+	text!: string;
+
+	@IsEnum(InputFormat)
+	@ApiProperty()
+	inputFormat!: InputFormat;
+}
+
+export class RichTextElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.RICH_TEXT })
+	type!: ContentElementType.RICH_TEXT;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: RichTextContentBody;
+}
+
+export class TaskContentBody {
+	@IsString()
+	@ApiProperty()
+	dueDate!: Date;
+}
+
+export class TaskElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.TASK })
+	type!: ContentElementType.TASK;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: TaskContentBody;
+}
+
 export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
 
 export class ElementContentUpdateBodyParams {
@@ -55,14 +70,19 @@ export class ElementContentUpdateBodyParams {
 		discriminator: {
 			property: 'type',
 			subTypes: [
-				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
+				{ value: TaskElementContentBody, name: ContentElementType.TASK },
 			],
 		},
 		keepDiscriminatorProperty: true,
 	})
 	@ApiProperty({
-		oneOf: [{ $ref: getSchemaPath(RichTextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
+		oneOf: [
+			{ $ref: getSchemaPath(FileElementContentBody) },
+			{ $ref: getSchemaPath(RichTextElementContentBody) },
+			{ $ref: getSchemaPath(TaskElementContentBody) },
+		],
 	})
-	data!: RichTextElementContentBody | FileElementContentBody;
+	data!: FileElementContentBody | RichTextElementContentBody | TaskElementContentBody;
 }
