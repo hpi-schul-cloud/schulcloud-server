@@ -175,10 +175,10 @@ describe('CommonUserLoginMigrationService', () => {
 				return { userId, migration };
 			};
 
-			it('should throw ModifyUserLoginMigrationError ', async () => {
+			it('should throw ModifyUserLoginMigrationError ', () => {
 				const { migration } = setup();
 
-				await expect(service.hasNotFinishedMigrationOrThrow(migration)).rejects.toThrow(
+				expect(() => service.hasNotFinishedMigrationOrThrow(migration)).toThrow(
 					new ModifyUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already finished the migration.`
 					)
