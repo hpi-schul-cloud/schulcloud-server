@@ -760,7 +760,6 @@ describe('UserLoginMigrationController (API)', () => {
 				sourceSystem,
 				startedAt: new Date(2023, 1, 4),
 				closedAt: new Date(2023, 1, 5),
-				finishedAt: new Date(2023, 1, 20),
 			});
 			school.userLoginMigration = userLoginMigration;
 
@@ -783,43 +782,94 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration is optional', () => {
 			const setup = async () => {
-				const { userLoginMigration, user } = await setupToggle();
+				const { userLoginMigration } = await setupToggle();
 
 				userLoginMigration.mandatorySince = undefined;
 				await em.persistAndFlush(userLoginMigration);
-
-				return {
-					userLoginMigration,
-					user,
-				};
 			};
 
 			it('it should set migration to mandatory', async () => {
 				await setup();
-				const expectedDate: Date = new Date();
-				jest.useFakeTimers().setSystemTime(expectedDate);
 
 				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
 
-				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.body).toHaveProperty<UserLoginMigrationResponse>('mandatorySince');
+				const responseBody = response.body as UserLoginMigrationResponse;
+				expect(responseBody.mandatorySince).toBeDefined();
 			});
 		});
 
 		describe('when migration is mandatory', () => {
-			it('it should set migration to optional', () => {});
+			const setup = async () => {
+				const { userLoginMigration } = await setupToggle();
+
+				userLoginMigration.mandatorySince = new Date();
+				await em.persistAndFlush(userLoginMigration);
+			};
+
+			it('it should set migration to optional', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+
+				const responseBody = response.body as UserLoginMigrationResponse;
+				expect(responseBody.mandatorySince).toBeUndefined();
+			});
 		});
 
 		describe('when migration is not started', () => {
-			it('should return a bad request', () => {});
+			const setup = async () => {
+				const { userLoginMigration } = await setupToggle();
+
+				em.remove(userLoginMigration);
+				await em.flush();
+			};
+
+			it('should return a bad request', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+			});
 		});
 
 		describe('when user is not authorized', () => {
-			it('should return unauthorized', () => {});
+			const setup = async () => {
+				await setupToggle();
+				currentUser = undefined;
+			};
+
+			it('should return unauthorized', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
 		});
 
 		describe('when user has not the required permission', () => {
-			it('should return forbidden', () => {});
+			const setup = async () => {
+				const { user } = await setupToggle();
+
+				user.roles.removeAll();
+				await em.persistAndFlush(user);
+
+				const userWithoutPermission: User = userFactory.transient(user).build({ roles: [] });
+				await em.persistAndFlush(userWithoutPermission);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return forbidden', async () => {
+				await setup();
+
+				const response: Response = await request(app.getHttpServer()).put(`/user-login-migrations/toggle`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
 		});
 	});
 });

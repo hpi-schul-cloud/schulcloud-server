@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationService } from '../service';
-import { CommonUserLoginMigrationService } from '../service/common-user-login-migration.service';
+import { UserLoginMigrationService, CommonUserLoginMigrationService } from '../service';
 
 @Injectable()
 export class ToggleUserLoginMigrationUc {
