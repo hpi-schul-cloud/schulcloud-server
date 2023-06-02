@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolService } from '@src/modules/school';
-import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory } from '@shared/testing';
+import { SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { StartUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationValidationService } from './start-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
@@ -11,13 +12,20 @@ describe('StartUserLoginMigrationValidationService', () => {
 	let module: TestingModule;
 	let service: StartUserLoginMigrationValidationService;
 
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let commonUserLoginMigrationService: DeepMocked<CommonUserLoginMigrationService>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				StartUserLoginMigrationValidationService,
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -30,6 +38,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 		}).compile();
 
 		service = module.get(StartUserLoginMigrationValidationService);
+		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
 		commonUserLoginMigrationService = module.get(CommonUserLoginMigrationService);
 	});
@@ -56,16 +65,17 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
+
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId, migration, schoolId: school.id as string, school, context };
 			};
 
 			it('should call ensurePermission', async () => {
 				const { userId, schoolId } = setup();
 
-				await service.checkPreconditions(userId, schoolId);
+				await service.checkPreconditions(userId, school.id as string);
 
 				expect(commonUserLoginMigrationService.ensurePermission).toHaveBeenCalledWith(userId, schoolId);
 			});
@@ -89,7 +99,10 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 		describe('when school has no officialSchoolNumber', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const school: SchoolDO = schoolDOFactory.buildWithId();
+				school.officialSchoolNumber = undefined;
+
+				const user: User = userFactory.buildWithId();
 
 				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
@@ -97,20 +110,20 @@ describe('StartUserLoginMigrationValidationService', () => {
 					startedAt: new Date(),
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-				school.officialSchoolNumber = undefined;
-
-				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { user, migration, schoolId: school.id as string };
 			};
 
-			it('should throw ForbiddenException ', async () => {
-				const { userId, schoolId } = setup();
+			it('should throw StartUserLoginMigrationError ', async () => {
+				const { schoolId, user } = setup();
 
-				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(user.id, schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(`The school with schoolId ${schoolId} has no official school number.`)
 				);
 			});
@@ -130,6 +143,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.schoolId });
 
+				authorizationService.checkPermission.mockReturnThis();
 				schoolService.getSchoolById.mockResolvedValue(school);
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
@@ -141,7 +155,9 @@ describe('StartUserLoginMigrationValidationService', () => {
 			it('should throw StartUserLoginMigrationError ', async () => {
 				const { userId, migration } = setup();
 
-				await expect(service.checkPreconditions(userId, migration.schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, migration.schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already finished the migration.`
 					)
@@ -161,6 +177,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
+				authorizationService.checkPermission.mockReturnThis();
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
@@ -171,7 +188,9 @@ describe('StartUserLoginMigrationValidationService', () => {
 			it('should throw StartUserLoginMigrationError ', async () => {
 				const { userId, migration } = setup();
 
-				await expect(service.checkPreconditions(userId, migration.schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, migration.schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new StartUserLoginMigrationError(
 						`The school with schoolId ${migration.schoolId} already started the migration.`
 					)

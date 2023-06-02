@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 export abstract class BaseDO {
 	id?: string;
 

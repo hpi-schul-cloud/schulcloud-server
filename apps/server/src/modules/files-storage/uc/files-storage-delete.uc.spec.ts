@@ -140,7 +140,7 @@ describe('FilesStorageUC delete methods', () => {
 
 				await filesStorageUC.deleteFilesOfParent(userId, requestParams);
 
-				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams);
+				expect(filesStorageService.deleteFilesOfParent).toHaveBeenCalledWith(requestParams.parentId);
 			});
 
 			it('should return results of service', async () => {

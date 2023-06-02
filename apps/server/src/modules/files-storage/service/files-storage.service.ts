@@ -68,8 +68,8 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async getFileRecordsOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		const countedFileRecords = await this.fileRecordRepo.findBySchoolIdAndParentId(params.schoolId, params.parentId);
+	public async getFileRecordsOfParent(parentId: EntityId): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findByParentId(parentId);
 
 		return countedFileRecords;
 	}
@@ -96,7 +96,7 @@ export class FilesStorageService {
 	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
 		let fileName = file.name;
 
-		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(params);
+		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(params.parentId);
 		if (count > 0) {
 			fileName = resolveFileNameDuplicates(file.name, fileRecordsOfParent);
 		}
@@ -158,7 +158,7 @@ export class FilesStorageService {
 
 	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
 		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
-		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams);
+		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams.parentId);
 
 		this.checkDuplicatedNames(fileRecords, data.fileName);
 		fileRecord.setName(data.fileName);
@@ -240,8 +240,8 @@ export class FilesStorageService {
 		await this.deleteWithRollbackByError(fileRecords);
 	}
 
-	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
-		const [fileRecords, count] = await this.getFileRecordsOfParent(params);
+	public async deleteFilesOfParent(parentId: EntityId): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.getFileRecordsOfParent(parentId);
 
 		if (count > 0) {
 			await this.delete(fileRecords);

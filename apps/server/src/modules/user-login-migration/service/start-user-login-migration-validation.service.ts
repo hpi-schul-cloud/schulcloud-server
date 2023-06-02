@@ -11,20 +11,20 @@ export class StartUserLoginMigrationValidationService {
 		private readonly commonUserLoginMigrationService: CommonUserLoginMigrationService
 	) {}
 
-	async checkPreconditions(userId: string, schoolId: string) {
+	async checkPreconditions(userId: string, schoolId: string): Promise<void> {
 		await this.commonUserLoginMigrationService.ensurePermission(userId, schoolId);
 
-		await this.hasOfficialSchoolNumber(schoolId);
+		await this.hasOfficialSchoolNumberOrThrow(schoolId);
 
 		const existingUserLoginMigration: UserLoginMigrationDO | null =
 			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
 
-		this.hasFinishedMigration(existingUserLoginMigration);
+		this.hasFinishedMigrationOrThrow(existingUserLoginMigration);
 
-		this.hasAlreadyStartedMigration(existingUserLoginMigration);
+		this.hasAlreadyStartedMigrationOrThrow(existingUserLoginMigration);
 	}
 
-	private async hasOfficialSchoolNumber(schoolId: string): Promise<void> {
+	private async hasOfficialSchoolNumberOrThrow(schoolId: string): Promise<void> {
 		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
 
 		if (!schoolDo.officialSchoolNumber) {
@@ -32,7 +32,7 @@ export class StartUserLoginMigrationValidationService {
 		}
 	}
 
-	private hasAlreadyStartedMigration(userLoginMigration: UserLoginMigrationDO | null): void {
+	private hasAlreadyStartedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null): void {
 		if (userLoginMigration) {
 			throw new StartUserLoginMigrationError(
 				`The school with schoolId ${userLoginMigration.schoolId} already started the migration.`
@@ -40,7 +40,7 @@ export class StartUserLoginMigrationValidationService {
 		}
 	}
 
-	hasFinishedMigration(userLoginMigration: UserLoginMigrationDO | null) {
+	private hasFinishedMigrationOrThrow(userLoginMigration: UserLoginMigrationDO | null) {
 		if (userLoginMigration?.finishedAt) {
 			throw new StartUserLoginMigrationError(
 				`The school with schoolId ${userLoginMigration.schoolId} already finished the migration.`

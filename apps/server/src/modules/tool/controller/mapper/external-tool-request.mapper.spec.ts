@@ -16,7 +16,7 @@ import {
 } from '@shared/domain/domainobject/tool';
 import {
 	CustomParameterLocationParams,
-	CustomParameterScopeParams,
+	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	LtiMessageType,
 	LtiPrivacyPermission,
@@ -27,7 +27,7 @@ import {
 	CustomParameterPostParams,
 	ExternalToolPostParams,
 	ExternalToolSearchParams,
-	ExternalToolSortOrder,
+	ExternalToolSortBy,
 	ExternalToolUpdateParams,
 	Lti11ToolConfigParams,
 	Oauth2ToolConfigParams,
@@ -62,7 +62,7 @@ describe('ExternalToolRequestMapper', () => {
 		customParameterPostParams.description = 'description';
 		customParameterPostParams.defaultValue = 'mockDefault';
 		customParameterPostParams.location = CustomParameterLocationParams.PATH;
-		customParameterPostParams.scope = CustomParameterScopeParams.SCHOOL;
+		customParameterPostParams.scope = CustomParameterScopeTypeParams.SCHOOL;
 		customParameterPostParams.type = CustomParameterTypeParams.STRING;
 		customParameterPostParams.regex = 'mockRegex';
 		customParameterPostParams.regexComment = 'mockComment';
@@ -332,7 +332,7 @@ describe('ExternalToolRequestMapper', () => {
 	describe('mapSortingQueryToDomain', () => {
 		it('should map controller sorting query to domain sort order map', () => {
 			const sortingQuery: SortExternalToolParams = {
-				sortBy: ExternalToolSortOrder.ID,
+				sortBy: ExternalToolSortBy.ID,
 				sortOrder: SortOrder.asc,
 			};
 

@@ -1,7 +1,8 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { User } from '@shared/domain';
+import { BaseDO, User } from '@shared/domain';
+import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import {
-	BoardNodeRule,
+	BoardDoRule,
 	CourseGroupRule,
 	CourseRule,
 	LessonRule,
@@ -13,7 +14,8 @@ import {
 	TeamRule,
 	UserRule,
 } from '@shared/domain/rules';
-import { AuthorizableObject, AuthorizationContext, Rule } from './types';
+import { ContextExternalToolRule } from '@shared/domain/rules/context-external-tool.rule';
+import { AuthorizationContext, Rule } from './types';
 
 @Injectable()
 export class RuleManager {
@@ -30,7 +32,8 @@ export class RuleManager {
 		private readonly teamRule: TeamRule,
 		private readonly submissionRule: SubmissionRule,
 		private readonly schoolExternalToolRule: SchoolExternalToolRule,
-		private readonly boardNodeRule: BoardNodeRule
+		private readonly boardDoRule: BoardDoRule,
+		private readonly contextExternalToolRule: ContextExternalToolRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -43,11 +46,12 @@ export class RuleManager {
 			this.schoolRule,
 			this.submissionRule,
 			this.schoolExternalToolRule,
-			this.boardNodeRule,
+			this.boardDoRule,
+			this.contextExternalToolRule,
 		];
 	}
 
-	public selectRule(user: User, object: AuthorizableObject, context: AuthorizationContext): Rule {
+	public selectRule(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): Rule {
 		const selectedRules = this.rules.filter((rule) => rule.isApplicable(user, object, context));
 		const rule = this.matchSingleRule(selectedRules);
 

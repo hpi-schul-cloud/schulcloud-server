@@ -6,7 +6,7 @@
 		"name": "user",
 		"roles": [],
 		"updatedAt": {
-			"$date": "2023-04-04T12:33:09.676Z"
+			"$date": "2023-05-16T11:11:21.297Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -58,7 +58,8 @@
 			"TOOL_VIEW",
 			"TOPIC_VIEW",
 			"NEXTCLOUD_USER",
-			"JOIN_MEETING"
+			"JOIN_MEETING",
+			"CONTEXT_TOOL_USER"
 		],
 		"__v": 0
 	},

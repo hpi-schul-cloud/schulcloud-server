@@ -1150,6 +1150,32 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Changes the schulcloud client to use new login endpoints"
+		},
+		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables new CTL-tool tab in a course"
+		},
+		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables old LTI-tool tab in a course"
+		},
+		"TSP_SCHOOL_SYNCER": {
+			"type": "object",
+			"description": "TSP School Syncer properties",
+			"properties": {
+				"SCHOOL_LIMIT": {
+					"type": "integer",
+					"minimum": 1,
+					"description": "Number of simultaneously synchronized schools"
+				},
+				"STUDENTS_TEACHERS_CLASSES_LIMIT": {
+					"type": "integer",
+					"minimum": 1,
+					"description": "Number of simultaneously synchronized students, teachers and classes"
+				}
+			}
 		}
 	},
 	"required": [

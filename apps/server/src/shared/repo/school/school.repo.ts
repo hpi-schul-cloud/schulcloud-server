@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId, ISchoolProperties, School, System } from '@shared/domain';
+import { EntityId, ISchoolProperties, School, System, UserLoginMigration } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
@@ -49,6 +49,7 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
+			userLoginMigrationId: entity.userLoginMigration?.id,
 		});
 	}
 
@@ -65,6 +66,9 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			systems: entityDO.systems
 				? entityDO.systems.map((systemId: EntityId) => this._em.getReference(System, systemId))
 				: [],
+			userLoginMigration: entityDO.userLoginMigrationId
+				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
+				: undefined,
 		};
 	}
 }
