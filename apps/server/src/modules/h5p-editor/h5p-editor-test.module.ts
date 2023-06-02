@@ -1,3 +1,6 @@
+import os from 'node:os';
+import path from 'node:path';
+
 import { DynamicModule, Module } from '@nestjs/common';
 import { Account, Role, School, SchoolYear, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
@@ -8,11 +11,21 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
-import { H5PEditorModule } from './h5p-editor.module';
-import { H5PEditorUc } from './uc/h5p.uc';
+import { ContentStorage } from './contentStorage/contentStorage';
 import { H5PEditorController } from './controller';
-import { H5PPlayerService } from './service/h5p-player.service';
+import { H5PEditorModule } from './h5p-editor.module';
+import { LibraryStorage } from './libraryStorage/libraryStorage';
+import { H5PAjaxEndpointService } from './service';
 import { H5PEditorService } from './service/h5p-editor.service';
+import { H5PPlayerService } from './service/h5p-player.service';
+import { TemporaryFileStorage } from './temporary-file-storage/temporary-file-storage';
+import { H5PEditorUc } from './uc/h5p.uc';
+
+const storages = [
+	{ provide: ContentStorage, useValue: new ContentStorage(path.join(os.tmpdir(), '/h5p_content')) },
+	{ provide: LibraryStorage, useValue: new LibraryStorage(path.join(os.tmpdir(), '/h5p_libraries')) },
+	{ provide: TemporaryFileStorage, useValue: new TemporaryFileStorage(path.join(os.tmpdir(), '/h5p_temporary')) },
+];
 
 const imports = [
 	H5PEditorModule,
@@ -25,7 +38,8 @@ const imports = [
 	RabbitMQWrapperTestModule,
 ];
 const controllers = [H5PEditorController];
-const providers = [H5PEditorUc, H5PPlayerService, H5PEditorService];
+const providers = [H5PEditorUc, H5PPlayerService, H5PEditorService, H5PAjaxEndpointService, ...storages];
+
 @Module({
 	imports,
 	controllers,

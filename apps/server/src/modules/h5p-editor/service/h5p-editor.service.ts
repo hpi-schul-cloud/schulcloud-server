@@ -1,18 +1,14 @@
-import { H5PConfig, H5PEditor, UrlGenerator, cacheImplementations, fsImplementations } from '@lumieducation/h5p-server';
+import { H5PConfig, H5PEditor, UrlGenerator, cacheImplementations } from '@lumieducation/h5p-server';
 
-import os from 'node:os';
-import path from 'node:path';
+import { ContentStorage } from '../contentStorage/contentStorage';
+import { LibraryStorage } from '../libraryStorage/libraryStorage';
+import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
 
 export const H5PEditorService = {
 	provide: H5PEditor,
-	useFactory: () => {
-		const tmpDir = os.tmpdir();
-
+	inject: [ContentStorage, LibraryStorage, TemporaryFileStorage],
+	useFactory(contentStorage: ContentStorage, libraryStorage: LibraryStorage, temporaryStorage: TemporaryFileStorage) {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache');
-
-		const libraryStorage = new fsImplementations.FileLibraryStorage(path.join(tmpDir, '/h5p_libraries'));
-		const contentStorage = new fsImplementations.FileContentStorage(path.join(tmpDir, '/h5p_content'));
-		const temporaryStorage = new fsImplementations.DirectoryTemporaryFileStorage(path.join(tmpDir, '/h5p_temporary'));
 
 		const config: H5PConfig = new H5PConfig(undefined, {
 			baseUrl: '/api/v3/h5p-editor',
