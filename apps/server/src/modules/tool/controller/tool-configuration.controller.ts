@@ -15,11 +15,12 @@ import { ExternalToolConfigurationUc } from '../uc';
 import {
 	ContextTypeParams,
 	ExternalToolConfigurationTemplateResponse,
+	SchoolToolConfigurationListResponse,
 	IdParams,
 	ToolConfigurationListResponse,
 	ToolIdParams,
 } from './dto';
-import { ExternalToolResponseMapper } from './mapper';
+import { ExternalToolResponseMapper, SchoolExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
@@ -27,7 +28,8 @@ import { ExternalToolResponseMapper } from './mapper';
 export class ToolConfigurationController {
 	constructor(
 		private readonly externalToolConfigurationUc: ExternalToolConfigurationUc,
-		private readonly externalToolResponseMapper: ExternalToolResponseMapper
+		private readonly externalToolResponseMapper: ExternalToolResponseMapper,
+		private readonly schoolExternalToolResponseMapper: SchoolExternalToolResponseMapper
 	) {}
 
 	@Get('available/school/:id')
@@ -59,16 +61,20 @@ export class ToolConfigurationController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() contextParams: ContextTypeParams,
 		@Param() idParams: IdParams
-	): Promise<ToolConfigurationListResponse> {
-		const availableTools: ExternalToolDO[] = await this.externalToolConfigurationUc.getAvailableToolsForContext(
-			currentUser.userId,
-			currentUser.schoolId,
-			idParams.id,
-			contextParams.context
-		);
+	): Promise<SchoolToolConfigurationListResponse> {
+		const [availableExternalTools, availableSchoolToolIds] =
+			await this.externalToolConfigurationUc.getAvailableToolsForContext(
+				currentUser.userId,
+				currentUser.schoolId,
+				idParams.id,
+				contextParams.context
+			);
 
-		const mapped: ToolConfigurationListResponse =
-			this.externalToolResponseMapper.mapExternalToolDOsToToolConfigurationListResponse(availableTools);
+		const mapped: SchoolToolConfigurationListResponse =
+			this.schoolExternalToolResponseMapper.mapExternalToolDOsToSchoolToolConfigurationListResponse(
+				availableExternalTools,
+				availableSchoolToolIds
+			);
 
 		return mapped;
 	}
