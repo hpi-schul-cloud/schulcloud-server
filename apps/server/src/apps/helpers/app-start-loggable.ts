@@ -1,13 +1,28 @@
 import { Loggable, LogMessage, LogMessageData } from '@src/core/logger';
 
+interface AppStartInfo {
+	appName: string;
+	port?: number;
+	basePath?: string;
+	mountsDescription?: string;
+}
+
 export class AppStartLoggable implements Loggable {
-	constructor(private readonly appName: string, private readonly port: number, private readonly mounts?: string) {}
+	constructor(private readonly info: AppStartInfo) {}
 
 	getLogMessage(): LogMessage {
-		const data: LogMessageData = { appName: this.appName, port: this.port };
+		const data: LogMessageData = { appName: this.info.appName };
 
-		if (this.mounts !== undefined) {
-			data.mounts = this.mounts;
+		if (this.info.port !== undefined) {
+			data.port = this.info.port;
+		}
+
+		if (this.info.basePath !== undefined) {
+			data.basePath = this.info.basePath;
+		}
+
+		if (this.info.mountsDescription !== undefined) {
+			data.mountsDescription = this.info.mountsDescription;
 		}
 
 		return {

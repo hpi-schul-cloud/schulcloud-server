@@ -78,7 +78,11 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 
 	prometheusMetricsApp.listen(prometheusMetricsAppPort, () => {
 		logger.log(
-			new AppStartLoggable('Prometheus metrics server app', prometheusMetricsAppPort, `${route} --> Prometheus metrics`)
+			new AppStartLoggable({
+				appName: 'Prometheus metrics server app',
+				port: prometheusMetricsAppPort,
+				mountsDescription: `${route} --> Prometheus metrics`,
+			})
 		);
 	});
 };

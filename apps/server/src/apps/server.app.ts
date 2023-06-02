@@ -107,7 +107,13 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(new AppStartLoggable('Main server app', port, '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS'));
+		logger.log(
+			new AppStartLoggable({
+				appName: 'Main server app',
+				port,
+				mountsDescription: '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS',
+			})
+		);
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});
