@@ -13,6 +13,7 @@ import { config } from './h5p-editor.config';
 import { H5PEditorService } from './service/h5p-editor.service';
 import { H5PPlayerService } from './service/h5p-player.service';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { FilesStorageAMQPModule } from '../files-storage/files-storage-amqp.module';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -24,6 +25,7 @@ const imports = [
 	AuthenticationModule,
 	AuthorizationModule,
 	CoreModule,
+	FilesStorageAMQPModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
 		type: 'mongo',
