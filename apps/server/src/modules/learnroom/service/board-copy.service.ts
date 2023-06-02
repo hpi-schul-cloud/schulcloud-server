@@ -3,8 +3,6 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnboardBoardElement,
-	ColumnBoardTarget,
 	Course,
 	isLesson,
 	isTask,
@@ -70,7 +68,6 @@ export class BoardCopyService {
 		destinationCourse: Course
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
-			// WIP : BC-3573 :  check what needs to be done for BoardElementType.ColumnBoard and decide: do || not-do
 			if (element.target === undefined) {
 				return Promise.reject(new Error('Broken boardelement - not pointing to any target entity'));
 			}
@@ -121,10 +118,6 @@ export class BoardCopyService {
 			if (status.copyEntity instanceof Lesson) {
 				const lessonElement = new LessonBoardElement({ target: status.copyEntity });
 				references.push(lessonElement);
-			}
-			if (status.copyEntity instanceof ColumnBoardTarget) {
-				const columnBoardElement = new ColumnboardBoardElement({ target: status.copyEntity });
-				references.push(columnBoardElement);
 			}
 		});
 		return references;
