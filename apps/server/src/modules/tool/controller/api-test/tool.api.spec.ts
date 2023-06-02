@@ -11,7 +11,7 @@ import { Request } from 'express';
 import request, { Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
-	CustomParameterScopeParams,
+	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../interface';
@@ -68,7 +68,7 @@ describe('ToolController (API)', () => {
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
 					location: CustomParameterLocationParams.PATH,
-					scope: CustomParameterScopeParams.GLOBAL,
+					scope: CustomParameterScopeTypeParams.GLOBAL,
 				},
 			],
 			config: {
@@ -125,7 +125,7 @@ describe('ToolController (API)', () => {
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
 							location: CustomParameterLocationParams.PATH,
-							scope: CustomParameterScopeParams.GLOBAL,
+							scope: CustomParameterScopeTypeParams.GLOBAL,
 						},
 					],
 					config: {
@@ -396,7 +396,7 @@ describe('ToolController (API)', () => {
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
 					location: CustomParameterLocationParams.PATH,
-					scope: CustomParameterScopeParams.GLOBAL,
+					scope: CustomParameterScopeTypeParams.GLOBAL,
 				},
 			],
 			config: {
@@ -455,7 +455,7 @@ describe('ToolController (API)', () => {
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
 							location: CustomParameterLocationParams.PATH,
-							scope: CustomParameterScopeParams.GLOBAL,
+							scope: CustomParameterScopeTypeParams.GLOBAL,
 						},
 					],
 					config: {

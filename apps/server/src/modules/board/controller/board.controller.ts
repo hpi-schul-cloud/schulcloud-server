@@ -11,9 +11,9 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
 import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
@@ -35,19 +35,6 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
 		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
-
-		const response = BoardResponseMapper.mapToResponse(board);
-
-		return response;
-	}
-
-	@ApiOperation({ summary: 'Create a new board.' })
-	@ApiResponse({ status: 201, type: BoardResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@Post()
-	async createBoard(@CurrentUser() currentUser: ICurrentUser): Promise<BoardResponse> {
-		const board = await this.boardUc.createBoard(currentUser.userId);
 
 		const response = BoardResponseMapper.mapToResponse(board);
 

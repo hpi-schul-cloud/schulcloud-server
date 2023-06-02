@@ -34,7 +34,6 @@ switch (NODE_ENV) {
 
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
-	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
