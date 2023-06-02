@@ -130,5 +130,32 @@ describe('CommonUserLoginMigrationService', () => {
 				expect(userLoginMigration.findMigrationBySchool).toHaveBeenCalledWith(schoolId);
 			});
 		});
+
+		describe('when could not find existing migration', () => {
+			const setup = () => {
+				const userId = 'userId';
+
+				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2022-12-17T03:24:00'),
+					closedAt: new Date('2023-12-17T03:24:00'),
+					finishedAt: new Date('2055-12-17T03:24:00'),
+				});
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
+				userLoginMigration.findMigrationBySchool.mockResolvedValue(null);
+
+				return { userId, migration, schoolId: school.id as string };
+			};
+
+			it('should return null', async () => {
+				const { schoolId } = setup();
+
+				const result = await service.findExistingUserLoginMigration(schoolId);
+
+				expect(result).toEqual(null);
+			});
+		});
 	});
 });

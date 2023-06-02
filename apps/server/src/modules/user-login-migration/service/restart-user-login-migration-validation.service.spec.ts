@@ -88,7 +88,9 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			it('should throw RestartUserLoginMigrationError ', async () => {
 				const { userId, schoolId } = setup();
 
-				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
 						`Existing migration for school with id: ${schoolId} could not be found for restart.`
 					)
@@ -115,7 +117,9 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			it('should throw RestartUserLoginMigrationError ', async () => {
 				const { userId, schoolId } = setup();
 
-				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
 						`Migration for school with id ${schoolId} is already started, you are not able to restart.`
 					)
@@ -144,7 +148,9 @@ describe('RestartUserLoginMigrationValidationService', () => {
 			it('should throw RestartUserLoginMigrationError ', async () => {
 				const { userId, schoolId, migration } = setup();
 
-				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
+				const func = () => service.checkPreconditions(userId, schoolId);
+
+				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
 						'grace_period_expired: The grace period after finishing migration has expired',
 						{

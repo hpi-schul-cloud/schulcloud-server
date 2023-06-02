@@ -10,14 +10,7 @@ export class RestartUserLoginMigrationValidationService {
 	async checkPreconditions(userId: string, schoolId: string): Promise<void> {
 		await this.commonUserLoginMigrationService.ensurePermission(userId, schoolId);
 
-		const existingUserLoginMigration: UserLoginMigrationDO | null =
-			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
-
-		if (existingUserLoginMigration === null) {
-			throw new RestartUserLoginMigrationError(
-				`Existing migration for school with id: ${schoolId} could not be found for restart.`
-			);
-		}
+		const existingUserLoginMigration: UserLoginMigrationDO = await this.hasExistingUserLoginMigrationOrThrow(schoolId);
 
 		this.validateGracePeriod(existingUserLoginMigration);
 
@@ -41,5 +34,17 @@ export class RestartUserLoginMigrationValidationService {
 				}
 			);
 		}
+	}
+
+	private async hasExistingUserLoginMigrationOrThrow(schoolId: string): Promise<UserLoginMigrationDO> {
+		const existingUserLoginMigration: UserLoginMigrationDO | null =
+			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
+
+		if (existingUserLoginMigration === null) {
+			throw new RestartUserLoginMigrationError(
+				`Existing migration for school with id: ${schoolId} could not be found for restart.`
+			);
+		}
+		return existingUserLoginMigration;
 	}
 }
