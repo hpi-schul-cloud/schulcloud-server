@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, PipeTransform, ValidationPipe } from '
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiProperty } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
-import { IsArray, IsString, validate } from 'class-validator';
+import { IsArray, IsOptional, IsString, validate } from 'class-validator';
 
 class LibrariesBodyParams {
 	@ApiProperty()
@@ -18,7 +18,8 @@ class ContentBodyParams {
 
 	@ApiProperty()
 	@IsString()
-	field!: string;
+	@IsOptional()
+	field!: string; // Todo: Reason
 }
 
 class LibraryParametersBodyParams {
