@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import { TaskService } from '@src/modules/task/service';
 import { RoomsService } from './rooms.service';
 
@@ -39,6 +39,18 @@ describe('rooms service', () => {
 				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
+				},
+				{
+					provide: ColumnService,
+					useValue: createMock<ColumnService>(),
+				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
+				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
 				},
 				{
 					provide: EntityManager,
