@@ -168,9 +168,9 @@ export abstract class AbstractLaunchStrategy {
 
 		if (
 			customParameter.type === CustomParameterType.AUTO_COURSEID &&
-			contextExternalToolDO.contextType === ToolContextType.COURSE
+			contextExternalToolDO.contextRef.type === ToolContextType.COURSE
 		) {
-			return contextExternalToolDO.contextId;
+			return contextExternalToolDO.contextRef.id;
 		}
 
 		const parameterValue =

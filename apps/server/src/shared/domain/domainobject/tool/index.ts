@@ -9,3 +9,4 @@ export * from './custom-parameter-entry.do';
 export * from './school-external-tool.do';
 export * from './school-external-tool-status';
 export * from './school-external-tool-ref.do';
+export * from './context-ref';
