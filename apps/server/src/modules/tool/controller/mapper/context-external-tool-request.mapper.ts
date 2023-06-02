@@ -6,12 +6,14 @@ export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
 		return {
 			id: '',
+			contextToolName: request.contextToolName ?? '',
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
-			contextToolName: request.contextToolName ?? '',
-			contextType: request.contextType,
-			contextId: request.contextId,
+			contextRef: {
+				id: request.contextId,
+				type: request.contextType,
+			},
 			toolVersion: request.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};

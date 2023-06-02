@@ -66,6 +66,23 @@ describe(BoardDoAuthorizableService.name, () => {
 	});
 
 	describe('getBoardAuthorizable', () => {
+		describe('when having an empty board', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build();
+				return { board };
+			};
+
+			it('should return an empty usergroup', async () => {
+				const { board } = setup();
+				boardDoRepo.findById.mockResolvedValueOnce(board);
+
+				const userGroup = await service.getBoardAuthorizable(board);
+
+				expect(userGroup.id).toEqual(board.id);
+				expect(userGroup.users.length).toEqual(0);
+			});
+		});
+
 		describe('when having a board with a teacher and some students', () => {
 			const setup = () => {
 				const roles = roleFactory.buildList(1, {});

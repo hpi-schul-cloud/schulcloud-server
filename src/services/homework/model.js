@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -69,9 +68,6 @@ query list with bigges impact of database load
 schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
 */
 submissionSchema.index({ schoolId: 1 });
-
-enableAuditLog(homeworkSchema);
-enableAuditLog(submissionSchema);
 
 const homeworkModel = mongoose.model('homework', homeworkSchema);
 const submissionModel = mongoose.model('submission', submissionSchema);
