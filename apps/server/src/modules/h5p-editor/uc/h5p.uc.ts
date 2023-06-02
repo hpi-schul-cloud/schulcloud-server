@@ -1,11 +1,10 @@
-import { H5PAjaxEndpoint, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
+import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
 import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
 
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
-import { H5PEditorService, H5PPlayerService } from '../service';
 
 // ToDo
 const dummyUser = {
@@ -20,11 +19,7 @@ const dummyUser = {
 
 @Injectable()
 export class H5PEditorUc {
-	private h5pAjaxEndpoint: H5PAjaxEndpoint;
-
-	constructor(public readonly h5pEditorService: H5PEditorService, private h5pPlayerService: H5PPlayerService) {
-		this.h5pAjaxEndpoint = new H5PAjaxEndpoint(h5pEditorService.h5pEditor);
-	}
+	constructor(private h5pEditor: H5PEditor, private h5pPlayer: H5PPlayer, private h5pAjaxEndpoint: H5PAjaxEndpoint) {}
 
 	/**
 	 * Returns a callback that parses the request range.
@@ -196,7 +191,7 @@ export class H5PEditorUc {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const h5pPlayerHtml: string = await this.h5pPlayerService.h5pPlayer.render(contentId, user);
+		const h5pPlayerHtml: string = await this.h5pPlayer.render(contentId, user);
 		return h5pPlayerHtml;
 	}
 
@@ -211,7 +206,7 @@ export class H5PEditorUc {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const createdH5PEditor: string = await this.h5pEditorService.h5pEditor.render(contentId, language, user);
+		const createdH5PEditor: string = await this.h5pEditor.render(contentId, language, user);
 
 		return createdH5PEditor;
 	}
@@ -221,7 +216,7 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 		let deletedContent = false;
 		try {
-			await this.h5pEditorService.h5pEditor.deleteContent(contentId, user);
+			await this.h5pEditor.deleteContent(contentId, user);
 			deletedContent = true;
 		} catch (error) {
 			deletedContent = false;
@@ -241,8 +236,28 @@ export class H5PEditorUc {
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 
-		const newContentId = await this.h5pEditorService.h5pEditor.saveOrUpdateContent(
+		const newContentId = await this.h5pEditor.saveOrUpdateContent(
 			contentId,
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+
+		return newContentId;
+	}
+
+	public async saveH5pContentGetMetadata(
+		currentUser: ICurrentUser,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string
+	): Promise<{ id: string; metadata: IContentMetadata }> {
+		// TODO: await this.checkPermission...
+		const user = this.changeUserType(currentUser);
+
+		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
+			undefined as unknown as string, // Typings are wrong
 			params,
 			metadata,
 			mainLibraryUbername,

@@ -13,6 +13,7 @@ import { config } from './h5p-editor.config';
 import { H5PEditorService } from './service/h5p-editor.service';
 import { H5PPlayerService } from './service/h5p-player.service';
 import { H5PEditorUc } from './uc/h5p.uc';
+import { H5PAjaxEndpointService } from './service';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -40,7 +41,7 @@ const imports = [
 
 const controllers = [H5PEditorController];
 
-const providers = [Logger, H5PEditorService, H5PPlayerService, H5PEditorUc];
+const providers = [Logger, H5PEditorService, H5PPlayerService, H5PEditorUc, H5PAjaxEndpointService];
 
 @Module({
 	imports,

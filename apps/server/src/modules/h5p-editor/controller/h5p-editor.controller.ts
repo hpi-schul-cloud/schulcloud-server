@@ -21,8 +21,6 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Request, Response } from 'express';
 
-import { IContentMetadata } from '@lumieducation/h5p-server';
-
 import { H5PEditorUc } from '../uc/h5p.uc';
 
 import {
@@ -183,23 +181,11 @@ export class H5PEditorController {
 	@Post('/create')
 	async createNewContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
 		// Todo: Move to UC
-		const response = await this.h5pEditorUc.h5pEditorService.h5pEditor.saveOrUpdateContentReturnMetaData(
-			undefined as unknown as string,
-			// @ts-ignore
+		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
+			currentUser,
 			body.params.params,
-			// @ts-ignore
-			body.params.metadata as IContentMetadata,
-			body.library,
-			// Todo: User
-			{
-				canCreateRestricted: true,
-				canInstallRecommended: true,
-				canUpdateAndInstallLibraries: true,
-				email: '',
-				id: 'abc',
-				name: 'abc',
-				type: '',
-			}
+			body.params.metadata,
+			body.library
 		);
 
 		return response;

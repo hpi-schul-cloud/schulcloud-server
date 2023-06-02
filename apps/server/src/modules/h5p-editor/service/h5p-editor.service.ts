@@ -1,14 +1,11 @@
 import { H5PConfig, H5PEditor, UrlGenerator, cacheImplementations, fsImplementations } from '@lumieducation/h5p-server';
-import { Injectable } from '@nestjs/common';
 
 import os from 'node:os';
 import path from 'node:path';
 
-@Injectable()
-export class H5PEditorService {
-	public readonly h5pEditor: H5PEditor;
-
-	constructor() {
+export const H5PEditorService = {
+	provide: H5PEditor,
+	useFactory: () => {
 		const tmpDir = os.tmpdir();
 
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache');
@@ -24,7 +21,7 @@ export class H5PEditorService {
 
 		const urlGenerator = new UrlGenerator(config);
 
-		this.h5pEditor = new H5PEditor(
+		const h5pEditor = new H5PEditor(
 			cache,
 			config,
 			libraryStorage,
@@ -34,5 +31,7 @@ export class H5PEditorService {
 			urlGenerator,
 			undefined
 		);
-	}
-}
+
+		return h5pEditor;
+	},
+};

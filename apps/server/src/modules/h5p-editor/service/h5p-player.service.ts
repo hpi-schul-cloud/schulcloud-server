@@ -1,14 +1,11 @@
 import { H5PConfig, H5PPlayer, UrlGenerator, fsImplementations } from '@lumieducation/h5p-server';
-import { Injectable } from '@nestjs/common';
 
 import os from 'node:os';
 import path from 'node:path';
 
-@Injectable()
-export class H5PPlayerService {
-	public readonly h5pPlayer: H5PPlayer;
-
-	constructor() {
+export const H5PPlayerService = {
+	provide: H5PPlayer,
+	useFactory: () => {
 		const tmpDir = os.tmpdir();
 
 		const libraryStorage = new fsImplementations.FileLibraryStorage(path.join(tmpDir, '/h5p_libraries'));
@@ -21,7 +18,7 @@ export class H5PPlayerService {
 
 		const urlGenerator = new UrlGenerator(config);
 
-		this.h5pPlayer = new H5PPlayer(
+		const h5pPlayer = new H5PPlayer(
 			libraryStorage,
 			contentStorage,
 			config,
@@ -31,5 +28,7 @@ export class H5PPlayerService {
 			undefined,
 			undefined
 		);
-	}
-}
+
+		return h5pPlayer;
+	},
+};

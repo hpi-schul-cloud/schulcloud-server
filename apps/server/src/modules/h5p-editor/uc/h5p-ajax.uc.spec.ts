@@ -1,21 +1,32 @@
-import { createMock } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { H5PEditorService, H5PPlayerService } from '../service';
 import { H5PEditorUc } from './h5p.uc';
 
 describe('H5P Ajax', () => {
 	let module: TestingModule;
 	let uc: H5PEditorUc;
-	let editorService: H5PEditorService;
+	let ajaxEndpoint: DeepMocked<H5PAjaxEndpoint>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				H5PEditorUc,
-				H5PEditorService,
-				H5PPlayerService,
+				{
+					provide: H5PEditor,
+					useValue: createMock<H5PEditor>(),
+				},
+				{
+					provide: H5PPlayer,
+					useValue: createMock<H5PPlayer>(),
+				},
+				{
+					provide: H5PAjaxEndpoint,
+					useValue: createMock<H5PAjaxEndpoint>(),
+				},
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -24,7 +35,7 @@ describe('H5P Ajax', () => {
 		}).compile();
 
 		uc = module.get(H5PEditorUc);
-		editorService = module.get(H5PEditorService);
+		ajaxEndpoint = module.get(H5PAjaxEndpoint);
 		await setupEntities();
 	});
 
@@ -36,8 +47,8 @@ describe('H5P Ajax', () => {
 		await module.close();
 	});
 
-	describe('when getting content type', () => {
-		it('should call H5PEditor.getContentTypeCache and return the result', async () => {
+	describe('when calling GET', () => {
+		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
 			const dummyResponse = {
 				apiVersion: { major: 1, minor: 1 },
 				details: [],
@@ -47,81 +58,170 @@ describe('H5P Ajax', () => {
 				user: 'DummyUser',
 			};
 
-			const editorSpy = jest.spyOn(editorService.h5pEditor, 'getContentTypeCache');
-			editorSpy.mockResolvedValueOnce(dummyResponse);
+			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
 
 			const result = await uc.getAjax({ action: 'content-type-cache', language: 'de' });
 
 			expect(result).toBe(dummyResponse);
-			// Todo: user
-			expect(editorSpy).toHaveBeenCalledWith(expect.anything(), 'de');
+			expect(ajaxEndpoint.getAjax).toHaveBeenCalledWith(
+				'content-type-cache',
+				undefined, // MachineName
+				undefined, // MajorVersion
+				undefined, // MinorVersion
+				'de',
+				expect.anything() // Todo: user
+			);
+		});
+
+		it('should convert any H5P-Errors into HttpExceptions', async () => {
+			ajaxEndpoint.getAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
+
+			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' });
+
+			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
+		});
+
+		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
+
+			const result = uc.getAjax({ action: 'content-type-cache', language: 'de' });
+
+			await expect(result).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 
-	describe('when getting library data', () => {
-		it('should call H5PEditor.getLibraryData and return the result', async () => {
-			const dummyLibrary = {
-				css: [],
-				defaultLanguage: 'de',
-				javascript: [],
-				language: 'de',
-				languages: ['de', 'en'],
-				name: 'DummyLibrary',
-				semantics: [],
-				title: 'Dummy Library',
-				upgradesScript: '',
-				translations: [],
-				version: {
-					major: 1,
-					minor: 1,
-				},
-			};
-
-			const editorSpy = jest.spyOn(editorService.h5pEditor, 'getLibraryData');
-			editorSpy.mockResolvedValueOnce(dummyLibrary);
-
-			const result = await uc.getAjax({
-				action: 'libraries',
-				machineName: 'DummyLibrary',
-				majorVersion: '1',
-				minorVersion: '1',
-			});
-
-			expect(result).toEqual(dummyLibrary);
-			expect(editorSpy).toHaveBeenCalledWith('DummyLibrary', '1', '1', undefined);
-		});
-
-		it('should fail if parameters are not set', async () => {
-			const editorSpy = jest.spyOn(editorService.h5pEditor, 'getLibraryData');
-
-			const testCases = [
+	describe('when calling POST', () => {
+		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
+			const dummyResponse = [
 				{
-					action: 'libraries',
-					majorVersion: '1',
-					minorVersion: '1',
-				},
-				{
-					action: 'libraries',
-					machineName: 'DummyLibrary',
-					minorVersion: '1',
-				},
-				{
-					action: 'libraries',
-					machineName: 'DummyLibrary',
-					majorVersion: '1',
+					majorVersion: 1,
+					minorVersion: 2,
+					metadataSettings: {},
+					name: 'Dummy Library',
+					restricted: false,
+					runnable: true,
+					title: 'Dummy Library',
+					tutorialUrl: '',
+					uberName: 'dummyLibrary-1.1',
 				},
 			];
 
-			await Promise.all(testCases.map((testCase) => expect(uc.getAjax(testCase)).rejects.toThrow('malformed-request')));
+			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
 
-			expect(editorSpy).toHaveBeenCalledTimes(0);
+			const result = await uc.postAjax(
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			expect(result).toBe(dummyResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'libraries',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				undefined,
+				{
+					canCreateRestricted: true,
+					canInstallRecommended: true,
+					canUpdateAndInstallLibraries: true,
+					email: '',
+					id: 'dummyId',
+					name: 'Dummy User',
+					type: '',
+				},
+				undefined,
+				undefined,
+				undefined,
+				undefined,
+				undefined
+			);
 		});
-	});
 
-	describe('when requesting unknown actions', () => {
-		it('should throw error', async () => {
-			const result = uc.getAjax({ action: 'invalid-action' });
-			await expect(result).rejects.toThrow('malformed-request');
+		it('should call H5PAjaxEndpoint.postAjax with files', async () => {
+			const dummyResponse = [
+				{
+					majorVersion: 1,
+					minorVersion: 2,
+					metadataSettings: {},
+					name: 'Dummy Library',
+					restricted: false,
+					runnable: true,
+					title: 'Dummy Library',
+					tutorialUrl: '',
+					uberName: 'dummyLibrary-1.1',
+				},
+			];
+
+			ajaxEndpoint.postAjax.mockResolvedValueOnce(dummyResponse);
+
+			const result = await uc.postAjax(
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				[
+					{
+						fieldname: 'file',
+						buffer: Buffer.from(''),
+						originalname: 'OriginalFile.jpg',
+						size: 0,
+						mimetype: 'image/jpg',
+					} as Express.Multer.File,
+					{
+						fieldname: 'h5p',
+						buffer: Buffer.from(''),
+						originalname: 'OriginalFile.jpg',
+						size: 0,
+						mimetype: 'image/jpg',
+					} as Express.Multer.File,
+				]
+			);
+
+			const bufferTest = {
+				data: expect.any(Buffer),
+				mimetype: 'image/jpg',
+				name: 'OriginalFile.jpg',
+				size: 0,
+			};
+
+			expect(result).toBe(dummyResponse);
+			expect(ajaxEndpoint.postAjax).toHaveBeenCalledWith(
+				'libraries',
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' },
+				undefined,
+				{
+					canCreateRestricted: true,
+					canInstallRecommended: true,
+					canUpdateAndInstallLibraries: true,
+					email: '',
+					id: 'dummyId',
+					name: 'Dummy User',
+					type: '',
+				},
+				bufferTest,
+				undefined,
+				undefined,
+				bufferTest,
+				undefined
+			);
+		});
+
+		it('should convert any H5P-Errors into HttpExceptions', async () => {
+			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
+
+			const result = uc.postAjax(
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			await expect(result).rejects.toThrowError(new HttpException('dummy-error (error: Dummy Error)', 400));
+		});
+
+		it('should convert any non-H5P-Errors into InternalServerErrorException', async () => {
+			ajaxEndpoint.postAjax.mockRejectedValueOnce(new Error('Dummy Error'));
+
+			const result = uc.postAjax(
+				{ action: 'libraries' },
+				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
+			);
+
+			await expect(result).rejects.toThrowError(InternalServerErrorException);
 		});
 	});
 });
