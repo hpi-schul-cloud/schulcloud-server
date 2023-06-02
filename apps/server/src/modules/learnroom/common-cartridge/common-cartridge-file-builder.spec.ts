@@ -13,14 +13,14 @@ describe('CommonCartridgeFileBuilder', () => {
 	const fileBuilderOptions: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
-		creationYear: 'Placeholder Current Year',
+		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_1_0,
 	};
 	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
-		creationYear: 'Placeholder Current Year',
+		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_3_0,
 	};
@@ -173,7 +173,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier',
 		copyrightOwners: 'Placeholder Copyright',
-		creationYear: 'Placeholder Current Year',
+		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_3_0,
 	};
