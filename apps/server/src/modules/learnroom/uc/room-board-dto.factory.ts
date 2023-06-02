@@ -70,9 +70,13 @@ class DtoCreator {
 			let result = false;
 			if (element.boardElementType === BoardElementType.Task) {
 				result = this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
-			} else if (element.boardElementType === BoardElementType.Lesson) {
+			}
+
+			if (element.boardElementType === BoardElementType.Lesson) {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
-			} else if (element instanceof ColumnboardBoardElement && this.isFeatureFlagActive()) {
+			}
+
+			if (element instanceof ColumnboardBoardElement && this.isFeatureFlagActive()) {
 				result = this.authorisationService.hasPermission(this.user, this.room, {
 					action: Action.read,
 					requiredPermissions: [Permission.COURSE_VIEW],

@@ -99,7 +99,7 @@ describe(ColumnBoardService.name, () => {
 		describe('when creating a fresh column board', () => {
 			it('should return a columnBoardInfo of that board', async () => {
 				const { context } = setupBoards();
-				const title = `Mainboard ${Math.random().toString()}`;
+				const title = `My brand new Mainboard`;
 
 				const columnBoardInfo = await service.create(context, title);
 

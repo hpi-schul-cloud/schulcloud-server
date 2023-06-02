@@ -30,9 +30,13 @@ export class RoomBoardResponseMapper {
 		board.elements.forEach((element) => {
 			if (element.type === RoomBoardElementTypes.TASK) {
 				elements.push(this.mapTask(element.content as TaskWithStatusVo));
-			} else if (element.type === RoomBoardElementTypes.LESSON) {
+			}
+
+			if (element.type === RoomBoardElementTypes.LESSON) {
 				elements.push(this.mapLesson(element.content as LessonMetaData));
-			} else if (element.type === RoomBoardElementTypes.COLUMN_BOARD) {
+			}
+
+			if (element.type === RoomBoardElementTypes.COLUMN_BOARD) {
 				elements.push(this.mapColumnBoard(element.content as ColumnBoardMetaData));
 			}
 		});

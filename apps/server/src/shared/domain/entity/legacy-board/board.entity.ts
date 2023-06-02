@@ -3,14 +3,14 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ILearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
-import { BoardElement, BoardElementReference } from './boardelement.entity';
 import type { Course } from '../course.entity';
-import { Task } from '../task.entity';
-import { LessonBoardElement } from './lesson-boardelement.entity';
 import { Lesson } from '../lesson.entity';
-import { TaskBoardElement } from './task-boardelement.entity';
+import { Task } from '../task.entity';
+import { BoardElement, BoardElementReference } from './boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { ColumnBoardTarget } from './column-board-target.entity';
+import { LessonBoardElement } from './lesson-boardelement.entity';
+import { TaskBoardElement } from './task-boardelement.entity';
 
 export type BoardProps = {
 	references: BoardElement[];
@@ -57,8 +57,9 @@ export class Board extends BaseEntityWithTimestamps {
 	}
 
 	private checkListsContainingEqualEntities(first: EntityId[], second: EntityId[]): boolean {
-		const firstSorted = [...first].sort();
-		const secondSorted = [...second].sort();
+		const compareAlphabetic = (a, b) => (a < b ? -1 : 1);
+		const firstSorted = [...first].sort(compareAlphabetic);
+		const secondSorted = [...second].sort(compareAlphabetic);
 		const isEqual = JSON.stringify(firstSorted) === JSON.stringify(secondSorted);
 		return isEqual;
 	}
