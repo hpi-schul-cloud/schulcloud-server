@@ -1,13 +1,17 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Request } from 'express';
 import { Readable } from 'stream';
-import { ContentStorage } from '../contentStorage/contentStorage';
+
 import { H5PEditorTestModule } from '../h5p-editor-test.module';
+import { H5PEditorUc } from './h5p.uc';
+
+import { ContentStorage } from '../contentStorage/contentStorage';
 import { LibraryStorage } from '../libraryStorage/libraryStorage';
 import { TemporaryFileStorage } from '../temporary-file-storage/temporary-file-storage';
-import { H5PEditorUc } from './h5p.uc';
+
 
 describe('H5P Files', () => {
 	let module: TestingModule;
@@ -41,6 +45,32 @@ describe('H5P Files', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	describe('when getting content parameters', () => {
+		it('should call ContentStorage and return the result', async () => {
+			const dummyMetadata = new ContentMetadata();
+			const dummyParams = { name: 'Dummy' };
+
+			contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
+			contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
+
+			const result = await uc.getContentParameters('dummylib-1.0');
+
+			expect(result).toEqual({
+				h5p: dummyMetadata,
+				params: { metadata: dummyMetadata, params: dummyParams },
+			});
+		});
+
+		it('should throw an error if the content does not exist', async () => {
+			contentStorage.getMetadata.mockRejectedValueOnce(new Error('Could not get Metadata'));
+			contentStorage.getParameters.mockRejectedValueOnce(new Error('Could not get Parameters'));
+
+			const result = uc.getContentParameters('dummylib-1.0');
+
+			await expect(result).rejects.toThrow();
+		});
 	});
 
 	describe('when getting content file', () => {
