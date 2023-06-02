@@ -27,7 +27,6 @@ import { UUID } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
-import { UserLoginMigrationResponse } from '../dto';
 
 jest.mock('jwks-rsa', () => () => {
 	return {
