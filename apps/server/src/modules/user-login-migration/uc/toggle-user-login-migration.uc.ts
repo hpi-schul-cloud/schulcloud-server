@@ -27,6 +27,9 @@ export class ToggleUserLoginMigrationUc {
 	private async checkPreconditions(userId: string, schoolId: string): Promise<void> {
 		await this.commonUserLoginMigrationService.ensurePermission(userId, schoolId);
 
-		await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
+		const existingMigration: UserLoginMigrationDO | null =
+			await this.commonUserLoginMigrationService.findExistingUserLoginMigration(schoolId);
+
+		this.commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow(existingMigration);
 	}
 }
