@@ -301,6 +301,19 @@
 				}
 			}
 		},
+		"H5P_EDITOR": {
+			"type": "object",
+			"description": "Properties of the H5P server microservice",
+			"default": {},
+			"properties": {
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 10000,
+					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+				}
+			}
+		},
 		"FEATURE_FWU_CONTENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1150,6 +1163,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Changes the schulcloud client to use new login endpoints"
+		},
+		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables new CTL-tool tab in a course"
+		},
+		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables old LTI-tool tab in a course"
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",

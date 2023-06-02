@@ -1,11 +1,12 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Injectable } from '@nestjs/common';
 import {
 	ContextExternalTool,
+	ContextExternalToolDO,
+	ContextRef,
 	IContextExternalToolProperties,
 	SchoolExternalTool,
-	ContextExternalToolDO,
 } from '@shared/domain';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
@@ -14,6 +15,7 @@ import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
+import { SchoolExternalToolRefDO } from '../../domain';
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo<
@@ -47,7 +49,9 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	async find(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
 		const scope: ContextExternalToolScope = this.buildScope(query);
 
-		const entities: ContextExternalTool[] = await this._em.find(this.entityName, scope.query);
+		const entities: ContextExternalTool[] = await this._em.find(this.entityName, scope.query, {
+			populate: ['schoolTool.school'],
+		});
 
 		const dos: ContextExternalToolDO[] = entities.map((entity: ContextExternalTool) => this.mapEntityToDO(entity));
 		return dos;
@@ -56,23 +60,30 @@ export class ContextExternalToolRepo extends BaseDORepo<
 	private buildScope(query: ContextExternalToolQuery): ContextExternalToolScope {
 		const scope: ContextExternalToolScope = new ContextExternalToolScope();
 
-		if (query.contextId && query.schoolToolId) {
-			scope.byContextIdAndSchoolToolId(query.contextId, query.schoolToolId);
-		} else if (query.schoolToolId && !query.contextId) {
-			scope.bySchoolToolId(query.schoolToolId);
-		}
-
+		scope.byId(query.id);
+		scope.bySchoolToolId(query.schoolToolRef?.schoolToolId);
+		scope.byContextId(query.context?.id);
+		scope.byContextType(query.context?.type);
 		scope.allowEmptyQuery(true);
 
 		return scope;
 	}
 
 	mapEntityToDO(entity: ContextExternalTool): ContextExternalToolDO {
+		const schoolToolRef: SchoolExternalToolRefDO = new SchoolExternalToolRefDO({
+			schoolId: entity.schoolTool.school?.id,
+			schoolToolId: entity.schoolTool.id,
+		});
+
+		const contextRef: ContextRef = new ContextRef({
+			id: entity.contextId,
+			type: this.mapContextTypeToDoType(entity.contextType),
+		});
+
 		return new ContextExternalToolDO({
 			id: entity.id,
-			schoolToolId: entity.schoolTool.id,
-			contextId: entity.contextId,
-			contextType: this.mapContextTypeToDoType(entity.contextType),
+			schoolToolRef,
+			contextRef,
 			contextToolName: entity.contextToolName,
 			toolVersion: entity.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
@@ -83,10 +94,10 @@ export class ContextExternalToolRepo extends BaseDORepo<
 
 	mapDOToEntityProperties(entityDO: ContextExternalToolDO): IContextExternalToolProperties {
 		return {
-			contextId: entityDO.contextId,
-			contextType: this.mapContextTypeToEntityType(entityDO.contextType),
+			contextId: entityDO.contextRef.id,
+			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			contextToolName: entityDO.contextToolName,
-			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolId),
+			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
 		};

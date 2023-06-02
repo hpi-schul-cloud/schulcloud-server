@@ -1,5 +1,5 @@
 export * from './custom-parameter-location.enum';
-export * from './custom-parameter-scope.enum';
+export * from './custom-parameter-scope-type.enum';
 export * from './custom-parameter-type.enum';
 export * from './lti-message-type.enum';
 export * from './lti-privacy-permission.enum';

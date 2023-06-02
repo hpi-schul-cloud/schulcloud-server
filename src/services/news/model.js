@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const { enableAuditLog } = require('../../utils/database');
 const { targetModels, newsPermissions } = require('./constants');
 
 const newsSchema = new Schema({
@@ -63,9 +62,6 @@ const newsHistorySchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
-
-enableAuditLog(newsSchema);
-enableAuditLog(newsHistorySchema);
 
 /** @deprecated use v3 instead */
 const newsModel = mongoose.model('news', newsSchema);

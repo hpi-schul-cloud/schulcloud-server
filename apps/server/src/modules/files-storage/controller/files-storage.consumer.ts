@@ -1,6 +1,7 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageEvents, FilesStorageExchange, ICopyFileDO, IFileDO } from '@src/shared/infra/rabbitmq';
@@ -45,7 +46,7 @@ export class FilesStorageConsumer {
 	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'getFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload.parentId);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
@@ -57,7 +58,7 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.DELETE_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async deleteFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<IFileDO[]>> {
+	public async deleteFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<IFileDO[]>> {
 		this.logger.debug({ action: 'deleteFilesOfParent', payload });
 
 		const [fileRecords, total] = await this.filesStorageService.deleteFilesOfParent(payload);
