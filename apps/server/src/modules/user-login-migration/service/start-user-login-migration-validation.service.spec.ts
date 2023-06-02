@@ -65,17 +65,16 @@ describe('StartUserLoginMigrationValidationService', () => {
 				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
-
 				schoolService.getSchoolById.mockResolvedValue(school);
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
-				return { userId, migration, schoolId: school.id as string, school, context };
+				return { userId, migration, schoolId: school.id as string };
 			};
 
 			it('should call ensurePermission', async () => {
 				const { userId, schoolId } = setup();
 
-				await service.checkPreconditions(userId, school.id as string);
+				await service.checkPreconditions(userId, schoolId);
 
 				expect(commonUserLoginMigrationService.ensurePermission).toHaveBeenCalledWith(userId, schoolId);
 			});
@@ -145,7 +144,6 @@ describe('StartUserLoginMigrationValidationService', () => {
 
 				authorizationService.checkPermission.mockReturnThis();
 				schoolService.getSchoolById.mockResolvedValue(school);
-
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 

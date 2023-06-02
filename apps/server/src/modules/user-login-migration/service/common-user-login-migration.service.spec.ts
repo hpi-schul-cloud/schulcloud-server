@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { roleFactory, schoolDOFactory, schoolFactory } from '@shared/testing';
-import { Permission, RoleName, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { Action, AllowedAuthorizationEntityType, AuthorizationService } from '@src/modules/authorization';
+import { roleFactory, schoolDOFactory, setupEntities, userFactory } from '@shared/testing';
+import { Permission, RoleName, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
+import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { SchoolService } from '@src/modules/school';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
@@ -12,8 +13,11 @@ describe('CommonUserLoginMigrationService', () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let userLoginMigration: DeepMocked<UserLoginMigrationService>;
+	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				CommonUserLoginMigrationService,
@@ -25,12 +29,17 @@ describe('CommonUserLoginMigrationService', () => {
 					provide: UserLoginMigrationService,
 					useValue: createMock<UserLoginMigrationService>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(CommonUserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
 		userLoginMigration = module.get(UserLoginMigrationService);
+		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
@@ -49,32 +58,47 @@ describe('CommonUserLoginMigrationService', () => {
 					permissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
 				});
 
-				const school = schoolFactory.buildWithId();
-				const userId = 'userId';
-
+				const school = schoolDOFactory.buildWithId();
+				const user: User = userFactory.buildWithId();
+				const context: AuthorizationContext = {
+					action: Action.write,
+					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
+				};
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.checkPermissionByReferences.mockResolvedValue(Promise.resolve());
 
 				return {
-					userId,
-					schoolId: school.id,
+					user,
+					schoolId: school.id as string,
 					adminRole,
+					context,
+					school,
 				};
 			};
 
+			it('should call getUserWithPermissions', async () => {
+				const { user, schoolId } = setup();
+
+				await service.ensurePermission(user.id, schoolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should call getSchoolById', async () => {
+				const { user, schoolId } = setup();
+
+				await service.ensurePermission(user.id, schoolId);
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(schoolId);
+			});
+
 			it('should call checkPermissionByReferences', async () => {
-				const { userId, schoolId } = setup();
+				const { user, school, context } = setup();
 
-				await service.ensurePermission(userId, schoolId);
+				await service.ensurePermission(user.id, school.id as string);
 
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AllowedAuthorizationEntityType.School,
-					schoolId,
-					{
-						action: Action.write,
-						requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-					}
-				);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, context);
 			});
 		});
 	});
