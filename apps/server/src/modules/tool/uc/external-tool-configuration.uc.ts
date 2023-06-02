@@ -110,8 +110,8 @@ export class ExternalToolConfigurationUc {
 		const availableTools: ExternalToolDO[] = externalTools.filter((tool: ExternalToolDO): boolean => {
 			const hasSchoolExternalTool: boolean = schoolExternalTools.some(
 				(schoolExternalTool: SchoolExternalToolDO): boolean => {
-					if (schoolExternalTool.toolId === tool.id) {
-						availableSchoolToolIds.push(tool.id);
+					if (schoolExternalTool.toolId === tool.id && schoolExternalTool.id) {
+						availableSchoolToolIds.push(schoolExternalTool.id);
 
 						return true;
 					}
