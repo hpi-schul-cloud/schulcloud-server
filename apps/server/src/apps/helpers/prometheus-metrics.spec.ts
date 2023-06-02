@@ -10,6 +10,8 @@ import {
 	createPrometheusMetricsApp,
 } from '@shared/infra/metrics';
 import {
+	PrometheusMetricsSetupState,
+	PrometheusMetricsSetupStateLoggable,
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './prometheus-metrics';
@@ -50,6 +52,27 @@ beforeEach(() => {
 
 afterAll(() => {
 	Configuration.reset(configBefore);
+});
+
+describe('PrometheusMetricsSetupStateLoggable', () => {
+	describe('getLogMessage', () => {
+		describe('should return a log message with proper content', () => {
+			const expectedMessage = 'Setting up Prometheus metrics...';
+
+			it.each([
+				[PrometheusMetricsSetupState.FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED],
+				[PrometheusMetricsSetupState.API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED],
+				[PrometheusMetricsSetupState.FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED],
+				[PrometheusMetricsSetupState.COLLECTING_DEFAULT_METRICS_DISABLED],
+				[PrometheusMetricsSetupState.COLLECTING_METRICS_ROUTE_METRICS_DISABLED],
+			])("for the '%s' state", (state: PrometheusMetricsSetupState) => {
+				const testLogMessage = new PrometheusMetricsSetupStateLoggable(state).getLogMessage();
+
+				expect(testLogMessage).toHaveProperty('message', expectedMessage);
+				expect(testLogMessage).toHaveProperty('data', { state });
+			});
+		});
+	});
 });
 
 describe('addPrometheusMetricsMiddlewaresIfEnabled', () => {

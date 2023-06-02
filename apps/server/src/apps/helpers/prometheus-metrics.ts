@@ -8,7 +8,7 @@ import {
 } from '@shared/infra/metrics';
 import { AppStartLoggable } from './app-start-loggable';
 
-enum PrometheusMetricsSetupState {
+export const enum PrometheusMetricsSetupState {
 	FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - no metrics middlewares will be added to the app',
 	API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED = 'API response time metric middleware successfully added to the app',
 	FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - Prometheus metrics app will not be created',
@@ -16,7 +16,7 @@ enum PrometheusMetricsSetupState {
 	COLLECTING_METRICS_ROUTE_METRICS_DISABLED = 'Collecting metrics route metrics is disabled - no metrics route calls will be added to the metrics',
 }
 
-class PrometheusMetricsSetupStateLoggable implements Loggable {
+export class PrometheusMetricsSetupStateLoggable implements Loggable {
 	constructor(private readonly state: PrometheusMetricsSetupState) {}
 
 	getLogMessage(): LogMessage {
