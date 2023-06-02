@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
 import { Mail, MailService } from '@shared/infra/mail';
-import { LegacyLogger, LoggableMessage, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
 import { AccountUc } from '@src/modules/account/uc/account.uc';
@@ -24,7 +24,7 @@ import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
-import { AppStartLoggable } from '@src/apps/helpers/app-start-loggable';
+import { AppStartLoggable } from './helpers/app-start-loggable';
 
 async function bootstrap() {
 	sourceMapInstall();

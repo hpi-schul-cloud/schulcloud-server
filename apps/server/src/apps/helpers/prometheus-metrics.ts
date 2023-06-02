@@ -1,6 +1,6 @@
 import { Express } from 'express';
 
-import { Logger, LoggableMessage } from '@src/core/logger';
+import { LogMessage, Loggable, Logger } from '@src/core/logger';
 import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
@@ -8,10 +8,33 @@ import {
 } from '@shared/infra/metrics';
 import { AppStartLoggable } from './app-start-loggable';
 
+enum PrometheusMetricsSetupState {
+	FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - no metrics middlewares will be added to the app',
+	API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED = 'API response time metric middleware successfully added to the app',
+	FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - Prometheus metrics app will not be created',
+	COLLECTING_DEFAULT_METRICS_DISABLED = 'Collecting default metrics is disabled - only the custom metrics will be collected',
+	COLLECTING_METRICS_ROUTE_METRICS_DISABLED = 'Collecting metrics route metrics is disabled - no metrics route calls will be added to the metrics',
+}
+
+class PrometheusMetricsSetupStateLoggable implements Loggable {
+	constructor(private readonly state: PrometheusMetricsSetupState) {}
+
+	getLogMessage(): LogMessage {
+		return {
+			message: 'Setting up Prometheus metrics...',
+			data: {
+				state: this.state,
+			},
+		};
+	}
+}
+
 export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Express) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
-			new LoggableMessage('Prometheus metrics feature is disabled, no metrics middlewares will be added to the app')
+			new PrometheusMetricsSetupStateLoggable(
+				PrometheusMetricsSetupState.FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED
+			)
 		);
 
 		return;
@@ -19,13 +42,17 @@ export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Ex
 
 	app.use(createAPIResponseTimeMetricMiddleware());
 
-	logger.debug(new LoggableMessage('API response time metric middleware successfully added to the app'));
+	logger.debug(
+		new PrometheusMetricsSetupStateLoggable(
+			PrometheusMetricsSetupState.API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED
+		)
+	);
 };
 
 export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
-			new LoggableMessage('Prometheus metrics feature is disabled, Prometheus metrics app will not be created')
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED)
 		);
 
 		return;
@@ -35,15 +62,13 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 
 	if (!collectDefaultMetrics) {
 		logger.debug(
-			new LoggableMessage('Collecting default metrics is disabled so only the custom metrics will be collected')
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_DEFAULT_METRICS_DISABLED)
 		);
 	}
 
 	if (!collectMetricsRouteMetrics) {
 		logger.debug(
-			new LoggableMessage(
-				'Collecting metrics route metrics is disabled so no metrics route calls will be added to the metrics'
-			)
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_METRICS_ROUTE_METRICS_DISABLED)
 		);
 	}
 

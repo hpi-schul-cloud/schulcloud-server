@@ -7,7 +7,7 @@ describe('AppStartLoggable', () => {
 		const testPort = 3030;
 
 		describe('should return loggable with proper content', () => {
-			it('in case of just a default fields', () => {
+			it('in case of just a default fields presence', () => {
 				const testLoggable = new AppStartLoggable(testAppName, testPort).getLogMessage();
 
 				expect(testLoggable).toHaveProperty('message', expectedLogMessage);
@@ -16,7 +16,7 @@ describe('AppStartLoggable', () => {
 				expect(testLoggable.data).not.toHaveProperty('mounts');
 			});
 
-			it('in case of both default and non-default values', () => {
+			it('in case of both default and non-default fields presence', () => {
 				const testMounts = '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS';
 
 				const testLoggable = new AppStartLoggable(testAppName, testPort, testMounts).getLogMessage();
