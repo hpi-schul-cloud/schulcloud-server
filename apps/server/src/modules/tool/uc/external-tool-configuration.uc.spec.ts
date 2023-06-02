@@ -304,6 +304,8 @@ describe('ExternalToolConfigurationUc', () => {
 					usedTool,
 					unusedTool,
 					toolWithoutSchoolTool,
+					usedSchoolExternalTool,
+					unusedSchoolExternalTool,
 				};
 			};
 
@@ -324,55 +326,59 @@ describe('ExternalToolConfigurationUc', () => {
 			});
 
 			it('should filter tools that are already in use', async () => {
-				const { usedTool } = setup();
+				const { usedTool, usedSchoolExternalTool } = setup();
 
-				const result: ExternalToolDO[] = await uc.getAvailableToolsForContext(
+				const [availableTools, availableSchoolToolIds] = await uc.getAvailableToolsForContext(
 					'userId',
 					'schoolId',
 					'contextId',
 					ToolContextType.COURSE
 				);
 
-				expect(result).not.toContain(usedTool);
+				expect(availableTools).not.toContain(usedTool);
+				expect(availableSchoolToolIds).not.toContain(usedSchoolExternalTool.id);
 			});
 
 			it('should filter tools that are hidden', async () => {
 				const { hiddenTool } = setup();
 
-				const result: ExternalToolDO[] = await uc.getAvailableToolsForContext(
+				const [availableTools, availableSchoolToolIds] = await uc.getAvailableToolsForContext(
 					'userId',
 					'schoolId',
 					'contextId',
 					ToolContextType.COURSE
 				);
 
-				expect(result).not.toContain(hiddenTool);
+				expect(availableTools).not.toContain(hiddenTool);
+				expect(availableSchoolToolIds).toHaveLength(availableTools.length);
 			});
 
 			it('should filter tools that have no SchoolExternalTool', async () => {
 				const { toolWithoutSchoolTool } = setup();
 
-				const result: ExternalToolDO[] = await uc.getAvailableToolsForContext(
+				const [availableTools, availableSchoolToolIds] = await uc.getAvailableToolsForContext(
 					'userId',
 					'schoolId',
 					'contextId',
 					ToolContextType.COURSE
 				);
 
-				expect(result).not.toContain(toolWithoutSchoolTool);
+				expect(availableTools).not.toContain(toolWithoutSchoolTool);
+				expect(availableSchoolToolIds).toHaveLength(availableTools.length);
 			});
 
 			it('should return a list of available external tools', async () => {
-				const { unusedTool } = setup();
+				const { unusedTool, unusedSchoolExternalTool } = setup();
 
-				const result: ExternalToolDO[] = await uc.getAvailableToolsForContext(
+				const [availableTools, availableSchoolToolIds] = await uc.getAvailableToolsForContext(
 					'userId',
 					'schoolId',
 					'contextId',
 					ToolContextType.COURSE
 				);
 
-				expect(result).toEqual([unusedTool]);
+				expect(availableTools).toEqual([unusedTool]);
+				expect(availableSchoolToolIds).toEqual([unusedSchoolExternalTool.id]);
 			});
 		});
 	});
