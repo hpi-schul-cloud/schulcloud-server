@@ -42,7 +42,7 @@ export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 			} else if ('libraryParameters' in value) {
 				transformed = plainToClass(LibraryParametersBodyParams, value);
 			} else {
-				throw new BadRequestException();
+				return undefined;
 			}
 
 			const validationResult = await validate(transformed);
