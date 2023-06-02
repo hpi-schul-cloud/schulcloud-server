@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import {
 	ContextExternalToolDO,
@@ -6,6 +6,7 @@ import {
 	EntityId,
 	Permission,
 	SchoolExternalToolDO,
+	User,
 } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
@@ -13,6 +14,7 @@ import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/mo
 import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
 import { ContextTypeMapper } from './mapper';
+import { UserService } from '../../user';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -20,7 +22,8 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalToolDO[]> {
@@ -126,30 +129,29 @@ export class ExternalToolConfigurationUc {
 		return [availableTools, availableSchoolToolIds];
 	}
 
-	public async getExternalToolForSchool(
-		userId: EntityId,
-		externalToolId: EntityId,
-		schoolId: EntityId
-	): Promise<ExternalToolDO> {
-		await this.ensureSchoolPermission(userId, schoolId);
+	// TODO: test
+	public async getExternalToolForSchool(userId: EntityId, externalToolId: EntityId): Promise<ExternalToolDO> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		if (await this.ensurePermission(user)) {
+			const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
+				externalToolId,
+				CustomParameterScope.SCHOOL
+			);
 
-		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
-			externalToolId,
-			CustomParameterScope.SCHOOL
-		);
+			if (externalToolDO.isHidden) {
+				throw new NotFoundException('Could not find the Tool Template');
+			}
 
-		if (externalToolDO.isHidden) {
-			throw new NotFoundException('Could not find the Tool Template');
+			return externalToolDO;
 		}
-
-		return externalToolDO;
+		throw new ForbiddenException();
 	}
 
-	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
-		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
-			action: Action.read,
-			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
-		});
+	private async ensurePermission(user: User) {
+		return this.authorizationService.hasOneOfPermissions(user, [
+			Permission.CONTEXT_TOOL_ADMIN,
+			Permission.SCHOOL_TOOL_ADMIN,
+		]);
 	}
 
 	private async ensureContextPermission(

@@ -88,8 +88,7 @@ export class ToolConfigurationController {
 	): Promise<ExternalToolConfigurationTemplateResponse> {
 		const externalToolDO: ExternalToolDO = await this.externalToolConfigurationUc.getExternalToolForSchool(
 			currentUser.userId,
-			params.toolId,
-			currentUser.schoolId
+			params.toolId
 		);
 
 		const mapped: ExternalToolConfigurationTemplateResponse =
