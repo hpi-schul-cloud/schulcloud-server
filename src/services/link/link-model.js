@@ -5,7 +5,6 @@
 
 const mongoose = require('mongoose');
 const ShortId = require('mongoose-shortid-nodeps');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 const LINK_LENGTH = 10;
@@ -23,8 +22,6 @@ const linkSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	systemNote: { type: Object },
 });
-
-enableAuditLog(linkSchema);
 
 const LinkModel = mongoose.model('link', linkSchema);
 LinkModel.linkLength = LINK_LENGTH; // fixme`
