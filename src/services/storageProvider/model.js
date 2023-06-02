@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const { enableAuditLog } = require('../../utils/database');
-
 const storageProviderSchema = new Schema(
 	{
 		type: { type: String, enum: ['S3'], required: true },
@@ -19,8 +17,6 @@ const storageProviderSchema = new Schema(
 		timestamps: true,
 	}
 );
-
-enableAuditLog(storageProviderSchema);
 
 const StorageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
 

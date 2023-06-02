@@ -66,22 +66,6 @@ describe(ColumnBoardService.name, () => {
 		});
 	});
 
-	describe('creating a board', () => {
-		it('should save a board using the repo', async () => {
-			await service.create();
-
-			expect(boardDoRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					id: expect.any(String),
-					title: '',
-					children: [],
-					createdAt: expect.any(Date),
-					updatedAt: expect.any(Date),
-				})
-			);
-		});
-	});
-
 	describe('deleting a board', () => {
 		it('should call the service to delete the board', async () => {
 			const { board } = setup();

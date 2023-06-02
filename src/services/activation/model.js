@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const crypto = require('crypto');
-const { enableAuditLog } = require('../../utils/database');
 
 const { KEYWORDS, STATE, createQuarantinedObject, getQuarantinedObject } = require('./utils/generalUtils');
 
@@ -48,8 +47,6 @@ activationSchema.post('find', (result) => {
 	});
 	return result;
 });
-
-enableAuditLog(activationSchema);
 
 const activationModel = mongoose.model('activation', activationSchema);
 

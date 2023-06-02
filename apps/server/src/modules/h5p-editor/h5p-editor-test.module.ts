@@ -1,7 +1,8 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
+import { Account, Role, School, SchoolYear, User } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { MongoDatabaseModuleOptions } from '@shared/infra/database/mongo-memory-database/types';
+import { RabbitMQWrapperTestModule } from '@shared/infra/rabbitmq';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
@@ -11,12 +12,13 @@ import { H5PEditorModule } from './h5p-editor.module';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User, System] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [Account, Role, School, SchoolYear, User] }),
 	AuthenticationApiModule,
 	AuthorizationModule,
 	AuthenticationModule,
 	CoreModule,
 	LoggerModule,
+	RabbitMQWrapperTestModule,
 ];
 const controllers = [];
 const providers = [];

@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-// const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
-const { enableAuditLog } = require('../../../utils/database');
 const { splitForSearchIndexes } = require('../../../utils/search');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
@@ -184,9 +182,6 @@ userSchema.plugin(leanVirtuals);
 userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
-
-enableAuditLog(userSchema);
-// userSchema.plugin(mongooseHistory);
 
 module.exports = {
 	USER_FEATURES,

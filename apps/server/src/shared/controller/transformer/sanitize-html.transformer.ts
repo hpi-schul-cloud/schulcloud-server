@@ -108,9 +108,8 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 	RichTextCk5: {
 		allowedTags: [
-			'h2',
-			'h3',
 			'h4',
+			'h5',
 			'p',
 			'span',
 			'br',
@@ -154,7 +153,7 @@ const inputFormatsSanitizeConfig: Record<string, IInputFormatsConfig> = {
 
 export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IInputFormatsConfig => {
 	switch (inputFormat) {
-		case InputFormat.RICHTEXT_SIMPLE:
+		case InputFormat.RICH_TEXT_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextSimple;
 		case InputFormat.RICH_TEXT:
 			return inputFormatsSanitizeConfig.RichText;
