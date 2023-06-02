@@ -215,11 +215,13 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Post('/save/:contentId')
+	@Post('/edit-h5p/:contentId')
 	async saveH5pContent(
-		@Param() params: PostH5PContentParams,
+		@Body() body: PostH5PContentCreateParams,
+		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<string> {
+		/*
 		const newContentId = this.h5pEditorUc.saveH5pContent(
 			currentUser,
 			params.contentId,
@@ -227,7 +229,16 @@ export class H5PEditorController {
 			params.metadata,
 			params.mainLibraryUbername
 		);
+		*/
+		// return newContentId;
+		const response = await this.h5pEditorUc.saveH5pContent(
+			currentUser,
+			params.contentId,
+			body.params.params,
+			body.params.metadata,
+			body.library
+		);
 
-		return newContentId;
+		return response;
 	}
 }
