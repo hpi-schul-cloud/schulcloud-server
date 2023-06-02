@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-import { ToolConfigurationListResponse } from '../dto';
+import { SchoolToolConfigurationListResponse } from '../dto';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;
@@ -110,21 +110,23 @@ describe('ToolSchoolController (API)', () => {
 					school,
 					course,
 					externalTool,
+					schoolExternalTool,
 				};
 			};
 
 			it('should return an array of available tools', async () => {
-				const { user, course, externalTool } = await setup();
+				const { user, course, externalTool, schoolExternalTool } = await setup();
 				currentUser = mapUserToCurrentUser(user);
 
 				const response: Response = await request(app.getHttpServer()).get(`/tools/available/course/${course.id}`);
 
-				expect(response.body).toEqual<ToolConfigurationListResponse>({
+				expect(response.body).toEqual<SchoolToolConfigurationListResponse>({
 					data: [
 						{
 							id: externalTool.id,
 							name: externalTool.name,
 							logoUrl: externalTool.logoUrl,
+							schoolToolId: schoolExternalTool.id,
 						},
 					],
 				});
@@ -163,7 +165,7 @@ describe('ToolSchoolController (API)', () => {
 
 				const response: Response = await request(app.getHttpServer()).get(`/tools/available/course/${course.id}`);
 
-				expect(response.body).toEqual<ToolConfigurationListResponse>({
+				expect(response.body).toEqual<SchoolToolConfigurationListResponse>({
 					data: [],
 				});
 			});
