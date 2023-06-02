@@ -56,6 +56,11 @@ export class BoardDoRepo {
 		return domainObject;
 	}
 
+	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {
+		const boardNode = await this.em.findOneOrFail(BoardNode, boardDo.id);
+		return boardNode.ancestorIds;
+	}
+
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const saveVisitor = new RecursiveSaveVisitor(this.em);
 		await saveVisitor.save(domainObject, parent);

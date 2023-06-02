@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
 	CustomParameterLocationParams,
-	CustomParameterScopeParams,
+	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 } from '../../../interface';
 
@@ -37,9 +37,9 @@ export class CustomParameterPostParams {
 	@ApiPropertyOptional()
 	regexComment?: string;
 
-	@IsEnum(CustomParameterScopeParams)
+	@IsEnum(CustomParameterScopeTypeParams)
 	@ApiProperty()
-	scope!: CustomParameterScopeParams;
+	scope!: CustomParameterScopeTypeParams;
 
 	@IsEnum(CustomParameterLocationParams)
 	@ApiProperty()

@@ -6,15 +6,13 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '@shared/domain';
-import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
-import {
 	BasicToolConfigDO,
 	CustomParameterDO,
 	ExternalToolDO,
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
-} from '@shared/domain/domainobject/tool';
+} from '@shared/domain';
+import { TokenEndpointAuthMethod } from '@src/modules/tool/interface';
 import { DoBaseFactory } from '../do-base.factory';
 
 export const basicToolConfigDOFactory = DoBaseFactory.define<BasicToolConfigDO, BasicToolConfigDO>(

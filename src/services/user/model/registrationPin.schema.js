@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -24,8 +23,6 @@ schulcloud.registrationpins    find         {"email": 1} -> 3
 registrationPinSchema.index({ importHash: 1 }); // ok = 1
 registrationPinSchema.index({ email: 1, pin: 1 }); // ok = 2
 registrationPinSchema.index({ email: 1 }); // ok = 3
-
-enableAuditLog(registrationPinSchema);
 
 module.exports = {
 	registrationPinSchema,

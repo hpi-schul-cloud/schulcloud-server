@@ -1,4 +1,5 @@
-import { Account, EntityId, IAccountProperties } from '@shared/domain';
+/* istanbul ignore file */
+import { Account, EntityId, IAccountProperties, User } from '@shared/domain';
 
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
@@ -7,6 +8,16 @@ import { BaseFactory } from './base.factory';
 class AccountFactory extends BaseFactory<Account, IAccountProperties> {
 	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial<IAccountProperties> = { systemId: id };
+
+		return this.params(params);
+	}
+
+	withUser(user: User): this {
+		if (!user.id) {
+			throw new Error('User does not have an id.');
+		}
+
+		const params: DeepPartial<IAccountProperties> = { userId: user.id };
 
 		return this.params(params);
 	}

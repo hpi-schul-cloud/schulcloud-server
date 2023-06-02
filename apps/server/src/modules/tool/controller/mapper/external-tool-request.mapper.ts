@@ -6,7 +6,11 @@ import {
 	SortOrderMap,
 	ExternalToolDO,
 } from '@shared/domain';
-import { CustomParameterLocationParams, CustomParameterScopeParams, CustomParameterTypeParams } from '../../interface';
+import {
+	CustomParameterLocationParams,
+	CustomParameterScopeTypeParams,
+	CustomParameterTypeParams,
+} from '../../interface';
 import {
 	BasicToolConfig,
 	CreateExternalTool,
@@ -27,10 +31,10 @@ import {
 	SortExternalToolParams,
 } from '../dto';
 
-const scopeMapping: Record<CustomParameterScopeParams, CustomParameterScope> = {
-	[CustomParameterScopeParams.GLOBAL]: CustomParameterScope.GLOBAL,
-	[CustomParameterScopeParams.SCHOOL]: CustomParameterScope.SCHOOL,
-	[CustomParameterScopeParams.COURSE]: CustomParameterScope.COURSE,
+const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
+	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,
+	[CustomParameterScopeTypeParams.SCHOOL]: CustomParameterScope.SCHOOL,
+	[CustomParameterScopeTypeParams.CONTEXT]: CustomParameterScope.CONTEXT,
 };
 
 const locationMapping: Record<CustomParameterLocationParams, CustomParameterLocation> = {
