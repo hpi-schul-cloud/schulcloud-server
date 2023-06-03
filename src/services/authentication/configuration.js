@@ -15,7 +15,7 @@ module.exports = {
 			audience,
 			issuer: 'feathers',
 			algorithm: 'HS256',
-			expiresIn: Configuration.get('JWT_LIFETIME'),
+			// expiresIn: Configuration.get('JWT_LIFETIME'),
 		},
 		tsp: {},
 		'api-key': {},

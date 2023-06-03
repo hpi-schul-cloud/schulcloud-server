@@ -27,6 +27,8 @@ const getRequestInfo = (req) => {
 
 	try {
 		let decodedJWT;
+		req.headers.authorization =
+			'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2NvdW50SWQiOiIwMDAwZDIxMzgxNmFiYmE1ODQ3MTRjYWEiLCJyb2xlcyI6WyIwMDAwZDE4NjgxNmFiYmE1ODQ3MTRjOTYiXSwic2Nob29sSWQiOiI1ZjI5ODdlMDIwODM0MTE0YjhlZmQ2ZjgiLCJ1c2VySWQiOiIwMDAwZDIxMzgxNmFiYmE1ODQ3MTRjMGEiLCJpYXQiOjE2ODU3MjA4MjUsImV4cCI6MTY4ODMxMjgyNSwiYXVkIjoiaHR0cHM6Ly9kYmlsZHVuZ3NjbG91ZC5kZSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiMDAwMGQyMTM4MTZhYmJhNTg0NzE0Y2FhIiwianRpIjoiYWMzZDI5OTItM2MxOS00NGZlLWE3NzMtY2E0ZGZhNjdiMzNiIn0.Xq4g-Ax3b8ISmLJmSjLuk1F-F__tSwChKaFx7xX1XLw';
 		if (req.headers.authorization) {
 			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
 		}
