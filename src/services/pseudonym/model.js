@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const idValidator = require('mongoose-id-validator');
 const { v4: uuidv4 } = require('uuid');
-const { enableAuditLog } = require('../../utils/database');
 
 const pseudonymSchema = new Schema(
 	{
@@ -25,7 +24,6 @@ pseudonymSchema.index({ pseudonym: 1 }, { unique: true });
 pseudonymSchema.index({ userId: 1, toolId: 1 }, { unique: true });
 
 pseudonymSchema.plugin(idValidator);
-enableAuditLog(pseudonymSchema);
 
 const pseudonymModel = mongoose.model('Pseudonym', pseudonymSchema);
 
