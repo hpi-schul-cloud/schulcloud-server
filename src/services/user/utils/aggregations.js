@@ -94,43 +94,7 @@ const getConsentStatusSwitch = () => {
 	secondLevel.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
 	const firstLevel = new Date();
 	firstLevel.setFullYear(currentDate.getFullYear() - 14);
-	const consentCaseOk = [
-		{
-			$and: [
-				{ $lte: ['$birthday', secondLevel] },
-				{ $eq: ['$consent.userConsent.privacyConsent', true] },
-				{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-			],
-		},
-		{
-			$and: [
-				{ $gt: ['$birthday', secondLevel] },
-				{ $lte: ['$birthday', firstLevel] },
-				{ $eq: ['$consent.userConsent.privacyConsent', true] },
-				{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-				{ $eq: [getParentReducer('privacyConsent'), true] },
-				{ $eq: [getParentReducer('termsOfUseConsent'), true] },
-			],
-		},
-		{
-			$and: [
-				{ $gt: ['$birthday', firstLevel] },
-				{ $eq: [getParentReducer('privacyConsent'), true] },
-				{ $eq: [getParentReducer('termsOfUseConsent'), true] },
-			],
-		},
-	];
-
-	if(Configuration.get("FEATURE_TREAT_USER_AS_REGISTERED_WITHOUT_CONSENTS_ENABLED") === true) {
-		consentCaseOk.push(
-			{
-				$and: [
-					{ $gt: ['$consent.userConsent.privacyConsent', null] },
-					{ $gt: ['$consent.userConsent.termsOfUseConsent', null] },
-				],
-			},)
-	}
-
+	const consentCaseOk = getConsentStatusOk(firstLevel, secondLevel);
 
 	return {
 		$switch: {
@@ -157,6 +121,59 @@ const getConsentStatusSwitch = () => {
 		},
 	};
 };
+
+const getConsentStatusOk = (ageFirstLevel, ageSecondLevel) => {
+	const consentCaseOk = [
+		{
+			$and: ifConsentsApprovedAndOlderThanAgeDate(ageSecondLevel),
+		},
+		{
+			$and: ifAllConsentsApprovedAndBetweenAgeDates(ageFirstLevel, ageSecondLevel),
+		},
+		{
+			$and: ifParentsConsentsApprovedAndYoungerThanAgeDate(ageFirstLevel),
+		},
+	];
+
+	if(Configuration.get("FEATURE_TREAT_USER_AS_REGISTERED_WITHOUT_CONSENTS_ENABLED") === true) {
+		consentCaseOk.push(
+			{
+				$and: [
+					{ $gt: ['$consent.userConsent.privacyConsent', null] },
+					{ $gt: ['$consent.userConsent.termsOfUseConsent', null] },
+				],
+			},)
+	}
+
+	return consentCaseOk;
+}
+
+const ifConsentsApprovedAndOlderThanAgeDate = (age) => {
+	return [
+		{ $lte: ['$birthday', age] },
+		{ $eq: ['$consent.userConsent.privacyConsent', true] },
+		{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
+	];
+}
+
+const ifAllConsentsApprovedAndBetweenAgeDates = (ageFirstLevel, ageSecondLevel) => {
+	return [
+		{ $gt: ['$birthday', ageSecondLevel] },
+		{ $lte: ['$birthday', ageFirstLevel] },
+		{ $eq: ['$consent.userConsent.privacyConsent', true] },
+		{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
+		{ $eq: [getParentReducer('privacyConsent'), true] },
+		{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+	];
+}
+
+const ifParentsConsentsApprovedAndYoungerThanAgeDate = (age) => {
+	return [
+		{ $gt: ['$birthday', age] },
+		{ $eq: [getParentReducer('privacyConsent'), true] },
+		{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+	];
+}
 
 const stageAddConsentStatus = (aggregation) => {
 	aggregation.push({
