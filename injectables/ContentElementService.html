@@ -529,7 +529,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>update(element: <a href="../undefineds/AnyContentElementDo.html" target="_self">AnyContentElementDo</a>, content: <a href="../entitys/File.html" target="_self">RichTextContentBody | FileContentBody</a>)</code>
+                    <code>update(element: <a href="../undefineds/AnyContentElementDo.html" target="_self">AnyContentElementDo</a>, content: FileContentBody | RichTextContentBody | TaskContentBody)</code>
                 </td>
             </tr>
 
@@ -572,7 +572,7 @@
                                 <tr>
                                     <td>content</td>
                                     <td>
-                                                <code><a href="../entitys/File.html" target="_self" >RichTextContentBody | FileContentBody</a></code>
+                                            <code>FileContentBody | RichTextContentBody | TaskContentBody</code>
                                     </td>
 
                                     <td>
@@ -612,7 +612,7 @@ import {
 	EntityId,
 	isAnyContentElement,
 } from &#x27;@shared/domain&#x27;;
-import { FileContentBody, RichTextContentBody } from &#x27;../controller/dto&#x27;;
+import { FileContentBody, RichTextContentBody, TaskContentBody } from &#x27;../controller/dto&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 import { ContentElementUpdateVisitor } from &#x27;./content-element-update.visitor&#x27;;
@@ -652,7 +652,10 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(element: AnyContentElementDo, content: RichTextContentBody | FileContentBody): Promise&lt;void&gt; {
+	async update(
+		element: AnyContentElementDo,
+		content: FileContentBody | RichTextContentBody | TaskContentBody
+	): Promise&lt;void&gt; {
 		const updater &#x3D; new ContentElementUpdateVisitor(content);
 		element.accept(updater);
 		const parent &#x3D; await this.boardDoRepo.findParentOfId(element.id);

@@ -24,211 +24,211 @@
 <title>cluster_OauthProviderModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 3335,-195 3335,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_OauthProviderModule_providers</title>
-<polygon fill="none" stroke="black" points="602,-78 602,-130 3327,-130 3327,-78 602,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_OauthProviderModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 594,-130 594,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="2749,-78 2749,-130 3327,-130 3327,-78 2749,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_OauthProviderModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 2741,-130 2741,-78 16,-78"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
 <title>AuthorizationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="585.81,-122 582.81,-126 561.81,-126 558.81,-122 448.19,-122 448.19,-86 585.81,-86 585.81,-122"/>
-<text text-anchor="middle" x="517" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="3318.81,-122 3315.81,-126 3294.81,-126 3291.81,-122 3181.19,-122 3181.19,-86 3318.81,-86 3318.81,-122"/>
+<text text-anchor="middle" x="3250" y="-99.8" font-family="Times,serif" font-size="14.00">AuthorizationModule</text>
 </g>
 <!-- OauthProviderModule -->
 <g id="node5" class="node">
 <title>OauthProviderModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1442.97,-187 1439.97,-191 1418.97,-191 1415.97,-187 1301.03,-187 1301.03,-151 1442.97,-151 1442.97,-187"/>
-<text text-anchor="middle" x="1372" y="-164.8" font-family="Times,serif" font-size="14.00">OauthProviderModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1962.97,-187 1959.97,-191 1938.97,-191 1935.97,-187 1821.03,-187 1821.03,-151 1962.97,-151 1962.97,-187"/>
+<text text-anchor="middle" x="1892" y="-164.8" font-family="Times,serif" font-size="14.00">OauthProviderModule</text>
 </g>
 <!-- AuthorizationModule&#45;&gt;OauthProviderModule -->
 <g id="edge1" class="edge">
 <title>AuthorizationModule&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M517,-122.11C517,-141.34 517,-169 517,-169 517,-169 1290.94,-169 1290.94,-169"/>
-<polygon fill="black" stroke="black" points="1290.94,-172.5 1300.94,-169 1290.94,-165.5 1290.94,-172.5"/>
+<path fill="none" stroke="black" d="M3250,-122.32C3250,-145.66 3250,-183 3250,-183 3250,-183 1973.1,-183 1973.1,-183"/>
+<polygon fill="black" stroke="black" points="1973.1,-179.5 1963.1,-183 1973.1,-186.5 1973.1,-179.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="429.98,-122 426.98,-126 405.98,-126 402.98,-122 330.02,-122 330.02,-86 429.98,-86 429.98,-122"/>
-<text text-anchor="middle" x="380" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="3162.98,-122 3159.98,-126 3138.98,-126 3135.98,-122 3063.02,-122 3063.02,-86 3162.98,-86 3162.98,-122"/>
+<text text-anchor="middle" x="3113" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;OauthProviderModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M380,-122.03C380,-142.77 380,-174 380,-174 380,-174 1290.66,-174 1290.66,-174"/>
-<polygon fill="black" stroke="black" points="1290.66,-177.5 1300.66,-174 1290.66,-170.5 1290.66,-177.5"/>
+<path fill="none" stroke="black" d="M3113,-122.29C3113,-144.21 3113,-178 3113,-178 3113,-178 1973.37,-178 1973.37,-178"/>
+<polygon fill="black" stroke="black" points="1973.37,-174.5 1963.37,-178 1973.37,-181.5 1973.37,-174.5"/>
 </g>
 <!-- OauthProviderServiceModule -->
 <g id="node3" class="node">
 <title>OauthProviderServiceModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="311.95,-122 308.95,-126 287.95,-126 284.95,-122 128.05,-122 128.05,-86 311.95,-86 311.95,-122"/>
-<text text-anchor="middle" x="220" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderServiceModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="3044.95,-122 3041.95,-126 3020.95,-126 3017.95,-122 2861.05,-122 2861.05,-86 3044.95,-86 3044.95,-122"/>
+<text text-anchor="middle" x="2953" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderServiceModule</text>
 </g>
 <!-- OauthProviderServiceModule&#45;&gt;OauthProviderModule -->
 <g id="edge3" class="edge">
 <title>OauthProviderServiceModule&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M220,-122.29C220,-144.21 220,-178 220,-178 220,-178 1290.81,-178 1290.81,-178"/>
-<polygon fill="black" stroke="black" points="1290.81,-181.5 1300.81,-178 1290.81,-174.5 1290.81,-181.5"/>
+<path fill="none" stroke="black" d="M2953,-122.03C2953,-142.77 2953,-174 2953,-174 2953,-174 1973.26,-174 1973.26,-174"/>
+<polygon fill="black" stroke="black" points="1973.26,-170.5 1963.26,-174 1973.26,-177.5 1973.26,-170.5"/>
 </g>
 <!-- UserModule -->
 <g id="node4" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2842.98,-122 2839.98,-126 2818.98,-126 2815.98,-122 2757.02,-122 2757.02,-86 2842.98,-86 2842.98,-122"/>
+<text text-anchor="middle" x="2800" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;OauthProviderModule -->
 <g id="edge4" class="edge">
 <title>UserModule&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M67,-122.32C67,-145.66 67,-183 67,-183 67,-183 1290.91,-183 1290.91,-183"/>
-<polygon fill="black" stroke="black" points="1290.91,-186.5 1300.91,-183 1290.91,-179.5 1290.91,-186.5"/>
+<path fill="none" stroke="black" d="M2800,-122.11C2800,-141.34 2800,-169 2800,-169 2800,-169 1973.25,-169 1973.25,-169"/>
+<polygon fill="black" stroke="black" points="1973.25,-165.5 1963.25,-169 1973.25,-172.5 1973.25,-165.5"/>
 </g>
 <!-- IdTokenService -->
 <g id="node6" class="node">
 <title>IdTokenService</title>
-<ellipse fill="#fdb462" stroke="black" cx="3246" cy="-104" rx="72.91" ry="18"/>
-<text text-anchor="middle" x="3246" y="-99.8" font-family="Times,serif" font-size="14.00">IdTokenService</text>
+<ellipse fill="#fdb462" stroke="black" cx="2660" cy="-104" rx="72.91" ry="18"/>
+<text text-anchor="middle" x="2660" y="-99.8" font-family="Times,serif" font-size="14.00">IdTokenService</text>
 </g>
 <!-- IdTokenService&#45;&gt;OauthProviderModule -->
 <g id="edge5" class="edge">
 <title>IdTokenService&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M3246,-122.32C3246,-145.66 3246,-183 3246,-183 3246,-183 1453.17,-183 1453.17,-183"/>
-<polygon fill="black" stroke="black" points="1453.17,-179.5 1443.17,-183 1453.17,-186.5 1453.17,-179.5"/>
+<path fill="none" stroke="black" d="M2660,-122.3C2660,-140.27 2660,-165 2660,-165 2660,-165 1973.22,-165 1973.22,-165"/>
+<polygon fill="black" stroke="black" points="1973.22,-161.5 1963.22,-165 1973.22,-168.5 1973.22,-161.5"/>
 </g>
 <!-- LtiToolRepo -->
 <g id="node7" class="node">
 <title>LtiToolRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="3094" cy="-104" rx="60.85" ry="18"/>
-<text text-anchor="middle" x="3094" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="2508" cy="-104" rx="60.85" ry="18"/>
+<text text-anchor="middle" x="2508" y="-99.8" font-family="Times,serif" font-size="14.00">LtiToolRepo</text>
 </g>
 <!-- LtiToolRepo&#45;&gt;OauthProviderModule -->
 <g id="edge6" class="edge">
 <title>LtiToolRepo&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M3094,-122.29C3094,-144.21 3094,-178 3094,-178 3094,-178 1452.99,-178 1452.99,-178"/>
-<polygon fill="black" stroke="black" points="1452.99,-174.5 1442.99,-178 1452.99,-181.5 1452.99,-174.5"/>
+<path fill="none" stroke="black" d="M2508,-122.03C2508,-138.4 2508,-160 2508,-160 2508,-160 1973.26,-160 1973.26,-160"/>
+<polygon fill="black" stroke="black" points="1973.26,-156.5 1963.26,-160 1973.26,-163.5 1973.26,-156.5"/>
 </g>
 <!-- OauthProviderClientCrudUc -->
 <g id="node8" class="node">
 <title>OauthProviderClientCrudUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2893" cy="-104" rx="122.13" ry="18"/>
-<text text-anchor="middle" x="2893" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderClientCrudUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="2307" cy="-104" rx="122.13" ry="18"/>
+<text text-anchor="middle" x="2307" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderClientCrudUc</text>
 </g>
 <!-- OauthProviderClientCrudUc&#45;&gt;OauthProviderModule -->
 <g id="edge7" class="edge">
 <title>OauthProviderClientCrudUc&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M2893,-122.03C2893,-142.77 2893,-174 2893,-174 2893,-174 1453.07,-174 1453.07,-174"/>
-<polygon fill="black" stroke="black" points="1453.07,-170.5 1443.07,-174 1453.07,-177.5 1453.07,-170.5"/>
+<path fill="none" stroke="black" d="M2307,-122.19C2307,-137.18 2307,-156 2307,-156 2307,-156 1973.34,-156 1973.34,-156"/>
+<polygon fill="black" stroke="black" points="1973.34,-152.5 1963.34,-156 1973.34,-159.5 1973.34,-152.5"/>
 </g>
 <!-- OauthProviderConsentFlowUc -->
 <g id="node9" class="node">
 <title>OauthProviderConsentFlowUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2622" cy="-104" rx="130.8" ry="18"/>
-<text text-anchor="middle" x="2622" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderConsentFlowUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="2036" cy="-104" rx="130.8" ry="18"/>
+<text text-anchor="middle" x="2036" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderConsentFlowUc</text>
 </g>
 <!-- OauthProviderConsentFlowUc&#45;&gt;OauthProviderModule -->
 <g id="edge8" class="edge">
 <title>OauthProviderConsentFlowUc&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M2622,-122.11C2622,-141.34 2622,-169 2622,-169 2622,-169 1453.24,-169 1453.24,-169"/>
-<polygon fill="black" stroke="black" points="1453.24,-165.5 1443.24,-169 1453.24,-172.5 1453.24,-165.5"/>
+<path fill="none" stroke="black" d="M1934.17,-115.32C1934.17,-115.32 1934.17,-140.94 1934.17,-140.94"/>
+<polygon fill="black" stroke="black" points="1930.67,-140.94 1934.17,-150.94 1937.67,-140.94 1930.67,-140.94"/>
 </g>
 <!-- OauthProviderLoginFlowService -->
 <g id="node10" class="node">
 <title>OauthProviderLoginFlowService</title>
-<ellipse fill="#fdb462" stroke="black" cx="2334" cy="-104" rx="139.53" ry="18"/>
-<text text-anchor="middle" x="2334" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLoginFlowService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1748" cy="-104" rx="139.53" ry="18"/>
+<text text-anchor="middle" x="1748" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLoginFlowService</text>
 </g>
 <!-- OauthProviderLoginFlowService&#45;&gt;OauthProviderModule -->
 <g id="edge9" class="edge">
 <title>OauthProviderLoginFlowService&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M2334,-122.3C2334,-140.27 2334,-165 2334,-165 2334,-165 1453.13,-165 1453.13,-165"/>
-<polygon fill="black" stroke="black" points="1453.13,-161.5 1443.13,-165 1453.13,-168.5 1453.13,-161.5"/>
+<path fill="none" stroke="black" d="M1854.39,-115.92C1854.39,-115.92 1854.39,-140.77 1854.39,-140.77"/>
+<polygon fill="black" stroke="black" points="1850.89,-140.77 1854.39,-150.77 1857.89,-140.77 1850.89,-140.77"/>
 </g>
 <!-- OauthProviderLoginFlowUc -->
 <g id="node11" class="node">
 <title>OauthProviderLoginFlowUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="2054" cy="-104" rx="122.13" ry="18"/>
-<text text-anchor="middle" x="2054" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLoginFlowUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1468" cy="-104" rx="122.13" ry="18"/>
+<text text-anchor="middle" x="1468" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLoginFlowUc</text>
 </g>
 <!-- OauthProviderLoginFlowUc&#45;&gt;OauthProviderModule -->
 <g id="edge10" class="edge">
 <title>OauthProviderLoginFlowUc&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M2054,-122.03C2054,-138.4 2054,-160 2054,-160 2054,-160 1453.06,-160 1453.06,-160"/>
-<polygon fill="black" stroke="black" points="1453.06,-156.5 1443.06,-160 1453.06,-163.5 1453.06,-156.5"/>
+<path fill="none" stroke="black" d="M1468,-122.19C1468,-137.18 1468,-156 1468,-156 1468,-156 1810.55,-156 1810.55,-156"/>
+<polygon fill="black" stroke="black" points="1810.55,-159.5 1820.55,-156 1810.55,-152.5 1810.55,-159.5"/>
 </g>
 <!-- OauthProviderLogoutFlowUc -->
 <g id="node12" class="node">
 <title>OauthProviderLogoutFlowUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="1787" cy="-104" rx="126.79" ry="18"/>
-<text text-anchor="middle" x="1787" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLogoutFlowUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="1201" cy="-104" rx="126.79" ry="18"/>
+<text text-anchor="middle" x="1201" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderLogoutFlowUc</text>
 </g>
 <!-- OauthProviderLogoutFlowUc&#45;&gt;OauthProviderModule -->
 <g id="edge11" class="edge">
 <title>OauthProviderLogoutFlowUc&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M1787,-122.19C1787,-137.18 1787,-156 1787,-156 1787,-156 1453.34,-156 1453.34,-156"/>
-<polygon fill="black" stroke="black" points="1453.34,-152.5 1443.34,-156 1453.34,-159.5 1453.34,-152.5"/>
+<path fill="none" stroke="black" d="M1201,-122.03C1201,-138.4 1201,-160 1201,-160 1201,-160 1810.98,-160 1810.98,-160"/>
+<polygon fill="black" stroke="black" points="1810.98,-163.5 1820.98,-160 1810.98,-156.5 1810.98,-163.5"/>
 </g>
 <!-- OauthProviderRequestMapper -->
 <g id="node13" class="node">
 <title>OauthProviderRequestMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="1513" cy="-104" rx="129.06" ry="18"/>
-<text text-anchor="middle" x="1513" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderRequestMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="927" cy="-104" rx="129.06" ry="18"/>
+<text text-anchor="middle" x="927" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderRequestMapper</text>
 </g>
 <!-- OauthProviderRequestMapper&#45;&gt;OauthProviderModule -->
 <g id="edge12" class="edge">
 <title>OauthProviderRequestMapper&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M1413.48,-115.62C1413.48,-115.62 1413.48,-140.85 1413.48,-140.85"/>
-<polygon fill="black" stroke="black" points="1409.98,-140.85 1413.48,-150.85 1416.98,-140.85 1409.98,-140.85"/>
+<path fill="none" stroke="black" d="M927,-122.3C927,-140.27 927,-165 927,-165 927,-165 1810.65,-165 1810.65,-165"/>
+<polygon fill="black" stroke="black" points="1810.65,-168.5 1820.65,-165 1810.65,-161.5 1810.65,-168.5"/>
 </g>
 <!-- OauthProviderResponseMapper -->
 <g id="node14" class="node">
 <title>OauthProviderResponseMapper</title>
-<ellipse fill="#fdb462" stroke="black" cx="1231" cy="-104" rx="134.86" ry="18"/>
-<text text-anchor="middle" x="1231" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderResponseMapper</text>
+<ellipse fill="#fdb462" stroke="black" cx="645" cy="-104" rx="134.86" ry="18"/>
+<text text-anchor="middle" x="645" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderResponseMapper</text>
 </g>
 <!-- OauthProviderResponseMapper&#45;&gt;OauthProviderModule -->
 <g id="edge13" class="edge">
 <title>OauthProviderResponseMapper&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M1333.47,-115.92C1333.47,-115.92 1333.47,-140.77 1333.47,-140.77"/>
-<polygon fill="black" stroke="black" points="1329.97,-140.77 1333.47,-150.77 1336.97,-140.77 1329.97,-140.77"/>
+<path fill="none" stroke="black" d="M645,-122.11C645,-141.34 645,-169 645,-169 645,-169 1810.93,-169 1810.93,-169"/>
+<polygon fill="black" stroke="black" points="1810.93,-172.5 1820.93,-169 1810.93,-165.5 1810.93,-172.5"/>
 </g>
 <!-- OauthProviderUc -->
 <g id="node15" class="node">
 <title>OauthProviderUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="999" cy="-104" rx="79.29" ry="18"/>
-<text text-anchor="middle" x="999" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="413" cy="-104" rx="79.29" ry="18"/>
+<text text-anchor="middle" x="413" y="-99.8" font-family="Times,serif" font-size="14.00">OauthProviderUc</text>
 </g>
 <!-- OauthProviderUc&#45;&gt;OauthProviderModule -->
 <g id="edge14" class="edge">
 <title>OauthProviderUc&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M999,-122.19C999,-137.18 999,-156 999,-156 999,-156 1290.96,-156 1290.96,-156"/>
-<polygon fill="black" stroke="black" points="1290.96,-159.5 1300.96,-156 1290.96,-152.5 1290.96,-159.5"/>
+<path fill="none" stroke="black" d="M413,-122.03C413,-142.77 413,-174 413,-174 413,-174 1810.66,-174 1810.66,-174"/>
+<polygon fill="black" stroke="black" points="1810.66,-177.5 1820.66,-174 1810.66,-170.5 1810.66,-177.5"/>
 </g>
 <!-- PseudonymsRepo -->
 <g id="node16" class="node">
 <title>PseudonymsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="822" cy="-104" rx="80.48" ry="18"/>
-<text text-anchor="middle" x="822" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="236" cy="-104" rx="80.48" ry="18"/>
+<text text-anchor="middle" x="236" y="-99.8" font-family="Times,serif" font-size="14.00">PseudonymsRepo</text>
 </g>
 <!-- PseudonymsRepo&#45;&gt;OauthProviderModule -->
 <g id="edge15" class="edge">
 <title>PseudonymsRepo&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M822,-122.03C822,-138.4 822,-160 822,-160 822,-160 1290.94,-160 1290.94,-160"/>
-<polygon fill="black" stroke="black" points="1290.94,-163.5 1300.94,-160 1290.94,-156.5 1290.94,-163.5"/>
+<path fill="none" stroke="black" d="M236,-122.29C236,-144.21 236,-178 236,-178 236,-178 1810.84,-178 1810.84,-178"/>
+<polygon fill="black" stroke="black" points="1810.84,-181.5 1820.84,-178 1810.84,-174.5 1810.84,-181.5"/>
 </g>
 <!-- TeamsRepo -->
 <g id="node17" class="node">
 <title>TeamsRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="667" cy="-104" rx="57.32" ry="18"/>
-<text text-anchor="middle" x="667" y="-99.8" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="81" cy="-104" rx="57.32" ry="18"/>
+<text text-anchor="middle" x="81" y="-99.8" font-family="Times,serif" font-size="14.00">TeamsRepo</text>
 </g>
 <!-- TeamsRepo&#45;&gt;OauthProviderModule -->
 <g id="edge16" class="edge">
 <title>TeamsRepo&#45;&gt;OauthProviderModule</title>
-<path fill="none" stroke="black" d="M667,-122.3C667,-140.27 667,-165 667,-165 667,-165 1290.85,-165 1290.85,-165"/>
-<polygon fill="black" stroke="black" points="1290.85,-168.5 1300.85,-165 1290.85,-161.5 1290.85,-168.5"/>
+<path fill="none" stroke="black" d="M81,-122.32C81,-145.66 81,-183 81,-183 81,-183 1811.01,-183 1811.01,-183"/>
+<polygon fill="black" stroke="black" points="1811.01,-186.5 1821.01,-183 1811.01,-179.5 1811.01,-186.5"/>
 </g>
 </g>
 </svg>

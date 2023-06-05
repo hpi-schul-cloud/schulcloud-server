@@ -142,7 +142,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/controller/dto/element/element-content-update.body.params.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -164,7 +164,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, getSchemaPath } from &#x27;@nestjs/swagger&#x27;;
 import { ContentElementType, InputFormat } from &#x27;@shared/domain&#x27;;
 import { Type } from &#x27;class-transformer&#x27;;
-import { IsEnum, IsString, ValidateNested } from &#x27;class-validator&#x27;;
+import { IsDate, IsEnum, IsString, ValidateNested } from &#x27;class-validator&#x27;;
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -174,6 +174,21 @@ export abstract class ElementContentBody {
 	})
 	@IsEnum(ContentElementType)
 	type!: ContentElementType;
+}
+
+export class FileContentBody {
+	@IsString()
+	@ApiProperty({})
+	caption!: string;
+}
+
+export class FileElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.FILE })
+	type!: ContentElementType.FILE;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: FileContentBody;
 }
 
 export class RichTextContentBody {
@@ -186,12 +201,6 @@ export class RichTextContentBody {
 	inputFormat!: InputFormat;
 }
 
-export class FileContentBody {
-	@IsString()
-	@ApiProperty({})
-	caption!: string;
-}
-
 export class RichTextElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;
@@ -201,13 +210,19 @@ export class RichTextElementContentBody extends ElementContentBody {
 	content!: RichTextContentBody;
 }
 
-export class FileElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.FILE })
-	type!: ContentElementType.FILE;
+export class TaskContentBody {
+	@IsDate()
+	@ApiProperty()
+	dueDate!: Date;
+}
+
+export class TaskElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.TASK })
+	type!: ContentElementType.TASK;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: FileContentBody;
+	content!: TaskContentBody;
 }
 
 export type AnyElementContentBody &#x3D; RichTextElementContentBody | FileContentBody;
@@ -218,16 +233,21 @@ export class ElementContentUpdateBodyParams {
 		discriminator: {
 			property: &#x27;type&#x27;,
 			subTypes: [
-				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
+				{ value: TaskElementContentBody, name: ContentElementType.TASK },
 			],
 		},
 		keepDiscriminatorProperty: true,
 	})
 	@ApiProperty({
-		oneOf: [{ $ref: getSchemaPath(RichTextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
+		oneOf: [
+			{ $ref: getSchemaPath(FileElementContentBody) },
+			{ $ref: getSchemaPath(RichTextElementContentBody) },
+			{ $ref: getSchemaPath(TaskElementContentBody) },
+		],
 	})
-	data!: RichTextElementContentBody | FileElementContentBody;
+	data!: FileElementContentBody | RichTextElementContentBody | TaskElementContentBody;
 }
 </code></pre>
     </div>

@@ -235,7 +235,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:24</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:28</a></code>
 </div>
                 </td>
             </tr>
@@ -312,7 +312,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:28</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:32</a></code>
 </div>
                 </td>
             </tr>
@@ -387,7 +387,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:19</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:20</a></code>
 </div>
                 </td>
             </tr>
@@ -744,7 +744,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:7</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:8</a></div>
                                 </td>
                             </tr>
 
@@ -755,7 +755,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:11</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:12</a></div>
                                 </td>
                             </tr>
                     <tr>
@@ -813,7 +813,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:15</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/card.do.ts:16</a></div>
                                 </td>
                             </tr>
 
@@ -827,6 +827,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
+import { TaskElement } from &#x27;./task-element.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export class Card extends BoardComposite&lt;CardProps&gt; {
@@ -843,7 +844,10 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed &#x3D; domainObject instanceof RichTextElement || domainObject instanceof FileElement;
+		const allowed &#x3D;
+			domainObject instanceof FileElement ||
+			domainObject instanceof RichTextElement ||
+			domainObject instanceof TaskElement;
 		return allowed;
 	}
 

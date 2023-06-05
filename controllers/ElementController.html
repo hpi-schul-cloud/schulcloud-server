@@ -176,8 +176,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:65</a></div>
                 </td>
             </tr>
 
@@ -273,8 +273,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="28"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:28</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:29</a></div>
                 </td>
             </tr>
 
@@ -377,14 +377,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(RichTextElementContentBody, FileElementContentBody)<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:contentElementId/content&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Update a single content element.&#x27;})<br />@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, TaskElementContentBody)<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Put(&#x27;:contentElementId/content&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:50</a></div>
                 </td>
             </tr>
 
@@ -472,6 +472,7 @@ import {
 	ElementContentUpdateBodyParams,
 	FileElementContentBody,
 	RichTextElementContentBody,
+	TaskElementContentBody,
 } from &#x27;./dto/element/element-content-update.body.params&#x27;;
 
 @ApiTags(&#x27;Board Element&#x27;)
@@ -501,7 +502,7 @@ export class ElementController {
 	}
 
 	@ApiOperation({ summary: &#x27;Update a single content element.&#x27; })
-	@ApiExtraModels(RichTextElementContentBody, FileElementContentBody)
+	@ApiExtraModels(FileElementContentBody, RichTextElementContentBody, TaskElementContentBody)
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })

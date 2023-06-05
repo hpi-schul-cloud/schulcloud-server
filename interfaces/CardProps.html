@@ -192,6 +192,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BoardComposite, BoardCompositeProps } from &#x27;./board-composite.do&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
+import { TaskElement } from &#x27;./task-element.do&#x27;;
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export class Card extends BoardComposite&lt;CardProps&gt; {
@@ -208,7 +209,10 @@ export class Card extends BoardComposite&lt;CardProps&gt; {
 	}
 
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
-		const allowed &#x3D; domainObject instanceof RichTextElement || domainObject instanceof FileElement;
+		const allowed &#x3D;
+			domainObject instanceof FileElement ||
+			domainObject instanceof RichTextElement ||
+			domainObject instanceof TaskElement;
 		return allowed;
 	}
 

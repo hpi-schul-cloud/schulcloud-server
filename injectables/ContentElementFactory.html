@@ -95,6 +95,10 @@
                                     <span class="modifier">Private</span>
                                 <a href="#buildRichText" >buildRichText</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildTask" >buildTask</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -133,8 +137,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:12</a></div>
                 </td>
             </tr>
 
@@ -204,8 +208,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="36"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:36</a></div>
                 </td>
             </tr>
 
@@ -243,8 +247,47 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:48</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildTask"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>buildTask</b></span>
+                        <a href="#buildTask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildTask()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="61"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/content-element.factory.ts:61</a></div>
                 </td>
             </tr>
 
@@ -271,6 +314,7 @@ import { InputFormat } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { FileElement } from &#x27;./file-element.do&#x27;;
 import { RichTextElement } from &#x27;./rich-text-element.do&#x27;;
+import { TaskElement } from &#x27;./task-element.do&#x27;;
 import { AnyContentElementDo } from &#x27;./types/any-content-element-do&#x27;;
 import { ContentElementType } from &#x27;./types/content-elements.enum&#x27;;
 
@@ -280,11 +324,14 @@ export class ContentElementFactory {
 		let element!: AnyContentElementDo;
 
 		switch (type) {
+			case ContentElementType.FILE:
+				element &#x3D; this.buildFile();
+				break;
 			case ContentElementType.RICH_TEXT:
 				element &#x3D; this.buildRichText();
 				break;
-			case ContentElementType.FILE:
-				element &#x3D; this.buildFile();
+			case ContentElementType.TASK:
+				element &#x3D; this.buildTask();
 				break;
 			default:
 				break;
@@ -293,6 +340,18 @@ export class ContentElementFactory {
 		if (!element) {
 			throw new NotImplementedException(&#x60;unknown type ${type} of element&#x60;);
 		}
+
+		return element;
+	}
+
+	private buildFile() {
+		const element &#x3D; new FileElement({
+			id: new ObjectId().toHexString(),
+			caption: &#x27;&#x27;,
+			children: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 
 		return element;
 	}
@@ -310,10 +369,10 @@ export class ContentElementFactory {
 		return element;
 	}
 
-	private buildFile() {
-		const element &#x3D; new FileElement({
+	private buildTask() {
+		const element &#x3D; new TaskElement({
 			id: new ObjectId().toHexString(),
-			caption: &#x27;&#x27;,
+			dueDate: new Date(),
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),

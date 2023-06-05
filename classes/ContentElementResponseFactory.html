@@ -149,14 +149,15 @@
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-		RichTextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
+		RichTextElementResponseMapper.getInstance(),
+		TaskElementResponseMapper.getInstance(),
 	]</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -192,8 +193,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/board/controller/mapper/content-element-response.factory.ts:16</a></div>
                 </td>
             </tr>
 
@@ -257,11 +258,13 @@ import { AnyContentElementResponse } from &#x27;../dto&#x27;;
 import { BaseResponseMapper } from &#x27;./base-mapper.interface&#x27;;
 import { FileElementResponseMapper } from &#x27;./file-element-response.mapper&#x27;;
 import { RichTextElementResponseMapper } from &#x27;./rich-text-element-response.mapper&#x27;;
+import { TaskElementResponseMapper } from &#x27;./task-element-response.mapper&#x27;;
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] &#x3D; [
-		RichTextElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
+		RichTextElementResponseMapper.getInstance(),
+		TaskElementResponseMapper.getInstance(),
 	];
 
 	static mapToResponse(element: AnyBoardDo): AnyContentElementResponse {

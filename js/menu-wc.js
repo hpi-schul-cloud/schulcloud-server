@@ -2321,6 +2321,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/TaskCard.html" data-type="entity-link" >TaskCard</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/TaskElementNode.html" data-type="entity-link" >TaskElementNode</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/Team.html" data-type="entity-link" >Team</a>
                                 </li>
                                 <li class="link">
@@ -3573,10 +3576,28 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TaskCardUrlParams.html" data-type="entity-link" >TaskCardUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/TaskContentBody.html" data-type="entity-link" >TaskContentBody</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/TaskCopyApiParams.html" data-type="entity-link" >TaskCopyApiParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TaskCreateParams.html" data-type="entity-link" >TaskCreateParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TaskElement.html" data-type="entity-link" >TaskElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TaskElementContent.html" data-type="entity-link" >TaskElementContent</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TaskElementContentBody.html" data-type="entity-link" >TaskElementContentBody</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TaskElementResponse.html" data-type="entity-link" >TaskElementResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TaskElementResponseMapper.html" data-type="entity-link" >TaskElementResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TaskFactory.html" data-type="entity-link" >TaskFactory</a>
@@ -4776,6 +4797,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SuccessfulRes.html" data-type="entity-link" >SuccessfulRes</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskElementNodeProps.html" data-type="entity-link" >TaskElementNodeProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TaskElementProps.html" data-type="entity-link" >TaskElementProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/User.html" data-type="entity-link" >User</a>

@@ -119,6 +119,12 @@
                                         visitRichTextElement
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="#visitTaskElement" 
+>
+                                        visitTaskElement
+                                    </a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -151,8 +157,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="10"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:10</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:11</a></div>
                 </td>
             </tr>
 
@@ -220,8 +226,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:9</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="10"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:10</a></div>
                 </td>
             </tr>
 
@@ -289,8 +295,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:9</a></div>
                 </td>
             </tr>
 
@@ -427,8 +433,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="13"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:13</a></div>
                 </td>
             </tr>
 
@@ -476,6 +482,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitTaskElement"></a>
+                    <span class="name">
+                        <span ><b>visitTaskElement</b></span>
+                        <a href="#visitTaskElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitTaskElement(taskElement: <a href="../classes/TaskElement.html" target="_self">TaskElement</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="14"
+                            class="link-to-prism">apps/server/src/shared/domain/domainobject/board/types/board-composite-visitor.ts:14</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>taskElement</td>
+                                    <td>
+                                                <code><a href="../classes/TaskElement.html" target="_self" >TaskElement</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -487,21 +562,24 @@ import type { ColumnBoard } from &#x27;../column-board.do&#x27;;
 import type { Column } from &#x27;../column.do&#x27;;
 import type { FileElement } from &#x27;../file-element.do&#x27;;
 import { RichTextElement } from &#x27;../rich-text-element.do&#x27;;
+import { TaskElement } from &#x27;../task-element.do&#x27;;
 
 export interface BoardCompositeVisitor {
 	visitColumnBoard(columnBoard: ColumnBoard): void;
 	visitColumn(column: Column): void;
 	visitCard(card: Card): void;
-	visitRichTextElement(richTextElement: RichTextElement): void;
 	visitFileElement(fileElement: FileElement): void;
+	visitRichTextElement(richTextElement: RichTextElement): void;
+	visitTaskElement(taskElement: TaskElement): void;
 }
 
 export interface BoardCompositeVisitorAsync {
 	visitColumnBoardAsync(columnBoard: ColumnBoard): Promise&lt;void&gt;;
 	visitColumnAsync(column: Column): Promise&lt;void&gt;;
 	visitCardAsync(card: Card): Promise&lt;void&gt;;
-	visitRichTextElementAsync(richTextElement: RichTextElement): Promise&lt;void&gt;;
 	visitFileElementAsync(fileElement: FileElement): Promise&lt;void&gt;;
+	visitRichTextElementAsync(richTextElement: RichTextElement): Promise&lt;void&gt;;
+	visitTaskElementAsync(taskElement: TaskElement): Promise&lt;void&gt;;
 }
 </code></pre>
     </div>
