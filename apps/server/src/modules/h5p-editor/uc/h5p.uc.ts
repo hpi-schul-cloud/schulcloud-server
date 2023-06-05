@@ -195,7 +195,7 @@ export class H5PEditorUc {
 		return h5pPlayerHtml;
 	}
 
-	public async createOrSaveH5pContent(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
 		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);

@@ -191,7 +191,7 @@ export class H5PEditorController {
 		if (params.contentId === 'create') {
 			params.contentId = undefined as unknown as string;
 		}
-		const response = this.h5pEditorUc.createOrSaveH5pContent(currentUser, params.contentId, 'de');
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
 		return response;
 	}
 
