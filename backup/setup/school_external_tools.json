@@ -22,5 +22,28 @@
 			}
 		],
 		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de374cf6a427b9d39e5ba"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1685971828284"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1685971828284"
+			}
+		},
+		"tool": {
+			"$oid": "647de247cf6a427b9d39e5b9"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"toolVersion": 2
 	}
 ]

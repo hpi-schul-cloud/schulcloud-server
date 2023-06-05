@@ -22,5 +22,17 @@
 			}
 		],
 		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de3cfab79fd5bd57e68f4"
+		},
+		"contextId": "0000dcfbfb5c7a3f00bf21ab",
+		"contextType": "course",
+		"parameters": [],
+		"schoolTool": {
+			"$oid": "647de374cf6a427b9d39e5ba"
+		},
+		"toolVersion": 2
 	}
 ]
