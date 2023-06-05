@@ -88,14 +88,14 @@ export class H5PEditorUc {
 					size: filesFile.size,
 				},
 				query.id,
-				undefined, // Todo: Translation callback
+				undefined, // TODO: Translation callback
 				libraryUploadFile && {
 					data: libraryUploadFile.buffer,
 					mimetype: libraryUploadFile.mimetype,
 					name: libraryUploadFile.originalname,
 					size: libraryUploadFile.size,
 				},
-				undefined // Todo: HubID?
+				undefined // TODO: HubID?
 			);
 
 			return result;
@@ -201,14 +201,8 @@ export class H5PEditorUc {
 		return h5pPlayerHtml;
 	}
 
-	public async createH5PEditor(currentUser: ICurrentUser, language: string): Promise<string> {
-		// TODO: await this.checkPermission...
-		const contentId = undefined as unknown as string;
-		const createdH5PEditor: Promise<string> = this.editH5pContent(currentUser, contentId, language);
-		return createdH5PEditor;
-	}
-
-	public async editH5pContent(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: string): Promise<string> {
+		// If contentId is undefined, a new H5P content will be created.
 		// TODO: await this.checkPermission...
 		const user = this.changeUserType(currentUser);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -232,28 +226,8 @@ export class H5PEditorUc {
 		return deletedContent;
 	}
 
-	public async saveH5pContent(
-		currentUser: ICurrentUser,
-		contentId: string,
-		params: unknown,
-		metadata: IContentMetadata,
-		mainLibraryUbername: string
-	): Promise<string> {
-		// TODO: await this.checkPermission...
-		const user = this.changeUserType(currentUser);
-
-		const newContentId = await this.h5pEditor.saveOrUpdateContent(
-			contentId,
-			params,
-			metadata,
-			mainLibraryUbername,
-			user
-		);
-
-		return newContentId;
-	}
-
 	public async saveH5pContentGetMetadata(
+		contentId: string,
 		currentUser: ICurrentUser,
 		params: unknown,
 		metadata: IContentMetadata,
@@ -263,7 +237,7 @@ export class H5PEditorUc {
 		const user = this.changeUserType(currentUser);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
-			undefined as unknown as string, // Typings are wrong
+			contentId, // Typings are wrong
 			params,
 			metadata,
 			mainLibraryUbername,

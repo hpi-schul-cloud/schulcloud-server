@@ -186,36 +186,6 @@ export class H5PEditorController {
 		return result;
 	}
 
-	@Get('/create')
-	async createNewEditor(@CurrentUser() currentUser: ICurrentUser): Promise<string> {
-		// Todo: Get user language
-		const response = this.h5pEditorUc.createH5PEditor(currentUser, 'de');
-		return response;
-	}
-
-	@Post('/create')
-	async createNewContent(@Body() body: PostH5PContentCreateParams, @CurrentUser() currentUser: ICurrentUser) {
-		// Todo: Move to UC
-		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
-			currentUser,
-			body.params.params,
-			body.params.metadata,
-			body.library
-		);
-
-		return response;
-	}
-
-	@Get('/edit-h5p/:contentId')
-	async editH5pContent(
-		@Param() params: GetH5PContentParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<string> {
-		// Todo: Get user language
-		const response = this.h5pEditorUc.editH5pContent(currentUser, params.contentId, 'de');
-		return response;
-	}
-
 	@Post('/delete/:contentId')
 	async deleteH5pContent(
 		@Param() params: GetH5PContentParams,
@@ -226,25 +196,28 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Post('/edit-h5p/:contentId')
-	async saveH5pContent(
+	@Get('/:contentId')
+	async getH5PEditor(@Param() params: GetH5PContentParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
+		// TODO: Get user language
+		if (params.contentId === 'create') {
+			params.contentId = undefined as unknown as string;
+		}
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
+		return response;
+	}
+
+	@Post('/:contentId')
+	async createOrSaveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
 		@Param() params: GetH5PContentParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<string> {
-		/*
-		const newContentId = this.h5pEditorUc.saveH5pContent(
-			currentUser,
+	) {
+		if (params.contentId === 'create') {
+			params.contentId = undefined as unknown as string;
+		}
+		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
 			params.contentId,
-			params.params,
-			params.metadata,
-			params.mainLibraryUbername
-		);
-		*/
-		// return newContentId;
-		const response = await this.h5pEditorUc.saveH5pContent(
 			currentUser,
-			params.contentId,
 			body.params.params,
 			body.params.metadata,
 			body.library
