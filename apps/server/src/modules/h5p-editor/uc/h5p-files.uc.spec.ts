@@ -225,14 +225,6 @@ describe('H5P Files', () => {
 				'dummy-file.jpg'
 			);
 		});
-
-		it('should fail on invalid ubername', async () => {
-			const { ubername, filename } = setup('InvalidName', 'dummy-file.jpg', 'File Content');
-
-			const result = uc.getLibraryFile(ubername, filename);
-
-			await expect(result).rejects.toThrow('invalid-ubername-pattern');
-		});
 	});
 
 	describe('when getting temporary file', () => {

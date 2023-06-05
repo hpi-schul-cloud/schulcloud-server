@@ -1,5 +1,11 @@
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError, IContentMetadata, IUser } from '@lumieducation/h5p-server';
-import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	HttpException,
+	Injectable,
+	InternalServerErrorException,
+	NotFoundException,
+} from '@nestjs/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { Readable } from 'stream';
@@ -144,7 +150,7 @@ export class H5PEditorUc {
 				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
 			};
 		} catch (err) {
-			throw this.mapH5pError(err);
+			throw new NotFoundException();
 		}
 	}
 
@@ -158,7 +164,7 @@ export class H5PEditorUc {
 				contentLength: stats.size,
 			};
 		} catch (err) {
-			throw this.mapH5pError(err);
+			throw new NotFoundException();
 		}
 	}
 
@@ -189,7 +195,7 @@ export class H5PEditorUc {
 				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
 			};
 		} catch (err) {
-			throw this.mapH5pError(err);
+			throw new NotFoundException();
 		}
 	}
 

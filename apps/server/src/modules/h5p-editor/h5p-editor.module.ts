@@ -6,12 +6,12 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Account, Role, School, SchoolYear, System, User } from '@shared/domain';
+import { RabbitMQWrapperModule } from '@shared/infra/rabbitmq';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
 import { AuthorizationModule } from '@src/modules/authorization';
-import { FilesStorageAMQPModule } from '@src/modules/files-storage/files-storage-amqp.module';
 
 import { H5PEditorController } from './controller/h5p-editor.controller';
 import { config } from './h5p-editor.config';
@@ -40,7 +40,7 @@ const imports = [
 	AuthenticationModule,
 	AuthorizationModule,
 	CoreModule,
-	FilesStorageAMQPModule,
+	RabbitMQWrapperModule,
 	MikroOrmModule.forRoot({
 		...defaultMikroOrmOptions,
 		type: 'mongo',
