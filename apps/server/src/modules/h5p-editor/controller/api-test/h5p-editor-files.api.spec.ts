@@ -1,4 +1,5 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager } from '@mikro-orm/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -202,6 +203,65 @@ describe('H5PEditor Controller (api)', () => {
 				temporaryStorage.getFileStats.mockRejectedValueOnce(new Error('Does not exist'));
 
 				const response = await loggedInClient.get(`temp-files/nonexistant.txt`);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
+
+	describe('when requesting content parameters', () => {
+		describe('when user not exists', () => {
+			it('should respond with unauthorized exception', async () => {
+				const response = await testApiClient.get('params/dummyId');
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					type: 'UNAUTHORIZED',
+					title: 'Unauthorized',
+					message: 'Unauthorized',
+					code: 401,
+				});
+			});
+		});
+
+		describe('when user is logged in', () => {
+			const createStudent = () => UserAndAccountTestFactory.buildStudent();
+
+			const setup = async () => {
+				const { studentAccount, studentUser } = createStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return the content parameters', async () => {
+				const { loggedInClient } = await setup();
+
+				const dummyMetadata = new ContentMetadata();
+				const dummyParams = { name: 'Dummy' };
+
+				contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
+				contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
+
+				const response = await loggedInClient.get(`params/dummyId`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					h5p: dummyMetadata,
+					params: { metadata: dummyMetadata, params: dummyParams },
+				});
+			});
+
+			it('should return 404 if content does not exist', async () => {
+				const { loggedInClient } = await setup();
+
+				contentStorage.getMetadata.mockRejectedValueOnce(new Error('Does not exist'));
+
+				const response = await loggedInClient.get('params/dummyId');
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});

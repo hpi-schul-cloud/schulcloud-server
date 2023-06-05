@@ -118,7 +118,7 @@ export class H5PEditorUc {
 
 			return result;
 		} catch (err) {
-			throw this.mapH5pError(err);
+			throw new NotFoundException();
 		}
 	}
 
