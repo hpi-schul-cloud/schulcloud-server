@@ -15,7 +15,7 @@ class API {
 	}
 
 	async createNewEditor() {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/createNew`);
+		return request(this.app.getHttpServer()).get(`/h5p-editor/create`);
 	}
 }
 
