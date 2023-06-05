@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { EntityId } from '@shared/domain';
+import { ContextRef, EntityId } from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
@@ -34,8 +34,7 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
 		const newContextExternalTool: ContextExternalToolDO = new ContextExternalToolDO({
 			displayName: contextExternalTool.displayName,
-			contextId: contextExternalTool.contextId,
-			contextType: contextExternalTool.contextType,
+			contextRef: contextExternalTool.contextRef,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: contextExternalTool.parameters,
 			schoolToolRef: contextExternalTool.schoolToolRef,
@@ -78,13 +77,21 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextType),
-			contextExternalToolDO.contextId,
+			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalToolDO.contextRef.type),
+			contextExternalToolDO.contextRef.id,
 			context
 		);
 	}
 
 	findById(id: EntityId): Promise<ContextExternalToolDO> {
 		return this.getContextExternalToolById(id);
+	}
+
+	async findAllByContext(contextRef: ContextRef): Promise<ContextExternalToolDO[]> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+			context: contextRef,
+		});
+
+		return contextExternalTools;
 	}
 }

@@ -22,7 +22,7 @@ const createTeacher = () => {
 describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiRequest: TestApiClient;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +32,7 @@ describe('Course Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		apiRequest = new TestApiClient(app, 'courses');
+		testApiClient = new TestApiClient(app, 'courses');
 	});
 
 	afterAll(async () => {
@@ -57,7 +57,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush([student.account, student.user, course]);
 			em.clear();
 
-			const response = await apiRequest.get(undefined, student.account);
+			const loggedInClient = await testApiClient.login(student.account);
+			const response = await loggedInClient.get();
 
 			const { data } = response.body as CourseMetadataListResponse;
 			expect(response.statusCode).toBe(200);
@@ -70,7 +71,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
 
-			const response = await apiRequest.get(undefined, teacher.account);
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get();
 
 			const { data } = response.body as CourseMetadataListResponse;
 			expect(response.statusCode).toBe(200);
@@ -110,7 +112,8 @@ describe('Course Controller (API)', () => {
 
 			em.clear();
 
-			const response = await apiRequest.get(`${course.id}`, teacher.account);
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}`);
 			const courseResponse = response.body as CourseResponse;
 
 			expect(response.statusCode).toEqual(200);
@@ -125,7 +128,8 @@ describe('Course Controller (API)', () => {
 
 			em.clear();
 
-			const response = await apiRequest.get(`${course.id}`, substitutionTeacher.account);
+			const loggedInClient = await testApiClient.login(substitutionTeacher.account);
+			const response = await loggedInClient.get(`${course.id}`);
 			const courseResponse = response.body as CourseResponse;
 
 			expect(response.statusCode).toEqual(200);
@@ -140,7 +144,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush([course, teacherUnkownToCourse.account, teacherUnkownToCourse.user]);
 			em.clear();
 
-			const response = await apiRequest.get(`${course.id}`, teacherUnkownToCourse.account);
+			const loggedInClient = await testApiClient.login(teacherUnkownToCourse.account);
+			const response = await loggedInClient.get(`${course.id}`);
 			expect(response.statusCode).toEqual(404);
 		});
 		it('should not find course if id does not exist', async () => {
@@ -150,7 +155,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush([course, teacher.account, teacher.user]);
 			em.clear();
 
-			const response = await apiRequest.get(`${unknownId}`, teacher.account);
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${unknownId}`);
 			expect(response.statusCode).toEqual(404);
 		});
 		it('should find course without start and until date', async () => {
@@ -159,7 +165,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush([courseWithoutStartAndUntilDate, teacher.account, teacher.user]);
 			em.clear();
 
-			const response = await apiRequest.get(`${courseWithoutStartAndUntilDate.id}`, teacher.account);
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${courseWithoutStartAndUntilDate.id}`);
 			const courseResponse = response.body as CourseResponse;
 
 			expect(response.statusCode).toEqual(200);
@@ -192,7 +199,8 @@ describe('Course Controller (API)', () => {
 			await em.persistAndFlush(course);
 			em.clear();
 
-			const response = await apiRequest.get(`${course.id}/export`, student1.account);
+			const loggedInClient = await testApiClient.login(student1.account);
+			const response = await loggedInClient.get(`${course.id}/export`);
 
 			expect(response.statusCode).toEqual(200);
 			const courseResponse = response.body as CourseResponse;

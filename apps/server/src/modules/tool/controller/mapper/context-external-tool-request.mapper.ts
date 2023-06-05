@@ -5,12 +5,15 @@ import { ContextExternalToolPostParams, CustomParameterEntryParam } from '../dto
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalTool {
 		return {
+			id: '',
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
+			contextRef: {
+				id: request.contextId,
+				type: request.contextType,
+			},
 			displayName: request.displayName,
-			contextType: request.contextType,
-			contextId: request.contextId,
 			toolVersion: request.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
 		};

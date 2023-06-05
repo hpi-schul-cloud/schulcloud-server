@@ -17,8 +17,7 @@ export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
 	({ sequence }) => {
 		return {
 			schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
-			contextId: 'courseId',
-			contextType: ToolContextType.COURSE,
+			contextRef: { id: 'courseId', type: ToolContextType.COURSE },
 			displayName: 'My Course Tool 1',
 			parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 			toolVersion: 1,

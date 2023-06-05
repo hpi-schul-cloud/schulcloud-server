@@ -1,5 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContextExternalTool,
@@ -26,7 +26,11 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ObjectId } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-
+import {
+	ContextExternalToolPostParams,
+	ContextExternalToolResponse,
+	ContextExternalToolSearchListResponse,
+} from '../dto';
 import { ToolContextType } from '../../interface';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
@@ -35,7 +39,7 @@ describe('ToolContextController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 
-	let currentUser: ICurrentUser;
+	let currentUser: ICurrentUser | undefined;
 
 	const basePath = '/tools/context';
 
@@ -256,6 +260,155 @@ describe('ToolContextController (API)', () => {
 				currentUser = mapUserToCurrentUser(userWithMissingPermission);
 
 				await request(app.getHttpServer()).delete(`${basePath}/${contextExternalTool.id}`).expect(403);
+			});
+		});
+	});
+
+	describe('[GET] tools/context/:contextType/:contextId', () => {
+		const setup = async () => {
+			const userRole: Role = roleFactory.build({
+				name: RoleName.USER,
+				permissions: [Permission.CONTEXT_TOOL_USER],
+			});
+
+			const school: School = schoolFactory.buildWithId();
+			const otherSchool: School = schoolFactory.buildWithId();
+
+			const user: User = userFactory.buildWithId({ roles: [userRole], school });
+			const userFromOtherSchool: User = userFactory.buildWithId({ roles: [userRole], school: otherSchool });
+
+			const course: Course = courseFactory.buildWithId({
+				students: [user],
+				teachers: [user, userFromOtherSchool],
+				school,
+			});
+
+			const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				school,
+				toolVersion: 1,
+			});
+			const contextExternalTool1: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				contextId: course.id,
+				schoolTool: schoolExternalTool1,
+				toolVersion: 1,
+			});
+
+			const schoolExternalTool2: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				toolVersion: 1,
+				school,
+			});
+			const contextExternalTool2: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				contextId: course.id,
+				schoolTool: schoolExternalTool2,
+				toolVersion: 1,
+			});
+
+			const schoolExternalToolFromOtherSchool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				school: otherSchool,
+				toolVersion: 1,
+			});
+			const contextExternalToolFromOtherSchool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				contextId: course.id,
+				schoolTool: schoolExternalToolFromOtherSchool,
+				toolVersion: 1,
+			});
+
+			em.persist([
+				userRole,
+				school,
+				otherSchool,
+				course,
+				user,
+				userFromOtherSchool,
+				schoolExternalTool1,
+				contextExternalTool1,
+				schoolExternalTool2,
+				contextExternalTool2,
+				schoolExternalToolFromOtherSchool,
+				contextExternalToolFromOtherSchool,
+			]);
+			await em.flush();
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+
+			return {
+				contextExternalTool1,
+				contextExternalTool2,
+				user,
+				userRole,
+			};
+		};
+
+		describe('when user is authorized and has the required permissions', () => {
+			it('should return context external tools he has permission for', async () => {
+				const { contextExternalTool1, contextExternalTool2 } = await setup();
+
+				const response: Response = await request(app.getHttpServer()).get(
+					`${basePath}/${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+				);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual<ContextExternalToolSearchListResponse>({
+					data: [
+						{
+							parameters: [
+								{
+									name: contextExternalTool1.parameters[0].name,
+									value: contextExternalTool1.parameters[0].value,
+								},
+							],
+							id: contextExternalTool1.id,
+							schoolToolId: contextExternalTool1.schoolTool.id,
+							contextId: contextExternalTool1.contextId,
+							contextType: ToolContextType.COURSE,
+							contextToolName: contextExternalTool1.contextToolName,
+							toolVersion: contextExternalTool1.toolVersion,
+						},
+						{
+							parameters: [
+								{
+									name: contextExternalTool2.parameters[0].name,
+									value: contextExternalTool2.parameters[0].value,
+								},
+							],
+							id: contextExternalTool2.id,
+							schoolToolId: contextExternalTool2.schoolTool.id,
+							contextId: contextExternalTool2.contextId,
+							contextType: ToolContextType.COURSE,
+							contextToolName: contextExternalTool2.contextToolName,
+							toolVersion: contextExternalTool2.toolVersion,
+						},
+					],
+				});
+			});
+
+			describe('when user is not authorized', () => {
+				it('should return unauthorized', async () => {
+					const { contextExternalTool1 } = await setup();
+					currentUser = undefined;
+
+					await request(app.getHttpServer())
+						.get(`${basePath}/${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`)
+						.expect(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when user has not the required permission', () => {
+				it('should return response with no tools', async () => {
+					const { contextExternalTool1, userRole } = await setup();
+					userRole.permissions = [];
+					await em.persistAndFlush(userRole);
+
+					const response: Response = await request(app.getHttpServer()).get(
+						`${basePath}/${contextExternalTool1.contextType}/${contextExternalTool1.contextId}`
+					);
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual<ContextExternalToolSearchListResponse>({
+						data: [],
+					});
+				});
 			});
 		});
 	});
