@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import {
 	PseudonymsRepo,
 	ExternalToolRepoMapper,
@@ -22,9 +22,12 @@ import {
 	SchoolExternalToolValidationService,
 } from './service';
 import { ExternalToolServiceMapper } from './service/mapper';
+import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
+import { BasicToolLaunchStrategy } from './launch-tool/service/strategy';
+import { AuthorizationModule } from '../authorization';
 
 @Module({
-	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule],
+	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule, forwardRef(() => AuthorizationModule)],
 	providers: [
 		Lti11Service,
 		ExternalToolService,
@@ -42,6 +45,8 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		CommonToolValidationService,
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
+		ToolLaunchService,
+		BasicToolLaunchStrategy,
 	],
 	exports: [
 		Lti11Service,
@@ -53,6 +58,7 @@ import { ExternalToolServiceMapper } from './service/mapper';
 		CommonToolValidationService,
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
+		ToolLaunchService,
 	],
 })
 export class ToolModule {}

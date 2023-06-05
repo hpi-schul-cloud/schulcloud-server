@@ -40,7 +40,7 @@ describe('ExternalTool Entity', () => {
 				displayName: 'User Friendly Name',
 				default: 'mock',
 				location: CustomParameterLocation.PATH,
-				scope: CustomParameterScope.COURSE,
+				scope: CustomParameterScope.CONTEXT,
 				type: CustomParameterType.STRING,
 				regex: 'mockRegex',
 				regexComment: 'mockComment',

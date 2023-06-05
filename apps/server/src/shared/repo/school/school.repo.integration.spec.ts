@@ -1,15 +1,24 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ISchoolProperties, School, SchoolRolePermission, SchoolRoles, SchoolYear, System } from '@shared/domain';
+import {
+	ISchoolProperties,
+	School,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYear,
+	System,
+	UserLoginMigration,
+} from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { schoolFactory, systemFactory } from '@shared/testing';
+import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { InternalServerErrorException } from '@nestjs/common';
+import { userLoginMigrationFactory } from '@shared/testing/factory/user-login-migration.factory';
 import { SchoolRepo } from '..';
 
 describe('SchoolRepo', () => {
@@ -73,7 +82,12 @@ describe('SchoolRepo', () => {
 
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
-		const school = new School({ name: 'test', schoolYear, previousExternalId: 'someId' });
+		const school = new School({
+			name: 'test',
+			schoolYear,
+			previousExternalId: 'someId',
+			userLoginMigration: userLoginMigrationFactory.build(),
+		});
 		school.permissions = new SchoolRoles();
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
@@ -94,6 +108,7 @@ describe('SchoolRepo', () => {
 		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
+		expect(storedSchool.userLoginMigration).toBeDefined();
 	});
 
 	describe('findByExternalId', () => {
@@ -169,6 +184,8 @@ describe('SchoolRepo', () => {
 			const system: System = systemFactory.buildWithId();
 			const schoolYear: SchoolYear = schoolYearFactory.buildWithId();
 			const schoolEntity: School = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
+			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.build({ school: schoolEntity });
+			schoolEntity.userLoginMigration = userLoginMigration;
 
 			const schoolDO: SchoolDO = repo.mapEntityToDO(schoolEntity);
 
@@ -181,14 +198,10 @@ describe('SchoolRepo', () => {
 					features: [],
 					inMaintenanceSince: schoolEntity.inMaintenanceSince,
 					inUserMigration: schoolEntity.inUserMigration,
-					oauthMigrationStart: schoolEntity.oauthMigrationStart,
-					oauthMigrationMandatory: schoolEntity.oauthMigrationMandatory,
-					oauthMigrationPossible: schoolEntity.oauthMigrationPossible,
-					oauthMigrationFinished: schoolEntity.oauthMigrationFinished,
-					oauthMigrationFinalFinish: schoolEntity.oauthMigrationFinalFinish,
 					previousExternalId: schoolEntity.previousExternalId,
 					officialSchoolNumber: schoolEntity.officialSchoolNumber,
 					schoolYear,
+					userLoginMigrationId: userLoginMigration.id,
 				})
 			);
 		});
@@ -203,12 +216,31 @@ describe('SchoolRepo', () => {
 	});
 
 	describe('mapDOToEntityProperties is called', () => {
-		it('should map SchoolDO properties to ISchoolProperties', async () => {
+		const setup = async () => {
 			const system1: System = systemFactory.buildWithId();
 			const system2: System = systemFactory.buildWithId();
-			await em.persistAndFlush([system1, system2]);
-			const entityDO: SchoolDO = schoolDOFactory.build({ systems: [system1.id, system2.id] });
+
+			const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+
+			await em.persistAndFlush([userLoginMigration, system1, system2]);
+
+			const entityDO: SchoolDO = schoolDOFactory.build({
+				systems: [system1.id, system2.id],
+				userLoginMigrationId: userLoginMigration.id,
+			});
 			const emGetReferenceSpy = jest.spyOn(em, 'getReference');
+
+			return {
+				entityDO,
+				emGetReferenceSpy,
+				system1,
+				system2,
+				userLoginMigration,
+			};
+		};
+
+		it('should map SchoolDO properties to ISchoolProperties', async () => {
+			const { entityDO, emGetReferenceSpy, system1, system2, userLoginMigration } = await setup();
 
 			const result: ISchoolProperties = repo.mapDOToEntityProperties(entityDO);
 
@@ -217,23 +249,31 @@ describe('SchoolRepo', () => {
 			expect(result.inMaintenanceSince).toEqual(entityDO.inMaintenanceSince);
 			expect(result.inUserMigration).toEqual(entityDO.inUserMigration);
 			expect(result.name).toEqual(entityDO.name);
-			expect(result.oauthMigrationStart).toEqual(entityDO.oauthMigrationStart);
-			expect(result.oauthMigrationMandatory).toEqual(entityDO.oauthMigrationMandatory);
-			expect(result.oauthMigrationPossible).toEqual(entityDO.oauthMigrationPossible);
-			expect(result.oauthMigrationFinished).toEqual(entityDO.oauthMigrationFinished);
-			expect(result.oauthMigrationFinalFinish).toEqual(entityDO.oauthMigrationFinalFinish);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
 			expect(result.schoolYear).toEqual(entityDO.schoolYear);
+			expect(result.userLoginMigration?.id).toEqual(entityDO.userLoginMigrationId);
 
-			expect(emGetReferenceSpy).toHaveBeenCalledTimes(2);
+			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, System, system1.id);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(2, System, system2.id);
+			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(3, UserLoginMigration, userLoginMigration.id);
 		});
 
 		describe('when there are no systems', () => {
 			it('should not call the entity manager to get the system object', () => {
 				const entityDO: SchoolDO = schoolDOFactory.build({ systems: undefined });
+				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
+
+				repo.mapDOToEntityProperties(entityDO);
+
+				expect(emGetReferenceSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when there is no userLoginMigration', () => {
+			it('should not call the entity manager to get the user login migration reference', () => {
+				const entityDO: SchoolDO = schoolDOFactory.build({ userLoginMigrationId: undefined });
 				const emGetReferenceSpy = jest.spyOn(em, 'getReference');
 
 				repo.mapDOToEntityProperties(entityDO);

@@ -14,3 +14,4 @@ export * from './custom-parameter-entry.params';
 export * from './context-external-tool-post.params';
 export * from './context-external-tool-id.params';
 export * from './config';
+export * from './context-external-tool-context.params';

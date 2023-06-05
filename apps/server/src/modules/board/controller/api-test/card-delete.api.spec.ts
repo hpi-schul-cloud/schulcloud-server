@@ -2,12 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { CardNode, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, CardNode, RichTextElementNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	courseFactory,
 	mapUserToCurrentUser,
 	richTextElementNodeFactory,
 	userFactory,
@@ -72,14 +73,18 @@ describe(`card delete (api)`, () => {
 	const setup = async () => {
 		await cleanupCollections(em);
 		const user = userFactory.build();
+		const course = courseFactory.build({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
 
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 		const richTextElementNode = richTextElementNodeFactory.buildWithId({ parent: cardNode });
 		const siblingCardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 
-		await em.persistAndFlush([user, cardNode, columnNode, siblingCardNode, richTextElementNode]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, siblingCardNode, richTextElementNode]);
 		em.clear();
 
 		return { user, cardNode, columnBoardNode, columnNode, siblingCardNode, richTextElementNode };
@@ -126,6 +131,7 @@ describe(`card delete (api)`, () => {
 		it('should update position of the siblings', async () => {
 			const { user, cardNode, siblingCardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
+
 			cardNode.position = 0;
 			siblingCardNode.position = 1;
 
@@ -136,5 +142,17 @@ describe(`card delete (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { cardNode } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.delete(cardNode.id);
+
+			expect(response.status).toEqual(403);
+		});
+	});
 });
