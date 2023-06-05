@@ -4,9 +4,11 @@ The cross cutting topics are implemented within of the core-module.
 
 ## Logging
 
-For logging use the Logger, provided by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its injection scope is transient, so you can set a context when you inject it.
+For logging use the Logger, exported by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its injection scope is transient, so you can set a context when you inject it.
 
 For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called loggables. If you want to log something you have to use or create a loggable that implements the Loggable interface.
+
+The message should be fixed in each loggable. If you want to log further data, put in the data field of the LogMessage, like in the example below.
 
 ```TypeScript
 export class YourLoggable implements Loggable {
@@ -14,7 +16,7 @@ export class YourLoggable implements Loggable {
 
 	getLogMessage(): LogMessage {
 		return {
-			message: 'This is foo bar ärgerlich.',
+			message: 'I am a log message.',
 			data: { userId: this.userId, },
 		};
 	}
@@ -32,14 +34,14 @@ export class YourUc {
 
 	public sampleUcMethod(user) {
 		this.logger.log(new YourLoggable(userId: user.id));
-		// ...
 	}
+}
 ```
 
 This produces a logging output like
 
 ```
-[Nest] Info - 2023-05-31 15:20:30.888   [YourUc] This is foo bar ärgerlich.
+[NestWinston] Info - 2023-05-31 15:20:30.888   [YourUc] {  message: 'I am a log message.',  data: {   userId: '0000d231816abba584714c9e'  }}
 ```
 
 ## Exception Handling
