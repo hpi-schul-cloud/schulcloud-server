@@ -105,7 +105,7 @@ export class H5PEditorController {
 		return content;
 	}
 
-	@Get('params/:id/:file(*)')
+	@Get('content/:id/:file(*)')
 	async getContentFile(
 		@Param() params: ContentFileUrlParams,
 		@Req() req: Request,
