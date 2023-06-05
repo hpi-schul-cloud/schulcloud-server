@@ -6,17 +6,6 @@ import { Readable } from 'stream';
 
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 
-// ToDo
-const dummyUser = {
-	canCreateRestricted: true,
-	canInstallRecommended: true,
-	canUpdateAndInstallLibraries: true,
-	email: '',
-	id: 'dummyId',
-	name: 'Dummy User',
-	type: '',
-};
-
 @Injectable()
 export class H5PEditorUc {
 	constructor(private h5pEditor: H5PEditor, private h5pPlayer: H5PPlayer, private h5pAjaxEndpoint: H5PAjaxEndpoint) {}
@@ -56,7 +45,9 @@ export class H5PEditorUc {
 		return new InternalServerErrorException({ error });
 	}
 
-	public async getAjax(query: AjaxGetQueryParams) {
+	public async getAjax(query: AjaxGetQueryParams, currentUser: ICurrentUser) {
+		const user = this.changeUserType(currentUser);
+
 		try {
 			const result = await this.h5pAjaxEndpoint.getAjax(
 				query.action,
@@ -64,7 +55,7 @@ export class H5PEditorUc {
 				query.majorVersion,
 				query.minorVersion,
 				query.language,
-				dummyUser
+				user
 			);
 
 			return result;
@@ -73,7 +64,14 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async postAjax(query: AjaxPostQueryParams, body: AjaxPostBodyParams, files?: Express.Multer.File[]) {
+	public async postAjax(
+		currentUser: ICurrentUser,
+		query: AjaxPostQueryParams,
+		body: AjaxPostBodyParams,
+		files?: Express.Multer.File[]
+	) {
+		const user = this.changeUserType(currentUser);
+
 		try {
 			const filesFile = files?.find((file) => file.fieldname === 'file');
 			const libraryUploadFile = files?.find((file) => file.fieldname === 'h5p');
@@ -82,7 +80,7 @@ export class H5PEditorUc {
 				query.action,
 				body,
 				undefined, // Todo: Language
-				dummyUser, // Todo: User
+				user,
 				filesFile && {
 					data: filesFile.buffer,
 					mimetype: filesFile.mimetype,
@@ -106,9 +104,11 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getContentParameters(contentId: string) {
+	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+		const user = this.changeUserType(currentUser);
+
 		try {
-			const result = await this.h5pAjaxEndpoint.getContentParameters(contentId, dummyUser);
+			const result = await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
 
 			return result;
 		} catch (err) {
@@ -119,18 +119,21 @@ export class H5PEditorUc {
 	public async getContentFile(
 		contentId: string,
 		file: string,
-		req: Request
+		req: Request,
+		currentUser: ICurrentUser
 	): Promise<{
 		data: Readable;
 		contentType: string;
 		contentLength: number;
 		contentRange?: { start: number; end: number };
 	}> {
+		const user = this.changeUserType(currentUser);
+
 		try {
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getContentFile(
 				contentId,
 				file,
-				dummyUser,
+				user,
 				this.getRange(req)
 			);
 
@@ -161,17 +164,20 @@ export class H5PEditorUc {
 
 	public async getTemporaryFile(
 		file: string,
-		req: Request
+		req: Request,
+		currentUser: ICurrentUser
 	): Promise<{
 		data: Readable;
 		contentType: string;
 		contentLength: number;
 		contentRange?: { start: number; end: number };
 	}> {
+		const user = this.changeUserType(currentUser);
+
 		try {
 			const { mimetype, range, stats, stream } = await this.h5pAjaxEndpoint.getTemporaryFile(
 				file,
-				dummyUser,
+				user,
 				// @ts-expect-error 2345: Callback can return undefined, typings from @lumieducation/h5p-server are wrong
 				this.getRange(req)
 			);

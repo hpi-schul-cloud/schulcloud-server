@@ -33,7 +33,6 @@ import {
 	GetH5PContentParams,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
-	PostH5PContentParams,
 } from './dto';
 
 // Dummy html response so we can test i-frame integration
@@ -100,8 +99,8 @@ export class H5PEditorController {
 	}
 
 	@Get('params/:id')
-	async getContentParameters(@Param('id') id: string) {
-		const content = await this.h5pEditorUc.getContentParameters(id);
+	async getContentParameters(@Param('id') id: string, @CurrentUser() currentUser: ICurrentUser) {
+		const content = await this.h5pEditorUc.getContentParameters(id, currentUser);
 
 		return content;
 	}
@@ -110,12 +109,14 @@ export class H5PEditorController {
 	async getContentFile(
 		@Param() params: ContentFileUrlParams,
 		@Req() req: Request,
-		@Res({ passthrough: true }) res: Response
+		@Res({ passthrough: true }) res: Response,
+		@CurrentUser() currentUser: ICurrentUser
 	) {
 		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getContentFile(
 			params.id,
 			params.file,
-			req
+			req,
+			currentUser
 		);
 
 		if (contentRange) {
@@ -137,8 +138,17 @@ export class H5PEditorController {
 	}
 
 	@Get('temp-files/:file(*)')
-	async getTemporaryFile(@Param('file') file: string, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(file, req);
+	async getTemporaryFile(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param('file') file: string,
+		@Req() req: Request,
+		@Res({ passthrough: true }) res: Response
+	) {
+		const { data, contentType, contentLength, contentRange } = await this.h5pEditorUc.getTemporaryFile(
+			file,
+			req,
+			currentUser
+		);
 
 		if (contentRange) {
 			const contentRangeHeader = `bytes ${contentRange.start}-${contentRange.end}/${contentLength}`;
@@ -159,8 +169,8 @@ export class H5PEditorController {
 	}
 
 	@Get('ajax')
-	async getAjax(@Query() query: AjaxGetQueryParams) {
-		const response = this.h5pEditorUc.getAjax(query);
+	async getAjax(@Query() query: AjaxGetQueryParams, @CurrentUser() currentUser: ICurrentUser) {
+		const response = this.h5pEditorUc.getAjax(query, currentUser);
 		return response;
 	}
 
@@ -169,9 +179,10 @@ export class H5PEditorController {
 	async postAjax(
 		@Body(AjaxPostBodyParamsTransformPipe) body: AjaxPostBodyParams,
 		@Query() query: AjaxPostQueryParams,
-		@UploadedFiles() files: Express.Multer.File[]
+		@UploadedFiles() files: Express.Multer.File[],
+		@CurrentUser() currentUser: ICurrentUser
 	) {
-		const result = await this.h5pEditorUc.postAjax(query, body, files);
+		const result = await this.h5pEditorUc.postAjax(currentUser, query, body, files);
 		return result;
 	}
 

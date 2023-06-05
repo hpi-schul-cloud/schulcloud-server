@@ -47,6 +47,8 @@ describe('H5P Files', () => {
 	});
 
 	describe('when getting content parameters', () => {
+		const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+
 		it('should call ContentStorage and return the result', async () => {
 			const dummyMetadata = new ContentMetadata();
 			const dummyParams = { name: 'Dummy' };
@@ -54,7 +56,7 @@ describe('H5P Files', () => {
 			contentStorage.getMetadata.mockResolvedValueOnce(dummyMetadata);
 			contentStorage.getParameters.mockResolvedValueOnce(dummyParams);
 
-			const result = await uc.getContentParameters('dummylib-1.0');
+			const result = await uc.getContentParameters('dummylib-1.0', userMock);
 
 			expect(result).toEqual({
 				h5p: dummyMetadata,
@@ -66,7 +68,7 @@ describe('H5P Files', () => {
 			contentStorage.getMetadata.mockRejectedValueOnce(new Error('Could not get Metadata'));
 			contentStorage.getParameters.mockRejectedValueOnce(new Error('Could not get Parameters'));
 
-			const result = uc.getContentParameters('dummylib-1.0');
+			const result = uc.getContentParameters('dummylib-1.0', userMock);
 
 			await expect(result).rejects.toThrow();
 		});
@@ -97,17 +99,19 @@ describe('H5P Files', () => {
 				range: (size: number) => rangeCallbackReturnValue,
 			} as Request;
 
-			return { contentId, filename, requestMock, contentRange, contentLength, readableContent };
+			const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+
+			return { contentId, filename, requestMock, contentRange, contentLength, readableContent, userMock };
 		};
 
 		it('should call ContentStorage and return the result', async () => {
-			const { contentId, filename, requestMock, contentLength, contentRange, readableContent } = setup(
+			const { contentId, filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
 				'DummyId',
 				'dummy-file.jpg',
 				'File Content'
 			);
 
-			const result = await uc.getContentFile(contentId, filename, requestMock);
+			const result = await uc.getContentFile(contentId, filename, requestMock, userMock);
 
 			expect(result).toStrictEqual({
 				data: readableContent,
@@ -116,11 +120,15 @@ describe('H5P Files', () => {
 				contentRange,
 			});
 
-			expect(contentStorage.getFileStats).toHaveBeenCalledWith(contentId, filename, expect.anything()); // Todo: User
+			expect(contentStorage.getFileStats).toHaveBeenCalledWith(
+				contentId,
+				filename,
+				expect.objectContaining({ id: 'dummyId' })
+			);
 			expect(contentStorage.getFileStream).toHaveBeenCalledWith(
 				contentId,
 				filename,
-				expect.anything(), // Todo: User
+				expect.objectContaining({ id: 'dummyId' }),
 				contentRange?.start,
 				contentRange?.end
 			);
@@ -129,14 +137,14 @@ describe('H5P Files', () => {
 		it('should accept ranges', async () => {
 			const content = 'File Content';
 
-			const { contentId, filename, requestMock, contentLength, contentRange, readableContent } = setup(
+			const { contentId, filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
 				'DummyId',
 				'dummy-file.jpg',
 				content,
 				[{ start: 0, end: content.length }]
 			);
 
-			const result = await uc.getContentFile(contentId, filename, requestMock);
+			const result = await uc.getContentFile(contentId, filename, requestMock, userMock);
 
 			expect(result).toStrictEqual({
 				data: readableContent,
@@ -145,34 +153,38 @@ describe('H5P Files', () => {
 				contentRange,
 			});
 
-			expect(contentStorage.getFileStats).toHaveBeenCalledWith(contentId, filename, expect.anything()); // Todo: User
+			expect(contentStorage.getFileStats).toHaveBeenCalledWith(
+				contentId,
+				filename,
+				expect.objectContaining({ id: 'dummyId' })
+			);
 			expect(contentStorage.getFileStream).toHaveBeenCalledWith(
 				contentId,
 				filename,
-				expect.anything(), // Todo: User
+				expect.objectContaining({ id: 'dummyId' }),
 				contentRange?.start,
 				contentRange?.end
 			);
 		});
 
 		it('should fail on invalid ranges', async () => {
-			const { contentId, filename, requestMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -2);
-			const result = uc.getContentFile(contentId, filename, requestMock);
+			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -2);
+			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 
 		it('should fail on unsatisfiable ranges', async () => {
-			const { contentId, filename, requestMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -1);
-			const result = uc.getContentFile(contentId, filename, requestMock);
+			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', -1);
+			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 
 		it('should fail on multipart ranges', async () => {
-			const { contentId, filename, requestMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', [
+			const { contentId, filename, requestMock, userMock } = setup('DummyId', 'dummy-file.jpg', 'File Content', [
 				{ start: 0, end: 5 },
 				{ start: 8, end: 12 },
 			]);
-			const result = uc.getContentFile(contentId, filename, requestMock);
+			const result = uc.getContentFile(contentId, filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 	});
@@ -247,16 +259,18 @@ describe('H5P Files', () => {
 				range: (size: number) => rangeCallbackReturnValue,
 			} as Request;
 
-			return { filename, requestMock, contentRange, contentLength, readableContent };
+			const userMock = { userId: 'dummyId', roles: [], schoolId: 'dummySchool', accountId: 'dummyAccountId' };
+
+			return { filename, requestMock, contentRange, contentLength, readableContent, userMock };
 		};
 
 		it('should call ContentStorage and return the result', async () => {
-			const { filename, requestMock, contentLength, contentRange, readableContent } = setup(
+			const { filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
 				'dummy-file.jpg',
 				'File Content'
 			);
 
-			const result = await uc.getTemporaryFile(filename, requestMock);
+			const result = await uc.getTemporaryFile(filename, requestMock, userMock);
 
 			expect(result).toStrictEqual({
 				data: readableContent,
@@ -265,10 +279,10 @@ describe('H5P Files', () => {
 				contentRange,
 			});
 
-			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.anything()); // Todo: User
+			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.objectContaining({ id: 'dummyId' }));
 			expect(temporaryStorage.getFileStream).toHaveBeenCalledWith(
 				filename,
-				expect.anything(), // Todo: User
+				expect.objectContaining({ id: 'dummyId' }),
 				contentRange?.start,
 				contentRange?.end
 			);
@@ -277,11 +291,13 @@ describe('H5P Files', () => {
 		it('should accept ranges', async () => {
 			const content = 'File Content';
 
-			const { filename, requestMock, contentLength, contentRange, readableContent } = setup('dummy-file.jpg', content, [
-				{ start: 0, end: content.length },
-			]);
+			const { filename, requestMock, contentLength, contentRange, readableContent, userMock } = setup(
+				'dummy-file.jpg',
+				content,
+				[{ start: 0, end: content.length }]
+			);
 
-			const result = await uc.getTemporaryFile(filename, requestMock);
+			const result = await uc.getTemporaryFile(filename, requestMock, userMock);
 
 			expect(result).toStrictEqual({
 				data: readableContent,
@@ -290,33 +306,33 @@ describe('H5P Files', () => {
 				contentRange,
 			});
 
-			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.anything()); // Todo: User
+			expect(temporaryStorage.getFileStats).toHaveBeenCalledWith(filename, expect.objectContaining({ id: 'dummyId' }));
 			expect(temporaryStorage.getFileStream).toHaveBeenCalledWith(
 				filename,
-				expect.anything(), // Todo: User
+				expect.objectContaining({ id: 'dummyId' }),
 				contentRange?.start,
 				contentRange?.end
 			);
 		});
 
 		it('should fail on invalid ranges', async () => {
-			const { filename, requestMock } = setup('dummy-file.jpg', 'File Content', -2);
-			const result = uc.getTemporaryFile(filename, requestMock);
+			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', -2);
+			const result = uc.getTemporaryFile(filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 
 		it('should fail on unsatisfiable ranges', async () => {
-			const { filename, requestMock } = setup('dummy-file.jpg', 'File Content', -2);
-			const result = uc.getTemporaryFile(filename, requestMock);
+			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', -2);
+			const result = uc.getTemporaryFile(filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 
 		it('should fail on multipart ranges', async () => {
-			const { filename, requestMock } = setup('dummy-file.jpg', 'File Content', [
+			const { filename, requestMock, userMock } = setup('dummy-file.jpg', 'File Content', [
 				{ start: 0, end: 5 },
 				{ start: 8, end: 12 },
 			]);
-			const result = uc.getTemporaryFile(filename, requestMock);
+			const result = uc.getTemporaryFile(filename, requestMock, userMock);
 			await expect(result).rejects.toThrow();
 		});
 	});
