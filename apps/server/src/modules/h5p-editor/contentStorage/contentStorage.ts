@@ -66,6 +66,7 @@ export class ContentStorage implements IContentStorage {
 			throw new Error('404: Content not Found at addFile.');
 		}
 
+		await this.existsOrCreateDir(contentId, path.dirname(filename));
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
 		const writeStream = fs.createWriteStream(fullPath);
 		stream.pipe(writeStream);
@@ -262,12 +263,8 @@ export class ContentStorage implements IContentStorage {
 		return this.contentPath;
 	}
 
-	private async existsOrCreateDir(contentId: ContentId) {
-		try {
-			await fsPromises.access(path.join(this.getContentPath(), contentId.toString()));
-		} catch (error) {
-			await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString()));
-		}
+	private async existsOrCreateDir(contentId: ContentId, subdir = '') {
+		await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString(), subdir), { recursive: true });
 	}
 
 	private hasDependencyOn(
