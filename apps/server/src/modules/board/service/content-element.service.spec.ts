@@ -1,13 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ContentElementFactory,
-	ContentElementType,
-	FileElement,
-	InputFormat,
-	RichTextElement,
-} from '@shared/domain';
+import { ContentElementFactory, ContentElementType, FileElement, InputFormat, RichTextElement } from '@shared/domain';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,
