@@ -6,7 +6,6 @@
 const mongoose = require('mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
-const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { countySchema } = require('../federalState/countyModel');
 
@@ -43,7 +42,6 @@ const rssFeedSchema = new Schema({
 		enum: ['pending', 'success', 'error'],
 	},
 });
-enableAuditLog(rssFeedSchema);
 
 const customYearSchema = new Schema({
 	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
@@ -162,11 +160,6 @@ const yearSchema = new Schema({
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
-
-enableAuditLog(schoolSchema);
-enableAuditLog(schoolGroupSchema);
-enableAuditLog(yearSchema);
-enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);

@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -15,8 +14,6 @@ const passwordRecoverySchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
-
-enableAuditLog(passwordRecoverySchema);
 
 const passwordRecoveryModel = mongoose.model('passwordRecovery', passwordRecoverySchema);
 
