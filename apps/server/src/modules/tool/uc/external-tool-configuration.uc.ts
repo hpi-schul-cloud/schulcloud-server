@@ -137,23 +137,28 @@ export class ExternalToolConfigurationUc {
 	// TODO: test
 	public async getExternalToolForSchool(userId: EntityId, externalToolId: EntityId): Promise<ExternalToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		if (await this.ensurePermission(user)) {
-			const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
-				externalToolId,
-				CustomParameterScope.SCHOOL
-			);
+		this.ensurePermission(user);
+		const externalToolDO: ExternalToolDO = await this.externalToolService.getExternalToolForScope(
+			externalToolId,
+			CustomParameterScope.SCHOOL
+		);
 
-			if (externalToolDO.isHidden) {
-				throw new NotFoundException('Could not find the Tool Template');
-			}
-
-			return externalToolDO;
+		if (externalToolDO.isHidden) {
+			throw new NotFoundException('Could not find the Tool Template');
 		}
-		throw new ForbiddenException();
+
+		return externalToolDO;
 	}
 
-	private async ensurePermission(user: User) {
-		return this.authorizationService.hasOneOfPermissions(user, [
+	private async ensureSchoolPermission(userId: EntityId, schoolId: EntityId) {
+		return this.authorizationService.checkPermissionByReferences(userId, AuthorizableReferenceType.School, schoolId, {
+			action: Action.read,
+			requiredPermissions: [Permission.SCHOOL_TOOL_ADMIN],
+		});
+	}
+
+	private ensurePermission(user: User) {
+		return this.authorizationService.checkOneOfPermissions(user, [
 			Permission.CONTEXT_TOOL_ADMIN,
 			Permission.SCHOOL_TOOL_ADMIN,
 		]);
