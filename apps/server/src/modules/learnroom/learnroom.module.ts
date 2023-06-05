@@ -21,6 +21,7 @@ import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { BoardCopyService } from './service/board-copy.service';
+import { ColumnBoardTargetService } from './service/column-board-target.service';
 import { CommonCartridgeExportService } from './service/common-cartridge-export.service';
 import { CourseCopyService } from './service/course-copy.service';
 import { CourseService } from './service/course.service';
@@ -72,6 +73,7 @@ import { RoomsUc } from './uc/rooms.uc';
 		CourseService,
 		CommonCartridgeExportService,
 		CourseExportUc,
+		ColumnBoardTargetService,
 	],
 	exports: [CourseCopyService, CourseService],
 })
