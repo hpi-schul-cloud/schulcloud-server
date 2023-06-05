@@ -80,12 +80,19 @@ describe('AbstractLaunchStrategy', () => {
 
 			const schoolCustomParameter = customParameterDOFactory.build({
 				scope: CustomParameterScope.SCHOOL,
+				location: CustomParameterLocation.PATH,
+				name: 'schoolParam',
+				type: CustomParameterType.BOOLEAN,
+			});
+
+			const schoolCustomParameterAuto = customParameterDOFactory.build({
+				scope: CustomParameterScope.SCHOOL,
 				location: CustomParameterLocation.QUERY,
 				name: 'schoolParam',
 				type: CustomParameterType.AUTO_SCHOOLID,
 			});
 
-			const contextCustomParameter = customParameterDOFactory.build({
+			const contextCustomParameterAuto = customParameterDOFactory.build({
 				scope: CustomParameterScope.CONTEXT,
 				location: CustomParameterLocation.BODY,
 				name: 'contextParam',
@@ -94,7 +101,12 @@ describe('AbstractLaunchStrategy', () => {
 
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 				config: basicToolConfigDO,
-				parameters: [globalCustomParameter, schoolCustomParameter, contextCustomParameter],
+				parameters: [
+					globalCustomParameter,
+					schoolCustomParameter,
+					schoolCustomParameterAuto,
+					contextCustomParameterAuto,
+				],
 			});
 
 			const schoolParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
@@ -106,7 +118,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 
 			const contextParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
-				name: contextCustomParameter.name,
+				name: contextCustomParameterAuto.name,
 				value: 'anyValue',
 			});
 			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
@@ -116,7 +128,8 @@ describe('AbstractLaunchStrategy', () => {
 			return {
 				globalCustomParameter,
 				schoolCustomParameter,
-				contextCustomParameter,
+				schoolCustomParameterAuto,
+				contextCustomParameterAuto,
 				schoolParameterEntry,
 				contextParameterEntry,
 				externalToolDO,
@@ -130,7 +143,9 @@ describe('AbstractLaunchStrategy', () => {
 			const {
 				globalCustomParameter,
 				schoolCustomParameter,
-				contextCustomParameter,
+				schoolCustomParameterAuto,
+				contextCustomParameterAuto,
+				schoolParameterEntry,
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
@@ -156,11 +171,16 @@ describe('AbstractLaunchStrategy', () => {
 					},
 					{
 						name: schoolCustomParameter.name,
+						value: schoolParameterEntry.value as string,
+						location: PropertyLocation.PATH,
+					},
+					{
+						name: schoolCustomParameterAuto.name,
 						value: launchParams.schoolExternalToolDO.schoolId,
 						location: PropertyLocation.QUERY,
 					},
 					{
-						name: contextCustomParameter.name,
+						name: contextCustomParameterAuto.name,
 						value: launchParams.contextExternalToolDO.contextId,
 						location: PropertyLocation.BODY,
 					},
@@ -237,7 +257,7 @@ describe('AbstractLaunchStrategy', () => {
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
-				schoolCustomParameter,
+				schoolCustomParameterAuto,
 				schoolParameterEntry,
 			} = setup();
 			const launchParams: IToolLaunchParams = {
@@ -245,7 +265,7 @@ describe('AbstractLaunchStrategy', () => {
 				schoolExternalToolDO,
 				contextExternalToolDO,
 			};
-			externalToolDO.parameters = [schoolCustomParameter];
+			externalToolDO.parameters = [schoolCustomParameterAuto];
 			schoolExternalToolDO.parameters = [schoolParameterEntry];
 			contextExternalToolDO.parameters = [];
 
@@ -257,7 +277,7 @@ describe('AbstractLaunchStrategy', () => {
 				openNewTab: false,
 				properties: [
 					{
-						name: schoolCustomParameter.name,
+						name: schoolCustomParameterAuto.name,
 						value: launchParams.schoolExternalToolDO.schoolId,
 						location: PropertyLocation.QUERY,
 					},
@@ -275,7 +295,7 @@ describe('AbstractLaunchStrategy', () => {
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
-				contextCustomParameter,
+				contextCustomParameterAuto,
 				contextParameterEntry,
 			} = setup();
 			const launchParams: IToolLaunchParams = {
@@ -283,7 +303,7 @@ describe('AbstractLaunchStrategy', () => {
 				schoolExternalToolDO,
 				contextExternalToolDO,
 			};
-			externalToolDO.parameters = [contextCustomParameter];
+			externalToolDO.parameters = [contextCustomParameterAuto];
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [contextParameterEntry];
 
@@ -295,7 +315,7 @@ describe('AbstractLaunchStrategy', () => {
 				openNewTab: false,
 				properties: [
 					{
-						name: contextCustomParameter.name,
+						name: contextCustomParameterAuto.name,
 						value: launchParams.contextExternalToolDO.contextId,
 						location: PropertyLocation.BODY,
 					},

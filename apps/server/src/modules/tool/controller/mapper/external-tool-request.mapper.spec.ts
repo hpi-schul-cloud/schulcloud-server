@@ -33,6 +33,7 @@ import {
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../dto';
+import { Lti11ToolConfigUpdateParams } from '../dto/request/config/lti11-tool-config-update.params';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
@@ -241,7 +242,7 @@ describe('ExternalToolRequestMapper', () => {
 
 		describe('when mapping lti tool', () => {
 			const ltiSetup = () => {
-				const lti11ConfigParams = new Lti11ToolConfigCreateParams();
+				const lti11ConfigParams = new Lti11ToolConfigUpdateParams();
 				lti11ConfigParams.type = ToolConfigType.LTI11;
 				lti11ConfigParams.baseUrl = 'mockUrl';
 				lti11ConfigParams.key = 'mockKey';
@@ -259,6 +260,7 @@ describe('ExternalToolRequestMapper', () => {
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 				});
+
 				return { lti11ToolConfigDO, lti11ConfigParams };
 			};
 

@@ -14,7 +14,7 @@
 		},
 		"contextId": "0000dcfbfb5c7a3f00bf21ab",
 		"contextType": "course",
-		"contextToolName": "Google-Suche",
+		"displayName": "Google-Suche",
 		"parameters": [
 			{
 				"name": "q",

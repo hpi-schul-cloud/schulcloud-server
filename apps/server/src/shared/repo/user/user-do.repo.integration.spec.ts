@@ -252,7 +252,7 @@ describe('UserRepo', () => {
 					firstName: testEntity.firstName,
 					lastName: testEntity.lastName,
 					schoolId: testEntity.school.id,
-					roleIds: [
+					roles: [
 						{
 							id: role.id,
 							name: role.name,

@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
+import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
 import { Action } from '@src/modules';
+import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
 import { ContextExternalToolUc } from './context-external-tool.uc';
-import { ToolContextType } from '../interface';
 
 describe('ContextExternalToolUc', () => {
 	let module: TestingModule;
@@ -50,7 +50,7 @@ describe('ContextExternalToolUc', () => {
 
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
 					contextType: ToolContextType.COURSE,
-					contextToolName: 'Course',
+					displayName: 'Course',
 					contextId: 'contextId',
 				});
 

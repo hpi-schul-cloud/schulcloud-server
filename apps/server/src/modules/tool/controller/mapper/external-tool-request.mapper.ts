@@ -57,7 +57,7 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams, version = 1): ExternalToolUpdate {
+	public mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams, version = 1): ExternalToolUpdate {
 		let mappedConfig: BasicToolConfig | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate;
 		if (externalToolUpdateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolUpdateParams.config);
@@ -84,7 +84,7 @@ export class ExternalToolRequestMapper {
 		};
 	}
 
-	mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams, version = 1): ExternalToolCreate {
+	public mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams, version = 1): ExternalToolCreate {
 		let mappedConfig: BasicToolConfig | Lti11ToolConfigCreate | Oauth2ToolConfigCreate;
 		if (externalToolCreateParams.config instanceof BasicToolConfigParams) {
 			mappedConfig = this.mapRequestToBasicToolConfig(externalToolCreateParams.config);

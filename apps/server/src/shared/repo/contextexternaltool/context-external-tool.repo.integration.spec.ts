@@ -19,8 +19,8 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ToolContextType } from '@src/modules/tool/interface';
+import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {
@@ -114,7 +114,7 @@ describe('ContextExternalToolRepo', () => {
 		describe('when context is known', () => {
 			function setupDO() {
 				const domainObject: ContextExternalToolDO = contextExternalToolDOFactory.build({
-					contextToolName: 'displayName',
+					displayName: 'displayName',
 					contextId: new ObjectId().toHexString(),
 					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 					schoolToolRef: {
@@ -131,14 +131,12 @@ describe('ContextExternalToolRepo', () => {
 
 			it('should save a ContextExternalToolDO', async () => {
 				const { domainObject } = setupDO();
-				const { id, updatedAt, createdAt, ...expected } = domainObject;
+				const { id, ...expected } = domainObject;
 
 				const result: ContextExternalToolDO = await repo.save(domainObject);
 
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
-				expect(result.updatedAt).toBeDefined();
-				expect(result.createdAt).toBeDefined();
 			});
 		});
 
@@ -146,7 +144,7 @@ describe('ContextExternalToolRepo', () => {
 			const contextSetup = () => {
 				const domainObject: ContextExternalToolDO = contextExternalToolDOFactory.build({
 					contextType: 'UNKNOWN' as ToolContextType,
-					contextToolName: 'displayName',
+					displayName: 'displayName',
 					contextId: new ObjectId().toHexString(),
 					parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 					schoolToolRef: {

@@ -26,9 +26,9 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ObjectId } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
-import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
 import { ToolContextType } from '../../interface';
+import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -90,7 +90,7 @@ describe('ToolContextController (API)', () => {
 				const postParams: ContextExternalToolPostParams = {
 					schoolToolId: schoolExternalTool.id,
 					contextId: course.id,
-					contextToolName: course.name,
+					displayName: course.name,
 					contextType: ToolContextType.COURSE,
 					parameters: [paramEntry],
 					toolVersion: 1,
@@ -122,7 +122,7 @@ describe('ToolContextController (API)', () => {
 								id: expect.any(String),
 								schoolToolId: postParams.schoolToolId,
 								contextId: postParams.contextId,
-								contextToolName: postParams.contextToolName,
+								displayName: postParams.displayName,
 								contextType: postParams.contextType,
 								parameters: postParams.parameters,
 								toolVersion: postParams.toolVersion,

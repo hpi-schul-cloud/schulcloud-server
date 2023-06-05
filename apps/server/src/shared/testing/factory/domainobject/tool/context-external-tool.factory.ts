@@ -1,6 +1,6 @@
-import { DeepPartial } from 'fishery';
 import { ContextExternalToolDO, CustomParameterEntryDO } from '@shared/domain/domainobject/tool';
 import { ToolContextType } from '@src/modules/tool/interface';
+import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../do-base.factory';
 
 class ContextExternalToolDOFactory extends DoBaseFactory<ContextExternalToolDO, ContextExternalToolDO> {
@@ -16,14 +16,12 @@ export const contextExternalToolDOFactory = ContextExternalToolDOFactory.define(
 	ContextExternalToolDO,
 	({ sequence }) => {
 		return {
-			updatedAt: new Date(),
 			schoolToolRef: { schoolToolId: `schoolToolId-${sequence}`, schoolId: 'schoolId' },
 			contextId: 'courseId',
 			contextType: ToolContextType.COURSE,
-			contextToolName: 'My Course Tool 1',
+			displayName: 'My Course Tool 1',
 			parameters: [new CustomParameterEntryDO({ name: 'param', value: 'value' })],
 			toolVersion: 1,
-			createdAt: new Date(),
 		};
 	}
 );

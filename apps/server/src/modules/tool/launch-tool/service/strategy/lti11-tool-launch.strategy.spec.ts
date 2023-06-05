@@ -21,12 +21,12 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymDOFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { PseudonymService } from '@src/modules/pseudonym/service/pseudonym.service';
-import { ExternalToolService } from '@src/modules/tool/service/external-tool.service';
+import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../interface';
+import { ExternalToolService } from '../../../service';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
