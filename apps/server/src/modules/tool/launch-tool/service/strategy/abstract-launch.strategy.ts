@@ -76,7 +76,7 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	}
 
 	private applyPropertiesToPathParams(url: URL, pathProperties: PropertyData[]): void {
-		const trimSlash: string = url.pathname.replace(/^\/+|\/+$/g, '');
+		const trimSlash: string = url.pathname.replace(/(^\/+)|(\/+$)/g, '');
 		const pathParams: string[] = trimSlash.split('/');
 
 		const filledPathParams: string[] = pathParams.map((param: string): string => {
