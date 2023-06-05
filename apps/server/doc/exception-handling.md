@@ -24,6 +24,18 @@ For business errors we use 409/conflict as default to clearly have all business 
 
 Pipes can be used as input validation. To get errors reported in the correct format, they can define a custom exception factory when they should produce api validation error or other exceptions, handled by clients.
 
+## Chaining errors with the `cause` property
+
+If you catch an error and throw a new one, put the original error in the [`cause` property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause) of the new error. See example:
+
+```typescript
+try {
+    someMethod();
+} catch(error) {
+    throw new ForbiddenException('some message', { cause: error });
+}
+```
+
 
 ## Loggable exceptions
 
