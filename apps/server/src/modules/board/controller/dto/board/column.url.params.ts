@@ -9,4 +9,5 @@ export class ColumnUrlParams {
 		nullable: false,
 	})
 	columnId!: string;
+	// hier optional ein Array mit den Typen?
 }
