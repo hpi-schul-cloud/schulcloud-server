@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
 import { BoardRepo, LessonRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import { TaskService } from '@src/modules/task/service';
 import { ColumnBoardTargetService } from './column-board-target.service';
 import { RoomsService } from './rooms.service';
@@ -43,6 +43,18 @@ describe('rooms service', () => {
 				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
+				},
+				{
+					provide: ColumnService,
+					useValue: createMock<ColumnService>(),
+				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
+				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
 				},
 				{
 					provide: ColumnBoardTargetService,
