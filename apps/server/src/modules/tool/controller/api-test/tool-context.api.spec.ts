@@ -26,13 +26,12 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { ObjectId } from 'bson';
 import { Request } from 'express';
 import request, { Response } from 'supertest';
+import { ToolContextType } from '../../interface';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,
 	ContextExternalToolSearchListResponse,
 } from '../dto';
-import { ToolContextType } from '../../interface';
-import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
 describe('ToolContextController (API)', () => {
 	let app: INestApplication;
@@ -362,7 +361,7 @@ describe('ToolContextController (API)', () => {
 							schoolToolId: contextExternalTool1.schoolTool.id,
 							contextId: contextExternalTool1.contextId,
 							contextType: ToolContextType.COURSE,
-							contextToolName: contextExternalTool1.contextToolName,
+							displayName: contextExternalTool1.displayName,
 							toolVersion: contextExternalTool1.toolVersion,
 						},
 						{
@@ -376,7 +375,7 @@ describe('ToolContextController (API)', () => {
 							schoolToolId: contextExternalTool2.schoolTool.id,
 							contextId: contextExternalTool2.contextId,
 							contextType: ToolContextType.COURSE,
-							contextToolName: contextExternalTool2.contextToolName,
+							displayName: contextExternalTool2.displayName,
 							toolVersion: contextExternalTool2.toolVersion,
 						},
 					],

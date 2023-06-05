@@ -25,7 +25,7 @@ import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { Authorization } from 'oauth-1.0a';
-import { LtiRole } from '../../../interface';
+import { LtiRole, ToolContextType } from '../../../interface';
 import { ExternalToolService } from '../../../service';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
@@ -194,7 +194,9 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.buildWithId();
 
 				const contextId: string = new ObjectId().toHexString();
-				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({ contextId });
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
+					contextRef: { id: contextId, type: ToolContextType.COURSE },
+				});
 
 				const data: IToolLaunchParams = {
 					contextExternalToolDO,

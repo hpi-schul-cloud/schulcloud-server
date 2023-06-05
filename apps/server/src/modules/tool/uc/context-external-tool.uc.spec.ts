@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, EntityId, Permission } from '@shared/domain';
 import { contextExternalToolDOFactory, setupEntities } from '@shared/testing';
-import { Action } from '@src/modules';
 import { LegacyLogger } from '@src/core/logger';
+import { Action } from '@src/modules';
 import { ForbiddenLoggableException } from '@src/modules/authorization/errors/forbidden.loggable-exception';
 import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ContextExternalToolValidationService } from '../service';
@@ -146,7 +146,7 @@ describe('ContextExternalToolUc', () => {
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
-					contextToolName: 'Course',
+					displayName: 'Course',
 					contextRef: {
 						id: 'contextId',
 						type: ToolContextType.COURSE,

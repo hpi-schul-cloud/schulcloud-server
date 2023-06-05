@@ -29,7 +29,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		data: IToolLaunchParams
 	): Promise<PropertyData[]> {
 		const { config } = data.externalToolDO;
-		const { contextId } = data.contextExternalToolDO;
+		const contextId: EntityId = data.contextExternalToolDO.contextRef.id;
 
 		const toolId: EntityId = data.externalToolDO.id as EntityId;
 
