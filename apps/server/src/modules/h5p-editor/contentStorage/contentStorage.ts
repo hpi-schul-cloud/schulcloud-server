@@ -266,7 +266,7 @@ export class ContentStorage implements IContentStorage {
 		try {
 			await fsPromises.access(path.join(this.getContentPath(), contentId.toString()));
 		} catch (error) {
-			await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString()));
+			await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString()), { recursive: true });
 		}
 	}
 
