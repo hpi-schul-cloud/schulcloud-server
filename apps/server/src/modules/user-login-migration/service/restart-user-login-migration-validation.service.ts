@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
-import { RestartUserLoginMigrationError, ModifyUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError } from '../error';
 
 @Injectable()
 export class RestartUserLoginMigrationValidationService {
@@ -24,7 +24,7 @@ export class RestartUserLoginMigrationValidationService {
 
 	private isClosed(userLoginMigration: UserLoginMigrationDO): void {
 		if (!userLoginMigration.closedAt) {
-			throw new RestartUserLoginMigrationError(
+			throw new ModifyUserLoginMigrationError(
 				`Migration for school with id ${userLoginMigration.schoolId} is already started, you are not able to restart.`
 			);
 		}
@@ -32,7 +32,7 @@ export class RestartUserLoginMigrationValidationService {
 
 	private validateGracePeriod(userLoginMigration: UserLoginMigrationDO) {
 		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
-			throw new RestartUserLoginMigrationError(
+			throw new ModifyUserLoginMigrationError(
 				'grace_period_expired: The grace period after finishing migration has expired',
 				{
 					finishedAt: userLoginMigration.finishedAt,

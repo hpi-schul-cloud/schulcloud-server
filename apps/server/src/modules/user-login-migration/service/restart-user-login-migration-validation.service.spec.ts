@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory } from '@shared/testing';
-import { RestartUserLoginMigrationError } from '../error';
+import { ModifyUserLoginMigrationError, RestartUserLoginMigrationError } from '../error';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
 
@@ -85,11 +85,11 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				return { userId, schoolId: school.id as string };
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw ModifyUserLoginMigrationError ', async () => {
 				const { userId, schoolId } = setup();
 
 				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new ModifyUserLoginMigrationError(
 						`Existing migration for school with id: ${schoolId} could not be found for restart.`
 					)
 				);
@@ -112,11 +112,11 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				return { userId, migration, schoolId: school.id as string };
 			};
 
-			it('should throw RestartUserLoginMigrationError ', async () => {
+			it('should throw ModifyUserLoginMigrationError ', async () => {
 				const { userId, schoolId } = setup();
 
 				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new ModifyUserLoginMigrationError(
 						`Migration for school with id ${schoolId} is already started, you are not able to restart.`
 					)
 				);
@@ -145,7 +145,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const { userId, schoolId, migration } = setup();
 
 				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
-					new RestartUserLoginMigrationError(
+					new ModifyUserLoginMigrationError(
 						'grace_period_expired: The grace period after finishing migration has expired',
 						{
 							finishedAt: migration.finishedAt,

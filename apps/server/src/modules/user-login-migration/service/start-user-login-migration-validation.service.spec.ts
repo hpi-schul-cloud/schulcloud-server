@@ -62,7 +62,7 @@ describe('StartUserLoginMigrationValidationService', () => {
 					startedAt: new Date(),
 				});
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({ id: migration.id });
+				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -97,11 +97,11 @@ describe('StartUserLoginMigrationValidationService', () => {
 			});
 
 			it('should check if migration finished ', async () => {
-				const { userId, schoolId, migration } = setup();
+				const { userId, schoolId } = setup();
 
 				await service.checkPreconditions(userId, schoolId);
 
-				expect(commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow).toHaveBeenCalledWith(migration);
+				expect(commonUserLoginMigrationService.hasNotFinishedMigrationOrThrow).toHaveBeenCalledWith(null);
 			});
 		});
 

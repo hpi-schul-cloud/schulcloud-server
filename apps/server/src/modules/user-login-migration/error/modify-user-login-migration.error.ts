@@ -2,7 +2,7 @@ import { BusinessError } from '@shared/common';
 import { HttpStatus } from '@nestjs/common';
 
 export class ModifyUserLoginMigrationError extends BusinessError {
-	constructor(message?: string, title?: string, details?: Record<string, unknown>) {
+	constructor(message?: string, details?: Record<string, unknown>, title?: string) {
 		super(
 			{
 				type: 'MODIFY_USER_MIGRATION_FAILED',
