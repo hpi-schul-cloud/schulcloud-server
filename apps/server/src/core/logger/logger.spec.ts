@@ -75,7 +75,7 @@ describe('Logger', () => {
 
 			service.warn(loggable);
 
-			expect(winstonLogger.warn).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
 		});
 	});
 
