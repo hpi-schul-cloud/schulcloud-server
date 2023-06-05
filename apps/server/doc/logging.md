@@ -40,6 +40,10 @@ This produces a logging output like
 [NestWinston] Info - 2023-05-31 15:20:30.888   [YourUc] {  message: 'I am a log message.',  data: {   userId: '0000d231816abba584714c9e'  }}
 ```
 
+## Log levels and error logging
+
+The logger exposes the methods `log`, `warn`, `debug` and `verbose`. It does not expose an `error` method because we don't want errors to be logged manually. All errors are logged in the exception filter.
+
 ## Legacy logger
 
 While transitioning to the new logger for loggables, the old logger for strings is still available as `LegacyLogger`.
