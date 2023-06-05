@@ -5,7 +5,7 @@ import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/boa
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { CardService } from '../service/card.service';
