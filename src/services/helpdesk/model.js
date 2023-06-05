@@ -5,8 +5,6 @@
 
 const mongoose = require('mongoose');
 
-const { enableAuditLog } = require('../../utils/database');
-
 const { Schema } = mongoose;
 
 const states = ['open', 'closed', 'submitted'];
@@ -24,8 +22,6 @@ const problemSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
-
-enableAuditLog(problemSchema);
 
 const problemModel = mongoose.model('problem', problemSchema);
 

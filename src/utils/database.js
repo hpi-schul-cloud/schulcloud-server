@@ -1,15 +1,11 @@
 /* eslint-disable import/no-dynamic-require */
 /* eslint-disable global-require */
 const mongoose = require('mongoose');
-const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
-
 const logger = require('../logger');
 const {
 	NODE_ENV,
-	DATABASE_AUDIT,
 	MONGOOSE_CONNECTION_POOL_SIZE,
 	DB_URL,
 	DB_USERNAME,
@@ -17,11 +13,7 @@ const {
 	ENVIRONMENTS,
 } = require('../../config/globals');
 
-if (DATABASE_AUDIT === 'true') {
-	logger.info('database audit log is globally enabled');
-} else {
-	logger.info('database audit log is globally disabled');
-}
+logger.info('database audit log is globally disabled');
 
 const encodeMongoURI = (urlString) => {
 	if (urlString) {
@@ -30,13 +22,6 @@ const encodeMongoURI = (urlString) => {
 	}
 	return urlString;
 };
-
-function enableAuditLog(schema, options) {
-	if (DATABASE_AUDIT === 'true') {
-		// set database audit
-		schema.plugin(diffHistory.plugin, options);
-	}
-}
 
 function addAuthenticationToMongooseOptions(username, password, mongooseOptions) {
 	const auth = {};
@@ -133,6 +118,5 @@ module.exports = {
 	connect,
 	close,
 	getConnectionOptions,
-	enableAuditLog,
 	splitForSearchIndexes,
 };
