@@ -39,13 +39,13 @@ try {
 
 ## Loggable exceptions
 
-If you want the error log to contain more information than just the exception message, use/create an exception which implements the Loggable interface. Don't put data directly in the exception message!
+If you want the error log to contain more information than just the exception message, use or create an exception which implements the `Loggable` interface. Don't put data directly in the exception message!
 
 A loggable exception should extend the respective [Built-in HTTP exception](https://docs.nestjs.com/exception-filters#built-in-http-exceptions) from NestJS. For the name just put in "Loggable" before the word "Exception", e.g. "BadRequestLoggableException". Except for logging a loggable exception behaves like any other exception, specifically the error response is not affected by this.
 
 See example below.
 
-```typescript
+```TypeScript
 export class UnauthorizedLoggableException extends UnauthorizedException implements Loggable {
 	constructor(private readonly username: string, private readonly systemId?: string) {
 		super();

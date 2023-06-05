@@ -1,10 +1,10 @@
 # Logging
 
-For logging use the Logger, exported by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its injection scope is transient, so you can set a context when you inject it.
+For logging use the Logger, exported by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its [injection scope](https://docs.nestjs.com/fundamentals/injection-scopes) is transient, so you can set a context when you inject it.
 
-For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called loggables. If you want to log something you have to use or create a loggable that implements the Loggable interface.
+For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called __loggables__. If you want to log something you have to use or create a loggable that implements the `Loggable` interface.
 
-The message should be fixed in each loggable. If you want to log further data, put in the data field of the LogMessage, like in the example below.
+The message should be fixed in each loggable. If you want to log further data, put in the data field of the `LogMessage`, like in the example below.
 
 ```TypeScript
 export class YourLoggable implements Loggable {
@@ -39,3 +39,7 @@ This produces a logging output like
 ```
 [NestWinston] Info - 2023-05-31 15:20:30.888   [YourUc] {  message: 'I am a log message.',  data: {   userId: '0000d231816abba584714c9e'  }}
 ```
+
+## Legacy logger
+
+While transitioning to the new logger for loggables, the old logger for strings is still available as `LegacyLogger`.
