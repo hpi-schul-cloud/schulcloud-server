@@ -1,0 +1,34 @@
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ICurrentUser } from '@src/modules/authentication';
+import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ToolLaunchUc } from '../uc/tool-launch.uc';
+import { ToolLaunchParams } from './dto/tool-launch.params';
+import { ToolLaunchRequestResponse } from './dto/tool-launch-request.response';
+import { ToolLaunchMapper } from '../mapper';
+import { ToolLaunchRequest } from '../types';
+
+@ApiTags('Tool')
+@Authenticate('jwt')
+@Controller('tools')
+export class ToolLaunchController {
+	constructor(private readonly toolLaunchUc: ToolLaunchUc) {}
+
+	@Get('context/:contextExternalToolId/launch')
+	@ApiOperation({ summary: 'Get tool launch request for a context external tool id' })
+	@ApiOkResponse({ description: 'Tool launch request', type: ToolLaunchRequestResponse })
+	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+	@ApiForbiddenResponse({ description: 'Forbidden' })
+	async getToolLaunchRequest(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ToolLaunchParams
+	): Promise<ToolLaunchRequestResponse> {
+		const toolLaunchRequest: ToolLaunchRequest = await this.toolLaunchUc.getToolLaunchRequest(
+			currentUser.userId,
+			params.contextExternalToolId
+		);
+
+		const response: ToolLaunchRequestResponse = ToolLaunchMapper.mapToToolLaunchRequestResponse(toolLaunchRequest);
+		return response;
+	}
+}

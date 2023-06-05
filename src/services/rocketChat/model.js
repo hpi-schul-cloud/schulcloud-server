@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -30,9 +29,6 @@ const channelSchema = new Schema(
 	},
 	{ timestamps: true }
 );
-
-enableAuditLog(userSchema);
-enableAuditLog(channelSchema);
 
 const userModel = mongoose.model('rocketChatUser', userSchema);
 const channelModel = mongoose.model('rocketChatChannel', channelSchema);
