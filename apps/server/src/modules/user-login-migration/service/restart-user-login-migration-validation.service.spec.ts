@@ -89,9 +89,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				const { userId, schoolId } = setup();
 
 				await expect(service.checkPreconditions(userId, schoolId)).rejects.toThrow(
-					new ModifyUserLoginMigrationError(
-						`Existing migration for school with id: ${schoolId} could not be found for restart.`
-					)
+					new ModifyUserLoginMigrationError(`Existing migration for school with id: ${schoolId} could not be found.`)
 				);
 			});
 		});
