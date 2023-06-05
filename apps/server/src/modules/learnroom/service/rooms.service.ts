@@ -1,11 +1,8 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	ColumnBoardTarget,
 	ContentElementType,
 	EntityId,
 	InputFormat,
@@ -14,6 +11,7 @@ import { BoardRepo, LessonRepo } from '@shared/repo';
 import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
 import { RichTextContentBody } from '@src/modules/board/controller/dto';
 import { TaskService } from '@src/modules/task/service';
+import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()
 export class RoomsService {
@@ -25,7 +23,7 @@ export class RoomsService {
 		private readonly columnService: ColumnService,
 		private readonly cardService: CardService,
 		private readonly contentElementService: ContentElementService,
-		private readonly em: EntityManager
+		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
@@ -44,7 +42,7 @@ export class RoomsService {
 			columnBoardIds.push(columnBoard.id);
 		}
 
-		const courseColumnBoardTargets = await this.findOrCreateColumnBoardTargets(columnBoardIds);
+		const courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
 
 		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
 
@@ -65,29 +63,5 @@ export class RoomsService {
 		content.text = '<p>Dieses Board ist ein neues Feature und kann hier getestet werden</p>';
 		await this.contentElementService.update(text, content);
 		return columnBoard;
-	}
-
-	private async findOrCreateColumnBoardTargets(columnBoardIds: string[]): Promise<ColumnBoardTarget[]> {
-		const existingTargets = await this.em.find(ColumnBoardTarget, {
-			_columnBoardId: { $in: columnBoardIds },
-		} as unknown as FilterQuery<ColumnBoardTarget>);
-
-		const titlesMap = await this.columnBoardService.getBoardObjectTitlesById(columnBoardIds);
-
-		const columnBoardTargets = columnBoardIds.map((id) => {
-			const title = titlesMap[id] ?? '';
-			let target = existingTargets.find((item) => item.columnBoardId === id);
-			if (target) {
-				target.title = title;
-			} else {
-				target = new ColumnBoardTarget({ columnBoardId: id, title });
-			}
-			this.em.persist(target);
-			return target;
-		});
-
-		await this.em.flush();
-
-		return columnBoardTargets;
 	}
 }
