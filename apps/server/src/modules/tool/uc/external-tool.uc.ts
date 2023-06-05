@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, ExternalToolDO, IFindOptions, Page, Permission, User } from '@shared/domain';
+import { EntityId, ExternalToolConfigDO, ExternalToolDO, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
@@ -29,7 +29,13 @@ export class ExternalToolUc {
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO = await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO = new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
+		const configToUpdate: ExternalToolConfigDO = { ...loaded.config, ...externalTool.config };
+		const toUpdate: ExternalToolDO = new ExternalToolDO({
+			...loaded,
+			...externalTool,
+			config: configToUpdate,
+			version: loaded.version,
+		});
 
 		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
 		return saved;
