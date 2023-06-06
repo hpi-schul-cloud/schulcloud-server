@@ -1,126 +1,132 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
 import { BoardExternalReferenceType, ColumnBoardNode } from '@shared/domain';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	courseFactory,
-	mapUserToCurrentUser,
-	userFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
-import request from 'supertest';
 
 const baseRouteName = '/boards';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async updateBoardTitle(boardId: string, title: string) {
-		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${boardId}/title`)
-			.set('Accept', 'application/json')
-			.send({ title });
-
-		return {
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
 
 describe(`board update title (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const setup = async () => {
+	beforeEach(async () => {
 		await cleanupCollections(em);
-		const user = userFactory.build();
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, course]);
-
-		const columnBoardNode = columnBoardNodeFactory.buildWithId({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
-		});
-
-		await em.persistAndFlush([columnBoardNode]);
-		em.clear();
-
-		return { user, columnBoardNode };
-	};
+	});
 
 	describe('with valid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+			const course = courseFactory.build({ teachers: [teacherUser] });
+			await em.persistAndFlush([teacherUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			await em.persistAndFlush([teacherAccount, teacherUser, columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return { loggedInClient, columnBoardNode };
+		};
+
 		it('should return status 204', async () => {
-			const { user, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnBoardNode } = await setup();
+
 			const newTitle = 'new title';
 
-			const response = await api.updateBoardTitle(columnBoardNode.id, newTitle);
+			const response = await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			expect(response.status).toEqual(204);
 		});
 
 		it('should actually change the board title', async () => {
-			const { user, columnBoardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, columnBoardNode } = await setup();
+
 			const newTitle = 'new title';
 
-			await api.updateBoardTitle(columnBoardNode.id, newTitle);
+			await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
+
+		it('should sanitize the title', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const unsanitizedTitle = '<iframe>foo</iframe> bar';
+			const sanitizedTitle = 'foo bar';
+
+			await loggedInClient.put(`${columnBoardNode.id}/title`, { title: unsanitizedTitle });
+			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+
+			expect(result.title).toEqual(sanitizedTitle);
+		});
 	});
 
 	describe('with invalid user', () => {
-		it('should return status 403', async () => {
-			const { columnBoardNode } = await setup();
+		const setup = async () => {
+			await cleanupCollections(em);
 
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+			const course = courseFactory.build({ students: [studentUser] });
+			await em.persistAndFlush([studentUser, course]);
+
+			const title = 'old title';
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				title,
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+
+			await em.persistAndFlush([studentAccount, studentUser, columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(studentAccount);
+
+			return { loggedInClient, columnBoardNode, title };
+		};
+
+		it('should return status 403', async () => {
+			const { loggedInClient, columnBoardNode, title } = await setup();
 
 			const newTitle = 'new title';
 
-			const response = await api.updateBoardTitle(columnBoardNode.id, newTitle);
+			const response = await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			expect(response.status).toEqual(403);
+
+			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
+			expect(result.title).toEqual(title);
 		});
 	});
 });
