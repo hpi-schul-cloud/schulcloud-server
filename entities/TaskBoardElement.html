@@ -62,7 +62,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/boardelement.entity.ts</code>
+            <code>apps/server/src/shared/domain/entity/legacy-board/task-boardelement.entity.ts</code>
         </p>
 
 
@@ -131,7 +131,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">apps/server/src/shared/domain/entity/boardelement.entity.ts:59</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/shared/domain/entity/legacy-board/task-boardelement.entity.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -143,52 +143,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Enum, ManyToOne } from &#x27;@mikro-orm/core&#x27;;
-import { Lesson } from &#x27;./lesson.entity&#x27;;
-import { Task } from &#x27;./task.entity&#x27;;
-import { EntityId } from &#x27;../types&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
-
-export type BoardElementReference &#x3D; Task | Lesson;
-
-export enum BoardElementType {
-	&#x27;Task&#x27; &#x3D; &#x27;task&#x27;,
-	&#x27;Lesson&#x27; &#x3D; &#x27;lesson&#x27;,
-}
-
-export type BoardElementProps &#x3D; {
-	target: EntityId | BoardElementReference;
-};
-
-@Entity({
-	discriminatorColumn: &#x27;boardElementType&#x27;,
-	abstract: true,
-})
-export abstract class BoardElement extends BaseEntityWithTimestamps {
-	/** id reference to a collection populated later with name */
-	target!: BoardElementReference;
-
-	/** name of a collection which is referenced in target */
-	@Enum()
-	boardElementType!: BoardElementType;
-
-	constructor(props: BoardElementProps) {
-		super();
-		Object.assign(this, { target: props.target });
-	}
-
-	static FromTask(task: Task): BoardElement {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		const element &#x3D; new TaskBoardElement({ target: task });
-		return element;
-	}
-
-	static FromLesson(lesson: Lesson): BoardElement {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		const element &#x3D; new LessonBoardElement({ target: lesson });
-		return element;
-	}
-}
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, ManyToOne } from &#x27;@mikro-orm/core&#x27;;
+import { Task } from &#x27;../task.entity&#x27;;
+import { BoardElement, BoardElementType } from &#x27;./boardelement.entity&#x27;;
 
 @Entity({ discriminatorValue: BoardElementType.Task })
 export class TaskBoardElement extends BoardElement {
@@ -202,17 +159,6 @@ export class TaskBoardElement extends BoardElement {
 	// Remove when fixed in mikro-orm.
 	@ManyToOne(&#x27;Task&#x27;, { nullable: true })
 	target!: Task;
-}
-
-@Entity({ discriminatorValue: BoardElementType.Lesson })
-export class LessonBoardElement extends BoardElement {
-	constructor(props: { target: Lesson }) {
-		super(props);
-		this.boardElementType &#x3D; BoardElementType.Lesson;
-	}
-
-	@ManyToOne(&#x27;Lesson&#x27;)
-	target!: Lesson;
 }
 </code></pre>
     </div>

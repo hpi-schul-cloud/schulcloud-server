@@ -102,11 +102,19 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findIdsByExternalReference" >findIdsByExternalReference</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findParentOfId" >findParentOfId</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#getAncestorIds" >getAncestorIds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTitleById" >getTitleById</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -135,7 +143,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -224,8 +232,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:93</a></div>
                 </td>
             </tr>
 
@@ -295,8 +303,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:26</a></div>
                 </td>
             </tr>
 
@@ -399,8 +407,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="17"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:17</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="18"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:18</a></div>
                 </td>
             </tr>
 
@@ -482,8 +490,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:39</a></div>
                 </td>
             </tr>
 
@@ -535,6 +543,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findIdsByExternalReference"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findIdsByExternalReference</b></span>
+                        <a href="#findIdsByExternalReference"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findIdsByExternalReference(reference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:65</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>reference</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findParentOfId"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -553,8 +632,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="75"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:75</a></div>
                 </td>
             </tr>
 
@@ -624,8 +703,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="59"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:59</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="82"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:82</a></div>
                 </td>
             </tr>
 
@@ -677,6 +756,77 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getTitleById"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>getTitleById</b></span>
+                        <a href="#getTitleById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTitleById(id: <a href="../undefineds/EntityId.html" target="_self">EntityId[] | EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:53</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[] | EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;Record&lt;EntityId, string&gt;&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -695,8 +845,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/board/repo/board-do.repo.ts:87</a></div>
                 </td>
             </tr>
 
@@ -762,9 +912,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
+import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, BoardNode, EntityId } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, BoardExternalReference, BoardNode, ColumnBoardNode, EntityId } from &#x27;@shared/domain&#x27;;
 import { BoardDoBuilderImpl } from &#x27;./board-do.builder-impl&#x27;;
 import { BoardNodeRepo } from &#x27;./board-node.repo&#x27;;
 import { RecursiveDeleteVisitor } from &#x27;./recursive-delete.vistor&#x27;;
@@ -811,6 +962,28 @@ export class BoardDoRepo {
 		});
 
 		return domainObjects;
+	}
+
+	async getTitleById(id: EntityId[] | EntityId): Promise&lt;Record&lt;EntityId, string&gt;&gt; {
+		const ids &#x3D; Utils.asArray(id);
+		const boardNodes &#x3D; await this.em.find(BoardNode, { id: { $in: ids } });
+
+		const titlesMap &#x3D; boardNodes.reduce((map, node) &#x3D;&gt; {
+			map[node.id] &#x3D; node.title ?? &#x27;&#x27;;
+			return map;
+		}, {});
+
+		return titlesMap;
+	}
+
+	async findIdsByExternalReference(reference: BoardExternalReference): Promise&lt;EntityId[]&gt; {
+		const boardNodes &#x3D; await this.em.find(ColumnBoardNode, {
+			_contextId: new ObjectId(reference.id),
+			_contextType: reference.type,
+		});
+		const ids &#x3D; boardNodes.map((o) &#x3D;&gt; o.id);
+
+		return ids;
 	}
 
 	async findParentOfId(childId: EntityId): Promise&lt;AnyBoardDo | undefined&gt; {

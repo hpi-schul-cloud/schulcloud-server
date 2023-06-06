@@ -783,7 +783,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Board, Course, EntityId, LessonBoardElement, TaskBoardElement } from &#x27;@shared/domain&#x27;;
+import { Board, ColumnboardBoardElement, Course, EntityId, LessonBoardElement, TaskBoardElement } from &#x27;@shared/domain&#x27;;
 import { BaseRepo } from &#x27;../base.repo&#x27;;
 
 @Injectable()
@@ -826,6 +826,8 @@ export class BoardRepo extends BaseRepo&lt;Board&gt; {
 		await this._em.populate(taskElements, [&#x27;target&#x27;]);
 		const lessonElements &#x3D; elements.filter((el) &#x3D;&gt; el instanceof LessonBoardElement);
 		await this._em.populate(lessonElements, [&#x27;target&#x27;]);
+		const columnBoardElements &#x3D; elements.filter((el) &#x3D;&gt; el instanceof ColumnboardBoardElement);
+		await this._em.populate(columnBoardElements, [&#x27;target&#x27;]);
 		return board;
 	}
 }

@@ -112,10 +112,16 @@
                             <a href="#cleanupCollections" title="apps/server/src/shared/testing/cleanup-collections.ts" ><b>cleanupCollections</b>&nbsp;&nbsp;&nbsp;(apps/.../cleanup-collections.ts)</a>
                         </li>
                         <li>
+                            <a href="#columnboardBoardElementFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>columnboardBoardElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#columnBoardFactory" title="apps/server/src/shared/testing/factory/domainobject/board/column-board.do.factory.ts" ><b>columnBoardFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board.do.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#columnBoardNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/column-board-node.factory.ts" ><b>columnBoardNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-node.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#columnBoardTargetFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>columnBoardTargetFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#columnFactory" title="apps/server/src/shared/testing/factory/domainobject/board/column.do.factory.ts" ><b>columnFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../column.do.factory.ts)</a>
@@ -1284,7 +1290,9 @@
 	BoardElement,
 	BoardNode,
 	CardNode,
+	ColumnboardBoardElement,
 	ColumnBoardNode,
+	ColumnBoardTarget,
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
@@ -2039,6 +2047,113 @@ This allows adding console commands to execute provider methods.</p>
 		})
 	);
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/boardelement.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="columnboardBoardElementFactory"></a>
+                    <span class="name">
+                        <span ><b>columnboardBoardElementFactory</b></span>
+                        <a href="#columnboardBoardElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	ColumnboardBoardElement,
+	{ target: ColumnBoardTarget }
+&gt;(ColumnboardBoardElement, () &#x3D;&gt; {
+	const target &#x3D; columnBoardTargetFactory.build();
+	return { target };
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="columnBoardTargetFactory"></a>
+                    <span class="name">
+                        <span ><b>columnBoardTargetFactory</b></span>
+                        <a href="#columnBoardTargetFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;
+	ColumnBoardTarget,
+	{ columnBoardId: EntityId; title: string; published: boolean }
+&gt;(ColumnBoardTarget, ({ sequence }) &#x3D;&gt; {
+	return {
+		columnBoardId: new ObjectId().toHexString(),
+		title: &#x60;columnBoardTarget #${sequence}&#x60;,
+		published: false,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lessonBoardElementFactory"></a>
+                    <span class="name">
+                        <span ><b>lessonBoardElementFactory</b></span>
+                        <a href="#lessonBoardElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;LessonBoardElement, { target: Lesson }&gt;(
+	LessonBoardElement,
+	() &#x3D;&gt; {
+		return { target: lessonFactory.build() };
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="taskBoardElementFactory"></a>
+                    <span class="name">
+                        <span ><b>taskBoardElementFactory</b></span>
+                        <a href="#taskBoardElementFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;TaskBoardElement, { target: Task }&gt;(TaskBoardElement, () &#x3D;&gt; {
+	return {
+		target: taskFactory.build(),
+	};
+})</code>
                     </td>
                 </tr>
 
@@ -5240,58 +5355,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>keyPair.publicKey.export({ type: &#x27;pkcs1&#x27;, format: &#x27;pem&#x27; })</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/boardelement.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="lessonBoardElementFactory"></a>
-                    <span class="name">
-                        <span ><b>lessonBoardElementFactory</b></span>
-                        <a href="#lessonBoardElementFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;LessonBoardElement, { target: Lesson }&gt;(
-	LessonBoardElement,
-	() &#x3D;&gt; {
-		return { target: lessonFactory.build() };
-	}
-)</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="taskBoardElementFactory"></a>
-                    <span class="name">
-                        <span ><b>taskBoardElementFactory</b></span>
-                        <a href="#taskBoardElementFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;TaskBoardElement, { target: Task }&gt;(TaskBoardElement, () &#x3D;&gt; {
-	return {
-		target: taskFactory.build(),
-	};
-})</code>
                     </td>
                 </tr>
 

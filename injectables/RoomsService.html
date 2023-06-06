@@ -85,6 +85,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createWelcomeColumnBoard" >createWelcomeColumnBoard</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateBoard" >updateBoard</a>
                             </li>
@@ -106,12 +111,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>)</code>
+<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonRepo: <a href="../injectables/LessonRepo.html" target="_self">LessonRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, contentElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, columnBoardTargetService: <a href="../injectables/ColumnBoardTargetService.html" target="_self">ColumnBoardTargetService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -164,6 +169,66 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>columnBoardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardService.html" target="_self" >ColumnBoardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>columnService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnService.html" target="_self" >ColumnService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>contentElementService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>columnBoardTargetService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardTargetService.html" target="_self" >ColumnBoardTargetService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -178,6 +243,78 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createWelcomeColumnBoard"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createWelcomeColumnBoard</b></span>
+                        <a href="#createWelcomeColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createWelcomeColumnBoard(courseReference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:55</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>courseReference</td>
+                                    <td>
+                                                <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -200,8 +337,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:29</a></div>
                 </td>
             </tr>
 
@@ -280,25 +417,70 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Board, EntityId } from &#x27;@shared/domain&#x27;;
+import {
+	Board,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	ContentElementType,
+	EntityId,
+	InputFormat,
+} from &#x27;@shared/domain&#x27;;
 import { BoardRepo, LessonRepo } from &#x27;@shared/repo&#x27;;
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from &#x27;@src/modules/board&#x27;;
+import { RichTextContentBody } from &#x27;@src/modules/board/controller/dto&#x27;;
 import { TaskService } from &#x27;@src/modules/task/service&#x27;;
+import { ColumnBoardTargetService } from &#x27;./column-board-target.service&#x27;;
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonRepo: LessonRepo,
-		private readonly boardRepo: BoardRepo
+		private readonly boardRepo: BoardRepo,
+		private readonly columnBoardService: ColumnBoardService,
+		private readonly columnService: ColumnService,
+		private readonly cardService: CardService,
+		private readonly contentElementService: ContentElementService,
+		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise&lt;Board&gt; {
 		const [courseLessons] &#x3D; await this.lessonRepo.findAllByCourseIds([roomId]);
 		const [courseTasks] &#x3D; await this.taskService.findBySingleParent(userId, roomId);
-		board.syncTasksFromList(courseTasks);
-		board.syncLessonsFromList(courseLessons);
+
+		const courseReference &#x3D; {
+			type: BoardExternalReferenceType.Course,
+			id: roomId,
+		};
+
+		const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference(courseReference);
+
+		if (columnBoardIds.length &#x3D;&#x3D;&#x3D; 0) {
+			const columnBoard &#x3D; await this.createWelcomeColumnBoard(courseReference);
+			columnBoardIds.push(columnBoard.id);
+		}
+
+		const courseColumnBoardTargets &#x3D; await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
+
+		const boardElementTargets &#x3D; [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
+
+		board.syncBoardElementReferences(boardElementTargets);
+
 		await this.boardRepo.save(board);
 		return board;
+	}
+
+	private async createWelcomeColumnBoard(courseReference: BoardExternalReference) {
+		const columnBoard &#x3D; await this.columnBoardService.create(courseReference);
+		const column &#x3D; await this.columnService.create(columnBoard);
+		const card &#x3D; await this.cardService.create(column);
+		await this.cardService.updateTitle(card, &#x27;Willkommen&#x27;);
+		const text &#x3D; await this.contentElementService.create(card, ContentElementType.RICH_TEXT);
+		const content &#x3D; new RichTextContentBody();
+		content.inputFormat &#x3D; InputFormat.RICH_TEXT_CK5;
+		content.text &#x3D; &#x27;&lt;p&gt;Dieses Board ist ein neues Feature und kann hier getestet werden&lt;/p&gt;&#x27;;
+		await this.contentElementService.update(text, content);
+		return columnBoard;
 	}
 }
 </code></pre>

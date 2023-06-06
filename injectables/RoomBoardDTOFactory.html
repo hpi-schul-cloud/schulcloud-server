@@ -105,12 +105,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorisationService: <a href="../injectables/RoomsAuthorisationService.html" target="_self">RoomsAuthorisationService</a>)</code>
+<code>constructor(authorisationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, roomsAuthorisationService: <a href="../injectables/RoomsAuthorisationService.html" target="_self">RoomsAuthorisationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="135" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:135</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="186" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:186</a></div>
                             </td>
                         </tr>
 
@@ -129,6 +129,18 @@
                                         <tbody>
                                                 <tr>
                                                         <td>authorisationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>roomsAuthorisationService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/RoomsAuthorisationService.html" target="_self" >RoomsAuthorisationService</a></code>
@@ -173,8 +185,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="138"
-                            class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:138</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="192"
+                            class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:192</a></div>
                 </td>
             </tr>
 
@@ -227,19 +239,31 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
 	ITaskStatus,
 	Lesson,
+	Permission,
 	Task,
 	TaskWithStatusVo,
 	User,
 } from &#x27;@shared/domain&#x27;;
-import { LessonMetaData, RoomBoardDTO, RoomBoardElementDTO, RoomBoardElementTypes } from &#x27;../types/room-board.types&#x27;;
+import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
+import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
+import {
+	ColumnBoardMetaData,
+	LessonMetaData,
+	RoomBoardDTO,
+	RoomBoardElementDTO,
+	RoomBoardElementTypes,
+} from &#x27;../types/room-board.types&#x27;;
 import { RoomsAuthorisationService } from &#x27;./rooms.authorisation.service&#x27;;
 
 class DtoCreator {
@@ -249,23 +273,28 @@ class DtoCreator {
 
 	user: User;
 
-	authorisationService: RoomsAuthorisationService;
+	authorisationService: AuthorizationService;
+
+	roomsAuthorisationService: RoomsAuthorisationService;
 
 	constructor({
 		room,
 		board,
 		user,
 		authorisationService,
+		roomsAuthorisationService,
 	}: {
 		room: Course;
 		board: Board;
 		user: User;
-		authorisationService: RoomsAuthorisationService;
+		authorisationService: AuthorizationService;
+		roomsAuthorisationService: RoomsAuthorisationService;
 	}) {
 		this.room &#x3D; room;
 		this.board &#x3D; board;
 		this.user &#x3D; user;
 		this.authorisationService &#x3D; authorisationService;
+		this.roomsAuthorisationService &#x3D; roomsAuthorisationService;
 	}
 
 	manufacture(): RoomBoardDTO {
@@ -281,13 +310,28 @@ class DtoCreator {
 		const filtered &#x3D; elements.filter((element) &#x3D;&gt; {
 			let result &#x3D; false;
 			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
-				result &#x3D; this.authorisationService.hasTaskReadPermission(this.user, element.target as Task);
-			} else if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
-				result &#x3D; this.authorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+				result &#x3D; this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
+			}
+
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
+				result &#x3D; this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+			}
+
+			if (element instanceof ColumnboardBoardElement &amp;&amp; this.isColumnBoardFeatureFlagActive()) {
+				result &#x3D; this.authorisationService.hasPermission(this.user, this.room, {
+					action: Action.read,
+					requiredPermissions: [Permission.COURSE_VIEW],
+				});
 			}
 			return result;
 		});
 		return filtered;
+	}
+
+	private isColumnBoardFeatureFlagActive() {
+		const isActive &#x3D; Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean;
+
+		return isActive;
 	}
 
 	private isTeacher(): boolean {
@@ -306,6 +350,10 @@ class DtoCreator {
 			}
 			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
 				const mapped &#x3D; this.mapLessonElement(element);
+				results.push(mapped);
+			}
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.ColumnBoard) {
+				const mapped &#x3D; this.mapColumnBoardElement(element);
 				results.push(mapped);
 			}
 		});
@@ -349,6 +397,21 @@ class DtoCreator {
 		return { type, content };
 	}
 
+	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
+		const type &#x3D; RoomBoardElementTypes.COLUMN_BOARD;
+		const columnBoardTarget &#x3D; element.target as ColumnBoardTarget;
+		const content: ColumnBoardMetaData &#x3D; {
+			id: columnBoardTarget.id,
+			columnBoardId: columnBoardTarget.columnBoardId,
+			title: columnBoardTarget.title,
+			createdAt: columnBoardTarget.createdAt,
+			updatedAt: columnBoardTarget.updatedAt,
+			published: columnBoardTarget.published,
+		};
+
+		return { type, content };
+	}
+
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
 		const dto &#x3D; {
 			roomId: this.room.id,
@@ -362,10 +425,19 @@ class DtoCreator {
 
 @Injectable()
 export class RoomBoardDTOFactory {
-	constructor(private readonly authorisationService: RoomsAuthorisationService) {}
+	constructor(
+		private readonly authorisationService: AuthorizationService,
+		private readonly roomsAuthorisationService: RoomsAuthorisationService
+	) {}
 
 	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
-		const worker &#x3D; new DtoCreator({ room, board, user, authorisationService: this.authorisationService });
+		const worker &#x3D; new DtoCreator({
+			room,
+			board,
+			user,
+			authorisationService: this.authorisationService,
+			roomsAuthorisationService: this.roomsAuthorisationService,
+		});
 		const result &#x3D; worker.manufacture();
 		return result;
 	}

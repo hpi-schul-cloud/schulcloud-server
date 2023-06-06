@@ -90,6 +90,7 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#children" 
 >
                                             children
@@ -151,6 +152,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -262,13 +268,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, ForbiddenException } from &#x27;@nestjs/common&#x27;;
-import { DomainObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import if it is avaible
 import { EntityId } from &#x27;@shared/domain&#x27;;
+import { DomainObject } from &#x27;@shared/domain/domain-object&#x27;; // fix import if it is avaible
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from &#x27;./types&#x27;;
 
 export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; extends DomainObject&lt;T&gt; {
 	get children(): AnyBoardDo[] {
-		return this.props.children;
+		return this.props.children ?? [];
 	}
 
 	get createdAt(): Date {
@@ -312,7 +318,7 @@ export abstract class BoardComposite&lt;T extends BoardCompositeProps&gt; extend
 
 export interface BoardCompositeProps {
 	id: EntityId;
-	children: AnyBoardDo[];
+	children?: AnyBoardDo[];
 	createdAt: Date;
 	updatedAt: Date;
 }

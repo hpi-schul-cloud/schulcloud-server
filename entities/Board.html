@@ -62,7 +62,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/entity/board.entity.ts</code>
+            <code>apps/server/src/shared/domain/entity/legacy-board/board.entity.ts</code>
         </p>
 
 
@@ -135,7 +135,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/domain/entity/board.entity.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/shared/domain/entity/legacy-board/board.entity.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -170,7 +170,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/shared/domain/entity/board.entity.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/entity/legacy-board/board.entity.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -184,13 +184,17 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from &#x27;@mikro-orm/core&#x27;;
 import { BadRequestException, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ILearnroomElement } from &#x27;../interface&#x27;;
-import { EntityId } from &#x27;../types&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
-import { BoardElement, BoardElementType } from &#x27;./boardelement.entity&#x27;;
-import type { Course } from &#x27;./course.entity&#x27;;
-import type { Lesson } from &#x27;./lesson.entity&#x27;;
-import type { Task } from &#x27;./task.entity&#x27;;
+import { ILearnroomElement } from &#x27;../../interface&#x27;;
+import { EntityId } from &#x27;../../types&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;../base.entity&#x27;;
+import type { Course } from &#x27;../course.entity&#x27;;
+import { Lesson } from &#x27;../lesson.entity&#x27;;
+import { Task } from &#x27;../task.entity&#x27;;
+import { BoardElement, BoardElementReference } from &#x27;./boardelement.entity&#x27;;
+import { ColumnboardBoardElement } from &#x27;./column-board-boardelement&#x27;;
+import { ColumnBoardTarget } from &#x27;./column-board-target.entity&#x27;;
+import { LessonBoardElement } from &#x27;./lesson-boardelement.entity&#x27;;
+import { TaskBoardElement } from &#x27;./task-boardelement.entity&#x27;;
 
 export type BoardProps &#x3D; {
 	references: BoardElement[];
@@ -237,8 +241,9 @@ export class Board extends BaseEntityWithTimestamps {
 	}
 
 	private checkListsContainingEqualEntities(first: EntityId[], second: EntityId[]): boolean {
-		const firstSorted &#x3D; [...first].sort();
-		const secondSorted &#x3D; [...second].sort();
+		const compareAlphabetic &#x3D; (a, b) &#x3D;&gt; (a &lt; b ? -1 : 1);
+		const firstSorted &#x3D; [...first].sort(compareAlphabetic);
+		const secondSorted &#x3D; [...second].sort(compareAlphabetic);
 		const isEqual &#x3D; JSON.stringify(firstSorted) &#x3D;&#x3D;&#x3D; JSON.stringify(secondSorted);
 		return isEqual;
 	}
@@ -249,61 +254,38 @@ export class Board extends BaseEntityWithTimestamps {
 		return element;
 	}
 
-	syncTasksFromList(taskList: Task[]) {
-		// should this be in an external domain service, to not having to know about tasks?
-		this.removeTasksNotInList(taskList);
-		this.addTasksOnList(taskList);
+	syncBoardElementReferences(boardElementTargets: BoardElementReference[]) {
+		this.removeDeletedReferences(boardElementTargets);
+		this.appendNotContainedBoardElements(boardElementTargets);
 	}
 
-	syncLessonsFromList(lessonList: Lesson[]) {
-		this.removeLessonsNotInList(lessonList);
-		this.addLessonsOnList(lessonList);
+	private removeDeletedReferences(boardElementTargets: BoardElementReference[]) {
+		const references &#x3D; this.references.getItems();
+		const onlyExistingReferences &#x3D; references.filter((ref) &#x3D;&gt; boardElementTargets.includes(ref.target));
+		this.references.set(onlyExistingReferences);
 	}
 
-	private removeTasksNotInList(taskList: Task[]) {
-		const taskReferences &#x3D; this.references.getItems().filter((ref) &#x3D;&gt; ref.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task);
-		taskReferences.forEach((reference) &#x3D;&gt; {
-			// TODO: use typescript guard
-			if (!taskList.includes(reference.target as Task)) {
-				this.references.remove(reference);
-			}
-		});
-	}
+	private appendNotContainedBoardElements(boardElementTargets: BoardElementReference[]): void {
+		const references &#x3D; this.references.getItems();
+		const isNotContained &#x3D; (element: BoardElementReference) &#x3D;&gt; !references.some((ref) &#x3D;&gt; ref.target &#x3D;&#x3D;&#x3D; element);
+		const mapToBoardElement &#x3D; (target: BoardElementReference) &#x3D;&gt; this.createBoardElementFor(target);
 
-	private removeLessonsNotInList(lessonList: Lesson[]) {
-		const lessonReferences &#x3D; this.references
-			.getItems()
-			.filter((ref) &#x3D;&gt; ref.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson);
-		lessonReferences.forEach((reference) &#x3D;&gt; {
-			// TODO: use typescript guard
-			if (!lessonList.includes(reference.target as Lesson)) {
-				this.references.remove(reference);
-			}
-		});
-	}
-
-	private addTasksOnList(taskList: Task[]) {
-		const current &#x3D; this.references.getItems();
-		const tasksToAdd &#x3D; taskList.filter((task) &#x3D;&gt; {
-			const contained &#x3D; current.find((ref) &#x3D;&gt; ref.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task &amp;&amp; ref.target &#x3D;&#x3D;&#x3D; task);
-			return !contained;
-		});
-		const elementsToAdd &#x3D; tasksToAdd.map((task) &#x3D;&gt; BoardElement.FromTask(task));
-		const newList &#x3D; [...elementsToAdd, ...current];
+		const elementsToAdd &#x3D; boardElementTargets.filter(isNotContained).map(mapToBoardElement);
+		const newList &#x3D; [...elementsToAdd, ...references];
 		this.references.set(newList);
 	}
 
-	private addLessonsOnList(lessonList: Lesson[]) {
-		const current &#x3D; this.references.getItems();
-		const lessonsToAdd &#x3D; lessonList.filter((lesson) &#x3D;&gt; {
-			const contained &#x3D; current.find(
-				(ref) &#x3D;&gt; ref.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson &amp;&amp; ref.target &#x3D;&#x3D;&#x3D; lesson
-			);
-			return !contained;
-		});
-		const elementsToAdd &#x3D; lessonsToAdd.map((lesson) &#x3D;&gt; BoardElement.FromLesson(lesson));
-		const newList &#x3D; [...elementsToAdd, ...current];
-		this.references.set(newList);
+	private createBoardElementFor(boardElementTarget: BoardElementReference): BoardElement {
+		if (boardElementTarget instanceof Task) {
+			return new TaskBoardElement({ target: boardElementTarget });
+		}
+		if (boardElementTarget instanceof Lesson) {
+			return new LessonBoardElement({ target: boardElementTarget });
+		}
+		if (boardElementTarget instanceof ColumnBoardTarget) {
+			return new ColumnboardBoardElement({ target: boardElementTarget });
+		}
+		throw new Error(&#x27;not a valid boardElementReference&#x27;);
 	}
 }
 </code></pre>

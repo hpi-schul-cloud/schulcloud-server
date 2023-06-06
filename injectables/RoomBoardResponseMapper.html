@@ -89,6 +89,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#mapColumnBoard" >mapColumnBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#mapLesson" >mapLesson</a>
                             </li>
                             <li>
@@ -148,8 +152,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="14"
-                            class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:14</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="15"
+                            class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:15</a></div>
                 </td>
             </tr>
 
@@ -222,7 +226,33 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapColumnBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapColumnBoard</b></span>
+                        <a href="#mapColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -248,7 +278,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:69</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -274,7 +304,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:39</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -295,7 +325,8 @@ import {
 	BoardTaskResponse,
 	SingleColumnBoardResponse,
 } from &#x27;../controller/dto&#x27;;
-import { LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from &#x27;../types&#x27;;
+import { BoardColumnBoardResponse } from &#x27;../controller/dto/single-column-board/board-column-board.response&#x27;;
+import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from &#x27;../types&#x27;;
 import { BoardTaskStatusMapper } from &#x27;./board-taskStatus.mapper&#x27;;
 
 @Injectable()
@@ -318,8 +349,14 @@ export class RoomBoardResponseMapper {
 		board.elements.forEach((element) &#x3D;&gt; {
 			if (element.type &#x3D;&#x3D;&#x3D; RoomBoardElementTypes.TASK) {
 				elements.push(this.mapTask(element.content as TaskWithStatusVo));
-			} else if (element.type &#x3D;&#x3D;&#x3D; RoomBoardElementTypes.LESSON) {
+			}
+
+			if (element.type &#x3D;&#x3D;&#x3D; RoomBoardElementTypes.LESSON) {
 				elements.push(this.mapLesson(element.content as LessonMetaData));
+			}
+
+			if (element.type &#x3D;&#x3D;&#x3D; RoomBoardElementTypes.COLUMN_BOARD) {
+				elements.push(this.mapColumnBoard(element.content as ColumnBoardMetaData));
 			}
 		});
 		return elements;
@@ -371,6 +408,23 @@ export class RoomBoardResponseMapper {
 		const boardElementResponse &#x3D; new BoardElementResponse({
 			type: RoomBoardElementTypes.LESSON,
 			content: mappedLesson,
+		});
+		return boardElementResponse;
+	};
+
+	private mapColumnBoard &#x3D; (columnBoardInfo: ColumnBoardMetaData): BoardElementResponse &#x3D;&gt; {
+		const mappedColumnBoard &#x3D; new BoardColumnBoardResponse({
+			id: columnBoardInfo.id,
+			columnBoardId: columnBoardInfo.columnBoardId,
+			title: columnBoardInfo.title,
+			published: columnBoardInfo.published,
+			createdAt: columnBoardInfo.createdAt,
+			updatedAt: columnBoardInfo.updatedAt,
+		});
+
+		const boardElementResponse &#x3D; new BoardElementResponse({
+			type: RoomBoardElementTypes.COLUMN_BOARD,
+			content: mappedColumnBoard,
 		});
 		return boardElementResponse;
 	};

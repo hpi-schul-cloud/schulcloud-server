@@ -138,7 +138,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:30</a></div>
                             </td>
                         </tr>
 
@@ -251,8 +251,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:39</a></div>
                 </td>
             </tr>
 
@@ -323,8 +323,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="53"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:53</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:65</a></div>
                 </td>
             </tr>
 
@@ -419,8 +419,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="95"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:95</a></div>
                 </td>
             </tr>
 
@@ -515,8 +515,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="103"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:103</a></div>
                 </td>
             </tr>
 
@@ -610,8 +610,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="99"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:99</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:111</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:125</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:139</a></div>
                 </td>
             </tr>
 
@@ -752,8 +752,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="112"
-                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:112</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/learnroom/service/board-copy.service.ts:126</a></div>
                 </td>
             </tr>
 
@@ -808,7 +808,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Board, BoardElement, BoardElementType, Course, isLesson, isTask, Lesson, Task, User } from &#x27;@shared/domain&#x27;;
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	Course,
+	isLesson,
+	isTask,
+	Lesson,
+	LessonBoardElement,
+	Task,
+	TaskBoardElement,
+	User,
+} from &#x27;@shared/domain&#x27;;
 import { BoardRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { CopyElementType, CopyHelperService, CopyStatus } from &#x27;@src/modules/copy-helper&#x27;;
@@ -865,7 +877,7 @@ export class BoardCopyService {
 		destinationCourse: Course
 	): Promise&lt;CopyStatus[]&gt; {
 		const promises: Promise&lt;[number, CopyStatus]&gt;[] &#x3D; boardElements.map((element, pos) &#x3D;&gt; {
-			if (element.target &#x3D;&#x3D;&#x3D; undefined || element.target.name &#x3D;&#x3D;&#x3D; undefined) {
+			if (element.target &#x3D;&#x3D;&#x3D; undefined) {
 				return Promise.reject(new Error(&#x27;Broken boardelement - not pointing to any target entity&#x27;));
 			}
 
@@ -909,10 +921,12 @@ export class BoardCopyService {
 		const references: BoardElement[] &#x3D; [];
 		statuses.forEach((status) &#x3D;&gt; {
 			if (status.copyEntity instanceof Task) {
-				references.push(BoardElement.FromTask(status.copyEntity));
+				const taskElement &#x3D; new TaskBoardElement({ target: status.copyEntity });
+				references.push(taskElement);
 			}
 			if (status.copyEntity instanceof Lesson) {
-				references.push(BoardElement.FromLesson(status.copyEntity));
+				const lessonElement &#x3D; new LessonBoardElement({ target: status.copyEntity });
+				references.push(lessonElement);
 			}
 		});
 		return references;

@@ -82,13 +82,22 @@
                             <a href="#BoardCopyParams" title="apps/server/src/modules/learnroom/service/board-copy.service.ts" ><b>BoardCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../board-copy.service.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardElementProps" title="apps/server/src/shared/domain/entity/boardelement.entity.ts" ><b>BoardElementProps</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
+                            <a href="#BoardElementProps" title="apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts" ><b>BoardElementProps</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardElementReference" title="apps/server/src/shared/domain/entity/boardelement.entity.ts" ><b>BoardElementReference</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
+                            <a href="#BoardElementReference" title="apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts" ><b>BoardElementReference</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
                         </li>
                         <li>
-                            <a href="#BoardProps" title="apps/server/src/shared/domain/entity/board.entity.ts" ><b>BoardProps</b>&nbsp;&nbsp;&nbsp;(apps/.../board.entity.ts)</a>
+                            <a href="#BoardProps" title="apps/server/src/shared/domain/entity/legacy-board/board.entity.ts" ><b>BoardProps</b>&nbsp;&nbsp;&nbsp;(apps/.../board.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardInfo" title="apps/server/src/shared/domain/domainobject/board/types/column-board-info.ts" ><b>ColumnBoardInfo</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-info.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardMetaData" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>ColumnBoardMetaData</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardTargetProps" title="apps/server/src/shared/domain/entity/legacy-board/column-board-target.entity.ts" ><b>ColumnBoardTargetProps</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-target.entity.ts)</a>
                         </li>
                         <li>
                             <a href="#ConnectionOptions" title="apps/server/src/shared/infra/database/mongo-memory-database/types.ts" ><b>ConnectionOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
@@ -610,7 +619,7 @@
             </tr>
         </tbody>
     </table>
-</section>    <h3>apps/server/src/shared/domain/entity/boardelement.entity.ts</h3>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts</h3>
     <section data-compodoc="block-typealias">
     <table class="table table-sm table-bordered">
         <tbody>
@@ -638,13 +647,13 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                    <code>        <code><a href="../classes/Task.html" target="_self" >Task | Lesson</a></code>
+                    <code>    <code>Task | Lesson | ColumnBoardTarget</code>
 </code>
                 </td>
             </tr>
         </tbody>
     </table>
-</section>    <h3>apps/server/src/shared/domain/entity/board.entity.ts</h3>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/board.entity.ts</h3>
     <section data-compodoc="block-typealias">
     <table class="table table-sm table-bordered">
         <tbody>
@@ -652,6 +661,108 @@
                 <td class="col-md-4">
                     <a name="BoardProps"></a>
                     <span class="name "><b>BoardProps</b><a href="#BoardProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/domainobject/board/types/column-board-info.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardInfo"></a>
+                    <span class="name "><b>ColumnBoardInfo</b><a href="#ColumnBoardInfo"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/types/room-board.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardMetaData"></a>
+                    <span class="name "><b>ColumnBoardMetaData</b><a href="#ColumnBoardMetaData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LessonMetaData"></a>
+                    <span class="name "><b>LessonMetaData</b><a href="#LessonMetaData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RoomBoardDTO"></a>
+                    <span class="name "><b>RoomBoardDTO</b><a href="#RoomBoardDTO"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RoomBoardElementDTO"></a>
+                    <span class="name "><b>RoomBoardElementDTO</b><a href="#RoomBoardElementDTO"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/column-board-target.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardTargetProps"></a>
+                    <span class="name "><b>ColumnBoardTargetProps</b><a href="#ColumnBoardTargetProps"><span class="icon ion-ios-link"></span></a></span>
                 </td>
             </tr>
             <tr>
@@ -1748,56 +1859,6 @@
                 <td class="col-md-4">
                     <a name="LessonCopyParentParams"></a>
                     <span class="name "><b>LessonCopyParentParams</b><a href="#LessonCopyParentParams"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>    <h3>apps/server/src/modules/learnroom/types/room-board.types.ts</h3>
-    <section data-compodoc="block-typealias">
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="LessonMetaData"></a>
-                    <span class="name "><b>LessonMetaData</b><a href="#LessonMetaData"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="RoomBoardDTO"></a>
-                    <span class="name "><b>RoomBoardDTO</b><a href="#RoomBoardDTO"><span class="icon ion-ios-link"></span></a></span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <code>    <code>literal type</code>
-</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="RoomBoardElementDTO"></a>
-                    <span class="name "><b>RoomBoardElementDTO</b><a href="#RoomBoardElementDTO"><span class="icon ion-ios-link"></span></a></span>
                 </td>
             </tr>
             <tr>
