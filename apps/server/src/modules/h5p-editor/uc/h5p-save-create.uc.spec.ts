@@ -1,0 +1,109 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@shared/testing';
+import { ICurrentUser } from '@src/modules/authentication';
+import { H5PEditor, IContentMetadata } from '@lumieducation/h5p-server';
+import { H5PEditorTestModule } from '../h5p-editor-test.module';
+import { H5PEditorUc } from './h5p.uc';
+
+const setup = () => {
+	const contentId = '123456789';
+	const notExistingContentId = '999999999';
+	const id = '0000000';
+	const metadata: IContentMetadata = {
+		embedTypes: [],
+		language: 'de',
+		mainLibrary: 'mainLib',
+		preloadedDependencies: [],
+		defaultLanguage: '',
+		license: '',
+		title: '123',
+	};
+	const params = {};
+	const contentIdUndefined = undefined as unknown as string;
+	const mainLibraryUbername = 'mainLib';
+	const currentUser: ICurrentUser = {
+		userId: '123',
+		roles: [],
+		schoolId: '',
+		accountId: '',
+	};
+	const error = new Error('Could not save H5P content');
+
+	return {
+		contentId,
+		contentIdUndefined,
+		notExistingContentId,
+		currentUser,
+		params,
+		metadata,
+		mainLibraryUbername,
+		id,
+		error,
+	};
+};
+
+describe('save or create H5P content', () => {
+	let module: TestingModule;
+	let uc: H5PEditorUc;
+	let h5pEditor: DeepMocked<H5PEditor>;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			imports: [H5PEditorTestModule],
+		})
+			.overrideProvider(H5PEditor)
+			.useValue(createMock<H5PEditor>())
+			.compile();
+
+		uc = module.get(H5PEditorUc);
+		h5pEditor = module.get(H5PEditor);
+		await setupEntities();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await module.close();
+	});
+
+	describe('when value of contentId is create', () => {
+		it('should create new h5p content', async () => {
+			const { contentIdUndefined, metadata, mainLibraryUbername, params, currentUser, id } = setup();
+			const result1 = { id, metadata };
+			h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
+			const result = await uc.saveH5pContentGetMetadata(
+				contentIdUndefined,
+				currentUser,
+				params,
+				metadata,
+				mainLibraryUbername
+			);
+
+			expect(result).toEqual(result1);
+		});
+	});
+
+	describe('when contentId is given', () => {
+		it('should render h5p editor', async () => {
+			const { contentId, metadata, mainLibraryUbername, params, currentUser, id } = setup();
+			const result1 = { id, metadata };
+			h5pEditor.saveOrUpdateContentReturnMetaData.mockResolvedValueOnce(result1);
+			const result = await uc.saveH5pContentGetMetadata(contentId, currentUser, params, metadata, mainLibraryUbername);
+
+			expect(result).toEqual(result1);
+		});
+	});
+
+	describe('when contentId does not exist', () => {
+		it('should throw an error ', async () => {
+			const { metadata, mainLibraryUbername, params, notExistingContentId, currentUser, error } = setup();
+			h5pEditor.saveOrUpdateContentReturnMetaData.mockRejectedValueOnce(error);
+			await expect(
+				uc.saveH5pContentGetMetadata(notExistingContentId, currentUser, params, metadata, mainLibraryUbername)
+			).rejects.toThrowError(error);
+		});
+	});
+});
