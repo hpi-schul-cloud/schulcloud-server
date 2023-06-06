@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, taskFactory } from '@shared/testing';
+import { ObjectId } from 'bson';
 import { BoardElementResponse, BoardTaskResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -146,6 +147,27 @@ describe('room board response mapper', () => {
 
 			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 			expect(result.elements[1] instanceof BoardElementResponse).toEqual(true);
+		});
+
+		it('should map column board targets on board to response', () => {
+			const columnBoardMetaData = {
+				id: new ObjectId().toHexString(),
+				columnBoardId: new ObjectId().toHexString(),
+				title: 'column board #1',
+				published: true,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			};
+			const board = {
+				roomId: 'roomId',
+				displayColor: '#ACACAC',
+				title: 'boardTitle',
+				elements: [{ type: RoomBoardElementTypes.COLUMN_BOARD, content: columnBoardMetaData }],
+			};
+
+			const result = mapper.mapToResponse(board);
+
+			expect(result.elements[0] instanceof BoardElementResponse).toEqual(true);
 		});
 	});
 });
