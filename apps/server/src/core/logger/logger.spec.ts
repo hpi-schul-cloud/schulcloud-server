@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { WinstonLogger, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger as WinstonLogger } from 'winston';
 import { Loggable } from './interfaces';
 import { Logger } from './logger';
-import { LogMessage, ErrorLogMessage, ValidationErrorLogMessage } from './types';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from './types';
 
 class SampleLoggable implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
@@ -57,9 +58,7 @@ describe('Logger', () => {
 
 			service.log(loggable);
 
-			// info does not exist on type WinstonLogger. Thus the access with bracket notation.
-			// eslint-disable-next-line @typescript-eslint/dot-notation
-			expect(winstonLogger['info']).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
 		});
 	});
 
@@ -76,7 +75,7 @@ describe('Logger', () => {
 
 			service.warn(loggable);
 
-			expect(winstonLogger.warn).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
 		});
 	});
 
