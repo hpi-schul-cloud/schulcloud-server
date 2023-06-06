@@ -7,9 +7,9 @@ import { Permission } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5PEditorUc } from '../../uc/h5p.uc';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 
 class API {
 	constructor(private app: INestApplication) {

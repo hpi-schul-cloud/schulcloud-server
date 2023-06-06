@@ -1,16 +1,16 @@
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import request from 'supertest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Body, ExecutionContext, INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
-import { H5PEditorTestModule } from '../../h5p-editor-test.module';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
-import { H5PEditorUc } from '../../uc/h5p.uc';
 import { IContentMetadata } from '@lumieducation/h5p-server';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5PEditorUc } from '../../uc/h5p.uc';
 
 const setup = () => {
 	const contentId = '12345';
@@ -37,7 +37,15 @@ class API {
 	}
 
 	async createOrSave(contentId: string) {
-		return request(this.app.getHttpServer()).post(`/h5p-editor/delete/${contentId}`);
+		const body = {
+			params: {
+				params: {},
+				metadata: {},
+			},
+			metadata: {},
+			library: {},
+		};
+		return request(this.app.getHttpServer()).post(`/h5p-editor/${contentId}`).send(body);
 	}
 }
 

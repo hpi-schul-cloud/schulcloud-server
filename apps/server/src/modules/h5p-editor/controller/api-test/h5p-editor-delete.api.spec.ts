@@ -4,11 +4,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
-import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { H5PEditorUc } from '../../uc/h5p.uc';
 
 class API {
