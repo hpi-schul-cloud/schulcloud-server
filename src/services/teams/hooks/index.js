@@ -11,6 +11,7 @@ const {
 } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { FileModel } = require('../../fileStorage/model.js');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -167,6 +168,30 @@ const existId = (hook) => {
 		throwErrorIfNotObjectId(hook.id);
 	}
 	return hook;
+};
+
+/**
+ * checks if user has been deleted and assigning all folders to team owner
+ * @beforeHook
+ * @param {Object::hook} hook
+ * @return {Promise::hook}
+ */
+const manageFolders = (hook) => {
+	if(!isUndefined(hook.data.userIdToRemove) && !isUndefined(hook.id) && !isUndefined(hook.params.account.userId)) {
+		reassignFoldersToOwner(hook).then(() => {
+			return hook;
+		});
+	}
+	return hook;
+};
+
+/**
+ * assigning all folders to team owner
+ * @param hook
+ */
+const reassignFoldersToOwner = async (hook) => {
+	const matchQuery = { owner: hook.id, creator: hook.data.userIdToRemove, isDirectory: true };
+	await FileModel.updateMany(matchQuery, { $set: { creator: hook.params.account.userId } }).lean().exec();
 };
 
 /**
@@ -832,6 +857,7 @@ exports.before = {
 		updateUsersForEachClass,
 		teamMainHook,
 		hasTeamPermission('RENAME_TEAM'),
+		manageFolders,
 	], // todo: filterToRelated(keys.data,'data')
 	remove: [teamMainHook, hasTeamPermission('DELETE_TEAM'), deleteTeamInCollaborativeStorage],
 };

@@ -222,15 +222,16 @@ const fileStorageService = {
 	 * @returns { Promise }
 	 */
 	find({ query, payload }) {
-		const { owner, parent } = query;
+		const { owner, parent, directoriesAndNestedFiles } = query;
 		const { userId } = payload;
 		const parentPromise = parent
 			? canRead(userId, parent).catch(() => Promise.reject(new Forbidden()))
 			: Promise.resolve();
+		const findQuery = directoriesAndNestedFiles ? { owner } : { owner, parent: parent || { $exists: false } };
 
 		return parentPromise
 			.then(() =>
-				FileModel.find({ owner, parent: parent || { $exists: false } })
+				FileModel.find(findQuery)
 					.lean()
 					.exec()
 			)
