@@ -9,6 +9,7 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
+	TaskElement,
 } from '@shared/domain';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 
@@ -34,16 +35,21 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 		await this.visitChildrenAsync(card);
 	}
 
-	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
-		this.deleteNode(richTextElement);
-		await this.visitChildrenAsync(richTextElement);
-	}
-
 	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
 		this.deleteNode(fileElement);
 
 		await this.visitChildrenAsync(fileElement);
+	}
+
+	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
+		this.deleteNode(richTextElement);
+		await this.visitChildrenAsync(richTextElement);
+	}
+
+	async visitTaskElementAsync(taskElement: TaskElement): Promise<void> {
+		this.deleteNode(taskElement);
+		await this.visitChildrenAsync(taskElement);
 	}
 
 	deleteNode(domainObject: AnyBoardDo): void {
