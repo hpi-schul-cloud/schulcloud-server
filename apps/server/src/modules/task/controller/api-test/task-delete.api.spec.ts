@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +10,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { ServerTestModule } from '@src/modules/server';
 
 const createStudent = () => {
@@ -35,7 +37,10 @@ describe('Task Controller (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
