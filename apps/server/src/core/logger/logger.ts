@@ -17,7 +17,7 @@ export class Logger {
 
 	public warn(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable, this.context);
-		this.logger.warn(message);
+		this.logger.warning(message);
 	}
 
 	public debug(loggable: Loggable): void {

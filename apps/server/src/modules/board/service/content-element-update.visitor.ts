@@ -7,10 +7,11 @@ import {
 	ColumnBoard,
 	FileElement,
 	RichTextElement,
+	TaskElement,
 } from '@shared/domain';
-import { FileContentBody, RichTextContentBody } from '../controller/dto';
+import { FileContentBody, RichTextContentBody, TaskContentBody } from '../controller/dto';
 
-type ContentType = RichTextContentBody | FileContentBody;
+type ContentType = FileContentBody | RichTextContentBody | TaskContentBody;
 
 export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 	private readonly content: ContentType;
@@ -31,6 +32,14 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		this.throwNotHandled(card);
 	}
 
+	visitFileElement(fileElement: FileElement): void {
+		if (this.content instanceof FileContentBody) {
+			fileElement.caption = this.content.caption;
+		} else {
+			this.throwNotHandled(fileElement);
+		}
+	}
+
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
@@ -40,11 +49,11 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
 		}
 	}
 
-	visitFileElement(fileElement: FileElement): void {
-		if (this.content instanceof FileContentBody) {
-			fileElement.caption = this.content.caption;
+	visitTaskElement(taskElement: TaskElement): void {
+		if (this.content instanceof TaskContentBody) {
+			taskElement.dueDate = this.content.dueDate;
 		} else {
-			this.throwNotHandled(fileElement);
+			this.throwNotHandled(taskElement);
 		}
 	}
 
