@@ -91,12 +91,44 @@ describe('H5PEditor Controller (api)', () => {
 			currentUser = mapUserToCurrentUser(user);
 		});
 		describe('with valid request params', () => {
-			it('should return 200 status', async () => {
+			it('should return 201 status', async () => {
 				const { createContentId, id, metadata } = setup();
 				const result1 = { id, metadata };
 				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
 				const response = await api.createOrSave(createContentId);
-				expect(response.status).toEqual(200);
+				expect(response.status).toEqual(201);
+			});
+		});
+	});
+	describe('save h5p content', () => {
+		beforeEach(async () => {
+			await cleanupCollections(em);
+			const school = schoolFactory.build();
+			const roles = roleFactory.buildList(1, {
+				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
+			});
+			const user = userFactory.build({ school, roles });
+
+			await em.persistAndFlush([user, school]);
+			em.clear();
+
+			currentUser = mapUserToCurrentUser(user);
+		});
+		describe('with valid request params', () => {
+			it('should return 201 status', async () => {
+				const { contentId, id, metadata } = setup();
+				const result1 = { id, metadata };
+				h5PEditorUc.saveH5pContentGetMetadata.mockResolvedValueOnce(result1);
+				const response = await api.createOrSave(contentId);
+				expect(response.status).toEqual(201);
+			});
+		});
+		describe('with bad request params', () => {
+			it('should return 500 status', async () => {
+				const { notExistingContentId } = setup();
+				h5PEditorUc.saveH5pContentGetMetadata.mockRejectedValueOnce(new Error('Could not save H5P content'));
+				const response = await api.createOrSave(notExistingContentId);
+				expect(response.status).toEqual(500);
 			});
 		});
 	});
