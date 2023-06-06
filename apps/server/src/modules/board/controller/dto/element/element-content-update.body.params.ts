@@ -1,7 +1,7 @@
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ContentElementType, InputFormat } from '@shared/domain';
 import { Type } from 'class-transformer';
-import { IsEnum, IsString, ValidateNested } from 'class-validator';
+import { IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
 	@ApiProperty({
@@ -11,6 +11,21 @@ export abstract class ElementContentBody {
 	})
 	@IsEnum(ContentElementType)
 	type!: ContentElementType;
+}
+
+export class FileContentBody {
+	@IsString()
+	@ApiProperty({})
+	caption!: string;
+}
+
+export class FileElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.FILE })
+	type!: ContentElementType.FILE;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: FileContentBody;
 }
 
 export class RichTextContentBody {
@@ -23,12 +38,6 @@ export class RichTextContentBody {
 	inputFormat!: InputFormat;
 }
 
-export class FileContentBody {
-	@IsString()
-	@ApiProperty({})
-	caption!: string;
-}
-
 export class RichTextElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;
@@ -38,13 +47,19 @@ export class RichTextElementContentBody extends ElementContentBody {
 	content!: RichTextContentBody;
 }
 
-export class FileElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.FILE })
-	type!: ContentElementType.FILE;
+export class TaskContentBody {
+	@IsDate()
+	@ApiProperty()
+	dueDate!: Date;
+}
+
+export class TaskElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.TASK })
+	type!: ContentElementType.TASK;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: FileContentBody;
+	content!: TaskContentBody;
 }
 
 export type AnyElementContentBody = RichTextElementContentBody | FileContentBody;
@@ -55,14 +70,19 @@ export class ElementContentUpdateBodyParams {
 		discriminator: {
 			property: 'type',
 			subTypes: [
-				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
+				{ value: TaskElementContentBody, name: ContentElementType.TASK },
 			],
 		},
 		keepDiscriminatorProperty: true,
 	})
 	@ApiProperty({
-		oneOf: [{ $ref: getSchemaPath(RichTextElementContentBody) }, { $ref: getSchemaPath(FileElementContentBody) }],
+		oneOf: [
+			{ $ref: getSchemaPath(FileElementContentBody) },
+			{ $ref: getSchemaPath(RichTextElementContentBody) },
+			{ $ref: getSchemaPath(TaskElementContentBody) },
+		],
 	})
-	data!: RichTextElementContentBody | FileElementContentBody;
+	data!: FileElementContentBody | RichTextElementContentBody | TaskElementContentBody;
 }

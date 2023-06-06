@@ -6,7 +6,7 @@ import {
 	schoolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, Permission, SchoolExternalToolDO } from '@shared/domain';
+import { ContextExternalToolDO, ContextRef, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ContextExternalToolService } from './context-external-tool.service';
@@ -91,6 +91,7 @@ describe('ContextExternalToolService', () => {
 	describe('createContextExternalTool is called', () => {
 		describe('when contextExternalTool is given', () => {
 			const setup = () => {
+				jest.useFakeTimers().setSystemTime(new Date('2023-01-01'));
 				const contextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.build();
 
 				return {
@@ -203,7 +204,7 @@ describe('ContextExternalToolService', () => {
 
 			it('should check permission by reference for the dependent context of the context external tool', async () => {
 				const { userId, contextExternalTool } = setup();
-				contextExternalTool.contextType = ToolContextType.COURSE;
+				contextExternalTool.contextRef.type = ToolContextType.COURSE;
 
 				await service.ensureContextPermissions(userId, contextExternalTool, {
 					requiredPermissions: [Permission.CONTEXT_TOOL_USER],
@@ -213,7 +214,7 @@ describe('ContextExternalToolService', () => {
 				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					AuthorizableReferenceType.Course,
-					contextExternalTool.contextId,
+					contextExternalTool.contextRef.id,
 					{
 						action: Action.read,
 						requiredPermissions: [Permission.CONTEXT_TOOL_USER],
@@ -270,6 +271,31 @@ describe('ContextExternalToolService', () => {
 				const result: ContextExternalToolDO = await service.findById(contextExternalTool.id as string);
 
 				expect(result).toEqual(contextExternalTool);
+			});
+		});
+	});
+
+	describe('getContextExternalToolsForContext is called', () => {
+		describe('when contextType and contextId are given', () => {
+			it('should call the repository', async () => {
+				const contextRef: ContextRef = new ContextRef({ type: ToolContextType.COURSE, id: 'contextId' });
+				await service.findAllByContext(contextRef);
+
+				expect(contextExternalToolRepo.find).toHaveBeenCalledWith({
+					context: {
+						id: 'contextId',
+						type: ToolContextType.COURSE,
+					},
+				});
+			});
+
+			it('should return context external tools', async () => {
+				const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalToolDO]);
+
+				const result: ContextExternalToolDO[] = await service.findAllByContext(contextExternalToolDO.contextRef);
+
+				expect(result).toEqual([contextExternalToolDO]);
 			});
 		});
 	});
