@@ -8,22 +8,33 @@ import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, u
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5PEditorUc } from '../../uc/h5p.uc';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 
 class API {
 	constructor(private app: INestApplication) {
 		this.app = app;
 	}
 
-	async createNewEditor() {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/create`);
+	async editH5pContent(contentId: string) {
+		return request(this.app.getHttpServer()).get(`/h5p-editor/${contentId}`);
 	}
 }
+
+const setup = () => {
+	const contentId = '12345';
+	const notExistingContentId = '12345';
+	const badContentId = '';
+
+	return { contentId, notExistingContentId, badContentId };
+};
 
 describe('H5PEditor Controller (api)', () => {
 	let app: INestApplication;
 	let api: API;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+	let h5PEditorUc: DeepMocked<H5PEditorUc>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -37,10 +48,13 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(H5PEditorUc)
+			.useValue(createMock<H5PEditorUc>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
+		h5PEditorUc = module.get(H5PEditorUc);
 
 		api = new API(app);
 		em = module.get(EntityManager);
@@ -50,7 +64,7 @@ describe('H5PEditor Controller (api)', () => {
 		await app.close();
 	});
 
-	describe('delete h5p content', () => {
+	describe('get h5p editor', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
 			const school = schoolFactory.build();
@@ -66,8 +80,18 @@ describe('H5PEditor Controller (api)', () => {
 		});
 		describe('with valid request params', () => {
 			it('should return 200 status', async () => {
-				const response = await api.createNewEditor();
+				const { contentId } = setup();
+				h5PEditorUc.getH5pEditor.mockResolvedValueOnce('iFrame');
+				const response = await api.editH5pContent(contentId);
 				expect(response.status).toEqual(200);
+			});
+		});
+		describe('with bad request params', () => {
+			it('should return 500 status', async () => {
+				const { notExistingContentId } = setup();
+				h5PEditorUc.getH5pEditor.mockRejectedValueOnce(new Error('Could not get H5P editor'));
+				const response = await api.editH5pContent(notExistingContentId);
+				expect(response.status).toEqual(500);
 			});
 		});
 	});

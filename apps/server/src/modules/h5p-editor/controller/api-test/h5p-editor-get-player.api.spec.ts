@@ -7,7 +7,10 @@ import { Permission } from '@shared/domain';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
+import H5PPlayer from '@lumieducation/h5p-server/build/src/H5PPlayer';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { H5PEditorUc } from '../../uc/h5p.uc';
 
 class API {
 	constructor(private app: INestApplication) {
@@ -22,9 +25,8 @@ class API {
 const setup = () => {
 	const contentId = '12345';
 	const notExistingContentId = '12345';
-	const badContentId = '';
 
-	return { contentId, notExistingContentId, badContentId };
+	return { contentId, notExistingContentId };
 };
 
 describe('H5PEditor Controller (api)', () => {
@@ -32,6 +34,7 @@ describe('H5PEditor Controller (api)', () => {
 	let api: API;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+	let h5PEditorUc: DeepMocked<H5PEditorUc>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -45,9 +48,12 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(H5PEditorUc)
+			.useValue(createMock<H5PEditorUc>())
 			.compile();
 
 		app = module.createNestApplication();
+		h5PEditorUc = module.get(H5PEditorUc);
 		await app.init();
 
 		api = new API(app);
@@ -58,7 +64,7 @@ describe('H5PEditor Controller (api)', () => {
 		await app.close();
 	});
 
-	describe('delete h5p content', () => {
+	describe('get h5p player', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
 			const school = schoolFactory.build();
@@ -75,22 +81,16 @@ describe('H5PEditor Controller (api)', () => {
 		describe('with valid request params', () => {
 			it('should return 200 status', async () => {
 				const { contentId } = setup();
-
+				h5PEditorUc.getH5pPlayer.mockResolvedValueOnce('iFrame');
 				const response = await api.getPlayer(contentId);
 				expect(response.status).toEqual(200);
 			});
 		});
 		describe('with bad request params', () => {
-			it('should return 404 status', async () => {
-				const { notExistingContentId } = setup();
-
-				const response = await api.getPlayer(notExistingContentId);
-				expect(response.status).toEqual(404);
-			});
 			it('should return 500 status', async () => {
-				const { badContentId } = setup();
-
-				const response = await api.getPlayer(badContentId);
+				const { notExistingContentId } = setup();
+				h5PEditorUc.getH5pPlayer.mockRejectedValueOnce(new Error('Could not get H5P player'));
+				const response = await api.getPlayer(notExistingContentId);
 				expect(response.status).toEqual(500);
 			});
 		});

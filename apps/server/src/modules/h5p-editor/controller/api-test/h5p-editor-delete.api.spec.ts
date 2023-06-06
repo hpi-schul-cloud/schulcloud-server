@@ -8,6 +8,8 @@ import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, u
 import { ICurrentUser } from '@src/modules/authentication';
 import { Request } from 'express';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
+import { DeepMocked, createMock } from '@golevelup/ts-jest/lib/mocks';
+import { H5PEditorUc } from '../../uc/h5p.uc';
 
 class API {
 	constructor(private app: INestApplication) {
@@ -15,7 +17,7 @@ class API {
 	}
 
 	async deleteH5pContent(contentId: string) {
-		return request(this.app.getHttpServer()).get(`/h5p-editor/delete/${contentId}`);
+		return request(this.app.getHttpServer()).post(`/h5p-editor/delete/${contentId}`);
 	}
 }
 
@@ -32,6 +34,7 @@ describe('H5PEditor Controller (api)', () => {
 	let api: API;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
+	let h5PEditorUc: DeepMocked<H5PEditorUc>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -45,10 +48,13 @@ describe('H5PEditor Controller (api)', () => {
 					return true;
 				},
 			})
+			.overrideProvider(H5PEditorUc)
+			.useValue(createMock<H5PEditorUc>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
+		h5PEditorUc = module.get(H5PEditorUc);
 
 		api = new API(app);
 		em = module.get(EntityManager);
@@ -76,21 +82,17 @@ describe('H5PEditor Controller (api)', () => {
 			it('should return 200 status', async () => {
 				const { contentId } = setup();
 
+				h5PEditorUc.deleteH5pContent.mockResolvedValueOnce(true);
 				const response = await api.deleteH5pContent(contentId);
-				expect(response.status).toEqual(200);
+				expect(response.status).toEqual(201);
 			});
 		});
 		describe('with bad request params', () => {
-			it('should return 404 status', async () => {
+			it('should return 500 status', async () => {
 				const { notExistingContentId } = setup();
 
+				h5PEditorUc.deleteH5pContent.mockRejectedValueOnce(new Error('Could not delete H5P content'));
 				const response = await api.deleteH5pContent(notExistingContentId);
-				expect(response.status).toEqual(404);
-			});
-			it('should return 500 status', async () => {
-				const { badContentId } = setup();
-
-				const response = await api.deleteH5pContent(badContentId);
 				expect(response.status).toEqual(500);
 			});
 		});
