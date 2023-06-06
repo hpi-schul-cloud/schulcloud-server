@@ -24,7 +24,7 @@ export class CommonCartridgeManifestElement implements ICommonCartridgeElement {
 					manifest: {
 						$: {
 							identifier: this.props.identifier,
-							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3',
+							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1',
 							'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest',
 							'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource',
 							'xmlns:ext': 'http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2',

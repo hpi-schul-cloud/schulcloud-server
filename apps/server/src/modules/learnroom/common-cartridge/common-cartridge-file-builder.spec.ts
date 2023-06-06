@@ -49,7 +49,7 @@ describe('CommonCartridgeFileBuilder', () => {
 	};
 	const webLinkResourceProps: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_1_0,
-		type: CommonCartridgeResourceType.WEB_LINK,
+		type: CommonCartridgeResourceType.WEB_LINK_V1,
 		identifier: 'web-content-identifier',
 		href: 'web-content-identifier/web-content.xml',
 		title: 'web-link-title',
@@ -202,7 +202,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 	};
 	const webLinkResourceProps: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
-		type: CommonCartridgeResourceType.WEB_LINK,
+		type: CommonCartridgeResourceType.WEB_LINK_V1,
 		identifier: 'web-content-identifier',
 		href: 'web-content-identifier/web-content.xml',
 		title: 'web-link-title',

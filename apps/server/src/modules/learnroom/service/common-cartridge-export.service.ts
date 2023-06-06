@@ -78,10 +78,21 @@ export class CommonCartridgeExportService {
 			};
 		}
 
-		if (content.component === ComponentType.GEOGEBRA) {
+		if (version === CommonCartridgeVersion.V_1_3_0 && content.component === ComponentType.GEOGEBRA) {
 			return {
 				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
+				type: CommonCartridgeResourceType.WEB_LINK_V3,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.xml`,
+				title: content.title,
+				url: `https://www.geogebra.org/m/${content.content.materialId}`,
+			};
+		}
+
+		if (version === CommonCartridgeVersion.V_1_1_0 && content.component === ComponentType.GEOGEBRA) {
+			return {
+				version,
+				type: CommonCartridgeResourceType.WEB_LINK_V1,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.title,
@@ -92,7 +103,7 @@ export class CommonCartridgeExportService {
 		if (content.component === ComponentType.ETHERPAD) {
 			return {
 				version,
-				type: CommonCartridgeResourceType.WEB_LINK,
+				type: CommonCartridgeResourceType.WEB_LINK_V1,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.title,
