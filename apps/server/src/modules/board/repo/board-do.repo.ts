@@ -1,6 +1,7 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { Utils } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardNode, EntityId } from '@shared/domain';
+import { AnyBoardDo, BoardExternalReference, BoardNode, ColumnBoardNode, EntityId } from '@shared/domain';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -47,6 +48,28 @@ export class BoardDoRepo {
 		});
 
 		return domainObjects;
+	}
+
+	async getTitleById(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
+		const ids = Utils.asArray(id);
+		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
+
+		const titlesMap = boardNodes.reduce((map, node) => {
+			map[node.id] = node.title ?? '';
+			return map;
+		}, {});
+
+		return titlesMap;
+	}
+
+	async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
+		const boardNodes = await this.em.find(ColumnBoardNode, {
+			_contextId: new ObjectId(reference.id),
+			_contextType: reference.type,
+		});
+		const ids = boardNodes.map((o) => o.id);
+
+		return ids;
 	}
 
 	async findParentOfId(childId: EntityId): Promise<AnyBoardDo | undefined> {

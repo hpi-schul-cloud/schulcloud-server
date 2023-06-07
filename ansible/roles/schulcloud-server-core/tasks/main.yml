@@ -91,20 +91,3 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
-
-  - name: Remove old erwin account migration job
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      api_version: batch/v1
-      kind: Job
-      name: erwin-account-migration-job
-      state: absent
-      wait: yes
-
-  - name: Create erwin account migration job
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: erwin-account-migration-job.yml.j2
-    when: ERWINIDM_ACCOUNT_MIGRATION is defined and ERWINIDM_ACCOUNT_MIGRATION|bool

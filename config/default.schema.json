@@ -971,6 +971,11 @@
 			"default": "lernen.cloud@dataport.de",
 			"description": "Email to report accessibility issue"
 		},
+		"FEATURE_COLUMN_BOARD_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for activating the column board."
+		},
 		"FEATURE_COURSE_SHARE": {
 			"type": "boolean",
 			"default": false,
