@@ -77,7 +77,7 @@ describe('CommonCartridgeExportService', () => {
 		await module.close();
 	});
 
-	describe('exportCourse', () => {
+	describe('exportCourse of version 1', () => {
 		let archive: AdmZip;
 
 		beforeAll(async () => {
@@ -134,5 +134,67 @@ describe('CommonCartridgeExportService', () => {
 		// 		expect(manifest).toContain(`i${task.id}`);
 		// 	});
 		// });
+
+		it('should add version 1 information to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
+		});
+	});
+
+	describe('exportCourse of version 3', () => {
+		let archive: AdmZip;
+
+		beforeAll(async () => {
+			const [lesson] = lessons;
+			const textContent = { text: 'Some random text' } as IComponentTextProperties;
+			const lessonContent: IComponentProperties = {
+				_id: 'random_id',
+				title: 'A random title',
+				hidden: false,
+				component: ComponentType.TEXT,
+				content: textContent,
+			};
+			const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_3_0;
+			lesson.contents = [lessonContent];
+			lessonServiceMock.findById.mockResolvedValueOnce(lesson);
+			courseServiceMock.findById.mockResolvedValueOnce(course);
+			lessonServiceMock.findByCourseIds.mockResolvedValueOnce([lessons, lessons.length]);
+			taskServiceMock.findBySingleParent.mockResolvedValueOnce([tasks, tasks.length]);
+			archive = new AdmZip(await courseExportService.exportCourse(course.id, '', version));
+		});
+
+		it('should create manifest file', () => {
+			expect(archive.getEntry('imsmanifest.xml')).toBeDefined();
+		});
+
+		it('should add title to manifest file', () => {
+			expect(archive.getEntry('imsmanifest.xml')?.getData().toString()).toContain(course.name);
+		});
+
+		it('should add lessons as organization items to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			lessons.forEach((lesson) => {
+				expect(manifest).toContain(lesson.name);
+			});
+		});
+
+		it('should add lesson text content to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(lessons[0].contents[0].title);
+		});
+
+		it('should add copyright information to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(course.teachers[0].firstName);
+			expect(manifest).toContain(course.teachers[0].lastName);
+			expect(manifest).toContain(course.teachers[1].firstName);
+			expect(manifest).toContain(course.teachers[1].lastName);
+			expect(manifest).toContain(course.createdAt.getFullYear().toString());
+		});
+
+		it('should add version 3 information to manifest file', () => {
+			const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
+			expect(manifest).toContain(CommonCartridgeVersion.V_1_3_0);
+		});
 	});
 });
