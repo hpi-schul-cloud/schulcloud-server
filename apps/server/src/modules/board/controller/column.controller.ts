@@ -72,8 +72,10 @@ export class ColumnController {
 	@Post(':columnId/cards')
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: { typeNames: string[] }
 	): Promise<CardResponse> {
+		console.log(bodyParams);
 		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId);
 
 		const response = CardResponseMapper.mapToResponse(card);
