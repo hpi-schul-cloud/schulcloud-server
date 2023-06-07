@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, Put } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	HttpCode,
+	NotFoundException,
+	Param,
+	Patch,
+	Put,
+} from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
@@ -46,7 +56,7 @@ export class ElementController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':contentElementId/content')
+	@Patch(':contentElementId/content')
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: ElementContentUpdateBodyParams,
