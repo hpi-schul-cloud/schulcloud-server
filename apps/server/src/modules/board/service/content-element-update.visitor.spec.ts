@@ -5,6 +5,7 @@ import {
 	columnFactory,
 	fileElementFactory,
 	richTextElementFactory,
+	taskElementFactory,
 } from '@shared/testing';
 import { FileContentBody, RichTextContentBody } from '../controller/dto';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -45,6 +46,24 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a file element using the wrong content', () => {
+		const setup = () => {
+			const fileElement = fileElementFactory.build();
+			const content = new RichTextContentBody();
+			content.text = 'a text';
+			content.inputFormat = InputFormat.RICH_TEXT_CK5;
+			const updater = new ContentElementUpdateVisitor(content);
+
+			return { fileElement, updater };
+		};
+
+		it('should throw an error', () => {
+			const { fileElement, updater } = setup();
+
+			expect(() => updater.visitFileElement(fileElement)).toThrow();
+		});
+	});
+
 	describe('when visiting a rich text element using the wrong content', () => {
 		const setup = () => {
 			const richTextElement = richTextElementFactory.build();
@@ -62,21 +81,21 @@ describe(ContentElementUpdateVisitor.name, () => {
 		});
 	});
 
-	describe('when visiting a file element using the wrong content', () => {
+	describe('when visiting a task element using the wrong content', () => {
 		const setup = () => {
-			const fileElement = fileElementFactory.build();
+			const taskElement = taskElementFactory.build();
 			const content = new RichTextContentBody();
 			content.text = 'a text';
 			content.inputFormat = InputFormat.RICH_TEXT_CK5;
 			const updater = new ContentElementUpdateVisitor(content);
 
-			return { fileElement, updater };
+			return { taskElement, updater };
 		};
 
 		it('should throw an error', () => {
-			const { fileElement, updater } = setup();
+			const { taskElement, updater } = setup();
 
-			expect(() => updater.visitFileElement(fileElement)).toThrow();
+			expect(() => updater.visitTaskElement(taskElement)).toThrow();
 		});
 	});
 });
