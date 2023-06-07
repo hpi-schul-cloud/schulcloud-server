@@ -1,7 +1,5 @@
 import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
 import { Account } from './account.entity';
-import { Board } from './board.entity';
-import { BoardElement, LessonBoardElement, TaskBoardElement } from './boardelement.entity';
 import {
 	CardNode,
 	ColumnBoardNode,
@@ -17,6 +15,14 @@ import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
+import {
+	Board,
+	BoardElement,
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
+	LessonBoardElement,
+	TaskBoardElement,
+} from './legacy-board';
 import { Lesson } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
@@ -42,7 +48,9 @@ export const ALL_ENTITIES = [
 	BoardElement,
 	BoardNode,
 	CardNode,
+	ColumnboardBoardElement,
 	ColumnBoardNode,
+	ColumnBoardTarget,
 	ColumnNode,
 	FileElementNode,
 	RichTextElementNode,
