@@ -63,7 +63,7 @@ describe(`board update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			expect(response.status).toEqual(204);
 		});
@@ -73,7 +73,7 @@ describe(`board update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
+			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
 
@@ -86,7 +86,7 @@ describe(`board update title (api)`, () => {
 			const unsanitizedTitle = '<iframe>foo</iframe> bar';
 			const sanitizedTitle = 'foo bar';
 
-			await loggedInClient.put(`${columnBoardNode.id}/title`, { title: unsanitizedTitle });
+			await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: unsanitizedTitle });
 			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
@@ -121,7 +121,7 @@ describe(`board update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${columnBoardNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
 			expect(response.status).toEqual(403);
 

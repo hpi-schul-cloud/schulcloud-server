@@ -64,7 +64,7 @@ describe(`column update title (api)`, () => {
 			const { loggedInClient, columnNode } = await setup();
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${columnNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${columnNode.id}/title`, { title: newTitle });
 
 			expect(response.statusCode).toEqual(204);
 		});
@@ -74,7 +74,7 @@ describe(`column update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			await loggedInClient.put(`${columnNode.id}/title`, { title: newTitle });
+			await loggedInClient.patch(`${columnNode.id}/title`, { title: newTitle });
 
 			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
 
@@ -87,7 +87,7 @@ describe(`column update title (api)`, () => {
 			const unsanitizedTitle = '<iframe>foo</iframe> bar';
 			const sanitizedTitle = 'foo bar';
 
-			await loggedInClient.put(`${columnNode.id}/title`, { title: unsanitizedTitle });
+			await loggedInClient.patch(`${columnNode.id}/title`, { title: unsanitizedTitle });
 			const result = await em.findOneOrFail(ColumnNode, columnNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
@@ -122,7 +122,7 @@ describe(`column update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${columnNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${columnNode.id}/title`, { title: newTitle });
 
 			expect(response.statusCode).toEqual(403);
 

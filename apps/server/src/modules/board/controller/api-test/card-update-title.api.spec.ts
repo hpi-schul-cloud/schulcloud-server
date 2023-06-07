@@ -67,7 +67,7 @@ describe(`card update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${cardNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 			expect(response.statusCode).toEqual(204);
 		});
 
@@ -76,7 +76,7 @@ describe(`card update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			await loggedInClient.put(`${cardNode.id}/title`, { title: newTitle });
+			await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 
 			const result = await em.findOneOrFail(CardNode, cardNode.id);
 
@@ -89,7 +89,7 @@ describe(`card update title (api)`, () => {
 			const unsanitizedTitle = '<iframe>foo</iframe> bar';
 			const sanitizedTitle = 'foo bar';
 
-			await loggedInClient.put(`${cardNode.id}/title`, { title: unsanitizedTitle });
+			await loggedInClient.patch(`${cardNode.id}/title`, { title: unsanitizedTitle });
 			const result = await em.findOneOrFail(CardNode, cardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
@@ -126,7 +126,7 @@ describe(`card update title (api)`, () => {
 
 			const newTitle = 'new title';
 
-			const response = await loggedInClient.put(`${cardNode.id}/title`, { title: newTitle });
+			const response = await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 			expect(response.statusCode).toEqual(403);
 
 			const result = await em.findOneOrFail(CardNode, cardNode.id);
