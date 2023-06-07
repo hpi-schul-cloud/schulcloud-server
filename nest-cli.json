@@ -15,7 +15,7 @@
 				}
 			}
 		],
-		"assets": ["static-assets/*"]
+		"assets": ["static-assets/**/*"]
 	},
 	"projects": {
 		"server": {
