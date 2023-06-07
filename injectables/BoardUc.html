@@ -127,6 +127,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#updateCardHeight" >updateCardHeight</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateCardTitle" >updateCardTitle</a>
                             </li>
                             <li>
@@ -282,8 +286,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="135"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:135</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:144</a></div>
                 </td>
             </tr>
 
@@ -626,8 +630,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:126</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:135</a></div>
                 </td>
             </tr>
 
@@ -1166,6 +1170,101 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="updateCardHeight"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>updateCardHeight</b></span>
+                        <a href="#updateCardHeight"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateCardHeight(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, cardId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, height: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="117"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:117</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>cardId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>height</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateCardTitle"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -1184,8 +1283,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="117"
-                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:117</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:126</a></div>
                 </td>
             </tr>
 
@@ -1472,6 +1571,15 @@ export class BoardUc {
 		await this.checkPermission(userId, targetColumn, Action.write);
 
 		await this.cardService.move(card, targetColumn, targetPosition);
+	}
+
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise&lt;void&gt; {
+		this.logger.debug({ action: &#x27;updateCardHeight&#x27;, userId, cardId, height });
+
+		const card &#x3D; await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateHeight(card, height);
 	}
 
 	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise&lt;void&gt; {

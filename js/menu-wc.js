@@ -3453,6 +3453,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ServerConsole.html" data-type="entity-link" >ServerConsole</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SetHeightBodyParams.html" data-type="entity-link" >SetHeightBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ShareTokenBodyParams.html" data-type="entity-link" >ShareTokenBodyParams</a>
                             </li>
                             <li class="link">
