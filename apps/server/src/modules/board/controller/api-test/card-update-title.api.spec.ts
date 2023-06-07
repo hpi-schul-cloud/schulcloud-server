@@ -100,7 +100,7 @@ describe(`card update title (api)`, () => {
 			expect(response.status).toEqual(204);
 		});
 
-		it('should actually change the column title', async () => {
+		it('should actually change the card title', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 			const newTitle = 'new title';
