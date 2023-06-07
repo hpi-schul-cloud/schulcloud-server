@@ -6,13 +6,14 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';
@@ -44,7 +45,7 @@ export class ColumnController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':columnId/title')
+	@Patch(':columnId/title')
 	async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
