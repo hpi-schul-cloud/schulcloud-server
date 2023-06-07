@@ -28,11 +28,11 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	Lti11ToolConfigCreateParams,
+	Lti11ToolConfigUpdateParams,
 	Oauth2ToolConfigCreateParams,
+	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../dto';
-import { Lti11ToolConfigUpdateParams } from '../dto/request/config/lti11-tool-config-update.params';
-import { Oauth2ToolConfigUpdateParams } from '../dto/request/config/oauth2-tool-config-update.params';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,

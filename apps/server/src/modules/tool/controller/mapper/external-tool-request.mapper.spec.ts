@@ -14,6 +14,7 @@ import {
 	Lti11ToolConfigDO,
 	Oauth2ToolConfigDO,
 } from '@shared/domain/domainobject/tool';
+import { basicToolConfigDOFactory, customParameterDOFactory, externalToolDOFactory } from '@shared/testing';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -30,10 +31,10 @@ import {
 	ExternalToolSortBy,
 	ExternalToolUpdateParams,
 	Lti11ToolConfigCreateParams,
+	Lti11ToolConfigUpdateParams,
 	Oauth2ToolConfigCreateParams,
 	SortExternalToolParams,
 } from '../dto';
-import { Lti11ToolConfigUpdateParams } from '../dto/request/config/lti11-tool-config-update.params';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {
@@ -86,12 +87,12 @@ describe('ExternalToolRequestMapper', () => {
 		externalToolUpdateParams.isHidden = true;
 		externalToolUpdateParams.openNewTab = true;
 
-		const basicToolConfigDO: BasicToolConfigDO = new BasicToolConfigDO({
+		const basicToolConfigDO: BasicToolConfigDO = basicToolConfigDOFactory.build({
 			type: ToolConfigType.BASIC,
 			baseUrl: 'mockUrl',
 		});
 
-		const customParameterDO: CustomParameterDO = new CustomParameterDO({
+		const customParameterDO: CustomParameterDO = customParameterDOFactory.build({
 			name: 'mockName',
 			displayName: 'displayName',
 			description: 'description',
@@ -104,7 +105,7 @@ describe('ExternalToolRequestMapper', () => {
 			isOptional: false,
 		});
 
-		const externalToolDOCreate: ExternalToolDO = new ExternalToolDO({
+		const externalToolDOCreate: ExternalToolDO = externalToolDOFactory.build({
 			name: 'mockName',
 			url: 'mockUrl',
 			logoUrl: 'mockLogoUrl',
@@ -115,17 +116,19 @@ describe('ExternalToolRequestMapper', () => {
 			config: basicToolConfigDO,
 		});
 
-		const externalToolDOUpdate: ExternalToolDO = new ExternalToolDO({
-			id: externalToolUpdateParams.id,
-			name: 'mockName',
-			url: 'mockUrl',
-			logoUrl: 'mockLogoUrl',
-			parameters: [customParameterDO],
-			isHidden: true,
-			openNewTab: true,
-			version: 1,
-			config: basicToolConfigDO,
-		});
+		const externalToolDOUpdate: ExternalToolDO = externalToolDOFactory.buildWithId(
+			{
+				name: 'mockName',
+				url: 'mockUrl',
+				logoUrl: 'mockLogoUrl',
+				parameters: [customParameterDO],
+				isHidden: true,
+				openNewTab: true,
+				version: 1,
+				config: basicToolConfigDO,
+			},
+			externalToolUpdateParams.id
+		);
 
 		return {
 			externalToolCreateParams,

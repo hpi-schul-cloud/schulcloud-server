@@ -2,9 +2,12 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ToolConfigType } from '../../../interface';
-import { BasicToolConfigParams, ExternalToolConfigCreateParams } from './config';
-import { Lti11ToolConfigUpdateParams } from './config/lti11-tool-config-update.params';
-import { Oauth2ToolConfigUpdateParams } from './config/oauth2-tool-config-update.params';
+import {
+	BasicToolConfigParams,
+	ExternalToolConfigCreateParams,
+	Lti11ToolConfigUpdateParams,
+	Oauth2ToolConfigUpdateParams,
+} from './config';
 import { CustomParameterPostParams } from './custom-parameter.params';
 
 @ApiExtraModels(Lti11ToolConfigUpdateParams, Oauth2ToolConfigUpdateParams, BasicToolConfigParams)

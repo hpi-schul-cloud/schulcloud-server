@@ -1,5 +1,6 @@
 export * from './custom-parameter.params';
 export * from './external-tool-create.params';
+export * from './external-tool-update.params';
 export * from './external-tool-search.params';
 export * from './external-tool-sort.params';
 export * from './tool-id.params';
@@ -8,7 +9,6 @@ export * from './id.params';
 export * from './scope.query';
 export * from './school-external-tool-search.params';
 export * from './school-external-tool-id.params';
-export * from './external-tool-update.params';
 export * from './school-external-tool-post.params';
 export * from './custom-parameter-entry.params';
 export * from './context-external-tool-post.params';
