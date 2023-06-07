@@ -82,7 +82,7 @@ export class ToolContextController {
 	@ApiUnauthorizedResponse()
 	@ApiOkResponse({
 		description: 'Returns a list of ContextExternalTools for the given context',
-		type: [ContextExternalToolSearchListResponse],
+		type: ContextExternalToolSearchListResponse,
 	})
 	@ApiOperation({ summary: 'Returns a list of ContextExternalTools for the given context' })
 	async getContextExternalToolsForContext(

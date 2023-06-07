@@ -64,7 +64,7 @@ export class ExternalToolConfigurationUc {
 				schoolId,
 			}),
 			this.contextExternalToolService.findContextExternalTools({
-				context: { id: contextId },
+				context: { id: contextId, type: contextType },
 			}),
 		]);
 
