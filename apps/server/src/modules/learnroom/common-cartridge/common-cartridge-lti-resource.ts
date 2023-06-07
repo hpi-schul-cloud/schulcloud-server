@@ -52,12 +52,6 @@ export class CommonCartridgeLtiResource implements ICommonCartridgeElement, ICom
 									identifierref: 'BLTI001_Icon',
 								},
 							},
-							// this are optional properties
-							// custom: {},
-							// extensions: {},
-							// icon: '',
-							// secure_icon: '',
-							// vendor: {},
 						},
 					},
 				});
