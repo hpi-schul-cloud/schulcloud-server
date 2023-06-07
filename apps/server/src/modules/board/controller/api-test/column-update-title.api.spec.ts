@@ -29,7 +29,7 @@ class API {
 
 	async updateColumnTitle(columnId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${columnId}/title`)
+			.patch(`${baseRouteName}/${columnId}/title`)
 			.set('Accept', 'application/json')
 			.send({ title });
 

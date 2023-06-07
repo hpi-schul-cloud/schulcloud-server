@@ -340,6 +340,38 @@ describe(BoardUc.name, () => {
 		});
 	});
 
+	describe('updateCardHeight', () => {
+		describe('when updating a card height', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should check the permission', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalled();
+			});
+
+			it('should call the service to update the card height', async () => {
+				const { user, card } = setup();
+				columnService.findById.mockResolvedValueOnce(card);
+				const newHeight = 250;
+
+				await uc.updateCardHeight(user.id, card.id, newHeight);
+
+				expect(cardService.updateHeight).toHaveBeenCalledWith(card, newHeight);
+			});
+		});
+	});
+
 	describe('updateCardTitle', () => {
 		describe('when updating a card title', () => {
 			it('should call the service to find the card', async () => {
@@ -350,7 +382,7 @@ describe(BoardUc.name, () => {
 				expect(cardService.findById).toHaveBeenCalledWith(card.id);
 			});
 
-			it('should call the service to update the column title', async () => {
+			it('should call the service to update the card title', async () => {
 				const { user, card } = setup();
 				columnService.findById.mockResolvedValueOnce(card);
 				const newTitle = 'new title';
