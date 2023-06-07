@@ -4,10 +4,15 @@ import { ObjectId } from 'bson';
 import { CreateCardBodyParams } from '../controller/dto/card/create-card.body.params';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
+import { ContentElementService } from './content-element.service';
 
 @Injectable()
 export class CardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		private readonly contentElementService: ContentElementService
+	) {}
 
 	async findById(cardId: EntityId): Promise<Card> {
 		const card = await this.boardDoRepo.findByClassAndId(Card, cardId);
@@ -31,11 +36,16 @@ export class CardService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
-		console.log('createCardBodyParams', createCardBodyParams);
 
 		parent.addChild(card);
 
 		await this.boardDoRepo.save(parent.children, parent);
+
+		const { requiredEmptyElements } = createCardBodyParams;
+		if (requiredEmptyElements && requiredEmptyElements.length > 0) {
+			const elementsPromise = requiredEmptyElements.map((type) => this.contentElementService.create(card, type));
+			await Promise.all(elementsPromise);
+		}
 
 		return card;
 	}
