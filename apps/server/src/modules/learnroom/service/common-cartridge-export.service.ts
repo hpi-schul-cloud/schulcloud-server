@@ -100,10 +100,21 @@ export class CommonCartridgeExportService {
 			};
 		}
 
-		if (content.component === ComponentType.ETHERPAD) {
+		if (version === CommonCartridgeVersion.V_1_1_0 && content.component === ComponentType.ETHERPAD) {
 			return {
 				version,
 				type: CommonCartridgeResourceType.WEB_LINK_V1,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.xml`,
+				title: content.title,
+				url: content.content.url,
+			};
+		}
+
+		if (version === CommonCartridgeVersion.V_1_3_0 && content.component === ComponentType.ETHERPAD) {
+			return {
+				version,
+				type: CommonCartridgeResourceType.WEB_LINK_V3,
 				identifier: `i${content._id as string}`,
 				href: `i${lessonId}/i${content._id as string}.xml`,
 				title: content.title,
