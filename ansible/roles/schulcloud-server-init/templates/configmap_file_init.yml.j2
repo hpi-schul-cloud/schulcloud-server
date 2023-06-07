@@ -13,13 +13,13 @@ data:
     cd /schulcloud-server
     git checkout {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
     npm install
-    until mongo $DATABASE__URL --eval "print(\"waited for connection\")"
+    until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
       do
         sleep 1
       done
-    mongo $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
+    mongosh $DATABASE__URL --eval 'rs.initiate({"_id" : "rs0", "members" : [{"_id" : 0, "host" : "localhost:27017"}]})'
     sleep 3
-    if [[ $(mongo --quiet --eval "db.isMaster().setName") != rs0 ]]
+    if [[ $(mongosh --quiet --eval "db.isMaster().setName") != rs0 ]]
     then
         echo "replicaset config failed :("
     else
@@ -34,7 +34,7 @@ data:
     OIDCMOCK_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $OIDCMOCK__CLIENT_SECRET)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
-    mongo $DATABASE__URL --eval 'db.systems.insert([
+    mongosh $DATABASE__URL --eval 'db.systems.insert([
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
@@ -134,7 +134,7 @@ data:
     fi
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
-    mongo $DATABASE__URL --eval 'db.storageproviders.insert( {
+    mongosh $DATABASE__URL --eval 'db.storageproviders.insert( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
                                        "type" : "S3",
@@ -151,7 +151,7 @@ data:
     SANIS_CLIENT_SECRET=$(node scripts/secret.js -s $AES_KEY -e $SANIS_CLIENT_SECRET)
     SANIS_SYSTEM_ID=0000d186816abba584714c93
     if [[ $SC_THEME == "n21" ]]; then
-      mongo $DATABASE__URL --eval 'db.schools.updateOne(
+      mongosh $DATABASE__URL --eval 'db.schools.updateOne(
           {
             "_id": ObjectId("5f2987e020834114b8efd6f8")
           },
@@ -159,7 +159,7 @@ data:
             $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
           }
       );'
-      mongo $DATABASE__URL --eval 'db.systems.insert([
+      mongosh $DATABASE__URL --eval 'db.systems.insert([
           {
             "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
             "alias" : "SANIS",
@@ -206,7 +206,7 @@ data:
         ISERV_LDAP_SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $AES_KEY -e $ISERV_LDAP_SEARCH_USER_PASSWORD)
 
         # Add (or replace) document with the Dev IServ configuration.
-        mongo $DATABASE__URL --eval 'db.systems.replaceOne(
+        mongosh $DATABASE__URL --eval 'db.systems.replaceOne(
             {
                 "_id": ObjectId("'$ISERV_SYSTEM_ID'"),
             },
@@ -288,7 +288,7 @@ data:
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
         if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
             # Add document to the 'ltitools' collection with Bettermarks tool configuration.
-            mongo $DATABASE__URL --eval 'db.ltitools.replaceOne(
+            mongosh $DATABASE__URL --eval 'db.ltitools.replaceOne(
                 {
                   "name": "bettermarks",
                   "isTemplate": true
@@ -346,7 +346,7 @@ data:
 
             # Add Bettermarks' tools configuration as an external tool
             # (stored in the 'external_tools' collection) that uses OAuth.
-            mongo $DATABASE__URL --eval 'db.external_tools.replaceOne(
+            mongosh $DATABASE__URL --eval 'db.external_tools.replaceOne(
                 {
                   "name": "bettermarks",
                   "config_type": "oauth2"
@@ -383,7 +383,7 @@ data:
     if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
          echo "Inserting nextcloud to ltitools..."
          # Add document to the 'ltitools' collection
-         mongo $DATABASE__URL --eval 'db.ltitools.update(
+         mongosh $DATABASE__URL --eval 'db.ltitools.update(
              {
                "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "isTemplate": true
@@ -443,7 +443,7 @@ data:
          # Add Nextcloud' tools configuration as an external tool
          # (stored in the 'external_tools' collection) that uses OAuth.
          echo "Inserting nextcloud to external_tools..."
-         mongo $DATABASE__URL --eval 'db.external_tools.update(
+         mongosh $DATABASE__URL --eval 'db.external_tools.update(
              {
                "name": "nextcloud",
                "config_type": "oauth2"
