@@ -29,7 +29,7 @@ class API {
 
 	async updateCardTitle(cardId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${cardId}/title`)
+			.patch(`${baseRouteName}/${cardId}/title`)
 			.set('Accept', 'application/json')
 			.send({ title });
 

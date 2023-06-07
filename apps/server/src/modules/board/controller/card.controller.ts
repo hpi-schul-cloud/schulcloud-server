@@ -92,7 +92,7 @@ export class CardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':cardId/title')
+	@Patch(':cardId/title')
 	async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
