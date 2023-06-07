@@ -16,6 +16,7 @@ import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CardResponseMapper } from './mapper';
+import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 
 @ApiTags('Board Column')
 @Authenticate('jwt')
@@ -73,10 +74,9 @@ export class ColumnController {
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() bodyParams: { typeNames: string[] }
+		@Body() createCardBodyParams: CreateCardBodyParams
 	): Promise<CardResponse> {
-		console.log(bodyParams);
-		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId);
+		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId, createCardBodyParams);
 
 		const response = CardResponseMapper.mapToResponse(card);
 

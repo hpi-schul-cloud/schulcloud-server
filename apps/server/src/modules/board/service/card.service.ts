@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Card, Column, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
+import { CreateCardBodyParams } from '../controller/dto/card/create-card.body.params';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -21,7 +22,7 @@ export class CardService {
 		throw new NotFoundException('some ids do not belong to a card');
 	}
 
-	async create(parent: Column): Promise<Card> {
+	async create(parent: Column, createCardBodyParams: CreateCardBodyParams): Promise<Card> {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
 			title: '',
@@ -30,6 +31,7 @@ export class CardService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
+		console.log('createCardBodyParams', createCardBodyParams);
 
 		parent.addChild(card);
 
