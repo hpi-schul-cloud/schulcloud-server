@@ -39,4 +39,20 @@ describe(Card.name, () => {
 			expect(visitor.visitCardAsync).toHaveBeenCalledWith(card);
 		});
 	});
+
+	describe('set title', () => {
+		it('should set the title property', () => {
+			const card = cardFactory.build({ title: 'card #1' });
+			card.title = 'card #2';
+			expect(card.title).toEqual('card #2');
+		});
+	});
+
+	describe('set height', () => {
+		it('should set the height property', () => {
+			const card = cardFactory.build({ height: 10 });
+			card.height = 42;
+			expect(card.height).toEqual(42);
+		});
+	});
 });

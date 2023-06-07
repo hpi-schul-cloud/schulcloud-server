@@ -27,7 +27,7 @@ class API {
 
 	async updateBoardTitle(boardId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${boardId}/title`)
+			.patch(`${baseRouteName}/${boardId}/title`)
 			.set('Accept', 'application/json')
 			.send({ title });
 
