@@ -7,6 +7,7 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
 	Put,
 	Query,
@@ -26,6 +27,7 @@ import {
 	MoveCardBodyParams,
 	RenameBodyParams,
 } from './dto';
+import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
@@ -67,6 +69,21 @@ export class CardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+	}
+
+	@ApiOperation({ summary: 'Update the height of a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':cardId/height')
+	async updateCardHeight(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: SetHeightBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
 	}
 
 	@ApiOperation({ summary: 'Update the title of a single card.' })
