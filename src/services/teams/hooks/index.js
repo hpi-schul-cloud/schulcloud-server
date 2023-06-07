@@ -176,11 +176,9 @@ const existId = (hook) => {
  * @param {Object::hook} hook
  * @return {Promise::hook}
  */
-const manageFolders = (hook) => {
-	if(!isUndefined(hook.data.userIdToRemove) && !isUndefined(hook.id) && !isUndefined(hook.params.account.userId)) {
-		reassignFoldersToOwner(hook).then(() => {
-			return hook;
-		});
+const manageFolders = async (hook) => {
+	if (hook.data.userIdToRemove && hook.id && hook.params.account.userId) {
+		await reassignFoldersToOwner(hook);
 	}
 	return hook;
 };
