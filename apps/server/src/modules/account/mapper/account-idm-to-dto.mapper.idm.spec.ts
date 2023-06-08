@@ -19,6 +19,9 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		}).compile();
 
 		mapper = module.get(AccountIdmToDtoMapper);
+
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date(2022, 1, 22));
 	});
 
 	afterAll(async () => {
