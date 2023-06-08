@@ -7,8 +7,8 @@ import {
 	HttpCode,
 	NotFoundException,
 	Param,
+	Patch,
 	Post,
-	Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
@@ -47,7 +47,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
-	@Put(':boardId/title')
+	@Patch(':boardId/title')
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
