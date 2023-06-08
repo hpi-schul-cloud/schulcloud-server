@@ -106,9 +106,13 @@ const schoolSchema = new Schema(
 );
 
 const userLoginMigrationSchema = new Schema({
-	yearId: { type: Schema.Types.ObjectId, ref: 'year', required: true },
-	startDate: { type: Date, required: true },
-	endDate: { type: Date, required: true },
+	school: { type: Schema.Types.ObjectId, ref: 'school', required: true },
+	sourceSystem: { type: Schema.Types.ObjectId, ref: 'system' },
+	targetSystem: { type: Schema.Types.ObjectId, ref: 'system', required: true },
+	mandatorySince: { type: Date },
+	startedAt: { type: Date, required: true },
+	closedAt: { type: Date },
+	finishedAt: { type: Date },
 });
 
 // don't exists in new entity
@@ -151,6 +155,7 @@ schoolSchema.virtual('userLoginMigration', {
 	ref: 'userLoginMigration',
 	localField: '_id',
 	foreignField: 'school',
+	justOne: true,
 });
 
 const yearSchema = new Schema({
@@ -169,7 +174,7 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
-const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema);
+const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user_login_migrations');
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
