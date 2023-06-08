@@ -109,7 +109,7 @@ describe('CommonCartridgeFileBuilder', () => {
 		});
 	});
 
-	describe('build', () => {
+	describe('build version 1', () => {
 		describe('when creating common cartridge archive', () => {
 			it('should create manifest file at archive root', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
@@ -143,25 +143,22 @@ describe('CommonCartridgeFileBuilder', () => {
 		});
 	});
 
-	async function initFileBuilderForCCVersion3() {
-		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
-			webContentResourceProps
-		);
-		fileBuilder
-			.addOrganization(organizationProps)
-			.addResourceToOrganization(ltiResourceProps)
-			.addResourceToOrganization(webLinkResourceProps);
-
-		archive = new AdmZip(await fileBuilder.build());
-	}
-
 	describe('common cartridge version 3', () => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const fileBuilderV3 = initFileBuilderForCCVersion3();
+		beforeAll(async () => {
+			const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
+				webContentResourceProps
+			);
+			fileBuilder
+				.addOrganization(organizationProps)
+				.addResourceToOrganization(ltiResourceProps)
+				.addResourceToOrganization(webLinkResourceProps);
+
+			archive = new AdmZip(await fileBuilder.build());
+		});
 
 		it('should use common cartridge version 1.3.0', () => {
 			const manifest = getFileContentAsString('imsmanifest.xml');
-			expect(manifest).toContain(CommonCartridgeVersion.V_1_1_0);
+			expect(manifest).toContain(CommonCartridgeVersion.V_1_3_0);
 		});
 	});
 });
@@ -171,19 +168,19 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 
 	const getFileContentAsString = (path: string): string | undefined => archive.getEntry(path)?.getData().toString();
 	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
-		identifier: 'file-identifier',
+		identifier: 'file-identifier for version 3',
 		copyrightOwners: 'Placeholder Copyright',
 		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_3_0,
 	};
-	const organizationProps: ICommonCartridgeOrganizationProps = {
+	const organizationPropsForCCVerions3: ICommonCartridgeOrganizationProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'organization-identifier',
 		title: 'organization-title',
 		resources: [],
 	};
-	const ltiResourceProps: ICommonCartridgeResourceProps = {
+	const ltiResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.LTI,
 		identifier: 'lti-identifier',
@@ -192,7 +189,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 		description: 'lti-description',
 		url: 'https://to-a-lti-tool.tld',
 	};
-	const webContentResourceProps: ICommonCartridgeResourceProps = {
+	const webContentResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'web-content-identifier',
@@ -200,7 +197,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 		title: 'web-content-title',
 		html: '<h1>Text Resource Title</h1><p>Text Resource Description</p>',
 	};
-	const webLinkResourceProps: ICommonCartridgeResourceProps = {
+	const webLinkResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.WEB_LINK_V1,
 		identifier: 'web-content-identifier',
@@ -211,16 +208,16 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 
 	beforeAll(async () => {
 		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
-			webContentResourceProps
+			webContentResourcePropsForCCVerions3
 		);
 		fileBuilder
-			.addOrganization(organizationProps)
-			.addResourceToOrganization(ltiResourceProps)
-			.addResourceToOrganization(webLinkResourceProps);
+			.addOrganization(organizationPropsForCCVerions3)
+			.addResourceToOrganization(ltiResourcePropsForCCVerions3)
+			.addResourceToOrganization(webLinkResourcePropsForCCVerions3);
 		archive = new AdmZip(await fileBuilder.build());
 	});
 
-	describe('build', () => {
+	describe('build version 3', () => {
 		describe('when creating common cartridge archive', () => {
 			it('should create manifest file at archive root', () => {
 				const manifest = getFileContentAsString('imsmanifest.xml');
