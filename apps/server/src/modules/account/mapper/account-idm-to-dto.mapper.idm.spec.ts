@@ -8,6 +8,8 @@ describe('AccountIdmToDtoMapperIdm', () => {
 	let module: TestingModule;
 	let mapper: AccountIdmToDtoMapper;
 
+	const now: Date = new Date(2022, 1, 22);
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -21,7 +23,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		mapper = module.get(AccountIdmToDtoMapper);
 
 		jest.useFakeTimers();
-		jest.setSystemTime(new Date(2022, 1, 22));
+		jest.setSystemTime(now);
 	});
 
 	afterAll(async () => {
@@ -63,7 +65,6 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				};
 				const ret = mapper.mapToDto(testIdmEntity);
 
-				const now = new Date();
 				expect(ret.createdAt).toEqual(now);
 				expect(ret.updatedAt).toEqual(now);
 			});
