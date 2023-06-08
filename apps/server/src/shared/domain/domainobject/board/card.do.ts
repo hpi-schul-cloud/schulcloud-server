@@ -17,6 +17,10 @@ export class Card extends BoardComposite<CardProps> {
 		return this.props.height;
 	}
 
+	set height(height: number) {
+		this.props.height = height;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed =
 			domainObject instanceof FileElement ||
