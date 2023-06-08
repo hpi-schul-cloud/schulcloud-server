@@ -168,6 +168,7 @@ export class UserImportUc {
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
 			for (const importUser of importUsers) {
+				console.debug(importUser);
 				await this.updateUserAndAccount(importUser, school);
 			}
 		}
