@@ -13,7 +13,7 @@ data:
       do
         sleep 1
       done
-    mongosh $DATABASE__URL --eval 'db.heartbeats.updateOne(
+    mongosh $DATABASE__URL --eval 'db.healthchecks.updateOne(
         {
           "_id": "api-db-healthcheck"
         },
