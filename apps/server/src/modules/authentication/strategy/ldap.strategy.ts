@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LdapConfig, System, User } from '@shared/domain';
+import { System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
 import { AccountDto } from '@src/modules/account/services/dto';
@@ -34,7 +34,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
 		}
 
-		const account: AccountDto = await this.loadAccount(username, system);
+		const account: AccountDto = await this.loadAccount(username, system.id, school);
 
 		const userId: string = this.checkValue(account.userId);
 
@@ -81,13 +81,31 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 	}
 
-	private async loadAccount(username: string, system: System): Promise<AccountDto> {
-		const ldapConfig: LdapConfig = this.checkValue(system.ldapConfig);
-		const rootPath: string = this.checkValue(ldapConfig.rootPath);
+	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise<AccountDto> {
+		const externalSchoolId = this.checkValue(school.externalId);
 
-		const userNameWithSchool = `${rootPath}/${username}`;
+		let account: AccountDto;
 
-		const account = await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), system.id);
+		// TODO having to check for two values in order to find an account is not optimal and should be changed.
+		// The way the name field of Accounts is used for LDAP should be reconsidered, since
+		// mixing the login name with a technical id from a foreign system is not a good pattern.
+		// Binding the login name to an identifier from a foreign system or an identifier of a school can lead to
+		// accounts not being found when the identifier changes.
+		if (school.previousExternalId) {
+			try {
+				account = await this.authenticationService.loadAccount(
+					`${externalSchoolId}/${username}`.toLowerCase(),
+					systemId
+				);
+			} catch (e: unknown) {
+				account = await this.authenticationService.loadAccount(
+					`${school.previousExternalId}/${username}`.toLowerCase(),
+					systemId
+				);
+			}
+		} else {
+			account = await this.authenticationService.loadAccount(`${externalSchoolId}/${username}`.toLowerCase(), systemId);
+		}
 
 		return account;
 	}

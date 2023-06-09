@@ -374,17 +374,20 @@ describe('LdapStrategy', () => {
 			});
 		});
 
-		describe('when authentication with LDAP succeeds', () => {
+		describe('when the account can be found by the schools external id and has no previous external id', () => {
 			const setup = () => {
 				const username = 'mockUserName';
 
-				const system: System = systemFactory.withLdapConfig({ rootPath: 'rootPath' }).buildWithId();
+				const system: System = systemFactory.withLdapConfig().buildWithId();
 
 				const user: User = userFactory
 					.withRoleByName(RoleName.STUDENT)
 					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school: SchoolDO = schoolDOFactory.buildWithId(
+					{ systems: [system.id], previousExternalId: undefined },
+					user.school.id
+				);
 
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
@@ -418,11 +421,72 @@ describe('LdapStrategy', () => {
 				};
 			};
 
-			it('should return user', async () => {
+			it('should authentication with LDAP successfully and return the user', async () => {
 				const { request, user, school, account, system } = setup();
 
 				const result: ICurrentUser = await strategy.validate(request);
 
+				expect(result).toEqual({
+					userId: user.id,
+					roles: [user.roles[0].id],
+					schoolId: school.id,
+					systemId: system.id,
+					accountId: account.id,
+				});
+			});
+		});
+
+		describe('when the account cannot be found by the schools external id, but its previous external id', () => {
+			const setup = () => {
+				const username = 'mockUserName';
+
+				const system: System = systemFactory.withLdapConfig().buildWithId();
+
+				const user: User = userFactory
+					.withRoleByName(RoleName.STUDENT)
+					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
+
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+
+				const account: AccountDto = accountDtoFactory.build({
+					systemId: system.id,
+					username,
+					password: defaultTestPasswordHash,
+					userId: user.id,
+				});
+
+				const request: { body: LdapAuthorizationBodyParams } = {
+					body: {
+						username,
+						password: defaultTestPassword,
+						schoolId: school.id as string,
+						systemId: system.id,
+					},
+				};
+
+				systemRepo.findById.mockResolvedValue(system);
+				authenticationServiceMock.loadAccount.mockRejectedValueOnce(new UnauthorizedException());
+				authenticationServiceMock.loadAccount.mockResolvedValueOnce(account);
+				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
+				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
+				userRepoMock.findById.mockResolvedValue(user);
+				schoolRepoMock.findById.mockResolvedValue(school);
+
+				return {
+					request,
+					user,
+					school,
+					account,
+					system,
+				};
+			};
+
+			it('should authentication with LDAP successfully and return the user', async () => {
+				const { request, user, school, account, system } = setup();
+
+				const result: ICurrentUser = await strategy.validate(request);
+
+				expect(authenticationServiceMock.loadAccount).toHaveBeenCalledTimes(2);
 				expect(result).toEqual({
 					userId: user.id,
 					roles: [user.roles[0].id],
