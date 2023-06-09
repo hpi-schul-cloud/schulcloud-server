@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-db-healthcheck-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+data:
+  update.sh: |
+    #! /bin/bash
+    set -euo pipefail
+    until mongosh $DATABASE__URL --eval "print(\"waited for connection\")"
+      do
+        sleep 1
+      done
+    mongosh $DATABASE__URL --eval 'db.heartbeats.updateOne(
+        {
+          "_id": "api-db-healthcheck"
+        },
+        {
+          "$set": {
+            "date": new ISODate()
+          }
+        },
+        {
+          "upsert": true
+        }
+      );'

@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+    cronjob: api-db-healthcheck
+  name: api-db-healthcheck-cronjob
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    labels:
+      app: api
+      cronjob: api-db-healthcheck
+    spec:
+      template:
+        spec:
+          containers:
+          - name: api-db-healthcheck-cronjob
+            image: schulcloud/infra-tools:latest
+            envFrom:
+            - secretRef:
+                name: api-secret
+            volumeMounts:
+            - name: script
+              mountPath: /update.sh
+              subPath: update.sh
+            command: ['/bin/sh','-c']
+            args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
+          volumes:
+          - name: script
+            configMap:
+              name: api-db-healthcheck-configmap
+              items:
+              - key: update.sh
+                path: update.sh
+          restartPolicy: OnFailure
