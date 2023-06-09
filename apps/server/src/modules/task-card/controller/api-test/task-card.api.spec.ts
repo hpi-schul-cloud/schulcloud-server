@@ -371,4 +371,30 @@ describe('Task-Card Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('[DELETE] /cards/task/:id', () => {
+		describe('when logged in as a teacher', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+				const task = taskFactory.build({ name: 'title', creator: user });
+				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+				await em.persistAndFlush([account, user, course, task, taskCard]);
+				em.clear();
+
+				const teacherClient = await testApiClient.login(account);
+
+				return { teacherClient, teacher: user, course, task, taskCard };
+			};
+
+			it('should return status 200 for valid task card', async () => {
+				const { teacherClient, taskCard } = await setup();
+
+				const response = await teacherClient.delete(`${taskCard.id}`);
+
+				expect(response.status).toEqual(200);
+			});
+		});
+	});
 });
