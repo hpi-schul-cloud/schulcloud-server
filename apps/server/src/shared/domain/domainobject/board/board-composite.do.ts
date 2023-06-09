@@ -1,11 +1,11 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { DomainObject } from '@shared/domain/domain-object'; // fix import if it is avaible
 import { EntityId } from '@shared/domain';
+import { DomainObject } from '@shared/domain/domain-object'; // fix import if it is avaible
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export abstract class BoardComposite<T extends BoardCompositeProps> extends DomainObject<T> {
 	get children(): AnyBoardDo[] {
-		return this.props.children;
+		return this.props.children ?? [];
 	}
 
 	get createdAt(): Date {
@@ -49,7 +49,7 @@ export abstract class BoardComposite<T extends BoardCompositeProps> extends Doma
 
 export interface BoardCompositeProps {
 	id: EntityId;
-	children: AnyBoardDo[];
+	children?: AnyBoardDo[];
 	createdAt: Date;
 	updatedAt: Date;
 }

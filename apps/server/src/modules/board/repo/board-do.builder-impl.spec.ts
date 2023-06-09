@@ -5,6 +5,7 @@ import {
 	columnNodeFactory,
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
+	taskElementNodeFactory,
 	setupEntities,
 } from '@shared/testing';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
@@ -161,6 +162,25 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildRichTextElement(richTextElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a task element', () => {
+		it('should work without descendants', () => {
+			const taskElementNode = taskElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildTaskElement(taskElementNode);
+
+			expect(domainObject.constructor.name).toBe('TaskElement');
+		});
+
+		it('should throw error if taskElement is not a leaf', () => {
+			const taskElementNode = taskElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: taskElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildTaskElement(taskElementNode);
 			}).toThrowError();
 		});
 	});

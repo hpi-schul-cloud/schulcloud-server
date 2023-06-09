@@ -29,7 +29,7 @@ const inThreeDays = new Date(Date.now() + 259200000);
 describe('Task-Card Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiRequest: TestApiClient;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -39,7 +39,7 @@ describe('Task-Card Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		apiRequest = new TestApiClient(app, 'cards/task');
+		testApiClient = new TestApiClient(app, 'cards/task');
 	});
 
 	afterAll(async () => {
@@ -59,10 +59,13 @@ describe('Task-Card Controller (API)', () => {
 
 				await em.persistAndFlush([account, user, course]);
 				em.clear();
-				return { account, teacher: user, course };
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return { loggedInClient, teacher: user, course };
 			};
 			it('should return new a task card', async () => {
-				const { account, course } = await setup();
+				const { loggedInClient, course } = await setup();
 
 				const taskCardParams = {
 					title: 'test title',
@@ -86,7 +89,7 @@ describe('Task-Card Controller (API)', () => {
 					dueDate: inTwoDays,
 				};
 
-				const response = await apiRequest.post(undefined, taskCardParams, account);
+				const response = await loggedInClient.post(undefined, taskCardParams);
 				const { statusCode } = response;
 				const responseTaskCard = response.body as TaskCardResponse;
 
@@ -102,8 +105,8 @@ describe('Task-Card Controller (API)', () => {
 				expect(responseTaskCard.task.status.isDraft).toEqual(false);
 			});
 
-			it('should sanitize rich text on create with inputformat ck5', async () => {
-				const { account, course } = await setup();
+			it('should sanitize richtext on create with inputformat ck5', async () => {
+				const { loggedInClient, course } = await setup();
 
 				const text = '<iframe>rich text 1</iframe> some more text';
 
@@ -124,7 +127,7 @@ describe('Task-Card Controller (API)', () => {
 
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
 
-				const response = await apiRequest.post(undefined, taskCardParams, account);
+				const response = await loggedInClient.post(undefined, taskCardParams);
 				const { statusCode } = response;
 				const responseTaskCard = response.body as TaskCardResponse;
 				expect(statusCode).toEqual(201);
@@ -137,7 +140,7 @@ describe('Task-Card Controller (API)', () => {
 			});
 
 			it('should throw if feature is NOT enabled', async () => {
-				const { account, course } = await setup();
+				const { loggedInClient, course } = await setup();
 				Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
 
 				const taskCardParams = {
@@ -145,33 +148,33 @@ describe('Task-Card Controller (API)', () => {
 					courseId: course.id,
 					dueDate: inThreeDays,
 				};
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(500);
 			});
 			it('should throw if courseId is empty', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
 				const taskCardParams = {
 					title: 'test title',
 					cardElements: [],
 					courseId: '',
 				};
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 			it('should throw if no course is matching', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
 				const taskCardParams = {
 					title: 'test title',
 					cardElements: [],
 					courseId: new ObjectId().toHexString(),
 				};
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 			it('should throw if dueDate is empty', async () => {
-				const { account, course } = await setup();
+				const { loggedInClient, course } = await setup();
 
 				const taskCardParams = {
 					title: 'test title',
@@ -179,11 +182,11 @@ describe('Task-Card Controller (API)', () => {
 					courseId: course.id,
 				};
 
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 			it('should throw if dueDate is earlier than today', async () => {
-				const { account, course } = await setup();
+				const { loggedInClient, course } = await setup();
 
 				const taskCardParams = {
 					title: 'test title',
@@ -191,35 +194,35 @@ describe('Task-Card Controller (API)', () => {
 					courseId: course.id,
 					dueDate: new Date(Date.now() - 259200000),
 				};
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 			it('should throw if title is empty', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
 				const taskCardParams = {
 					title: '',
 				};
 
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 			it('should throw if title is not a string', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
 				const taskCardParams = {
 					title: 1234,
 				};
 
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(501);
 			});
 			it('should throw if title is not provided', async () => {
-				const { account } = await setup();
+				const { loggedInClient } = await setup();
 
 				const taskCardParams = {};
 
-				const { statusCode } = await apiRequest.post(undefined, taskCardParams, account);
+				const { statusCode } = await loggedInClient.post(undefined, taskCardParams);
 				expect(statusCode).toEqual(400);
 			});
 		});
@@ -234,14 +237,17 @@ describe('Task-Card Controller (API)', () => {
 			const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 			await em.persistAndFlush([account, user, course, task, taskCard]);
 			em.clear();
-			return { account, teacher: user, course, task, taskCard };
+
+			const loggedInClient = await testApiClient.login(account);
+
+			return { loggedInClient, teacher: user, course, task, taskCard };
 		};
 
 		describe('when teacher and taskcard is given', () => {
 			it('should return existing task-card', async () => {
-				const { account, taskCard } = await setup();
+				const { loggedInClient, taskCard } = await setup();
 
-				const response = await apiRequest.get(`${taskCard.id}`, account);
+				const response = await loggedInClient.get(`${taskCard.id}`);
 				const { statusCode } = response;
 				const responseTaskCard = response.body as TaskCardResponse;
 
@@ -250,10 +256,10 @@ describe('Task-Card Controller (API)', () => {
 			});
 
 			it('should throw if feature not enabled', async () => {
-				const { account, taskCard } = await setup();
+				const { loggedInClient, taskCard } = await setup();
 				Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
 
-				const { statusCode } = await apiRequest.get(`${taskCard.id}`, account);
+				const { statusCode } = await loggedInClient.get(`${taskCard.id}`);
 				expect(statusCode).toBe(500);
 			});
 		});
@@ -269,11 +275,14 @@ describe('Task-Card Controller (API)', () => {
 				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
 				await em.persistAndFlush([account, user, course, task, taskCard]);
 				em.clear();
-				return { account, teacher: user, course, task, taskCard };
+
+				const loggedInClient = await testApiClient.login(account);
+
+				return { loggedInClient, teacher: user, course, task, taskCard };
 			};
 
 			it('should update the task card', async () => {
-				const { account, taskCard, course } = await setup();
+				const { loggedInClient, taskCard, course } = await setup();
 
 				const richTextCardElement = richTextCardElementFactory.buildWithId();
 
@@ -301,7 +310,7 @@ describe('Task-Card Controller (API)', () => {
 					courseId: course.id,
 				};
 
-				const response = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
+				const response = await loggedInClient.patch(`${taskCard.id}`, taskCardUpdateParams);
 				const { statusCode } = response;
 				const responseTaskCard = response.body as TaskCardResponse;
 
@@ -313,8 +322,8 @@ describe('Task-Card Controller (API)', () => {
 				expect(new Date(responseTaskCard.dueDate)).toEqual(inThreeDays);
 			});
 
-			it('should sanitize rich text on update with inputformat ck5', async () => {
-				const { account, taskCard, course } = await setup();
+			it('should sanitize richtext on update with inputformat ck5', async () => {
+				const { loggedInClient, taskCard, course } = await setup();
 
 				const text = '<iframe>rich text 1</iframe> some more text';
 				const sanitizedText = sanitizeRichText(text, InputFormat.RICH_TEXT_CK5);
@@ -334,7 +343,7 @@ describe('Task-Card Controller (API)', () => {
 					dueDate: inTwoDays,
 				};
 
-				const response = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
+				const response = await loggedInClient.patch(`${taskCard.id}`, taskCardUpdateParams);
 				const { statusCode } = response;
 				const responseTaskCard = response.body as TaskCardResponse;
 
@@ -347,7 +356,7 @@ describe('Task-Card Controller (API)', () => {
 			});
 
 			it('should throw if feature is not enabled', async () => {
-				const { account, course, taskCard } = await setup();
+				const { loggedInClient, course, taskCard } = await setup();
 				Configuration.set('FEATURE_TASK_CARD_ENABLED', false);
 
 				const taskCardUpdateParams = {
@@ -356,9 +365,35 @@ describe('Task-Card Controller (API)', () => {
 					dueDate: inThreeDays,
 				};
 
-				const { statusCode } = await apiRequest.patch(`${taskCard.id}`, taskCardUpdateParams, account);
+				const { statusCode } = await loggedInClient.patch(`${taskCard.id}`, taskCardUpdateParams);
 
 				expect(statusCode).toBe(500);
+			});
+		});
+	});
+
+	describe('[DELETE] /cards/task/:id', () => {
+		describe('when logged in as a teacher', () => {
+			const setup = async () => {
+				const { account, user } = createTeacher();
+				const course = courseFactory.build({ teachers: [user] });
+				// for some reason taskCard factory messes up the creator of task, so it needs to be separated
+				const task = taskFactory.build({ name: 'title', creator: user });
+				const taskCard = taskCardFactory.buildWithId({ creator: user, task });
+				await em.persistAndFlush([account, user, course, task, taskCard]);
+				em.clear();
+
+				const teacherClient = await testApiClient.login(account);
+
+				return { teacherClient, teacher: user, course, task, taskCard };
+			};
+
+			it('should return status 200 for valid task card', async () => {
+				const { teacherClient, taskCard } = await setup();
+
+				const response = await teacherClient.delete(`${taskCard.id}`);
+
+				expect(response.status).toEqual(200);
 			});
 		});
 	});

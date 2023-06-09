@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 const mongooseLeanVirtuals = require('mongoose-lean-virtuals');
-const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
-const COURSE_FEATURES = {
-};
+const COURSE_FEATURES = {};
 // not all pros exist in new entity
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
@@ -139,10 +137,6 @@ classSchema.virtual('displayName').get(function displayName() {
 
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
-
-enableAuditLog(courseSchema);
-enableAuditLog(courseGroupSchema);
-enableAuditLog(classSchema);
 
 const courseModel = mongoose.model('course', courseSchema);
 // represents a sub-group of students inside a course, e.g. for projects etc.

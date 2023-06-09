@@ -1,7 +1,6 @@
-import { Account, School, User } from '@shared/domain';
+import { Account, User } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { setupEntities } from '../setup-entities';
-import { roleFactory } from './role.factory';
 import { schoolFactory } from './school.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
@@ -26,72 +25,13 @@ describe('user-and-account.test.factory', () => {
 		return params;
 	};
 
-	describe('buildUser', () => {
-		const setup = () => {
-			const roleWithoutId = roleFactory.build();
-			const role = roleFactory.buildWithId();
-
-			const params = createParams();
-
-			return { role, roleWithoutId, params };
-		};
-
-		it('should create a user without passing additional parameter', () => {
-			const { role } = setup();
-
-			const result = UserAndAccountTestFactory.buildUser(role);
-
-			expect(result.user).toBeInstanceOf(User);
-			expect(result.account).toBeInstanceOf(Account);
-			expect(result.school).toBeInstanceOf(School);
-		});
-
-		it('should create a user with id that must be added in account', () => {
-			const { role } = setup();
-
-			const result = UserAndAccountTestFactory.buildUser(role);
-
-			expect(result.user.id).toBeDefined();
-			expect(result.account.userId).toEqual(result.user.id);
-		});
-
-		it('should check if passed role already has a id', () => {
-			const { roleWithoutId } = setup();
-
-			expect(() => UserAndAccountTestFactory.buildUser(roleWithoutId)).toThrowError();
-		});
-
-		it('should build entities with passed params', () => {
-			const { role, params } = setup();
-
-			const result = UserAndAccountTestFactory.buildUser(role, params);
-
-			expect(result.user.firstName).toEqual(params.firstName);
-			expect(result.user.lastName).toEqual(params.lastName);
-			expect(result.user.email).toEqual(params.email);
-			expect(result.user.roles[0]).toEqual(role);
-
-			expect(result.account.systemId).toEqual(params.systemId);
-			expect(result.account.username).toEqual(params.username);
-		});
-	});
-
 	describe('buildStudent', () => {
 		const setup = () => {
 			const additionalPermissions = []; // check how we can add additional permissions for test without using existing
 			const params = createParams();
-			const spy = jest.spyOn(UserAndAccountTestFactory, 'buildUser');
 
-			return { additionalPermissions, params, spy };
+			return { additionalPermissions, params };
 		};
-
-		it('should call buildUser', () => {
-			const { spy } = setup();
-
-			UserAndAccountTestFactory.buildStudent();
-
-			expect(spy).toBeCalled();
-		});
 
 		it('should build entities with passed params', () => {
 			const { params, additionalPermissions } = setup();
@@ -100,7 +40,6 @@ describe('user-and-account.test.factory', () => {
 
 			expect(result.studentUser).toBeInstanceOf(User);
 			expect(result.studentAccount).toBeInstanceOf(Account);
-			expect(result.school).toBeInstanceOf(School);
 
 			expect(result.studentUser.firstName).toEqual(params.firstName);
 			expect(result.studentUser.lastName).toEqual(params.lastName);
@@ -117,18 +56,9 @@ describe('user-and-account.test.factory', () => {
 		const setup = () => {
 			const additionalPermissions = []; // check how we can add additional permissions for test without using existing
 			const params = createParams();
-			const spy = jest.spyOn(UserAndAccountTestFactory, 'buildUser');
 
-			return { additionalPermissions, params, spy };
+			return { additionalPermissions, params };
 		};
-
-		it('should call buildUser', () => {
-			const { spy } = setup();
-
-			UserAndAccountTestFactory.buildTeacher();
-
-			expect(spy).toBeCalled();
-		});
 
 		it('should build entities with passed params', () => {
 			const { params, additionalPermissions } = setup();
@@ -137,7 +67,6 @@ describe('user-and-account.test.factory', () => {
 
 			expect(result.teacherUser).toBeInstanceOf(User);
 			expect(result.teacherAccount).toBeInstanceOf(Account);
-			expect(result.school).toBeInstanceOf(School);
 
 			expect(result.teacherUser.firstName).toEqual(params.firstName);
 			expect(result.teacherUser.lastName).toEqual(params.lastName);
@@ -154,18 +83,9 @@ describe('user-and-account.test.factory', () => {
 		const setup = () => {
 			const additionalPermissions = []; // check how we can add additional permissions for test without using existing
 			const params = createParams();
-			const spy = jest.spyOn(UserAndAccountTestFactory, 'buildUser');
 
-			return { additionalPermissions, params, spy };
+			return { additionalPermissions, params };
 		};
-
-		it('should call buildUser', () => {
-			const { spy } = setup();
-
-			UserAndAccountTestFactory.buildAdmin();
-
-			expect(spy).toBeCalled();
-		});
 
 		it('should build entities with passed params', () => {
 			const { params, additionalPermissions } = setup();
@@ -174,7 +94,6 @@ describe('user-and-account.test.factory', () => {
 
 			expect(result.adminUser).toBeInstanceOf(User);
 			expect(result.adminAccount).toBeInstanceOf(Account);
-			expect(result.school).toBeInstanceOf(School);
 
 			expect(result.adminUser.firstName).toEqual(params.firstName);
 			expect(result.adminUser.lastName).toEqual(params.lastName);
