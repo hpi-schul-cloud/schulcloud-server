@@ -92,7 +92,7 @@ export class BoardUc {
 		await this.columnService.updateTitle(column, title);
 	}
 
-	async createCard(userId: EntityId, columnId: EntityId, createCardBodyParams: CreateCardBodyParams): Promise<Card> {
+	async createCard(userId: EntityId, columnId: EntityId, createCardBodyParams?: CreateCardBodyParams): Promise<Card> {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);

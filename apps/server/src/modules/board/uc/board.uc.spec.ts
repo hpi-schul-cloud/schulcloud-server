@@ -282,7 +282,7 @@ describe(BoardUc.name, () => {
 				const { user, column, card } = setup();
 				cardService.create.mockResolvedValueOnce(card);
 
-				const result = await uc.createCard(user.id, column.id, {});
+				const result = await uc.createCard(user.id, column.id);
 
 				expect(result).toEqual(card);
 			});
