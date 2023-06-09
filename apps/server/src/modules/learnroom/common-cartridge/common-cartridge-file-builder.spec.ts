@@ -167,20 +167,20 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 	let archive: AdmZip;
 
 	const getFileContentAsString = (path: string): string | undefined => archive.getEntry(path)?.getData().toString();
-	const fileBuilderOptionsForCCVerions3: ICommonCartridgeFileBuilderOptions = {
+	const fileBuilderOptionsForCCVersion3: ICommonCartridgeFileBuilderOptions = {
 		identifier: 'file-identifier for version 3',
 		copyrightOwners: 'Placeholder Copyright',
 		creationYear: 'Placeholder Creation Year',
 		title: 'file-title',
 		version: CommonCartridgeVersion.V_1_3_0,
 	};
-	const organizationPropsForCCVerions3: ICommonCartridgeOrganizationProps = {
+	const organizationPropsForCCVersion3: ICommonCartridgeOrganizationProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: 'organization-identifier',
 		title: 'organization-title',
 		resources: [],
 	};
-	const ltiResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
+	const ltiResourcePropsForCCVersion3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.LTI,
 		identifier: 'lti-identifier',
@@ -189,7 +189,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 		description: 'lti-description',
 		url: 'https://to-a-lti-tool.tld',
 	};
-	const webContentResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
+	const webContentResourcePropsForCCVersion3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.WEB_CONTENT,
 		identifier: 'web-content-identifier',
@@ -197,7 +197,7 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 		title: 'web-content-title',
 		html: '<h1>Text Resource Title</h1><p>Text Resource Description</p>',
 	};
-	const webLinkResourcePropsForCCVerions3: ICommonCartridgeResourceProps = {
+	const webLinkResourcePropsForCCVersion3: ICommonCartridgeResourceProps = {
 		version: CommonCartridgeVersion.V_1_3_0,
 		type: CommonCartridgeResourceType.WEB_LINK_V1,
 		identifier: 'web-content-identifier',
@@ -207,13 +207,13 @@ describe('CommonCartridgeFileBuilder for export of version 1.3.0', () => {
 	};
 
 	beforeAll(async () => {
-		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVerions3).addResourceToFile(
-			webContentResourcePropsForCCVerions3
+		const fileBuilder = new CommonCartridgeFileBuilder(fileBuilderOptionsForCCVersion3).addResourceToFile(
+			webContentResourcePropsForCCVersion3
 		);
 		fileBuilder
-			.addOrganization(organizationPropsForCCVerions3)
-			.addResourceToOrganization(ltiResourcePropsForCCVerions3)
-			.addResourceToOrganization(webLinkResourcePropsForCCVerions3);
+			.addOrganization(organizationPropsForCCVersion3)
+			.addResourceToOrganization(ltiResourcePropsForCCVersion3)
+			.addResourceToOrganization(webLinkResourcePropsForCCVersion3);
 		archive = new AdmZip(await fileBuilder.build());
 	});
 
