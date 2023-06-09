@@ -58,6 +58,12 @@ export class CardService {
 		await this.boardDoService.move(card, targetColumn, targetPosition);
 	}
 
+	async updateHeight(card: Card, height: number): Promise<void> {
+		const parent = await this.boardDoRepo.findParentOfId(card.id);
+		card.height = height;
+		await this.boardDoRepo.save(card, parent);
+	}
+
 	async updateTitle(card: Card, title: string): Promise<void> {
 		const parent = await this.boardDoRepo.findParentOfId(card.id);
 		card.title = title;
