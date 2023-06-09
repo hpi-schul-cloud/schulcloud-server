@@ -92,11 +92,6 @@ const schoolSchema = new Schema(
 		enableStudentTeamCreation: { type: Boolean, required: false },
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		inUserMigration: { type: Boolean },
-		oauthMigrationStart: { type: Date },
-		oauthMigrationPossible: { type: Date },
-		oauthMigrationMandatory: { type: Date },
-		oauthMigrationFinished: { type: Date },
-		oauthMigrationFinalFinish: { type: Date },
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
 		tombstoneUserId: {
@@ -109,6 +104,16 @@ const schoolSchema = new Schema(
 		timestamps: true,
 	}
 );
+
+const userLoginMigrationSchema = new Schema({
+	school: { type: Schema.Types.ObjectId, ref: 'school', required: true },
+	sourceSystem: { type: Schema.Types.ObjectId, ref: 'system' },
+	targetSystem: { type: Schema.Types.ObjectId, ref: 'system', required: true },
+	mandatorySince: { type: Date },
+	startedAt: { type: Date, required: true },
+	closedAt: { type: Date },
+	finishedAt: { type: Date },
+});
 
 // don't exists in new entity
 schoolSchema.index({ purpose: 1 });
@@ -146,6 +151,13 @@ schoolSchema.virtual('isExternal').get(function get() {
 	return !!this.ldapSchoolIdentifier || !!this.source;
 });
 
+schoolSchema.virtual('userLoginMigration', {
+	ref: 'userLoginMigration',
+	localField: '_id',
+	foreignField: 'school',
+	justOne: true,
+});
+
 const yearSchema = new Schema({
 	name: {
 		type: String,
@@ -162,6 +174,7 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
+const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user_login_migrations');
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
@@ -176,4 +189,6 @@ module.exports = {
 	customYearSchema,
 	gradeLevelModel,
 	fileStorageTypes,
+	userLoginMigrationSchema,
+	userLoginMigrationModel,
 };

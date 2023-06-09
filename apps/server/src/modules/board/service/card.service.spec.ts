@@ -163,8 +163,8 @@ describe(CardService.name, () => {
 
 	describe('updateTitle', () => {
 		describe('when updating the title', () => {
-			it('should call the service', async () => {
-				const card = cardFactory.build();
+			it('should call the repo to save the updated card', async () => {
+				const card = cardFactory.build({ title: 'card #1' });
 				const column = columnFactory.build({ children: [card] });
 				const columnBoard = columnBoardFactory.build({ children: [column] });
 				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
@@ -177,6 +177,34 @@ describe(CardService.name, () => {
 					expect.objectContaining({
 						id: expect.any(String),
 						title: newTitle,
+						height: expect.any(Number),
+						children: [],
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					}),
+					columnBoard
+				);
+			});
+		});
+	});
+
+	describe('setHeight', () => {
+		describe('when updating the height', () => {
+			it('should call the repo to save the updated card', async () => {
+				const card = cardFactory.build({ height: 10 });
+				const column = columnFactory.build({ children: [card] });
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(columnBoard);
+
+				const newHeight = 42;
+
+				await service.updateHeight(card, newHeight);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						title: expect.any(String),
+						height: newHeight,
 						children: [],
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),

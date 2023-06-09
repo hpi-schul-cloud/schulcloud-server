@@ -29,7 +29,7 @@ class API {
 
 	async updateCardTitle(cardId: string, title: string) {
 		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${cardId}/title`)
+			.patch(`${baseRouteName}/${cardId}/title`)
 			.set('Accept', 'application/json')
 			.send({ title });
 
@@ -100,7 +100,7 @@ describe(`card update title (api)`, () => {
 			expect(response.status).toEqual(204);
 		});
 
-		it('should actually change the column title', async () => {
+		it('should actually change the card title', async () => {
 			const { user, cardNode } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 			const newTitle = 'new title';
