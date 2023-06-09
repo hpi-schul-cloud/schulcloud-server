@@ -1,10 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentElementType } from '@shared/domain';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { CreateContentElementBody } from '../element';
 
 export class CreateCardBodyParams {
 	@IsEnum(ContentElementType, { each: true })
+	@IsOptional()
 	@ApiPropertyOptional({
 		required: false,
 		isArray: true,
