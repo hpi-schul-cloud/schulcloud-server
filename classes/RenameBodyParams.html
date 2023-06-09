@@ -91,6 +91,7 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#title" >title</a>
                             </li>
                         </ul>
@@ -120,6 +121,7 @@
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                         <span ><b>title</b></span>
                         <a href="#title"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -136,13 +138,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@ApiProperty({required: true, nullable: false})<br />
+                            @IsString()<br />@ApiProperty({required: true, nullable: false})<br />@SanitizeHtml()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/board/controller/dto/board/rename.body.params.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/controller/dto/board/rename.body.params.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -163,6 +165,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
 import { IsString } from &#x27;class-validator&#x27;;
+import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
 
 export class RenameBodyParams {
 	@IsString()
@@ -170,6 +173,7 @@ export class RenameBodyParams {
 		required: true,
 		nullable: false,
 	})
+	@SanitizeHtml()
 	title!: string;
 }
 </code></pre>
