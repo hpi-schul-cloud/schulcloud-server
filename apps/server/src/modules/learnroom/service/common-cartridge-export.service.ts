@@ -67,59 +67,32 @@ export class CommonCartridgeExportService {
 		content: IComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
+		const commonProps = {
+			version,
+			identifier: `i${content._id as string}`,
+			href: `i${lessonId}/i${content._id as string}.xml`,
+			title: content.title,
+		};
+
 		if (content.component === ComponentType.TEXT) {
 			return {
-				version,
+				...commonProps,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.html`,
-				title: content.title,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
 		}
 
-		if (version === CommonCartridgeVersion.V_1_3_0 && content.component === ComponentType.GEOGEBRA) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK_V3,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: `https://www.geogebra.org/m/${content.content.materialId}`,
-			};
+		if (content.component === ComponentType.GEOGEBRA) {
+			const url = `https://www.geogebra.org/m/${content.content.materialId}`;
+			return version === CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url };
 		}
 
-		if (version === CommonCartridgeVersion.V_1_1_0 && content.component === ComponentType.GEOGEBRA) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK_V1,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: `https://www.geogebra.org/m/${content.content.materialId}`,
-			};
-		}
-
-		if (version === CommonCartridgeVersion.V_1_1_0 && content.component === ComponentType.ETHERPAD) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK_V1,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: content.content.url,
-			};
-		}
-
-		if (version === CommonCartridgeVersion.V_1_3_0 && content.component === ComponentType.ETHERPAD) {
-			return {
-				version,
-				type: CommonCartridgeResourceType.WEB_LINK_V3,
-				identifier: `i${content._id as string}`,
-				href: `i${lessonId}/i${content._id as string}.xml`,
-				title: content.title,
-				url: content.content.url,
-			};
+		if (content.component === ComponentType.ETHERPAD) {
+			return version === CommonCartridgeVersion.V_1_3_0
+				? { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V3, url: content.content.url }
+				: { ...commonProps, type: CommonCartridgeResourceType.WEB_LINK_V1, url: content.content.url };
 		}
 
 		return undefined;

@@ -20,41 +20,37 @@ export class CommonCartridgeWebLinkResourceElement implements ICommonCartridgeEl
 	}
 
 	content(): string {
+		const commonTags = {
+			title: this.props.title,
+			url: {
+				$: {
+					href: this.props.url,
+					target: '_self',
+					windowFeatures: 'width=100, height=100',
+				},
+			},
+		};
 		switch (this.props.version) {
 			case CommonCartridgeVersion.V_1_3_0:
 				return this.xmlBuilder.buildObject({
 					webLink: {
+						...commonTags,
 						$: {
 							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3',
 							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 							'xsi:schemaLocation':
 								'http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd',
 						},
-						title: this.props.title,
-						url: {
-							$: {
-								href: this.props.url,
-								target: '_self',
-								windowFeatures: 'width=100, height=100',
-							},
-						},
 					},
 				});
 			default:
 				return this.xmlBuilder.buildObject({
+					...commonTags,
 					webLink: {
 						$: {
 							xmlns: '/xsd/imsccv1p1/imswl_v1p1',
 							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 							'xsi:schemaLocation': '/xsd/imsccv1p1/imswl_v1p1 /profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
-						},
-						title: this.props.title,
-						url: {
-							$: {
-								href: this.props.url,
-								target: '_self',
-								windowFeatures: 'width=100, height=100',
-							},
 						},
 					},
 				});
