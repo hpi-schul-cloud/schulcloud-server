@@ -76,7 +76,10 @@ export class CommonCartridgeExportService {
 
 		if (content.component === ComponentType.TEXT) {
 			return {
-				...commonProps,
+				version,
+				identifier: `i${content._id as string}`,
+				href: `i${lessonId}/i${content._id as string}.html`,
+				title: content.title,
 				type: CommonCartridgeResourceType.WEB_CONTENT,
 				html: `<h1>${content.title}</h1><p>${content.content.text}</p>`,
 			};
