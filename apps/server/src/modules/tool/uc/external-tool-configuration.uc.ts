@@ -13,7 +13,6 @@ import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
-import { UserService } from '../../user';
 import { ContextTypeMapper } from '../service/mapper';
 
 @Injectable()
@@ -22,8 +21,7 @@ export class ExternalToolConfigurationUc {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly authorizationService: AuthorizationService,
-		private readonly userService: UserService
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async getAvailableToolsForSchool(userId: EntityId, schoolId: EntityId): Promise<ExternalToolDO[]> {
