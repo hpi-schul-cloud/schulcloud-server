@@ -1,20 +1,37 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Board, Course, Lesson, Task, TaskWithStatusVo, User } from '@shared/domain';
-import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	boardFactory,
+	columnboardBoardElementFactory,
+	courseFactory,
+	lessonBoardElementFactory,
+	lessonFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
-describe('RoomBoardDTOMapper', () => {
+describe(RoomBoardDTOFactory.name, () => {
 	let module: TestingModule;
 	let mapper: RoomBoardDTOFactory;
-	let authorisationService: RoomsAuthorisationService;
+	let roomsAuthorisationService: RoomsAuthorisationService;
+	let authorisationService: DeepMocked<AuthorizationService>;
+	let configBefore: IConfig;
 
 	afterAll(async () => {
 		await module.close();
+		Configuration.reset(configBefore);
 	});
 
 	beforeAll(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
@@ -32,10 +49,12 @@ describe('RoomBoardDTOMapper', () => {
 						},
 					},
 				},
+				{ provide: AuthorizationService, useValue: createMock<AuthorizationService>() },
 			],
 		}).compile();
 
-		authorisationService = module.get(RoomsAuthorisationService);
+		roomsAuthorisationService = module.get(RoomsAuthorisationService);
+		authorisationService = module.get(AuthorizationService);
 		mapper = module.get(RoomBoardDTOFactory);
 		await setupEntities();
 	});
@@ -87,8 +106,8 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
-				board.syncTasksFromList(tasks);
-				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
+				board.syncBoardElementReferences(tasks);
+				jest.spyOn(roomsAuthorisationService, 'hasTaskReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set each allowed task for teacher', () => {
@@ -159,8 +178,8 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				tasks = taskFactory.buildList(3, { course: room });
-				board.syncTasksFromList(tasks);
-				jest.spyOn(authorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
+				board.syncBoardElementReferences(tasks);
+				jest.spyOn(roomsAuthorisationService, 'hasTaskReadPermission').mockImplementation(() => false);
 			});
 
 			it('should not set forbidden tasks for student', () => {
@@ -198,8 +217,8 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
-				board.syncLessonsFromList(lessons);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
+				board.syncBoardElementReferences(lessons);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set lessons for student', () => {
@@ -241,8 +260,8 @@ describe('RoomBoardDTOMapper', () => {
 				taskFactory.buildList(1, { course: room, lesson });
 				taskFactory.buildList(3, { course: room, lesson, availableDate: inOneDay });
 				taskFactory.draft().buildList(5, { course: room, lesson });
-				board.syncLessonsFromList([lesson]);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
+				board.syncBoardElementReferences([lesson]);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => true);
 			});
 
 			it('should set number of published tasks for student', () => {
@@ -319,8 +338,8 @@ describe('RoomBoardDTOMapper', () => {
 				});
 				board = boardFactory.buildWithId({ course: room });
 				lessons = lessonFactory.buildList(3, { course: room });
-				board.syncLessonsFromList(lessons);
-				jest.spyOn(authorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
+				board.syncBoardElementReferences(lessons);
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockImplementation(() => false);
 			});
 
 			it('should not set forbidden tasks for student', () => {
@@ -336,6 +355,43 @@ describe('RoomBoardDTOMapper', () => {
 			it('should not set forbidden tasks for substitutionTeacher', () => {
 				const result = mapper.createDTO({ room, board, user: substitutionTeacher });
 				expect(result.elements.length).toEqual(0);
+			});
+		});
+
+		describe('when board contains allowed column boards', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const room = courseFactory.build();
+				const columnboardBoardElements = columnboardBoardElementFactory.buildList(5);
+				const lessonElement = lessonBoardElementFactory.buildWithId();
+				const board = boardFactory.buildWithId({ references: [lessonElement, ...columnboardBoardElements] });
+
+				jest.spyOn(roomsAuthorisationService, 'hasLessonReadPermission').mockReturnValue(true);
+				authorisationService.hasPermission.mockReturnValue(true);
+
+				return { user, room, board };
+			};
+
+			describe('when ColumnBoard-feature is disabled', () => {
+				it('should set lessons for student', () => {
+					const { user, room, board } = setup();
+
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', false);
+
+					const result = mapper.createDTO({ room, board, user });
+					expect(result.elements.length).toEqual(1);
+				});
+			});
+
+			describe('when ColumnBoard-feature is enabled', () => {
+				it('should set lessons for student', () => {
+					const { user, room, board } = setup();
+
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
+
+					const result = mapper.createDTO({ room, board, user });
+					expect(result.elements.length).toEqual(6);
+				});
 			});
 		});
 	});

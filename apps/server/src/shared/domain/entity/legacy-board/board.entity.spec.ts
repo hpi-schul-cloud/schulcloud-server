@@ -1,6 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import {
 	boardFactory,
+	columnboardBoardElementFactory,
+	columnBoardFactory,
+	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	setupEntities,
@@ -35,7 +38,7 @@ describe('Board Entity', () => {
 		it('it should reorder exisiting elements', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
 			const board = boardFactory.buildWithId({});
-			board.syncTasksFromList(tasks);
+			board.syncBoardElementReferences(tasks);
 			const newOrder = [tasks[1], tasks[0], tasks[2]].map((el) => el.id);
 
 			board.reorderElements(newOrder);
@@ -47,7 +50,7 @@ describe('Board Entity', () => {
 		it('should throw when element is missing in new order', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
 			const board = boardFactory.buildWithId({});
-			board.syncTasksFromList(tasks);
+			board.syncBoardElementReferences(tasks);
 			const newOrder = [tasks[1], tasks[0]].map((el) => el.id);
 
 			const call = () => board.reorderElements(newOrder);
@@ -59,7 +62,7 @@ describe('Board Entity', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
 			const additional = taskFactory.buildWithId();
 			const board = boardFactory.buildWithId({});
-			board.syncTasksFromList(tasks);
+			board.syncBoardElementReferences(tasks);
 			const newOrder = [tasks[1], tasks[0], additional].map((el) => el.id);
 
 			const call = () => board.reorderElements(newOrder);
@@ -70,7 +73,7 @@ describe('Board Entity', () => {
 		it('should throw when element is passed twice', () => {
 			const tasks = [taskFactory.buildWithId(), taskFactory.buildWithId(), taskFactory.buildWithId()];
 			const board = boardFactory.buildWithId({});
-			board.syncTasksFromList(tasks);
+			board.syncBoardElementReferences(tasks);
 			const newOrder = [tasks[1], tasks[0], tasks[2], tasks[1]].map((el) => el.id);
 
 			const call = () => board.reorderElements(newOrder);
@@ -79,31 +82,42 @@ describe('Board Entity', () => {
 		});
 	});
 
-	describe('syncTasksFromList', () => {
+	describe('syncBoardElementReferences', () => {
 		it('should remove tasks from board that are not in list', () => {
 			const task = taskFactory.buildWithId();
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
 			const board = boardFactory.buildWithId({ references: [taskElement] });
 
-			board.syncTasksFromList([]);
+			board.syncBoardElementReferences([]);
 
 			expect(board.references.count()).toEqual(0);
 		});
 
-		it('should NOT remove other elements from board that are not in list', () => {
-			const lessonElement = lessonBoardElementFactory.buildWithId();
+		it('should remove lessons from board that are not in list', () => {
+			const lesson = lessonFactory.buildWithId();
+			const lessonElement = lessonBoardElementFactory.buildWithId({ target: lesson });
 			const board = boardFactory.buildWithId({ references: [lessonElement] });
 
-			board.syncTasksFromList([]);
+			board.syncBoardElementReferences([]);
 
-			expect(board.references.count()).toEqual(1);
+			expect(board.references.count()).toEqual(0);
+		});
+
+		it('should remove columnBoards from board that are not in list', () => {
+			const columnBoard = columnBoardFactory.build();
+			const columnboardBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoard });
+			const board = boardFactory.buildWithId({ references: [columnboardBoardElement] });
+
+			board.syncBoardElementReferences([]);
+
+			expect(board.references.count()).toEqual(0);
 		});
 
 		it('should add tasks to board', () => {
 			const task = taskFactory.buildWithId();
 			const board = boardFactory.buildWithId({ references: [] });
 
-			board.syncTasksFromList([task]);
+			board.syncBoardElementReferences([task]);
 
 			expect(board.references.count()).toEqual(1);
 		});
@@ -113,7 +127,7 @@ describe('Board Entity', () => {
 			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
 			const board = boardFactory.buildWithId({ references: [taskElement] });
 
-			board.syncTasksFromList([task]);
+			board.syncBoardElementReferences([task]);
 
 			expect(board.references.count()).toEqual(1);
 		});
@@ -124,38 +138,16 @@ describe('Board Entity', () => {
 			const taskElement = taskBoardElementFactory.buildWithId({ target: existingTask });
 			const board = boardFactory.buildWithId({ references: [taskElement] });
 
-			board.syncTasksFromList([existingTask, task]);
+			board.syncBoardElementReferences([existingTask, task]);
 
 			expect(board.references[0].target.id).toEqual(task.id);
-		});
-	});
-
-	describe('syncLessonsFromList', () => {
-		it('should remove lessons from board that are not in list', () => {
-			const lesson = lessonFactory.buildWithId();
-			const lessonElement = lessonBoardElementFactory.buildWithId({ target: lesson });
-			const board = boardFactory.buildWithId({ references: [lessonElement] });
-
-			board.syncLessonsFromList([]);
-
-			expect(board.references.count()).toEqual(0);
-		});
-
-		it('should NOT remove other elements from board that are not in list', () => {
-			const task = taskFactory.buildWithId();
-			const taskElement = taskBoardElementFactory.buildWithId({ target: task });
-			const board = boardFactory.buildWithId({ references: [taskElement] });
-
-			board.syncLessonsFromList([]);
-
-			expect(board.references.count()).toEqual(1);
 		});
 
 		it('should add lessons to board', () => {
 			const lesson = lessonFactory.buildWithId();
 			const board = boardFactory.buildWithId({ references: [] });
 
-			board.syncLessonsFromList([lesson]);
+			board.syncBoardElementReferences([lesson]);
 
 			expect(board.references.count()).toEqual(1);
 		});
@@ -165,7 +157,7 @@ describe('Board Entity', () => {
 			const lessonElement = lessonBoardElementFactory.buildWithId({ target: lesson });
 			const board = boardFactory.buildWithId({ references: [lessonElement] });
 
-			board.syncLessonsFromList([lesson]);
+			board.syncBoardElementReferences([lesson]);
 
 			expect(board.references.count()).toEqual(1);
 		});
@@ -176,9 +168,19 @@ describe('Board Entity', () => {
 			const lessonElement = lessonBoardElementFactory.buildWithId({ target: existinglesson });
 			const board = boardFactory.buildWithId({ references: [lessonElement] });
 
-			board.syncLessonsFromList([existinglesson, lesson]);
+			board.syncBoardElementReferences([existinglesson, lesson]);
 
 			expect(board.references[0].target.id).toEqual(lesson.id);
+		});
+
+		describe('when board element has an invalid type', () => {
+			it('should throw an error', () => {
+				const course = courseFactory.buildWithId();
+				const board = boardFactory.buildWithId({ references: [] });
+
+				// @ts-expect-error invalid target type
+				expect(() => board.syncBoardElementReferences([course])).toThrow();
+			});
 		});
 	});
 });
