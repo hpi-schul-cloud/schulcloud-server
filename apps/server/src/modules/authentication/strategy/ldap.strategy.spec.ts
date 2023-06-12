@@ -451,7 +451,10 @@ describe('LdapStrategy', () => {
 					.withRoleByName(RoleName.STUDENT)
 					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
 
-				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school: SchoolDO = schoolDOFactory.buildWithId(
+					{ systems: [system.id], previousExternalId: 'previousExternalId' },
+					user.school.id
+				);
 
 				const account: AccountDto = accountDtoFactory.build({
 					systemId: system.id,
