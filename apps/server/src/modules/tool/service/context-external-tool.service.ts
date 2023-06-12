@@ -27,15 +27,15 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 	}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
-		const contextExternalTool: ContextExternalToolDO | null = await this.contextExternalToolRepo.findById(
-			contextExternalToolId
-		);
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
+			id: contextExternalToolId,
+		});
 
-		if (!contextExternalTool) {
+		if (contextExternalTools.length === 0) {
 			throw new NotFoundException(`ContextExternalTool with id ${contextExternalToolId} not found`);
 		}
 
-		return contextExternalTool;
+		return contextExternalTools[0];
 	}
 
 	async createContextExternalTool(contextExternalTool: ContextExternalToolDO): Promise<ContextExternalToolDO> {
