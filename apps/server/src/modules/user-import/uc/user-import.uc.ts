@@ -168,7 +168,8 @@ export class UserImportUc {
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
 		if (total > 0) {
 			for (const importUser of importUsers) {
-				console.debug(importUser);
+				// TODO: Find a better solution for this loop
+				// eslint-disable-next-line no-await-in-loop
 				await this.updateUserAndAccount(importUser, school);
 			}
 		}
@@ -185,6 +186,7 @@ export class UserImportUc {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
+		school.inMaintenanceSince = undefined;
 		await this.schoolService.save(school);
 	}
 
