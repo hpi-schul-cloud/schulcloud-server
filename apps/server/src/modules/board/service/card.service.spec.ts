@@ -11,12 +11,14 @@ import {
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';
+import { ContentElementService } from './content-element.service';
 
 describe(CardService.name, () => {
 	let module: TestingModule;
 	let service: CardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
+	let contentElementService: DeepMocked<ContentElementService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,12 +32,17 @@ describe(CardService.name, () => {
 					provide: BoardDoService,
 					useValue: createMock<BoardDoService>(),
 				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(CardService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
+		contentElementService = module.get(ContentElementService);
 
 		await setupEntities();
 	});

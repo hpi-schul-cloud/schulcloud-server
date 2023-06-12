@@ -27,7 +27,7 @@ export class CardService {
 		throw new NotFoundException('some ids do not belong to a card');
 	}
 
-	async create(parent: Column, createCardBodyParams?: CreateCardBodyParams): Promise<Card> {
+	async create(parent: Column /* ,  createCardBodyParams?: CreateCardBodyParams */): Promise<Card> {
 		const card = new Card({
 			id: new ObjectId().toHexString(),
 			title: '',
@@ -41,11 +41,11 @@ export class CardService {
 
 		await this.boardDoRepo.save(parent.children, parent);
 
-		const { requiredEmptyElements } = createCardBodyParams || {};
-		if (requiredEmptyElements && requiredEmptyElements.length > 0) {
-			const elementsPromise = requiredEmptyElements.map((type) => this.contentElementService.create(card, type.type));
-			await Promise.all(elementsPromise);
-		}
+		// const { requiredEmptyElements } = createCardBodyParams || {};
+		// if (requiredEmptyElements && requiredEmptyElements.length > 0) {
+		// 	const elementsPromise = requiredEmptyElements.map((type) => this.contentElementService.create(card, type.type));
+		// 	await Promise.all(elementsPromise);
+		// }
 
 		return card;
 	}
