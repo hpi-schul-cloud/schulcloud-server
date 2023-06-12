@@ -3,6 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { System, User } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
+import { Logger } from '@src/core/logger';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
@@ -18,7 +20,8 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		private readonly schoolRepo: SchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -91,20 +94,25 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		// mixing the login name with a technical id from a foreign system is not a good pattern.
 		// Binding the login name to an identifier from a foreign system or an identifier of a school can lead to
 		// accounts not being found when the identifier changes.
-		if (school.previousExternalId) {
-			try {
-				account = await this.authenticationService.loadAccount(
-					`${externalSchoolId}/${username}`.toLowerCase(),
-					systemId
+		try {
+			account = await this.authenticationService.loadAccount(`${externalSchoolId}/${username}`.toLowerCase(), systemId);
+		} catch (err: unknown) {
+			if (school.previousExternalId) {
+				this.logger.log(
+					new ErrorLoggable(
+						new Error(
+							`Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...`
+						)
+					)
 				);
-			} catch (e: unknown) {
+
 				account = await this.authenticationService.loadAccount(
 					`${school.previousExternalId}/${username}`.toLowerCase(),
 					systemId
 				);
+			} else {
+				throw err;
 			}
-		} else {
-			account = await this.authenticationService.loadAccount(`${externalSchoolId}/${username}`.toLowerCase(), systemId);
 		}
 
 		return account;

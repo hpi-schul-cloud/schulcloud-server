@@ -15,6 +15,7 @@ import {
 	systemFactory,
 	userFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { AccountDto } from '@src/modules/account/services/dto';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
@@ -58,6 +59,10 @@ describe('LdapStrategy', () => {
 				{
 					provide: SystemRepo,
 					useValue: createMock<SystemRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
