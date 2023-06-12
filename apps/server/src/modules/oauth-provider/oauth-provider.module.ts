@@ -12,5 +12,6 @@ import { OauthProviderLoginFlowService } from './service/oauth-provider-login-fl
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, PseudonymModule, LtiToolModule, ToolModule],
 	providers: [OauthProviderLoginFlowService, IdTokenService, TeamsRepo],
+	exports: [OauthProviderLoginFlowService, IdTokenService],
 })
 export class OauthProviderModule {}
