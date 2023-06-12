@@ -1,7 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PseudonymDO } from '@shared/domain';
 import {
 	AcceptLoginRequestBody,
@@ -9,14 +7,15 @@ import {
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
+import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
+import { OauthProviderLoginFlowService } from '../service/oauth-provider-login-flow.service';
 
 describe('OauthProviderLoginFlowUc', () => {
 	let module: TestingModule;
 	let uc: OauthProviderLoginFlowUc;
 
-	let service: DeepMocked<OauthProviderService>;
+	let service: DeepMocked<OauthProviderLoginFlowService>;
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let mapper: DeepMocked<OauthProviderRequestMapper>;
 
@@ -45,8 +44,8 @@ describe('OauthProviderLoginFlowUc', () => {
 			providers: [
 				OauthProviderLoginFlowUc,
 				{
-					provide: OauthProviderService,
-					useValue: createMock<OauthProviderService>(),
+					provide: OauthProviderLoginFlowService,
+					useValue: createMock<OauthProviderLoginFlowService>(),
 				},
 				{
 					provide: OauthProviderLoginFlowService,
@@ -60,7 +59,7 @@ describe('OauthProviderLoginFlowUc', () => {
 		}).compile();
 
 		uc = module.get(OauthProviderLoginFlowUc);
-		service = module.get(OauthProviderService);
+		service = module.get(OauthProviderLoginFlowService);
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		mapper = module.get(OauthProviderRequestMapper);
 	});

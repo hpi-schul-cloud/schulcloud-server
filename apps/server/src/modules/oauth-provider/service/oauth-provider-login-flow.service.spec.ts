@@ -8,8 +8,8 @@ import { LtiToolRepo, PseudonymsRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules';
 import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
 import { ObjectID } from 'bson';
+import { OauthProviderLoginFlowService } from './oauth-provider-login-flow.service';
 
 describe('OauthProviderLoginFlowService', () => {
 	let module: TestingModule;

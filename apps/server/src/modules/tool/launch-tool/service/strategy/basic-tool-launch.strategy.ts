@@ -15,7 +15,7 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 		return Promise.resolve([]);
 	}
 
-	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
+	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | undefined {
 		const bodyProperties = properties.filter((property: PropertyData) => property.location === PropertyLocation.BODY);
 		const payload: Record<string, string> = {};
 
@@ -24,7 +24,7 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (Object.keys(payload).length === 0) {
-			return '';
+			return undefined;
 		}
 
 		return JSON.stringify(payload);

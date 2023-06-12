@@ -465,7 +465,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 			it('should return a OAuth1 signed payload', () => {
 				const { properties, signedPayload } = setup();
 
-				const payload: string = strategy.buildToolLaunchRequestPayload('url', properties);
+				const payload: string | undefined = strategy.buildToolLaunchRequestPayload('url', properties);
 
 				expect(payload).toEqual(JSON.stringify(signedPayload));
 			});

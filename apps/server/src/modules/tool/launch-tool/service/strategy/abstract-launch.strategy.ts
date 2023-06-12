@@ -30,14 +30,14 @@ export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 		config: IToolLaunchParams
 	): Promise<PropertyData[]>;
 
-	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string;
+	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | undefined;
 
 	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
 	public createLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const requestMethod: LaunchRequestMethod = this.determineLaunchRequestMethod(toolLaunchData.properties);
 		const url: string = this.buildUrl(toolLaunchData);
-		const payload: string = this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
+		const payload: string | undefined = this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
 
 		const toolLaunchRequest: ToolLaunchRequest = new ToolLaunchRequest({
 			method: requestMethod,

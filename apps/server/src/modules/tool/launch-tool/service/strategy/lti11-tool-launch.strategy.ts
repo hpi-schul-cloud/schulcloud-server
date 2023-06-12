@@ -118,7 +118,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
-	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
+	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | undefined {
 		const bodyProperties: PropertyData[] = properties.filter(
 			(property: PropertyData) => property.location === PropertyLocation.BODY
 		);

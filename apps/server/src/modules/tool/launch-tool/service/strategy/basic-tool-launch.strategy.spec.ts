@@ -39,7 +39,7 @@ describe('BasicToolLaunchStrategy', () => {
 		it('should build the tool launch request payload correctly', () => {
 			const { properties } = setup();
 
-			const payload: string = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
+			const payload: string | undefined = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
 
 			expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
 		});

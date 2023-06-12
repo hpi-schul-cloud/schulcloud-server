@@ -1,21 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ExternalToolDO, PseudonymDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { OauthProviderService } from '@shared/infra/oauth-provider';
 import {
 	AcceptLoginRequestBody,
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderLoginFlowService } from '@src/modules/oauth-provider/service/oauth-provider.login-flow.service';
-import { PseudonymDO } from '@shared/domain';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
+import { PseudonymService } from '@src/modules/pseudonym/service';
+import { OauthProviderLoginFlowService } from '../service/oauth-provider-login-flow.service';
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
 	constructor(
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
-		private readonly oauthProviderRequestMapper: OauthProviderRequestMapper
+		private readonly oauthProviderRequestMapper: OauthProviderRequestMapper,
+		private readonly pseudonymService: PseudonymService
 	) {}
 
 	async getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
@@ -44,18 +47,41 @@ export class OauthProviderLoginFlowUc {
 		loginRequestBody: LoginRequestBody
 	): Promise<ProviderRedirectResponse> {
 		const loginResponse: ProviderLoginResponse = await this.oauthProviderService.getLoginRequest(challenge);
-		const pseudonym: PseudonymDO = await this.oauthProviderLoginFlowService.getPseudonym(currentUserId, loginResponse);
+
+		if (!loginResponse.client.client_id) {
+			throw new InternalServerErrorException(`Cannot find oAuthClientId in login response for challenge: ${challenge}`);
+		}
+
+		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(
+			loginResponse.client.client_id
+		);
+
+		if (!tool.id) {
+			throw new InternalServerErrorException('Tool has no id');
+		}
+
+		if (this.oauthProviderLoginFlowService.isNextcloudTool(tool)) {
+			await this.oauthProviderLoginFlowService.validateNextcloudPermission(currentUserId);
+		}
+
+		let pseudonym: PseudonymDO | null = await this.pseudonymService.findByUserIdAndToolId(currentUserId, tool.id);
+
+		if (!pseudonym) {
+			pseudonym = await this.pseudonymService.createPseudonym(currentUserId, tool.id);
+		}
+
 		const acceptLoginRequestBody: AcceptLoginRequestBody =
 			this.oauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
 				loginRequestBody,
 				currentUserId,
 				pseudonym.pseudonym
 			);
-		await this.oauthProviderLoginFlowService.validateNextcloudPermission(currentUserId, loginResponse);
+
 		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderService.acceptLoginRequest(
 			loginResponse.challenge,
 			acceptLoginRequestBody
 		);
+
 		return redirectResponse;
 	}
 
