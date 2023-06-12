@@ -124,12 +124,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>)</code>
+<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>, schoolRepo: <a href="../injectables/SchoolRepo.html" target="_self">SchoolRepo</a>, ldapService: <a href="../injectables/LdapService.html" target="_self">LdapService</a>, authenticationService: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -206,6 +206,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -243,8 +255,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:76</a></div>
                 </td>
             </tr>
 
@@ -350,8 +362,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:69</a></div>
                 </td>
             </tr>
 
@@ -429,8 +441,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="54"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:54</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="57"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:57</a></div>
                 </td>
             </tr>
 
@@ -494,15 +506,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, system: <a href="../entitys/System.html" target="_self">System</a>)</code>
+                    <code>loadAccount(username: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, systemId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, school: <a href="../classes/SchoolDO.html" target="_self">SchoolDO</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:87</a></div>
                 </td>
             </tr>
 
@@ -535,9 +547,21 @@
 
                                 </tr>
                                 <tr>
-                                    <td>system</td>
+                                    <td>systemId</td>
                                     <td>
-                                                <code><a href="../entitys/System.html" target="_self" >System</a></code>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>school</td>
+                                    <td>
+                                                <code><a href="../classes/SchoolDO.html" target="_self" >SchoolDO</a></code>
                                     </td>
 
                                     <td>
@@ -584,8 +608,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/authentication/strategy/ldap.strategy.ts:29</a></div>
                 </td>
             </tr>
 
@@ -641,9 +665,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnauthorizedException } from &#x27;@nestjs/common&#x27;;
 import { PassportStrategy } from &#x27;@nestjs/passport&#x27;;
-import { LdapConfig, System, User } from &#x27;@shared/domain&#x27;;
+import { System, User } from &#x27;@shared/domain&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { SchoolRepo, SystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { ErrorLoggable } from &#x27;@src/core/error/loggable/error.loggable&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AccountDto } from &#x27;@src/modules/account/services/dto&#x27;;
 import { Strategy } from &#x27;passport-custom&#x27;;
 import { LdapAuthorizationBodyParams } from &#x27;../controllers/dto&#x27;;
@@ -659,7 +685,8 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		private readonly schoolRepo: SchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -675,7 +702,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 			throw new UnauthorizedException(&#x60;School ${schoolId} does not have the selected system ${systemId}&#x60;);
 		}
 
-		const account: AccountDto &#x3D; await this.loadAccount(username, system);
+		const account: AccountDto &#x3D; await this.loadAccount(username, system.id, school);
 
 		const userId: string &#x3D; this.checkValue(account.userId);
 
@@ -722,13 +749,36 @@ export class LdapStrategy extends PassportStrategy(Strategy, &#x27;ldap&#x27;) {
 		}
 	}
 
-	private async loadAccount(username: string, system: System): Promise&lt;AccountDto&gt; {
-		const ldapConfig: LdapConfig &#x3D; this.checkValue(system.ldapConfig);
-		const rootPath: string &#x3D; this.checkValue(ldapConfig.rootPath);
+	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise&lt;AccountDto&gt; {
+		const externalSchoolId &#x3D; this.checkValue(school.externalId);
 
-		const userNameWithSchool &#x3D; &#x60;${rootPath}/${username}&#x60;;
+		let account: AccountDto;
 
-		const account &#x3D; await this.authenticationService.loadAccount(userNameWithSchool.toLowerCase(), system.id);
+		// TODO having to check for two values in order to find an account is not optimal and should be changed.
+		// The way the name field of Accounts is used for LDAP should be reconsidered, since
+		// mixing the login name with a technical id from a foreign system is not a good pattern.
+		// Binding the login name to an identifier from a foreign system or an identifier of a school can lead to
+		// accounts not being found when the identifier changes.
+		try {
+			account &#x3D; await this.authenticationService.loadAccount(&#x60;${externalSchoolId}/${username}&#x60;.toLowerCase(), systemId);
+		} catch (err: unknown) {
+			if (school.previousExternalId) {
+				this.logger.log(
+					new ErrorLoggable(
+						new Error(
+							&#x60;Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...&#x60;
+						)
+					)
+				);
+
+				account &#x3D; await this.authenticationService.loadAccount(
+					&#x60;${school.previousExternalId}/${username}&#x60;.toLowerCase(),
+					systemId
+				);
+			} else {
+				throw err;
+			}
+		}
 
 		return account;
 	}
