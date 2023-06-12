@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@src/modules/authorization';
+import { PseudonymModule } from '@src/modules/pseudonym';
 import { OauthProviderController } from './controller/oauth-provider.controller';
 import { OauthProviderRequestMapper } from './mapper/oauth-provider-request.mapper';
 import { OauthProviderResponseMapper } from './mapper/oauth-provider-response.mapper';
@@ -15,7 +16,7 @@ import {
 } from './uc';
 
 @Module({
-	imports: [OauthProviderServiceModule, OauthProviderModule, LoggerModule, AuthorizationModule],
+	imports: [OauthProviderServiceModule, OauthProviderModule, PseudonymModule, LoggerModule, AuthorizationModule],
 	providers: [
 		OauthProviderUc,
 		OauthProviderClientCrudUc,

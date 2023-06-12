@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ExternalToolDO, Permission, User } from '@shared/domain';
+import { ExternalToolDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { AuthorizationService } from '@src/modules/authorization';
 import { LtiToolService } from '@src/modules/lti-tool/service';
-import { PseudonymService } from '@src/modules/pseudonym/service';
 import { ExternalToolService } from '@src/modules/tool/service';
 
 @Injectable()
 export class OauthProviderLoginFlowService {
 	constructor(
 		private readonly ltiToolService: LtiToolService,
-		private readonly externalToolService: ExternalToolService,
-		private readonly pseudonymService: PseudonymService,
-		private readonly authorizationService: AuthorizationService
+		private readonly externalToolService: ExternalToolService
 	) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalToolDO | LtiToolDO> {
@@ -34,10 +30,5 @@ export class OauthProviderLoginFlowService {
 		const isNextcloud: boolean = tool.name === 'SchulcloudNextcloud';
 
 		return isNextcloud;
-	}
-
-	async validateNextcloudPermission(userId: string): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 	}
 }

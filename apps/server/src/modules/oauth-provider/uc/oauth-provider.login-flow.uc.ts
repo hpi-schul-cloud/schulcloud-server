@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, PseudonymDO } from '@shared/domain';
+import { ExternalToolDO, Permission, PseudonymDO, User } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import {
@@ -10,6 +10,7 @@ import {
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
+import { AuthorizationService } from '../../authorization';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider-login-flow.service';
 
 @Injectable()
@@ -18,7 +19,8 @@ export class OauthProviderLoginFlowUc {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly oauthProviderRequestMapper: OauthProviderRequestMapper,
-		private readonly pseudonymService: PseudonymService
+		private readonly pseudonymService: PseudonymService,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
@@ -61,7 +63,8 @@ export class OauthProviderLoginFlowUc {
 		}
 
 		if (this.oauthProviderLoginFlowService.isNextcloudTool(tool)) {
-			await this.oauthProviderLoginFlowService.validateNextcloudPermission(currentUserId);
+			const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
 		let pseudonym: PseudonymDO | null = await this.pseudonymService.findByUserIdAndToolId(currentUserId, tool.id);
