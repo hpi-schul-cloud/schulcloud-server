@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDO, ContextRef, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
