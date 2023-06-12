@@ -194,17 +194,29 @@ describe('Course Controller (API)', () => {
 		};
 		it('should find course export', async () => {
 			if (!Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')) return;
-			const { student1, course } = setup();
+			const { teacher, course } = setup();
 
 			await em.persistAndFlush(course);
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(student1.account);
-			const response = await loggedInClient.get(`${course.id}/export`);
+			const version = { version: '1.1.0' };
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/export`).query(version);
 
 			expect(response.statusCode).toEqual(200);
 			const courseResponse = response.body as CourseResponse;
 			expect(courseResponse).toBeDefined();
+		});
+		it('should not export course if the export is disable', async () => {
+			const { teacher, course } = setup();
+			Configuration.set('FEATURE_IMSCC_COURSE_EXPORT_ENABLED', false);
+			const version = { version: '1.1.0' };
+			await em.persistAndFlush([course, teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/export`).query(version);
+			expect(response.statusCode).toEqual(404);
 		});
 	});
 });
