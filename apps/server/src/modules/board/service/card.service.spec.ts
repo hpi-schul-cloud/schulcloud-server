@@ -120,7 +120,7 @@ describe(CardService.name, () => {
 			const setup = () => {
 				const column = columnFactory.build();
 				const columnId = column.id;
-				const createCardBodyParams: CreateCardBodyParams = {
+				const createCardBodyParams = {
 					requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
 				};
 

@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/board';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject/board';
 import { setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
+import { ContentElementService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { CardService } from '../service/card.service';
 import { ColumnBoardService } from '../service/column-board.service';
@@ -50,6 +51,10 @@ describe(BoardUc.name, () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
+				{
+					provide: ContentElementService,
+					useValue: createMock<ContentElementService>(),
+				},
 			],
 		}).compile();
 
@@ -83,10 +88,13 @@ describe(BoardUc.name, () => {
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
 		});
+		const createCardBodyParams = {
+			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+		};
 
 		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
-		return { user, board, boardId, column, card };
+		return { user, board, boardId, column, card, createCardBodyParams };
 	};
 
 	describe('findBoard', () => {
@@ -271,11 +279,11 @@ describe(BoardUc.name, () => {
 	describe('createCard', () => {
 		describe('when creating a card', () => {
 			it('should call the service to create the card', async () => {
-				const { user, column } = setup();
+				const { user, column, createCardBodyParams } = setup();
 
-				await uc.createCard(user.id, column.id, {});
+				await uc.createCard(user.id, column.id, createCardBodyParams);
 
-				expect(cardService.create).toHaveBeenCalledWith(column);
+				expect(cardService.create).toHaveBeenCalledWith(column, createCardBodyParams);
 			});
 
 			it('should return the card object', async () => {
