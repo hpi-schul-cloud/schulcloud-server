@@ -12,7 +12,7 @@ import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import { ToolContextType } from '../interface';
 import { ContextExternalToolService, ExternalToolService, SchoolExternalToolService } from '../service';
-import { ContextTypeMapper } from './mapper';
+import { ContextTypeMapper } from '../service/mapper';
 
 @Injectable()
 export class ExternalToolConfigurationUc {
@@ -61,7 +61,10 @@ export class ExternalToolConfigurationUc {
 				schoolId,
 			}),
 			this.contextExternalToolService.findContextExternalTools({
-				contextId,
+				context: {
+					id: contextId,
+					type: contextType,
+				},
 			}),
 		]);
 
@@ -90,7 +93,8 @@ export class ExternalToolConfigurationUc {
 		const schoolExternalToolsInUse: SchoolExternalToolDO[] = schoolExternalTools.filter(
 			(schoolExternalTool: SchoolExternalToolDO): boolean => {
 				const hasContextExternalTool: boolean = contextExternalToolsInUse.some(
-					(contextExternalTool: ContextExternalToolDO) => contextExternalTool.schoolToolId === schoolExternalTool.id
+					(contextExternalTool: ContextExternalToolDO) =>
+						contextExternalTool.schoolToolRef.schoolToolId === schoolExternalTool.id
 				);
 
 				return hasContextExternalTool;

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { permissionSchema } = require('../fileStorage/model');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
@@ -67,8 +66,6 @@ teamUserSchema.index({ schoolId: 1 }); // ?
 
 teamsSchema.index({ schoolId: 1 }); // ?
 teamsSchema.index({ schoolIds: 1 }); // ?
-
-enableAuditLog(teamsSchema);
 
 const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);

@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { enableAuditLog } = require('../../utils/database');
 
 const tspBaseType = require('../sync/strategies/TSP/TSPBaseSyncer').SYNCER_TARGET;
 const tspSchoolType = require('../sync/strategies/TSP/TSPSchoolSyncer').SYNCER_TARGET;
@@ -98,8 +97,6 @@ const systemSchema = new Schema(
 		timestamps: true,
 	}
 );
-
-enableAuditLog(systemSchema);
 
 const systemModel = mongoose.model('system', systemSchema);
 

@@ -20,9 +20,9 @@ export class RoomsUc {
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
 		const course = await this.courseRepo.findOne(roomId, userId);
-		let board = await this.boardRepo.findByCourseId(course.id);
+		const board = await this.boardRepo.findByCourseId(roomId);
 
-		board = await this.roomsService.updateBoard(board, roomId, userId);
+		await this.roomsService.updateBoard(board, roomId, userId);
 
 		const dto = this.factory.createDTO({ room: course, board, user });
 		return dto;

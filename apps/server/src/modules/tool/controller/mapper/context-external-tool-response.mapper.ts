@@ -5,9 +5,9 @@ export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse = new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? '',
-			contextId: contextExternalTool.contextId,
-			schoolToolId: contextExternalTool.schoolToolId,
-			contextType: contextExternalTool.contextType,
+			contextId: contextExternalTool.contextRef.id,
+			contextType: contextExternalTool.contextRef.type,
+			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
 			contextToolName: contextExternalTool.contextToolName,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
