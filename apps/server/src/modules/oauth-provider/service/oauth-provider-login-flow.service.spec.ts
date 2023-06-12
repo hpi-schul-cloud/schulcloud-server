@@ -102,12 +102,12 @@ describe('OauthProviderLoginFlowService', () => {
 			};
 
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDoMock);
-			pseudonymsRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+			pseudonymsRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonym);
 
 			const pseudonymDO: PseudonymDO = await service.getPseudonym(currentUser.userId, loginResponse);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(loginResponse.client.client_id, true);
-			expect(pseudonymsRepo.findByUserIdAndToolId).toHaveBeenCalledWith(currentUser.userId, ltiToolDoMock.id);
+			expect(pseudonymsRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(currentUser.userId, ltiToolDoMock.id);
 			expect(pseudonymDO).toEqual(pseudonym);
 		});
 

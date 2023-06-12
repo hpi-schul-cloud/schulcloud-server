@@ -95,7 +95,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: PseudonymDO = await this.pseudonymService.findByUserIdAndToolId(userId, toolId);
+			const pseudonym: PseudonymDO = await this.pseudonymService.requestPseudonym(userId, toolId);
 
 			additionalProperties.push(
 				new PropertyData({

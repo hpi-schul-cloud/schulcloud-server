@@ -1,12 +1,12 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
-import { PseudonymsRepo } from '@shared/repo/';
-import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymDO } from '@shared/domain/';
-import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
+import { PseudonymsRepo } from '@shared/repo/';
+import { LtiToolRepo } from '@shared/repo/ltitool/';
+import { LegacyLogger } from '@src/core/logger';
+import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
+import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
 
 /**
@@ -130,7 +130,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 				async (teamUser: TeamUserDto): Promise<string> =>
 					// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
 					this.pseudonymsRepo
-						.findByUserIdAndToolId(teamUser.userId, nextcloudLtiTool.id as string)
+						.findByUserIdAndToolIdOrFail(teamUser.userId, nextcloudLtiTool.id as string)
 						.then((pseudonymDO: PseudonymDO) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))
 						.catch(() => '')
 			)

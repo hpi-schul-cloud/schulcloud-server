@@ -35,7 +35,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
-				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonym);
 
 				return {
 					pseudonym,
@@ -47,7 +47,7 @@ describe('PseudonymService', () => {
 
 				await service.findByUserIdAndToolId('userId', 'toolId');
 
-				expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith('userId', 'toolId');
+				expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith('userId', 'toolId');
 			});
 
 			it('should return a pseudonym', async () => {

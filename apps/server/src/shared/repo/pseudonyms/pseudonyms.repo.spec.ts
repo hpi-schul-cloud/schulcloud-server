@@ -1,15 +1,15 @@
+import { createMock } from '@golevelup/ts-jest';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections } from '@shared/testing';
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
-import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
-import { PseudonymsRepo } from '@shared/repo/pseudonyms/pseudonyms.repo';
-import { v4 as uuidv4 } from 'uuid';
-import { NotFoundError } from '@mikro-orm/core';
-import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
 import { IPseudonymProperties, Pseudonym } from '@shared/domain';
+import { PseudonymDO } from '@shared/domain/domainobject/pseudonym.do';
+import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { PseudonymsRepo } from '@shared/repo/pseudonyms/pseudonyms.repo';
+import { cleanupCollections } from '@shared/testing';
+import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
+import { LegacyLogger } from '@src/core/logger';
+import { v4 as uuidv4 } from 'uuid';
 
 class PseudonymsRepoSpec extends PseudonymsRepo {
 	mapEntityToDOSpec(entity: Pseudonym): PseudonymDO {
@@ -83,7 +83,7 @@ describe('Pseudonym Repo', () => {
 			const entity: Pseudonym = pseudonymFactory.buildWithId();
 			await em.persistAndFlush(entity);
 
-			const result = await repo.findByUserIdAndToolId(entity.userId.toHexString(), entity.toolId.toHexString());
+			const result = await repo.findByUserIdAndToolIdOrFail(entity.userId.toHexString(), entity.toolId.toHexString());
 
 			expect(result.id).toEqual(entity.id);
 		});
@@ -91,7 +91,7 @@ describe('Pseudonym Repo', () => {
 		it('should throw an Error if the scope mismatches the idtype', async () => {
 			const entity: Pseudonym = pseudonymFactory.buildWithId();
 			await expect(
-				repo.findByUserIdAndToolId(entity.userId.toHexString(), entity.toolId.toHexString())
+				repo.findByUserIdAndToolIdOrFail(entity.userId.toHexString(), entity.toolId.toHexString())
 			).rejects.toThrow(NotFoundError);
 		});
 	});

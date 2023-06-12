@@ -134,7 +134,7 @@ describe('IdTokenService', () => {
 				expectedName = 'Max Mustermann';
 				teamsRepo.findByUserId.mockResolvedValue(teams);
 				ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
+				pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonymDo);
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(expectedName);
 			});
@@ -204,7 +204,7 @@ describe('IdTokenService', () => {
 	describe('createIframeSubject', () => {
 		it('should create and return iframe string', async () => {
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonymDo);
+			pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(pseudonymDo);
 
 			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
 
@@ -214,7 +214,7 @@ describe('IdTokenService', () => {
 			expect(result).toEqual(expectedResult);
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(userId, ltiToolDo.id);
+			expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(userId, ltiToolDo.id);
 		});
 
 		it('should return undefined if ltiTool can not be found', async () => {
@@ -225,19 +225,19 @@ describe('IdTokenService', () => {
 			expect(result).toBeUndefined();
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).not.toHaveBeenCalled();
+			expect(pseudonymRepo.findByUserIdAndToolIdOrFail).not.toHaveBeenCalled();
 		});
 
 		it('should return undefined if pseudonym can not be found', async () => {
 			ltiToolRepo.findByClientIdAndIsLocal.mockResolvedValue(ltiToolDo);
-			pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(Promise.reject());
+			pseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValue(Promise.reject());
 
 			const result = await idTokenService.createIframeSubjectSpec(userId, clientId);
 
 			expect(result).toBeUndefined();
 
 			expect(ltiToolRepo.findByClientIdAndIsLocal).toHaveBeenCalledWith(clientId, true);
-			expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(userId, ltiToolDo.id);
+			expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(userId, ltiToolDo.id);
 		});
 	});
 
