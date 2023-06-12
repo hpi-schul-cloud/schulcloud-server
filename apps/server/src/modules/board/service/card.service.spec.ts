@@ -8,7 +8,6 @@ import {
 	columnFactory,
 	richTextElementFactory,
 } from '@shared/testing/factory/domainobject';
-import { CreateCardBodyParams } from '../controller/dto/card/create-card.body.params';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { CardService } from './card.service';

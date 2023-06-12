@@ -106,6 +106,14 @@ describe(`card create (api)`, () => {
 
 			expect(result.id).toBeDefined();
 		});
+		// it('card should have empty elements of given types', async () => {
+		// 	const { user, columnNode } = await setup();
+		// 	currentUser = mapUserToCurrentUser(user);
+
+		// 	const { result } = await api.post(columnNode.id);
+
+		// 	expect(result.id).toBeDefined();
+		// });
 	});
 
 	describe('with invalid user', () => {
