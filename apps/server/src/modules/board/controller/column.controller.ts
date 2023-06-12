@@ -10,7 +10,7 @@ import {
 	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
@@ -71,6 +71,7 @@ export class ColumnController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: false, type: CreateCardBodyParams })
 	@Post(':columnId/cards')
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
