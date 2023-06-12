@@ -133,7 +133,6 @@ export class ExternalToolConfigurationUc {
 		return [availableTools, availableSchoolToolIds];
 	}
 
-	// TODO: test
 	public async getExternalToolForSchool(userId: EntityId, externalToolId: EntityId): Promise<ExternalToolDO> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.ensurePermission(user);
