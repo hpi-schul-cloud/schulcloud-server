@@ -75,7 +75,7 @@ export class ColumnController {
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() createCardBodyParams: CreateCardBodyParams | undefined
+		@Body() createCardBodyParams?: CreateCardBodyParams | undefined
 	): Promise<CardResponse> {
 		const card = await this.boardUc.createCard(currentUser.userId, urlParams.columnId, createCardBodyParams);
 
