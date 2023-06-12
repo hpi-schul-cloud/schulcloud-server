@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContextExternalToolDO, ContextRef, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolDOFactory,
 	schoolDOFactory,
 	schoolExternalToolDOFactory,
 } from '@shared/testing/factory/domainobject/';
-import { ContextExternalToolDO, ContextRef, Permission, SchoolExternalToolDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolContextType } from '../interface';
+import { ContextExternalToolService } from './context-external-tool.service';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -80,6 +80,8 @@ describe('ContextExternalToolService', () => {
 				const contextExternalTool2: ContextExternalToolDO = contextExternalToolDOFactory
 					.withSchoolExternalToolRef(schoolExternalToolId)
 					.buildWithId();
+
+				contextExternalToolRepo.find.mockResolvedValue([contextExternalTool1, contextExternalTool2]);
 
 				return {
 					schoolExternalTool,
