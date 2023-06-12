@@ -11,7 +11,7 @@ import {
 	ToolConfigurationListResponse,
 	ToolIdParams,
 } from './dto';
-import { ExternalToolResponseMapper } from './mapper';
+import { ExternalToolResponseMapper, SchoolExternalToolResponseMapper } from './mapper';
 import { ToolConfigurationController } from './tool-configuration.controller';
 
 describe('ToolConfigurationController', () => {
@@ -32,6 +32,10 @@ describe('ToolConfigurationController', () => {
 				{
 					provide: ExternalToolResponseMapper,
 					useValue: createMock<ExternalToolResponseMapper>(),
+				},
+				{
+					provide: SchoolExternalToolResponseMapper,
+					useValue: createMock<SchoolExternalToolResponseMapper>(),
 				},
 			],
 		}).compile();
@@ -127,8 +131,7 @@ describe('ToolConfigurationController', () => {
 
 				expect(externalToolConfigurationUc.getExternalToolForSchool).toHaveBeenCalledWith(
 					currentUser.userId,
-					toolIdParams.toolId,
-					currentUser.schoolId
+					toolIdParams.toolId
 				);
 			});
 
