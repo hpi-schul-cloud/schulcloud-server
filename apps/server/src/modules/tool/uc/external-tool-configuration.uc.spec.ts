@@ -287,7 +287,9 @@ describe('ExternalToolConfigurationUc', () => {
 				});
 
 				const usedContextExternalTool: ContextExternalToolDO = contextExternalToolDOFactory.buildWithId({
-					schoolToolId: 'usedSchoolExternalToolId',
+					schoolToolRef: {
+						schoolToolId: 'usedSchoolExternalToolId',
+					},
 				});
 
 				externalToolService.findExternalTools.mockResolvedValue(
