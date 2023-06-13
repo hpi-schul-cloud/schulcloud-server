@@ -75,11 +75,7 @@ describe('VideoConferenceCreateUc', () => {
 					},
 				};
 
-				bbbService.getMeetingInfo.mockResolvedValue({
-					response: {
-						running: false,
-					},
-				} as BBBResponse<BBBMeetingInfoResponse>);
+				bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
 
 				return { user, currentUserId, scope, options, bbbCreateResponse };
 			};
