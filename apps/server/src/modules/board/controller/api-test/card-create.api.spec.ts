@@ -17,7 +17,6 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 import { CardResponse } from '../dto';
-import { CreateCardBodyParams } from '../dto/card/create-card.body.params';
 
 const baseRouteName = '/columns';
 

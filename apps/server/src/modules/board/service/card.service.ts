@@ -44,11 +44,7 @@ export class CardService {
 		const { requiredEmptyElements } = createCardBodyParams || {};
 		if (requiredEmptyElements && requiredEmptyElements.length > 0) {
 			const elementsPromise = requiredEmptyElements.map((type) => this.contentElementService.create(card, type));
-			for (const elementPromise of elementsPromise) {
-				// eslint-disable-next-line no-await-in-loop
-				await elementPromise;
-			}
-			// await Promise.all(elementsPromise);
+			await Promise.all(elementsPromise);
 		}
 
 		return card;
