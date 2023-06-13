@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoard } from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '@shared/domain';
+import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';
@@ -46,7 +47,7 @@ describe(ColumnBoardService.name, () => {
 		return { board, boardId, column };
 	};
 
-	describe('finding a board', () => {
+	describe('findById', () => {
 		it('should call the board do repository', async () => {
 			const { boardId, board } = setup();
 			boardDoRepo.findByClassAndId.mockResolvedValueOnce(board);
@@ -66,23 +67,48 @@ describe(ColumnBoardService.name, () => {
 		});
 	});
 
-	describe('creating a board', () => {
-		it('should save a board using the repo', async () => {
-			await service.create();
+	describe('getBoardObjectTitlesById', () => {
+		describe('when asking for a list of boardObject-ids', () => {
+			const setupBoards = () => {
+				return {
+					boardNodes: columnBoardNodeFactory.buildListWithId(3),
+				};
+			};
 
-			expect(boardDoRepo.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					id: expect.any(String),
-					title: '',
-					children: [],
-					createdAt: expect.any(Date),
-					updatedAt: expect.any(Date),
-				})
-			);
+			it('should call the boardDoRepo.getTitleById with the same parameters', async () => {
+				const { boardNodes } = setupBoards();
+				const ids = boardNodes.map((n) => n.id);
+
+				await service.getBoardObjectTitlesById(ids);
+
+				expect(boardDoRepo.getTitleById).toHaveBeenCalledWith(ids);
+			});
 		});
 	});
 
-	describe('deleting a board', () => {
+	describe('create', () => {
+		const setupBoards = () => {
+			const context: BoardExternalReference = {
+				type: BoardExternalReferenceType.Course,
+				id: new ObjectId().toHexString(),
+			};
+
+			return { context };
+		};
+
+		describe('when creating a fresh column board', () => {
+			it('should return a columnBoardInfo of that board', async () => {
+				const { context } = setupBoards();
+				const title = `My brand new Mainboard`;
+
+				const columnBoardInfo = await service.create(context, title);
+
+				expect(columnBoardInfo).toEqual(expect.objectContaining({ title }));
+			});
+		});
+	});
+
+	describe('delete', () => {
 		it('should call the service to delete the board', async () => {
 			const { board } = setup();
 

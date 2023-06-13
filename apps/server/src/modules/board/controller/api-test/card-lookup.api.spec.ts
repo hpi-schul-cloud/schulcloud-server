@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
+import { BoardExternalReferenceType } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -81,25 +82,20 @@ describe(`card lookup (api)`, () => {
 			// permissions: [Permission.COURSE_CREATE],
 		});
 		const user = userFactory.build({ school, roles });
-		const course = courseFactory.build({ teachers: [user] });
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
+		const course = courseFactory.buildWithId({ teachers: [user] });
+		await em.persistAndFlush([user, course]);
+
+		const columnBoardNode = columnBoardNodeFactory.buildWithId({
+			context: { id: course.id, type: BoardExternalReferenceType.Course },
+		});
 		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
 		const cardNode1 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode2 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const cardNode3 = cardNodeFactory.buildWithId({ parent: columnNode });
 		const richTextElement = richTextElementNodeFactory.buildWithId({ parent: cardNode1 });
 
-		await em.persistAndFlush([
-			user,
-			course,
-			columnBoardNode,
-			columnNode,
-			cardNode1,
-			cardNode2,
-			cardNode3,
-			richTextElement,
-		]);
-		await em.persistAndFlush([user, course, columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, richTextElement]);
+		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3]);
 		em.clear();
 
 		currentUser = mapUserToCurrentUser(user);
@@ -109,7 +105,8 @@ describe(`card lookup (api)`, () => {
 
 	describe('with valid card ids', () => {
 		it('should return status 200', async () => {
-			const { card1 } = await setup();
+			const { user, card1 } = await setup();
+			currentUser = mapUserToCurrentUser(user);
 
 			const response = await api.get({ ids: [card1.id] });
 
@@ -117,7 +114,8 @@ describe(`card lookup (api)`, () => {
 		});
 
 		it('should return one card for a single id', async () => {
-			const { card1 } = await setup();
+			const { user, card1 } = await setup();
+			currentUser = mapUserToCurrentUser(user);
 
 			const { result } = await api.get({ ids: [card1.id] });
 
@@ -126,7 +124,8 @@ describe(`card lookup (api)`, () => {
 		});
 
 		it('should return multiple cards for multiple ids', async () => {
-			const { card1, card2 } = await setup();
+			const { user, card1, card2 } = await setup();
+			currentUser = mapUserToCurrentUser(user);
 
 			const { result } = await api.get({ ids: [card1.id, card2.id] });
 
@@ -139,7 +138,9 @@ describe(`card lookup (api)`, () => {
 
 	describe('with invalid card ids', () => {
 		it('should return empty array if card id does not exist', async () => {
-			await setup();
+			const { user } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
 			const notExistingCardId = new ObjectId().toHexString();
 
 			const { result, status } = await api.get({ ids: [notExistingCardId] });
@@ -149,7 +150,9 @@ describe(`card lookup (api)`, () => {
 		});
 
 		it('should return only results of existing cards', async () => {
-			const { card1, card2 } = await setup();
+			const { user, card1, card2 } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
 			const notExistingCardId = new ObjectId().toHexString();
 
 			const { result } = await api.get({ ids: [card1.id, notExistingCardId, card2.id] });
@@ -161,5 +164,18 @@ describe(`card lookup (api)`, () => {
 		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with invalid user', () => {
+		it('should return status 200', async () => {
+			const { card1 } = await setup();
+
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.get({ ids: [card1.id] });
+
+			expect(response.status).toEqual(200);
+			expect(response.result).toEqual({ data: [] });
+		});
+	});
 });

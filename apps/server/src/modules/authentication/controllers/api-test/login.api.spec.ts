@@ -150,9 +150,8 @@ describe('Login Controller (api)', () => {
 		let system: System;
 
 		beforeAll(async () => {
-			const ldapRootPath = 'rootPath';
 			const schoolExternalId = 'mockSchoolExternalId';
-			system = systemFactory.withLdapConfig({ rootPath: ldapRootPath }).buildWithId({});
+			system = systemFactory.withLdapConfig().buildWithId({});
 			school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
@@ -160,7 +159,7 @@ describe('Login Controller (api)', () => {
 
 			account = accountFactory.buildWithId({
 				userId: user.id,
-				username: `${ldapRootPath}/${ldapAccountUserName}`.toLowerCase(),
+				username: `${schoolExternalId}/${ldapAccountUserName}`.toLowerCase(),
 				systemId: system.id,
 			});
 

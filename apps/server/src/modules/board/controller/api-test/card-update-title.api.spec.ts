@@ -1,111 +1,136 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { CardNode } from '@shared/domain';
+import { BoardExternalReferenceType, CardNode } from '@shared/domain';
 import {
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	columnNodeFactory,
-	mapUserToCurrentUser,
-	userFactory,
+	courseFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
-import { Request } from 'express';
-import request from 'supertest';
 
 const baseRouteName = '/cards';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async updateCardTitle(cardId: string, title: string) {
-		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}/${cardId}/title`)
-			.set('Accept', 'application/json')
-			.send({ title });
-
-		return {
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
 
 describe(`card update title (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const setup = async () => {
+	beforeEach(async () => {
 		await cleanupCollections(em);
-		const user = userFactory.build();
-
-		const columnBoardNode = columnBoardNodeFactory.buildWithId();
-		const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
-		const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
-
-		await em.persistAndFlush([user, cardNode, columnNode, columnBoardNode]);
-		em.clear();
-
-		return { user, cardNode };
-	};
+	});
 
 	describe('with valid user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+			const course = courseFactory.build({ teachers: [teacherUser] });
+			await em.persistAndFlush([teacherUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
+
+			await em.persistAndFlush([teacherAccount, teacherUser, cardNode, columnNode, columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return { loggedInClient, cardNode };
+		};
+
 		it('should return status 204', async () => {
-			const { user, cardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+			const { loggedInClient, cardNode } = await setup();
+
 			const newTitle = 'new title';
 
-			const response = await api.updateCardTitle(cardNode.id, newTitle);
-
-			expect(response.status).toEqual(204);
+			const response = await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
+			expect(response.statusCode).toEqual(204);
 		});
 
-		it('should actually change the column title', async () => {
-			const { user, cardNode } = await setup();
-			currentUser = mapUserToCurrentUser(user);
+		it('should actually change the card title', async () => {
+			const { loggedInClient, cardNode } = await setup();
+
 			const newTitle = 'new title';
 
-			await api.updateCardTitle(cardNode.id, newTitle);
+			await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
 
 			const result = await em.findOneOrFail(CardNode, cardNode.id);
 
 			expect(result.title).toEqual(newTitle);
 		});
+
+		it('should sanitize the title', async () => {
+			const { loggedInClient, cardNode } = await setup();
+
+			const unsanitizedTitle = '<iframe>foo</iframe> bar';
+			const sanitizedTitle = 'foo bar';
+
+			await loggedInClient.patch(`${cardNode.id}/title`, { title: unsanitizedTitle });
+			const result = await em.findOneOrFail(CardNode, cardNode.id);
+
+			expect(result.title).toEqual(sanitizedTitle);
+		});
 	});
 
-	// TODO: add tests for permission checks... during their implementation
+	describe('with non authorised user', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+			const course = courseFactory.build({ students: [studentUser] });
+			await em.persistAndFlush([studentUser, course]);
+
+			const columnBoardNode = columnBoardNodeFactory.buildWithId({
+				context: { id: course.id, type: BoardExternalReferenceType.Course },
+			});
+			const columnNode = columnNodeFactory.buildWithId({ parent: columnBoardNode });
+
+			const title = 'old title';
+			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode, title });
+
+			await em.persistAndFlush([studentAccount, studentUser, cardNode, columnNode, columnBoardNode]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(studentAccount);
+
+			return { loggedInClient, cardNode, title };
+		};
+
+		it('should return status 403', async () => {
+			const { loggedInClient, cardNode, title } = await setup();
+
+			const newTitle = 'new title';
+
+			const response = await loggedInClient.patch(`${cardNode.id}/title`, { title: newTitle });
+			expect(response.statusCode).toEqual(403);
+
+			const result = await em.findOneOrFail(CardNode, cardNode.id);
+			expect(result.title).toEqual(title);
+		});
+	});
 });

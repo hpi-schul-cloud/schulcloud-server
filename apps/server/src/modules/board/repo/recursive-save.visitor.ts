@@ -15,6 +15,8 @@ import {
 	FileElementNode,
 	RichTextElement,
 	RichTextElementNode,
+	TaskElement,
+	TaskElementNode,
 } from '@shared/domain';
 
 type ParentData = {
@@ -49,6 +51,7 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 			title: columnBoard.title,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
+			context: columnBoard.context,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
@@ -84,6 +87,20 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(card, boardNode);
 	}
 
+	visitFileElement(fileElement: FileElement): void {
+		const parentData = this.parentsMap.get(fileElement.id);
+
+		const boardNode = new FileElementNode({
+			id: fileElement.id,
+			caption: fileElement.caption,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(fileElement, boardNode);
+	}
+
 	visitRichTextElement(richTextElement: RichTextElement): void {
 		const parentData = this.parentsMap.get(richTextElement.id);
 
@@ -99,18 +116,18 @@ export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 		this.visitChildren(richTextElement, boardNode);
 	}
 
-	visitFileElement(fileElement: FileElement): void {
-		const parentData = this.parentsMap.get(fileElement.id);
+	visitTaskElement(taskElement: TaskElement): void {
+		const parentData = this.parentsMap.get(taskElement.id);
 
-		const boardNode = new FileElementNode({
-			id: fileElement.id,
-			caption: fileElement.caption,
+		const boardNode = new TaskElementNode({
+			id: taskElement.id,
+			dueDate: taskElement.dueDate,
 			parent: parentData?.boardNode,
 			position: parentData?.position,
 		});
 
 		this.createOrUpdateBoardNode(boardNode);
-		this.visitChildren(fileElement, boardNode);
+		this.visitChildren(taskElement, boardNode);
 	}
 
 	visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {

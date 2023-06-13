@@ -19,7 +19,7 @@ import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/deco
 import { UserMigrationResponse } from '@src/modules/oauth/controller/dto/user-migration.response';
 import { HydraOauthUc } from '@src/modules/oauth/uc/hydra-oauth.uc';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { MigrationDto } from '@src/modules/user-login-migration/service/dto/migration.dto';
+import { MigrationDto } from '@src/modules/user-login-migration/service/dto';
 import { CookieOptions, Request, Response } from 'express';
 import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';

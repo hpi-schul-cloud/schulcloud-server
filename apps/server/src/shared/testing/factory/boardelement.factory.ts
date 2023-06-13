@@ -1,6 +1,15 @@
-import { TaskBoardElement, LessonBoardElement, Task, Lesson } from '@shared/domain';
-import { lessonFactory } from './lesson.factory';
+import {
+	ColumnboardBoardElement,
+	ColumnBoardTarget,
+	EntityId,
+	Lesson,
+	LessonBoardElement,
+	Task,
+	TaskBoardElement,
+} from '@shared/domain';
+import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
+import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
@@ -15,3 +24,22 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 		return { target: lessonFactory.build() };
 	}
 );
+
+export const columnBoardTargetFactory = BaseFactory.define<
+	ColumnBoardTarget,
+	{ columnBoardId: EntityId; title: string; published: boolean }
+>(ColumnBoardTarget, ({ sequence }) => {
+	return {
+		columnBoardId: new ObjectId().toHexString(),
+		title: `columnBoardTarget #${sequence}`,
+		published: false,
+	};
+});
+
+export const columnboardBoardElementFactory = BaseFactory.define<
+	ColumnboardBoardElement,
+	{ target: ColumnBoardTarget }
+>(ColumnboardBoardElement, () => {
+	const target = columnBoardTargetFactory.build();
+	return { target };
+});

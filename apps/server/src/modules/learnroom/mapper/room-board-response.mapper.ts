@@ -6,7 +6,8 @@ import {
 	BoardTaskResponse,
 	SingleColumnBoardResponse,
 } from '../controller/dto';
-import { LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
+import { BoardColumnBoardResponse } from '../controller/dto/single-column-board/board-column-board.response';
+import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
@@ -29,8 +30,14 @@ export class RoomBoardResponseMapper {
 		board.elements.forEach((element) => {
 			if (element.type === RoomBoardElementTypes.TASK) {
 				elements.push(this.mapTask(element.content as TaskWithStatusVo));
-			} else if (element.type === RoomBoardElementTypes.LESSON) {
+			}
+
+			if (element.type === RoomBoardElementTypes.LESSON) {
 				elements.push(this.mapLesson(element.content as LessonMetaData));
+			}
+
+			if (element.type === RoomBoardElementTypes.COLUMN_BOARD) {
+				elements.push(this.mapColumnBoard(element.content as ColumnBoardMetaData));
 			}
 		});
 		return elements;
@@ -82,6 +89,23 @@ export class RoomBoardResponseMapper {
 		const boardElementResponse = new BoardElementResponse({
 			type: RoomBoardElementTypes.LESSON,
 			content: mappedLesson,
+		});
+		return boardElementResponse;
+	};
+
+	private mapColumnBoard = (columnBoardInfo: ColumnBoardMetaData): BoardElementResponse => {
+		const mappedColumnBoard = new BoardColumnBoardResponse({
+			id: columnBoardInfo.id,
+			columnBoardId: columnBoardInfo.columnBoardId,
+			title: columnBoardInfo.title,
+			published: columnBoardInfo.published,
+			createdAt: columnBoardInfo.createdAt,
+			updatedAt: columnBoardInfo.updatedAt,
+		});
+
+		const boardElementResponse = new BoardElementResponse({
+			type: RoomBoardElementTypes.COLUMN_BOARD,
+			content: mappedColumnBoard,
 		});
 		return boardElementResponse;
 	};

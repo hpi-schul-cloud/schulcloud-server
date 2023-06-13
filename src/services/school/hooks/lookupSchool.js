@@ -19,16 +19,12 @@ module.exports = async (context) => {
 				'inMaintenanceSince',
 				'inMaintenance',
 				'inUserMigration',
-				'oauthMigrationStart',
-				'oauthMigrationPossible',
-				'oauthMigrationMandatory',
-				'oauthMigrationFinished',
-				'oauthMigrationFinalFinish',
+				'userLoginMigration',
 				'enableStudentTeamCreation',
 				'language',
 				'timezone',
 			])
-			.populate(['currentYear', 'systems'])
+			.populate(['currentYear', 'systems', 'userLoginMigration'])
 			.lean({ virtuals: true })
 			.exec();
 	} catch (err) {

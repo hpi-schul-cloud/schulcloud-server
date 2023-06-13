@@ -7,6 +7,7 @@ import { setupEntities } from '@shared/testing';
 import { AxiosResponse } from 'axios';
 import { UUID } from 'bson';
 import { of } from 'rxjs';
+import { RoleName } from '@shared/domain';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -176,6 +177,21 @@ describe('SanisStrategy', () => {
 				const promise: Promise<OauthDataDto> = strategy.getData(input);
 
 				await expect(promise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('when role from sanis is admin', () => {
+			it('should add teacher and admin svs role to externalUser', async () => {
+				const { input } = setup();
+				const user = new ExternalUserDto({
+					externalId: 'externalSchoolId',
+					roles: [RoleName.ADMINISTRATOR],
+				});
+				mapper.mapToExternalUserDto.mockReturnValue(user);
+
+				const result: OauthDataDto = await strategy.getData(input);
+
+				expect(result.externalUser.roles).toEqual(expect.arrayContaining([RoleName.ADMINISTRATOR, RoleName.TEACHER]));
 			});
 		});
 	});
