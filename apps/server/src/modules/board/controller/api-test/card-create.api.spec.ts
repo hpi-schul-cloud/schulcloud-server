@@ -17,6 +17,7 @@ import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 import { CardResponse } from '../dto';
+import { CreateCardBodyParams } from '../dto/card/create-card.body.params';
 
 const baseRouteName = '/columns';
 
@@ -28,13 +29,10 @@ class API {
 	}
 
 	async post(columnId: string, requestBody?: object) {
-		let requestBuilder = request(this.app.getHttpServer())
+		const response = await request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${columnId}/cards`)
-			.set('Accept', 'application/json');
-		if (requestBody) {
-			requestBuilder = requestBuilder.send(requestBody);
-		}
-		const response = await requestBuilder;
+			.set('Accept', 'application/json')
+			.send(requestBody);
 
 		return {
 			result: response.body as CardResponse,
@@ -68,6 +66,9 @@ describe(`card create (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		api = new API(app);
+	});
+	beforeEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -114,20 +115,6 @@ describe(`card create (api)`, () => {
 
 			expect(result.id).toBeDefined();
 		});
-
-		it('created card should contain the required empty elements', async () => {
-			const { user, columnNode, createCardBodyParams } = await setup();
-			currentUser = mapUserToCurrentUser(user);
-
-			const expectedEmptyElements = createCardBodyParams.requiredEmptyElements.map((type) => {
-				return { type, content: type === ContentElementType.FILE ? { caption: '' } : { text: '' } };
-			});
-
-			const { result } = await api.post(columnNode.id, createCardBodyParams);
-
-			expect(result.elements[0]).toMatchObject(expectedEmptyElements[0]);
-			expect(result.elements[1]).toMatchObject(expectedEmptyElements[1]);
-		});
 	});
 
 	describe('with invalid user', () => {
@@ -140,6 +127,33 @@ describe(`card create (api)`, () => {
 			const response = await api.post(columnNode.id);
 
 			expect(response.status).toEqual(403);
+		});
+	});
+	describe('with required empty elements', () => {
+		it('created card should contain the required empty elements', async () => {
+			const { user, columnNode, createCardBodyParams } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const expectedEmptyElements = createCardBodyParams.requiredEmptyElements.map((type) => {
+				return { type, content: type === ContentElementType.FILE ? { caption: '' } : { text: '' } };
+			});
+
+			const { result } = await api.post(columnNode.id, createCardBodyParams);
+			const { elements } = result;
+
+			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
+			expect(elements[1]).toMatchObject(expectedEmptyElements[1]);
+		});
+		it('should return status 400 as the content element is unknown', async () => {
+			const { user, columnNode } = await setup();
+			currentUser = mapUserToCurrentUser(user);
+
+			const invalidBodyParams = {
+				requiredEmptyElements: ['unknown-content-element'],
+			};
+
+			const response = await api.post(columnNode.id, invalidBodyParams);
+			expect(response.status).toEqual(400);
 		});
 	});
 });
