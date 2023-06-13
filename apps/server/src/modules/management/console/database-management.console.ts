@@ -33,7 +33,7 @@ export class DatabaseManagementConsole {
 
 		const collections = options.onlyfactories
 			? await this.databaseManagementUc.seedDatabaseCollectionsFromFactories(filter)
-			: await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter, true);
+			: await this.databaseManagementUc.seedDatabaseCollectionsFromFileSystem(filter);
 		const report = JSON.stringify(collections);
 		this.consoleWriter.info(report);
 		return collections;

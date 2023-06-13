@@ -161,7 +161,7 @@ export class DatabaseManagementUc {
 
 	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
 		const seededCollectionsWithAmount = await Promise.all(
-			generateSeedData()
+			generateSeedData((s: string) => this.injectEnvVars(s))
 				.filter((data) => {
 					if (collections && collections.length > 0) {
 						return collections.includes(data.collectionName);
@@ -193,31 +193,16 @@ export class DatabaseManagementUc {
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
-	async seedDatabaseCollectionsFromFileSystem(
-		collections?: string[],
-		seedAlsoFromFactories = false
-	): Promise<string[]> {
-		// TODO: once all collection seed generation is moved to factories, seedDatabaseCollectionsFromFileSystem will be removed
-		// currently we first seed from factories and seed the remaining collections from the filesystem
-		const collectionsGeneratedByFactories = generateSeedData().map(({ collectionName }) => collectionName);
-		const seededCollectionsWithAmount: string[] = seedAlsoFromFactories
-			? await this.seedDatabaseCollectionsFromFactories(collections)
-			: [];
-
+	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to seed based on filesystem data
 		const setupPath = this.getSeedFolder();
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 			'files',
 			setupPath,
 			collections
-		).then((collectionNames) =>
-			collectionNames.filter(({ collectionName }) => {
-				if (seedAlsoFromFactories) {
-					return !collectionsGeneratedByFactories.includes(collectionName);
-				}
-				return true;
-			})
 		);
+
+		const seededCollectionsWithAmount: string[] = [];
 
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {

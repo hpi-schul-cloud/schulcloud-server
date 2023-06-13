@@ -63,8 +63,9 @@ const data: SystemPartial[] = [
 	},
 ];
 
-export function generateSystems() {
+export function generateSystems(injectEnvVars: (s: string) => string) {
 	const systems = data.map((d) => {
+		d = JSON.parse(injectEnvVars(JSON.stringify(d))) as typeof d;
 		const params: DeepPartial<ISystemProperties> = {
 			alias: d.alias,
 			displayName: d.displayName,
