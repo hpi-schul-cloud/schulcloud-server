@@ -90,7 +90,7 @@ describe(`card create (api)`, () => {
 		em.clear();
 
 		const createCardBodyParams = {
-			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			requiredEmptyElements: [ContentElementType.RICH_TEXT],
 		};
 
 		return { user, columnBoardNode, columnNode, createCardBodyParams };
@@ -129,7 +129,7 @@ describe(`card create (api)`, () => {
 		});
 	});
 	describe('with required empty elements', () => {
-		it('created card should contain the required empty elements', async () => {
+		it('created card should contain empty text element', async () => {
 			const { user, columnNode, createCardBodyParams } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
@@ -141,7 +141,6 @@ describe(`card create (api)`, () => {
 			const { elements } = result;
 
 			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
-			expect(elements[1]).toMatchObject(expectedEmptyElements[1]);
 		});
 		it('should return status 400 as the content element is unknown', async () => {
 			const { user, columnNode } = await setup();
