@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType, ContentElementType } from '@shared/domain';
 import {
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -27,10 +27,14 @@ class API {
 		this.app = app;
 	}
 
-	async post(columnId: string) {
-		const response = await request(this.app.getHttpServer())
+	async post(columnId: string, requestBody?: object) {
+		let requestBuilder = request(this.app.getHttpServer())
 			.post(`${baseRouteName}/${columnId}/cards`)
 			.set('Accept', 'application/json');
+		if (requestBody) {
+			requestBuilder = requestBuilder.send(requestBody);
+		}
+		const response = await requestBuilder;
 
 		return {
 			result: response.body as CardResponse,
@@ -85,7 +89,11 @@ describe(`card create (api)`, () => {
 		await em.persistAndFlush([columnBoardNode, columnNode]);
 		em.clear();
 
-		return { user, columnBoardNode, columnNode };
+		const createCardBodyParams = {
+			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+		};
+
+		return { user, columnBoardNode, columnNode, createCardBodyParams };
 	};
 
 	describe('with valid user', () => {
@@ -106,14 +114,20 @@ describe(`card create (api)`, () => {
 
 			expect(result.id).toBeDefined();
 		});
-		// it('card should have empty elements of given types', async () => {
-		// 	const { user, columnNode } = await setup();
-		// 	currentUser = mapUserToCurrentUser(user);
 
-		// 	const { result } = await api.post(columnNode.id);
+		it('created card should contain the required empty elements', async () => {
+			const { user, columnNode, createCardBodyParams } = await setup();
+			currentUser = mapUserToCurrentUser(user);
 
-		// 	expect(result.id).toBeDefined();
-		// });
+			const expectedEmptyElements = createCardBodyParams.requiredEmptyElements.map((type) => {
+				return { type, content: type === ContentElementType.FILE ? { caption: '' } : { text: '' } };
+			});
+
+			const { result } = await api.post(columnNode.id, createCardBodyParams);
+
+			expect(result.elements[0]).toMatchObject(expectedEmptyElements[0]);
+			expect(result.elements[1]).toMatchObject(expectedEmptyElements[1]);
+		});
 	});
 
 	describe('with invalid user', () => {
