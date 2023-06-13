@@ -63,22 +63,26 @@ const data: SystemPartial[] = [
 	},
 ];
 
-export const systems = data.map((d) => {
-	const params: DeepPartial<ISystemProperties> = {
-		alias: d.alias,
-		displayName: d.displayName,
-		type: d.type,
-		provisioningStrategy: d.provisioningStrategy,
-		oidcConfig: d.oidcConfig,
-		ldapConfig: d.ldapConfig,
-		oauthConfig: d.oauthConfig,
-		provisioningUrl: d.provisioningUrl,
-		url: d.url,
-	};
-	const system = systemFactory.buildWithId(params, d.id);
+export function generateSystems() {
+	const systems = data.map((d) => {
+		const params: DeepPartial<ISystemProperties> = {
+			alias: d.alias,
+			displayName: d.displayName,
+			type: d.type,
+			provisioningStrategy: d.provisioningStrategy,
+			oidcConfig: d.oidcConfig,
+			ldapConfig: d.ldapConfig,
+			oauthConfig: d.oauthConfig,
+			provisioningUrl: d.provisioningUrl,
+			url: d.url,
+		};
+		const system = systemFactory.buildWithId(params, d.id);
 
-	if (d.createdAt) system.createdAt = new Date(d.createdAt);
-	if (d.updatedAt) system.updatedAt = new Date(d.updatedAt);
+		if (d.createdAt) system.createdAt = new Date(d.createdAt);
+		if (d.updatedAt) system.updatedAt = new Date(d.updatedAt);
 
-	return system;
-});
+		return system;
+	});
+
+	return systems;
+}

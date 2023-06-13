@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProvider, System } from '@shared/domain';
@@ -35,6 +36,7 @@ export class DatabaseManagementUc {
 		private bsonConverter: BsonConverter,
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
+		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
 	) {
@@ -172,14 +174,12 @@ export class DatabaseManagementUc {
 					}
 
 					if (collectionName === systemsCollectionName) {
-						// TODO: this.encryptSecrets(collectionName, jsonDocuments); , once we include the related collections
+						this.encryptSecretsInSystems(data as System[]);
 					}
 					await this.dropCollectionIfExists(collectionName);
-					// await this.databaseManagementService.getDatabaseCollection(collectionName).insertMany(data);
-					await this.databaseManagementService
-						.getDatabaseCollection(collectionName)
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return
-						.insertMany(data.map((d) => JSON.parse(JSON.stringify(d))));
+
+					await this.em.persistAndFlush(data);
+
 					return `${collectionName}:${data.length}`;
 				})
 		);

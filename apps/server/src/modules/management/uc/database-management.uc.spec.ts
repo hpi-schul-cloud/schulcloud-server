@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProvider, System } from '@shared/domain';
@@ -179,6 +180,7 @@ describe('DatabaseManagementService', () => {
 				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
+				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
@@ -636,7 +638,7 @@ describe('DatabaseManagementService', () => {
 		});
 		it('should have the system collections in the database', async () => {
 			await uc.seedDatabaseCollectionsFromFactories();
-			const docs = await dbService.findDocumentsOfCollection('system');
+			const docs = await dbService.findDocumentsOfCollection('systems');
 			expect(docs.length).toBeGreaterThan(0);
 		});
 	});

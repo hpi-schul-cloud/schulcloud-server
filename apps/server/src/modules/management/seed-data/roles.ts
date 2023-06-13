@@ -451,19 +451,15 @@ export function generateRole() {
 			permissions: partial.permissions,
 			roles: subRoles,
 		};
-
-		const role = roleFactory.build(params);
+		const role = roleFactory.buildWithId(params, partial.id);
 		if (partial.createdAt) {
 			role.createdAt = new Date(partial.createdAt);
 		}
 		if (partial.updatedAt) {
 			role.updatedAt = new Date(partial.updatedAt);
 		}
-		// workaround error when setting roles in factory
-		// if (subRoles.length > 0) role.roles = new Collection<Role, object>(role, subRoles);
 
 		rolesByName[roleName] = role;
-		// console.log(JSON.parse(JSON.stringify(role)));
 		return role;
 	});
 }
