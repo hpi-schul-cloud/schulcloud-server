@@ -132,7 +132,7 @@
 		"axios": "^0.27.2",
 		"axios-mock-adapter": "^1.21.2",
 		"bbb-promise": "^1.2.0",
-		"bcryptjs": "latest",
+		"bcryptjs": "*",
 		"body-parser": "^1.15.2",
 		"bson": "^4.6.0",
 		"busboy": "^1.6.0",
