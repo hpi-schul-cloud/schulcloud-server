@@ -3,10 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { schoolDOFactory } from '@shared/testing';
-import { UserLoginMigrationService } from '../service';
+import { UserLoginMigrationService, StartUserLoginMigrationCheckService } from '../service';
 import { StartUserLoginMigrationError } from '../error';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
-import { StartUserLoginMigrationCheckService } from '../service/start-user-login-migration-check.service';
 
 describe('StartUserLoginMigrationUc', () => {
 	let module: TestingModule;

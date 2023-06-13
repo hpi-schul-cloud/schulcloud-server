@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
-import { Action, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { StartUserLoginMigrationError } from '../error';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
@@ -29,10 +29,7 @@ export class StartUserLoginMigrationCheckService {
 	private async ensurePermission(userId: string, schoolId: string): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-		const context: AuthorizationContext = {
-			action: Action.write,
-			requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
-		};
+		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
 
 		this.authorizationService.checkPermission(user, school, context);
 	}

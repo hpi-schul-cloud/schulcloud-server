@@ -13,9 +13,7 @@ import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto
 import { SchoolService } from '@src/modules/school';
 import { AuthorizationService } from '@src/modules/authorization';
 import { Oauth2MigrationParams } from '../controller/dto/oauth2-migration.params';
-import { OAuthMigrationError } from '../error';
-import { SchoolMigrationError } from '../error/school-migration.error';
-import { UserLoginMigrationError } from '../error/user-login-migration.error';
+import { OAuthMigrationError, SchoolMigrationError, UserLoginMigrationError } from '../error';
 import { PageTypes } from '../interface/page-types.enum';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { MigrationDto, PageContentDto } from '../service/dto';
