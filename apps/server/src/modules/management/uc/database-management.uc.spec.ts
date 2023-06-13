@@ -634,7 +634,10 @@ describe('DatabaseManagementService', () => {
 	describe('when seeding database from factories', () => {
 		it('should return correct number of seeded collection with length', async () => {
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
-			expect(collectionsSeeded).toStrictEqual(generateSeedData().map((c) => `${c.collectionName}:${c.data.length}`));
+			expect(collectionsSeeded).toStrictEqual(
+				// eslint-disable-next-line @typescript-eslint/dot-notation
+				generateSeedData((s) => uc['injectEnvVars'](s)).map((c) => `${c.collectionName}:${c.data.length}`)
+			);
 		});
 		it('should have the system collections in the database', async () => {
 			await uc.seedDatabaseCollectionsFromFactories();

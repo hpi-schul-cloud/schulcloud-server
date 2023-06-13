@@ -1,4 +1,5 @@
 import { BaseEntity } from '@shared/domain';
+import { generateFederalStates } from './federalstates';
 import { generateRole } from './roles';
 import { generateSystems } from './systems';
 
@@ -7,15 +8,15 @@ export function generateSeedData(injectEnvVars: (s: string) => string) {
 	let collections: { collectionName: string; data: BaseEntity[] }[] = [];
 	// create school related collections
 	const systems = generateSystems(injectEnvVars);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-
-	// create user related collections
-	const roles = generateRole();
-	// federalstate
+	const federalStates = generateFederalStates();
 	// years
 	// schule,
 
+	// create user related collections
+	const roles = generateRole();
+
 	collections = [
+		{ collectionName: 'federalstates', data: federalStates },
 		{ collectionName: 'systems', data: systems },
 		{ collectionName: 'roles', data: roles },
 	];
