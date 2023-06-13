@@ -6,4 +6,9 @@ export class ExternalToolSearchParams {
 	@IsString()
 	@IsOptional()
 	name?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	clientId?: string;
 }

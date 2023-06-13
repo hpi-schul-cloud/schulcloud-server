@@ -15,6 +15,7 @@ import { ExternalToolDO, IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { ExternalToolSearchQuery } from '../interface';
 import { ExternalToolUc } from '../uc';
 import { ExternalToolCreate, ExternalToolUpdate } from '../uc/dto';
 import {
@@ -68,7 +69,8 @@ export class ToolController {
 	): Promise<ExternalToolSearchListResponse> {
 		const options: IFindOptions<ExternalToolDO> = { pagination };
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
-		const query: Partial<ExternalToolDO> = this.externalToolDOMapper.mapExternalToolFilterQueryToDO(filterQuery);
+		const query: ExternalToolSearchQuery =
+			this.externalToolDOMapper.mapExternalToolFilterQueryToExternalToolSearchQuery(filterQuery);
 
 		const tools: Page<ExternalToolDO> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
