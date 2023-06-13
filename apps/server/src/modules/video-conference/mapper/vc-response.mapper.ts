@@ -1,36 +1,30 @@
-import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { Injectable } from '@nestjs/common';
-import {
-	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-} from '@src/modules/video-conference/controller/dto/video-conference.response';
-import {
-	VideoConferenceDTO,
-	VideoConferenceInfoDTO,
-	VideoConferenceJoinDTO,
-} from '@src/modules/video-conference/dto/video-conference.dto';
+import { VideoConferenceBaseResponse } from '../controller/dto';
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
+import { VideoConferenceInfoResponse, VideoConferenceJoinResponse } from '../controller/dto/response';
+import { VideoConferenceMapper } from './video-conference.mapper';
+import { BBBBaseResponse } from '../bbb';
 
 @Injectable()
 export class VideoConferenceResponseMapper {
-	mapToBaseResponse(from: VideoConferenceDTO<BBBBaseResponse>): VideoConferenceBaseResponse {
+	mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
 		return new VideoConferenceBaseResponse({
-			state: from.state,
+			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 		});
 	}
 
-	mapToJoinResponse(from: VideoConferenceJoinDTO): VideoConferenceJoinResponse {
+	mapToJoinResponse(from: VideoConferenceJoin): VideoConferenceJoinResponse {
 		return new VideoConferenceJoinResponse({
-			state: from.state,
+			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 			url: from.url,
 		});
 	}
 
-	mapToInfoResponse(from: VideoConferenceInfoDTO): VideoConferenceInfoResponse {
+	mapToInfoResponse(from: VideoConferenceInfo): VideoConferenceInfoResponse {
 		return new VideoConferenceInfoResponse({
-			state: from.state,
+			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 			options: from.options,
 		});

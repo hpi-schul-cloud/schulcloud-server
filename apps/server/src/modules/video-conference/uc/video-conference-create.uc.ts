@@ -1,0 +1,99 @@
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { EntityId, UserDO } from '@shared/domain';
+import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
+import { UserService } from '@src/modules/user';
+import {
+	BBBBaseMeetingConfig,
+	BBBCreateConfigBuilder,
+	BBBMeetingInfoResponse,
+	BBBResponse,
+	BBBRole,
+	BBBService,
+	GuestPolicy,
+} from '../bbb';
+import { IScopeInfo, ScopeRef } from './dto';
+import { VideoConferenceService } from '../service';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+
+@Injectable()
+export class VideoConferenceCreateUc {
+	constructor(
+		private readonly bbbService: BBBService,
+		private readonly userService: UserService,
+		private readonly videoConferenceService: VideoConferenceService
+	) {}
+
+	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
+		try {
+			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: scope.id }));
+		} catch (e) {
+			bbbMeetingInfoResponse = undefined;
+		}
+
+		if (bbbMeetingInfoResponse === undefined) {
+			await this.create(currentUserId, scope, this.mergeOptionsWithDefaults(options));
+		}
+	}
+
+	private mergeOptionsWithDefaults(options: VideoConferenceOptions): VideoConferenceOptions {
+		return {
+			everyAttendeeJoinsMuted: options.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
+			everybodyJoinsAsModerator:
+				options.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
+			moderatorMustApproveJoinRequests:
+				options.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
+		};
+	}
+
+	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+		const user: UserDO = await this.userService.findById(currentUserId);
+
+		await this.verifyFeaturesEnabled(user.schoolId);
+
+		const scopeInfo: IScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+
+		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
+			currentUserId,
+			scopeInfo.scopeId,
+			scope.scope
+		);
+		this.throwIfNotModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
+
+		await this.videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
+
+		const configBuilder: BBBCreateConfigBuilder = this.prepareBBBCreateConfigBuilder(scope, options, scopeInfo);
+		await this.bbbService.create(configBuilder.build());
+	}
+
+	private prepareBBBCreateConfigBuilder(
+		scope: ScopeRef,
+		options: VideoConferenceOptions,
+		scopeInfo: IScopeInfo
+	): BBBCreateConfigBuilder {
+		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
+			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
+			meetingID: scope.id,
+		}).withLogoutUrl(scopeInfo.logoutUrl);
+
+		if (options.moderatorMustApproveJoinRequests) {
+			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
+		}
+
+		if (options.everyAttendeeJoinsMuted) {
+			configBuilder.withMuteOnStart(true);
+		}
+
+		return configBuilder;
+	}
+
+	private async verifyFeaturesEnabled(schoolId: string): Promise<void> {
+		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
+	}
+
+	private throwIfNotModerator(role: BBBRole, errorMessage: string) {
+		if (role !== BBBRole.MODERATOR) {
+			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION, errorMessage);
+		}
+	}
+}

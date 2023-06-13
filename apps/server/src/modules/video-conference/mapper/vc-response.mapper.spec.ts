@@ -1,18 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain';
-import { VideoConferenceState } from '@src/modules/video-conference/controller/dto/vc-state.enum';
-import {
-	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-} from '@src/modules/video-conference/controller/dto/video-conference.response';
-import {
-	VideoConferenceDTO,
-	VideoConferenceInfoDTO,
-	VideoConferenceJoinDTO,
-} from '@src/modules/video-conference/dto/video-conference.dto';
-import { BBBBaseResponse } from '@src/modules/video-conference/interface/bbb-response.interface';
 import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
+import { VideoConferenceBaseResponse } from '../controller/dto';
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceInfoResponse, VideoConferenceJoinResponse } from '../controller/dto/response';
+import { BBBBaseResponse } from '../bbb';
 
 describe('VideoConferenceResponseMapper', () => {
 	let module: TestingModule;
@@ -29,42 +21,39 @@ describe('VideoConferenceResponseMapper', () => {
 		await module.close();
 	});
 
-	describe('test mapping', () => {
-		it('mapToBaseResponse', () => {
-			// Arrange
-			const from: VideoConferenceDTO<BBBBaseResponse> = {
+	describe('mapToBaseResponse', () => {
+		it('should map videoConference', () => {
+			const from: VideoConference<BBBBaseResponse> = {
 				state: VideoConferenceState.RUNNING,
 				permission: Permission.ADD_SCHOOL_MEMBERS,
 			};
 
-			// Act
 			const result: VideoConferenceBaseResponse = mapper.mapToBaseResponse(from);
 
-			// Assert
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);
 		});
+	});
 
-		it('mapToJoinResponse', () => {
-			// Arrange
-			const from: VideoConferenceJoinDTO = {
+	describe('mapToJoinResponse', () => {
+		it('should map videoConferenceJoin', () => {
+			const from: VideoConferenceJoin = {
 				state: VideoConferenceState.RUNNING,
 				permission: Permission.ADD_SCHOOL_MEMBERS,
 				url: 'url',
 			};
 
-			// Act
 			const result: VideoConferenceJoinResponse = mapper.mapToJoinResponse(from);
 
-			// Assert
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);
 			expect(result.url).toEqual(from.url);
 		});
+	});
 
-		it('mapToInfoResponse', () => {
-			// Arrange
-			const from: VideoConferenceInfoDTO = {
+	describe('mapToInfoResponse', () => {
+		it('should map videoConferenceInfo', () => {
+			const from: VideoConferenceInfo = {
 				state: VideoConferenceState.RUNNING,
 				permission: Permission.ADD_SCHOOL_MEMBERS,
 				options: {
@@ -74,10 +63,8 @@ describe('VideoConferenceResponseMapper', () => {
 				},
 			};
 
-			// Act
 			const result: VideoConferenceInfoResponse = mapper.mapToInfoResponse(from);
 
-			// Assert
 			expect(result.state).toEqual(from.state);
 			expect(result.permission).toEqual(from.permission);
 			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(from.options?.moderatorMustApproveJoinRequests);

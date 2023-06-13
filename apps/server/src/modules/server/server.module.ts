@@ -39,6 +39,7 @@ import { RedisClient } from 'redis';
 import { BoardApiModule, BoardModule } from '../board';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
+import { VideoConferenceApiModule } from '../video-conference/video-conference-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -71,6 +72,7 @@ const serverModules = [
 	ProvisioningModule,
 	RoleModule,
 	VideoConferenceModule,
+	VideoConferenceApiModule,
 	OauthProviderModule,
 	SharingApiModule,
 	ToolApiModule,
