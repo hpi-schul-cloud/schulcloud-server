@@ -7,13 +7,15 @@ export class OauthProviderRequestMapper {
 	mapCreateAcceptLoginRequestBody(
 		loginRequestBody: LoginRequestBody,
 		currentUserId: string,
-		pseudonym: string
+		pseudonym: string,
+		context?: object
 	): AcceptLoginRequestBody {
 		return {
 			remember: loginRequestBody.remember,
 			remember_for: loginRequestBody.remember_for,
 			subject: currentUserId,
 			force_subject_identifier: pseudonym,
+			context,
 		};
 	}
 }

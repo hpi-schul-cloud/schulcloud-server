@@ -1,5 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ExternalToolDO, Permission, PseudonymDO, User } from '@shared/domain';
+import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { ExternalToolDO, Oauth2ToolConfigDO, Permission, PseudonymDO, User } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { OauthProviderService } from '@shared/infra/oauth-provider';
 import {
@@ -69,11 +69,16 @@ export class OauthProviderLoginFlowUc {
 
 		const pseudonym: PseudonymDO = await this.pseudonymService.requestPseudonym(currentUserId, tool.id);
 
+		const skipConsent: boolean = this.shouldSkipConsent(tool);
+
 		const acceptLoginRequestBody: AcceptLoginRequestBody =
 			this.oauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
 				loginRequestBody,
 				currentUserId,
-				pseudonym.pseudonym
+				pseudonym.pseudonym,
+				{
+					skipConsent,
+				}
 			);
 
 		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderService.acceptLoginRequest(
@@ -82,6 +87,18 @@ export class OauthProviderLoginFlowUc {
 		);
 
 		return redirectResponse;
+	}
+
+	private shouldSkipConsent(tool: ExternalToolDO | LtiToolDO): boolean {
+		if (tool instanceof LtiToolDO) {
+			return !!tool.skipConsent;
+		}
+		if (tool.config instanceof Oauth2ToolConfigDO) {
+			return tool.config.skipConsent;
+		}
+		throw new UnprocessableEntityException(
+			`Cannot use Tool ${tool.name} for OAuth2 login, since it is not a LtiTool or OAuth2-ExternalTool`
+		);
 	}
 
 	private async rejectLoginRequest(
