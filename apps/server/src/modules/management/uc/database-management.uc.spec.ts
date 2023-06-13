@@ -10,6 +10,7 @@ import {
 	SymetricKeyEncryptionService,
 } from '@shared/infra/encryption';
 import { FileSystemAdapter } from '@shared/infra/file-system';
+import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
@@ -253,6 +254,7 @@ describe('DatabaseManagementService', () => {
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
+		await setupEntities();
 	});
 
 	afterAll(async () => {
@@ -631,7 +633,6 @@ describe('DatabaseManagementService', () => {
 		it('should return correct number of seeded collection with length', async () => {
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
 			expect(collectionsSeeded).toStrictEqual(generateSeedData().map((c) => `${c.collectionName}:${c.data.length}`));
-			console.log(collectionsSeeded);
 		});
 		it('should have the system collections in the database', async () => {
 			await uc.seedDatabaseCollectionsFromFactories();

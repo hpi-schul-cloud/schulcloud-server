@@ -175,7 +175,6 @@ export class DatabaseManagementUc {
 						// TODO: this.encryptSecrets(collectionName, jsonDocuments); , once we include the related collections
 					}
 					await this.dropCollectionIfExists(collectionName);
-					console.log('debug 1');
 					// await this.databaseManagementService.getDatabaseCollection(collectionName).insertMany(data);
 					await this.databaseManagementService
 						.getDatabaseCollection(collectionName)
