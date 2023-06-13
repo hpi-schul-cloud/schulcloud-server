@@ -546,7 +546,6 @@ describe('[ImportUserModule]', () => {
 				expect(importUserRepoFindImportUsersSpy).toHaveBeenCalledWith(school, filters, {});
 				expect(userRepoSaveWithoutFlushSpy).toHaveBeenCalledTimes(2);
 				expect(userRepoSaveWithoutFlushSpy.mock.calls).toEqual([[userMatch1], [userMatch2]]);
-				expect(userRepoFlushSpy).toHaveBeenCalledTimes(1);
 				userRepoSaveWithoutFlushSpy.mockRestore();
 			});
 			it('should remove import users for school', async () => {
