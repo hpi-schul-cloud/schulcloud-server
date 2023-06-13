@@ -71,6 +71,14 @@ describe('rooms service', () => {
 		columnBoardTargetService = module.get(ColumnBoardTargetService);
 	});
 
+	beforeEach(() => {
+		Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('updateBoard', () => {
 		describe('for lessons and tasks', () => {
 			const setup = () => {
@@ -156,7 +164,6 @@ describe('rooms service', () => {
 				describe('when no column board exists for the board', () => {
 					it('should create one', async () => {
 						const { user, boardWithoutColumnBoard: board } = setup();
-						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -170,7 +177,6 @@ describe('rooms service', () => {
 				describe('when a colum board exists for the board', () => {
 					it('should not create one', async () => {
 						const { user, boardWithColumnBoard: board } = setup();
-						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -180,7 +186,6 @@ describe('rooms service', () => {
 
 				it('should use the service to find or create targets', async () => {
 					const { user, boardWithColumnBoard: board, columnBoardId } = setup();
-					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
 
 					await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -192,7 +197,7 @@ describe('rooms service', () => {
 				describe('when no column board exists for the board', () => {
 					it('should NOT create one', async () => {
 						const { user, boardWithoutColumnBoard: board } = setup();
-						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', false);
+						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
@@ -202,7 +207,7 @@ describe('rooms service', () => {
 
 				it('should NOT use the service to find or create targets', async () => {
 					const { user, boardWithColumnBoard: board } = setup();
-					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', false);
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
 
 					await roomsService.updateBoard(board, board.course.id, user.id);
 
