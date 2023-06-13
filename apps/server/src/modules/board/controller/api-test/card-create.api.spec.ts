@@ -66,9 +66,6 @@ describe(`card create (api)`, () => {
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
-	beforeEach(async () => {
-		await cleanupCollections(em);
-	});
 
 	afterAll(async () => {
 		await app.close();
@@ -133,14 +130,14 @@ describe(`card create (api)`, () => {
 			const { user, columnNode, createCardBodyParams } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const expectedEmptyElements = createCardBodyParams.requiredEmptyElements.map((type) => {
-				return { type, content: type === ContentElementType.FILE ? { caption: '' } : { text: '' } };
-			});
-
+			const expectedEmptyElements = {
+				type: ContentElementType.RICH_TEXT,
+				content: { text: '', inputFormat: 'richTextCk5' },
+			};
 			const { result } = await api.post(columnNode.id, createCardBodyParams);
 			const { elements } = result;
 
-			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
+			expect(elements[0]).toMatchObject(expectedEmptyElements);
 		});
 		it('should return status 400 as the content element is unknown', async () => {
 			const { user, columnNode } = await setup();
