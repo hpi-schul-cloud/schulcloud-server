@@ -1,6 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { federalStateFactory } from '@shared/testing/factory/federalstate.factory';
-import { FederalState } from './federalstate';
+import { FederalState } from './federalstate.entity';
 
 describe('federalstate entity', () => {
 	beforeAll(async () => {

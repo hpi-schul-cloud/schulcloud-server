@@ -11,6 +11,7 @@ export * from './card';
 export * from './course';
 export * from './coursegroup';
 export * from './dashboard';
+export * from './federalstate';
 export * from './files';
 export * from './importuser';
 export * from './lesson';

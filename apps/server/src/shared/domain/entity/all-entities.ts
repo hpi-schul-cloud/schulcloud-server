@@ -13,13 +13,14 @@ import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
+import { FederalState } from './federalstate.entity';
 import { File } from './file.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -62,6 +63,7 @@ export const ALL_ENTITIES = [
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	ExternalTool,
+	FederalState,
 	File,
 	ImportUser,
 	Lesson,

@@ -1,4 +1,4 @@
-import { FederalState, IFederalStateProperties } from '@shared/domain/entity/federalstate';
+import { FederalState, IFederalStateProperties } from '@shared/domain/entity/federalstate.entity';
 import { BaseFactory } from './base.factory';
 
 export const federalStateFactory = BaseFactory.define<FederalState, IFederalStateProperties>(FederalState, () => {
