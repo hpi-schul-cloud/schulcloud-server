@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Readable, Stream } from 'stream';
 import * as fs from 'node:fs';
 import * as fsPromises from 'node:fs/promises';
@@ -16,12 +16,14 @@ import {
 	streamToString,
 } from '@lumieducation/h5p-server';
 import path from 'path';
-import rimraf from 'rimraf';
+import { FileDto } from '@src/modules/files-storage/dto';
+import { S3ClientAdapter } from '../../files-storage/client/s3-client.adapter';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
 	constructor(
-		protected contentPath: string,
+		private readonly storageClient: S3ClientAdapter,
+		protected contentPath?: string,
 		protected options?: {
 			invalidCharactersRegexp?: RegExp;
 			maxPathLength?: number;
@@ -37,20 +39,35 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === null || contentId === undefined) {
 			contentId = await this.createContentId();
 		}
+		const h5pPath = path.join(this.getContentPath(), contentId.toString(), 'h5p.json');
+		const contentPath = path.join(this.getContentPath(), contentId.toString(), 'content.json');
+		const h5pExists = await this.exists(h5pPath);
+		const contentExists = await this.exists(contentPath);
+		if (h5pExists || contentExists) {
+			throw new Error(`Error creating content. Content already exists`);
+		}
 		try {
-			fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
-			await this.existsOrCreateDir(contentId);
-			await fsPromises.writeFile(
-				path.join(this.getContentPath(), contentId.toString(), 'h5p.json'),
-				JSON.stringify(metadata)
-			);
-			await fsPromises.writeFile(
-				path.join(this.getContentPath(), contentId.toString(), 'content.json'),
-				JSON.stringify(content)
-			);
+			const h5pFile: FileDto = {
+				name: 'h5p.json',
+				data: Readable.from(JSON.stringify(metadata)),
+				mimeType: 'json',
+			};
+			await this.storageClient.create(h5pPath, h5pFile);
+
+			const contentFile: FileDto = {
+				name: 'content.json',
+				data: content as Readable,
+				mimeType: 'json',
+			};
+			await this.storageClient.create(contentPath, contentFile);
 		} catch (error) {
-			if (fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
-				rimraf.sync(path.join(this.getContentPath(), contentId.toString()));
+			const h5pExistsAlready = await this.exists(h5pPath);
+			if (h5pExistsAlready) {
+				await this.storageClient.delete([h5pPath]);
+			}
+			const contentExistsAlready = await this.exists(contentPath);
+			if (contentExistsAlready) {
+				await this.storageClient.delete([contentPath]);
 			}
 
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -62,37 +79,38 @@ export class ContentStorage implements IContentStorage {
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async addFile(contentId: string, filename: string, stream: Stream, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
-		if (!fs.existsSync(path.join(this.getContentPath(), contentId.toString()))) {
+
+		const contentPath = path.join(this.getContentPath(), contentId.toString());
+		const contentExists = await this.exists(contentPath);
+		if (!contentExists) {
 			throw new Error('404: Content not Found at addFile.');
 		}
-
-		await this.existsOrCreateDir(contentId, path.dirname(filename));
 		const fullPath = path.join(this.getContentPath(), contentId.toString(), filename);
-		const writeStream = fs.createWriteStream(fullPath);
-		stream.pipe(writeStream);
+		const file: FileDto = {
+			name: filename,
+			data: stream as Readable,
+			mimeType: 'json',
+		};
+		await this.storageClient.create(fullPath, file);
 	}
 
 	public contentExists(contentId: string): Promise<boolean> {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString()));
-		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
-		return existPromise;
+		const exist = this.exists(path.join(this.getContentPath(), contentId.toString()));
+		return exist;
 	}
 
 	public async deleteContent(contentId: string, user?: IUser | undefined): Promise<void> {
 		const fullPath = path.join(this.getContentPath(), contentId.toString());
 		try {
-			if (!fs.existsSync(fullPath)) {
+			const contentPath = path.join(this.getContentPath(), contentId.toString());
+			const contentExists = await this.exists(contentPath);
+			if (!contentExists) {
 				throw new Error('404: Content not Found at deleteContent.');
 			}
-			fs.readdirSync(fullPath).forEach((file, index) => {
-				const curPath = path.join(fullPath, file);
-				fs.unlinkSync(curPath);
-			});
-
-			await fsPromises.rmdir(path.join(this.getContentPath(), contentId.toString()));
+			await this.storageClient.delete([contentPath]);
 		} catch (error) {
 			if (error) {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -103,12 +121,12 @@ export class ContentStorage implements IContentStorage {
 
 	public async deleteFile(contentId: string, filename: string, user?: IUser | undefined): Promise<void> {
 		this.checkFilename(filename);
-		const absolutePath = path.join(this.getContentPath(), contentId.toString(), filename);
-		const exist = fs.existsSync(absolutePath);
-		if (!exist) {
+		const filePath = path.join(this.getContentPath(), contentId.toString(), filename);
+		const fileExists = await this.exists(filePath);
+		if (!fileExists) {
 			throw new Error('404: Content not Found at deleteFile.');
 		}
-		await fsPromises.rm(absolutePath);
+		await this.storageClient.delete([filePath]);
 	}
 
 	public fileExists(contentId: string, filename: string): Promise<boolean> {
@@ -116,20 +134,29 @@ export class ContentStorage implements IContentStorage {
 		if (contentId === '' || contentId === undefined) {
 			throw new Error('ContentId is empty or undefined.');
 		}
-		const exist = fs.existsSync(path.join(this.getContentPath(), contentId.toString(), filename));
-		const existPromise: Promise<boolean> = <Promise<boolean>>(<unknown>exist);
-		return existPromise;
+		const exist = this.exists(path.join(this.getContentPath(), contentId.toString(), filename));
+		return exist;
 	}
 
 	public async getFileStats(contentId: string, file: string, user: IUser): Promise<IFileStats> {
 		if (!(await this.fileExists(contentId, file))) {
 			throw new Error('404: Content does not found to get file stats.');
 		}
-		const fileStats = await fsPromises.stat(path.join(this.getContentPath(), contentId.toString(), file));
-		return fileStats;
+		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
+		const fileResponse = this.storageClient.get(filePath);
+		const fileSize = (await fileResponse).contentLength;
+		if (fileSize) {
+			// TODO: birthtime
+			const fileStats2: IFileStats = {
+				birthtime: undefined,
+				size: fileSize,
+			};
+			return <Promise<IFileStats>>(<unknown>fileStats2);
+		}
+		throw new Error('Missing File Stats!');
 	}
 
-	public getFileStream(
+	public async getFileStream(
 		contentId: string,
 		file: string,
 		user: IUser,
@@ -140,13 +167,11 @@ export class ContentStorage implements IContentStorage {
 		if (!exist) {
 			throw new Error('404: Content file missing.');
 		}
-		return <Promise<Readable>>(<unknown>fs.createReadStream(
-			path.join(this.getContentPath(), contentId.toString(), file),
-			{
-				start: rangeStart,
-				end: rangeEnd,
-			}
-		));
+		const filePath = path.join(this.getContentPath(), contentId.toString(), file);
+		// TODO: add bytesRange
+		const fileResponse = this.storageClient.get(filePath);
+		const stream = (await fileResponse).data;
+		return stream;
 	}
 
 	public async getMetadata(contentId: string, user?: IUser | undefined): Promise<IContentMetadata> {
@@ -260,11 +285,30 @@ export class ContentStorage implements IContentStorage {
 	}
 
 	protected getContentPath(): string {
-		return this.contentPath;
+		if (this.contentPath !== undefined) {
+			return this.contentPath;
+		}
+		return '';
 	}
 
 	private async existsOrCreateDir(contentId: ContentId, subdir = '') {
 		await fsPromises.mkdir(path.join(this.getContentPath(), contentId.toString(), subdir), { recursive: true });
+	}
+
+	private async exists(path1: string): Promise<boolean> {
+		try {
+			await this.storageClient.get(path1);
+			return true;
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				return false;
+			}
+			if (error) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				throw new Error(error.toString());
+			}
+		}
+		return false;
 	}
 
 	private hasDependencyOn(
