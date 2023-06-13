@@ -7,7 +7,7 @@ import { ObjectId } from 'bson';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ForbiddenException } from '@nestjs/common';
 import { BBBService, VideoConferenceService } from '../service';
-import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
+import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { IScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
 import { VideoConferenceInfoUc } from './video-conference-info.uc';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
