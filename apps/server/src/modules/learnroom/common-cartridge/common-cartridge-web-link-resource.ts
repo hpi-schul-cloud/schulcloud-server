@@ -45,12 +45,13 @@ export class CommonCartridgeWebLinkResourceElement implements ICommonCartridgeEl
 				});
 			default:
 				return this.xmlBuilder.buildObject({
-					...commonTags,
 					webLink: {
+						...commonTags,
 						$: {
-							xmlns: '/xsd/imsccv1p1/imswl_v1p1',
+							xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
 							'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-							'xsi:schemaLocation': '/xsd/imsccv1p1/imswl_v1p1 /profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
+							'xsi:schemaLocation':
+								'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
 						},
 					},
 				});
