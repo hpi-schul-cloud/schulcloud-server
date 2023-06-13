@@ -9,6 +9,7 @@ import { VideoConferenceResponseMapper } from '@src/modules/video-conference/map
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
 import { UserModule } from '@src/modules/user';
+import { RoleModule } from '@src/modules/role';
 import { BBBService, BbbSettings } from './bbb';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
@@ -17,7 +18,7 @@ import VideoConferenceConfiguration from './video-conference-config';
 import { VideoConferenceSettings } from './interface';
 
 @Module({
-	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule, UserModule],
+	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule, UserModule, RoleModule],
 	providers: [
 		{
 			provide: VideoConferenceSettings,
