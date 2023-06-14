@@ -531,34 +531,29 @@ describe('SchoolMigrationService', () => {
 
 		describe('when the school has no migrated user', () => {
 			it('should return false', async () => {
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-01'),
-				});
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userService.findUsers.mockResolvedValue(new Page([], 0));
 
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 
 				const result = await service.hasSchoolMigratedUser('schoolId');
 
-				expect(result).toBe(true);
+				expect(result).toBe(false);
 			});
 		});
 	});
 
-	describe('rollbackMigration', () => {
-		describe('when school should be rolled back', () => {
+	describe('revertMigration', () => {
+		describe('when school should be reverted', () => {
 			it('should call schoolService.getSchoolById', async () => {
 				schoolService.getSchoolById.mockResolvedValue(schoolDOFactory.build());
 
-				await service.rollbackMigration('schoolId', 'targetSystemId');
+				await service.revertMigration('schoolId', 'targetSystemId');
 
 				expect(schoolService.getSchoolById).toHaveBeenCalledWith('schoolId');
 			});
 
-			it('should roll back migration properties on school ', async () => {
+			it('should revert migration properties on school ', async () => {
 				const school: SchoolDO = schoolDOFactory.build({
 					externalId: 'externalId',
 					previousExternalId: 'previousExternalId',
@@ -566,7 +561,7 @@ describe('SchoolMigrationService', () => {
 				});
 				schoolService.getSchoolById.mockResolvedValue(school);
 
-				await service.rollbackMigration('schoolId', 'systemB');
+				await service.revertMigration('schoolId', 'systemB');
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<SchoolDO>>({
