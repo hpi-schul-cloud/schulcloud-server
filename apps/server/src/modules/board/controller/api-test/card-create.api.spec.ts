@@ -66,9 +66,6 @@ describe(`card create (api)`, () => {
 		em = module.get(EntityManager);
 		api = new API(app);
 	});
-	beforeEach(async () => {
-		await cleanupCollections(em);
-	});
 
 	afterAll(async () => {
 		await app.close();
