@@ -1,5 +1,5 @@
 import { Utils } from '@mikro-orm/core';
-import { EntityManager, EntityRepository } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitor,
@@ -18,6 +18,7 @@ import {
 	TaskElement,
 	TaskElementNode,
 } from '@shared/domain';
+import { BoardNodeRepo } from './board-node.repo';
 
 type ParentData = {
 	boardNode: BoardNode;
@@ -27,17 +28,13 @@ type ParentData = {
 export class RecursiveSaveVisitor implements BoardCompositeVisitor {
 	private parentsMap: Map<EntityId, ParentData> = new Map();
 
-	private repository: EntityRepository<BoardNode>;
-
-	constructor(private readonly em: EntityManager) {
-		this.repository = this.em.getRepository(BoardNode);
-	}
+	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise<void> {
 		const domainObjects = Utils.asArray(domainObject);
 
 		if (parent) {
-			const parentNode = await this.repository.findOneOrFail(parent.id);
+			const parentNode = await this.boardNodeRepo.findById(parent.id);
 
 			domainObjects.forEach((child) => {
 				this.registerParentData(parent, child, parentNode);
