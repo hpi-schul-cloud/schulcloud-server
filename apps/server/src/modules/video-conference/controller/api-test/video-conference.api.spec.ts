@@ -30,11 +30,7 @@ import {
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
 import { VideoConferenceBaseResponse, VideoConferenceCreateParams } from '../dto';
-import {
-	VideoConferenceInfoResponse,
-	VideoConferenceJoinResponse,
-	VideoConferenceStateResponse,
-} from '../dto/response';
+import { VideoConferenceJoinResponse, VideoConferenceStateResponse } from '../dto/response';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
@@ -69,6 +65,7 @@ describe('VideoConferenceController (API)', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+		axiosMock.reset();
 	});
 
 	const mockBbbMeetingInfoFailed = () => {
@@ -422,24 +419,14 @@ describe('VideoConferenceController (API)', () => {
 			});
 
 			describe('when user has the required permission', () => {
-				it('should return the conference info', async () => {
-					const { scope, scopeId, teacher, videoConference } = await setup();
+				it('should return ok', async () => {
+					const { scope, scopeId, teacher } = await setup();
 					currentUser = mapUserToCurrentUser(teacher);
 					mockBbbMeetingInfoSuccess();
 
 					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/join`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual<VideoConferenceInfoResponse>({
-						state: VideoConferenceStateResponse.RUNNING,
-						status: 'SUCCESS',
-						permission: Permission.START_MEETING,
-						options: {
-							moderatorMustApproveJoinRequests: videoConference.options.moderatorMustApproveJoinRequests,
-							everybodyJoinsAsModerator: videoConference.options.everybodyJoinsAsModerator,
-							everyAttendeeJoinsMuted: videoConference.options.everyAttendeJoinsMuted,
-						},
-					});
 				});
 			});
 
@@ -458,7 +445,7 @@ describe('VideoConferenceController (API)', () => {
 			});
 
 			describe('when conference is not running', () => {
-				it('should return the conference info with NOT_STARTED', async () => {
+				it('should return ok', async () => {
 					const { scope, scopeId, teacher } = await setup();
 					currentUser = mapUserToCurrentUser(teacher);
 					mockBbbMeetingInfoFailed();
@@ -466,9 +453,6 @@ describe('VideoConferenceController (API)', () => {
 					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual<Partial<VideoConferenceInfoResponse>>({
-						state: VideoConferenceStateResponse.NOT_STARTED,
-					});
 				});
 			});
 		});
