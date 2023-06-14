@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Card, Column, EntityId } from '@shared/domain';
+import { Card, Column, ContentElementType, EntityId } from '@shared/domain';
 import { ObjectId } from 'bson';
 import { CreateCardBodyParams } from '../controller/dto/card/create-card.body.params';
 import { BoardDoRepo } from '../repo';
@@ -42,9 +42,8 @@ export class CardService {
 		await this.boardDoRepo.save(parent.children, parent);
 
 		const { requiredEmptyElements } = createCardBodyParams || {};
-		if (requiredEmptyElements && requiredEmptyElements.length > 0) {
-			const elementsPromise = requiredEmptyElements.map((type) => this.contentElementService.create(card, type));
-			await Promise.all(elementsPromise);
+		if (requiredEmptyElements) {
+			await this.createEmptyElements(card, requiredEmptyElements);
 		}
 
 		return card;
@@ -68,5 +67,11 @@ export class CardService {
 		const parent = await this.boardDoRepo.findParentOfId(card.id);
 		card.title = title;
 		await this.boardDoRepo.save(card, parent);
+	}
+
+	async createEmptyElements(card: Card, requiredEmptyElements: ContentElementType[]): Promise<void> {
+		for await (const requiredEmptyElement of requiredEmptyElements) {
+			await this.contentElementService.create(card, requiredEmptyElement);
+		}
 	}
 }

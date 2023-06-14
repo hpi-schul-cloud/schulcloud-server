@@ -90,7 +90,7 @@ describe(`card create (api)`, () => {
 		em.clear();
 
 		const createCardBodyParams = {
-			requiredEmptyElements: [ContentElementType.RICH_TEXT],
+			requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.FILE],
 		};
 
 		return { user, columnBoardNode, columnNode, createCardBodyParams };
@@ -114,21 +114,6 @@ describe(`card create (api)`, () => {
 
 			expect(result.id).toBeDefined();
 		});
-	});
-
-	describe('with invalid user', () => {
-		it('should return status 403', async () => {
-			const { columnNode } = await setup();
-			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
-			currentUser = mapUserToCurrentUser(invalidUser);
-
-			const response = await api.post(columnNode.id);
-
-			expect(response.status).toEqual(403);
-		});
-	});
-	describe('with required empty elements', () => {
 		it('created card should contain empty text element', async () => {
 			const { user, columnNode, createCardBodyParams } = await setup();
 			currentUser = mapUserToCurrentUser(user);
@@ -141,6 +126,7 @@ describe(`card create (api)`, () => {
 			const { elements } = result;
 
 			expect(elements[0]).toMatchObject(expectedEmptyElements[0]);
+			expect(elements[1]).toMatchObject(expectedEmptyElements[1]);
 		});
 		it('should return status 400 as the content element is unknown', async () => {
 			const { user, columnNode } = await setup();
@@ -152,6 +138,19 @@ describe(`card create (api)`, () => {
 
 			const response = await api.post(columnNode.id, invalidBodyParams);
 			expect(response.status).toEqual(400);
+		});
+	});
+
+	describe('with invalid user', () => {
+		it('should return status 403', async () => {
+			const { columnNode } = await setup();
+			const invalidUser = userFactory.build();
+			await em.persistAndFlush([invalidUser]);
+			currentUser = mapUserToCurrentUser(invalidUser);
+
+			const response = await api.post(columnNode.id);
+
+			expect(response.status).toEqual(403);
 		});
 	});
 });
