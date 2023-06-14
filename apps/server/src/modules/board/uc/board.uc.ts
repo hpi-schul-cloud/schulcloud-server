@@ -114,6 +114,15 @@ export class BoardUc {
 		await this.cardService.move(card, targetColumn, targetPosition);
 	}
 
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
+		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateHeight(card, height);
+	}
+
 	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
