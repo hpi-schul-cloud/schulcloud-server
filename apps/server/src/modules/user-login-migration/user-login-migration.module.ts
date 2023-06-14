@@ -11,7 +11,7 @@ import {
 	UserLoginMigrationService,
 	UserMigrationService,
 	StartUserLoginMigrationCheckService,
-	UserLoginMigrationRollbackService,
+	UserLoginMigrationRevertService,
 } from './service';
 import { AuthorizationModule } from '../authorization';
 
@@ -24,7 +24,7 @@ import { AuthorizationModule } from '../authorization';
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
 		StartUserLoginMigrationCheckService,
-		UserLoginMigrationRollbackService,
+		UserLoginMigrationRevertService,
 	],
 	exports: [
 		UserMigrationService,
@@ -32,7 +32,7 @@ import { AuthorizationModule } from '../authorization';
 		MigrationCheckService,
 		UserLoginMigrationService,
 		StartUserLoginMigrationCheckService,
-		UserLoginMigrationRollbackService,
+		UserLoginMigrationRevertService,
 	],
 })
 export class UserLoginMigrationModule {}

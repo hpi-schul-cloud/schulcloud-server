@@ -9,7 +9,7 @@ import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
 import {
 	SchoolMigrationService,
-	UserLoginMigrationRollbackService,
+	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
@@ -22,7 +22,7 @@ describe('SchoolUc', () => {
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
-	let userLoginMigrationRollbackService: DeepMocked<UserLoginMigrationRollbackService>;
+	let userLoginMigrationRevertService: DeepMocked<UserLoginMigrationRevertService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,8 +45,8 @@ describe('SchoolUc', () => {
 					useValue: createMock<UserLoginMigrationService>(),
 				},
 				{
-					provide: UserLoginMigrationRollbackService,
-					useValue: createMock<UserLoginMigrationRollbackService>(),
+					provide: UserLoginMigrationRevertService,
+					useValue: createMock<UserLoginMigrationRevertService>(),
 				},
 			],
 		}).compile();
@@ -56,7 +56,7 @@ describe('SchoolUc', () => {
 		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
-		userLoginMigrationRollbackService = module.get(UserLoginMigrationRollbackService);
+		userLoginMigrationRevertService = module.get(UserLoginMigrationRevertService);
 	});
 
 	afterAll(async () => {
@@ -115,22 +115,34 @@ describe('SchoolUc', () => {
 				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
 				schoolService.getSchoolById.mockResolvedValue(school);
 				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
+
+				return {
+					updatedUserLoginMigration,
+				};
 			};
 
-			it('should call schoolMigrationService.markUnmigratedUsersAsOutdated', async () => {
-				setup();
+			describe('when there were users migrated', () => {
+				it('should call schoolMigrationService.markUnmigratedUsersAsOutdated', async () => {
+					setup();
+					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(true);
 
-				await schoolUc.setMigration('schoolId', true, false, true, 'userId');
+					await schoolUc.setMigration('schoolId', true, false, true, 'userId');
 
-				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalled();
+					expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalled();
+				});
 			});
 
-			it('should call userLoginMigrationRollbackService.rollbackIfNecessary', async () => {
-				setup();
+			describe('when there were no users migrated', () => {
+				it('should call userLoginMigrationRevertService.revertUserLoginMigration', async () => {
+					const { updatedUserLoginMigration } = setup();
+					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
 
-				await schoolUc.setMigration('schoolId', true, false, true, 'userId');
+					await schoolUc.setMigration('schoolId', true, false, true, 'userId');
 
-				expect(userLoginMigrationRollbackService.rollbackIfNecessary).toHaveBeenCalledWith('schoolId');
+					expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(
+						updatedUserLoginMigration
+					);
+				});
 			});
 		});
 

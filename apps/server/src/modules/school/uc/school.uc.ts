@@ -3,7 +3,7 @@ import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
 import {
 	SchoolMigrationService,
-	UserLoginMigrationRollbackService,
+	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
 import { SchoolService } from '../service';
@@ -16,7 +16,7 @@ export class SchoolUc {
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly userLoginMigrationRollbackService: UserLoginMigrationRollbackService
+		private readonly userLoginMigrationRollbackService: UserLoginMigrationRevertService
 	) {}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
@@ -47,8 +47,13 @@ export class SchoolUc {
 		);
 
 		if (!existingUserLoginMigration?.closedAt && updatedUserLoginMigration.closedAt) {
-			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
-			await this.userLoginMigrationRollbackService.rollbackIfNecessary(schoolId);
+			const hasSchoolMigratedUser = await this.schoolMigrationService.hasSchoolMigratedUser(schoolId);
+
+			if (!hasSchoolMigratedUser) {
+				await this.userLoginMigrationRollbackService.revertUserLoginMigration(updatedUserLoginMigration);
+			} else {
+				await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
+			}
 		} else if (existingUserLoginMigration?.closedAt && !updatedUserLoginMigration.closedAt) {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}

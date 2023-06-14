@@ -25,10 +25,12 @@ export class SchoolMigrationService {
 	}
 
 	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
+		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
+
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
 		} catch (e: unknown) {
-			await this.rollbackMigration(existingSchool.id as string, targetSystemId);
+			await this.rollbackMigration(schoolDOCopy);
 			this.logger.log({
 				message: `This error occurred during migration of School with official school number`,
 				officialSchoolNumber: existingSchool.officialSchoolNumber,
@@ -133,14 +135,10 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	async rollbackMigration(schoolId: EntityId, targetSystemId: string): Promise<void> {
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
-		school.externalId = school.previousExternalId;
-		school.systems = school.systems?.filter((systemId: EntityId) => systemId !== targetSystemId);
-		school.userLoginMigrationId = undefined;
-
-		await this.schoolService.save(school);
+	private async rollbackMigration(originalSchoolDO: SchoolDO) {
+		if (originalSchoolDO) {
+			await this.schoolService.save(originalSchoolDO);
+		}
 	}
 
 	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
@@ -178,5 +176,15 @@ export class SchoolMigrationService {
 		}
 
 		return false;
+	}
+
+	async revertMigration(schoolId: EntityId, targetSystemId: string): Promise<void> {
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		school.externalId = school.previousExternalId;
+		school.systems = school.systems?.filter((systemId: EntityId) => systemId !== targetSystemId);
+		school.userLoginMigrationId = undefined;
+
+		await this.schoolService.save(school);
 	}
 }
