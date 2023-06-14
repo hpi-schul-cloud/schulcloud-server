@@ -8,6 +8,18 @@ type SeedSchoolYearProperties = Pick<ISchoolYearProperties, 'name'> & {
 	startDate: string;
 };
 
+export enum SeedSchoolYearEnum {
+	'2017/18' = '2017/18',
+	'2018/19' = '2018/19',
+	'2019/20' = '2019/20',
+	'2020/21' = '2020/21',
+	'2021/22' = '2021/22',
+	'2022/23' = '2022/23',
+	'2023/24' = '2023/24',
+	'2024/25' = '2024/25',
+	'2025/26' = '2025/26',
+}
+
 const seedSchoolYears: SeedSchoolYearProperties[] = [
 	{
 		id: '5b7de0021a3a07c20a1c165d',
