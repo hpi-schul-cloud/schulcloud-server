@@ -16,8 +16,12 @@
 				"file": "api-design.md"
 			},
 			{
-				"title": "Cross-cutting concerns",
-				"file": "cross-cutting-concerns.md"
+				"title": "Logging",
+				"file": "logging.md"
+			},
+			{
+				"title": "Exception Handling",
+				"file": "exception-handling.md"
 			},
 			{
 				"title": "Domain Object Validation",

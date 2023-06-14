@@ -7,12 +7,12 @@ import { UserLoginMigrationService, StartUserLoginMigrationValidationService } f
 export class StartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly startUserLoginMigrationCheckService: StartUserLoginMigrationValidationService,
+		private readonly startUserLoginMigrationValidationService: StartUserLoginMigrationValidationService,
 		private readonly logger: LegacyLogger
 	) {}
 
 	async startMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		await this.startUserLoginMigrationCheckService.checkPreconditions(userId, schoolId);
+		await this.startUserLoginMigrationValidationService.checkPreconditions(userId, schoolId);
 
 		const userLoginMigrationDO: UserLoginMigrationDO = await this.userLoginMigrationService.startMigration(schoolId);
 		this.logger.debug(`The school admin started the migration for the school with id: ${schoolId}`);

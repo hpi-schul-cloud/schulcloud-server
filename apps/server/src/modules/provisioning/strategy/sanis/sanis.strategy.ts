@@ -3,6 +3,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
+import { RoleName } from '@shared/domain';
 import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto } from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
@@ -39,6 +40,8 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 		);
 
 		const externalUser: ExternalUserDto = this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		this.addTeacherRoleIfAdmin(externalUser);
+
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
 
 		const oauthData: OauthDataDto = new OauthDataDto({
@@ -47,5 +50,11 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			externalUser,
 		});
 		return oauthData;
+	}
+
+	private addTeacherRoleIfAdmin(externalUser: ExternalUserDto): void {
+		if (externalUser.roles && externalUser.roles.includes(RoleName.ADMINISTRATOR)) {
+			externalUser.roles.push(RoleName.TEACHER);
+		}
 	}
 }
