@@ -9,8 +9,10 @@ describe('federalstate entity', () => {
 
 	describe('constructor', () => {
 		describe('when creating a federalstate', () => {
+			const setup = () => federalStateFactory.build();
+
 			it('should create federalstate', () => {
-				const fs = federalStateFactory.build();
+				const fs = setup();
 				expect(fs).toBeInstanceOf(FederalState);
 			});
 		});
