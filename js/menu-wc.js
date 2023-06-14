@@ -2421,6 +2421,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ApiValidationErrorResponse.html" data-type="entity-link" >ApiValidationErrorResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/AppStartLoggable.html" data-type="entity-link" >AppStartLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/AuthenticationCodeGrantTokenRequest.html" data-type="entity-link" >AuthenticationCodeGrantTokenRequest</a>
                             </li>
                             <li class="link">
@@ -3285,6 +3288,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PatchVisibilityParams.html" data-type="entity-link" >PatchVisibilityParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/PrometheusMetricsConfig.html" data-type="entity-link" >PrometheusMetricsConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/PrometheusMetricsSetupStateLoggable.html" data-type="entity-link" >PrometheusMetricsSetupStateLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/PropertyData.html" data-type="entity-link" >PropertyData</a>
                             </li>
                             <li class="link">
@@ -3324,10 +3333,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/RenameFileParams.html" data-type="entity-link" >RenameFileParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/RequestInfo.html" data-type="entity-link" >RequestInfo</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ResolvedUserMapper.html" data-type="entity-link" >ResolvedUserMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ResolvedUserResponse.html" data-type="entity-link" >ResolvedUserResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/ResponseInfo.html" data-type="entity-link" >ResponseInfo</a>
                             </li>
                             <li class="link">
                                 <a href="classes/RevokeConsentParams.html" data-type="entity-link" >RevokeConsentParams</a>
@@ -4305,6 +4320,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/AppendedAttachment.html" data-type="entity-link" >AppendedAttachment</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/AppStartInfo.html" data-type="entity-link" >AppStartInfo</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/AuthenticationResponse.html" data-type="entity-link" >AuthenticationResponse</a>
