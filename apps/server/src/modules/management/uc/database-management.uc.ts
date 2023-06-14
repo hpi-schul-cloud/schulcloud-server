@@ -160,25 +160,25 @@ export class DatabaseManagementUc {
 	}
 
 	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
-		const seededCollectionsWithAmount = await Promise.all(
-			generateSeedData((s: string) => this.injectEnvVars(s))
-				.filter((data) => {
-					if (collections && collections.length > 0) {
-						return collections.includes(data.collectionName);
-					}
-					return true;
-				})
-				.map(async ({ collectionName, data }) => {
-					if (collectionName === systemsCollectionName) {
-						this.encryptSecretsInSystems(data as System[]);
-					}
-					await this.dropCollectionIfExists(collectionName);
+		const promises = generateSeedData((s: string) => this.injectEnvVars(s))
+			.filter((data) => {
+				if (collections && collections.length > 0) {
+					return collections.includes(data.collectionName);
+				}
+				return true;
+			})
+			.map(async ({ collectionName, data }) => {
+				if (collectionName === systemsCollectionName) {
+					this.encryptSecretsInSystems(data as System[]);
+				}
+				await this.dropCollectionIfExists(collectionName);
 
-					await this.em.persistAndFlush(data);
+				await this.em.persistAndFlush(data);
 
-					return `${collectionName}:${data.length}`;
-				})
-		);
+				return `${collectionName}:${data.length}`;
+			});
+
+		const seededCollectionsWithAmount = await Promise.all(promises);
 
 		return seededCollectionsWithAmount;
 	}
