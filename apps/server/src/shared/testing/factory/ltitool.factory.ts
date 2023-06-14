@@ -1,7 +1,7 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { ILtiToolProperties, LtiPrivacyPermission, LtiRoleType, LtiTool } from '@shared/domain/';
+import { CustomLtiPropertyDO } from '@shared/domain/domainobject/ltitool.do';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { CustomLtiProperty } from '@shared/domain/domainobject/ltitool.do';
 
 class LtiToolFactory extends BaseFactory<LtiTool, ILtiToolProperties> {
 	withName(name: string): this {
@@ -32,7 +32,7 @@ export const ltiToolFactory = LtiToolFactory.define(LtiTool, ({ sequence }) => {
 		isLocal: true,
 		oAuthClientId: 'clientId',
 		secret: 'secret',
-		customs: [new CustomLtiProperty('key', 'value')],
+		customs: [new CustomLtiPropertyDO('key', 'value')],
 		isHidden: false,
 		isTemplate: false,
 		key: 'key',

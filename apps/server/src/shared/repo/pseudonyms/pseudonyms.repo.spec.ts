@@ -11,33 +11,24 @@ import { pseudonymFactory } from '@shared/testing/factory/pseudonym.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { v4 as uuidv4 } from 'uuid';
 
-class PseudonymsRepoSpec extends PseudonymsRepo {
-	mapEntityToDOSpec(entity: Pseudonym): PseudonymDO {
-		return super.mapEntityToDO(entity);
-	}
-
-	mapDOToEntityPropertiesSpec(entityDO: PseudonymDO): IPseudonymProperties {
-		return super.mapDOToEntityProperties(entityDO);
-	}
-}
-
 describe('Pseudonym Repo', () => {
 	let module: TestingModule;
-	let repo: PseudonymsRepoSpec;
+	let repo: PseudonymsRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
-				PseudonymsRepoSpec,
+				PseudonymsRepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(PseudonymsRepoSpec);
+
+		repo = module.get(PseudonymsRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -49,13 +40,10 @@ describe('Pseudonym Repo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('should be defined', () => {
-		expect(repo).toBeDefined();
-		expect(typeof repo.findById).toEqual('function');
-	});
-
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Pseudonym);
+	describe('entityName', () => {
+		it('should return Pseudonym', () => {
+			expect(repo.entityName).toBe(Pseudonym);
+		});
 	});
 
 	describe('entityFactory', () => {
@@ -78,7 +66,7 @@ describe('Pseudonym Repo', () => {
 		});
 	});
 
-	describe('findByUserAndTool', () => {
+	describe('findByUserIdAndToolIdOrFail', () => {
 		it('should find a pseudonym by userId and toolId', async () => {
 			const entity: Pseudonym = pseudonymFactory.buildWithId();
 			await em.persistAndFlush(entity);
@@ -96,42 +84,75 @@ describe('Pseudonym Repo', () => {
 		});
 	});
 
-	describe('mapEntityToDO', () => {
-		it('should return a domain object', () => {
-			const id = new ObjectId();
-			const testEntity: Pseudonym = {
-				id: id.toHexString(),
-				_id: id,
-				updatedAt: new Date('2022-07-20'),
-				createdAt: new Date('2022-07-20'),
-				pseudonym: uuidv4(),
-				toolId: new ObjectId(),
-				userId: new ObjectId(),
+	describe('findByUserIdAndToolId', () => {
+		describe('when there is a pseudonym', () => {
+			const setup = async () => {
+				const entity: Pseudonym = pseudonymFactory.buildWithId();
+
+				await em.persistAndFlush(entity);
+
+				return {
+					entity,
+				};
 			};
 
-			const pseudonymDO: PseudonymDO = repo.mapEntityToDOSpec(testEntity);
+			it('should return a pseudonym by userId and toolId', async () => {
+				const { entity } = await setup();
 
-			expect(pseudonymDO.id).toEqual(testEntity.id);
-			expect(pseudonymDO.pseudonym).toEqual(testEntity.pseudonym);
-			expect(pseudonymDO.toolId).toEqual(testEntity.toolId.toHexString());
-			expect(pseudonymDO.userId).toEqual(testEntity.userId.toHexString());
+				const result: PseudonymDO | null = await repo.findByUserIdAndToolId(
+					entity.userId.toHexString(),
+					entity.toolId.toHexString()
+				);
+
+				expect(result?.id).toEqual(entity.id);
+			});
+		});
+
+		describe('when there is no pseudonym', () => {
+			it('should return null', async () => {
+				const result: PseudonymDO | null = await repo.findByUserIdAndToolId(
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString()
+				);
+
+				expect(result).toBeNull();
+			});
 		});
 	});
 
-	describe('mapDOToEntityProperties', () => {
-		it('should map DO to Entity Properties', () => {
-			const testDO: PseudonymDO = new PseudonymDO({
-				id: 'testId',
+	describe('save', () => {
+		const setup = async () => {
+			const id = new ObjectId().toHexString();
+
+			const domainObject: PseudonymDO = new PseudonymDO({
+				id,
 				pseudonym: uuidv4(),
 				toolId: new ObjectId().toHexString(),
 				userId: new ObjectId().toHexString(),
 			});
 
-			const result: IPseudonymProperties = repo.mapDOToEntityPropertiesSpec(testDO);
+			const entity: Pseudonym = pseudonymFactory.buildWithId(
+				{
+					pseudonym: uuidv4(),
+					toolId: new ObjectId(),
+					userId: new ObjectId(),
+				},
+				id
+			);
 
-			expect(result.pseudonym).toEqual(testDO.pseudonym);
-			expect(result.toolId.toHexString()).toEqual(testDO.toolId);
-			expect(result.userId.toHexString()).toEqual(testDO.userId);
+			await em.persistAndFlush(entity);
+
+			return {
+				domainObject,
+			};
+		};
+
+		it('should return a domain object', async () => {
+			const { domainObject } = await setup();
+
+			const result: PseudonymDO = await repo.save(domainObject);
+
+			expect(result).toEqual(domainObject);
 		});
 	});
 });

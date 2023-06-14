@@ -356,7 +356,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
 
 				userService.findById.mockResolvedValue(user);
-				pseudonymService.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+				pseudonymService.requestPseudonym.mockResolvedValue(pseudonym);
 
 				return {
 					data,

@@ -3,12 +3,11 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ExternalToolDO, PseudonymDO, Team, UserDO } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { TeamsRepo } from '@shared/repo';
-import { LtiToolService } from '@src/modules/lti-tool/service';
 import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
 import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
 import { PseudonymService } from '@src/modules/pseudonym/service';
 import { UserService } from '@src/modules/user/service/user.service';
-import { OauthProviderLoginFlowService } from './oauth-provider-login-flow.service';
+import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 @Injectable()
 export class IdTokenService {
@@ -19,7 +18,6 @@ export class IdTokenService {
 	constructor(
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly ltiToolService: LtiToolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService
 	) {
@@ -48,7 +46,7 @@ export class IdTokenService {
 		};
 	}
 
-	protected buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
+	private buildGroupsClaim(teams: Team[]): GroupNameIdTuple[] {
 		return teams.map((team: Team): GroupNameIdTuple => {
 			return {
 				gid: team.id,
@@ -58,7 +56,7 @@ export class IdTokenService {
 	}
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
-	protected async createIframeSubject(userId: string, clientId: string): Promise<string> {
+	private async createIframeSubject(userId: string, clientId: string): Promise<string> {
 		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {

@@ -7,18 +7,17 @@ import {
 	ProviderLoginResponse,
 	ProviderRedirectResponse,
 } from '@shared/infra/oauth-provider/dto';
+import { AuthorizationService } from '@src/modules/authorization';
 import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
 import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 import { PseudonymService } from '@src/modules/pseudonym/service';
-import { AuthorizationService } from '../../authorization';
-import { OauthProviderLoginFlowService } from '../service/oauth-provider-login-flow.service';
+import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
 @Injectable()
 export class OauthProviderLoginFlowUc {
 	constructor(
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
-		private readonly oauthProviderRequestMapper: OauthProviderRequestMapper,
 		private readonly pseudonymService: PseudonymService,
 		private readonly authorizationService: AuthorizationService
 	) {}
@@ -71,15 +70,14 @@ export class OauthProviderLoginFlowUc {
 
 		const skipConsent: boolean = this.shouldSkipConsent(tool);
 
-		const acceptLoginRequestBody: AcceptLoginRequestBody =
-			this.oauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
-				loginRequestBody,
-				currentUserId,
-				pseudonym.pseudonym,
-				{
-					skipConsent,
-				}
-			);
+		const acceptLoginRequestBody: AcceptLoginRequestBody = OauthProviderRequestMapper.mapCreateAcceptLoginRequestBody(
+			loginRequestBody,
+			currentUserId,
+			pseudonym.pseudonym,
+			{
+				skipConsent,
+			}
+		);
 
 		const redirectResponse: ProviderRedirectResponse = await this.oauthProviderService.acceptLoginRequest(
 			loginResponse.challenge,

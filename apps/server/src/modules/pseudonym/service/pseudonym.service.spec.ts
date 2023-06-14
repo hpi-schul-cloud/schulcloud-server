@@ -59,4 +59,59 @@ describe('PseudonymService', () => {
 			});
 		});
 	});
+
+	describe('requestPseudonym', () => {
+		describe('when the pseudonym exists', () => {
+			const setup = () => {
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
+
+				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(pseudonym);
+
+				return {
+					pseudonym,
+				};
+			};
+
+			it('should return the pseudonym', async () => {
+				const { pseudonym } = setup();
+
+				const result: PseudonymDO = await service.requestPseudonym('userId', 'toolId');
+
+				expect(result).toEqual(pseudonym);
+			});
+		});
+
+		describe('when no pseudonym exists yet', () => {
+			const setup = () => {
+				const pseudonym: PseudonymDO = pseudonymDOFactory.buildWithId();
+
+				pseudonymRepo.findByUserIdAndToolId.mockResolvedValue(null);
+				pseudonymRepo.save.mockResolvedValue(pseudonym);
+
+				return {
+					pseudonym,
+				};
+			};
+
+			it('should create and save a new pseudonym', async () => {
+				setup();
+
+				await service.requestPseudonym('userId', 'toolId');
+
+				expect(pseudonymRepo.save).toHaveBeenCalledWith({
+					pseudonym: expect.any(String),
+					userId: 'userId',
+					toolId: 'toolId',
+				});
+			});
+
+			it('should return the pseudonym', async () => {
+				const { pseudonym } = setup();
+
+				const result: PseudonymDO = await service.requestPseudonym('userId', 'toolId');
+
+				expect(result).toEqual<PseudonymDO>(pseudonym);
+			});
+		});
+	});
 });

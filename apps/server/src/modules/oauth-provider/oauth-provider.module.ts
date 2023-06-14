@@ -7,7 +7,7 @@ import { PseudonymModule } from '@src/modules/pseudonym';
 import { ToolModule } from '@src/modules/tool';
 import { UserModule } from '@src/modules/user';
 import { IdTokenService } from './service/id-token.service';
-import { OauthProviderLoginFlowService } from './service/oauth-provider-login-flow.service';
+import { OauthProviderLoginFlowService } from './service/oauth-provider.login-flow.service';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, PseudonymModule, LtiToolModule, ToolModule],

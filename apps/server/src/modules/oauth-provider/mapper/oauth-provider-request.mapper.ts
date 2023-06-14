@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
 
-@Injectable()
 export class OauthProviderRequestMapper {
-	mapCreateAcceptLoginRequestBody(
+	static mapCreateAcceptLoginRequestBody(
 		loginRequestBody: LoginRequestBody,
 		currentUserId: string,
 		pseudonym: string,
