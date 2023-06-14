@@ -104,6 +104,14 @@
                                     <span class="modifier">Async</span>
                                 <a href="#migrateUserLogin" >migrateUserLogin</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#startMigration" >startMigration</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -154,8 +162,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:39</a></div>
                 </td>
             </tr>
 
@@ -247,8 +255,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:87</a></div>
                 </td>
             </tr>
 
@@ -320,17 +328,106 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="startMigration"></a>
+                    <span class="name">
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier"></span>
+                        <span class="modifier">Async</span>
+                        <span ><b>startMigration</b></span>
+                        <a href="#startMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>startMigration(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;start&#x27;)<br />@ApiBadRequestResponse({description: &#x27;Preconditions for starting user login migration are not met&#x27;, type: StartUserLoginMigrationError})<br />@ApiOkResponse({description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse})<br />@ApiUnauthorizedResponse()<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="72"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/controller/user-login-migration.controller.ts:72</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUser</td>
+                                    <td>
+                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationResponse&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Body, Controller, Get, Post, Query } from &#x27;@nestjs/common&#x27;;
-import { ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import {
+	ApiBadRequestResponse,
+	ApiForbiddenResponse,
+	ApiInternalServerErrorResponse,
+	ApiOkResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from &#x27;@nestjs/swagger&#x27;;
 import { UserLoginMigrationDO } from &#x27;@shared/domain&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser, JWT } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { UserLoginMigrationMapper } from &#x27;../mapper/user-login-migration.mapper&#x27;;
+import { UserLoginMigrationMapper } from &#x27;../mapper&#x27;;
 import { UserLoginMigrationQuery } from &#x27;../uc/dto/user-login-migration-query&#x27;;
 import { UserLoginMigrationUc } from &#x27;../uc/user-login-migration.uc&#x27;;
 import {
@@ -339,12 +436,17 @@ import {
 	UserLoginMigrationSearchParams,
 } from &#x27;./dto&#x27;;
 import { Oauth2MigrationParams } from &#x27;./dto/oauth2-migration.params&#x27;;
+import { StartUserLoginMigrationUc } from &#x27;../uc/start-user-login-migration.uc&#x27;;
+import { StartUserLoginMigrationError } from &#x27;../error&#x27;;
 
 @ApiTags(&#x27;UserLoginMigration&#x27;)
 @Controller(&#x27;user-login-migrations&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 export class UserLoginMigrationController {
-	constructor(private readonly userLoginMigrationUc: UserLoginMigrationUc) {}
+	constructor(
+		private readonly userLoginMigrationUc: UserLoginMigrationUc,
+		private readonly startUserLoginMigrationUc: StartUserLoginMigrationUc
+	) {}
 
 	@Get()
 	@ApiForbiddenResponse()
@@ -374,6 +476,25 @@ export class UserLoginMigrationController {
 		);
 
 		return response;
+	}
+
+	@Post(&#x27;start&#x27;)
+	@ApiBadRequestResponse({
+		description: &#x27;Preconditions for starting user login migration are not met&#x27;,
+		type: StartUserLoginMigrationError,
+	})
+	@ApiOkResponse({ description: &#x27;User login migration started&#x27;, type: UserLoginMigrationResponse })
+	@ApiUnauthorizedResponse()
+	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise&lt;UserLoginMigrationResponse&gt; {
+		const migrationDto: UserLoginMigrationDO &#x3D; await this.startUserLoginMigrationUc.startMigration(
+			currentUser.userId,
+			currentUser.schoolId
+		);
+
+		const migrationResponse: UserLoginMigrationResponse &#x3D;
+			UserLoginMigrationMapper.mapUserLoginMigrationDoToResponse(migrationDto);
+
+		return migrationResponse;
 	}
 
 	@Post(&#x27;migrate-to-oauth2&#x27;)
