@@ -31,48 +31,51 @@ describe('federalstate repo', () => {
 		await cleanupCollections(em);
 	});
 
-	it('should be defined', () => {
-		expect(repo).toBeDefined();
-		expect(typeof repo.findById).toEqual('function');
+	describe('when FederalStateRepo is instantiated', () => {
+		it('should be defined', () => {
+			expect(repo).toBeDefined();
+			expect(typeof repo.findById).toEqual('function');
+		});
+
+		it('should implement entityName getter', () => {
+			expect(repo.entityName).toBe(FederalState);
+		});
 	});
 
-	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(FederalState);
-	});
-
-	describe('findById', () => {
-		it('should return right keys', async () => {
+	describe('when 2 federalstates are persisted', () => {
+		const setup = async () => {
 			const fsA = federalStateFactory.build();
+			const fsB = federalStateFactory.build();
 
-			await em.persistAndFlush([fsA]);
+			await em.persistAndFlush([fsA, fsB]);
+			return [fsA, fsB];
+		};
+
+		it('findById should return right keys', async () => {
+			const [fsA] = await setup();
+
 			const result = await repo.findById(fsA.id);
 			expect(Object.keys(result).sort()).toEqual(['_id', 'abbreviation', 'counties', 'logoUrl', 'name']);
 		});
 
-		it('should return one federalstate that matched by id', async () => {
-			const fsA = federalStateFactory.build();
-			const fsB = federalStateFactory.build();
+		it('findById should return one federalstate that matched by id', async () => {
+			const [fsA] = await setup();
 
-			await em.persistAndFlush([fsA, fsB]);
 			const result = await repo.findById(fsA.id);
 			expect(result).toEqual(fsA);
 		});
 
-		it('should throw an error if federalstates by id doesnt exist', async () => {
+		it('findById should throw an error if federalstates by id doesnt exist', async () => {
+			const [fsA] = await setup();
 			const idB = new ObjectId().toHexString();
-			const fsA = federalStateFactory.build();
 
 			await em.persistAndFlush([fsA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
 		});
-	});
 
-	describe('findByIds', () => {
-		it('should return federalstates that matched by ids', async () => {
-			const fsA = federalStateFactory.build();
-			const fsB = federalStateFactory.build();
+		it('findByIds should return federalstates that matched by ids', async () => {
+			const [fsA, fsB] = await setup();
 
-			await em.persistAndFlush([fsA, fsB]);
 			const result: FederalState[] = await repo.findByIds([fsA.id, fsB.id]);
 			expect(result).toContainEqual(fsA);
 			expect(result).toContainEqual(fsB);
