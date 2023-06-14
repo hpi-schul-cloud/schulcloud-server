@@ -20,8 +20,14 @@ const setSubject = (hook) => {
 				isLocal: true,
 			},
 		})
-		.then((tools) =>
-			hook.app
+		.then((tools) => {
+			if (!tools.data || !Array.isArray(tools.data) || tools.data.length !== 1) {
+				throw new Error(
+					`Unable find a singular LtiTool with client_id ${hook.params.loginRequest.client.client_id} for login request`
+				);
+			}
+
+			return hook.app
 				.service('pseudonym')
 				.find({
 					query: {
@@ -34,8 +40,8 @@ const setSubject = (hook) => {
 					if (!hook.data) hook.data = {};
 					hook.data.subject = hook.params.account.userId;
 					hook.data.force_subject_identifier = pseudonym;
-				})
-		);
+				});
+		});
 };
 
 const setIdToken = (hook) => {
@@ -79,10 +85,12 @@ const setIdToken = (hook) => {
 						userId: scope.includes('profile') ? user._id : undefined,
 						schoolId: user.schoolId,
 						groups: scope.includes('groups')
-							? userTeams.data.map((team) => ({
-									gid: team._id,
-									displayName: team.name,
-							  }))
+							? userTeams.data.map((team) => {
+									return {
+										gid: team._id,
+										displayName: team.name,
+									};
+							  })
 							: undefined,
 					},
 				};

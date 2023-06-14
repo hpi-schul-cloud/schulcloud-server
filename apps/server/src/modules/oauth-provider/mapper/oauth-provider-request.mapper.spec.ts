@@ -1,6 +1,6 @@
-import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
+import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto';
 import { LoginRequestBody } from '@src/modules/oauth-provider/controller/dto';
-import { AcceptLoginRequestBody } from '@shared/infra/oauth-provider/dto/index';
+import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
 
 describe('OauthProviderRequestMapper', () => {
 	let mapper: OauthProviderRequestMapper;
@@ -18,7 +18,8 @@ describe('OauthProviderRequestMapper', () => {
 			const result: AcceptLoginRequestBody = mapper.mapCreateAcceptLoginRequestBody(
 				loginRequestBodyMock,
 				'currentUserId',
-				'pseudonym'
+				'pseudonym',
+				{ test: '123' }
 			);
 
 			expect(result).toEqual({
@@ -26,6 +27,7 @@ describe('OauthProviderRequestMapper', () => {
 				remember_for: 0,
 				subject: 'currentUserId',
 				force_subject_identifier: 'pseudonym',
+				context: { test: '123' },
 			});
 		});
 	});
