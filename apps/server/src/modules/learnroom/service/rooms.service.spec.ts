@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
@@ -68,6 +69,14 @@ describe('rooms service', () => {
 		boardRepo = module.get(BoardRepo);
 		columnBoardService = module.get(ColumnBoardService);
 		columnBoardTargetService = module.get(ColumnBoardTargetService);
+	});
+
+	beforeEach(() => {
+		Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'true');
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('updateBoard', () => {
@@ -151,35 +160,59 @@ describe('rooms service', () => {
 				return { user, boardWithoutColumnBoard, boardWithColumnBoard, columnBoardId };
 			};
 
-			describe('when no column board exists for the board', () => {
-				it('should create one', async () => {
-					const { user, boardWithoutColumnBoard: board } = setup();
+			describe('when ColumnBoard-feature is enabled', () => {
+				describe('when no column board exists for the board', () => {
+					it('should create one', async () => {
+						const { user, boardWithoutColumnBoard: board } = setup();
 
-					await roomsService.updateBoard(board, board.course.id, user.id);
+						await roomsService.updateBoard(board, board.course.id, user.id);
 
-					expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
-						type: BoardExternalReferenceType.Course,
-						id: board.course.id,
+						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+							type: BoardExternalReferenceType.Course,
+							id: board.course.id,
+						});
 					});
 				});
-			});
 
-			describe('when a colum board exists for the board', () => {
-				it('should not create one', async () => {
-					const { user, boardWithColumnBoard: board } = setup();
+				describe('when a colum board exists for the board', () => {
+					it('should not create one', async () => {
+						const { user, boardWithColumnBoard: board } = setup();
+
+						await roomsService.updateBoard(board, board.course.id, user.id);
+
+						expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
+					});
+				});
+
+				it('should use the service to find or create targets', async () => {
+					const { user, boardWithColumnBoard: board, columnBoardId } = setup();
 
 					await roomsService.updateBoard(board, board.course.id, user.id);
 
-					expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
+					expect(columnBoardTargetService.findOrCreateTargets).toBeCalledWith([columnBoardId]);
 				});
 			});
 
-			it('should use the service to find or create targets', async () => {
-				const { user, boardWithColumnBoard: board, columnBoardId } = setup();
+			describe('when ColumnBoard-feature is disabled', () => {
+				describe('when no column board exists for the board', () => {
+					it('should NOT create one', async () => {
+						const { user, boardWithoutColumnBoard: board } = setup();
+						Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
 
-				await roomsService.updateBoard(board, board.course.id, user.id);
+						await roomsService.updateBoard(board, board.course.id, user.id);
 
-				expect(columnBoardTargetService.findOrCreateTargets).toBeCalledWith([columnBoardId]);
+						expect(columnBoardService.create).not.toBeCalled();
+					});
+				});
+
+				it('should NOT use the service to find or create targets', async () => {
+					const { user, boardWithColumnBoard: board } = setup();
+					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', 'false');
+
+					await roomsService.updateBoard(board, board.course.id, user.id);
+
+					expect(columnBoardTargetService.findOrCreateTargets).not.toBeCalled();
+				});
 			});
 		});
 	});
