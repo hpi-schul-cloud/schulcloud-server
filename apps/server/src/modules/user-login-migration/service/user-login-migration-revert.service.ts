@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain';
-import { SchoolMigrationService } from './school-migration.service';
+import { SchoolFeatures, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolService } from '@src/modules/school';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
 @Injectable()
 export class UserLoginMigrationRevertService {
 	constructor(
-		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userLoginMigrationService: UserLoginMigrationService
+		private readonly userLoginMigrationService: UserLoginMigrationService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	async revertUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
-		await this.schoolMigrationService.revertMigration(userLoginMigration.schoolId, userLoginMigration.targetSystemId);
+		await this.schoolService.removeFeature(userLoginMigration.schoolId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
 		await this.userLoginMigrationService.deleteUserLoginMigration(userLoginMigration);
 	}
 }

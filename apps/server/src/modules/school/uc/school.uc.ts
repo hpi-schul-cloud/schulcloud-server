@@ -16,7 +16,7 @@ export class SchoolUc {
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly userLoginMigrationRollbackService: UserLoginMigrationRevertService
+		private readonly userLoginMigrationRevertService: UserLoginMigrationRevertService
 	) {}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
@@ -50,7 +50,7 @@ export class SchoolUc {
 			const hasSchoolMigratedUser = await this.schoolMigrationService.hasSchoolMigratedUser(schoolId);
 
 			if (!hasSchoolMigratedUser) {
-				await this.userLoginMigrationRollbackService.revertUserLoginMigration(updatedUserLoginMigration);
+				await this.userLoginMigrationRevertService.revertUserLoginMigration(updatedUserLoginMigration);
 			} else {
 				await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
 			}

@@ -2,16 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
-import { UserLoginMigrationDO } from '@shared/domain';
+import { SchoolFeatures } from '@shared/domain';
+import { SchoolService } from '@src/modules/school';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
-import { SchoolMigrationService } from './school-migration.service';
 
 describe('UserLoginMigrationRevertService', () => {
 	let module: TestingModule;
 	let service: UserLoginMigrationRevertService;
 
-	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 
 	beforeAll(async () => {
@@ -21,8 +21,8 @@ describe('UserLoginMigrationRevertService', () => {
 			providers: [
 				UserLoginMigrationRevertService,
 				{
-					provide: SchoolMigrationService,
-					useValue: createMock<SchoolMigrationService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: UserLoginMigrationService,
@@ -32,7 +32,7 @@ describe('UserLoginMigrationRevertService', () => {
 		}).compile();
 
 		service = module.get(UserLoginMigrationRevertService);
-		schoolMigrationService = module.get(SchoolMigrationService);
+		schoolService = module.get(SchoolService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 	});
 
@@ -54,14 +54,14 @@ describe('UserLoginMigrationRevertService', () => {
 				};
 			};
 
-			it('should call schoolMigrationService.rollbackMigration', async () => {
+			it('should call schoolService.removeFeature', async () => {
 				const { userLoginMigration } = setup();
 
 				await service.revertUserLoginMigration(userLoginMigration);
 
-				expect(schoolMigrationService.revertMigration).toHaveBeenCalledWith(
+				expect(schoolService.removeFeature).toHaveBeenCalledWith(
 					userLoginMigration.schoolId,
-					userLoginMigration.targetSystemId
+					SchoolFeatures.OAUTH_PROVISIONING_ENABLED
 				);
 			});
 

@@ -542,35 +542,4 @@ describe('SchoolMigrationService', () => {
 			});
 		});
 	});
-
-	describe('revertMigration', () => {
-		describe('when school should be reverted', () => {
-			it('should call schoolService.getSchoolById', async () => {
-				schoolService.getSchoolById.mockResolvedValue(schoolDOFactory.build());
-
-				await service.revertMigration('schoolId', 'targetSystemId');
-
-				expect(schoolService.getSchoolById).toHaveBeenCalledWith('schoolId');
-			});
-
-			it('should revert migration properties on school ', async () => {
-				const school: SchoolDO = schoolDOFactory.build({
-					externalId: 'externalId',
-					previousExternalId: 'previousExternalId',
-					systems: ['systemA', 'systemB'],
-				});
-				schoolService.getSchoolById.mockResolvedValue(school);
-
-				await service.revertMigration('schoolId', 'systemB');
-
-				expect(schoolService.save).toHaveBeenCalledWith(
-					expect.objectContaining<Partial<SchoolDO>>({
-						externalId: school.previousExternalId,
-						userLoginMigrationId: undefined,
-						systems: ['systemA'],
-					})
-				);
-			});
-		});
-	});
 });

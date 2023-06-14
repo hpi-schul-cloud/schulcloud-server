@@ -177,14 +177,4 @@ export class SchoolMigrationService {
 
 		return false;
 	}
-
-	async revertMigration(schoolId: EntityId, targetSystemId: string): Promise<void> {
-		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
-
-		school.externalId = school.previousExternalId;
-		school.systems = school.systems?.filter((systemId: EntityId) => systemId !== targetSystemId);
-		school.userLoginMigrationId = undefined;
-
-		await this.schoolService.save(school);
-	}
 }

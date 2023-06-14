@@ -135,6 +135,32 @@ describe('SchoolService', () => {
 		});
 	});
 
+	describe('removeFeature', () => {
+		describe('when given schoolFeature exists on school', () => {
+			it('should call schoolRepo.findById', async () => {
+				const { schoolSavedId } = setup();
+
+				await schoolService.removeFeature(schoolSavedId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+
+				expect(schoolRepo.findById).toHaveBeenCalledWith(schoolSavedId);
+			});
+
+			it('should save school without given feature', async () => {
+				const { schoolSaved, schoolSavedId } = setup();
+				schoolSaved.features = [SchoolFeatures.VIDEOCONFERENCE, SchoolFeatures.OAUTH_PROVISIONING_ENABLED];
+				schoolRepo.findById.mockResolvedValue(schoolSaved);
+
+				await schoolService.removeFeature(schoolSavedId, SchoolFeatures.OAUTH_PROVISIONING_ENABLED);
+
+				expect(schoolRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						features: [SchoolFeatures.VIDEOCONFERENCE],
+					})
+				);
+			});
+		});
+	});
+
 	describe('getSchoolById is called', () => {
 		describe('when id is given', () => {
 			it('should call the repo', async () => {
