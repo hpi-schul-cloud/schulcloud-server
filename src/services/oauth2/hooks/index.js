@@ -23,7 +23,8 @@ const setSubject = (hook) => {
 		.then((tools) => {
 			if (!tools.data || !Array.isArray(tools.data) || tools.data.length !== 1) {
 				throw new Error(
-					`Unable find a singular LtiTool with client_id ${hook.params.loginRequest.client.client_id} for login request`
+					`Unable find a singular LtiTool with client_id ${hook.params.loginRequest.client.client_id} for login request. ` +
+						'If you are trying to use a CTL-Tool, please use the v3+ endpoints.'
 				);
 			}
 
