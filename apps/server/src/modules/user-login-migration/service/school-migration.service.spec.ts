@@ -15,6 +15,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {
@@ -472,6 +473,108 @@ describe('SchoolMigrationService', () => {
 				const func = async () => service.unmarkOutdatedUsers('schoolId');
 
 				await expect(func).rejects.toThrow(UnprocessableEntityException);
+			});
+		});
+	});
+
+	describe('hasSchoolMigratedUser', () => {
+		describe('when the school has no migration', () => {
+			it('should return false', async () => {
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the school has migrated user', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should return true', async () => {
+				const { userLoginMigration } = setup();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(true);
+			});
+
+			it('should call userLoginMigrationRepo.findBySchoolId', async () => {
+				const { userLoginMigration } = setup();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+
+				await service.hasSchoolMigratedUser('schoolId');
+
+				expect(userLoginMigrationRepo.findBySchoolId).toHaveBeenCalledWith('schoolId');
+			});
+
+			it('should call userService.findUsers', async () => {
+				const { userLoginMigration } = setup();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+
+				await service.hasSchoolMigratedUser('schoolId');
+
+				expect(userService.findUsers).toHaveBeenCalledWith({
+					lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+					lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+				});
+			});
+		});
+
+		describe('when the school has no migrated user', () => {
+			it('should return false', async () => {
+				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					schoolId: 'schoolId',
+					targetSystemId: 'targetSystemId',
+					startedAt: new Date('2023-05-01'),
+					closedAt: new Date('2023-05-01'),
+					finishedAt: new Date('2023-05-01'),
+				});
+
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(true);
+			});
+		});
+	});
+
+	describe('rollbackMigration', () => {
+		describe('when school should be rolled back', () => {
+			it('should call schoolService.getSchoolById', async () => {
+				schoolService.getSchoolById.mockResolvedValue(schoolDOFactory.build());
+
+				await service.rollbackMigration('schoolId', 'targetSystemId');
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith('schoolId');
+			});
+
+			it('should roll back migration properties on school ', async () => {
+				const school: SchoolDO = schoolDOFactory.build({
+					externalId: 'externalId',
+					previousExternalId: 'previousExternalId',
+					systems: ['systemA', 'systemB'],
+				});
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				await service.rollbackMigration('schoolId', 'systemB');
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<SchoolDO>>({
+						externalId: school.previousExternalId,
+						userLoginMigrationId: undefined,
+						systems: ['systemA'],
+					})
+				);
 			});
 		});
 	});

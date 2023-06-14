@@ -10,6 +10,7 @@ import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
 describe('UserLoginMigrationService', () => {
@@ -778,6 +779,18 @@ describe('UserLoginMigrationService', () => {
 				const result: UserLoginMigrationDO | null = await service.findMigrationBySchool(schoolId);
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('deleteUserLoginMigration', () => {
+		describe('when a userLoginMigration is given', () => {
+			it('should call userLoginMigrationRepo.delete', async () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				await service.deleteUserLoginMigration(userLoginMigration);
+
+				expect(userLoginMigrationRepo.delete).toHaveBeenCalledWith(userLoginMigration);
 			});
 		});
 	});

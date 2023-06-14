@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { EntityId, Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
@@ -25,12 +25,10 @@ export class SchoolMigrationService {
 	}
 
 	async migrateSchool(externalId: string, existingSchool: SchoolDO, targetSystemId: string): Promise<void> {
-		const schoolDOCopy: SchoolDO = new SchoolDO({ ...existingSchool });
-
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
 		} catch (e: unknown) {
-			await this.rollbackMigration(schoolDOCopy);
+			await this.rollbackMigration(existingSchool.id as string, targetSystemId);
 			this.logger.log({
 				message: `This error occurred during migration of School with official school number`,
 				officialSchoolNumber: existingSchool.officialSchoolNumber,
@@ -135,10 +133,14 @@ export class SchoolMigrationService {
 		await this.schoolService.save(schoolDO);
 	}
 
-	private async rollbackMigration(originalSchoolDO: SchoolDO) {
-		if (originalSchoolDO) {
-			await this.schoolService.save(originalSchoolDO);
-		}
+	async rollbackMigration(schoolId: EntityId, targetSystemId: string): Promise<void> {
+		const school: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		school.externalId = school.previousExternalId;
+		school.systems = school.systems?.filter((systemId: EntityId) => systemId !== targetSystemId);
+		school.userLoginMigrationId = undefined;
+
+		await this.schoolService.save(school);
 	}
 
 	private checkOfficialSchoolNumbersMatch(schoolDO: SchoolDO, officialExternalSchoolNumber: string): void {
@@ -156,6 +158,25 @@ export class SchoolMigrationService {
 		if (sourceExternalId === targetExternalId) {
 			return true;
 		}
+		return false;
+	}
+
+	async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			return false;
+		}
+
+		const users: Page<UserDO> = await this.userService.findUsers({
+			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+		});
+
+		if (users.total > 0) {
+			return true;
+		}
+
 		return false;
 	}
 }

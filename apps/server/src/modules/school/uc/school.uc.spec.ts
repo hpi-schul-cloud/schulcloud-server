@@ -7,7 +7,11 @@ import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.fac
 import { AuthorizationService } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school/service/school.service';
 import { SchoolUc } from '@src/modules/school/uc/school.uc';
-import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
+import {
+	SchoolMigrationService,
+	UserLoginMigrationRollbackService,
+	UserLoginMigrationService,
+} from '@src/modules/user-login-migration';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
@@ -18,6 +22,7 @@ describe('SchoolUc', () => {
 	let authService: DeepMocked<AuthorizationService>;
 	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
+	let userLoginMigrationRollbackService: DeepMocked<UserLoginMigrationRollbackService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,6 +44,10 @@ describe('SchoolUc', () => {
 					provide: UserLoginMigrationService,
 					useValue: createMock<UserLoginMigrationService>(),
 				},
+				{
+					provide: UserLoginMigrationRollbackService,
+					useValue: createMock<UserLoginMigrationRollbackService>(),
+				},
 			],
 		}).compile();
 
@@ -47,6 +56,7 @@ describe('SchoolUc', () => {
 		schoolUc = module.get(SchoolUc);
 		schoolMigrationService = module.get(SchoolMigrationService);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
+		userLoginMigrationRollbackService = module.get(UserLoginMigrationRollbackService);
 	});
 
 	afterAll(async () => {
@@ -113,6 +123,14 @@ describe('SchoolUc', () => {
 				await schoolUc.setMigration('schoolId', true, false, true, 'userId');
 
 				expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalled();
+			});
+
+			it('should call userLoginMigrationRollbackService.rollbackIfNecessary', async () => {
+				setup();
+
+				await schoolUc.setMigration('schoolId', true, false, true, 'userId');
+
+				expect(userLoginMigrationRollbackService.rollbackIfNecessary).toHaveBeenCalledWith('schoolId');
 			});
 		});
 
