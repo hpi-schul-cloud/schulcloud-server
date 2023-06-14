@@ -20,6 +20,8 @@ export function generateSeedData(injectEnvVars: (s: string) => string) {
 	// TODO: create user & accounts
 	// TODO: create all other collections
 
+	// TODO: remember when adding storageproviders to injectVars
+
 	collections = [
 		{ collectionName: 'federalstates', data: federalStates },
 		{ collectionName: 'systems', data: systems },

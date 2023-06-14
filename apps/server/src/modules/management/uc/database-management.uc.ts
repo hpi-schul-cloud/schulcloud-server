@@ -169,10 +169,6 @@ export class DatabaseManagementUc {
 					return true;
 				})
 				.map(async ({ collectionName, data }) => {
-					if (collectionName === systemsCollectionName || collectionName === storageprovidersCollectionName) {
-						// TODO: this.injectEnvVars, once we include the related collections
-					}
-
 					if (collectionName === systemsCollectionName) {
 						this.encryptSecretsInSystems(data as System[]);
 					}

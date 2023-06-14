@@ -6,7 +6,7 @@ import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { cleanupCollections, federalStateFactory } from '@shared/testing';
 import { FederalStateRepo } from './federalstate.repo';
 
-describe('role repo', () => {
+describe('federalstate repo', () => {
 	let module: TestingModule;
 	let repo: FederalStateRepo;
 	let em: EntityManager;
@@ -49,7 +49,7 @@ describe('role repo', () => {
 			expect(Object.keys(result).sort()).toEqual(['_id', 'abbreviation', 'counties', 'logoUrl', 'name']);
 		});
 
-		it('should return one role that matched by id', async () => {
+		it('should return one federalstate that matched by id', async () => {
 			const fsA = federalStateFactory.build();
 			const fsB = federalStateFactory.build();
 
@@ -58,7 +58,7 @@ describe('role repo', () => {
 			expect(result).toEqual(fsA);
 		});
 
-		it('should throw an error if roles by id doesnt exist', async () => {
+		it('should throw an error if federalstates by id doesnt exist', async () => {
 			const idB = new ObjectId().toHexString();
 			const fsA = federalStateFactory.build();
 
@@ -68,7 +68,7 @@ describe('role repo', () => {
 	});
 
 	describe('findByIds', () => {
-		it('should return roles that matched by ids', async () => {
+		it('should return federalstates that matched by ids', async () => {
 			const fsA = federalStateFactory.build();
 			const fsB = federalStateFactory.build();
 
