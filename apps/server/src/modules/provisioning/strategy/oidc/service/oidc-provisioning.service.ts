@@ -9,6 +9,7 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
+import { SchoolYearService } from '@src/modules/school/service';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 
 @Injectable()
@@ -17,7 +18,8 @@ export class OidcProvisioningService {
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly schoolYearService: SchoolYearService
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
@@ -42,6 +44,8 @@ export class OidcProvisioningService {
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				schoolYear: await this.schoolYearService.getCurrentSchoolYear(),
+				// TODO: N21-983 map federalState?
 			});
 		}
 
