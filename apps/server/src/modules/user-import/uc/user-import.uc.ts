@@ -169,7 +169,7 @@ export class UserImportUc {
 		if (total > 0) {
 			for (const importUser of importUsers) {
 				// TODO: Find a better solution for this loop
-				// this needs to be synchronous, because otherwise it was leading to 
+				// this needs to be synchronous, because otherwise it was leading to
 				// server crush when working with larger number of users (e.g. 1000)
 				// eslint-disable-next-line no-await-in-loop
 				await this.updateUserAndAccount(importUser, school);
