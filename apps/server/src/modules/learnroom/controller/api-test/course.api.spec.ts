@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -210,16 +209,5 @@ describe('Course Controller (API)', () => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.header['content-disposition']).toBe('attachment;');
 		});
-		/* it('should not export course if the export is disable', async () => {
-			const { teacher, course } = setup();
-			Configuration.set('FEATURE_IMSCC_COURSE_EXPORT_ENABLED', false);
-			const version = { version: '1.1.0' };
-			await em.persistAndFlush([course, teacher.account, teacher.user]);
-			em.clear();
-
-			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(version);
-			expect(response.statusCode).toEqual(404);
-		}); */
 	});
 });
