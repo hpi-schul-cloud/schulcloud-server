@@ -17,7 +17,7 @@ export class ContextExternalToolPostParams {
 	@ApiProperty()
 	contextType!: ToolContextType;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsString()
 	@IsOptional()
 	contextToolName?: string;
