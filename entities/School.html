@@ -665,9 +665,7 @@ export class School extends BaseEntity {
 		if (props.previousExternalId) {
 			this.previousExternalId &#x3D; props.previousExternalId;
 		}
-		if (props.inMaintenanceSince) {
-			this.inMaintenanceSince &#x3D; props.inMaintenanceSince;
-		}
+		this.inMaintenanceSince &#x3D; props.inMaintenanceSince;
 		if (props.inUserMigration !&#x3D;&#x3D; null) {
 			this.inUserMigration &#x3D; props.inUserMigration;
 		}
