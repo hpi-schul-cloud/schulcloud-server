@@ -69,7 +69,7 @@ export class CardService {
 		await this.boardDoRepo.save(card, parent);
 	}
 
-	async createEmptyElements(card: Card, requiredEmptyElements: ContentElementType[]): Promise<void> {
+	private async createEmptyElements(card: Card, requiredEmptyElements: ContentElementType[]): Promise<void> {
 		for await (const requiredEmptyElement of requiredEmptyElements) {
 			await this.contentElementService.create(card, requiredEmptyElement);
 		}
