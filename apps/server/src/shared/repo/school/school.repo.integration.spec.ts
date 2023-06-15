@@ -43,6 +43,7 @@ describe('SchoolRepo', () => {
 
 	beforeEach(async () => {
 		await em.nativeDelete(School, {});
+		await em.nativeDelete(SchoolYear, {});
 		em.clear();
 		jest.resetAllMocks();
 	});
