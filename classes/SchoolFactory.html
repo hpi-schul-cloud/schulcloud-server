@@ -1259,6 +1259,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { DoBaseFactory } from &#x27;./do-base.factory&#x27;;
+import { federalStateFactory } from &#x27;../federal-state.factory&#x27;;
+import { schoolYearFactory } from &#x27;../schoolyear.factory&#x27;;
 
 class SchoolFactory extends DoBaseFactory&lt;SchoolDO, SchoolDO&gt; {}
 
@@ -1275,6 +1277,8 @@ export const schoolDOFactory &#x3D; SchoolFactory.define(SchoolDO, ({ sequence }
 		previousExternalId: &#x27;456&#x27;,
 		officialSchoolNumber: &#x27;789&#x27;,
 		systems: [],
+		federalState: federalStateFactory.build(),
+		schoolYear: schoolYearFactory.build(),
 	};
 });
 </code></pre>

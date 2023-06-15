@@ -280,6 +280,9 @@
                             <a href="#externalToolFactory" title="apps/server/src/shared/testing/factory/external-tool.factory.ts" ><b>externalToolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#federalStateFactory" title="apps/server/src/shared/testing/factory/federal-state.factory.ts" ><b>federalStateFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../federal-state.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#FILE_COULD_NOT_BE_COPIED_HINT" title="apps/server/src/modules/files-storage-client/service/copy-files.service.ts" ><b>FILE_COULD_NOT_BE_COPIED_HINT</b>&nbsp;&nbsp;&nbsp;(apps/.../copy-files.service.ts)</a>
                         </li>
                         <li>
@@ -1425,6 +1428,7 @@
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	ExternalTool,
+	FederalState,
 	File,
 	ImportUser,
 	Lesson,
@@ -4741,6 +4745,50 @@ it should ensure an empty result</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/federal-state.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="federalStateFactory"></a>
+                    <span class="name">
+                        <span ><b>federalStateFactory</b></span>
+                        <a href="#federalStateFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;FederalState, IFederalStateProperties&gt;(
+	FederalState,
+	() &#x3D;&gt;
+		new FederalState({
+			name: &#x27;Hamburg&#x27;,
+			abbreviation: &#x27;HH&#x27;,
+			logoUrl:
+				&#x27;https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Coat_of_arms_of_Hamburg.svg/1200px-Coat_of_arms_of_Hamburg.svg.png&#x27;,
+			counties: [
+				new County({
+					name: &#x27;Hamburg-Mitte&#x27;,
+					countyId: &#x27;02000&#x27;,
+					antaresKey: &#x27;02000&#x27;,
+				}),
+				new County({
+					name: &#x27;Altona&#x27;,
+					countyId: &#x27;02002&#x27;,
+					antaresKey: &#x27;02002&#x27;,
+				}),
+			],
+		})
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/files-storage-client/service/copy-files.service.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6533,6 +6581,8 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		previousExternalId: &#x27;456&#x27;,
 		officialSchoolNumber: &#x27;789&#x27;,
 		systems: [],
+		federalState: federalStateFactory.build(),
+		schoolYear: schoolYearFactory.build(),
 	};
 })</code>
                     </td>
@@ -6631,6 +6681,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	return {
 		name: &#x60;school #${sequence}&#x60;,
 		schoolYear: schoolYearFactory.build(),
+		federalState: federalStateFactory.build(),
 	};
 })</code>
                     </td>

@@ -1539,18 +1539,30 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolModule.html" data-type="entity-link" >SchoolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' :
-                                        'id="xs-injectables-links-module-SchoolModule-d12d034b58de9bfd2cdd360272630efa8114d105f0001a0565593c52d735097a8d9bfaa549940044c883342c8f440e6eca60376c9c1bc59d85f36bbfaec9c33b"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' :
+                                        'id="xs-injectables-links-module-SchoolModule-c436399d7bd845ab404dbb88b8787208119c200a6334773442a1faaad6aca1909bda67d2c9ffe4142106e0d2527faefed192fbf881fbc4d8b7b6efc71beac596"' }>
+                                        <li class="link">
+                                            <a href="injectables/FederalStateRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FederalStateRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/FederalStateService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >FederalStateService</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/SchoolRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolRepo</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SchoolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SchoolYearRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolYearRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/SchoolYearService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolYearService</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -2267,6 +2279,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/ExternalTool.html" data-type="entity-link" >ExternalTool</a>
                                 </li>
                                 <li class="link">
+                                    <a href="entities/FederalState.html" data-type="entity-link" >FederalState</a>
+                                </li>
+                                <li class="link">
                                     <a href="entities/File.html" data-type="entity-link" >File</a>
                                 </li>
                                 <li class="link">
@@ -2710,6 +2725,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/CopyMapper.html" data-type="entity-link" >CopyMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/County.html" data-type="entity-link" >County</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CourseFactory.html" data-type="entity-link" >CourseFactory</a>
@@ -4030,6 +4048,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/FeathersAuthProvider.html" data-type="entity-link" >FeathersAuthProvider</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/FederalStateRepo.html" data-type="entity-link" >FederalStateRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/FederalStateService.html" data-type="entity-link" >FederalStateService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/FileRecordRepo.html" data-type="entity-link" >FileRecordRepo</a>
                                 </li>
                                 <li class="link">
@@ -4184,6 +4208,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SchoolYearRepo.html" data-type="entity-link" >SchoolYearRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/SchoolYearService.html" data-type="entity-link" >SchoolYearService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/ShareTokenService.html" data-type="entity-link" >ShareTokenService</a>
@@ -4539,6 +4566,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IErrorType.html" data-type="entity-link" >IErrorType</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/IFederalStateProperties.html" data-type="entity-link" >IFederalStateProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/IFileDO.html" data-type="entity-link" >IFileDO</a>

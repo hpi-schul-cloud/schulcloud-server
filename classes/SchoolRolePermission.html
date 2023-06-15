@@ -147,7 +147,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:46</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -184,7 +184,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:43</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -218,6 +218,7 @@ import { UserLoginMigration } from &#x27;@shared/domain/entity/user-login-migrat
 import { BaseEntity } from &#x27;./base.entity&#x27;;
 import { SchoolYear } from &#x27;./schoolyear.entity&#x27;;
 import { System } from &#x27;./system.entity&#x27;;
+import { FederalState } from &#x27;./federal-state.entity&#x27;;
 
 export enum SchoolFeatures {
 	ROCKET_CHAT &#x3D; &#x27;rocketChat&#x27;,
@@ -240,6 +241,7 @@ export interface ISchoolProperties {
 	features?: SchoolFeatures[];
 	schoolYear?: SchoolYear;
 	userLoginMigration?: UserLoginMigration;
+	federalState: FederalState;
 }
 
 @Embeddable()
@@ -300,6 +302,9 @@ export class School extends BaseEntity {
 	})
 	userLoginMigration?: UserLoginMigration;
 
+	@ManyToOne(() &#x3D;&gt; FederalState, { fieldName: &#x27;federalState&#x27;, nullable: false })
+	federalState: FederalState;
+
 	constructor(props: ISchoolProperties) {
 		super();
 		if (props.externalId) {
@@ -328,6 +333,7 @@ export class School extends BaseEntity {
 		if (props.userLoginMigration) {
 			this.userLoginMigration &#x3D; props.userLoginMigration;
 		}
+		this.federalState &#x3D; props.federalState;
 	}
 }
 </code></pre>

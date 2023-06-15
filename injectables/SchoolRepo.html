@@ -495,7 +495,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:56</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:57</a></code>
 </div>
                 </td>
             </tr>
@@ -1482,6 +1482,7 @@ export class SchoolRepo extends BaseDORepo&lt;SchoolDO, School, ISchoolPropertie
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) &#x3D;&gt; system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
+			federalState: entity.federalState,
 		});
 	}
 
@@ -1501,6 +1502,7 @@ export class SchoolRepo extends BaseDORepo&lt;SchoolDO, School, ISchoolPropertie
 			userLoginMigration: entityDO.userLoginMigrationId
 				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
 				: undefined,
+			federalState: entityDO.federalState,
 		};
 	}
 }

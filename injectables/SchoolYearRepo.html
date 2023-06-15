@@ -64,7 +64,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/repo/schoolyear/schoolyear.repo.ts</code>
+            <code>apps/server/src/modules/school/repo/schoolyear.repo.ts</code>
         </p>
 
 
@@ -90,6 +90,10 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findCurrentYear" >findCurrentYear</a>
+                            </li>
                             <li>
                                 <a href="#create" >create</a>
                             </li>
@@ -137,6 +141,45 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findCurrentYear"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>findCurrentYear</b></span>
+                        <a href="#findCurrentYear"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findCurrentYear()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="11"
+                            class="link-to-prism">apps/server/src/modules/school/repo/schoolyear.repo.ts:11</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >Promise&lt;SchoolYear&gt;</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -465,7 +508,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/shared/repo/schoolyear/schoolyear.repo.ts:7</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/school/repo/schoolyear.repo.ts:7</a></div>
                                 </td>
                             </tr>
 
@@ -484,6 +527,14 @@ import { BaseRepo } from &#x27;@shared/repo/base.repo&#x27;;
 export class SchoolYearRepo extends BaseRepo&lt;SchoolYear&gt; {
 	get entityName() {
 		return SchoolYear;
+	}
+
+	async findCurrentYear(): Promise&lt;SchoolYear&gt; {
+		const currentDate &#x3D; new Date();
+		const year: SchoolYear | null &#x3D; await this._em.findOneOrFail(SchoolYear, {
+			$and: [{ startDate: { $lte: currentDate } }, { endDate: { $gte: currentDate } }],
+		});
+		return year;
 	}
 }
 </code></pre>
