@@ -98,9 +98,19 @@ describe('UserScope', () => {
 	});
 
 	describe('whereLastLoginSystemChangeIsBetween', () => {
-		it('should return scope with added query where lastLoginSystemChange gte and lt is given', () => {
+		const setup = () => {
 			const startDate: Date = new Date();
 			const endDate: Date = new Date();
+
+			return {
+				startDate,
+				endDate,
+			};
+		};
+
+		it('should return scope with added query where lastLoginSystemChange gte and lt is given', () => {
+			const { startDate, endDate } = setup();
+
 			scope.whereLastLoginSystemChangeIsBetween(startDate, endDate);
 
 			expect(scope.query).toEqual({
@@ -112,8 +122,10 @@ describe('UserScope', () => {
 		});
 
 		it('should return scope without added whereLastLoginSystemChangeIsBetween to query', () => {
-			const date: Date = new Date();
-			scope.whereLastLoginSystemChangeIsBetween(date, undefined);
+			const { startDate } = setup();
+
+			scope.whereLastLoginSystemChangeIsBetween(startDate, undefined);
+
 			expect(scope.query).toEqual({});
 		});
 	});

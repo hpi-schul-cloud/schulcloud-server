@@ -785,8 +785,16 @@ describe('UserLoginMigrationService', () => {
 
 	describe('deleteUserLoginMigration', () => {
 		describe('when a userLoginMigration is given', () => {
-			it('should call userLoginMigrationRepo.delete', async () => {
+			const setup = () => {
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should call userLoginMigrationRepo.delete', async () => {
+				const { userLoginMigration } = setup();
 
 				await service.deleteUserLoginMigration(userLoginMigration);
 

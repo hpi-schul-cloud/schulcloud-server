@@ -478,47 +478,38 @@ describe('SchoolMigrationService', () => {
 	});
 
 	describe('hasSchoolMigratedUser', () => {
-		describe('when the school has no migration', () => {
-			it('should return false', async () => {
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-				const result = await service.hasSchoolMigratedUser('schoolId');
-
-				expect(result).toBe(false);
-			});
-		});
-
-		describe('when the school has migrated user', () => {
+		describe('when school will be loaded', () => {
 			const setup = () => {
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 
 				return {
 					userLoginMigration,
 				};
 			};
 
-			it('should return true', async () => {
-				const { userLoginMigration } = setup();
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
-
-				const result = await service.hasSchoolMigratedUser('schoolId');
-
-				expect(result).toBe(true);
-			});
-
 			it('should call userLoginMigrationRepo.findBySchoolId', async () => {
-				const { userLoginMigration } = setup();
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				setup();
 
 				await service.hasSchoolMigratedUser('schoolId');
 
 				expect(userLoginMigrationRepo.findBySchoolId).toHaveBeenCalledWith('schoolId');
 			});
+		});
+
+		describe('when users will be loaded', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
+
+				return {
+					userLoginMigration,
+				};
+			};
 
 			it('should call userService.findUsers', async () => {
 				const { userLoginMigration } = setup();
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 
 				await service.hasSchoolMigratedUser('schoolId');
 
@@ -529,12 +520,45 @@ describe('SchoolMigrationService', () => {
 			});
 		});
 
-		describe('when the school has no migrated user', () => {
-			it('should return false', async () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
-				userService.findUsers.mockResolvedValue(new Page([], 0));
+		describe('when the school has no migration', () => {
+			const setup = () => {
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+			};
 
+			it('should return false', async () => {
+				setup();
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when the school has migrated user', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
+			};
+
+			it('should return true', async () => {
+				setup();
+
+				const result = await service.hasSchoolMigratedUser('schoolId');
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when the school has no migrated user', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
+				userService.findUsers.mockResolvedValue(new Page([], 0));
+			};
+
+			it('should return false', async () => {
+				setup();
 
 				const result = await service.hasSchoolMigratedUser('schoolId');
 

@@ -420,9 +420,7 @@ describe('UserRepo', () => {
 		});
 
 		describe('scope', () => {
-			it('should add query to scope', async () => {
-				const { options, emFindAndCountSpy } = await setupFind();
-
+			const setup = async () => {
 				const query: UserQuery = {
 					schoolId: 'schoolId',
 					isOutdated: true,
@@ -431,6 +429,25 @@ describe('UserRepo', () => {
 					lastLoginSystemChangeBetweenStart: new Date(),
 					lastLoginSystemChangeBetweenEnd: new Date(),
 				};
+
+				const options: IFindOptions<UserDO> = {};
+
+				await em.nativeDelete(User, {});
+				await em.nativeDelete(School, {});
+
+				const userA: User = userFactory.buildWithId({ firstName: 'A' });
+				const userB: User = userFactory.buildWithId({ firstName: 'B' });
+				const userC: User = userFactory.buildWithId({ firstName: 'C' });
+				const users: User[] = [userA, userB, userC];
+				await em.persistAndFlush(users);
+
+				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
+
+				return { query, options, users, emFindAndCountSpy };
+			};
+
+			it('should add query to scope', async () => {
+				const { query, options, emFindAndCountSpy } = await setup();
 
 				await repo.find(query, options);
 

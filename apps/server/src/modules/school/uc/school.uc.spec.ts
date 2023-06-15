@@ -12,6 +12,7 @@ import {
 	UserLoginMigrationRevertService,
 	UserLoginMigrationService,
 } from '@src/modules/user-login-migration';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
 describe('SchoolUc', () => {
@@ -96,48 +97,61 @@ describe('SchoolUc', () => {
 		});
 
 		describe('when closing a migration', () => {
-			const setup = () => {
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date('2023-05-02'),
-				});
-				const updatedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
-					schoolId: 'schoolId',
-					targetSystemId: 'targetSystemId',
-					startedAt: new Date('2023-05-02'),
-					closedAt: new Date('2023-05-02'),
-					finishedAt: new Date('2023-05-02'),
-				});
+			describe('when there were migrated users', () => {
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+						closedAt: undefined,
+					});
+					const updatedUserLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+						targetSystemId: userLoginMigration.targetSystemId,
+					});
 
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
-				authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
-				schoolService.getSchoolById.mockResolvedValue(school);
-				userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
-
-				return {
-					updatedUserLoginMigration,
-				};
-			};
-
-			describe('when there were users migrated', () => {
-				it('should call schoolMigrationService.markUnmigratedUsersAsOutdated', async () => {
-					setup();
+					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+					authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+					schoolService.getSchoolById.mockResolvedValue(school);
+					userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(true);
 
-					await schoolUc.setMigration('schoolId', true, false, true, 'userId');
+					return {
+						updatedUserLoginMigration,
+					};
+				};
+
+				it('should call schoolMigrationService.markUnmigratedUsersAsOutdated', async () => {
+					const { updatedUserLoginMigration } = setup();
+
+					await schoolUc.setMigration(updatedUserLoginMigration.schoolId, true, false, true, 'userId');
 
 					expect(schoolMigrationService.markUnmigratedUsersAsOutdated).toHaveBeenCalled();
 				});
 			});
 
 			describe('when there were no users migrated', () => {
-				it('should call userLoginMigrationRevertService.revertUserLoginMigration', async () => {
-					const { updatedUserLoginMigration } = setup();
+				const setup = () => {
+					const school: SchoolDO = schoolDOFactory.buildWithId();
+					const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+						closedAt: undefined,
+					});
+					const updatedUserLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+						targetSystemId: userLoginMigration.targetSystemId,
+					});
+
+					userLoginMigrationService.findMigrationBySchool.mockResolvedValue(userLoginMigration);
+					authService.checkPermissionByReferences.mockImplementation(() => Promise.resolve());
+					schoolService.getSchoolById.mockResolvedValue(school);
+					userLoginMigrationService.setMigration.mockResolvedValue(updatedUserLoginMigration);
 					schoolMigrationService.hasSchoolMigratedUser.mockResolvedValue(false);
 
-					await schoolUc.setMigration('schoolId', true, false, true, 'userId');
+					return {
+						updatedUserLoginMigration,
+					};
+				};
+
+				it('should call userLoginMigrationRevertService.revertUserLoginMigration', async () => {
+					const { updatedUserLoginMigration } = setup();
+
+					await schoolUc.setMigration(updatedUserLoginMigration.schoolId, true, false, true, 'userId');
 
 					expect(userLoginMigrationRevertService.revertUserLoginMigration).toHaveBeenCalledWith(
 						updatedUserLoginMigration
