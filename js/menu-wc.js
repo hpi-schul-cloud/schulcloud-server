@@ -2676,6 +2676,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ContextTypeMapper.html" data-type="entity-link" >ContextTypeMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ContextTypeParams.html" data-type="entity-link" >ContextTypeParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CookiesDto.html" data-type="entity-link" >CookiesDto</a>
                             </li>
                             <li class="link">
@@ -3466,12 +3469,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Scope.html" data-type="entity-link" >Scope</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ScopeParams.html" data-type="entity-link" >ScopeParams</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/ScopeQuery.html" data-type="entity-link" >ScopeQuery</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ServerConsole.html" data-type="entity-link" >ServerConsole</a>

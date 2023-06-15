@@ -183,8 +183,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="69"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:69</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="68"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:68</a></div>
                 </td>
             </tr>
 
@@ -274,8 +274,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="140"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:140</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="139"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:139</a></div>
                 </td>
             </tr>
 
@@ -368,8 +368,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:83</a></div>
                 </td>
             </tr>
 
@@ -483,8 +483,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="109"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:109</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:108</a></div>
                 </td>
             </tr>
 
@@ -574,8 +574,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="48"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:48</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:47</a></div>
                 </td>
             </tr>
 
@@ -681,8 +681,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="123"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:123</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:122</a></div>
                 </td>
             </tr>
 
@@ -771,14 +771,13 @@ import {
 } from &#x27;@nestjs/swagger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { IFindOptions, RoleName, ExternalToolDO, Page } from &#x27;@shared/domain&#x27;;
+import { ExternalToolDO, IFindOptions, Page, RoleName } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
+import { ExternalToolUc, Lti11Uc } from &#x27;../uc&#x27;;
 import { CreateExternalTool, UpdateExternalTool } from &#x27;../uc/dto&#x27;;
-import { ExternalToolUc } from &#x27;../uc/external-tool.uc&#x27;;
-import { Lti11Uc } from &#x27;../uc/lti11.uc&#x27;;
 import {
 	ExternalToolPostParams,
 	ExternalToolResponse,
