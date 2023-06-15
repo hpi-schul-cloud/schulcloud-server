@@ -11,8 +11,11 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
+import { federalStateFactory, schoolDOFactory } from '@shared/testing';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { OidcProvisioningService } from './oidc-provisioning.service';
+import { FederalStateService, SchoolYearService } from '../../../../school/service';
 
 jest.mock('crypto-js');
 
@@ -24,6 +27,8 @@ describe('OidcProvisioningService', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let schoolYearService: DeepMocked<SchoolYearService>;
+	let federalStateService: DeepMocked<FederalStateService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -45,6 +50,14 @@ describe('OidcProvisioningService', () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: SchoolYearService,
+					useValue: createMock<SchoolYearService>(),
+				},
+				{
+					provide: FederalStateService,
+					useValue: createMock<FederalStateService>(),
+				},
 			],
 		}).compile();
 
@@ -53,6 +66,8 @@ describe('OidcProvisioningService', () => {
 		schoolService = module.get(SchoolService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		schoolYearService = module.get(SchoolYearService);
+		federalStateService = module.get(FederalStateService);
 	});
 
 	afterAll(async () => {
@@ -70,7 +85,7 @@ describe('OidcProvisioningService', () => {
 			name: 'name',
 			officialSchoolNumber: 'officialSchoolNumber',
 		});
-		const savedSchoolDO = new SchoolDO({
+		const savedSchoolDO = schoolDOFactory.build({
 			id: 'schoolId',
 			externalId: 'externalId',
 			name: 'name',
@@ -78,7 +93,7 @@ describe('OidcProvisioningService', () => {
 			systems: [systemId],
 			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 		});
-		const existingSchoolDO = new SchoolDO({
+		const existingSchoolDO = schoolDOFactory.build({
 			id: 'schoolId',
 			externalId: 'externalId',
 			name: 'existingName',
@@ -103,6 +118,8 @@ describe('OidcProvisioningService', () => {
 				const { systemId, externalSchoolDto, savedSchoolDO } = setupData();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(null);
+				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
+				federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
 
 				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 

@@ -9,7 +9,8 @@ import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { SchoolYearService } from '@src/modules/school/service';
+import { FederalStateService, SchoolYearService } from '@src/modules/school/service';
+import { FederalStateNames } from '@src/modules/school/types';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 
 @Injectable()
@@ -19,7 +20,8 @@ export class OidcProvisioningService {
 		private readonly schoolService: SchoolService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly federalStateService: FederalStateService
 	) {}
 
 	async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<SchoolDO> {
@@ -44,8 +46,9 @@ export class OidcProvisioningService {
 				officialSchoolNumber: externalSchool.officialSchoolNumber,
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 				schoolYear: await this.schoolYearService.getCurrentSchoolYear(),
-				// TODO: N21-983 map federalState?
+				federalState: await this.federalStateService.findFederalStateByName(FederalStateNames.NIEDERSACHEN),
 			});
 		}
 
