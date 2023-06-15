@@ -15,7 +15,7 @@ echo "Server logs:"
 tail -f server.log &
 
 echo "Wait for server to start..."
-until curl -s -w --retry 360 --retry-connrefused --retry-delay 10 http://localhost:3030/serverversion >/dev/null 2>&1; do
+until curl -s -w --retry 10 --retry-max-time 120 --retry-connrefused --retry-delay 10 http://localhost:3030/serverversion >/dev/null 2>&1; do
     sleep 1
     echo "asleep"
 done
