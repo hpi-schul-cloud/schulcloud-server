@@ -11,14 +11,13 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions, RoleName, ExternalToolDO, Page } from '@shared/domain';
+import { ExternalToolDO, IFindOptions, Page, RoleName } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Authorization } from 'oauth-1.0a';
+import { ExternalToolUc, Lti11Uc } from '../uc';
 import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
-import { ExternalToolUc } from '../uc/external-tool.uc';
-import { Lti11Uc } from '../uc/lti11.uc';
 import {
 	ExternalToolPostParams,
 	ExternalToolResponse,
