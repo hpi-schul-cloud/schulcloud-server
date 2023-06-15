@@ -44,6 +44,23 @@ describe('VideoConferenceInfoUc', () => {
 		videoConferenceService = module.get(VideoConferenceService);
 	});
 
+	const createBbbMeetingInfoSuccessResponse = (scopeId: string): BBBResponse<BBBMeetingInfoResponse> => {
+		return {
+			response: {
+				returncode: BBBStatus.SUCCESS,
+				meetingID: scopeId,
+				internalMeetingID: 'internalMeetingID',
+				createTime: new Date().getTime(),
+				voiceBridge: 123,
+				dialNumber: '4910790393',
+				createDate: '2022-02-15',
+				hasUserJoined: false,
+				duration: 2333,
+				hasBeenForciblyEnded: false,
+			} as BBBMeetingInfoResponse,
+		};
+	};
+
 	describe('getMeetingInfo', () => {
 		describe('when conference is not running', () => {
 			const setup = () => {
@@ -64,12 +81,6 @@ describe('VideoConferenceInfoUc', () => {
 					},
 				});
 
-				return { user, currentUserId, scope, scopeInfo, videoConferenceDO };
-			};
-
-			it('should return video conference info with state NOT_STARTED', async () => {
-				const { user, currentUserId, scope, scopeInfo, videoConferenceDO } = setup();
-
 				userService.findById.mockResolvedValue(user);
 				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
@@ -79,6 +90,12 @@ describe('VideoConferenceInfoUc', () => {
 				videoConferenceService.hasExpertRole.mockResolvedValue(true);
 				videoConferenceService.canGuestJoin.mockReturnValue(true);
 
+				return { user, currentUserId, scope, scopeInfo, videoConferenceDO };
+			};
+
+			it('should return video conference info with state NOT_STARTED', async () => {
+				const { currentUserId, scope } = setup();
+
 				const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
 
 				expect(result.state).toBe(VideoConferenceState.NOT_STARTED);
@@ -86,127 +103,118 @@ describe('VideoConferenceInfoUc', () => {
 		});
 
 		describe('when conference is running', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-				const currentUserId: string = user.id as string;
-				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-				const scopeInfo: IScopeInfo = {
-					scopeId: scope.id,
-					scopeName: 'scopeName',
-					title: 'title',
-					logoutUrl: 'logoutUrl',
-				};
-				const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
-					options: {
-						everyAttendeeJoinsMuted: true,
-						everybodyJoinsAsModerator: true,
-						moderatorMustApproveJoinRequests: true,
-					},
-				});
-				const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = {
-					response: {
-						returncode: BBBStatus.SUCCESS,
-						meetingID: scope.id,
-						internalMeetingID: 'internalMeetingID',
-						createTime: new Date().getTime(),
-						voiceBridge: 123,
-						dialNumber: '4910790393',
-						createDate: '2022-02-15',
-						hasUserJoined: false,
-						duration: 2333,
-						hasBeenForciblyEnded: false,
-					} as BBBMeetingInfoResponse,
-				};
-
-				userService.findById.mockResolvedValue(user);
-				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
-				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
-				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
-				bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
-				videoConferenceService.hasExpertRole.mockResolvedValue(false);
-				videoConferenceService.canGuestJoin.mockReturnValue(true);
-				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-
-				return { user, currentUserId, scope, scopeInfo, videoConferenceDO, bbbMeetingInfoResponse };
-			};
-
 			describe('when bbbRole is moderator', () => {
-				it('should call userService.findById', async () => {
-					const { user, currentUserId, scope } = setup();
+				const setup = () => {
+					const user: UserDO = userDoFactory.buildWithId();
+					const currentUserId: string = user.id as string;
+					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+					const scopeInfo: IScopeInfo = {
+						scopeId: scope.id,
+						scopeName: 'scopeName',
+						title: 'title',
+						logoutUrl: 'logoutUrl',
+					};
+					const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
+						options: {
+							everyAttendeeJoinsMuted: true,
+							everybodyJoinsAsModerator: true,
+							moderatorMustApproveJoinRequests: true,
+						},
+					});
+					const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = {
+						response: {
+							returncode: BBBStatus.SUCCESS,
+							meetingID: scope.id,
+							internalMeetingID: 'internalMeetingID',
+							createTime: new Date().getTime(),
+							voiceBridge: 123,
+							dialNumber: '4910790393',
+							createDate: '2022-02-15',
+							hasUserJoined: false,
+							duration: 2333,
+							hasBeenForciblyEnded: false,
+						} as BBBMeetingInfoResponse,
+					};
 
 					userService.findById.mockResolvedValue(user);
-
-					await uc.getMeetingInfo(currentUserId, scope);
-
-					expect(userService.findById).toBeCalledWith(currentUserId);
-				});
-
-				it('should call videoConferenceService.throwOnFeaturesDisabled', async () => {
-					const { currentUserId, scope } = setup();
-
 					videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
-
-					await uc.getMeetingInfo(currentUserId, scope);
-
-					expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalled();
-				});
-
-				it('should call videoConferenceService.getScopeInfo', async () => {
-					const { currentUserId, scope, scopeInfo } = setup();
-
 					videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
-
-					await uc.getMeetingInfo(currentUserId, scope);
-
-					expect(videoConferenceService.getScopeInfo).toBeCalledWith(currentUserId, scope.id, scope.scope);
-				});
-
-				it('should call bbbService.getMeetingInfo', async () => {
-					const { currentUserId, scope } = setup();
-
-					bbbService.getMeetingInfo.mockRejectedValue(new Error('not found'));
-
-					await uc.getMeetingInfo(currentUserId, scope);
-
-					expect(bbbService.getMeetingInfo).toBeCalledWith({ meetingID: scope.id });
-				});
-
-				it('should call videoConferenceService.findVideoConferenceByScopeIdAndScope', async () => {
-					const { currentUserId, scope, videoConferenceDO } = setup();
-
 					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
-
-					await uc.getMeetingInfo(currentUserId, scope);
-
-					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toBeCalledWith(scope.id, scope.scope);
-				});
-
-				it('should return video conference info with existing options', async () => {
-					const { currentUserId, scope, videoConferenceDO, bbbMeetingInfoResponse } = setup();
+					bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
+					videoConferenceService.hasExpertRole.mockResolvedValue(false);
+					videoConferenceService.canGuestJoin.mockReturnValue(true);
 					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
 
-					const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
+					return { user, currentUserId, scope, scopeInfo, videoConferenceDO, bbbMeetingInfoResponse };
+				};
 
-					expect(result).toEqual<VideoConferenceInfo>({
-						state: VideoConferenceState.RUNNING,
-						options: videoConferenceDO.options,
-						bbbResponse: bbbMeetingInfoResponse,
-						permission: Permission.START_MEETING,
+				describe('when bbbRole is moderator', () => {
+					it('should call userService.findById', async () => {
+						const { currentUserId, scope } = setup();
+
+						await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(userService.findById).toBeCalledWith(currentUserId);
 					});
-				});
 
-				it('should return video conference info with default options', async () => {
-					const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
-					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockRejectedValue(new Error('not found'));
+					it('should call videoConferenceService.throwOnFeaturesDisabled', async () => {
+						const { currentUserId, scope } = setup();
 
-					const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
+						await uc.getMeetingInfo(currentUserId, scope);
 
-					expect(result).toEqual<VideoConferenceInfo>({
-						state: VideoConferenceState.RUNNING,
-						options: defaultVideoConferenceOptions,
-						bbbResponse: bbbMeetingInfoResponse,
-						permission: Permission.START_MEETING,
+						expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalled();
+					});
+
+					it('should call videoConferenceService.getScopeInfo', async () => {
+						const { currentUserId, scope } = setup();
+
+						await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(videoConferenceService.getScopeInfo).toBeCalledWith(currentUserId, scope.id, scope.scope);
+					});
+
+					it('should call bbbService.getMeetingInfo', async () => {
+						const { currentUserId, scope } = setup();
+						bbbService.getMeetingInfo.mockRejectedValue(new Error('not found'));
+
+						await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(bbbService.getMeetingInfo).toBeCalledWith({ meetingID: scope.id });
+					});
+
+					it('should call videoConferenceService.findVideoConferenceByScopeIdAndScope', async () => {
+						const { currentUserId, scope } = setup();
+
+						await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toBeCalledWith(scope.id, scope.scope);
+					});
+
+					it('should return video conference info with existing options', async () => {
+						const { currentUserId, scope, videoConferenceDO, bbbMeetingInfoResponse } = setup();
+
+						const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(result).toEqual<VideoConferenceInfo>({
+							state: VideoConferenceState.RUNNING,
+							options: videoConferenceDO.options,
+							bbbResponse: bbbMeetingInfoResponse,
+							permission: Permission.START_MEETING,
+						});
+					});
+
+					it('should return video conference info with default options', async () => {
+						const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
+						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockRejectedValue(new Error('not found'));
+
+						const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
+
+						expect(result).toEqual<VideoConferenceInfo>({
+							state: VideoConferenceState.RUNNING,
+							options: defaultVideoConferenceOptions,
+							bbbResponse: bbbMeetingInfoResponse,
+							permission: Permission.START_MEETING,
+						});
 					});
 				});
 			});
@@ -214,11 +222,41 @@ describe('VideoConferenceInfoUc', () => {
 			describe('when bbbRole is viewer', () => {
 				describe('when user has expert role', () => {
 					describe('when guest can join', () => {
-						it('should return video conference info with existing options', async () => {
-							const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
-							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+						const setup = () => {
+							const user: UserDO = userDoFactory.buildWithId();
+							const currentUserId: string = user.id as string;
+							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+							const scopeInfo: IScopeInfo = {
+								scopeId: scope.id,
+								scopeName: 'scopeName',
+								title: 'title',
+								logoutUrl: 'logoutUrl',
+							};
+							const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
+								options: {
+									everyAttendeeJoinsMuted: true,
+									everybodyJoinsAsModerator: true,
+									moderatorMustApproveJoinRequests: true,
+								},
+							});
+							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
+								scope.id
+							);
+
+							userService.findById.mockResolvedValue(user);
+							videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
+							bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
 							videoConferenceService.hasExpertRole.mockResolvedValue(true);
 							videoConferenceService.canGuestJoin.mockReturnValue(true);
+							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+
+							return { currentUserId, scope, bbbMeetingInfoResponse };
+						};
+
+						it('should return video conference info with existing options', async () => {
+							const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
 
 							const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
 
@@ -232,11 +270,41 @@ describe('VideoConferenceInfoUc', () => {
 					});
 
 					describe('when guest can not join', () => {
-						it('should throw ForbiddenException', async () => {
-							const { currentUserId, scope } = setup();
-							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+						const setup = () => {
+							const user: UserDO = userDoFactory.buildWithId();
+							const currentUserId: string = user.id as string;
+							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+							const scopeInfo: IScopeInfo = {
+								scopeId: scope.id,
+								scopeName: 'scopeName',
+								title: 'title',
+								logoutUrl: 'logoutUrl',
+							};
+							const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
+								options: {
+									everyAttendeeJoinsMuted: true,
+									everybodyJoinsAsModerator: true,
+									moderatorMustApproveJoinRequests: true,
+								},
+							});
+							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
+								scope.id
+							);
+
+							userService.findById.mockResolvedValue(user);
+							videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+							videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+							videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
+							bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
 							videoConferenceService.hasExpertRole.mockResolvedValue(true);
 							videoConferenceService.canGuestJoin.mockReturnValue(false);
+							videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+
+							return { currentUserId, scope };
+						};
+
+						it('should throw ForbiddenException', async () => {
+							const { currentUserId, scope } = setup();
 
 							const func = () => uc.getMeetingInfo(currentUserId, scope);
 
@@ -246,9 +314,41 @@ describe('VideoConferenceInfoUc', () => {
 				});
 
 				describe('when user does not have expert role', () => {
+					const setup = () => {
+						const user: UserDO = userDoFactory.buildWithId();
+						const currentUserId: string = user.id as string;
+						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+						const scopeInfo: IScopeInfo = {
+							scopeId: scope.id,
+							scopeName: 'scopeName',
+							title: 'title',
+							logoutUrl: 'logoutUrl',
+						};
+						const videoConferenceDO: VideoConferenceDO = videoConferenceDOFactory.buildWithId({
+							options: {
+								everyAttendeeJoinsMuted: true,
+								everybodyJoinsAsModerator: true,
+								moderatorMustApproveJoinRequests: true,
+							},
+						});
+						const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
+							scope.id
+						);
+
+						userService.findById.mockResolvedValue(user);
+						videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+						videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+						videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDO);
+						bbbService.getMeetingInfo.mockResolvedValue(bbbMeetingInfoResponse);
+						videoConferenceService.hasExpertRole.mockResolvedValue(true);
+						videoConferenceService.canGuestJoin.mockReturnValue(true);
+						videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+
+						return { currentUserId, scope, bbbMeetingInfoResponse };
+					};
+
 					it('should return video conference info without options', async () => {
 						const { currentUserId, scope, bbbMeetingInfoResponse } = setup();
-						videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
 						const result: VideoConferenceInfo = await uc.getMeetingInfo(currentUserId, scope);
 

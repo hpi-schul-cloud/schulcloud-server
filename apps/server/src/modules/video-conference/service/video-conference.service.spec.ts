@@ -146,43 +146,59 @@ describe('VideoConferenceService', () => {
 	});
 
 	describe('isExpert', () => {
-		const setup = (conferenceScope: VideoConferenceScope) => {
-			const user: UserDO = userDoFactory.buildWithId();
-			const userId = user.id as EntityId;
-			const scopeId = new ObjectId().toHexString();
-			const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
-
-			return {
-				user,
-				userId,
-				conferenceScope,
-				scopeId,
-				team,
-			};
-		};
-
 		describe('when user has EXPERT role for a course conference', () => {
-			it('should return true', async () => {
-				const { conferenceScope, userId, scopeId } = setup(VideoConferenceScope.COURSE);
-				const user: UserDO = userDoFactory.build({ id: userId, roleIds: [RoleName.EXPERT] });
+			const setup = () => {
+				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), roleIds: [RoleName.EXPERT] });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
 				userService.findById.mockResolvedValue(user);
 				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.EXPERT })]);
+
+				return {
+					user,
+					userId,
+					conferenceScope: VideoConferenceScope.COURSE,
+					scopeId,
+				};
+			};
+
+			it('should return true', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
 
 				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
+			});
+
+			it('should call userService.findById', async () => {
+				const { conferenceScope, userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, conferenceScope, scopeId);
+
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 
 		describe('when user does not have the EXPERT role for a course conference', () => {
-			it('should return false', async () => {
-				const { conferenceScope, userId, scopeId } = setup(VideoConferenceScope.COURSE);
-				const user: UserDO = userDoFactory.build({ id: userId, roleIds: [RoleName.STUDENT] });
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ roleIds: [RoleName.STUDENT] });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
 				userService.findById.mockResolvedValue(user);
 				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.STUDENT })]);
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				return {
+					userId,
+					scopeId,
+				};
+			};
+
+			it('should return false', async () => {
+				const { userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -190,20 +206,46 @@ describe('VideoConferenceService', () => {
 		});
 
 		describe('when conference scope is unknown', () => {
-			it('should throw a BadRequestException', async () => {
-				const { conferenceScope, userId, scopeId } = setup('invalid-scope' as VideoConferenceScope);
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId({ roleIds: [RoleName.STUDENT] });
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
 
-				const func = async () => service.hasExpertRole(userId, conferenceScope, scopeId);
+				userService.findById.mockResolvedValue(user);
+				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.STUDENT })]);
+
+				return {
+					userId,
+					scopeId,
+				};
+			};
+
+			it('should throw a BadRequestException', async () => {
+				const { userId, scopeId } = setup();
+
+				const func = async () => service.hasExpertRole(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
 			});
 		});
 
 		describe('when user does not exist in team', () => {
-			it('should throw a ForbiddenException', async () => {
-				const { scopeId, team } = setup(VideoConferenceScope.EVENT);
-				team.teamUsers = [];
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+				const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build({ teamUsers: [] });
 				teamsRepo.findById.mockResolvedValue(team);
+
+				return {
+					user,
+					userId,
+					scopeId,
+				};
+			};
+
+			it('should throw a ForbiddenException', async () => {
+				const { scopeId } = setup();
 
 				const func = async () => service.hasExpertRole('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
 
@@ -459,6 +501,7 @@ describe('VideoConferenceService', () => {
 				target: 'scopeId',
 				targetModel: VideoConferenceScope.COURSE,
 			});
+			videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
 
 			return {
 				videoConference,
@@ -468,7 +511,6 @@ describe('VideoConferenceService', () => {
 		describe('when the scope and scope ID are valid', () => {
 			it('should call videoConferenceRepo.findByScopeAndScopeId', async () => {
 				const { videoConference } = setup();
-				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
 
 				await service.findVideoConferenceByScopeIdAndScope(videoConference.target, videoConference.targetModel);
 
@@ -480,7 +522,6 @@ describe('VideoConferenceService', () => {
 
 			it('should return the video conference', async () => {
 				const { videoConference } = setup();
-				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
 
 				const result: VideoConferenceDO = await service.findVideoConferenceByScopeIdAndScope(
 					videoConference.target,
@@ -493,23 +534,23 @@ describe('VideoConferenceService', () => {
 	});
 
 	describe('createOrUpdateVideoConferenceWithOptions', () => {
-		const setup = () => {
-			const options: VideoConferenceOptions = {
-				everyAttendeeJoinsMuted: true,
-				everybodyJoinsAsModerator: true,
-				moderatorMustApproveJoinRequests: true,
-			};
-			const videoConference = videoConferenceDOFactory.build({ options });
-			const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
-
-			return {
-				options,
-				scope,
-				videoConference,
-			};
-		};
-
 		describe('when video conference exists', () => {
+			const setup = () => {
+				const options: VideoConferenceOptions = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+				};
+				const videoConference = videoConferenceDOFactory.build({ options });
+				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+
+				return {
+					options,
+					scope,
+					videoConference,
+				};
+			};
+
 			it('should call videoConferenceRepo.findByScopeAndScopeId', async () => {
 				const { scope, options } = setup();
 
@@ -527,27 +568,63 @@ describe('VideoConferenceService', () => {
 				expect(videoConferenceRepo.save).toHaveBeenCalledWith(videoConference);
 			});
 
-			it('should return the updated video conference with new options', async () => {
-				const { videoConference, scope } = setup();
-				const newOptions: VideoConferenceOptions = {
-					everyAttendeeJoinsMuted: false,
-					everybodyJoinsAsModerator: false,
-					moderatorMustApproveJoinRequests: false,
+			describe('when options are not provided', () => {
+				const setup = () => {
+					const options: VideoConferenceOptions = {
+						everyAttendeeJoinsMuted: true,
+						everybodyJoinsAsModerator: true,
+						moderatorMustApproveJoinRequests: true,
+					};
+					const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+					const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+
+					const newOptions: VideoConferenceOptions = {
+						everyAttendeeJoinsMuted: false,
+						everybodyJoinsAsModerator: false,
+						moderatorMustApproveJoinRequests: false,
+					};
+
+					videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
+					videoConferenceRepo.save.mockResolvedValue(videoConference);
+
+					return {
+						scope,
+						videoConference,
+						newOptions,
+					};
 				};
-				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
-				videoConferenceRepo.save.mockResolvedValue(videoConference);
 
-				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
-					scope.id,
-					scope.scope,
-					newOptions
-				);
+				it('should return the updated video conference with new options', async () => {
+					const { videoConference, scope, newOptions } = setup();
 
-				expect(result).toEqual({ ...videoConference, options: newOptions });
+					const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
+						scope.id,
+						scope.scope,
+						newOptions
+					);
+
+					expect(result).toEqual({ ...videoConference, options: newOptions });
+				});
 			});
 		});
 
 		describe('when video conference does not exist', () => {
+			const setup = () => {
+				const options: VideoConferenceOptions = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+				};
+				const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+
+				return {
+					videoConference,
+					options,
+					scope,
+				};
+			};
+
 			it('should create a new video conference', async () => {
 				const { videoConference, scope, options } = setup();
 				videoConferenceRepo.findByScopeAndScopeId.mockRejectedValue(new NotFoundException());

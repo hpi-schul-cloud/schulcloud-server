@@ -43,37 +43,35 @@ describe('VideoConferenceEndUc', () => {
 	});
 
 	describe('end', () => {
-		const setup = () => {
-			const user: UserDO = userDoFactory.buildWithId();
-			const currentUserId: string = user.id as string;
-			const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-			const scopeInfo: IScopeInfo = {
-				scopeId: scope.id,
-				scopeName: 'scopeName',
-				title: 'title',
-				logoutUrl: 'logoutUrl',
-			};
-
-			const bbbEndResponse: BBBResponse<BBBBaseResponse> = {
-				response: {
-					returncode: BBBStatus.SUCCESS,
-				} as BBBBaseResponse,
-			};
-
-			userService.findById.mockResolvedValue(user);
-			videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
-			videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
-			bbbService.end.mockResolvedValue(bbbEndResponse);
-			videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
-
-			return { user, currentUserId, scope, bbbEndResponse, scopeInfo };
-		};
-
 		describe('when user is not moderator', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const currentUserId: string = user.id as string;
+				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+				const scopeInfo: IScopeInfo = {
+					scopeId: scope.id,
+					scopeName: 'scopeName',
+					title: 'title',
+					logoutUrl: 'logoutUrl',
+				};
+
+				const bbbEndResponse: BBBResponse<BBBBaseResponse> = {
+					response: {
+						returncode: BBBStatus.SUCCESS,
+					} as BBBBaseResponse,
+				};
+
+				userService.findById.mockResolvedValue(user);
+				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+				bbbService.end.mockResolvedValue(bbbEndResponse);
+				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
+
+				return { user, currentUserId, scope, bbbEndResponse, scopeInfo };
+			};
+
 			it('should throw ForbiddenException', async () => {
 				const { currentUserId, scope } = setup();
-
-				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
 
 				const func = () => uc.end(currentUserId, scope);
 
@@ -82,10 +80,34 @@ describe('VideoConferenceEndUc', () => {
 		});
 
 		describe('when user is moderator', () => {
-			it('should call userService.findById', async () => {
-				const { user, currentUserId, scope } = setup();
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const currentUserId: string = user.id as string;
+				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+				const scopeInfo: IScopeInfo = {
+					scopeId: scope.id,
+					scopeName: 'scopeName',
+					title: 'title',
+					logoutUrl: 'logoutUrl',
+				};
+
+				const bbbEndResponse: BBBResponse<BBBBaseResponse> = {
+					response: {
+						returncode: BBBStatus.SUCCESS,
+					} as BBBBaseResponse,
+				};
 
 				userService.findById.mockResolvedValue(user);
+				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+				bbbService.end.mockResolvedValue(bbbEndResponse);
+				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
+
+				return { currentUserId, scope, bbbEndResponse };
+			};
+
+			it('should call userService.findById', async () => {
+				const { currentUserId, scope } = setup();
 
 				await uc.end(currentUserId, scope);
 
@@ -95,17 +117,13 @@ describe('VideoConferenceEndUc', () => {
 			it('should call videoConferenceService.throwOnFeaturesDisabled', async () => {
 				const { currentUserId, scope } = setup();
 
-				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
-
 				await uc.end(currentUserId, scope);
 
 				expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalled();
 			});
 
 			it('should call videoConferenceService.getScopeInfo', async () => {
-				const { currentUserId, scope, scopeInfo } = setup();
-
-				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+				const { currentUserId, scope } = setup();
 
 				await uc.end(currentUserId, scope);
 
@@ -113,9 +131,7 @@ describe('VideoConferenceEndUc', () => {
 			});
 
 			it('should call bbbService.end', async () => {
-				const { currentUserId, scope, bbbEndResponse } = setup();
-
-				bbbService.end.mockResolvedValue(bbbEndResponse);
+				const { currentUserId, scope } = setup();
 
 				await uc.end(currentUserId, scope);
 
