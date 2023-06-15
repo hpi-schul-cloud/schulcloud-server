@@ -103,9 +103,7 @@ export class School extends BaseEntity {
 		if (props.previousExternalId) {
 			this.previousExternalId = props.previousExternalId;
 		}
-		if (props.inMaintenanceSince) {
-			this.inMaintenanceSince = props.inMaintenanceSince;
-		}
+		this.inMaintenanceSince = props.inMaintenanceSince;
 		if (props.inUserMigration !== null) {
 			this.inUserMigration = props.inUserMigration;
 		}
