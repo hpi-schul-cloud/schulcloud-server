@@ -114,12 +114,22 @@ describe('OidcProvisioningService', () => {
 
 	describe('provisionExternalSchool is called', () => {
 		describe('when systemId is given and external school does not exist', () => {
-			it('should save the new school', async () => {
+			const setup = () => {
 				const { systemId, externalSchoolDto, savedSchoolDO } = setupData();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(null);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
 				federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+
+				return {
+					systemId,
+					externalSchoolDto,
+					savedSchoolDO,
+				};
+			};
+
+			it('should save the new school', async () => {
+				const { systemId, externalSchoolDto, savedSchoolDO } = setup();
 
 				const result: SchoolDO = await service.provisionExternalSchool(externalSchoolDto, systemId);
 

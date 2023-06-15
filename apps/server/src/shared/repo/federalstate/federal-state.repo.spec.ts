@@ -33,10 +33,18 @@ describe('FederalStateRepo', () => {
 	});
 
 	describe('findByName', () => {
-		it('should return existing federalState', async () => {
+		const setup = async () => {
 			const federalState: FederalState = federalStateFactory.build();
 			await em.persistAndFlush(federalState);
 			em.clear();
+
+			return {
+				federalState,
+			};
+		};
+
+		it('should return existing federalState', async () => {
+			const { federalState } = await setup();
 
 			const result = await repo.findByName(federalState.name);
 
@@ -44,9 +52,7 @@ describe('FederalStateRepo', () => {
 		});
 
 		it('should throw if no federalState exists', async () => {
-			const federalState: FederalState = federalStateFactory.build();
-			await em.persistAndFlush(federalState);
-			em.clear();
+			await setup();
 
 			const func = () => repo.findByName('non-existing');
 
