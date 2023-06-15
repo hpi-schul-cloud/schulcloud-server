@@ -188,7 +188,6 @@ export class UserImportUc {
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
-		school.inMaintenanceSince = undefined;
 		await this.schoolService.save(school);
 	}
 
