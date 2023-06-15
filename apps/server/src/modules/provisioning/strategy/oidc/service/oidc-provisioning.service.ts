@@ -1,15 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, SchoolFeatures } from '@shared/domain';
+import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService } from '@src/modules/school';
+import { SchoolService, FederalStateService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { FederalStateService, SchoolYearService } from '@src/modules/school/service';
 import { FederalStateNames } from '@src/modules/school/types';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 
@@ -40,6 +39,11 @@ export class OidcProvisioningService {
 				school.systems.push(systemId);
 			}
 		} else {
+			const schoolYear: SchoolYear = await this.schoolYearService.getCurrentSchoolYear();
+			const federalState: FederalState = await this.federalStateService.findFederalStateByName(
+				FederalStateNames.NIEDERSACHEN
+			);
+
 			school = new SchoolDO({
 				externalId: externalSchool.externalId,
 				name: externalSchool.name,
@@ -47,8 +51,8 @@ export class OidcProvisioningService {
 				systems: [systemId],
 				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
 				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-				schoolYear: await this.schoolYearService.getCurrentSchoolYear(),
-				federalState: await this.federalStateService.findFederalStateByName(FederalStateNames.NIEDERSACHEN),
+				schoolYear,
+				federalState,
 			});
 		}
 

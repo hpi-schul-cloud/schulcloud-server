@@ -1,10 +1,10 @@
-import { SchoolYearRepo } from '@shared/repo/schoolyear';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { SchoolYear } from '@shared/domain';
 import { SchoolYearService } from './school-year.service';
+import { SchoolYearRepo } from '../repo';
 
 describe('SchoolYearService', () => {
 	let module: TestingModule;
@@ -47,12 +47,14 @@ describe('SchoolYearService', () => {
 			};
 		};
 
-		it('should return the current school year', async () => {
-			const { schoolYear } = setup();
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
 
-			const currentSchoolYear: SchoolYear = await service.getCurrentSchoolYear();
+				const currentSchoolYear: SchoolYear = await service.getCurrentSchoolYear();
 
-			expect(currentSchoolYear).toEqual(schoolYear);
+				expect(currentSchoolYear).toEqual(schoolYear);
+			});
 		});
 	});
 });

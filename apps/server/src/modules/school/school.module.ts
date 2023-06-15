@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { FederalStateRepo, SchoolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolYearRepo } from '@shared/repo/schoolyear';
 import { FederalStateService, SchoolService, SchoolYearService } from './service';
+import { SchoolYearRepo } from './repo';
 
 @Module({
 	imports: [LoggerModule],

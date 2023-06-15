@@ -8,14 +8,13 @@ import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService } from '@src/modules/school';
+import { SchoolService, FederalStateService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
 import { federalStateFactory, schoolDOFactory } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { OidcProvisioningService } from './oidc-provisioning.service';
-import { FederalStateService, SchoolYearService } from '../../../../school/service';
 
 jest.mock('crypto-js');
 
