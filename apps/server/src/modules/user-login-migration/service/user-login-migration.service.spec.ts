@@ -539,6 +539,196 @@ describe('UserLoginMigrationService', () => {
 		});
 	});
 
+	describe('startMigration is called', () => {
+		describe('when schoolId is given', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: SystemDto = new SystemDto({
+					id: targetSystemId,
+					type: 'oauth2',
+					alias: 'SANIS',
+				});
+
+				const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+				});
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([system]);
+				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
+
+				return {
+					schoolId,
+					targetSystemId,
+					userLoginMigrationDO,
+				};
+			};
+
+			it('should call userLoginMigrationRepo', async () => {
+				const { schoolId, userLoginMigrationDO } = setup();
+
+				await service.startMigration(schoolId);
+
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
+			});
+
+			it('should return UserLoginMigration with start date and target system', async () => {
+				const { schoolId, targetSystemId } = setup();
+				const expected: UserLoginMigrationDO = new UserLoginMigrationDO({
+					id: new ObjectId().toHexString(),
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+				});
+				userLoginMigrationRepo.save.mockResolvedValue(expected);
+
+				const result: UserLoginMigrationDO = await service.startMigration(schoolId);
+
+				expect(result).toEqual(expected);
+			});
+		});
+
+		describe('when the school has systems', () => {
+			const setup = () => {
+				const sourceSystemId: EntityId = new ObjectId().toHexString();
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: SystemDto = new SystemDto({
+					id: targetSystemId,
+					type: 'oauth2',
+					alias: 'SANIS',
+				});
+
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: SchoolDO = schoolDOFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([system]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+					targetSystemId,
+					sourceSystemId,
+				};
+			};
+
+			it('should save the UserLoginMigration with start date, target system and source system', async () => {
+				const { schoolId, targetSystemId, sourceSystemId } = setup();
+				const expected: UserLoginMigrationDO = new UserLoginMigrationDO({
+					id: new ObjectId().toHexString(),
+					sourceSystemId,
+					targetSystemId,
+					schoolId,
+					startedAt: mockedDate,
+				});
+				userLoginMigrationRepo.save.mockResolvedValue(expected);
+
+				const result: UserLoginMigrationDO = await service.startMigration(schoolId);
+
+				expect(result).toEqual(expected);
+			});
+		});
+
+		describe('when the school has schoolfeatures', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: SystemDto = new SystemDto({
+					id: targetSystemId,
+					type: 'oauth2',
+					alias: 'SANIS',
+				});
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([system]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+					school,
+				};
+			};
+
+			it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
+				const { schoolId, school } = setup();
+				const existingFeature: SchoolFeatures = 'otherFeature' as SchoolFeatures;
+				school.features = [existingFeature];
+
+				await service.startMigration(schoolId);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<SchoolDO>>({
+						features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					})
+				);
+			});
+		});
+
+		describe('when the school has no features yet', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: SchoolDO = schoolDOFactory.buildWithId({ features: undefined }, schoolId);
+
+				const targetSystemId: EntityId = new ObjectId().toHexString();
+				const system: SystemDto = new SystemDto({
+					id: targetSystemId,
+					type: 'oauth2',
+					alias: 'SANIS',
+				});
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([system]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should set the OAUTH_PROVISIONING_ENABLED feature for the school', async () => {
+				const { schoolId } = setup();
+
+				await service.startMigration(schoolId);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<SchoolDO>>({
+						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+					})
+				);
+			});
+		});
+
+		describe('when creating a new migration but the SANIS system does not exist', () => {
+			const setup = () => {
+				const schoolId: EntityId = new ObjectId().toHexString();
+				const school: SchoolDO = schoolDOFactory.buildWithId(undefined, schoolId);
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+				systemService.findByType.mockResolvedValue([]);
+				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should throw an InternalServerErrorException', async () => {
+				const { schoolId } = setup();
+
+				const func = async () => service.startMigration(schoolId);
+
+				await expect(func).rejects.toThrow(new InternalServerErrorException('Cannot find SANIS system'));
+			});
+		});
+	});
+
 	describe('findMigrationBySchool is called', () => {
 		describe('when a UserLoginMigration exists for the school', () => {
 			const setup = () => {

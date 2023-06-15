@@ -88,7 +88,7 @@ class DtoCreator {
 	}
 
 	private isColumnBoardFeatureFlagActive() {
-		const isActive = Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean;
+		const isActive = (Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true;
 
 		return isActive;
 	}
