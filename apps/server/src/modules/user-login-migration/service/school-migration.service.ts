@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { EntityId, Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { Page, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolService } from '@src/modules/school';
