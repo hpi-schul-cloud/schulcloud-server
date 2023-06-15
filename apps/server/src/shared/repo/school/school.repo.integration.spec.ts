@@ -89,7 +89,7 @@ describe('SchoolRepo', () => {
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
 
-		await em.persistAndFlush([school, schoolYear]);
+		await em.persistAndFlush([school]);
 
 		const storedSchoolYears = await em.find(SchoolYear, {});
 		expect(storedSchoolYears).toHaveLength(1);
