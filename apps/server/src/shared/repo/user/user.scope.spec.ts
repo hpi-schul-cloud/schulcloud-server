@@ -124,7 +124,7 @@ describe('UserScope', () => {
 		it('should return scope without added whereLastLoginSystemChangeIsBetween to query', () => {
 			const { startDate } = setup();
 
-			scope.whereLastLoginSystemChangeIsBetween(startDate, undefined);
+			scope.whereLastLoginSystemChangeIsBetween(startDate);
 
 			expect(scope.query).toEqual({});
 		});
