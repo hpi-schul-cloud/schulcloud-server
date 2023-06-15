@@ -1,17 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICurrentUser } from '@src/modules/authentication';
 import { ExternalToolDO } from '@shared/domain/domainobject/tool';
 import { externalToolDOFactory } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ConfigurationScope } from '../interface';
-import { ExternalToolConfigurationUc } from '../uc/external-tool-configuration.uc';
+import { ICurrentUser } from '@src/modules/authentication';
+import { ExternalToolConfigurationUc } from '../uc';
 import {
-	ToolIdParams,
+	ExternalToolConfigurationTemplateResponse,
 	IdParams,
-	ScopeParams,
 	ToolConfigurationEntryResponse,
 	ToolConfigurationListResponse,
-	ExternalToolConfigurationTemplateResponse,
+	ToolIdParams,
 } from './dto';
 import { ExternalToolResponseMapper } from './mapper';
 import { ToolConfigurationController } from './tool-configuration.controller';
@@ -79,8 +77,6 @@ describe('ToolConfigurationController', () => {
 				const currentUser: ICurrentUser = { userId: 'userId' } as ICurrentUser;
 				const idQuery: IdParams = new IdParams();
 				idQuery.id = 'schoolId';
-				const scopeQuery: ScopeParams = new ScopeParams();
-				scopeQuery.scope = ConfigurationScope.SCHOOL;
 				const externalToolDOs: ExternalToolDO[] = externalToolDOFactory.buildListWithId(2);
 				const response: ToolConfigurationListResponse = new ToolConfigurationListResponse([
 					new ToolConfigurationEntryResponse({
@@ -96,16 +92,15 @@ describe('ToolConfigurationController', () => {
 				return {
 					currentUser,
 					idQuery,
-					scopeQuery,
 					response,
 					externalToolDOs,
 				};
 			};
 
 			it('should call externalToolConfigurationUc.getAvailableToolsForSchool', async () => {
-				const { currentUser, idQuery, scopeQuery } = setup();
+				const { currentUser, idQuery } = setup();
 
-				await controller.getAvailableToolsForSchool(currentUser, scopeQuery, idQuery);
+				await controller.getAvailableToolsForSchool(currentUser, idQuery);
 
 				expect(externalToolConfigurationUc.getAvailableToolsForSchool).toHaveBeenCalledWith(
 					currentUser.userId,
@@ -114,13 +109,9 @@ describe('ToolConfigurationController', () => {
 			});
 
 			it('should return a list of available external tools', async () => {
-				const { currentUser, idQuery, scopeQuery, response } = setup();
+				const { currentUser, idQuery, response } = setup();
 
-				const result: ToolConfigurationListResponse = await controller.getAvailableToolsForSchool(
-					currentUser,
-					scopeQuery,
-					idQuery
-				);
+				const result: ToolConfigurationListResponse = await controller.getAvailableToolsForSchool(currentUser, idQuery);
 
 				expect(result).toEqual(response);
 			});
