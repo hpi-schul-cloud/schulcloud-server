@@ -1,13 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VideoConferenceBaseResponse } from './video-conference.response';
-import { VideoConferenceOptions } from '../../../interface';
+import { VideoConferenceOptionsResponse } from './video-conference-options.response';
+import { VideoConferenceStateResponse } from './video-conference-state.response';
 
-export class VideoConferenceInfoResponse extends VideoConferenceBaseResponse {
-	@ApiProperty({ description: 'The options for the video conference.', required: false })
-	options?: VideoConferenceOptions;
+export class VideoConferenceInfoResponse {
+	@ApiProperty({
+		enum: VideoConferenceStateResponse,
+		enumName: 'VideoConferenceStateResponse',
+		description: 'The state of the video conference.',
+	})
+	state: VideoConferenceStateResponse;
+
+	@ApiProperty({ description: 'The options for the video conference.' })
+	options: VideoConferenceOptionsResponse;
 
 	constructor(resp: VideoConferenceInfoResponse) {
-		super(resp);
+		this.state = resp.state;
 		this.options = resp.options;
 	}
 }

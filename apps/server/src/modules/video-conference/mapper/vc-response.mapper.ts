@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { VideoConferenceBaseResponse } from '../controller/dto';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
-import { VideoConferenceInfoResponse, VideoConferenceJoinResponse } from '../controller/dto/response';
-import { VideoConferenceMapper } from './video-conference.mapper';
 import { BBBBaseResponse } from '../bbb';
+import {
+	VideoConferenceBaseResponse,
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+} from '../controller/dto/response/video-conference-deprecated.response';
+import { VideoConferenceMapper } from './video-conference.mapper';
 
+/**
+ * @deprecated Please use the VideoConferenceResponseMapper instead.
+ */
 @Injectable()
-export class VideoConferenceResponseMapper {
+export class VideoConferenceResponseDeprecatedMapper {
 	mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
 		return new VideoConferenceBaseResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),

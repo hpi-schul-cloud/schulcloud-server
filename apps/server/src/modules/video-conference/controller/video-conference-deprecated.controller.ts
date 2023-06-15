@@ -13,13 +13,16 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { ICurrentUser } from '@src/modules/authentication/interface';
-import { VideoConference, VideoConferenceBaseResponse, VideoConferenceCreateParams } from './dto';
-import { VideoConferenceResponseMapper } from '../mapper/vc-response.mapper';
+import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-response.mapper';
 import { VideoConferenceDeprecatedUc } from '../uc';
-import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { VideoConferenceInfoResponse } from './dto/response';
+import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceCreateParams } from './dto';
 import { defaultVideoConferenceOptions } from '../interface';
 import { BBBBaseResponse } from '../bbb';
+import {
+	VideoConferenceBaseResponse,
+	VideoConferenceInfoResponse,
+} from './dto/response/video-conference-deprecated.response';
 
 /**
  * This controller is deprecated. Please use {@link VideoConferenceController} instead.
@@ -30,7 +33,7 @@ import { BBBBaseResponse } from '../bbb';
 export class VideoConferenceDeprecatedController {
 	constructor(
 		private readonly videoConferenceUc: VideoConferenceDeprecatedUc,
-		private readonly responseMapper: VideoConferenceResponseMapper
+		private readonly responseMapper: VideoConferenceResponseDeprecatedMapper
 	) {}
 
 	@Post(':scope/:scopeId')

@@ -3,13 +3,11 @@ import { Body, Controller, Get, HttpStatus, Param, Put } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { VideoConferenceScope } from '@shared/domain';
 import { ICurrentUser } from '@src/modules/authentication';
-import { VideoConference, VideoConferenceBaseResponse, VideoConferenceCreateParams } from './dto';
-import { VideoConferenceJoinUc, VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc } from '../uc';
-import { VideoConferenceInfoResponse, VideoConferenceJoinResponse } from './dto/response';
+import { VideoConferenceCreateParams, VideoConferenceInfoResponse, VideoConferenceJoinResponse } from './dto';
+import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
 import { ScopeRef, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
 import { VideoConferenceOptions } from '../interface';
-import { BBBBaseResponse } from '../bbb';
 
 @ApiTags('VideoConference')
 @Authenticate('jwt')
@@ -82,7 +80,7 @@ export class VideoConferenceController {
 		return resp;
 	}
 
-	@Get(':scope/:scopeId')
+	@Get(':scope/:scopeId/info')
 	@ApiOperation({
 		summary: 'Returns information about a running video conference.',
 		description: 'Use this endpoint to get information about a running video conference.',
@@ -121,7 +119,6 @@ export class VideoConferenceController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns the status of the operation.',
-		type: VideoConferenceBaseResponse,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid parameters.' })
 	@ApiResponse({
@@ -133,14 +130,7 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
-	): Promise<VideoConferenceBaseResponse> {
-		const dto: VideoConference<BBBBaseResponse> = await this.videoConferenceEndUc.end(
-			currentUser.userId,
-			new ScopeRef(scopeId, scope)
-		);
-
-		const resp: VideoConferenceBaseResponse = VideoConferenceMapper.toVideoConferenceBaseResponse(dto);
-
-		return resp;
+	): Promise<void> {
+		await this.videoConferenceEndUc.end(currentUser.userId, new ScopeRef(scopeId, scope));
 	}
 }

@@ -29,8 +29,7 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { VideoConferenceBaseResponse, VideoConferenceCreateParams } from '../dto';
-import { VideoConferenceJoinResponse, VideoConferenceStateResponse } from '../dto/response';
+import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
@@ -337,9 +336,6 @@ describe('VideoConferenceController (API)', () => {
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual<VideoConferenceJoinResponse>({
-						state: VideoConferenceStateResponse.RUNNING,
-						status: 'SUCCESS',
-						permission: Permission.START_MEETING,
 						url: expect.any(String),
 					});
 				});
@@ -368,7 +364,7 @@ describe('VideoConferenceController (API)', () => {
 			it('should return unauthorized', async () => {
 				setup();
 
-				const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/anyScope/anyId`);
+				const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/anyScope/anyId/info`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -412,7 +408,7 @@ describe('VideoConferenceController (API)', () => {
 					currentUser = mapUserToCurrentUser(teacher);
 					mockBbbMeetingInfoFailed();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}`);
+					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -424,7 +420,7 @@ describe('VideoConferenceController (API)', () => {
 					currentUser = mapUserToCurrentUser(teacher);
 					mockBbbMeetingInfoSuccess();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/join`);
+					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -438,7 +434,7 @@ describe('VideoConferenceController (API)', () => {
 					videoConference.options.moderatorMustApproveJoinRequests = false;
 					await em.persistAndFlush(videoConference);
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}`);
+					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 				});
@@ -450,7 +446,7 @@ describe('VideoConferenceController (API)', () => {
 					currentUser = mapUserToCurrentUser(teacher);
 					mockBbbMeetingInfoFailed();
 
-					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}`);
+					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/info`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
 				});
@@ -537,11 +533,6 @@ describe('VideoConferenceController (API)', () => {
 					const response: Response = await request(app.getHttpServer()).get(`${BASE_URL}/${scope}/${scopeId}/end`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual<VideoConferenceBaseResponse>({
-						status: 'SUCCESS',
-						state: VideoConferenceStateResponse.FINISHED,
-						permission: Permission.START_MEETING,
-					});
 				});
 			});
 		});

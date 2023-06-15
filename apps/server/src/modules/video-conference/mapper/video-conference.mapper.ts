@@ -1,13 +1,13 @@
 import { Permission, VideoConferenceScope } from '@shared/domain';
 import { AuthorizableReferenceType } from '@src/modules/authorization';
-import { VideoConference, VideoConferenceBaseResponse, VideoConferenceCreateParams } from '../controller/dto';
 import {
+	VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceStateResponse,
-} from '../controller/dto/response';
+} from '../controller/dto';
 import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { BBBBaseResponse, BBBMeetingInfoResponse, BBBRole } from '../bbb';
+import { BBBRole } from '../bbb';
 import { VideoConferenceOptions } from '../interface';
 
 export const PermissionMapping = {
@@ -23,31 +23,18 @@ export const PermissionScopeMapping = {
 const stateMapping = {
 	[VideoConferenceState.NOT_STARTED]: VideoConferenceStateResponse.NOT_STARTED,
 	[VideoConferenceState.RUNNING]: VideoConferenceStateResponse.RUNNING,
-	[VideoConferenceState.FINISHED]: VideoConferenceStateResponse.FINISHED,
 };
 
 export class VideoConferenceMapper {
-	static toVideoConferenceBaseResponse(
-		videoConference: VideoConference<BBBMeetingInfoResponse | BBBBaseResponse>
-	): VideoConferenceBaseResponse {
-		return new VideoConferenceBaseResponse({
-			state: this.toVideoConferenceStateResponse(videoConference.state),
-			permission: videoConference.permission,
-		});
-	}
-
 	static toVideoConferenceInfoResponse(videoConferenceInfo: VideoConferenceInfo): VideoConferenceInfoResponse {
-		const baseResponse = this.toVideoConferenceBaseResponse(videoConferenceInfo);
 		return new VideoConferenceInfoResponse({
-			...baseResponse,
+			state: this.toVideoConferenceStateResponse(videoConferenceInfo.state),
 			options: videoConferenceInfo.options,
 		});
 	}
 
 	static toVideoConferenceJoinResponse(videoConferenceJoin: VideoConferenceJoin): VideoConferenceJoinResponse {
-		const baseResponse = this.toVideoConferenceBaseResponse(videoConferenceJoin);
 		return new VideoConferenceJoinResponse({
-			...baseResponse,
 			url: videoConferenceJoin.url,
 		});
 	}
