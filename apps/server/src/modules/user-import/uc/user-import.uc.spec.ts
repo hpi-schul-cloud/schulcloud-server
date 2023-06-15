@@ -5,7 +5,6 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import {
-	FederalState,
 	ImportUser,
 	MatchCreator,
 	MatchCreatorScope,
