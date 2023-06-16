@@ -20,7 +20,8 @@ export class RestartUserLoginMigrationValidationService {
 	private isClosed(userLoginMigration: UserLoginMigrationDO): void {
 		if (!userLoginMigration.closedAt) {
 			throw new RestartUserLoginMigrationError(
-				`Migration for school with id ${userLoginMigration.schoolId} is already started, you are not able to restart.`
+				`Migration for school with id ${userLoginMigration.schoolId} is already started, you are not able to restart.`,
+				userLoginMigration.schoolId
 			);
 		}
 	}
@@ -29,6 +30,7 @@ export class RestartUserLoginMigrationValidationService {
 		if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
 			throw new RestartUserLoginMigrationError(
 				'grace_period_expired: The grace period after finishing migration has expired',
+				userLoginMigration.schoolId,
 				{
 					finishedAt: userLoginMigration.finishedAt,
 				}
@@ -42,7 +44,8 @@ export class RestartUserLoginMigrationValidationService {
 
 		if (existingUserLoginMigration === null) {
 			throw new RestartUserLoginMigrationError(
-				`Existing migration for school with id: ${schoolId} could not be found for restart.`
+				`Existing migration for school with id: ${schoolId} could not be found for restart.`,
+				schoolId
 			);
 		}
 		return existingUserLoginMigration;

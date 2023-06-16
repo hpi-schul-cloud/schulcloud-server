@@ -85,7 +85,10 @@ export class UserLoginMigrationService {
 		);
 
 		if (existingUserLoginMigrationDO === null) {
-			throw new RestartUserLoginMigrationError(`Migration for school with id ${schoolId} does not exist for restart.`);
+			throw new RestartUserLoginMigrationError(
+				`Migration for school with id ${schoolId} does not exist for restart.`,
+				schoolId
+			);
 		}
 
 		const updatedUserLoginMigration = await this.updateExistingMigration(existingUserLoginMigrationDO);

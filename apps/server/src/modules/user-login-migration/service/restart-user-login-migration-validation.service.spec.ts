@@ -92,7 +92,8 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
-						`Existing migration for school with id: ${schoolId} could not be found for restart.`
+						`Existing migration for school with id: ${schoolId} could not be found for restart.`,
+						schoolId
 					)
 				);
 			});
@@ -121,7 +122,8 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
-						`Migration for school with id ${schoolId} is already started, you are not able to restart.`
+						`Migration for school with id ${schoolId} is already started, you are not able to restart.`,
+						schoolId
 					)
 				);
 			});
@@ -153,6 +155,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				await expect(func()).rejects.toThrow(
 					new RestartUserLoginMigrationError(
 						'grace_period_expired: The grace period after finishing migration has expired',
+						schoolId,
 						{
 							finishedAt: migration.finishedAt,
 						}
