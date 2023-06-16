@@ -11,6 +11,7 @@ import {
 	SchoolMigrationService,
 	UserLoginMigrationService,
 	UserMigrationService,
+	UserLoginMigrationRevertService,
 	CommonUserLoginMigrationService,
 	StartUserLoginMigrationValidationService,
 } from './service';
@@ -24,6 +25,7 @@ import { AuthorizationModule } from '../authorization';
 		MigrationCheckService,
 		UserLoginMigrationService,
 		UserLoginMigrationRepo,
+		UserLoginMigrationRevertService,
 		StartUserLoginMigrationValidationService,
 		RestartUserLoginMigrationValidationService,
 		CommonUserLoginMigrationService,
@@ -33,6 +35,7 @@ import { AuthorizationModule } from '../authorization';
 		SchoolMigrationService,
 		MigrationCheckService,
 		UserLoginMigrationService,
+		UserLoginMigrationRevertService,
 		StartUserLoginMigrationValidationService,
 		RestartUserLoginMigrationValidationService,
 	],

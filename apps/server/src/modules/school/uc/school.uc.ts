@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Permission, SchoolDO, UserLoginMigrationDO } from '@shared/domain';
 import { Action, AuthorizableReferenceType, AuthorizationService } from '@src/modules/authorization';
-import { SchoolMigrationService, UserLoginMigrationService } from '@src/modules/user-login-migration';
+import {
+	SchoolMigrationService,
+	UserLoginMigrationRevertService,
+	UserLoginMigrationService,
+} from '@src/modules/user-login-migration';
 import { SchoolService } from '../service';
 import { OauthMigrationDto } from './dto/oauth-migration.dto';
 
@@ -11,7 +15,8 @@ export class SchoolUc {
 		private readonly schoolService: SchoolService,
 		private readonly authService: AuthorizationService,
 		private readonly schoolMigrationService: SchoolMigrationService,
-		private readonly userLoginMigrationService: UserLoginMigrationService
+		private readonly userLoginMigrationService: UserLoginMigrationService,
+		private readonly userLoginMigrationRevertService: UserLoginMigrationRevertService
 	) {}
 
 	// TODO: https://ticketsystem.dbildungscloud.de/browse/N21-673 Refactor this and split it up
@@ -42,7 +47,13 @@ export class SchoolUc {
 		);
 
 		if (!existingUserLoginMigration?.closedAt && updatedUserLoginMigration.closedAt) {
-			await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
+			const hasSchoolMigratedUser = await this.schoolMigrationService.hasSchoolMigratedUser(schoolId);
+
+			if (!hasSchoolMigratedUser) {
+				await this.userLoginMigrationRevertService.revertUserLoginMigration(updatedUserLoginMigration);
+			} else {
+				await this.schoolMigrationService.markUnmigratedUsersAsOutdated(schoolId);
+			}
 		} else if (existingUserLoginMigration?.closedAt && !updatedUserLoginMigration.closedAt) {
 			await this.schoolMigrationService.unmarkOutdatedUsers(schoolId);
 		}
