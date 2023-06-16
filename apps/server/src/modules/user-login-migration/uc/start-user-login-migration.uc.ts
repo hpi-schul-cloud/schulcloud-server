@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { UserLoginMigrationService, StartUserLoginMigrationValidationService } from '../service';
 import { UserLoginMigrationLoggable } from '../loggable/user-login-migration.loggable';
 
