@@ -3,7 +3,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, LanguageType, Permission, Role, RoleName, SortOrder, User } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -117,12 +116,11 @@ describe('UserService', () => {
 
 	describe('findById', () => {
 		beforeEach(() => {
-			const userDO: UserDO = new UserDO({
+			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
 				firstName: 'firstName',
 				lastName: 'lastName',
 				email: 'email',
 				schoolId: 'schoolId',
-				roles: [new RoleReference({ id: 'roleId', name: RoleName.STUDENT })],
 				externalId: 'externalUserId',
 			});
 			userDORepo.findById.mockResolvedValue(userDO);
@@ -180,8 +178,7 @@ describe('UserService', () => {
 
 		it('should return only the last name when the user has a protected role', async () => {
 			// Arrange
-			const user: UserDO = userDoFactory.buildWithId({
-				roles: [new RoleReference({ id: role.id, name: RoleName.STUDENT })],
+			const user: UserDO = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 			});
 
@@ -195,8 +192,7 @@ describe('UserService', () => {
 
 		it('should return the first name and last name when the user has no protected role', async () => {
 			// Arrange
-			const user: UserDO = userDoFactory.buildWithId({
-				roles: [new RoleReference({ id: 'unprotectedId', name: RoleName.STUDENT })],
+			const user: UserDO = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 				firstName: 'firstName',
 			});
@@ -234,12 +230,11 @@ describe('UserService', () => {
 	describe('save is called', () => {
 		describe('when saving a new user', () => {
 			const setup = () => {
-				const user: UserDO = new UserDO({
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
 				});
 
 				userDORepo.save.mockResolvedValue(user);
@@ -270,12 +265,11 @@ describe('UserService', () => {
 	describe('findByExternalId is called', () => {
 		describe('when a user with this external id exists', () => {
 			it('should return the user', async () => {
-				const user: UserDO = new UserDO({
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
 					email: 'email',
-					roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
 					externalId: 'externalId',
 				});
 

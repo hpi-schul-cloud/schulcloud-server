@@ -19,8 +19,14 @@ import { IToolLaunchStrategy } from './tool-launch-strategy.interface';
 export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
 	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise<ToolLaunchData> {
 		const launchData: ToolLaunchData = this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
-		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
-		launchData.properties.push(...(await this.buildToolLaunchDataFromConcreteConfig(userId, data)));
+		const launchDataProperties: PropertyData[] = this.buildToolLaunchDataFromTools(data);
+		const additionalLaunchDataProperties: PropertyData[] = await this.buildToolLaunchDataFromConcreteConfig(
+			userId,
+			data
+		);
+
+		launchData.properties.push(...launchDataProperties);
+		launchData.properties.push(...additionalLaunchDataProperties);
 
 		return launchData;
 	}

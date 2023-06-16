@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, RoleName, RoleReference } from '@shared/domain';
+import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { userDoFactory } from '@shared/testing';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -52,9 +52,7 @@ describe('Oauth2Strategy', () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
-				const user: UserDO = userDoFactory.buildWithId({
-					roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
-				});
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account: AccountDto = new AccountDto({
 					id: 'accountId',
 					createdAt: new Date(),

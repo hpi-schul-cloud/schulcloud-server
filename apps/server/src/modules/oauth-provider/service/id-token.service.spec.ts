@@ -12,8 +12,6 @@ import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.en
 import { IdTokenService } from '@src/modules/oauth-provider/service/id-token.service';
 import { UserService } from '@src/modules/user/service/user.service';
 import { ObjectId } from 'bson';
-import clearAllMocks = jest.clearAllMocks;
-import resetAllMocks = jest.resetAllMocks;
 
 class IdTokenServiceSpec extends IdTokenService {
 	buildGroupsClaimSpec(teams: Team[]): GroupNameIdTuple[] {
@@ -89,7 +87,6 @@ describe('IdTokenService', () => {
 
 	afterAll(async () => {
 		await module.close();
-		clearAllMocks();
 	});
 
 	beforeEach(() => {
@@ -98,7 +95,7 @@ describe('IdTokenService', () => {
 	});
 
 	afterEach(() => {
-		resetAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('createIdToken', () => {

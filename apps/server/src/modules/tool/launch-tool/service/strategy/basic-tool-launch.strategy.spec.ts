@@ -1,8 +1,5 @@
-import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@shared/domain';
-import { contextExternalToolDOFactory, externalToolDOFactory, schoolExternalToolDOFactory } from '@shared/testing';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let basicToolLaunchStrategy: BasicToolLaunchStrategy;
@@ -42,33 +39,6 @@ describe('BasicToolLaunchStrategy', () => {
 			const payload: string = basicToolLaunchStrategy.buildToolLaunchRequestPayload('url', properties);
 
 			expect(payload).toEqual('{"param1":"value1","param2":"value2"}');
-		});
-	});
-
-	describe('buildToolLaunchDataFromConcreteConfig', () => {
-		const setup = () => {
-			const externalToolDO: ExternalToolDO = externalToolDOFactory.build();
-			const schoolExternalToolDO: SchoolExternalToolDO = schoolExternalToolDOFactory.build();
-			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build();
-
-			const data: IToolLaunchParams = {
-				contextExternalToolDO,
-				schoolExternalToolDO,
-				externalToolDO,
-			};
-
-			return { data };
-		};
-
-		it('should build the tool launch data from the basic tool config correctly', async () => {
-			const { data } = setup();
-
-			const result: PropertyData[] = await basicToolLaunchStrategy.buildToolLaunchDataFromConcreteConfig(
-				'userId',
-				data
-			);
-
-			expect(result).toEqual([]);
 		});
 	});
 

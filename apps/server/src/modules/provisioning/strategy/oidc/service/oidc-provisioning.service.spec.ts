@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolFeatures } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { userDoFactory } from '@shared/testing';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
@@ -154,24 +154,26 @@ describe('OidcProvisioningService', () => {
 		const setupUser = () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
-			const existingUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'existingFirstName',
-				lastName: 'existingLastName',
-				email: 'existingEmail',
-				schoolId: 'existingSchoolId',
-				roles: [new RoleReference({ id: 'existingRoleId', name: RoleName.USER })],
-				externalId: 'externalUserId',
-			});
-			const savedUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'firstName',
-				lastName: 'lastName',
-				email: 'email',
-				schoolId,
-				roles: [new RoleReference({ id: 'roleId', name: RoleName.USER })],
-				externalId: 'externalUserId',
-			});
+			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'existingFirstName',
+					lastName: 'existingLastName',
+					email: 'existingEmail',
+					schoolId: 'existingSchoolId',
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
+			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId,
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
 			const externalUser: ExternalUserDto = new ExternalUserDto({
 				externalId: 'externalUserId',
 				firstName: 'firstName',

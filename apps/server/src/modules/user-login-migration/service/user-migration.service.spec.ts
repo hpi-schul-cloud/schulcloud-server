@@ -10,9 +10,8 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
@@ -350,29 +349,29 @@ describe('UserMigrationService', () => {
 		const setupMigrationData = () => {
 			const targetSystemId = new ObjectId().toHexString();
 
-			const notMigratedUser: UserDO = new UserDO({
+			const notMigratedUser: UserDO = userDoFactory.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }]).build({
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				email: 'emailMock',
 				firstName: 'firstNameMock',
 				lastName: 'lastNameMock',
-				roles: [new RoleReference({ id: 'roleIdMock', name: RoleName.STUDENT })],
 				schoolId: 'schoolMock',
 				externalId: 'currentUserExternalIdMock',
 			});
 
-			const migratedUserDO: UserDO = new UserDO({
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				email: 'emailMock',
-				firstName: 'firstNameMock',
-				lastName: 'lastNameMock',
-				roles: [new RoleReference({ id: 'roleIdMock', name: RoleName.STUDENT })],
-				schoolId: 'schoolMock',
-				externalId: 'externalUserTargetId',
-				previousExternalId: 'currentUserExternalIdMock',
-				lastLoginSystemChange: new Date(),
-			});
+			const migratedUserDO: UserDO = userDoFactory
+				.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }])
+				.buildWithId({
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					email: 'emailMock',
+					firstName: 'firstNameMock',
+					lastName: 'lastNameMock',
+					schoolId: 'schoolMock',
+					externalId: 'externalUserTargetId',
+					previousExternalId: 'currentUserExternalIdMock',
+					lastLoginSystemChange: new Date(),
+				});
 
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();

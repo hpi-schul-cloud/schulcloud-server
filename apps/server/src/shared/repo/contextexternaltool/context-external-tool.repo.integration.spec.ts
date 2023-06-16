@@ -18,8 +18,8 @@ import {
 	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { ContextExternalToolQuery } from '@src/modules/tool';
 import { ToolContextType } from '@src/modules/tool/interface';
-import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe('ContextExternalToolRepo', () => {

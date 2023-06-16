@@ -14,12 +14,18 @@ import {
 	System,
 	User,
 } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	roleFactory,
+	schoolFactory,
+	systemFactory,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
 
@@ -277,22 +283,25 @@ describe('UserRepo', () => {
 
 	describe('mapDOToEntityProperties', () => {
 		it('should map DO to Entity Properties', () => {
-			const testDO: UserDO = new UserDO({
-				id: 'testId',
-				email: 'email@email.email',
-				firstName: 'firstName',
-				lastName: 'lastName',
-				roles: [new RoleReference({ id: new ObjectId().toHexString(), name: RoleName.USER })],
-				schoolId: new ObjectId().toHexString(),
-				ldapDn: 'ldapDn',
-				externalId: 'externalId',
-				language: LanguageType.DE,
-				forcePasswordChange: false,
-				preferences: { firstLogin: true },
-				outdatedSince: new Date(),
-				lastLoginSystemChange: new Date(),
-				previousExternalId: 'someId',
-			});
+			const testDO: UserDO = userDoFactory
+				.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.USER }])
+				.buildWithId(
+					{
+						email: 'email@email.email',
+						firstName: 'firstName',
+						lastName: 'lastName',
+						schoolId: new ObjectId().toHexString(),
+						ldapDn: 'ldapDn',
+						externalId: 'externalId',
+						language: LanguageType.DE,
+						forcePasswordChange: false,
+						preferences: { firstLogin: true },
+						outdatedSince: new Date(),
+						lastLoginSystemChange: new Date(),
+						previousExternalId: 'someId',
+					},
+					'testId'
+				);
 
 			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
 

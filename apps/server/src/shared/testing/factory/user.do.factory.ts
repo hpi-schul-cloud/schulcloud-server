@@ -1,3 +1,4 @@
+import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { ObjectId } from 'bson';
 import { BuildOptions, DeepPartial } from 'fishery';
@@ -10,6 +11,14 @@ class UserDoFactory extends BaseFactory<UserDO, UserDO> {
 		const entityWithId = Object.assign(entity, { id: new ObjectId(id).toString() });
 
 		return entityWithId;
+	}
+
+	withRoles(roles: { id: EntityId; name: RoleName }[]) {
+		const params: DeepPartial<UserDO> = {
+			roles,
+		};
+
+		return this.params(params);
 	}
 }
 
