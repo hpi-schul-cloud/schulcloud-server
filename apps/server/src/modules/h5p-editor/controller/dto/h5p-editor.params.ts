@@ -16,6 +16,20 @@ export class GetH5PContentParams {
 	contentId!: string;
 }
 
+export class GetH5PEditorParams {
+	@ApiProperty()
+	@Matches('([a-z]+-[a-z]+)')
+	@IsString()
+	@IsOptional()
+	language?: string;
+
+	@ApiProperty()
+	@Matches('([A-Z0-9a-z]+)')
+	@IsString()
+	@IsOptional()
+	contentId?: string;
+}
+
 export class PostH5PContentParams {
 	@ApiProperty()
 	@Matches('([A-Z0-9a-z]+)')

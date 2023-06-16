@@ -31,6 +31,7 @@ import {
 	AjaxPostQueryParams,
 	ContentFileUrlParams,
 	GetH5PContentParams,
+	GetH5PEditorParams,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 } from './dto';
@@ -196,27 +197,21 @@ export class H5PEditorController {
 		return deleteSuccessfull;
 	}
 
-	@Get('/:contentId')
-	async getH5PEditor(@Param() params: GetH5PContentParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
+	@Get('/edit/:contentId?')
+	async getH5PEditor(@Param() params: GetH5PEditorParams, @CurrentUser() currentUser: ICurrentUser): Promise<string> {
 		// TODO: Get user language
-		if (params.contentId === 'create') {
-			params.contentId = undefined as unknown as string;
-		}
-		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId, 'de');
+		const response = this.h5pEditorUc.getH5pEditor(currentUser, params.contentId as string, 'de');
 		return response;
 	}
 
-	@Post('/:contentId')
+	@Post('/edit/:contentId?')
 	async createOrSaveH5pContent(
 		@Body() body: PostH5PContentCreateParams,
-		@Param() params: GetH5PContentParams,
+		@Param() params: GetH5PEditorParams,
 		@CurrentUser() currentUser: ICurrentUser
 	) {
-		if (params.contentId === 'create') {
-			params.contentId = undefined as unknown as string;
-		}
 		const response = await this.h5pEditorUc.saveH5pContentGetMetadata(
-			params.contentId,
+			params.contentId as string,
 			currentUser,
 			body.params.params,
 			body.params.metadata,
