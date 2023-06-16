@@ -12,7 +12,7 @@ import { Page } from '@shared/domain/domainobject/page';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser, JWT } from '@src/modules/authentication/decorator/auth.decorator';
 import { UserLoginMigrationMapper } from '../mapper';
-import { UserLoginMigrationQuery } from '../uc/dto/user-login-migration-query';
+import { UserLoginMigrationQuery } from '../uc';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
 import {
 	UserLoginMigrationResponse,
@@ -70,7 +70,7 @@ export class UserLoginMigrationController {
 		type: StartUserLoginMigrationError,
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
-	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
 	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
 			currentUser.userId,
