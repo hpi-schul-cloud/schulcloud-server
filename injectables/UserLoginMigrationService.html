@@ -90,6 +90,10 @@
                                 <a href="#createNewMigration" >createNewMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserLoginMigration" >deleteUserLoginMigration</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#enableOauthMigrationFeature" >enableOauthMigrationFeature</a>
                             </li>
@@ -274,6 +278,77 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserLoginMigrationDO&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserLoginMigration"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteUserLoginMigration</b></span>
+                        <a href="#deleteUserLoginMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserLoginMigration(userLoginMigration: <a href="../classes/UserLoginMigrationDO.html" target="_self">UserLoginMigrationDO</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/user-login-migration.service.ts:135</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userLoginMigration</td>
+                                    <td>
+                                                <code><a href="../classes/UserLoginMigrationDO.html" target="_self" >UserLoginMigrationDO</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -798,7 +873,7 @@ export class UserLoginMigrationService {
 		const userDO: UserDO &#x3D; await this.userService.findById(userId);
 		const { schoolId } &#x3D; userDO;
 
-		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			return null;
@@ -812,6 +887,10 @@ export class UserLoginMigrationService {
 		}
 
 		return userLoginMigration;
+	}
+
+	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise&lt;void&gt; {
+		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
 }
 </code></pre>

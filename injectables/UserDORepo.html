@@ -215,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="134"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:134</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:138</a></div>
                 </td>
             </tr>
 
@@ -444,8 +444,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:78</a></div>
                 </td>
             </tr>
 
@@ -527,8 +527,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="66"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:66</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:70</a></div>
                 </td>
             </tr>
 
@@ -616,7 +616,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:55</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:59</a></code>
 </div>
                 </td>
             </tr>
@@ -708,7 +708,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:116</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:120</a></code>
 </div>
                 </td>
             </tr>
@@ -783,7 +783,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:85</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:89</a></code>
 </div>
                 </td>
             </tr>
@@ -855,8 +855,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="144"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:144</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:148</a></div>
                 </td>
             </tr>
 
@@ -1676,6 +1676,10 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 			.bySchoolId(query.schoolId)
 			.isOutdated(query.isOutdated)
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
+			.whereLastLoginSystemChangeIsBetween(
+				query.lastLoginSystemChangeBetweenStart,
+				query.lastLoginSystemChangeBetweenEnd
+			)
 			.withOutdatedSince(query.outdatedSince)
 			.allowEmptyQuery(true);
 

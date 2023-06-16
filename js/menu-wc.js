@@ -2047,13 +2047,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/UserLoginMigrationModule.html" data-type="entity-link" >UserLoginMigrationModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-UserLoginMigrationModule-e98b8ff97e045ba3f4cd46ff9cb261ec72b5a7e144196ea2d5859f09d244ef1897d1229697a939c58b33c3f9f114c7d19678cdee98f4a8f9c47817182d337983"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationModule-e98b8ff97e045ba3f4cd46ff9cb261ec72b5a7e144196ea2d5859f09d244ef1897d1229697a939c58b33c3f9f114c7d19678cdee98f4a8f9c47817182d337983"' }>
+                                        'data-bs-target="#injectables-links-module-UserLoginMigrationModule-19fe86ce06d14e16117fdc8853bbb31bbb309631393ad1239dfab2f7224750e85cab172a6946c391843ca2623a661ac3f187117270834c89942c209a53f536f1"' : 'data-bs-target="#xs-injectables-links-module-UserLoginMigrationModule-19fe86ce06d14e16117fdc8853bbb31bbb309631393ad1239dfab2f7224750e85cab172a6946c391843ca2623a661ac3f187117270834c89942c209a53f536f1"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-e98b8ff97e045ba3f4cd46ff9cb261ec72b5a7e144196ea2d5859f09d244ef1897d1229697a939c58b33c3f9f114c7d19678cdee98f4a8f9c47817182d337983"' :
-                                        'id="xs-injectables-links-module-UserLoginMigrationModule-e98b8ff97e045ba3f4cd46ff9cb261ec72b5a7e144196ea2d5859f09d244ef1897d1229697a939c58b33c3f9f114c7d19678cdee98f4a8f9c47817182d337983"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-UserLoginMigrationModule-19fe86ce06d14e16117fdc8853bbb31bbb309631393ad1239dfab2f7224750e85cab172a6946c391843ca2623a661ac3f187117270834c89942c209a53f536f1"' :
+                                        'id="xs-injectables-links-module-UserLoginMigrationModule-19fe86ce06d14e16117fdc8853bbb31bbb309631393ad1239dfab2f7224750e85cab172a6946c391843ca2623a661ac3f187117270834c89942c209a53f536f1"' }>
                                         <li class="link">
                                             <a href="injectables/MigrationCheckService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MigrationCheckService</a>
                                         </li>
@@ -2065,6 +2065,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/UserLoginMigrationRevertService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationRevertService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >UserLoginMigrationService</a>
@@ -4219,6 +4222,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/ShareTokenUC.html" data-type="entity-link" >ShareTokenUC</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/StartUserLoginMigrationCheckService.html" data-type="entity-link" >StartUserLoginMigrationCheckService</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/SubmissionRepo.html" data-type="entity-link" >SubmissionRepo</a>
                                 </li>
                                 <li class="link">
@@ -4289,6 +4295,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationRepo.html" data-type="entity-link" >UserLoginMigrationRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/UserLoginMigrationRevertService.html" data-type="entity-link" >UserLoginMigrationRevertService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/UserLoginMigrationService.html" data-type="entity-link" >UserLoginMigrationService</a>

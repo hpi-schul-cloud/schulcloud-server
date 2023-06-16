@@ -652,6 +652,9 @@
                             <a href="#userFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>userFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#userLoginMigrationDOFactory" title="apps/server/src/shared/testing/factory/domainobject/user-login-migration.factory.ts" ><b>userLoginMigrationDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#userLoginMigrationFactory" title="apps/server/src/shared/testing/factory/user-login-migration.factory.ts" ><b>userLoginMigrationFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.factory.ts)</a>
                         </li>
                         <li>
@@ -7403,6 +7406,40 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		school: schoolFactory.build(),
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/user-login-migration.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userLoginMigrationDOFactory"></a>
+                    <span class="name">
+                        <span ><b>userLoginMigrationDOFactory</b></span>
+                        <a href="#userLoginMigrationDOFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DoBaseFactory.define&lt;UserLoginMigrationDO, UserLoginMigrationDO&gt;(
+	UserLoginMigrationDO,
+	({ sequence }) &#x3D;&gt; {
+		return {
+			schoolId: &#x60;schoolId-${sequence}&#x60;,
+			targetSystemId: &#x27;targetSystemId&#x27;,
+			startedAt: new Date(&#x27;2023-05-01&#x27;),
+			closedAt: new Date(&#x27;2023-05-02&#x27;),
+			finishedAt: new Date(&#x27;2023-05-16&#x27;),
+		};
+	}
+)</code>
                     </td>
                 </tr>
 

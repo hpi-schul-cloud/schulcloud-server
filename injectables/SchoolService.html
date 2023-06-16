@@ -111,6 +111,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#removeFeature" >removeFeature</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
                             </li>
                         </ul>
@@ -272,8 +276,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="38"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:38</a></div>
                 </td>
             </tr>
 
@@ -355,8 +359,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="25"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:25</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:33</a></div>
                 </td>
             </tr>
 
@@ -426,8 +430,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="35"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:35</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:43</a></div>
                 </td>
             </tr>
 
@@ -581,8 +585,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="53"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:53</a></div>
                 </td>
             </tr>
 
@@ -634,6 +638,89 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="removeFeature"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>removeFeature</b></span>
+                        <a href="#removeFeature"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeFeature(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, feature: <a href="../undefineds/SchoolFeatures.html" target="_self">SchoolFeatures</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="25"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:25</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>feature</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#SchoolFeatures" target="_self" >SchoolFeatures</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                         <span class="modifier">Async</span>
@@ -652,8 +739,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="40"
-                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:40</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/school/service/school.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -729,6 +816,14 @@ export class SchoolService {
 	async hasFeature(schoolId: EntityId, feature: SchoolFeatures): Promise&lt;boolean&gt; {
 		const entity: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
+	}
+
+	async removeFeature(schoolId: EntityId, feature: SchoolFeatures): Promise&lt;void&gt; {
+		const school: SchoolDO &#x3D; await this.schoolRepo.findById(schoolId);
+		if (school.features &amp;&amp; school.features.includes(feature)) {
+			school.features &#x3D; school.features.filter((f: SchoolFeatures) &#x3D;&gt; f !&#x3D;&#x3D; feature);
+			await this.schoolRepo.save(school);
+		}
 	}
 
 	async getSchoolById(id: string): Promise&lt;SchoolDO&gt; {

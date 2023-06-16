@@ -125,6 +125,9 @@
                                 <a href="#isOutdated" >isOutdated</a>
                             </li>
                             <li>
+                                <a href="#whereLastLoginSystemChangeIsBetween" >whereLastLoginSystemChangeIsBetween</a>
+                            </li>
+                            <li>
                                 <a href="#whereLastLoginSystemChangeSmallerThan" >whereLastLoginSystemChangeSmallerThan</a>
                             </li>
                             <li>
@@ -288,8 +291,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:35</a></div>
                 </td>
             </tr>
 
@@ -410,6 +413,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="whereLastLoginSystemChangeIsBetween"></a>
+                    <span class="name">
+                        <span ><b>whereLastLoginSystemChangeIsBetween</b></span>
+                        <a href="#whereLastLoginSystemChangeIsBetween"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>whereLastLoginSystemChangeIsBetween(startDate?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, endDate?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:19</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>startDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>endDate</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/UserScope.html" target="_self" >UserScope</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="whereLastLoginSystemChangeSmallerThan"></a>
                     <span class="name">
                         <span ><b>whereLastLoginSystemChangeSmallerThan</b></span>
@@ -495,8 +579,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user.scope.ts:28</a></div>
                 </td>
             </tr>
 
@@ -718,6 +802,15 @@ export class UserScope extends Scope&lt;User&gt; {
 	whereLastLoginSystemChangeSmallerThan(date?: Date): UserScope {
 		if (date) {
 			this.addQuery({ $or: [{ lastLoginSystemChange: { $lt: date } }, { lastLoginSystemChange: { $exists: false } }] });
+		}
+		return this;
+	}
+
+	whereLastLoginSystemChangeIsBetween(startDate?: Date, endDate?: Date): UserScope {
+		if (startDate &amp;&amp; endDate) {
+			this.addQuery({
+				lastLoginSystemChange: { $gte: startDate, $lt: endDate },
+			});
 		}
 		return this;
 	}

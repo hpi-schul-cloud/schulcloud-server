@@ -99,6 +99,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#hasSchoolMigratedUser" >hasSchoolMigratedUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#markUnmigratedUsersAsOutdated" >markUnmigratedUsersAsOutdated</a>
                             </li>
                             <li>
@@ -476,6 +480,77 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasSchoolMigratedUser"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>hasSchoolMigratedUser</b></span>
+                        <a href="#hasSchoolMigratedUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasSchoolMigratedUser(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="162"
+                            class="link-to-prism">apps/server/src/modules/user-login-migration/service/school-migration.service.ts:162</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>schoolId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -1122,6 +1197,25 @@ export class SchoolMigrationService {
 		if (sourceExternalId &#x3D;&#x3D;&#x3D; targetExternalId) {
 			return true;
 		}
+		return false;
+	}
+
+	async hasSchoolMigratedUser(schoolId: string): Promise&lt;boolean&gt; {
+		const userLoginMigration: UserLoginMigrationDO | null &#x3D; await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			return false;
+		}
+
+		const users: Page&lt;UserDO&gt; &#x3D; await this.userService.findUsers({
+			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+		});
+
+		if (users.total &gt; 0) {
+			return true;
+		}
+
 		return false;
 	}
 }
