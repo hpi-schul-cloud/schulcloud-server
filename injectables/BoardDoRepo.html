@@ -930,7 +930,7 @@ export class BoardDoRepo {
 	) {}
 
 	async findById(id: EntityId, depth?: number): Promise&lt;AnyBoardDo&gt; {
-		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, id);
+		const boardNode &#x3D; await this.boardNodeRepo.findById(id);
 		const descendants &#x3D; await this.boardNodeRepo.findDescendants(boardNode, depth);
 		const domainObject &#x3D; new BoardDoBuilderImpl(descendants).buildDomainObject(boardNode);
 
@@ -987,19 +987,19 @@ export class BoardDoRepo {
 	}
 
 	async findParentOfId(childId: EntityId): Promise&lt;AnyBoardDo | undefined&gt; {
-		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, childId);
+		const boardNode &#x3D; await this.boardNodeRepo.findById(childId);
 		const domainObject &#x3D; boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
 	}
 
 	async getAncestorIds(boardDo: AnyBoardDo): Promise&lt;EntityId[]&gt; {
-		const boardNode &#x3D; await this.em.findOneOrFail(BoardNode, boardDo.id);
+		const boardNode &#x3D; await this.boardNodeRepo.findById(boardDo.id);
 		return boardNode.ancestorIds;
 	}
 
 	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise&lt;void&gt; {
-		const saveVisitor &#x3D; new RecursiveSaveVisitor(this.em);
+		const saveVisitor &#x3D; new RecursiveSaveVisitor(this.em, this.boardNodeRepo);
 		await saveVisitor.save(domainObject, parent);
 		await this.em.flush();
 	}
