@@ -3,14 +3,31 @@ import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { IFindOptions, IUserProperties, LanguageType, Role, School, SortOrder, System, User } from '@shared/domain';
+import {
+	IFindOptions,
+	IUserProperties,
+	LanguageType,
+	Role,
+	RoleName,
+	School,
+	SortOrder,
+	System,
+	User,
+} from '@shared/domain';
+import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { cleanupCollections, roleFactory, schoolFactory, systemFactory, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	roleFactory,
+	schoolFactory,
+	systemFactory,
+	userDoFactory,
+	userFactory,
+} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
-import { Page } from '@shared/domain/domainobject/page';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -88,7 +105,7 @@ describe('UserRepo', () => {
 			const result: UserDO = await repo.findById(user.id);
 
 			expect(result.id).toEqual(user.id);
-			expect(result.roleIds).toEqual([]);
+			expect(result.roles).toEqual([]);
 		});
 
 		it('should find user and populate roles', async () => {
@@ -109,7 +126,12 @@ describe('UserRepo', () => {
 			const result: UserDO = await repo.findById(user.id, true);
 
 			expect(result.id).toEqual(user.id);
-			expect(result.roleIds).toEqual([roles1[0].id]);
+			expect(result.roles).toEqual([
+				{
+					id: roles1[0].id,
+					name: roles1[0].name,
+				},
+			]);
 		});
 
 		it('should throw if user cannot be found', async () => {
@@ -236,7 +258,12 @@ describe('UserRepo', () => {
 					firstName: testEntity.firstName,
 					lastName: testEntity.lastName,
 					schoolId: testEntity.school.id,
-					roleIds: [role.id],
+					roles: [
+						{
+							id: role.id,
+							name: role.name,
+						},
+					],
 					ldapDn: testEntity.ldapDn,
 					externalId: testEntity.externalId,
 					importHash: testEntity.importHash,
@@ -256,22 +283,25 @@ describe('UserRepo', () => {
 
 	describe('mapDOToEntityProperties', () => {
 		it('should map DO to Entity Properties', () => {
-			const testDO: UserDO = new UserDO({
-				id: 'testId',
-				email: 'email@email.email',
-				firstName: 'firstName',
-				lastName: 'lastName',
-				roleIds: [new ObjectId().toHexString()],
-				schoolId: new ObjectId().toHexString(),
-				ldapDn: 'ldapDn',
-				externalId: 'externalId',
-				language: LanguageType.DE,
-				forcePasswordChange: false,
-				preferences: { firstLogin: true },
-				outdatedSince: new Date(),
-				lastLoginSystemChange: new Date(),
-				previousExternalId: 'someId',
-			});
+			const testDO: UserDO = userDoFactory
+				.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.USER }])
+				.buildWithId(
+					{
+						email: 'email@email.email',
+						firstName: 'firstName',
+						lastName: 'lastName',
+						schoolId: new ObjectId().toHexString(),
+						ldapDn: 'ldapDn',
+						externalId: 'externalId',
+						language: LanguageType.DE,
+						forcePasswordChange: false,
+						preferences: { firstLogin: true },
+						outdatedSince: new Date(),
+						lastLoginSystemChange: new Date(),
+						previousExternalId: 'someId',
+					},
+					'testId'
+				);
 
 			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
 
@@ -282,7 +312,7 @@ describe('UserRepo', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roleIds[0] })],
+				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				ldapDn: testDO.ldapDn,
 				externalId: testDO.externalId,
 				language: testDO.language,

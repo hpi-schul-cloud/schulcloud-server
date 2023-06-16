@@ -1,9 +1,9 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../../interface';
 import { ExternalToolConfigCreateParams } from './external-tool-config.params';
 
-export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
+export class Lti11ToolConfigCreateParams extends ExternalToolConfigCreateParams {
 	@IsEnum(ToolConfigType)
 	@ApiProperty()
 	type!: ToolConfigType;
@@ -17,9 +17,8 @@ export class Lti11ToolConfigParams extends ExternalToolConfigCreateParams {
 	key!: string;
 
 	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	secret?: string;
+	@ApiProperty()
+	secret!: string;
 
 	@IsString()
 	@IsOptional()

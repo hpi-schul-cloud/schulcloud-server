@@ -3,8 +3,8 @@ import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	SortOrderMap,
 	ExternalToolDO,
+	SortOrderMap,
 } from '@shared/domain';
 import {
 	CustomParameterLocationParams,
@@ -13,21 +13,24 @@ import {
 } from '../../interface';
 import {
 	BasicToolConfig,
-	CreateExternalTool,
 	CustomParameter,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-	UpdateExternalTool,
+	ExternalToolCreate,
+	ExternalToolUpdate,
+	Lti11ToolConfigCreate,
+	Lti11ToolConfigUpdate,
+	Oauth2ToolConfigCreate,
+	Oauth2ToolConfigUpdate,
 } from '../../uc/dto';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
-	ExternalToolPostParams,
+	ExternalToolCreateParams,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
-	Lti11ToolConfigParams,
-	Oauth2ToolConfigParams,
+	Lti11ToolConfigCreateParams,
+	Lti11ToolConfigUpdateParams,
+	Oauth2ToolConfigCreateParams,
+	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../dto';
 
@@ -54,53 +57,84 @@ const typeMapping: Record<CustomParameterTypeParams, CustomParameterType> = {
 
 @Injectable()
 export class ExternalToolRequestMapper {
-	mapExternalToolRequest(
-		externalToolPostParams: ExternalToolPostParams | ExternalToolUpdateParams,
-		version = 1
-	): ExternalTool {
-		let mappedConfig: BasicToolConfig | Lti11ToolConfig | Oauth2ToolConfig;
-		if (externalToolPostParams.config instanceof BasicToolConfigParams) {
-			mappedConfig = this.mapRequestToBasicToolConfigDO(externalToolPostParams.config);
-		} else if (externalToolPostParams.config instanceof Lti11ToolConfigParams) {
-			mappedConfig = this.mapRequestToLti11ToolConfigDO(externalToolPostParams.config);
+	public mapUpdateRequest(externalToolUpdateParams: ExternalToolUpdateParams, version = 1): ExternalToolUpdate {
+		let mappedConfig: BasicToolConfig | Lti11ToolConfigUpdate | Oauth2ToolConfigUpdate;
+		if (externalToolUpdateParams.config instanceof BasicToolConfigParams) {
+			mappedConfig = this.mapRequestToBasicToolConfig(externalToolUpdateParams.config);
+		} else if (externalToolUpdateParams.config instanceof Lti11ToolConfigUpdateParams) {
+			mappedConfig = this.mapRequestToLti11ToolConfigUpdate(externalToolUpdateParams.config);
 		} else {
-			mappedConfig = this.mapRequestToOauth2ToolConfigDO(externalToolPostParams.config);
+			mappedConfig = this.mapRequestToOauth2ToolConfigUpdate(externalToolUpdateParams.config);
 		}
 
 		const mappedCustomParameter: CustomParameter[] = this.mapRequestToCustomParameterDO(
-			externalToolPostParams.parameters ?? []
+			externalToolUpdateParams.parameters ?? []
 		);
 
 		return {
-			id: externalToolPostParams.id,
-			name: externalToolPostParams.name || '',
-			url: externalToolPostParams.url,
-			logoUrl: externalToolPostParams.logoUrl,
+			id: externalToolUpdateParams.id,
+			name: externalToolUpdateParams.name,
+			url: externalToolUpdateParams.url,
+			logoUrl: externalToolUpdateParams.logoUrl,
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
-			isHidden: externalToolPostParams.isHidden === undefined ? true : externalToolPostParams.isHidden,
-			openNewTab: externalToolPostParams.openNewTab === undefined ? true : externalToolPostParams.openNewTab,
+			isHidden: externalToolUpdateParams.isHidden,
+			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
 		};
 	}
 
-	mapUpdateRequest(externalToolPostParams: ExternalToolUpdateParams, version = 1): UpdateExternalTool {
-		return this.mapExternalToolRequest(externalToolPostParams, version);
+	public mapCreateRequest(externalToolCreateParams: ExternalToolCreateParams, version = 1): ExternalToolCreate {
+		let mappedConfig: BasicToolConfig | Lti11ToolConfigCreate | Oauth2ToolConfigCreate;
+		if (externalToolCreateParams.config instanceof BasicToolConfigParams) {
+			mappedConfig = this.mapRequestToBasicToolConfig(externalToolCreateParams.config);
+		} else if (externalToolCreateParams.config instanceof Lti11ToolConfigCreateParams) {
+			mappedConfig = this.mapRequestToLti11ToolConfigCreate(externalToolCreateParams.config);
+		} else {
+			mappedConfig = this.mapRequestToOauth2ToolConfigCreate(externalToolCreateParams.config);
+		}
+
+		const mappedCustomParameter: CustomParameter[] = this.mapRequestToCustomParameterDO(
+			externalToolCreateParams.parameters ?? []
+		);
+
+		return {
+			name: externalToolCreateParams.name,
+			url: externalToolCreateParams.url,
+			logoUrl: externalToolCreateParams.logoUrl,
+			config: mappedConfig,
+			parameters: mappedCustomParameter,
+			isHidden: externalToolCreateParams.isHidden,
+			openNewTab: externalToolCreateParams.openNewTab,
+			version,
+		};
 	}
 
-	mapCreateRequest(externalToolPostParams: ExternalToolPostParams, version = 1): CreateExternalTool {
-		return this.mapExternalToolRequest(externalToolPostParams, version);
-	}
-
-	private mapRequestToBasicToolConfigDO(externalToolConfigParams: BasicToolConfigParams): BasicToolConfig {
+	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfig {
 		return { ...externalToolConfigParams };
 	}
 
-	private mapRequestToLti11ToolConfigDO(externalToolConfigParams: Lti11ToolConfigParams): Lti11ToolConfig {
+	private mapRequestToLti11ToolConfigCreate(
+		externalToolConfigParams: Lti11ToolConfigCreateParams
+	): Lti11ToolConfigCreate {
 		return { ...externalToolConfigParams };
 	}
 
-	private mapRequestToOauth2ToolConfigDO(externalToolConfigParams: Oauth2ToolConfigParams): Oauth2ToolConfig {
+	private mapRequestToLti11ToolConfigUpdate(
+		externalToolConfigParams: Lti11ToolConfigUpdateParams
+	): Lti11ToolConfigUpdate {
+		return { ...externalToolConfigParams };
+	}
+
+	private mapRequestToOauth2ToolConfigCreate(
+		externalToolConfigParams: Oauth2ToolConfigCreateParams
+	): Oauth2ToolConfigCreate {
+		return { ...externalToolConfigParams };
+	}
+
+	private mapRequestToOauth2ToolConfigUpdate(
+		externalToolConfigParams: Oauth2ToolConfigUpdateParams
+	): Oauth2ToolConfigUpdate {
 		return { ...externalToolConfigParams };
 	}
 
