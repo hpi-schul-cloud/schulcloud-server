@@ -4,6 +4,12 @@
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
 
+  - name: ServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: svc-monitor.yml.j2
+
   - name: FileStorageService
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config

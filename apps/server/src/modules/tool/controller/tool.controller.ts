@@ -15,8 +15,7 @@ import { ExternalToolDO, IFindOptions, Page } from '@shared/domain';
 import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ExternalToolUc } from '../uc';
-import { ExternalToolCreate, ExternalToolUpdate } from '../uc/dto';
+import { ExternalToolUc, ExternalToolCreate, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolCreateParams,
 	ExternalToolResponse,
