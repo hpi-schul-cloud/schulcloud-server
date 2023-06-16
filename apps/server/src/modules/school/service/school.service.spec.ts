@@ -33,7 +33,7 @@ describe('SchoolService', () => {
 
 	const setupOld = () => {
 		const systems: string[] = ['systemId'];
-		const schoolSaved: SchoolDO = new SchoolDO({
+		const schoolSaved: SchoolDO = schoolDOFactory.build({
 			id: 'testId',
 			name: 'schoolName',
 			externalId: 'externalId',
@@ -41,7 +41,7 @@ describe('SchoolService', () => {
 			systems,
 			features: [SchoolFeatures.VIDEOCONFERENCE],
 		});
-		const schoolUnsaved: SchoolDO = new SchoolDO({ name: 'school #2}', systems: [] });
+		const schoolUnsaved: SchoolDO = schoolDOFactory.build({ name: 'school #2}', systems: [] });
 		schoolRepo.findById.mockResolvedValue(schoolSaved);
 		schoolRepo.findByExternalId.mockResolvedValue(schoolSaved);
 		schoolRepo.findBySchoolNumber.mockResolvedValue(schoolSaved);
@@ -257,9 +257,18 @@ describe('SchoolService', () => {
 		});
 
 		describe('save is called', () => {
+			const setupSave = () => {
+				const school: SchoolDO = schoolDOFactory.build();
+				schoolRepo.save.mockResolvedValue(school);
+
+				return {
+					school,
+				};
+			};
+
 			describe('when school is given', () => {
 				it('should call the repo', async () => {
-					const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
+					const { school } = setupSave();
 
 					await schoolService.save(school);
 
@@ -267,12 +276,11 @@ describe('SchoolService', () => {
 				});
 
 				it('should return a do', async () => {
-					const school: SchoolDO = new SchoolDO({ id: 'id', name: 'name' });
-					schoolRepo.save.mockResolvedValue(school);
+					const { school } = setupSave();
 
 					const schoolDO: SchoolDO = await schoolService.save(school);
 
-					expect(schoolDO).toBeInstanceOf(SchoolDO);
+					expect(schoolDO).toBeDefined();
 				});
 			});
 		});

@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { schoolDOFactory } from '@shared/testing';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -77,7 +78,7 @@ describe('OidcStrategy', () => {
 				roleIds: ['roleId'],
 				externalId: externalUserId,
 			});
-			const school: SchoolDO = new SchoolDO({
+			const school: SchoolDO = schoolDOFactory.build({
 				id: schoolId,
 				name: 'schoolName',
 				externalId: externalSchoolId,
