@@ -2,7 +2,7 @@ import { ISchoolYearProperties, SchoolYear } from '@shared/domain/entity/schooly
 import { BaseFactory } from './base.factory';
 
 export const schoolYearFactory = BaseFactory.define<SchoolYear, ISchoolYearProperties>(SchoolYear, () => {
-	const year = new Date(2020, 1).getFullYear();
+	const year = new Date().getFullYear();
 	const nextYear = (year + 1).toString().substr(-2);
 	const name = `${year}/${nextYear}`;
 	const startDate = new Date(`${year}-08-01`);
