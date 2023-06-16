@@ -74,59 +74,48 @@ describe('OidcProvisioningService', () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
-	const setupData = () => {
-		const systemId = 'systemId';
-		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-		});
-		const savedSchoolDO = schoolDOFactory.build({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-		const existingSchoolDO = schoolDOFactory.build({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'existingName',
-			officialSchoolNumber: 'existingOfficialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-
-		schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
-
-		return {
-			systemId,
-			externalSchoolDto,
-			savedSchoolDO,
-			existingSchoolDO,
-		};
-	};
-
 	describe('provisionExternalSchool is called', () => {
-		describe('when systemId is given and external school does not exist', () => {
-			const setup = () => {
-				const { systemId, externalSchoolDto, savedSchoolDO } = setupData();
+		const setup = () => {
+			const systemId = 'systemId';
+			const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+			});
+			const savedSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
+			const existingSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'existingName',
+				officialSchoolNumber: 'existingOfficialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
 
-				schoolService.getSchoolByExternalId.mockResolvedValue(null);
-				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
-				federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+			schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
+			schoolService.getSchoolByExternalId.mockResolvedValue(null);
+			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
+			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
 
-				return {
-					systemId,
-					externalSchoolDto,
-					savedSchoolDO,
-				};
+			return {
+				systemId,
+				externalSchoolDto,
+				savedSchoolDO,
+				existingSchoolDO,
 			};
+		};
 
+		describe('when systemId is given and external school does not exist', () => {
 			it('should save the new school', async () => {
 				const { systemId, externalSchoolDto, savedSchoolDO } = setup();
 
@@ -138,7 +127,7 @@ describe('OidcProvisioningService', () => {
 
 		describe('when external school already exist', () => {
 			it('should update the existing school', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
 
@@ -148,7 +137,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should append the new system', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				const otherSystemId = 'otherSystemId';
 				existingSchoolDO.systems = [otherSystemId];
 
@@ -163,7 +152,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should create a new system list', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				existingSchoolDO.systems = undefined;
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
