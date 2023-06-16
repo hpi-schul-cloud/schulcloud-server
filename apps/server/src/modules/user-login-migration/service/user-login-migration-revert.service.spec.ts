@@ -21,12 +21,12 @@ describe('UserLoginMigrationRevertService', () => {
 			providers: [
 				UserLoginMigrationRevertService,
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
-				},
-				{
 					provide: UserLoginMigrationService,
 					useValue: createMock<UserLoginMigrationService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 			],
 		}).compile();
