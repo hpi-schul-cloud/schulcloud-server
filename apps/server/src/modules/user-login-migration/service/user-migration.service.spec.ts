@@ -349,29 +349,37 @@ describe('UserMigrationService', () => {
 		const setupMigrationData = () => {
 			const targetSystemId = new ObjectId().toHexString();
 
-			const notMigratedUser: UserDO = userDoFactory.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }]).build({
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				email: 'emailMock',
-				firstName: 'firstNameMock',
-				lastName: 'lastNameMock',
-				schoolId: 'schoolMock',
-				externalId: 'currentUserExternalIdMock',
-			});
+			const notMigratedUser: UserDO = userDoFactory
+				.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }])
+				.buildWithId(
+					{
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						email: 'emailMock',
+						firstName: 'firstNameMock',
+						lastName: 'lastNameMock',
+						schoolId: 'schoolMock',
+						externalId: 'currentUserExternalIdMock',
+					},
+					'userId'
+				);
 
 			const migratedUserDO: UserDO = userDoFactory
 				.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }])
-				.buildWithId({
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					email: 'emailMock',
-					firstName: 'firstNameMock',
-					lastName: 'lastNameMock',
-					schoolId: 'schoolMock',
-					externalId: 'externalUserTargetId',
-					previousExternalId: 'currentUserExternalIdMock',
-					lastLoginSystemChange: new Date(),
-				});
+				.buildWithId(
+					{
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						email: 'emailMock',
+						firstName: 'firstNameMock',
+						lastName: 'lastNameMock',
+						schoolId: 'schoolMock',
+						externalId: 'externalUserTargetId',
+						previousExternalId: 'currentUserExternalIdMock',
+						lastLoginSystemChange: new Date(),
+					},
+					'userId'
+				);
 
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
