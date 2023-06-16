@@ -189,19 +189,21 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
-		describe('when current User start the migration and is not authorized', () => {
-			const setup = () => {
-				currentUser = undefined;
+		describe('when invalid User start the migration', () => {
+			const setup = async () => {
+				const invalidUser = userFactory.build();
+				await em.persistAndFlush([invalidUser]);
+				currentUser = mapUserToCurrentUser(invalidUser);
 			};
 
-			it('should return Unauthorized', async () => {
-				setup();
+			it('should return forbidden', async () => {
+				await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.post(`/user-login-migrations/start`)
 					.query({ userId: new ObjectId().toHexString() });
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
@@ -602,19 +604,21 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
-		describe('when current User restart the migration and is not authorized', () => {
-			const setup = () => {
-				currentUser = undefined;
+		describe('when invalid User restart the migration', () => {
+			const setup = async () => {
+				const invalidUser = userFactory.build();
+				await em.persistAndFlush([invalidUser]);
+				currentUser = mapUserToCurrentUser(invalidUser);
 			};
 
-			it('should return Unauthorized', async () => {
-				setup();
+			it('should return forbidden', async () => {
+				await setup();
 
 				const response: Response = await request(app.getHttpServer())
 					.put(`/user-login-migrations/restart`)
 					.query({ userId: new ObjectId().toHexString() });
 
-				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 
