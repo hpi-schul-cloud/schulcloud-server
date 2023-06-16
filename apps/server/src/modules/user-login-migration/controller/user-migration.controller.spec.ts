@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PageTypes } from '../interface/page-types.enum';
-import { PageContentMapper } from '../mapper/page-content.mapper';
-import { PageContentDto } from '../service/dto/page-content.dto';
+import { PageContentMapper } from '../mapper';
+import { PageContentDto } from '../service/dto';
 import { UserLoginMigrationUc } from '../uc/user-login-migration.uc';
 import { PageContentQueryParams, PageContentResponse } from './dto';
 import { UserMigrationController } from './user-migration.controller';

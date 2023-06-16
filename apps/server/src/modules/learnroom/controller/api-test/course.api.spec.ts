@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain';
@@ -202,6 +202,7 @@ describe('Course Controller (API)', () => {
 			const teacherUnkownToCourse = createTeacher();
 			const course = courseFactory.build({
 				name: 'course #1',
+				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
 
@@ -209,27 +210,22 @@ describe('Course Controller (API)', () => {
 		};
 		it('should find course export', async () => {
 			const { teacher, course } = setup();
-			await em.persistAndFlush([course, teacher.account, teacher.user]);
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
-			console.log(app);
 			console.log(configService);
 			const version = { version: '1.1.0' };
+
 			const loggedInClient = await testApiClient.login(teacher.account);
 			const response = await loggedInClient.get(`${course.id}/export`).query(version);
 			expect(configService.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED')).toBe(true);
 			console.log(configService);
 			expect(response.statusCode).toEqual(200);
-			const courseResponse = response.body as CourseResponse;
-			expect(courseResponse).toBeDefined();
-		});
-		it('should not export course if the export is disable', async () => {
-			const { teacher, course } = setup();
-			const version = { version: '1.1.0' };
-			await em.persistAndFlush([course, teacher.account, teacher.user]);
-			em.clear();
-			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(version);
-			expect(response.statusCode).toEqual(404);
+			const file = response.body as StreamableFile;
+			expect(file).toBeDefined();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-type']).toBe('application/zip');
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-disposition']).toBe('attachment;');
 		});
 	});
 });

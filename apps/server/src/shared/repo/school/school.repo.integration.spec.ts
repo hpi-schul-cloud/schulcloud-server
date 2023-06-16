@@ -43,6 +43,7 @@ describe('SchoolRepo', () => {
 
 	beforeEach(async () => {
 		await em.nativeDelete(School, {});
+		await em.nativeDelete(SchoolYear, {});
 		em.clear();
 		jest.resetAllMocks();
 	});
@@ -58,10 +59,7 @@ describe('SchoolRepo', () => {
 	describe('save is called', () => {
 		describe('when saving only required fields', () => {
 			function setupDO() {
-				const domainObject: SchoolDO = new SchoolDO({
-					name: 'schoolName',
-				});
-
+				const domainObject: SchoolDO = schoolDOFactory.build();
 				return {
 					domainObject,
 				};
@@ -82,7 +80,7 @@ describe('SchoolRepo', () => {
 
 	it('should create a school with embedded object', async () => {
 		const schoolYear = schoolYearFactory.build();
-		const school = new School({
+		const school = schoolFactory.build({
 			name: 'test',
 			schoolYear,
 			previousExternalId: 'someId',
@@ -92,7 +90,7 @@ describe('SchoolRepo', () => {
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
 
-		await em.persistAndFlush([school, schoolYear]);
+		await em.persistAndFlush([school]);
 
 		const storedSchoolYears = await em.find(SchoolYear, {});
 		expect(storedSchoolYears).toHaveLength(1);
@@ -202,6 +200,7 @@ describe('SchoolRepo', () => {
 					officialSchoolNumber: schoolEntity.officialSchoolNumber,
 					schoolYear,
 					userLoginMigrationId: userLoginMigration.id,
+					federalState: schoolEntity.federalState,
 				})
 			);
 		});
@@ -253,6 +252,7 @@ describe('SchoolRepo', () => {
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
 			expect(result.schoolYear).toEqual(entityDO.schoolYear);
 			expect(result.userLoginMigration?.id).toEqual(entityDO.userLoginMigrationId);
+			expect(result.federalState).toEqual(entityDO.federalState);
 
 			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);
 			expect(emGetReferenceSpy).toHaveBeenNthCalledWith(1, System, system1.id);

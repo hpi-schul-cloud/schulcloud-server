@@ -1,4 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ContextRef, EntityId } from '@shared/domain';
 import { ContextExternalToolDO } from '@shared/domain/domainobject/tool';
 import { ContextExternalToolRepo } from '@shared/repo';
@@ -8,7 +9,7 @@ import {
 	AuthorizationLoaderService,
 	AuthorizationService,
 } from '@src/modules/authorization';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { ContextExternalToolQuery } from '../uc/dto';
 import { ContextTypeMapper } from './mapper';
 
 @Injectable()
@@ -18,6 +19,12 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		@Inject(forwardRef(() => AuthorizationService))
 		private readonly authorizationService: AuthorizationService
 	) {}
+
+	async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalToolDO[]> {
+		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find(query);
+
+		return contextExternalTools;
+	}
 
 	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalToolDO> {
 		const contextExternalTools: ContextExternalToolDO[] = await this.contextExternalToolRepo.find({
@@ -85,7 +92,7 @@ export class ContextExternalToolService implements AuthorizationLoaderService {
 		);
 	}
 
-	findById(id: EntityId): Promise<ContextExternalToolDO> {
+	async findById(id: EntityId): Promise<ContextExternalToolDO> {
 		return this.getContextExternalToolById(id);
 	}
 

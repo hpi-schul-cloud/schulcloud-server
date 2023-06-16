@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { Role, School, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolDOFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationHelper } from '@src/modules/authorization/authorization.helper';
 import { Action } from '@src/modules/authorization/types';
 import { SchoolRule } from './school.rule';
@@ -56,7 +56,7 @@ describe('SchoolRule', () => {
 	});
 
 	it('should return "false" if user has not some school', () => {
-		entity = new SchoolDO({ name: 'testschool', id: 'invalidId' });
+		entity = schoolDOFactory.build({ name: 'testschool', id: 'invalidId' });
 		user = userFactory.build({ roles: [role] });
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(false);
