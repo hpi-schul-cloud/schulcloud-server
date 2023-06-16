@@ -1334,9 +1334,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
-import { ContextExternalToolDO, CustomParameterEntryDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalToolDO, CustomParameterEntryDO } from &#x27;@shared/domain/domainobject/tool&#x27;;
 import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 import { DoBaseFactory } from &#x27;../do-base.factory&#x27;;
 
 class ContextExternalToolDOFactory extends DoBaseFactory&lt;ContextExternalToolDO, ContextExternalToolDO&gt; {
@@ -1352,13 +1352,11 @@ export const contextExternalToolDOFactory &#x3D; ContextExternalToolDOFactory.de
 	ContextExternalToolDO,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			updatedAt: new Date(),
 			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
 			contextRef: { id: &#x27;courseId&#x27;, type: ToolContextType.COURSE },
-			contextToolName: &#x27;My Course Tool 1&#x27;,
+			displayName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,
-			createdAt: new Date(),
 		};
 	}
 );

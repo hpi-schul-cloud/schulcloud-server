@@ -108,7 +108,6 @@
                                 <a href="#resource_link_id" >resource_link_id</a>
                             </li>
                             <li>
-                                    <span class="modifier">Optional</span>
                                 <a href="#secret" >secret</a>
                             </li>
                             <li>
@@ -295,7 +294,6 @@
                 <td class="col-md-4">
                     <a name="secret"></a>
                     <span class="name">
-                            <span class="modifier">Optional</span>
                         <span ><b>secret</b></span>
                         <a href="#secret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -400,7 +398,7 @@ import { ExternalToolConfigDO } from &#x27;./external-tool-config.do&#x27;;
 export class Lti11ToolConfigDO extends ExternalToolConfigDO {
 	key: string;
 
-	secret?: string;
+	secret: string;
 
 	resource_link_id?: string;
 

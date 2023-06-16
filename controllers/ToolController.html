@@ -119,11 +119,6 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getLti11LaunchParameters" >getLti11LaunchParameters</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -169,7 +164,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolParams: <a href="../classes/ExternalToolPostParams.html" target="_self">ExternalToolPostParams</a>)</code>
+                    <code>createExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, externalToolParams: <a href="../classes/ExternalToolCreateParams.html" target="_self">ExternalToolCreateParams</a>)</code>
                 </td>
             </tr>
 
@@ -183,8 +178,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="68"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:68</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:47</a></div>
                 </td>
             </tr>
 
@@ -219,7 +214,7 @@
                                 <tr>
                                     <td>externalToolParams</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolPostParams.html" target="_self" >ExternalToolPostParams</a></code>
+                                                <code><a href="../classes/ExternalToolCreateParams.html" target="_self" >ExternalToolCreateParams</a></code>
                                     </td>
 
                                     <td>
@@ -274,8 +269,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="139"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:139</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:118</a></div>
                 </td>
             </tr>
 
@@ -368,8 +363,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="83"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:83</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:62</a></div>
                 </td>
             </tr>
 
@@ -483,8 +478,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:108</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:87</a></div>
                 </td>
             </tr>
 
@@ -548,109 +543,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getLti11LaunchParameters"></a>
-                    <span class="name">
-                        <span class="modifier"></span>
-                        <span class="modifier">Async</span>
-                        <span ><b>getLti11LaunchParameters</b></span>
-                        <a href="#getLti11LaunchParameters"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLti11LaunchParameters(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, query: <a href="../classes/Lti11LaunchQuery.html" target="_self">Lti11LaunchQuery</a>)</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>Decorators : </b>
-                    <br />
-                    <code>@Get(&#x27;lti11/:toolId/launch&#x27;)<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="47"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:47</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>currentUser</td>
-                                    <td>
-                                                <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>params</td>
-                                    <td>
-                                                <code><a href="../classes/ToolIdParams.html" target="_self" >ToolIdParams</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                                <tr>
-                                    <td>query</td>
-                                    <td>
-                                                <code><a href="../classes/Lti11LaunchQuery.html" target="_self" >Lti11LaunchQuery</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/Lti11LaunchResponse.html" target="_self" >Promise&lt;Lti11LaunchResponse&gt;</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="updateExternalTool"></a>
                     <span class="name">
                         <span class="modifier"></span>
@@ -667,7 +559,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolPostParams.html" target="_self">ExternalToolPostParams</a>)</code>
+                    <code>updateExternalTool(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ToolIdParams.html" target="_self">ToolIdParams</a>, externalToolParams: <a href="../classes/ExternalToolUpdateParams.html" target="_self">ExternalToolUpdateParams</a>)</code>
                 </td>
             </tr>
 
@@ -681,8 +573,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="122"
-                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:122</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="101"
+                            class="link-to-prism">apps/server/src/modules/tool/controller/tool.controller.ts:101</a></div>
                 </td>
             </tr>
 
@@ -729,7 +621,7 @@
                                 <tr>
                                     <td>externalToolParams</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolPostParams.html" target="_self" >ExternalToolPostParams</a></code>
+                                                <code><a href="../classes/ExternalToolUpdateParams.html" target="_self" >ExternalToolUpdateParams</a></code>
                                     </td>
 
                                     <td>
@@ -771,53 +663,32 @@ import {
 } from &#x27;@nestjs/swagger&#x27;;
 import { ValidationError } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller&#x27;;
-import { ExternalToolDO, IFindOptions, Page, RoleName } from &#x27;@shared/domain&#x27;;
+import { ExternalToolDO, IFindOptions, Page } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
-import { Authorization } from &#x27;oauth-1.0a&#x27;;
-import { ExternalToolUc, Lti11Uc } from &#x27;../uc&#x27;;
-import { CreateExternalTool, UpdateExternalTool } from &#x27;../uc/dto&#x27;;
+import { ExternalToolUc, ExternalToolCreate, ExternalToolUpdate } from &#x27;../uc&#x27;;
 import {
-	ExternalToolPostParams,
+	ExternalToolCreateParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
-	Lti11LaunchQuery,
-	Lti11LaunchResponse,
+	ExternalToolUpdateParams,
 	SortExternalToolParams,
 	ToolIdParams,
 } from &#x27;./dto&#x27;;
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from &#x27;./mapper&#x27;;
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Tool&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;tools&#x27;)
 export class ToolController {
 	constructor(
-		private readonly lti11Uc: Lti11Uc,
-		private readonly lti11ResponseMapper: Lti11ResponseMapper,
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
 		private readonly logger: LegacyLogger
 	) {}
-
-	@Get(&#x27;lti11/:toolId/launch&#x27;)
-	async getLti11LaunchParameters(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Query() query: Lti11LaunchQuery
-	): Promise&lt;Lti11LaunchResponse&gt; {
-		const authorization: Authorization &#x3D; await this.lti11Uc.getLaunchParameters(
-			currentUser.userId,
-			currentUser.roles[0] as RoleName,
-			params.toolId,
-			query.courseId
-		);
-		const mapped: Lti11LaunchResponse &#x3D; this.lti11ResponseMapper.mapAuthorizationToResponse(authorization);
-		return mapped;
-	}
 
 	@Post()
 	@ApiCreatedResponse({ description: &#x27;The Tool has been successfully created.&#x27;, type: ExternalToolResponse })
@@ -827,9 +698,9 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: &#x27;Request data has invalid format.&#x27; })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise&lt;ExternalToolResponse&gt; {
-		const externalToolDO: CreateExternalTool &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalToolDO: ExternalToolCreate &#x3D; this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO &#x3D; await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse &#x3D; this.externalResponseMapper.mapToResponse(created);
 		this.logger.debug(&#x60;ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}&#x60;);
@@ -882,9 +753,9 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise&lt;ExternalToolResponse&gt; {
-		const externalTool: UpdateExternalTool &#x3D; this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const externalTool: ExternalToolUpdate &#x3D; this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO &#x3D; await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,

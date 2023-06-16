@@ -574,8 +574,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="115"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:115</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:113</a></div>
                 </td>
             </tr>
 
@@ -645,8 +645,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="106"
-                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:106</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="104"
+                            class="link-to-prism">apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.ts:104</a></div>
                 </td>
             </tr>
 
@@ -720,7 +720,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:95</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:93</a></code>
 </div>
                 </td>
             </tr>
@@ -1665,14 +1665,14 @@ import {
 	IContextExternalToolProperties,
 	SchoolExternalTool,
 } from &#x27;@shared/domain&#x27;;
+import { ContextExternalToolType } from &#x27;@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum&#x27;;
 import { BaseDORepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { ContextExternalToolType } from &#x27;@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum&#x27;;
 import { ToolContextType } from &#x27;@src/modules/tool/interface&#x27;;
 import { ContextExternalToolQuery } from &#x27;@src/modules/tool/uc/dto&#x27;;
+import { SchoolExternalToolRefDO } from &#x27;../../domain&#x27;;
 import { ExternalToolRepoMapper } from &#x27;../externaltool&#x27;;
 import { ContextExternalToolScope } from &#x27;./context-external-tool.scope&#x27;;
-import { SchoolExternalToolRefDO } from &#x27;../../domain&#x27;;
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo&lt;
@@ -1741,11 +1741,9 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 			id: entity.id,
 			schoolToolRef,
 			contextRef,
-			contextToolName: entity.contextToolName,
+			displayName: entity.displayName,
 			toolVersion: entity.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 		});
 	}
 
@@ -1753,7 +1751,7 @@ export class ContextExternalToolRepo extends BaseDORepo&lt;
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
-			contextToolName: entityDO.contextToolName,
+			displayName: entityDO.displayName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),

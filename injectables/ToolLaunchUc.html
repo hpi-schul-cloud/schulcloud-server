@@ -258,8 +258,8 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { ContextExternalToolDO, EntityId, Permission } from &#x27;@shared/domain&#x27;;
 import { Action } from &#x27;@src/modules/authorization&#x27;;
-import { ToolLaunchService } from &#x27;../service/tool-launch.service&#x27;;
 import { ContextExternalToolService } from &#x27;../../service&#x27;;
+import { ToolLaunchService } from &#x27;../service/tool-launch.service&#x27;;
 import { ToolLaunchData, ToolLaunchRequest } from &#x27;../types&#x27;;
 
 @Injectable()
@@ -278,7 +278,7 @@ export class ToolLaunchUc {
 			action: Action.read,
 		});
 
-		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(contextExternalToolDO);
+		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(userId, contextExternalToolDO);
 		const launchRequest: ToolLaunchRequest &#x3D; this.toolLaunchService.generateLaunchRequest(toolLaunchData);
 
 		return launchRequest;

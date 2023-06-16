@@ -140,7 +140,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -253,8 +253,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="49"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:49</a></div>
                 </td>
             </tr>
 
@@ -324,8 +324,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="28"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:28</a></div>
                 </td>
             </tr>
 
@@ -420,8 +420,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="60"
-                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:60</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="59"
+                            class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:59</a></div>
                 </td>
             </tr>
 
@@ -508,7 +508,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -535,7 +535,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/oauth-provider/service/id-token.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -548,16 +548,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PseudonymDO, Team } from &#x27;@shared/domain&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { GroupNameIdTuple, IdToken } from &#x27;@src/modules/oauth-provider/interface/id-token&#x27;;
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from &#x27;@shared/repo&#x27;;
-import { OauthScope } from &#x27;@src/modules/oauth-provider/interface/oauth-scope.enum&#x27;;
+import { PseudonymDO, Team, UserDO } from &#x27;@shared/domain&#x27;;
 import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
-import { UserService } from &#x27;@src/modules/user/service/user.service&#x27;;
-import { UserDto } from &#x27;@src/modules/user/uc/dto/user.dto&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { GroupNameIdTuple, IdToken } from &#x27;@src/modules/oauth-provider/interface/id-token&#x27;;
+import { OauthScope } from &#x27;@src/modules/oauth-provider/interface/oauth-scope.enum&#x27;;
+import { UserService } from &#x27;@src/modules/user/service/user.service&#x27;;
 
 @Injectable()
 export class IdTokenService {
@@ -582,17 +581,17 @@ export class IdTokenService {
 			teams &#x3D; await this.teamsRepo.findByUserId(userId);
 		}
 
-		const userDto: UserDto &#x3D; await this.userService.getUser(userId);
-		const name: string &#x3D; await this.userService.getDisplayName(userDto);
+		const user: UserDO &#x3D; await this.userService.findById(userId);
+		const name: string &#x3D; await this.userService.getDisplayName(user);
 		const iframe: string | undefined &#x3D; await this.createIframeSubject(userId, clientId);
 		const groups: GroupNameIdTuple[] &#x3D; this.buildGroupsClaim(teams);
 
 		return {
 			iframe,
-			email: scopes.includes(OauthScope.EMAIL) ? userDto.email : undefined,
+			email: scopes.includes(OauthScope.EMAIL) ? user.email : undefined,
 			name: scopes.includes(OauthScope.PROFILE) ? name : undefined,
-			userId: scopes.includes(OauthScope.PROFILE) ? userDto.id : undefined,
-			schoolId: userDto.schoolId,
+			userId: scopes.includes(OauthScope.PROFILE) ? user.id : undefined,
+			schoolId: user.schoolId,
 			groups: scopes.includes(OauthScope.GROUPS) ? groups : undefined,
 		};
 	}

@@ -74,6 +74,12 @@
 
 
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/IToolLaunchStrategy.html" target="_self" >IToolLaunchStrategy</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -98,7 +104,11 @@
                                 <a href="#addProperty" >addProperty</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Private</span>
+                                <a href="#applyPropertiesToPathParams" >applyPropertiesToPathParams</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
                                 <a href="#buildToolLaunchDataFromConcreteConfig" >buildToolLaunchDataFromConcreteConfig</a>
                             </li>
@@ -111,7 +121,7 @@
                                 <a href="#buildToolLaunchDataFromTools" >buildToolLaunchDataFromTools</a>
                             </li>
                             <li>
-                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
                                 <a href="#buildToolLaunchRequestPayload" >buildToolLaunchRequestPayload</a>
                             </li>
@@ -121,6 +131,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createLaunchData" >createLaunchData</a>
                             </li>
                             <li>
@@ -128,7 +139,8 @@
                                 <a href="#createLaunchRequest" >createLaunchRequest</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Abstract</span>
                                 <a href="#determineLaunchRequestMethod" >determineLaunchRequestMethod</a>
                             </li>
                             <li>
@@ -180,8 +192,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="113"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:113</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:134</a></div>
                 </td>
             </tr>
 
@@ -299,8 +311,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="182"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:182</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="203"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:203</a></div>
                 </td>
             </tr>
 
@@ -388,27 +400,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildToolLaunchDataFromConcreteConfig"></a>
+                    <a name="applyPropertiesToPathParams"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
-                        <span class="modifier">Abstract</span>
-                        <span ><b>buildToolLaunchDataFromConcreteConfig</b></span>
-                        <a href="#buildToolLaunchDataFromConcreteConfig"><span class="icon ion-ios-link"></span></a>
+                        <span class="modifier">Private</span>
+                        <span ><b>applyPropertiesToPathParams</b></span>
+                        <a href="#applyPropertiesToPathParams"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchDataFromConcreteConfig(config: <a href="../classes/ExternalToolConfigDO.html" target="_self">ExternalToolConfigDO</a>)</code>
+                    <code>applyPropertiesToPathParams(url: URL, pathProperties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="27"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:27</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:84</a></div>
                 </td>
             </tr>
 
@@ -429,9 +440,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>config</td>
+                                    <td>url</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolConfigDO.html" target="_self" >ExternalToolConfigDO</a></code>
+                                            <code>URL</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>pathProperties</td>
+                                    <td>
+                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
                                     </td>
 
                                     <td>
@@ -446,7 +469,91 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildToolLaunchDataFromConcreteConfig"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Abstract</span>
+                        <span ><b>buildToolLaunchDataFromConcreteConfig</b></span>
+                        <a href="#buildToolLaunchDataFromConcreteConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, config: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:34</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>config</td>
+                                    <td>
+                                                <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../classes/PropertyData.html" target="_self" >Promise&lt;PropertyData[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -478,8 +585,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="107"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:107</a></div>
                 </td>
             </tr>
 
@@ -549,8 +656,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="97"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:97</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:118</a></div>
                 </td>
             </tr>
 
@@ -604,7 +711,7 @@
                 <td class="col-md-4">
                     <a name="buildToolLaunchRequestPayload"></a>
                     <span class="name">
-                        <span class="modifier">Protected</span>
+                        <span class="modifier">Public</span>
                         <span class="modifier">Abstract</span>
                         <span ><b>buildToolLaunchRequestPayload</b></span>
                         <a href="#buildToolLaunchRequestPayload"><span class="icon ion-ios-link"></span></a>
@@ -614,15 +721,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>buildToolLaunchRequestPayload(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
+                    <code>buildToolLaunchRequestPayload(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="29"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:29</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:39</a></div>
                 </td>
             </tr>
 
@@ -642,6 +749,18 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>url</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
                                 <tr>
                                     <td>properties</td>
                                     <td>
@@ -692,8 +811,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:58</a></div>
                 </td>
             </tr>
 
@@ -748,6 +867,7 @@
                     <a name="createLaunchData"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
                         <span ><b>createLaunchData</b></span>
                         <a href="#createLaunchData"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -756,15 +876,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchData(data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="19"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:19</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="20"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:20</a></div>
                 </td>
             </tr>
 
@@ -785,6 +905,18 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
                                     <td>data</td>
                                     <td>
                                                 <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
@@ -802,7 +934,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >Promise&lt;ToolLaunchData&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -827,15 +959,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchRequest(toolLaunchDataDO: <a href="../classes/ToolLaunchData.html" target="_self">ToolLaunchData</a>)</code>
+                    <code>createLaunchRequest(toolLaunchData: <a href="../classes/ToolLaunchData.html" target="_self">ToolLaunchData</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="31"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:31</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="43"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:43</a></div>
                 </td>
             </tr>
 
@@ -856,7 +988,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>toolLaunchDataDO</td>
+                                    <td>toolLaunchData</td>
                                     <td>
                                                 <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
                                     </td>
@@ -889,7 +1021,8 @@
                 <td class="col-md-4">
                     <a name="determineLaunchRequestMethod"></a>
                     <span class="name">
-                        <span class="modifier">Private</span>
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Abstract</span>
                         <span ><b>determineLaunchRequestMethod</b></span>
                         <a href="#determineLaunchRequestMethod"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -905,8 +1038,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="41"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:41</a></div>
                 </td>
             </tr>
 
@@ -976,8 +1109,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="159"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:159</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="180"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:180</a></div>
                 </td>
             </tr>
 
@@ -1083,8 +1216,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="137"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:137</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="158"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/abstract-launch.strategy.ts:158</a></div>
                 </td>
             </tr>
 
@@ -1197,42 +1330,54 @@
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalToolConfigDO,
+	EntityId,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from &#x27;@shared/domain&#x27;;
 import { URLSearchParams } from &#x27;url&#x27;;
+import { ToolContextType } from &#x27;../../../interface&#x27;;
+import { ToolLaunchMapper } from &#x27;../../mapper&#x27;;
 import { LaunchRequestMethod, PropertyData, PropertyLocation, ToolLaunchData, ToolLaunchRequest } from &#x27;../../types&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
-import { ToolLaunchMapper } from &#x27;../../mapper&#x27;;
-import { ToolContextType } from &#x27;../../../interface&#x27;;
+import { IToolLaunchStrategy } from &#x27;./tool-launch-strategy.interface&#x27;;
 
-export abstract class AbstractLaunchStrategy {
-	public createLaunchData(data: IToolLaunchParams): ToolLaunchData {
+export abstract class AbstractLaunchStrategy implements IToolLaunchStrategy {
+	public async createLaunchData(userId: EntityId, data: IToolLaunchParams): Promise&lt;ToolLaunchData&gt; {
 		const launchData: ToolLaunchData &#x3D; this.buildToolLaunchDataFromExternalTool(data.externalToolDO);
-		launchData.properties.push(...this.buildToolLaunchDataFromTools(data));
-		launchData.properties.push(...this.buildToolLaunchDataFromConcreteConfig(data.externalToolDO.config));
+		const launchDataProperties: PropertyData[] &#x3D; this.buildToolLaunchDataFromTools(data);
+		const additionalLaunchDataProperties: PropertyData[] &#x3D; await this.buildToolLaunchDataFromConcreteConfig(
+			userId,
+			data
+		);
+
+		launchData.properties.push(...launchDataProperties);
+		launchData.properties.push(...additionalLaunchDataProperties);
 
 		return launchData;
 	}
 
-	protected abstract buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[];
+	public abstract buildToolLaunchDataFromConcreteConfig(
+		userId: EntityId,
+		config: IToolLaunchParams
+	): Promise&lt;PropertyData[]&gt;;
 
-	protected abstract buildToolLaunchRequestPayload(properties: PropertyData[]): string;
+	public abstract buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string;
 
-	public createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest {
-		const requestMethod: LaunchRequestMethod &#x3D; this.determineLaunchRequestMethod(toolLaunchDataDO.properties);
-		const url: string &#x3D; this.buildUrl(toolLaunchDataDO);
-		const payload: string &#x3D; this.buildToolLaunchRequestPayload(toolLaunchDataDO.properties);
+	public abstract determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod;
 
-		const toolLaunchRequestDO: ToolLaunchRequest &#x3D; new ToolLaunchRequest({
+	public createLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
+		const requestMethod: LaunchRequestMethod &#x3D; this.determineLaunchRequestMethod(toolLaunchData.properties);
+		const url: string &#x3D; this.buildUrl(toolLaunchData);
+		const payload: string &#x3D; this.buildToolLaunchRequestPayload(url, toolLaunchData.properties);
+
+		const toolLaunchRequest: ToolLaunchRequest &#x3D; new ToolLaunchRequest({
 			method: requestMethod,
 			url,
 			payload,
-			openNewTab: toolLaunchDataDO.openNewTab,
+			openNewTab: toolLaunchData.openNewTab,
 		});
 
-		return toolLaunchRequestDO;
+		return toolLaunchRequest;
 	}
 
 	private buildUrl(toolLaunchDataDO: ToolLaunchData): string {
@@ -1248,8 +1393,7 @@ export abstract class AbstractLaunchStrategy {
 		const url &#x3D; new URL(baseUrl);
 
 		if (pathProperties.length &gt; 0) {
-			const pathParams: string &#x3D; pathProperties.map((property: PropertyData) &#x3D;&gt; &#x60;${property.value}&#x60;).join(&#x27;/&#x27;);
-			url.pathname &#x3D; url.pathname.endsWith(&#x27;/&#x27;) ? &#x60;${url.pathname}${pathParams}&#x60; : &#x60;${url.pathname}/${pathParams}&#x60;;
+			this.applyPropertiesToPathParams(url, pathProperties);
 		}
 
 		if (queryProperties.length &gt; 0) {
@@ -1259,20 +1403,30 @@ export abstract class AbstractLaunchStrategy {
 			url.search +&#x3D; queryParams.toString();
 		}
 
-		const urlString &#x3D; url.toString();
-		return urlString;
+		return url.toString();
 	}
 
-	private determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
-		const hasBodyProperty: boolean &#x3D; properties.some(
-			(property: PropertyData) &#x3D;&gt; property.location &#x3D;&#x3D;&#x3D; PropertyLocation.BODY
-		);
+	private applyPropertiesToPathParams(url: URL, pathProperties: PropertyData[]): void {
+		const trimSlash: string &#x3D; url.pathname.replace(/(^\/)|(\/$)/g, &#x27;&#x27;);
+		const pathParams: string[] &#x3D; trimSlash.split(&#x27;/&#x27;);
 
-		const launchRequestMethod: LaunchRequestMethod &#x3D; hasBodyProperty
-			? LaunchRequestMethod.POST
-			: LaunchRequestMethod.GET;
+		const filledPathParams: string[] &#x3D; pathParams.map((param: string): string &#x3D;&gt; {
+			let pathParam: string &#x3D; param;
 
-		return launchRequestMethod;
+			if (param.startsWith(&#x27;:&#x27;)) {
+				const foundProperty: PropertyData | undefined &#x3D; pathProperties.find(
+					(property: PropertyData) &#x3D;&gt; param &#x3D;&#x3D;&#x3D; &#x60;:${property.name}&#x60;
+				);
+
+				if (foundProperty) {
+					pathParam &#x3D; foundProperty.value;
+				}
+			}
+
+			return pathParam;
+		});
+
+		url.pathname &#x3D; filledPathParams.join(&#x27;/&#x27;);
 	}
 
 	private buildToolLaunchDataFromExternalTool(externalToolDO: ExternalToolDO): ToolLaunchData {

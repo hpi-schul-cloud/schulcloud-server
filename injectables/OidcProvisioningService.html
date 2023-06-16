@@ -115,7 +115,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -240,8 +240,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="26"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:26</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -323,8 +323,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/oidc-provisioning.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -404,6 +404,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId, FederalState, SchoolFeatures, SchoolYear } from &#x27;@shared/domain&#x27;;
+import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { SchoolDO } from &#x27;@shared/domain/domainobject/school.do&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { AccountService } from &#x27;@src/modules/account/services/account.service&#x27;;
@@ -465,10 +466,10 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise&lt;UserDO&gt; {
-		let roleIds: EntityId[] | undefined;
+		let roleRefs: RoleReference[] | undefined;
 		if (externalUser.roles) {
 			const roles: RoleDto[] &#x3D; await this.roleService.findByNames(externalUser.roles);
-			roleIds &#x3D; roles.map((role: RoleDto): EntityId &#x3D;&gt; role.id || &#x27;&#x27;);
+			roleRefs &#x3D; roles.map((role: RoleDto): RoleReference &#x3D;&gt; new RoleReference({ id: role.id || &#x27;&#x27;, name: role.name }));
 		}
 
 		const existingUser: UserDO | null &#x3D; await this.userService.findByExternalId(externalUser.externalId, systemId);
@@ -479,7 +480,7 @@ export class OidcProvisioningService {
 			user.firstName &#x3D; externalUser.firstName ?? existingUser.firstName;
 			user.lastName &#x3D; externalUser.lastName ?? existingUser.lastName;
 			user.email &#x3D; externalUser.email ?? existingUser.email;
-			user.roleIds &#x3D; roleIds ?? existingUser.roleIds;
+			user.roles &#x3D; roleRefs ?? existingUser.roles;
 			user.schoolId &#x3D; schoolId ?? existingUser.schoolId;
 		} else {
 			createNewAccount &#x3D; true;
@@ -495,7 +496,7 @@ export class OidcProvisioningService {
 				firstName: externalUser.firstName ?? &#x27;&#x27;,
 				lastName: externalUser.lastName ?? &#x27;&#x27;,
 				email: externalUser.email ?? &#x27;&#x27;,
-				roleIds: roleIds ?? [],
+				roles: roleRefs ?? [],
 				schoolId,
 			});
 		}

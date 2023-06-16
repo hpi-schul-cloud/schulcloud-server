@@ -96,15 +96,16 @@
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#contextToolName" 
->
-                                            contextToolName
-                                        </a>
-                                </li>
-                                <li>
                                         <a href="#contextType" 
 >
                                             contextType
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#displayName" 
+>
+                                            displayName
                                         </a>
                                 </li>
                                 <li>
@@ -174,39 +175,6 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="contextToolName"></a>
-                                        <span class="name "><b>contextToolName</b>
-                                            <a href="#contextToolName">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>contextToolName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
                                         <a name="contextType"></a>
                                         <span class="name "><b>contextType</b>
                                             <a href="#contextType">
@@ -230,6 +198,44 @@
                                         </td>
                                     </tr>
 
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="displayName"></a>
+                                        <span class="name "><b>displayName</b>
+                                            <a href="#displayName">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>displayName:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -358,7 +364,7 @@ export interface IContextExternalToolProperties {
 
 	contextType: ContextExternalToolType;
 
-	contextToolName: string;
+	displayName?: string;
 
 	parameters?: CustomParameterEntry[];
 
@@ -376,8 +382,8 @@ export class ContextExternalTool extends BaseEntityWithTimestamps {
 	@Property()
 	contextType: ContextExternalToolType;
 
-	@Property()
-	contextToolName: string;
+	@Property({ nullable: true })
+	displayName?: string;
 
 	@Embedded(() &#x3D;&gt; CustomParameterEntry, { array: true })
 	parameters: CustomParameterEntry[];
@@ -390,7 +396,7 @@ export class ContextExternalTool extends BaseEntityWithTimestamps {
 		this.schoolTool &#x3D; props.schoolTool;
 		this.contextId &#x3D; props.contextId;
 		this.contextType &#x3D; props.contextType;
-		this.contextToolName &#x3D; props.contextToolName;
+		this.displayName &#x3D; props.displayName;
 		this.parameters &#x3D; props.parameters ?? [];
 		this.toolVersion &#x3D; props.toolVersion;
 	}

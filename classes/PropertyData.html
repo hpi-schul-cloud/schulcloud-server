@@ -89,6 +89,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Optional</span>
                                 <a href="#location" >location</a>
                             </li>
                             <li>
@@ -170,6 +171,7 @@
                 <td class="col-md-4">
                     <a name="location"></a>
                     <span class="name">
+                            <span class="modifier">Optional</span>
                         <span ><b>location</b></span>
                         <a href="#location"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -261,7 +263,7 @@ export class PropertyData {
 
 	value: string;
 
-	location: PropertyLocation;
+	location?: PropertyLocation;
 
 	constructor(props: PropertyData) {
 		this.name &#x3D; props.name;

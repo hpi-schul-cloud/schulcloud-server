@@ -77,7 +77,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                        <code><a href="../classes/BaseFactory.html" target="_self" >BaseFactory</a></code>
+                        <code><a href="../classes/DoBaseFactory.html" target="_self" >DoBaseFactory</a></code>
             </p>
 
 
@@ -112,6 +112,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#withRoles" >withRoles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
                                 <a href="#buildWithId" >buildWithId</a>
                             </li>
                             <li>
@@ -214,8 +218,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="withRoles"></a>
+                    <span class="name">
+                        <span ><b>withRoles</b></span>
+                        <a href="#withRoles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>withRoles(roles: literal type[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="8"
+                            class="link-to-prism">apps/server/src/shared/testing/factory/user.do.factory.ts:8</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>roles</td>
+                                    <td>
+                                            <code>literal type[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="buildWithId"></a>
                     <span class="name">
+                        <span class="modifier"></span>
                         <span ><b>buildWithId</b></span>
                         <a href="#buildWithId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -223,7 +297,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildWithId(params?: <a href="../interfaces/User.html" target="_self">DeepPartial&lt;UserDO&gt;</a>, id?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options: <a href="../entitys/User.html" target="_self">BuildOptions&lt;UserDO | any&gt;</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildWithId(params?: DeepPartial<U>, id?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options: <a href="../interfaces/Options.html" target="_self">BuildOptions&lt;U | I&gt;</a>)</code>
                 </td>
             </tr>
 
@@ -261,7 +336,7 @@
                                 <tr>
                                     <td>params</td>
                                     <td>
-                                                <code><a href="../interfaces/User.html" target="_self" >DeepPartial&lt;UserDO&gt;</a></code>
+                                            <code>DeepPartial&lt;U&gt;</code>
                                     </td>
 
                                     <td>
@@ -289,7 +364,7 @@
                                 <tr>
                                     <td>options</td>
                                     <td>
-                                                <code><a href="../entitys/User.html" target="_self" >BuildOptions&lt;UserDO | any&gt;</a></code>
+                                                <code><a href="../interfaces/Options.html" target="_self" >BuildOptions&lt;U | I&gt;</a></code>
                                     </td>
 
                                     <td>
@@ -307,7 +382,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/UserDO.html" target="_self" >UserDO</a></code>
+                        <b>Returns : </b>    <code>T</code>
 
                     </div>
                     <div class="io-description">
@@ -1254,18 +1329,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
-import { BuildOptions, DeepPartial } from &#x27;fishery&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId, RoleName } from &#x27;@shared/domain&#x27;;
+import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
-import { BaseFactory } from &#x27;./base.factory&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
+import { DoBaseFactory } from &#x27;./domainobject&#x27;;
 
-class UserDoFactory extends BaseFactory&lt;UserDO, UserDO&gt; {
-	buildWithId(params?: DeepPartial&lt;UserDO&gt;, id?: string, options: BuildOptions&lt;UserDO, any&gt; &#x3D; {}): UserDO {
-		const entity: UserDO &#x3D; super.buildWithId(params, id, options);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const entityWithId &#x3D; Object.assign(entity, { id: new ObjectId(id).toString() });
+class UserDoFactory extends DoBaseFactory&lt;UserDO, UserDO&gt; {
+	withRoles(roles: { id: EntityId; name: RoleName }[]) {
+		const params: DeepPartial&lt;UserDO&gt; &#x3D; {
+			roles,
+		};
 
-		return entityWithId;
+		return this.params(params);
 	}
 }
 
@@ -1274,7 +1350,7 @@ export const userDoFactory &#x3D; UserDoFactory.define(UserDO, ({ sequence }) &#
 		firstName: &#x27;John&#x27;,
 		lastName: &#x60;Doe ${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,
-		roleIds: [],
+		roles: [],
 		schoolId: new ObjectId().toString(),
 	};
 });

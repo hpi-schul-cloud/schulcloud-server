@@ -463,6 +463,9 @@
                             <a href="#providers" title="apps/server/src/modules/management/management.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../management.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#pseudonymDOFactory" title="apps/server/src/shared/testing/factory/domainobject/pseudonym.factory.ts" ><b>pseudonymDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../pseudonym.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#pseudonymFactory" title="apps/server/src/shared/testing/factory/pseudonym.factory.ts" ><b>pseudonymFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../pseudonym.factory.ts)</a>
                         </li>
                         <li>
@@ -487,7 +490,7 @@
                             <a href="#RoleMapping" title="apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts" ><b>RoleMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../sanis-response.mapper.ts)</a>
                         </li>
                         <li>
-                            <a href="#RoleMapping" title="apps/server/src/modules/tool/uc/mapper/lti-role.mapper.ts" ><b>RoleMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../lti-role.mapper.ts)</a>
+                            <a href="#RoleMapping" title="apps/server/src/modules/tool/launch-tool/mapper/lti-role.mapper.ts" ><b>RoleMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../lti-role.mapper.ts)</a>
                         </li>
                         <li>
                             <a href="#s3Config" title="apps/server/src/modules/files-storage/files-storage.config.ts" ><b>s3Config</b>&nbsp;&nbsp;&nbsp;(apps/.../files-storage.config.ts)</a>
@@ -2948,13 +2951,11 @@ must use @ApiProperty</p>
 	ContextExternalToolDO,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			updatedAt: new Date(),
 			schoolToolRef: { schoolToolId: &#x60;schoolToolId-${sequence}&#x60;, schoolId: &#x27;schoolId&#x27; },
 			contextRef: { id: &#x27;courseId&#x27;, type: ToolContextType.COURSE },
-			contextToolName: &#x27;My Course Tool 1&#x27;,
+			displayName: &#x27;My Course Tool 1&#x27;,
 			parameters: [new CustomParameterEntryDO({ name: &#x27;param&#x27;, value: &#x27;value&#x27; })],
 			toolVersion: 1,
-			createdAt: new Date(),
 		};
 	}
 )</code>
@@ -2986,7 +2987,7 @@ must use @ApiProperty</p>
 		return {
 			contextId: courseFactory.buildWithId().id,
 			contextType: ContextExternalToolType.COURSE,
-			contextToolName: &#x27;My Course Tool 1&#x27;,
+			displayName: &#x27;My Course Tool 1&#x27;,
 			schoolTool: schoolExternalToolFactory.buildWithId(),
 			parameters: [new CustomParameterEntry({ name: &#x27;mockParamater&#x27;, value: &#x27;mockValue&#x27; })],
 			toolVersion: 1,
@@ -6309,6 +6310,35 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/pseudonym.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pseudonymDOFactory"></a>
+                    <span class="name">
+                        <span ><b>pseudonymDOFactory</b></span>
+                        <a href="#pseudonymDOFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DoBaseFactory.define&lt;PseudonymDO, PseudonymDO&gt;(PseudonymDO, ({ sequence }) &#x3D;&gt; {
+	return {
+		pseudonym: &#x60;pseudonym${sequence}&#x60;,
+		toolId: &#x27;toolId&#x27;,
+		userId: &#x27;userId&#x27;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/pseudonym.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -6521,7 +6551,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/tool/uc/mapper/lti-role.mapper.ts</h3>
+    <h3>apps/server/src/modules/tool/launch-tool/mapper/lti-role.mapper.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -6576,11 +6606,11 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		name: &#x60;schoolName-${sequence}&#x60;,
 		externalId: &#x27;123&#x27;,
 		features: [],
-		inMaintenanceSince: new Date(),
+		inMaintenanceSince: new Date(2020, 1),
 		inUserMigration: true,
-		oauthMigrationMandatory: new Date(),
-		oauthMigrationPossible: new Date(),
-		oauthMigrationFinished: new Date(),
+		oauthMigrationMandatory: new Date(2020, 1),
+		oauthMigrationPossible: new Date(2020, 1),
+		oauthMigrationFinished: new Date(2020, 1),
 		previousExternalId: &#x27;456&#x27;,
 		officialSchoolNumber: &#x27;789&#x27;,
 		systems: [],
@@ -7371,7 +7401,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		firstName: &#x27;John&#x27;,
 		lastName: &#x60;Doe ${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,
-		roleIds: [],
+		roles: [],
 		schoolId: new ObjectId().toString(),
 	};
 })</code>

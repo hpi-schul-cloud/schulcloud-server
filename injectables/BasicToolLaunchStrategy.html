@@ -91,10 +91,19 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier"></span>
                                 <a href="#buildToolLaunchDataFromConcreteConfig" >buildToolLaunchDataFromConcreteConfig</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier"></span>
                                 <a href="#buildToolLaunchRequestPayload" >buildToolLaunchRequestPayload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier"></span>
+                                <a href="#determineLaunchRequestMethod" >determineLaunchRequestMethod</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -103,6 +112,10 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#addProperty" >addProperty</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#applyPropertiesToPathParams" >applyPropertiesToPathParams</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -118,15 +131,12 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createLaunchData" >createLaunchData</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#createLaunchRequest" >createLaunchRequest</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#determineLaunchRequestMethod" >determineLaunchRequestMethod</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -160,6 +170,8 @@
                 <td class="col-md-4">
                     <a name="buildToolLaunchDataFromConcreteConfig"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier"></span>
                         <span ><b>buildToolLaunchDataFromConcreteConfig</b></span>
                         <a href="#buildToolLaunchDataFromConcreteConfig"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -167,7 +179,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildToolLaunchDataFromConcreteConfig(config: <a href="../classes/ExternalToolConfigDO.html" target="_self">ExternalToolConfigDO</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildToolLaunchDataFromConcreteConfig(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -180,7 +193,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:10</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:9</a></code>
 </div>
                 </td>
             </tr>
@@ -202,9 +215,21 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>config</td>
+                                    <td>userId</td>
                                     <td>
-                                                <code><a href="../classes/ExternalToolConfigDO.html" target="_self" >ExternalToolConfigDO</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>data</td>
+                                    <td>
+                                                <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
                                     </td>
 
                                     <td>
@@ -219,7 +244,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/PropertyData.html" target="_self" >Promise&lt;PropertyData[]&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -235,6 +260,8 @@
                 <td class="col-md-4">
                     <a name="buildToolLaunchRequestPayload"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier"></span>
                         <span ><b>buildToolLaunchRequestPayload</b></span>
                         <a href="#buildToolLaunchRequestPayload"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -242,7 +269,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>buildToolLaunchRequestPayload(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildToolLaunchRequestPayload(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
                 </td>
             </tr>
 
@@ -255,7 +283,97 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:14</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:18</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>url</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>properties</td>
+                                    <td>
+                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="determineLaunchRequestMethod"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier"></span>
+                        <span ><b>determineLaunchRequestMethod</b></span>
+                        <a href="#determineLaunchRequestMethod"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>determineLaunchRequestMethod(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/AbstractLaunchStrategy.html" target="_self" >AbstractLaunchStrategy</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:33</a></code>
 </div>
                 </td>
             </tr>
@@ -294,7 +412,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#LaunchRequestMethod" target="_self" >LaunchRequestMethod</a></code>
 
                     </div>
                     <div class="io-description">
@@ -332,7 +450,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:113</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:134</a></code>
 </div>
                 </td>
             </tr>
@@ -457,7 +575,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:182</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:203</a></code>
 </div>
                 </td>
             </tr>
@@ -546,6 +664,95 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="applyPropertiesToPathParams"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>applyPropertiesToPathParams</b></span>
+                        <a href="#applyPropertiesToPathParams"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyPropertiesToPathParams(url: URL, pathProperties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Inherited from         <code><a href="../classes/AbstractLaunchStrategy.html" target="_self" >AbstractLaunchStrategy</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:84</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>url</td>
+                                    <td>
+                                            <code>URL</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>pathProperties</td>
+                                    <td>
+                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="buildToolLaunchDataFromExternalTool"></a>
                     <span class="name">
                         <span class="modifier">Private</span>
@@ -570,7 +777,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:86</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:107</a></code>
 </div>
                 </td>
             </tr>
@@ -647,7 +854,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:97</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:118</a></code>
 </div>
                 </td>
             </tr>
@@ -724,7 +931,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:46</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:58</a></code>
 </div>
                 </td>
             </tr>
@@ -780,6 +987,7 @@
                     <a name="createLaunchData"></a>
                     <span class="name">
                         <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
                         <span ><b>createLaunchData</b></span>
                         <a href="#createLaunchData"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -788,7 +996,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchData(data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+                    <code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, data: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -801,7 +1009,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:19</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:20</a></code>
 </div>
                 </td>
             </tr>
@@ -823,6 +1031,18 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
                                     <td>data</td>
                                     <td>
                                                 <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
@@ -840,7 +1060,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >Promise&lt;ToolLaunchData&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -865,7 +1085,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createLaunchRequest(toolLaunchDataDO: <a href="../classes/ToolLaunchData.html" target="_self">ToolLaunchData</a>)</code>
+                    <code>createLaunchRequest(toolLaunchData: <a href="../classes/ToolLaunchData.html" target="_self">ToolLaunchData</a>)</code>
                 </td>
             </tr>
 
@@ -878,7 +1098,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:31</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:43</a></code>
 </div>
                 </td>
             </tr>
@@ -900,7 +1120,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>toolLaunchDataDO</td>
+                                    <td>toolLaunchData</td>
                                     <td>
                                                 <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
                                     </td>
@@ -918,83 +1138,6 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/ToolLaunchRequest.html" target="_self" >ToolLaunchRequest</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="determineLaunchRequestMethod"></a>
-                    <span class="name">
-                        <span class="modifier">Private</span>
-                        <span ><b>determineLaunchRequestMethod</b></span>
-                        <a href="#determineLaunchRequestMethod"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>determineLaunchRequestMethod(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Inherited from         <code><a href="../classes/AbstractLaunchStrategy.html" target="_self" >AbstractLaunchStrategy</a></code>
-</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:74</a></code>
-</div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>properties</td>
-                                    <td>
-                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#LaunchRequestMethod" target="_self" >LaunchRequestMethod</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1032,7 +1175,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:159</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:180</a></code>
 </div>
                 </td>
             </tr>
@@ -1145,7 +1288,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:137</a></code>
+                        <div class="io-line">Defined in         <code><a href="../classes/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:158</a></code>
 </div>
                 </td>
             </tr>
@@ -1248,20 +1391,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalToolConfigDO } from &#x27;@shared/domain&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain&#x27;;
+import { LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
 import { AbstractLaunchStrategy } from &#x27;./abstract-launch.strategy&#x27;;
-import { PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
-import { IToolLaunchStrategy } from &#x27;./tool-launch-strategy.interface&#x27;;
+import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
 
 @Injectable()
-export class BasicToolLaunchStrategy extends AbstractLaunchStrategy implements IToolLaunchStrategy {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
-		return [];
+export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
+	public override buildToolLaunchDataFromConcreteConfig(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		userId: EntityId,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		data: IToolLaunchParams
+	): Promise&lt;PropertyData[]&gt; {
+		return Promise.resolve([]);
 	}
 
-	buildToolLaunchRequestPayload(properties: PropertyData[]): string {
+	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
 		const bodyProperties &#x3D; properties.filter((property: PropertyData) &#x3D;&gt; property.location &#x3D;&#x3D;&#x3D; PropertyLocation.BODY);
 		const payload: Record&lt;string, string&gt; &#x3D; {};
 
@@ -1272,7 +1419,20 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy implements I
 		if (Object.keys(payload).length &#x3D;&#x3D;&#x3D; 0) {
 			return &#x27;&#x27;;
 		}
+
 		return JSON.stringify(payload);
+	}
+
+	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
+		const hasBodyProperty: boolean &#x3D; properties.some(
+			(property: PropertyData) &#x3D;&gt; property.location &#x3D;&#x3D;&#x3D; PropertyLocation.BODY
+		);
+
+		const launchRequestMethod: LaunchRequestMethod &#x3D; hasBodyProperty
+			? LaunchRequestMethod.POST
+			: LaunchRequestMethod.GET;
+
+		return launchRequestMethod;
 	}
 }
 </code></pre>

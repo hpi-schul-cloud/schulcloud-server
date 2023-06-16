@@ -214,7 +214,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolDO: <a href="../undefineds/CreateExternalTool.html" target="_self">CreateExternalTool</a>)</code>
+                    <code>createExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolDO: <a href="../undefineds/ExternalToolCreate.html" target="_self">ExternalToolCreate</a>)</code>
                 </td>
             </tr>
 
@@ -257,7 +257,7 @@
                                 <tr>
                                     <td>externalToolDO</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#CreateExternalTool" target="_self" >CreateExternalTool</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalToolCreate" target="_self" >ExternalToolCreate</a></code>
                                     </td>
 
                                     <td>
@@ -304,8 +304,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="56"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:56</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="62"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:62</a></div>
                 </td>
             </tr>
 
@@ -388,8 +388,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="63"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:63</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="69"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:69</a></div>
                 </td>
             </tr>
 
@@ -471,8 +471,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="38"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:38</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:44</a></div>
                 </td>
             </tr>
 
@@ -566,8 +566,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="55"
+                            class="link-to-prism">apps/server/src/modules/tool/uc/external-tool.uc.ts:55</a></div>
                 </td>
             </tr>
 
@@ -642,7 +642,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../undefineds/UpdateExternalTool.html" target="_self">UpdateExternalTool</a>)</code>
+                    <code>updateExternalTool(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, toolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, externalTool: <a href="../undefineds/ExternalToolUpdate.html" target="_self">ExternalToolUpdate</a>)</code>
                 </td>
             </tr>
 
@@ -697,7 +697,7 @@
                                 <tr>
                                     <td>externalTool</td>
                                     <td>
-                                                <code><a href="../miscellaneous/typealiases.html#UpdateExternalTool" target="_self" >UpdateExternalTool</a></code>
+                                                <code><a href="../miscellaneous/typealiases.html#ExternalToolUpdate" target="_self" >ExternalToolUpdate</a></code>
                                     </td>
 
                                     <td>
@@ -729,10 +729,10 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { EntityId, IFindOptions, Permission, User, ExternalToolDO, Page } from &#x27;@shared/domain&#x27;;
+import { EntityId, ExternalToolConfigDO, ExternalToolDO, IFindOptions, Page, Permission, User } from &#x27;@shared/domain&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { ExternalToolService, ExternalToolValidationService } from &#x27;../service&#x27;;
-import { CreateExternalTool, UpdateExternalTool } from &#x27;./dto&#x27;;
+import { ExternalToolCreate, ExternalToolUpdate } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class ExternalToolUc {
@@ -742,7 +742,7 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService
 	) {}
 
-	async createExternalTool(userId: EntityId, externalToolDO: CreateExternalTool): Promise&lt;ExternalToolDO&gt; {
+	async createExternalTool(userId: EntityId, externalToolDO: ExternalToolCreate): Promise&lt;ExternalToolDO&gt; {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateCreate(externalToolDO);
 
@@ -753,13 +753,19 @@ export class ExternalToolUc {
 	async updateExternalTool(
 		userId: EntityId,
 		toolId: string,
-		externalTool: UpdateExternalTool
+		externalTool: ExternalToolUpdate
 	): Promise&lt;ExternalToolDO&gt; {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
 		const loaded: ExternalToolDO &#x3D; await this.externalToolService.findExternalToolById(toolId);
-		const toUpdate: ExternalToolDO &#x3D; new ExternalToolDO({ ...loaded, ...externalTool, version: loaded.version });
+		const configToUpdate: ExternalToolConfigDO &#x3D; { ...loaded.config, ...externalTool.config };
+		const toUpdate: ExternalToolDO &#x3D; new ExternalToolDO({
+			...loaded,
+			...externalTool,
+			config: configToUpdate,
+			version: loaded.version,
+		});
 
 		const saved &#x3D; await this.externalToolService.updateExternalTool(toUpdate, loaded);
 		return saved;

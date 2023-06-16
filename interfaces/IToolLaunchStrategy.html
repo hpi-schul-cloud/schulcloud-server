@@ -90,18 +90,6 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                    <a href="#buildToolLaunchDataFromConcreteConfig" 
->
-                                        buildToolLaunchDataFromConcreteConfig
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#buildToolLaunchRequestPayload" 
->
-                                        buildToolLaunchRequestPayload
-                                    </a>
-                                </li>
-                                <li>
                                     <a href="#createLaunchData" 
 >
                                         createLaunchData
@@ -129,144 +117,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="buildToolLaunchDataFromConcreteConfig"></a>
-                    <span class="name">
-                        <span ><b>buildToolLaunchDataFromConcreteConfig</b></span>
-                        <a href="#buildToolLaunchDataFromConcreteConfig"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>buildToolLaunchDataFromConcreteConfig(config: <a href="../classes/ExternalToolConfigDO.html" target="_self">ExternalToolConfigDO</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/tool-launch-strategy.interface.ts:8</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>config</td>
-                                    <td>
-                                                <code><a href="../classes/ExternalToolConfigDO.html" target="_self" >ExternalToolConfigDO</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="buildToolLaunchRequestPayload"></a>
-                    <span class="name">
-                        <span ><b>buildToolLaunchRequestPayload</b></span>
-                        <a href="#buildToolLaunchRequestPayload"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>buildToolLaunchRequestPayload(properties: <a href="../classes/PropertyData.html" target="_self">PropertyData[]</a>)</code>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="9"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/tool-launch-strategy.interface.ts:9</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>properties</td>
-                                    <td>
-                                                <code><a href="../classes/PropertyData.html" target="_self" >PropertyData[]</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
-                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </div>
-                    <div class="io-description">
-                        
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="createLaunchData"></a>
                     <span class="name">
                         <span ><b>createLaunchData</b></span>
@@ -276,7 +126,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>createLaunchData(params: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
+<code>createLaunchData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../interfaces/IToolLaunchParams.html" target="_self">IToolLaunchParams</a>)</code>
                 </td>
             </tr>
 
@@ -305,6 +155,18 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>userId</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
                                     <td>params</td>
                                     <td>
                                                 <code><a href="../interfaces/IToolLaunchParams.html" target="_self" >IToolLaunchParams</a></code>
@@ -322,7 +184,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >ToolLaunchData</a></code>
+                        <b>Returns : </b>        <code><a href="../classes/ToolLaunchData.html" target="_self" >Promise&lt;ToolLaunchData&gt;</a></code>
 
                     </div>
                     <div class="io-description">
@@ -352,8 +214,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="7"
-                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/tool-launch-strategy.interface.ts:7</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="8"
+                            class="link-to-prism">apps/server/src/modules/tool/launch-tool/service/strategy/tool-launch-strategy.interface.ts:8</a></div>
                 </td>
             </tr>
 
@@ -407,15 +269,14 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ExternalToolConfigDO } from &#x27;@shared/domain&#x27;;
-import { PropertyData, ToolLaunchData, ToolLaunchRequest } from &#x27;../../types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain&#x27;;
+import { ToolLaunchData, ToolLaunchRequest } from &#x27;../../types&#x27;;
 import { IToolLaunchParams } from &#x27;./tool-launch-params.interface&#x27;;
 
 export interface IToolLaunchStrategy {
-	createLaunchData(params: IToolLaunchParams): ToolLaunchData;
+	createLaunchData(userId: EntityId, params: IToolLaunchParams): Promise&lt;ToolLaunchData&gt;;
+
 	createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest;
-	buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[];
-	buildToolLaunchRequestPayload(properties: PropertyData[]): string;
 }
 </code></pre>
     </div>

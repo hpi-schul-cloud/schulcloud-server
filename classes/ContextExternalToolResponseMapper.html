@@ -271,7 +271,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ContextExternalTool } from &#x27;../../uc/dto&#x27;;
-import { CustomParameterEntryParam, CustomParameterEntryResponse, ContextExternalToolResponse } from &#x27;../dto&#x27;;
+import { ContextExternalToolResponse, CustomParameterEntryParam, CustomParameterEntryResponse } from &#x27;../dto&#x27;;
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
@@ -280,7 +280,7 @@ export class ContextExternalToolResponseMapper {
 			contextId: contextExternalTool.contextRef.id,
 			contextType: contextExternalTool.contextRef.type,
 			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
-			contextToolName: contextExternalTool.contextToolName,
+			displayName: contextExternalTool.displayName,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
 		});

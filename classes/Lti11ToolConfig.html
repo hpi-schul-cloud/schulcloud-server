@@ -113,7 +113,6 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
                                 <a href="#secret" >secret</a>
                             </li>
                             <li>
@@ -343,7 +342,6 @@
                     <a name="secret"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
                         <span ><b>secret</b></span>
                         <a href="#secret"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -483,7 +481,7 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 	key: string;
 
 	@Property()
-	secret?: string;
+	secret: string;
 
 	@Property({ nullable: true })
 	resource_link_id?: string;

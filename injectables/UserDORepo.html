@@ -215,8 +215,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="138"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:138</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="141"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:141</a></div>
                 </td>
             </tr>
 
@@ -290,7 +290,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:28</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:29</a></code>
 </div>
                 </td>
             </tr>
@@ -361,8 +361,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="32"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:32</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="33"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:33</a></div>
                 </td>
             </tr>
 
@@ -444,8 +444,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="78"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:78</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="79"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:79</a></div>
                 </td>
             </tr>
 
@@ -527,8 +527,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="70"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:70</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:71</a></div>
                 </td>
             </tr>
 
@@ -616,7 +616,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:59</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:60</a></code>
 </div>
                 </td>
             </tr>
@@ -708,7 +708,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:120</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:123</a></code>
 </div>
                 </td>
             </tr>
@@ -783,7 +783,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:89</a></code>
+                        <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:90</a></code>
 </div>
                 </td>
             </tr>
@@ -855,8 +855,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="148"
-                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:148</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="151"
+                            class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:151</a></div>
                 </td>
             </tr>
 
@@ -1627,7 +1627,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:24</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:25</a></div>
                                 </td>
                             </tr>
 
@@ -1653,6 +1653,7 @@ import {
 	System,
 	User,
 } from &#x27;@shared/domain&#x27;;
+import { RoleReference } from &#x27;@shared/domain/domainobject&#x27;;
 import { Page } from &#x27;@shared/domain/domainobject/page&#x27;;
 import { UserDO } from &#x27;@shared/domain/domainobject/user.do&#x27;;
 import { BaseDORepo, Scope } from &#x27;@shared/repo&#x27;;
@@ -1734,7 +1735,7 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
-			roleIds: [],
+			roles: [],
 			schoolId: entity.school.id,
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
@@ -1751,7 +1752,9 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 		});
 
 		if (entity.roles.isInitialized()) {
-			user.roleIds &#x3D; entity.roles.getItems().map((role: Role): EntityId &#x3D;&gt; role.id);
+			user.roles &#x3D; entity.roles
+				.getItems()
+				.map((role: Role): RoleReference &#x3D;&gt; new RoleReference({ id: role.id, name: role.name }));
 		}
 
 		return user;
@@ -1763,7 +1766,7 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User, IUserProperties&gt; 
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
 			school: this._em.getReference(School, entityDO.schoolId),
-			roles: entityDO.roleIds.map((roleId: EntityId) &#x3D;&gt; this._em.getReference(Role, roleId)),
+			roles: entityDO.roles.map((roleRef: RoleReference) &#x3D;&gt; this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
