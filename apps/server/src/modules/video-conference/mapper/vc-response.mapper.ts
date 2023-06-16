@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
 import { BBBBaseResponse } from '../bbb';
 import {
@@ -11,16 +10,15 @@ import { VideoConferenceMapper } from './video-conference.mapper';
 /**
  * @deprecated Please use the VideoConferenceResponseMapper instead.
  */
-@Injectable()
 export class VideoConferenceResponseDeprecatedMapper {
-	mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
+	static mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
 		return new VideoConferenceBaseResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 		});
 	}
 
-	mapToJoinResponse(from: VideoConferenceJoin): VideoConferenceJoinResponse {
+	static mapToJoinResponse(from: VideoConferenceJoin): VideoConferenceJoinResponse {
 		return new VideoConferenceJoinResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
@@ -28,7 +26,7 @@ export class VideoConferenceResponseDeprecatedMapper {
 		});
 	}
 
-	mapToInfoResponse(from: VideoConferenceInfo): VideoConferenceInfoResponse {
+	static mapToInfoResponse(from: VideoConferenceInfo): VideoConferenceInfoResponse {
 		return new VideoConferenceInfoResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,

@@ -15,7 +15,6 @@ import { VideoConferenceDeprecatedUc } from './uc';
 import { VideoConferenceDeprecatedController } from './controller';
 import VideoConferenceConfiguration from './video-conference-config';
 import { VideoConferenceSettings } from './interface';
-import { VideoConferenceResponseDeprecatedMapper } from './mapper/vc-response.mapper';
 
 @Module({
 	imports: [AuthorizationModule, CalendarModule, HttpModule, SchoolModule, LoggerModule, UserModule, RoleModule],
@@ -33,8 +32,6 @@ import { VideoConferenceResponseDeprecatedMapper } from './mapper/vc-response.ma
 		TeamsRepo,
 		CourseRepo,
 		UserRepo,
-		// TODO: remove VideoConferenceResponseDeprecatedMapper from providers
-		VideoConferenceResponseDeprecatedMapper,
 		ConverterUtil,
 		VideoConferenceService,
 		// TODO: remove VideoConferenceDeprecatedUc from providers

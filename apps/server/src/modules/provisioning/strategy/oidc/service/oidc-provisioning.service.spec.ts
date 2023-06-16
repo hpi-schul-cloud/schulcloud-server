@@ -170,7 +170,15 @@ describe('OidcProvisioningService', () => {
 
 				await service.provisionExternalSchool(externalSchoolDto, systemId);
 
-				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith(savedSchoolDO);
+				expect(schoolService.createOrUpdateSchool).toHaveBeenCalledWith({
+					...savedSchoolDO,
+					federalState: {
+						...savedSchoolDO.federalState,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					},
+					inMaintenanceSince: expect.any(Date),
+				});
 			});
 		});
 	});

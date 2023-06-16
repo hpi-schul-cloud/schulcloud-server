@@ -31,10 +31,7 @@ import {
 @Authenticate('jwt')
 @Controller('videoconference')
 export class VideoConferenceDeprecatedController {
-	constructor(
-		private readonly videoConferenceUc: VideoConferenceDeprecatedUc,
-		private readonly responseMapper: VideoConferenceResponseDeprecatedMapper
-	) {}
+	constructor(private readonly videoConferenceUc: VideoConferenceDeprecatedUc) {}
 
 	@Post(':scope/:scopeId')
 	@ApiOperation({
@@ -68,7 +65,7 @@ export class VideoConferenceDeprecatedController {
 
 		const dto: VideoConferenceJoin = await this.videoConferenceUc.join(currentUser, scope, scopeId);
 
-		return this.responseMapper.mapToJoinResponse(dto);
+		return VideoConferenceResponseDeprecatedMapper.mapToJoinResponse(dto);
 	}
 
 	@Get(':scope/:scopeId')
@@ -93,7 +90,7 @@ export class VideoConferenceDeprecatedController {
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceInfoResponse> {
 		const dto: VideoConferenceInfo = await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
-		return this.responseMapper.mapToInfoResponse(dto);
+		return VideoConferenceResponseDeprecatedMapper.mapToInfoResponse(dto);
 	}
 
 	@Delete(':scope/:scopeId')
@@ -113,6 +110,6 @@ export class VideoConferenceDeprecatedController {
 		@Param('scopeId') scopeId: string
 	): Promise<VideoConferenceBaseResponse> {
 		const dto: VideoConference<BBBBaseResponse> = await this.videoConferenceUc.end(currentUser, scope, scopeId);
-		return this.responseMapper.mapToBaseResponse(dto);
+		return VideoConferenceResponseDeprecatedMapper.mapToBaseResponse(dto);
 	}
 }

@@ -23,6 +23,7 @@ export const PermissionScopeMapping = {
 const stateMapping = {
 	[VideoConferenceState.NOT_STARTED]: VideoConferenceStateResponse.NOT_STARTED,
 	[VideoConferenceState.RUNNING]: VideoConferenceStateResponse.RUNNING,
+	[VideoConferenceState.FINISHED]: VideoConferenceStateResponse.FINISHED,
 };
 
 export class VideoConferenceMapper {

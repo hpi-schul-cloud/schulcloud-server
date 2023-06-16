@@ -2,16 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@src/modules/authentication';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { VideoConferenceResponseMapper } from '@src/modules/video-conference/mapper/vc-response.mapper';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { VideoConferenceDeprecatedController } from './video-conference-deprecated.controller';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
-import { VideoConferenceJoinResponse, VideoConferenceInfoResponse } from './dto/response';
 import { VideoConferenceDeprecatedUc } from '../uc';
 import { defaultVideoConferenceOptions } from '../interface';
 import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
+import {
+	VideoConferenceInfoResponse,
+	VideoConferenceJoinResponse,
+} from './dto/response/video-conference-deprecated.response';
 
-describe('VideoConference Controller', () => {
+describe('VideoConferenceDeprecatedController', () => {
 	let module: TestingModule;
 	let controller: VideoConferenceDeprecatedController;
 	let videoConferenceUc: DeepMocked<VideoConferenceDeprecatedUc>;
@@ -26,7 +28,6 @@ describe('VideoConference Controller', () => {
 					provide: VideoConferenceDeprecatedUc,
 					useValue: createMock<VideoConferenceDeprecatedUc>(),
 				},
-				VideoConferenceResponseMapper,
 			],
 		}).compile();
 		controller = module.get(VideoConferenceDeprecatedController);
