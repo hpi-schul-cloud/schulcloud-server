@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolDO, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory } from '@shared/testing';
+import { schoolDOFactory, userDoFactory } from '@shared/testing';
 import { RestartUserLoginMigrationError } from '../error';
 import { RestartUserLoginMigrationValidationService } from './restart-user-login-migration-validation.service';
 import { CommonUserLoginMigrationService } from './common-user-login-migration.service';
@@ -38,7 +38,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 	describe('checkPreconditions', () => {
 		describe('when preconditions are met', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const user = userDoFactory.buildWithId();
 
 				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: 'schoolId',
@@ -53,7 +53,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId: user.id as string, migration, schoolId: school.id as string };
 			};
 
 			it('should call ensurePermission', async () => {
@@ -75,14 +75,14 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 		describe('when migration could not be found', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const user = userDoFactory.buildWithId();
 
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(null);
 
-				return { userId, schoolId: school.id as string };
+				return { userId: user.id as string, schoolId: school.id as string };
 			};
 
 			it('should throw RestartUserLoginMigrationError ', async () => {
@@ -101,7 +101,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 		describe('when migration is not closed', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const user = userDoFactory.buildWithId({ id: 'userId' });
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id ?? '',
@@ -112,7 +112,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId: user.id as string, migration, schoolId: school.id as string };
 			};
 
 			it('should throw RestartUserLoginMigrationError ', async () => {
@@ -131,7 +131,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 
 		describe('when grace period expired', () => {
 			const setup = () => {
-				const userId = 'userId';
+				const user = userDoFactory.buildWithId();
 				const school: SchoolDO = schoolDOFactory.buildWithId();
 				const migration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id ?? '',
@@ -144,7 +144,7 @@ describe('RestartUserLoginMigrationValidationService', () => {
 				commonUserLoginMigrationService.ensurePermission.mockResolvedValue(Promise.resolve());
 				commonUserLoginMigrationService.findExistingUserLoginMigration.mockResolvedValue(migration);
 
-				return { userId, migration, schoolId: school.id as string };
+				return { userId: user.id as string, migration, schoolId: school.id as string };
 			};
 
 			it('should throw RestartUserLoginMigrationError ', async () => {
