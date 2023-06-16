@@ -567,44 +567,44 @@ describe('VideoConferenceService', () => {
 
 				expect(videoConferenceRepo.save).toHaveBeenCalledWith(videoConference);
 			});
+		});
 
-			describe('when options are not provided', () => {
-				const setup = () => {
-					const options: VideoConferenceOptions = {
-						everyAttendeeJoinsMuted: true,
-						everybodyJoinsAsModerator: true,
-						moderatorMustApproveJoinRequests: true,
-					};
-					const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
-					const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+		describe('when options are not provided', () => {
+			const setup = () => {
+				const options: VideoConferenceOptions = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+				};
+				const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
 
-					const newOptions: VideoConferenceOptions = {
-						everyAttendeeJoinsMuted: false,
-						everybodyJoinsAsModerator: false,
-						moderatorMustApproveJoinRequests: false,
-					};
-
-					videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
-					videoConferenceRepo.save.mockResolvedValue(videoConference);
-
-					return {
-						scope,
-						videoConference,
-						newOptions,
-					};
+				const newOptions: VideoConferenceOptions = {
+					everyAttendeeJoinsMuted: false,
+					everybodyJoinsAsModerator: false,
+					moderatorMustApproveJoinRequests: false,
 				};
 
-				it('should return the updated video conference with new options', async () => {
-					const { videoConference, scope, newOptions } = setup();
+				videoConferenceRepo.findByScopeAndScopeId.mockResolvedValue(videoConference);
+				videoConferenceRepo.save.mockResolvedValue(videoConference);
 
-					const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
-						scope.id,
-						scope.scope,
-						newOptions
-					);
+				return {
+					scope,
+					videoConference,
+					newOptions,
+				};
+			};
 
-					expect(result).toEqual({ ...videoConference, options: newOptions });
-				});
+			it('should return the updated video conference with new options', async () => {
+				const { videoConference, scope, newOptions } = setup();
+
+				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
+					scope.id,
+					scope.scope,
+					newOptions
+				);
+
+				expect(result).toEqual({ ...videoConference, options: newOptions });
 			});
 		});
 

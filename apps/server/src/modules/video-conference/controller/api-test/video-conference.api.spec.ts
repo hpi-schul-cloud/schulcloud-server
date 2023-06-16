@@ -64,7 +64,7 @@ describe('VideoConferenceController (API)', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		axiosMock.reset();
+		axiosMock = new MockAdapter(axios);
 	});
 
 	const mockBbbMeetingInfoFailed = () => {
