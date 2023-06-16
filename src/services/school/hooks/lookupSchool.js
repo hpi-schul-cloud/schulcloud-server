@@ -23,8 +23,9 @@ module.exports = async (context) => {
 				'enableStudentTeamCreation',
 				'language',
 				'timezone',
+				'federalState',
 			])
-			.populate(['currentYear', 'systems', 'userLoginMigration'])
+			.populate(['currentYear', 'systems', 'userLoginMigration', 'federalState'])
 			.lean({ virtuals: true })
 			.exec();
 	} catch (err) {
