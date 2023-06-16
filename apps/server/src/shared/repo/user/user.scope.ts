@@ -16,6 +16,15 @@ export class UserScope extends Scope<User> {
 		return this;
 	}
 
+	whereLastLoginSystemChangeIsBetween(startDate?: Date, endDate?: Date): UserScope {
+		if (startDate && endDate) {
+			this.addQuery({
+				lastLoginSystemChange: { $gte: startDate, $lt: endDate },
+			});
+		}
+		return this;
+	}
+
 	withOutdatedSince(date?: Date): UserScope {
 		if (date) {
 			this.addQuery({ outdatedSince: { $eq: date } });
