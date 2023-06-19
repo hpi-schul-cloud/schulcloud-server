@@ -89,6 +89,11 @@
                                 <a href="#create" >create</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createEmptyElements" >createEmptyElements</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
@@ -130,12 +135,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>, contentElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -176,6 +181,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>contentElementService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ContentElementService.html" target="_self" >ContentElementService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -205,15 +222,15 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/Column.html" target="_self">Column</a>)</code>
+                    <code>create(parent: <a href="../classes/Column.html" target="_self">Column</a>, requiredEmptyElements?: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType[]</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="24"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:24</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:29</a></div>
                 </td>
             </tr>
 
@@ -245,6 +262,18 @@
 
 
                                 </tr>
+                                <tr>
+                                    <td>requiredEmptyElements</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -252,6 +281,90 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createEmptyElements"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createEmptyElements</b></span>
+                        <a href="#createEmptyElements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createEmptyElements(card: <a href="../classes/Card.html" target="_self">Card</a>, requiredEmptyElements: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType[]</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>card</td>
+                                    <td>
+                                                <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>requiredEmptyElements</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -283,8 +396,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="41"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:41</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -354,8 +467,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="16"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:16</a></div>
                 </td>
             </tr>
 
@@ -425,8 +538,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="16"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:16</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="21"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:21</a></div>
                 </td>
             </tr>
 
@@ -496,8 +609,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:54</a></div>
                 </td>
             </tr>
 
@@ -591,8 +704,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="58"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:58</a></div>
                 </td>
             </tr>
 
@@ -674,8 +787,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="55"
-                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:55</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="64"
+                            class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:64</a></div>
                 </td>
             </tr>
 
@@ -742,14 +855,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Card, Column, EntityId } from &#x27;@shared/domain&#x27;;
+import { Card, Column, ContentElementType, EntityId } from &#x27;@shared/domain&#x27;;
 import { ObjectId } from &#x27;bson&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
+import { ContentElementService } from &#x27;./content-element.service&#x27;;
 
 @Injectable()
 export class CardService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+	constructor(
+		private readonly boardDoRepo: BoardDoRepo,
+		private readonly boardDoService: BoardDoService,
+		private readonly contentElementService: ContentElementService
+	) {}
 
 	async findById(cardId: EntityId): Promise&lt;Card&gt; {
 		const card &#x3D; await this.boardDoRepo.findByClassAndId(Card, cardId);
@@ -764,7 +882,7 @@ export class CardService {
 		throw new NotFoundException(&#x27;some ids do not belong to a card&#x27;);
 	}
 
-	async create(parent: Column): Promise&lt;Card&gt; {
+	async create(parent: Column, requiredEmptyElements?: ContentElementType[]): Promise&lt;Card&gt; {
 		const card &#x3D; new Card({
 			id: new ObjectId().toHexString(),
 			title: &#x27;&#x27;,
@@ -777,6 +895,10 @@ export class CardService {
 		parent.addChild(card);
 
 		await this.boardDoRepo.save(parent.children, parent);
+
+		if (requiredEmptyElements) {
+			await this.createEmptyElements(card, requiredEmptyElements);
+		}
 
 		return card;
 	}
@@ -799,6 +921,12 @@ export class CardService {
 		const parent &#x3D; await this.boardDoRepo.findParentOfId(card.id);
 		card.title &#x3D; title;
 		await this.boardDoRepo.save(card, parent);
+	}
+
+	private async createEmptyElements(card: Card, requiredEmptyElements: ContentElementType[]): Promise&lt;void&gt; {
+		for await (const requiredEmptyElement of requiredEmptyElements) {
+			await this.contentElementService.create(card, requiredEmptyElement);
+		}
 	}
 }
 </code></pre>

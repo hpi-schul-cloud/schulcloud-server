@@ -2777,6 +2777,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CourseUrlParams.html" data-type="entity-link" >CourseUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CreateCardBodyParams.html" data-type="entity-link" >CreateCardBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CreateContentElementBody.html" data-type="entity-link" >CreateContentElementBody</a>
                             </li>
                             <li class="link">

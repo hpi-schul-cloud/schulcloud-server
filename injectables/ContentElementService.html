@@ -299,8 +299,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="42"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:42</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:40</a></div>
                 </td>
             </tr>
 
@@ -441,8 +441,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="46"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:46</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:44</a></div>
                 </td>
             </tr>
 
@@ -536,8 +536,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="50"
-                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:50</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="48"
+                            class="link-to-prism">apps/server/src/modules/board/service/content-element.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -638,9 +638,7 @@ export class ContentElementService {
 	async create(parent: Card, type: ContentElementType): Promise&lt;AnyContentElementDo&gt; {
 		const element &#x3D; this.contentElementFactory.build(type);
 		parent.addChild(element);
-
 		await this.boardDoRepo.save(parent.children, parent);
-
 		return element;
 	}
 

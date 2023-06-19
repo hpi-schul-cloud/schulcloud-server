@@ -374,7 +374,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createCard(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>createCard(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, requiredEmptyElements?: <a href="../undefineds/ContentElementType.html" target="_self">ContentElementType[]</a>)</code>
                 </td>
             </tr>
 
@@ -422,6 +422,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>requiredEmptyElements</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/enumerations.html#ContentElementType" target="_self" >ContentElementType[]</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -1458,7 +1470,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { AnyBoardDo, Card, Column, ColumnBoard, EntityId } from &#x27;@shared/domain&#x27;;
+import { AnyBoardDo, Card, Column, ColumnBoard, ContentElementType, EntityId } from &#x27;@shared/domain&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization/authorization.service&#x27;;
 import { Action } from &#x27;@src/modules/authorization/types/action.enum&#x27;;
@@ -1550,13 +1562,13 @@ export class BoardUc {
 		await this.columnService.updateTitle(column, title);
 	}
 
-	async createCard(userId: EntityId, columnId: EntityId): Promise&lt;Card&gt; {
+	async createCard(userId: EntityId, columnId: EntityId, requiredEmptyElements?: ContentElementType[]): Promise&lt;Card&gt; {
 		this.logger.debug({ action: &#x27;createCard&#x27;, userId, columnId });
 
 		const column &#x3D; await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.read);
 
-		const card &#x3D; await this.cardService.create(column);
+		const card &#x3D; await this.cardService.create(column, requiredEmptyElements);
 
 		return card;
 	}

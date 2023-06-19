@@ -96,6 +96,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#createCard" >createCard</a>
                             </li>
@@ -161,6 +162,7 @@
                         <span class="modifier"></span>
                         <span class="modifier"></span>
                         <span class="modifier"></span>
+                        <span class="modifier"></span>
                         <span class="modifier">Async</span>
                         <span ><b>createCard</b></span>
                         <a href="#createCard"><span class="icon ion-ios-link"></span></a>
@@ -170,7 +172,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createCard(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>createCard(urlParams: <a href="../classes/ColumnUrlParams.html" target="_self">ColumnUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, createCardBodyParams?: <a href="../classes/CreateCardBodyParams.html" target="_self">CreateCardBodyParams</a>)</code>
                 </td>
             </tr>
 
@@ -178,14 +180,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Create a new card on a column.&#x27;})<br />@ApiResponse({status: 201, type: CardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post(&#x27;:columnId/cards&#x27;)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Create a new card on a column.&#x27;})<br />@ApiResponse({status: 201, type: CardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiBody({required: false, type: CreateCardBodyParams})<br />@Post(&#x27;:columnId/cards&#x27;)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="74"
-                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:74</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="76"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:76</a></div>
                 </td>
             </tr>
 
@@ -225,6 +227,18 @@
 
                                     <td>
                                         No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>createCardBodyParams</td>
+                                    <td>
+                                                <code><a href="../classes/CreateCardBodyParams.html" target="_self" >CreateCardBodyParams</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
                                     </td>
 
 
@@ -281,8 +295,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="64"
-                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:64</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="65"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:65</a></div>
                 </td>
             </tr>
 
@@ -378,8 +392,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="34"
-                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:34</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="35"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:35</a></div>
                 </td>
             </tr>
 
@@ -487,8 +501,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="49"
-                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:49</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="50"
+                            class="link-to-prism">apps/server/src/modules/board/controller/column.controller.ts:50</a></div>
                 </td>
             </tr>
 
@@ -576,13 +590,14 @@
 	Post,
 	Put,
 } from &#x27;@nestjs/common&#x27;;
-import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
 import { Authenticate, CurrentUser } from &#x27;@src/modules/authentication/decorator/auth.decorator&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
 import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from &#x27;./dto&#x27;;
 import { CardResponseMapper } from &#x27;./mapper&#x27;;
+import { CreateCardBodyParams } from &#x27;./dto/card/create-card.body.params&#x27;;
 
 @ApiTags(&#x27;Board Column&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -636,12 +651,15 @@ export class ColumnController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
+	@ApiBody({ required: false, type: CreateCardBodyParams })
 	@Post(&#x27;:columnId/cards&#x27;)
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise&lt;CardResponse&gt; {
-		const card &#x3D; await this.boardUc.createCard(currentUser.userId, urlParams.columnId);
+		const { requiredEmptyElements } &#x3D; createCardBodyParams || {};
+		const card &#x3D; await this.boardUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
 
 		const response &#x3D; CardResponseMapper.mapToResponse(card);
 

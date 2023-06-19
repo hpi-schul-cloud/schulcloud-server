@@ -24,10 +24,6 @@
 <title>cluster_TaskModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2477,-268 2477,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_TaskModule_exports</title>
-<polygon fill="none" stroke="black" points="1022,-208 1022,-260 1264,-260 1264,-208 1022,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_TaskModule_providers</title>
 <polygon fill="none" stroke="black" points="506,-78 506,-130 2469,-130 2469,-78 506,-78"/>
@@ -35,6 +31,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_TaskModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 498,-130 498,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_TaskModule_exports</title>
+<polygon fill="none" stroke="black" points="1022,-208 1022,-260 1264,-260 1264,-208 1022,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
