@@ -4,6 +4,7 @@ import {
 	EntityId,
 	Permission,
 	RoleName,
+	RoleReference,
 	SchoolFeatures,
 	Team,
 	TeamUser,
@@ -21,13 +22,11 @@ import {
 } from '@src/modules/authorization';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
-import { RoleService } from '@src/modules/role';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
 import { PermissionScopeMapping } from '../mapper/video-conference.mapper';
 import { IScopeInfo, VideoConferenceState } from '../uc/dto';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
-import { RoleDto } from '../../role/service/dto/role.dto';
 
 @Injectable()
 export class VideoConferenceService {
@@ -39,8 +38,7 @@ export class VideoConferenceService {
 		private readonly schoolService: SchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
-		private readonly videoConferenceRepo: VideoConferenceRepo,
-		private readonly roleService: RoleService
+		private readonly videoConferenceRepo: VideoConferenceRepo
 	) {}
 
 	get hostUrl(): string {
@@ -63,7 +61,7 @@ export class VideoConferenceService {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const user: UserDO = await this.userService.findById(userId);
-				isExpert = await this.existsExpertRole(user.roleIds);
+				isExpert = this.existsExpertRole(user.roles);
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
@@ -85,9 +83,8 @@ export class VideoConferenceService {
 		}
 	}
 
-	private async existsExpertRole(roleIds: EntityId[]): Promise<boolean> {
-		const roles: RoleDto[] = await this.roleService.findByIds(roleIds);
-		const roleNames: RoleName[] = roles.map((role: RoleDto) => role.name);
+	private existsExpertRole(roles: RoleReference[]): boolean {
+		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name);
 
 		const isExpert: boolean = roleNames.includes(RoleName.EXPERT);
 

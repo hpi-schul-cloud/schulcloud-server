@@ -25,7 +25,6 @@ import { videoConferenceDOFactory } from '@shared/testing/factory/video-conferen
 import { ObjectId } from 'bson';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { RoleService } from '@src/modules/role';
 import { VideoConferenceService } from './video-conference.service';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
@@ -38,7 +37,6 @@ describe('VideoConferenceService', () => {
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
-	let roleService: DeepMocked<RoleService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
@@ -71,10 +69,6 @@ describe('VideoConferenceService', () => {
 					useValue: createMock<SchoolService>(),
 				},
 				{
-					provide: RoleService,
-					useValue: createMock<RoleService>(),
-				},
-				{
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
 				},
@@ -94,7 +88,6 @@ describe('VideoConferenceService', () => {
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
-		roleService = module.get(RoleService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
@@ -148,12 +141,13 @@ describe('VideoConferenceService', () => {
 	describe('isExpert', () => {
 		describe('when user has EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), roleIds: [RoleName.EXPERT] });
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
 				userService.findById.mockResolvedValue(user);
-				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.EXPERT })]);
 
 				return {
 					user,
@@ -182,12 +176,13 @@ describe('VideoConferenceService', () => {
 
 		describe('when user does not have the EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ roleIds: [RoleName.STUDENT] });
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.buildWithId();
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
 				userService.findById.mockResolvedValue(user);
-				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.STUDENT })]);
 
 				return {
 					userId,
@@ -207,12 +202,13 @@ describe('VideoConferenceService', () => {
 
 		describe('when conference scope is unknown', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ roleIds: [RoleName.STUDENT] });
+				const user: UserDO = userDoFactory
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
+					.buildWithId();
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
 				userService.findById.mockResolvedValue(user);
-				roleService.findByIds.mockResolvedValue([roleFactory.build({ name: RoleName.STUDENT })]);
 
 				return {
 					userId,
