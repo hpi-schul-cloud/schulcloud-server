@@ -1,15 +1,16 @@
+import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { BuildOptions, DeepPartial } from 'fishery';
 import { ObjectId } from 'bson';
-import { BaseFactory } from './base.factory';
+import { DeepPartial } from 'fishery';
+import { DoBaseFactory } from './domainobject';
 
-class UserDoFactory extends BaseFactory<UserDO, UserDO> {
-	buildWithId(params?: DeepPartial<UserDO>, id?: string, options: BuildOptions<UserDO, any> = {}): UserDO {
-		const entity: UserDO = super.buildWithId(params, id, options);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const entityWithId = Object.assign(entity, { id: new ObjectId(id).toString() });
+class UserDoFactory extends DoBaseFactory<UserDO, UserDO> {
+	withRoles(roles: { id: EntityId; name: RoleName }[]) {
+		const params: DeepPartial<UserDO> = {
+			roles,
+		};
 
-		return entityWithId;
+		return this.params(params);
 	}
 }
 
@@ -18,7 +19,7 @@ export const userDoFactory = UserDoFactory.define(UserDO, ({ sequence }) => {
 		firstName: 'John',
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
-		roleIds: [],
+		roles: [],
 		schoolId: new ObjectId().toString(),
 	};
 });

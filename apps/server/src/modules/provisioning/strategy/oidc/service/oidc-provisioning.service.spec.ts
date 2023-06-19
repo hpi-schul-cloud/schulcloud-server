@@ -4,15 +4,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SchoolFeatures } from '@shared/domain';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { federalStateFactory, schoolDOFactory, userDoFactory } from '@shared/testing';
+import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountSaveDto } from '@src/modules/account/services/dto';
 import { RoleService } from '@src/modules/role';
 import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { SchoolService, FederalStateService, SchoolYearService } from '@src/modules/school';
+import { FederalStateService, SchoolService, SchoolYearService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import CryptoJS from 'crypto-js';
-import { federalStateFactory, schoolDOFactory } from '@shared/testing';
-import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { OidcProvisioningService } from './oidc-provisioning.service';
 
@@ -74,59 +74,48 @@ describe('OidcProvisioningService', () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
-	const setupData = () => {
-		const systemId = 'systemId';
-		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-		});
-		const savedSchoolDO = schoolDOFactory.build({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'name',
-			officialSchoolNumber: 'officialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-		const existingSchoolDO = schoolDOFactory.build({
-			id: 'schoolId',
-			externalId: 'externalId',
-			name: 'existingName',
-			officialSchoolNumber: 'existingOfficialSchoolNumber',
-			systems: [systemId],
-			features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-		});
-
-		schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
-
-		return {
-			systemId,
-			externalSchoolDto,
-			savedSchoolDO,
-			existingSchoolDO,
-		};
-	};
-
 	describe('provisionExternalSchool is called', () => {
-		describe('when systemId is given and external school does not exist', () => {
-			const setup = () => {
-				const { systemId, externalSchoolDto, savedSchoolDO } = setupData();
+		const setup = () => {
+			const systemId = 'systemId';
+			const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+			});
+			const savedSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'name',
+				officialSchoolNumber: 'officialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
+			const existingSchoolDO = schoolDOFactory.build({
+				id: 'schoolId',
+				externalId: 'externalId',
+				name: 'existingName',
+				officialSchoolNumber: 'existingOfficialSchoolNumber',
+				systems: [systemId],
+				features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+			});
 
-				schoolService.getSchoolByExternalId.mockResolvedValue(null);
-				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
-				federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
+			schoolService.createOrUpdateSchool.mockResolvedValue(savedSchoolDO);
+			schoolService.getSchoolByExternalId.mockResolvedValue(null);
+			schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYearFactory.build());
+			federalStateService.findFederalStateByName.mockResolvedValue(federalStateFactory.build());
 
-				return {
-					systemId,
-					externalSchoolDto,
-					savedSchoolDO,
-				};
+			return {
+				systemId,
+				externalSchoolDto,
+				savedSchoolDO,
+				existingSchoolDO,
 			};
+		};
 
+		describe('when systemId is given and external school does not exist', () => {
 			it('should save the new school', async () => {
 				const { systemId, externalSchoolDto, savedSchoolDO } = setup();
 
@@ -138,7 +127,7 @@ describe('OidcProvisioningService', () => {
 
 		describe('when external school already exist', () => {
 			it('should update the existing school', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
 
@@ -148,7 +137,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should append the new system', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				const otherSystemId = 'otherSystemId';
 				existingSchoolDO.systems = [otherSystemId];
 
@@ -163,7 +152,7 @@ describe('OidcProvisioningService', () => {
 			});
 
 			it('should create a new system list', async () => {
-				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setupData();
+				const { systemId, externalSchoolDto, existingSchoolDO, savedSchoolDO } = setup();
 				existingSchoolDO.systems = undefined;
 
 				schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
@@ -179,24 +168,26 @@ describe('OidcProvisioningService', () => {
 		const setupUser = () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
-			const existingUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'existingFirstName',
-				lastName: 'existingLastName',
-				email: 'existingEmail',
-				schoolId: 'existingSchoolId',
-				roleIds: ['existingRoleId'],
-				externalId: 'externalUserId',
-			});
-			const savedUser: UserDO = new UserDO({
-				id: 'userId',
-				firstName: 'firstName',
-				lastName: 'lastName',
-				email: 'email',
-				schoolId,
-				roleIds: ['roleId'],
-				externalId: 'externalUserId',
-			});
+			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'existingFirstName',
+					lastName: 'existingLastName',
+					email: 'existingEmail',
+					schoolId: 'existingSchoolId',
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
+			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId,
+					externalId: 'externalUserId',
+				},
+				'userId'
+			);
 			const externalUser: ExternalUserDto = new ExternalUserDto({
 				externalId: 'externalUserId',
 				firstName: 'firstName',

@@ -13,6 +13,7 @@ import {
 	System,
 	User,
 } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { BaseDORepo, Scope } from '@shared/repo';
@@ -94,7 +95,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
-			roleIds: [],
+			roles: [],
 			schoolId: entity.school.id,
 			ldapDn: entity.ldapDn,
 			externalId: entity.externalId,
@@ -111,7 +112,9 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		});
 
 		if (entity.roles.isInitialized()) {
-			user.roleIds = entity.roles.getItems().map((role: Role): EntityId => role.id);
+			user.roles = entity.roles
+				.getItems()
+				.map((role: Role): RoleReference => new RoleReference({ id: role.id, name: role.name }));
 		}
 
 		return user;
@@ -123,7 +126,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
 			school: this._em.getReference(School, entityDO.schoolId),
-			roles: entityDO.roleIds.map((roleId: EntityId) => this._em.getReference(Role, roleId)),
+			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
 			language: entityDO.language,
