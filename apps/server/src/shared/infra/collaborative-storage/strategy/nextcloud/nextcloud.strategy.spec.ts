@@ -11,6 +11,7 @@ import { LtiToolRepo } from '@shared/repo/ltitool/index';
 import { setupEntities, userFactory } from '@shared/testing/index';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { ExternalToolService } from '../../../../../modules/tool/service';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {
@@ -60,6 +61,10 @@ describe('NextCloud Adapter Strategy', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: ExternalToolService,
+					useValue: createMock<ExternalToolService>(),
 				},
 			],
 		}).compile();

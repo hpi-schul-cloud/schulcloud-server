@@ -1,10 +1,11 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { PseudonymDO } from '@shared/domain/';
+import { ExternalToolDO, PseudonymDO } from '@shared/domain/';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { PseudonymsRepo } from '@shared/repo/';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@src/modules/collaborative-storage/services/dto/team.dto';
+import { ExternalToolService } from '../../../../../modules/tool/service';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { ICollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';
@@ -20,7 +21,8 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		private readonly logger: LegacyLogger,
 		private readonly client: NextcloudClient,
 		private readonly pseudonymsRepo: PseudonymsRepo,
-		private readonly ltiToolRepo: LtiToolRepo
+		private readonly ltiToolRepo: LtiToolRepo,
+		private readonly externalToolService: ExternalToolService
 	) {
 		this.logger.setContext(NextcloudStrategy.name);
 	}
@@ -123,7 +125,7 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 	 */
 	protected async updateTeamUsersInGroup(groupId: string, teamUsers: TeamUserDto[]): Promise<void[][]> {
 		const groupUserIds: string[] = await this.client.getGroupUsers(groupId);
-		const nextcloudLtiTool: LtiToolDO = await this.findNextcloudTool();
+		const nextcloudLtiTool: ExternalToolDO | LtiToolDO = await this.findNextcloudTool();
 
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
 			teamUsers.map(
@@ -148,14 +150,30 @@ export class NextcloudStrategy implements ICollaborativeStorageStrategy {
 		]);
 	}
 
-	private async findNextcloudTool(): Promise<LtiToolDO> {
+	private async findNextcloudTool(): Promise<ExternalToolDO | LtiToolDO> {
+		const tool: ExternalToolDO | null = await this.externalToolService.findExternalToolByName(
+			this.client.oidcInternalName
+		);
+
+		if (!tool) {
+			const ltiToolPromise: Promise<LtiToolDO> = this.findLegacyLtiTool();
+
+			return ltiToolPromise;
+		}
+
+		return tool;
+	}
+
+	private async findLegacyLtiTool(): Promise<LtiToolDO> {
 		const foundTools: LtiToolDO[] = await this.ltiToolRepo.findByName(this.client.oidcInternalName);
+
 		if (foundTools.length > 1) {
 			this.logger.warn(
 				`Please check the configured lti tools. There should one be one tool with the name ${this.client.oidcInternalName}. 
 				Otherwise teams can not be created or updated on demand.`
 			);
 		}
+
 		return foundTools[0];
 	}
 
