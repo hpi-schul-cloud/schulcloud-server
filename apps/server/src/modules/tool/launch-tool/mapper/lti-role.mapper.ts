@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain';
 import { LtiRole } from '../../interface';
 
@@ -10,9 +9,14 @@ const RoleMapping: Partial<Record<RoleName, LtiRole>> = {
 	[RoleName.SUPERHERO]: LtiRole.ADMINISTRATOR,
 };
 
-@Injectable()
 export class LtiRoleMapper {
-	mapRoleToLtiRole(role: RoleName): LtiRole | undefined {
-		return RoleMapping[role];
+	public static mapRolesToLtiRoles(roleNames: RoleName[]): LtiRole[] {
+		const ltiRoles: (LtiRole | undefined)[] = roleNames.map((roleName: RoleName) => RoleMapping[roleName]);
+
+		const filterUndefined: LtiRole[] = ltiRoles.filter(
+			(ltiRole: LtiRole | undefined): ltiRole is LtiRole => ltiRole !== undefined
+		);
+
+		return filterUndefined;
 	}
 }

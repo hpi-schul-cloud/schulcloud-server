@@ -11,7 +11,7 @@ export interface IContextExternalToolProperties {
 
 	contextType: ContextExternalToolType;
 
-	contextToolName: string;
+	displayName?: string;
 
 	parameters?: CustomParameterEntry[];
 
@@ -29,8 +29,8 @@ export class ContextExternalTool extends BaseEntityWithTimestamps {
 	@Property()
 	contextType: ContextExternalToolType;
 
-	@Property()
-	contextToolName: string;
+	@Property({ nullable: true })
+	displayName?: string;
 
 	@Embedded(() => CustomParameterEntry, { array: true })
 	parameters: CustomParameterEntry[];
@@ -43,7 +43,7 @@ export class ContextExternalTool extends BaseEntityWithTimestamps {
 		this.schoolTool = props.schoolTool;
 		this.contextId = props.contextId;
 		this.contextType = props.contextType;
-		this.contextToolName = props.contextToolName;
+		this.displayName = props.displayName;
 		this.parameters = props.parameters ?? [];
 		this.toolVersion = props.toolVersion;
 	}

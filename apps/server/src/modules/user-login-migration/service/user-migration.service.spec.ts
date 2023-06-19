@@ -9,9 +9,9 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { RoleName, SchoolDO, UserDO, UserLoginMigrationDO } from '@shared/domain';
 import { UserLoginMigrationRepo } from '@shared/repo';
-import { schoolDOFactory, setupEntities } from '@shared/testing';
+import { schoolDOFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@src/modules/account/services/account.service';
 import { AccountDto, AccountSaveDto } from '@src/modules/account/services/dto';
@@ -349,29 +349,37 @@ describe('UserMigrationService', () => {
 		const setupMigrationData = () => {
 			const targetSystemId = new ObjectId().toHexString();
 
-			const notMigratedUser: UserDO = new UserDO({
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				email: 'emailMock',
-				firstName: 'firstNameMock',
-				lastName: 'lastNameMock',
-				roleIds: ['roleIdMock'],
-				schoolId: 'schoolMock',
-				externalId: 'currentUserExternalIdMock',
-			});
+			const notMigratedUser: UserDO = userDoFactory
+				.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }])
+				.buildWithId(
+					{
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						email: 'emailMock',
+						firstName: 'firstNameMock',
+						lastName: 'lastNameMock',
+						schoolId: 'schoolMock',
+						externalId: 'currentUserExternalIdMock',
+					},
+					'userId'
+				);
 
-			const migratedUserDO: UserDO = new UserDO({
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				email: 'emailMock',
-				firstName: 'firstNameMock',
-				lastName: 'lastNameMock',
-				roleIds: ['roleIdMock'],
-				schoolId: 'schoolMock',
-				externalId: 'externalUserTargetId',
-				previousExternalId: 'currentUserExternalIdMock',
-				lastLoginSystemChange: new Date(),
-			});
+			const migratedUserDO: UserDO = userDoFactory
+				.withRoles([{ id: 'roleIdMock', name: RoleName.STUDENT }])
+				.buildWithId(
+					{
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						email: 'emailMock',
+						firstName: 'firstNameMock',
+						lastName: 'lastNameMock',
+						schoolId: 'schoolMock',
+						externalId: 'externalUserTargetId',
+						previousExternalId: 'currentUserExternalIdMock',
+						lastLoginSystemChange: new Date(),
+					},
+					'userId'
+				);
 
 			const accountId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();

@@ -1,5 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, FederalState, SchoolFeatures, SchoolYear } from '@shared/domain';
+import { RoleReference } from '@shared/domain/domainobject';
 import { SchoolDO } from '@shared/domain/domainobject/school.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { AccountService } from '@src/modules/account/services/account.service';
@@ -61,10 +62,10 @@ export class OidcProvisioningService {
 	}
 
 	async provisionExternalUser(externalUser: ExternalUserDto, systemId: EntityId, schoolId?: string): Promise<UserDO> {
-		let roleIds: EntityId[] | undefined;
+		let roleRefs: RoleReference[] | undefined;
 		if (externalUser.roles) {
 			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
-			roleIds = roles.map((role: RoleDto): EntityId => role.id || '');
+			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
 		}
 
 		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
@@ -75,7 +76,7 @@ export class OidcProvisioningService {
 			user.firstName = externalUser.firstName ?? existingUser.firstName;
 			user.lastName = externalUser.lastName ?? existingUser.lastName;
 			user.email = externalUser.email ?? existingUser.email;
-			user.roleIds = roleIds ?? existingUser.roleIds;
+			user.roles = roleRefs ?? existingUser.roles;
 			user.schoolId = schoolId ?? existingUser.schoolId;
 		} else {
 			createNewAccount = true;
@@ -91,7 +92,7 @@ export class OidcProvisioningService {
 				firstName: externalUser.firstName ?? '',
 				lastName: externalUser.lastName ?? '',
 				email: externalUser.email ?? '',
-				roleIds: roleIds ?? [],
+				roles: roleRefs ?? [],
 				schoolId,
 			});
 		}

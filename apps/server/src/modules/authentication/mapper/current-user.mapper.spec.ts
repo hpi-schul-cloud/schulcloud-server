@@ -95,15 +95,30 @@ describe('CurrentUserMapper', () => {
 		});
 
 		describe('when userDO is valid and contains roles', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([
+						{
+							id: 'mockRoleId',
+							name: RoleName.USER,
+						},
+					])
+					.buildWithId({
+						id: userId,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					});
+
+				return {
+					user,
+				};
+			};
+
 			it('should return valid ICurrentUser instance without systemId', () => {
-				const roleIds = ['mockRoleId'];
-				const user: UserDO = userDoFactory.buildWithId({
-					id: userId,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					roleIds,
-				});
+				const { user } = setup();
+
 				const currentUser = CurrentUserMapper.userDoToICurrentUser(accountId, user);
+
 				expect(currentUser).toMatchObject({
 					accountId,
 					systemId: undefined,

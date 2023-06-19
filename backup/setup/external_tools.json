@@ -47,5 +47,43 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"version": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de247cf6a427b9d39e5b9"
+		},
+		"createdAt": {
+			"$date": {
+				"$numberLong": "1685971527243"
+			}
+		},
+		"updatedAt": {
+			"$date": {
+				"$numberLong": "1685973728239"
+			}
+		},
+		"name": "LTI Test Tool",
+		"url": "https://www.tsugi.org/lti-test/tool.php",
+		"config_type": "lti11",
+		"config_baseUrl": "https://www.tsugi.org/lti-test/tool.php",
+		"config_key": "12345",
+		"config_secret": "secret",
+		"config_lti_message_type": "basic-lti-launch-request",
+		"config_privacy_permission": "name",
+		"parameters": [
+			{
+				"name": "custom_test",
+				"displayName": "Custom Test Parameter",
+				"description": "just a test",
+				"default": "test",
+				"scope": "global",
+				"location": "body",
+				"type": "string",
+				"isOptional": false
+			}
+		],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 2
 	}
 ]

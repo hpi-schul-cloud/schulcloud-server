@@ -116,7 +116,7 @@ export class UserLoginMigrationService {
 		const userDO: UserDO = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration: UserLoginMigrationDO | null = await this.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			return null;
@@ -130,5 +130,9 @@ export class UserLoginMigrationService {
 		}
 
 		return userLoginMigration;
+	}
+
+	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
 }

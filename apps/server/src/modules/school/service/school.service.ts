@@ -22,6 +22,14 @@ export class SchoolService {
 		return entity.features ? entity.features.includes(feature) : false;
 	}
 
+	async removeFeature(schoolId: EntityId, feature: SchoolFeatures): Promise<void> {
+		const school: SchoolDO = await this.schoolRepo.findById(schoolId);
+		if (school.features && school.features.includes(feature)) {
+			school.features = school.features.filter((f: SchoolFeatures) => f !== feature);
+			await this.schoolRepo.save(school);
+		}
+	}
+
 	async getSchoolById(id: string): Promise<SchoolDO> {
 		const schoolDO: SchoolDO = await this.schoolRepo.findById(id);
 		return schoolDO;
