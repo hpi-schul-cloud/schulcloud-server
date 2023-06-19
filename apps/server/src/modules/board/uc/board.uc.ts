@@ -97,8 +97,9 @@ export class BoardUc {
 
 		const column = await this.columnService.findById(columnId);
 		await this.checkPermission(userId, column, Action.read);
+		const { requiredEmptyElements } = createCardBodyParams || {};
 
-		const card = await this.cardService.create(column, createCardBodyParams);
+		const card = await this.cardService.create(column, requiredEmptyElements);
 
 		return card;
 	}
