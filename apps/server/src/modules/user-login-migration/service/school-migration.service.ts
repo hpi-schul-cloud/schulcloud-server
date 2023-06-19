@@ -158,4 +158,23 @@ export class SchoolMigrationService {
 		}
 		return false;
 	}
+
+	async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+
+		if (!userLoginMigration) {
+			return false;
+		}
+
+		const users: Page<UserDO> = await this.userService.findUsers({
+			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
+			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
+		});
+
+		if (users.total > 0) {
+			return true;
+		}
+
+		return false;
+	}
 }

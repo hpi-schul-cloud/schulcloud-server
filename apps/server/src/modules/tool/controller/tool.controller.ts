@@ -16,48 +16,28 @@ import { LegacyLogger } from '@src/core/logger';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { Authorization } from 'oauth-1.0a';
-import { ExternalToolUc, Lti11Uc } from '../uc';
-import { CreateExternalTool, UpdateExternalTool } from '../uc/dto';
+import { ExternalToolUc, ExternalToolCreate, ExternalToolUpdate, Lti11Uc } from '../uc';
 import {
-	ExternalToolPostParams,
+	ExternalToolCreateParams,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
-	Lti11LaunchQuery,
-	Lti11LaunchResponse,
+	ExternalToolUpdateParams,
 	SortExternalToolParams,
 	ToolIdParams,
 } from './dto';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, Lti11ResponseMapper } from './mapper';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper } from './mapper';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
 @Controller('tools')
 export class ToolController {
 	constructor(
-		private readonly lti11Uc: Lti11Uc,
-		private readonly lti11ResponseMapper: Lti11ResponseMapper,
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly externalResponseMapper: ExternalToolResponseMapper,
 		private readonly logger: LegacyLogger
 	) {}
-
-	@Get('lti11/:toolId/launch')
-	async getLti11LaunchParameters(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ToolIdParams,
-		@Query() query: Lti11LaunchQuery
-	): Promise<Lti11LaunchResponse> {
-		const authorization: Authorization = await this.lti11Uc.getLaunchParameters(
-			currentUser.userId,
-			currentUser.roles[0] as RoleName,
-			params.toolId,
-			query.courseId
-		);
-		const mapped: Lti11LaunchResponse = this.lti11ResponseMapper.mapAuthorizationToResponse(authorization);
-		return mapped;
-	}
 
 	@Post()
 	@ApiCreatedResponse({ description: 'The Tool has been successfully created.', type: ExternalToolResponse })
@@ -67,9 +47,9 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	async createExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
-		const externalToolDO: CreateExternalTool = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
+		const externalToolDO: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 		const created: ExternalToolDO = await this.externalToolUc.createExternalTool(currentUser.userId, externalToolDO);
 		const mapped: ExternalToolResponse = this.externalResponseMapper.mapToResponse(created);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was created by user with id ${currentUser.userId}`);
@@ -122,9 +102,9 @@ export class ToolController {
 	async updateExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ToolIdParams,
-		@Body() externalToolParams: ExternalToolPostParams
+		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
-		const externalTool: UpdateExternalTool = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
+		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalToolDO = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.toolId,

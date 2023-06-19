@@ -8,14 +8,14 @@ import {
 	IContextExternalToolProperties,
 	SchoolExternalTool,
 } from '@shared/domain';
+import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { BaseDORepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ContextExternalToolType } from '@shared/domain/entity/tools/course-external-tool/context-external-tool-type.enum';
 import { ToolContextType } from '@src/modules/tool/interface';
 import { ContextExternalToolQuery } from '@src/modules/tool/uc/dto';
+import { SchoolExternalToolRefDO } from '../../domain';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { ContextExternalToolScope } from './context-external-tool.scope';
-import { SchoolExternalToolRefDO } from '../../domain';
 
 @Injectable()
 export class ContextExternalToolRepo extends BaseDORepo<
@@ -84,11 +84,9 @@ export class ContextExternalToolRepo extends BaseDORepo<
 			id: entity.id,
 			schoolToolRef,
 			contextRef,
-			contextToolName: entity.contextToolName,
+			displayName: entity.displayName,
 			toolVersion: entity.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.parameters),
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
 		});
 	}
 
@@ -96,7 +94,7 @@ export class ContextExternalToolRepo extends BaseDORepo<
 		return {
 			contextId: entityDO.contextRef.id,
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
-			contextToolName: entityDO.contextToolName,
+			displayName: entityDO.displayName,
 			schoolTool: this._em.getReference(SchoolExternalTool, entityDO.schoolToolRef.schoolToolId),
 			toolVersion: entityDO.toolVersion,
 			parameters: this.externalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
