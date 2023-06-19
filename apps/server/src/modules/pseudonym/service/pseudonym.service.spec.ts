@@ -62,7 +62,7 @@ describe('PseudonymService', () => {
 
 		describe('when the repo throws an error', () => {
 			const setup = () => {
-				pseudonymRepo.findByUserIdAndToolId.mockRejectedValue(new NotFoundException());
+				pseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValue(new NotFoundException());
 			};
 
 			it('should pass the error without catching', async () => {
