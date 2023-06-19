@@ -84,7 +84,7 @@ export class VideoConferenceService {
 	}
 
 	private existsExpertRole(roles: RoleReference[]): boolean {
-		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name);
+		const roleNames: RoleName[] = roles.map((role: RoleReference) => role.name as RoleName);
 
 		const isExpert: boolean = roleNames.includes(RoleName.EXPERT);
 
