@@ -29,7 +29,6 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { before } from 'lodash';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
