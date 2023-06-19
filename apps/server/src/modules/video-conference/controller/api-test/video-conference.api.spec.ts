@@ -71,7 +71,7 @@ describe('VideoConferenceController (API)', () => {
 
 	const mockBbbMeetingInfoFailed = () => {
 		axiosMock
-			.onGet(/.*\/bigbluebutton\/api\/getMeetingInfo*/)
+			.onGet(/.*\/api\/getMeetingInfo*/)
 			.replyOnce<string>(
 				HttpStatus.INTERNAL_SERVER_ERROR,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
@@ -85,7 +85,7 @@ describe('VideoConferenceController (API)', () => {
 
 	const mockBbbMeetingInfoSuccess = () => {
 		axiosMock
-			.onGet(/.*\/bigbluebutton\/api\/getMeetingInfo*/)
+			.onGet(/.*\/api\/getMeetingInfo*/)
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
@@ -125,7 +125,7 @@ describe('VideoConferenceController (API)', () => {
 
 	const mockBbbCreateSuccess = () => {
 		axiosMock
-			.onPost(/.*\/bigbluebutton\/api\/create/)
+			.onPost(/.*\/api\/create/)
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
@@ -149,7 +149,7 @@ describe('VideoConferenceController (API)', () => {
 
 	const mockBbbEndSuccess = () => {
 		axiosMock
-			.onGet(/.*\/bigbluebutton\/api\/end/)
+			.onGet(/.*\/api\/end/)
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
