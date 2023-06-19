@@ -111,13 +111,24 @@ describe(`card create (api)`, () => {
 
 			expect(result.id).toBeDefined();
 		});
-		it('created card should contain empty text element', async () => {
+		it('created card should contain empty text and file elements', async () => {
 			const { user, columnNode, createCardBodyParams } = await setup();
 			currentUser = mapUserToCurrentUser(user);
 
-			const expectedEmptyElements = createCardBodyParams.requiredEmptyElements.map((type) => {
-				return { type, content: type === ContentElementType.FILE ? { caption: '' } : { text: '' } };
-			});
+			const expectedEmptyElements = [
+				{
+					type: 'richText',
+					content: {
+						text: '',
+					},
+				},
+				{
+					type: 'file',
+					content: {
+						caption: '',
+					},
+				},
+			];
 
 			const { result } = await api.post(columnNode.id, createCardBodyParams);
 			const { elements } = result;
