@@ -90,6 +90,7 @@ export class UserLoginMigrationController {
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
+	@ApiForbiddenResponse()
 	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,

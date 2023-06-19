@@ -189,6 +189,22 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
+		describe('when current User start the migration and is not authorized', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return Unauthorized', async () => {
+				setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/start`)
+					.query({ userId: new ObjectId().toHexString() });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
 		describe('when invalid User start the migration', () => {
 			const setup = async () => {
 				const invalidUser = userFactory.build();
@@ -619,6 +635,22 @@ describe('UserLoginMigrationController (API)', () => {
 					.query({ userId: new ObjectId().toHexString() });
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when current User restart the migration and is not authorized', () => {
+			const setup = () => {
+				currentUser = undefined;
+			};
+
+			it('should return Unauthorized', async () => {
+				setup();
+
+				const response: Response = await request(app.getHttpServer())
+					.post(`/user-login-migrations/restart`)
+					.query({ userId: new ObjectId().toHexString() });
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
