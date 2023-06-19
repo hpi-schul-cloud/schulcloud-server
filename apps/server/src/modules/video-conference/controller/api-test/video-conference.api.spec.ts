@@ -29,6 +29,7 @@ import {
 	VideoConferenceScope,
 } from '@shared/domain';
 import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
+import { before } from 'lodash';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -52,7 +53,6 @@ describe('VideoConferenceController (API)', () => {
 			})
 			.compile();
 
-		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
@@ -62,9 +62,12 @@ describe('VideoConferenceController (API)', () => {
 		await app.close();
 	});
 
+	beforeEach(() => {
+		axiosMock = new MockAdapter(axios);
+	});
+
 	afterEach(async () => {
 		await cleanupCollections(em);
-		axiosMock = new MockAdapter(axios);
 	});
 
 	const mockBbbMeetingInfoFailed = () => {
