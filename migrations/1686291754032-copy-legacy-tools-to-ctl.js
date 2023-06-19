@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
 const { alert, error, info } = require('../src/logger');
@@ -18,7 +17,7 @@ const LtiTool = mongoose.model(
 			name: { type: String, required: true },
 			url: { type: String, required: true },
 			key: { type: String },
-			secret: { type: String, required: true, default: 'none' },
+			secret: { type: String, required: true, default: 'none' }, // default value?
 			logo_url: { type: String },
 			lti_message_type: { type: String },
 			lti_version: { type: String },
@@ -36,9 +35,9 @@ const LtiTool = mongoose.model(
 			customs: [{ type: { key: { type: String }, value: { type: String } } }],
 			isTemplate: { type: Boolean, required: true, default: false },
 			isLocal: { type: Boolean },
-			_originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
+			originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 			oAuthClientId: { type: String },
-			friendlyUrl: { type: String, unique: true, sparse: true },
+			friendlyUrl: { type: String, unique: true },
 			skipConsent: { type: Boolean },
 			openNewTab: { type: Boolean, required: true, default: false },
 			frontchannel_logout_uri: { type: String },
@@ -63,23 +62,24 @@ const ExternalTool = mongoose.model(
 			logoUrl: { type: String },
 
 			// basic Config
-			config_type: { type: String },
-			config_baseUrl: { type: String },
+			config_type: { type: String }, // required: true?
+			config_baseUrl: { type: String }, // required: true?
 			// Outh Config
-			config_clientId: { type: String },
-			config_skipConsent: { type: Boolean },
+			config_clientId: { type: String }, // required: true?
+			config_skipConsent: { type: Boolean }, // required: true?
 			// Lti Config
-			key: { type: String, required: true },
-			secret: { type: String },
-			resource_link_id: { type: String },
-			lti_message_type: { type: String },
-			privacy_permission: {
+			config_key: { type: String }, // required: true?
+			config_secret: { type: String }, // required: true? default = 'none'?
+			config_resource_link_id: { type: String },
+			config_lti_message_type: {
+				type: String,
+				enum: ['basic-lti-launch-request', 'LtiResourceLinkRequest', 'LtiDeepLinkingRequest'],
+			}, // required: true?
+			config_privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
-				required: true,
 				default: 'anonymous',
-			},
-			// config: { type: mongoose.Schema.Types.Mixed }
+			}, // default? required: true?
 
 			parameters: [
 				{
@@ -102,6 +102,7 @@ const ExternalTool = mongoose.model(
 						},
 						type: {
 							type: String,
+							// change enum to context version?
 							enum: ['string', 'number', 'boolean', 'auto_courseid', 'auto_coursename', 'auto_schoolid'],
 							required: true,
 						},
@@ -129,7 +130,7 @@ const SchoolExternalTool = mongoose.model(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
 			tool: { type: Schema.Types.ObjectId, ref: 'externalTool', required: true },
-			school: { type: Schema.Types.ObjectId, ref: 'school', required: true },
+			school: { type: Schema.Types.ObjectId, ref: 'school', required: true }, // delete ref or create schoolSchema?
 			schoolParameters: [{ type: { key: { type: String }, value: { type: String } } }],
 			toolVersion: { type: Number, required: true },
 			createdAt: { type: Date, default: Date.now },
@@ -148,7 +149,7 @@ const ContextExternalTool = mongoose.model(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
 			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolExternalTool', required: true },
-			contextId: { type: Schema.Types.ObjectId, required: true },
+			contextId: { type: Schema.Types.ObjectId, required: true }, // ref to course?
 			contextType: { type: String, enum: ['course'], required: true },
 			contextToolName: { type: String },
 			parameters: [{ type: { key: { type: String }, value: { type: String } } }],
@@ -163,17 +164,31 @@ const ContextExternalTool = mongoose.model(
 	'context_external_tools'
 );
 
-function mapToExternalToolParameter(ltiToolTemplate, scope, location) {
+const Course = mongoose.model(
+	'course0906202311485',
+	new mongoose.Schema(
+		{
+			_id: { type: Schema.Types.ObjectId, required: true },
+			school: { type: Schema.Types.ObjectId, required: true }, // ref? extra Schema?
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'courses'
+);
+
+function mapToExternalToolParameter(ltiToolTemplate) {
 	return ltiToolTemplate.customs.map((parameter) => {
 		return {
 			name: parameter.key,
 			displayName: parameter.key,
-			description: '',
-			default: parameter.value,
-			regex: '',
-			regexComment: '',
-			scope,
-			location,
+			// description: '', // is optional
+			// default: parameter.value, // is optional
+			// regex: '', // is optional
+			// regexComment: '', // is optional
+			scope: 'context', // always scope: course/context?
+			location: 'body', // body
 			type: 'string',
 			isOptional: true,
 		};
@@ -183,48 +198,50 @@ function mapToExternalToolParameter(ltiToolTemplate, scope, location) {
 function mapToCustomParameterEntry(externalToolParameters, ltiToolCustomes) {
 	return externalToolParameters.map((parameter, index) => {
 		return {
-			name: parameter.name,
+			name: parameter.name, // or displayname ?
 			value: ltiToolCustomes[index].value,
 		};
 	});
 }
 
-function mapToExternalTool(ltiToolTemplate) {
-	let toolConfig = {};
+function toolConfigMapper(ltiToolTemplate) {
+	let toolConfig = {
+		config_baseUrl: ltiToolTemplate.url,
+		config_type: 'basic',
+	};
 
 	if (ltiToolTemplate.oAuthClientId) {
 		toolConfig = {
+			...toolConfig,
 			config_type: 'oauth2',
-			config_baseUrl: ltiToolTemplate.url,
 			config_clientId: ltiToolTemplate.oAuthClientId,
 			config_skipConsent: ltiToolTemplate.skipConsent,
 		};
 	} else if (ltiToolTemplate.key || ltiToolTemplate.key !== 'none') {
 		toolConfig = {
+			...toolConfig,
 			config_type: 'lti11',
-			config_baseUrl: ltiToolTemplate.url,
-			key: ltiToolTemplate.key,
-			secret: ltiToolTemplate.secret,
-			ressource_link_id: ltiToolTemplate.ressource_link_id,
-			lti_message_type: ltiToolTemplate.lti_message_type,
-			privacy_permission: ltiToolTemplate.privacy_permission,
-		};
-	} else {
-		toolConfig = {
-			config_type: 'basic',
-			config_baseUrl: ltiToolTemplate.url,
+			config_key: ltiToolTemplate.key,
+			config_secret: ltiToolTemplate.secret,
+			config_ressource_link_id: ltiToolTemplate.ressource_link_id,
+			config_lti_message_type: ltiToolTemplate.lti_message_type,
+			config_privacy_permission: ltiToolTemplate.privacy_permission,
 		};
 	}
 
+	return toolConfig;
+}
+
+function mapToExternalTool(ltiToolTemplate) {
 	return {
 		name: ltiToolTemplate.name,
 		url: ltiToolTemplate.url,
 		logoUrl: ltiToolTemplate.logo_url,
-		parameters: mapToExternalToolParameter(ltiToolTemplate.customs, 'course', 'body'),
+		parameters: mapToExternalToolParameter(ltiToolTemplate),
 		isHidden: ltiToolTemplate.isHidden,
 		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
-		...toolConfig,
+		...toolConfigMapper(ltiToolTemplate),
 	};
 }
 
@@ -254,6 +271,7 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
+		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'n21') {
 			info('Migration does not migrate lti tools to CTL for this instance.');
 			return;
@@ -273,9 +291,11 @@ module.exports = {
 
 		if ((ltiToolTemplates || []).length === 0) {
 			alert('No LtiTool Template found.');
+			// Create ToolTemplate?
 			return;
 		}
 
+		// --- Migrate LtiTools ---
 		const ltiTools = await LtiTool.find({
 			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
 			isTemplate: false,
@@ -283,20 +303,14 @@ module.exports = {
 			.lean()
 			.exec();
 
-		// ITERATE OVER ALL LTITOOLS
+		// --- ITERATE OVER ALL LTITOOLS ---
+		/* eslint-disable no-await-in-loop */
 		for (const ltiTool of ltiTools) {
 			// GET TOOLTEMPLATE
-			let toolTemplate = await LtiTool.findOne({
-				id: ltiTool.originTool,
-			})
-				.lean()
-				.exec();
-
-			if (toolTemplate === undefined) {
-				// toolTemplate = createTemplate(ltiTool);
-			}
+			const toolTemplate = ltiToolTemplates.filter((template) => template.name === ltiTool.name);
 
 			// GET COURSE
+			// courseSchema?
 			const course = await Course.findOne({
 				ltiToolIds: { $in: [ltiTool.id] },
 			})
@@ -305,8 +319,8 @@ module.exports = {
 
 			// GET EXTERNALTOOL
 			let externalTool = await ExternalTool.findOne({
-				name: ltiTool.name,
-				url: ltiTool.url,
+				name: toolTemplate.name,
+				url: toolTemplate.url, // or other paramter for the query
 			})
 				.lean()
 				.exec();
@@ -324,7 +338,7 @@ module.exports = {
 				tool: externalTool._id,
 				school: course.schoolId,
 				name: externalTool.name,
-				url: externalTool.url,
+				url: externalTool.url, // or other paramter for the query
 			})
 				.lean()
 				.exec();
@@ -341,7 +355,7 @@ module.exports = {
 
 			const contextExternalTools = await ContextExternalTool.find({
 				schoolTool: schoolExternalTool.id,
-				contextId: context.Id,
+				contextId: course.Id,
 				contextType: 'course',
 			})
 				.lean()
@@ -359,41 +373,6 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
-
-		if (process.env.SC_THEME !== 'n21') {
-			info('Migration does not migrate lti tools to CTL for this instance.');
-			return;
-		}
-
-		// FIND ALL LTI TOOL TEMPLATES
-		const ltiToolTemplates = await LtiTool.find({
-			// with name Bettermarks or Nextcloud
-			// normally we don't need to check for name, if we want to migrate all ltitools
-			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
-			isTemplate: true,
-		})
-			.lean()
-			.exec();
-
-		// Get all names from ltiToolTemplates to find the corresponding externalTools
-		const externalToolNames = ltiToolTemplates.map((ltitool) => {
-			// check if ltitool is an oauthTool
-			if (ltitool.oAuthClientId) {
-				return ltitool.name;
-			}
-			return null;
-		});
-
-		if ((ltiToolTemplates || []).length === 0) {
-			alert('No external tools found. Nothing to roll back.');
-			return;
-		}
-
-		const externalTools = await ExternalTool.find({ name: { $in: externalToolNames } });
-
-		alert(`Found ${externalTools.length} externaltool(s) to roll back.`);
-
-		await ExternalTool.deleteMany(externalTools);
 
 		await close();
 	},
