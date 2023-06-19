@@ -2,6 +2,8 @@ import { ContextExternalToolDO, ExternalToolDO, SchoolExternalToolDO } from '@sh
 
 export interface IToolLaunchParams {
 	externalToolDO: ExternalToolDO;
+
 	schoolExternalToolDO: SchoolExternalToolDO;
+
 	contextExternalToolDO: ContextExternalToolDO;
 }

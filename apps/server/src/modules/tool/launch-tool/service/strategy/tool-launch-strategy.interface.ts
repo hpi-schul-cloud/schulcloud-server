@@ -1,10 +1,9 @@
-import { ExternalToolConfigDO } from '@shared/domain';
-import { PropertyData, ToolLaunchData, ToolLaunchRequest } from '../../types';
+import { EntityId } from '@shared/domain';
+import { ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { IToolLaunchParams } from './tool-launch-params.interface';
 
 export interface IToolLaunchStrategy {
-	createLaunchData(params: IToolLaunchParams): ToolLaunchData;
+	createLaunchData(userId: EntityId, params: IToolLaunchParams): Promise<ToolLaunchData>;
+
 	createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest;
-	buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[];
-	buildToolLaunchRequestPayload(properties: PropertyData[]): string;
 }

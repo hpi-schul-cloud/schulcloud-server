@@ -1,5 +1,5 @@
 import { ContextExternalTool } from '../../uc/dto';
-import { CustomParameterEntryParam, CustomParameterEntryResponse, ContextExternalToolResponse } from '../dto';
+import { ContextExternalToolResponse, CustomParameterEntryParam, CustomParameterEntryResponse } from '../dto';
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
@@ -8,7 +8,7 @@ export class ContextExternalToolResponseMapper {
 			contextId: contextExternalTool.contextRef.id,
 			contextType: contextExternalTool.contextRef.type,
 			schoolToolId: contextExternalTool.schoolToolRef.schoolToolId,
-			contextToolName: contextExternalTool.contextToolName,
+			displayName: contextExternalTool.displayName,
 			toolVersion: contextExternalTool.toolVersion,
 			parameters: this.mapRequestToCustomParameterEntryDO(contextExternalTool.parameters),
 		});

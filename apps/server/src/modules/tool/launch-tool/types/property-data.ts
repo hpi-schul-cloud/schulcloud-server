@@ -5,7 +5,7 @@ export class PropertyData {
 
 	value: string;
 
-	location: PropertyLocation;
+	location?: PropertyLocation;
 
 	constructor(props: PropertyData) {
 		this.name = props.name;

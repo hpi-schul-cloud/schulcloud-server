@@ -1,13 +1,12 @@
-import { PseudonymDO, Team } from '@shared/domain';
-import { Injectable } from '@nestjs/common';
-import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
-import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
-import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { UserService } from '@src/modules/user/service/user.service';
-import { UserDto } from '@src/modules/user/uc/dto/user.dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Injectable } from '@nestjs/common';
+import { PseudonymDO, Team, UserDO } from '@shared/domain';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiToolRepo, PseudonymsRepo, TeamsRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { GroupNameIdTuple, IdToken } from '@src/modules/oauth-provider/interface/id-token';
+import { OauthScope } from '@src/modules/oauth-provider/interface/oauth-scope.enum';
+import { UserService } from '@src/modules/user/service/user.service';
 
 @Injectable()
 export class IdTokenService {
@@ -32,17 +31,17 @@ export class IdTokenService {
 			teams = await this.teamsRepo.findByUserId(userId);
 		}
 
-		const userDto: UserDto = await this.userService.getUser(userId);
-		const name: string = await this.userService.getDisplayName(userDto);
+		const user: UserDO = await this.userService.findById(userId);
+		const name: string = await this.userService.getDisplayName(user);
 		const iframe: string | undefined = await this.createIframeSubject(userId, clientId);
 		const groups: GroupNameIdTuple[] = this.buildGroupsClaim(teams);
 
 		return {
 			iframe,
-			email: scopes.includes(OauthScope.EMAIL) ? userDto.email : undefined,
+			email: scopes.includes(OauthScope.EMAIL) ? user.email : undefined,
 			name: scopes.includes(OauthScope.PROFILE) ? name : undefined,
-			userId: scopes.includes(OauthScope.PROFILE) ? userDto.id : undefined,
-			schoolId: userDto.schoolId,
+			userId: scopes.includes(OauthScope.PROFILE) ? user.id : undefined,
+			schoolId: user.schoolId,
 			groups: scopes.includes(OauthScope.GROUPS) ? groups : undefined,
 		};
 	}
