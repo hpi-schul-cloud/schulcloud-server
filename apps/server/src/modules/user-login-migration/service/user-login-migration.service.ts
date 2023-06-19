@@ -63,6 +63,19 @@ export class UserLoginMigrationService {
 		return savedMigration;
 	}
 
+	async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
+		const schoolDo: SchoolDO = await this.schoolService.getSchoolById(schoolId);
+
+		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
+
+		this.enableOauthMigrationFeature(schoolDo);
+		await this.schoolService.save(schoolDo);
+
+		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
+
+		return userLoginMigration;
+	}
+
 	private async createNewMigration(school: SchoolDO): Promise<UserLoginMigrationDO> {
 		const oauthSystems: SystemDto[] = await this.systemService.findByType(SystemTypeEnum.OAUTH);
 		const sanisSystem: SystemDto | undefined = oauthSystems.find((system: SystemDto) => system.alias === 'SANIS');
@@ -75,12 +88,14 @@ export class UserLoginMigrationService {
 			school.systems?.filter((systemId: EntityId) => systemId !== (sanisSystem.id as string)) || [];
 		const sourceSystemId = systemIds[0];
 
-		return new UserLoginMigrationDO({
+		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
 			targetSystemId: sanisSystem.id as string,
 			sourceSystemId,
 			startedAt: new Date(),
 		});
+
+		return userLoginMigrationDO;
 	}
 
 	private enableOauthMigrationFeature(schoolDo: SchoolDO) {
@@ -101,7 +116,7 @@ export class UserLoginMigrationService {
 		const userDO: UserDO = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration: UserLoginMigrationDO | null = await this.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			return null;
@@ -115,5 +130,9 @@ export class UserLoginMigrationService {
 		}
 
 		return userLoginMigration;
+	}
+
+	async deleteUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+		await this.userLoginMigrationRepo.delete(userLoginMigration);
 	}
 }

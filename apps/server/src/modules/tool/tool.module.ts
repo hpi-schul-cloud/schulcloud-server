@@ -1,15 +1,21 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { EncryptionModule } from '@shared/infra/encryption';
+import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
 import {
-	PseudonymsRepo,
-	ExternalToolRepoMapper,
-	ExternalToolRepo,
-	SchoolExternalToolRepo,
 	ContextExternalToolRepo,
+	ExternalToolRepo,
+	ExternalToolRepoMapper,
 	ExternalToolSortingMapper,
+	PseudonymsRepo,
+	SchoolExternalToolRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { EncryptionModule } from '@shared/infra/encryption';
+import { AuthorizationModule } from '@src/modules/authorization';
+import { PseudonymModule } from '@src/modules/pseudonym';
+import { UserModule } from '@src/modules/user';
+import { Lti11EncryptionService } from './launch-tool/service/lti11-encryption.service';
+import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy } from './launch-tool/service/strategy';
+import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
 import {
 	CommonToolValidationService,
 	ContextExternalToolService,
@@ -17,19 +23,21 @@ import {
 	ExternalToolService,
 	ExternalToolValidationService,
 	ExternalToolVersionService,
-	Lti11Service,
 	SchoolExternalToolService,
 	SchoolExternalToolValidationService,
 } from './service';
 import { ExternalToolServiceMapper } from './service/mapper';
-import { ToolLaunchService } from './launch-tool/service/tool-launch.service';
-import { BasicToolLaunchStrategy } from './launch-tool/service/strategy';
-import { AuthorizationModule } from '../authorization';
 
 @Module({
-	imports: [LoggerModule, OauthProviderServiceModule, EncryptionModule, forwardRef(() => AuthorizationModule)],
+	imports: [
+		LoggerModule,
+		OauthProviderServiceModule,
+		EncryptionModule,
+		forwardRef(() => AuthorizationModule),
+		UserModule,
+		PseudonymModule,
+	],
 	providers: [
-		Lti11Service,
 		ExternalToolService,
 		ExternalToolServiceMapper,
 		PseudonymsRepo,
@@ -46,10 +54,11 @@ import { AuthorizationModule } from '../authorization';
 		SchoolExternalToolValidationService,
 		ContextExternalToolValidationService,
 		ToolLaunchService,
+		Lti11EncryptionService,
 		BasicToolLaunchStrategy,
+		Lti11ToolLaunchStrategy,
 	],
 	exports: [
-		Lti11Service,
 		ExternalToolService,
 		ExternalToolValidationService,
 		SchoolExternalToolService,

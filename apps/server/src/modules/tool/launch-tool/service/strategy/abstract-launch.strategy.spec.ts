@@ -5,7 +5,7 @@ import {
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
-	ExternalToolConfigDO,
+	EntityId,
 	ExternalToolDO,
 	SchoolExternalToolDO,
 } from '@shared/domain';
@@ -35,16 +35,27 @@ const concreteConfigParameter: PropertyData = {
 
 const expectedPayload = 'payload';
 
+const launchMethod = LaunchRequestMethod.GET;
+
 class TestLaunchStrategy extends AbstractLaunchStrategy {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected buildToolLaunchDataFromConcreteConfig(config: ExternalToolConfigDO): PropertyData[] {
+	public override buildToolLaunchDataFromConcreteConfig(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		userId: EntityId,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		config: IToolLaunchParams
+	): Promise<PropertyData[]> {
 		// Implement this method with your own logic for the mock launch strategy
-		return [concreteConfigParameter];
+		return Promise.resolve([concreteConfigParameter]);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	protected buildToolLaunchRequestPayload(properties: PropertyData[]): string {
+	public buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
 		return expectedPayload;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public override determineLaunchRequestMethod(properties: PropertyData[]): LaunchRequestMethod {
+		return launchMethod;
 	}
 }
 
@@ -69,12 +80,19 @@ describe('AbstractLaunchStrategy', () => {
 
 			const schoolCustomParameter = customParameterDOFactory.build({
 				scope: CustomParameterScope.SCHOOL,
+				location: CustomParameterLocation.PATH,
+				name: 'schoolParam',
+				type: CustomParameterType.BOOLEAN,
+			});
+
+			const schoolCustomParameterAuto = customParameterDOFactory.build({
+				scope: CustomParameterScope.SCHOOL,
 				location: CustomParameterLocation.QUERY,
 				name: 'schoolParam',
 				type: CustomParameterType.AUTO_SCHOOLID,
 			});
 
-			const contextCustomParameter = customParameterDOFactory.build({
+			const contextCustomParameterAuto = customParameterDOFactory.build({
 				scope: CustomParameterScope.CONTEXT,
 				location: CustomParameterLocation.BODY,
 				name: 'contextParam',
@@ -83,7 +101,12 @@ describe('AbstractLaunchStrategy', () => {
 
 			const externalToolDO: ExternalToolDO = externalToolDOFactory.build({
 				config: basicToolConfigDO,
-				parameters: [globalCustomParameter, schoolCustomParameter, contextCustomParameter],
+				parameters: [
+					globalCustomParameter,
+					schoolCustomParameter,
+					schoolCustomParameterAuto,
+					contextCustomParameterAuto,
+				],
 			});
 
 			const schoolParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
@@ -95,7 +118,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 
 			const contextParameterEntry: CustomParameterEntryDO = new CustomParameterEntryDO({
-				name: contextCustomParameter.name,
+				name: contextCustomParameterAuto.name,
 				value: 'anyValue',
 			});
 			const contextExternalToolDO: ContextExternalToolDO = contextExternalToolDOFactory.build({
@@ -105,7 +128,8 @@ describe('AbstractLaunchStrategy', () => {
 			return {
 				globalCustomParameter,
 				schoolCustomParameter,
-				contextCustomParameter,
+				schoolCustomParameterAuto,
+				contextCustomParameterAuto,
 				schoolParameterEntry,
 				contextParameterEntry,
 				externalToolDO,
@@ -115,11 +139,13 @@ describe('AbstractLaunchStrategy', () => {
 			};
 		};
 
-		it('should return a ToolLaunchDataDO with merged parameters', () => {
+		it('should return a ToolLaunchDataDO with merged parameters', async () => {
 			const {
 				globalCustomParameter,
 				schoolCustomParameter,
-				contextCustomParameter,
+				schoolCustomParameterAuto,
+				contextCustomParameterAuto,
+				schoolParameterEntry,
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
@@ -131,7 +157,7 @@ describe('AbstractLaunchStrategy', () => {
 				contextExternalToolDO,
 			};
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -145,11 +171,16 @@ describe('AbstractLaunchStrategy', () => {
 					},
 					{
 						name: schoolCustomParameter.name,
+						value: schoolParameterEntry.value as string,
+						location: PropertyLocation.PATH,
+					},
+					{
+						name: schoolCustomParameterAuto.name,
 						value: launchParams.schoolExternalToolDO.schoolId,
 						location: PropertyLocation.QUERY,
 					},
 					{
-						name: contextCustomParameter.name,
+						name: contextCustomParameterAuto.name,
 						value: launchParams.contextExternalToolDO.contextRef.id,
 						location: PropertyLocation.BODY,
 					},
@@ -162,7 +193,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with no custom parameters', () => {
+		it('should return a ToolLaunchDataDO with no custom parameters', async () => {
 			const { externalToolDO, schoolExternalToolDO, contextExternalToolDO } = setup();
 			const launchParams: IToolLaunchParams = {
 				externalToolDO,
@@ -173,7 +204,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -189,7 +220,7 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only global custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only global custom parameters', async () => {
 			const { externalToolDO, schoolExternalToolDO, contextExternalToolDO, globalCustomParameter } = setup();
 			const launchParams: IToolLaunchParams = {
 				externalToolDO,
@@ -200,7 +231,7 @@ describe('AbstractLaunchStrategy', () => {
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -221,12 +252,12 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only school custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only school custom parameters', async () => {
 			const {
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
-				schoolCustomParameter,
+				schoolCustomParameterAuto,
 				schoolParameterEntry,
 			} = setup();
 			const launchParams: IToolLaunchParams = {
@@ -234,11 +265,11 @@ describe('AbstractLaunchStrategy', () => {
 				schoolExternalToolDO,
 				contextExternalToolDO,
 			};
-			externalToolDO.parameters = [schoolCustomParameter];
+			externalToolDO.parameters = [schoolCustomParameterAuto];
 			schoolExternalToolDO.parameters = [schoolParameterEntry];
 			contextExternalToolDO.parameters = [];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -246,7 +277,7 @@ describe('AbstractLaunchStrategy', () => {
 				openNewTab: false,
 				properties: [
 					{
-						name: schoolCustomParameter.name,
+						name: schoolCustomParameterAuto.name,
 						value: launchParams.schoolExternalToolDO.schoolId,
 						location: PropertyLocation.QUERY,
 					},
@@ -259,12 +290,12 @@ describe('AbstractLaunchStrategy', () => {
 			});
 		});
 
-		it('should return a ToolLaunchDataDO with only context custom parameters', () => {
+		it('should return a ToolLaunchDataDO with only context custom parameters', async () => {
 			const {
 				externalToolDO,
 				schoolExternalToolDO,
 				contextExternalToolDO,
-				contextCustomParameter,
+				contextCustomParameterAuto,
 				contextParameterEntry,
 			} = setup();
 			const launchParams: IToolLaunchParams = {
@@ -272,11 +303,11 @@ describe('AbstractLaunchStrategy', () => {
 				schoolExternalToolDO,
 				contextExternalToolDO,
 			};
-			externalToolDO.parameters = [contextCustomParameter];
+			externalToolDO.parameters = [contextCustomParameterAuto];
 			schoolExternalToolDO.parameters = [];
 			contextExternalToolDO.parameters = [contextParameterEntry];
 
-			const result: ToolLaunchData = launchStrategy.createLaunchData(launchParams);
+			const result: ToolLaunchData = await launchStrategy.createLaunchData('userId', launchParams);
 
 			expect(result).toEqual<ToolLaunchData>({
 				baseUrl: launchParams.externalToolDO.config.baseUrl,
@@ -284,7 +315,7 @@ describe('AbstractLaunchStrategy', () => {
 				openNewTab: false,
 				properties: [
 					{
-						name: contextCustomParameter.name,
+						name: contextCustomParameterAuto.name,
 						value: launchParams.contextExternalToolDO.contextRef.id,
 						location: PropertyLocation.BODY,
 					},
@@ -302,7 +333,7 @@ describe('AbstractLaunchStrategy', () => {
 		const setup = () => {
 			const toolLaunchDataDO: ToolLaunchData = new ToolLaunchData({
 				type: ToolLaunchDataType.BASIC,
-				baseUrl: 'https://www.basic-baseurl.com/',
+				baseUrl: 'https://www.basic-baseurl.com/pre/:pathParam/post',
 				properties: [],
 				openNewTab: false,
 			});
@@ -316,7 +347,7 @@ describe('AbstractLaunchStrategy', () => {
 			const { toolLaunchDataDO } = setup();
 
 			const propertyData1 = new PropertyData({
-				name: 'search',
+				name: 'pathParam',
 				value: 'searchValue',
 				location: PropertyLocation.PATH,
 			});
@@ -331,25 +362,10 @@ describe('AbstractLaunchStrategy', () => {
 
 			expect(result).toEqual<ToolLaunchRequest>({
 				method: LaunchRequestMethod.GET,
-				url: `${toolLaunchDataDO.baseUrl}${propertyData1.value}?${propertyData2.name}=${propertyData2.value}`,
+				url: `https://www.basic-baseurl.com/pre/${propertyData1.value}/post?${propertyData2.name}=${propertyData2.value}`,
 				payload: expectedPayload,
 				openNewTab: toolLaunchDataDO.openNewTab,
 			});
-		});
-
-		it('should create a LaunchRequestDO with POST method when there is a BODY property', () => {
-			const { toolLaunchDataDO } = setup();
-
-			const bodyProperty = new PropertyData({
-				name: 'content',
-				value: 'test content',
-				location: PropertyLocation.BODY,
-			});
-			toolLaunchDataDO.properties = [bodyProperty];
-
-			const result: ToolLaunchRequest = launchStrategy.createLaunchRequest(toolLaunchDataDO);
-
-			expect(result.method).toEqual(LaunchRequestMethod.POST);
 		});
 
 		it('should create a LaunchRequestDO with the correct payload when there are BODY properties', () => {
@@ -376,7 +392,7 @@ describe('AbstractLaunchStrategy', () => {
 			const { toolLaunchDataDO } = setup();
 
 			const pathProperty = new PropertyData({
-				name: 'pathSegment',
+				name: 'pathParam',
 				value: 'segmentValue',
 				location: PropertyLocation.PATH,
 			});
@@ -390,7 +406,7 @@ describe('AbstractLaunchStrategy', () => {
 			const result: ToolLaunchRequest = launchStrategy.createLaunchRequest(toolLaunchDataDO);
 
 			expect(result.url).toEqual(
-				`${toolLaunchDataDO.baseUrl}${pathProperty.value}?${queryProperty.name}=${queryProperty.value}`
+				`https://www.basic-baseurl.com/pre/${pathProperty.value}/post?${queryProperty.name}=${queryProperty.value}`
 			);
 		});
 	});

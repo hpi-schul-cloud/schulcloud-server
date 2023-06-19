@@ -50,6 +50,7 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			schoolYear: entity.schoolYear,
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: System) => system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
+			federalState: entity.federalState,
 		});
 	}
 
@@ -69,6 +70,7 @@ export class SchoolRepo extends BaseDORepo<SchoolDO, School, ISchoolProperties> 
 			userLoginMigration: entityDO.userLoginMigrationId
 				? this._em.getReference(UserLoginMigration, entityDO.userLoginMigrationId)
 				: undefined,
+			federalState: entityDO.federalState,
 		};
 	}
 }
