@@ -146,7 +146,9 @@ describe(CardService.name, () => {
 			it('contentElementService.create should be called with given parameters', async () => {
 				const { column, createCardBodyParams } = setup();
 
-				await service.create(column, createCardBodyParams);
+				const { requiredEmptyElements } = createCardBodyParams;
+
+				await service.create(column, requiredEmptyElements);
 
 				expect(contentElementService.create).toHaveBeenCalledTimes(2);
 				expect(contentElementService.create).toHaveBeenNthCalledWith(1, expect.anything(), ContentElementType.FILE);
