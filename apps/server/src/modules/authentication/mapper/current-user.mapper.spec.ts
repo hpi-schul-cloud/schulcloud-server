@@ -1,5 +1,5 @@
 import { ValidationError } from '@shared/common';
-import { Permission, RoleName, RoleReference } from '@shared/domain';
+import { Permission, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { roleFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { ICurrentUser } from '../interface';
