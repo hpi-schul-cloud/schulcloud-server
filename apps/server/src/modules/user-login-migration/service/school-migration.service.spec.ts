@@ -15,7 +15,7 @@ import { ICurrentUser } from '@src/modules/authentication';
 import { SchoolService } from '@src/modules/school';
 import { UserService } from '@src/modules/user';
 import { OAuthMigrationError } from '@src/modules/user-login-migration/error/oauth-migration.error';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe('SchoolMigrationService', () => {

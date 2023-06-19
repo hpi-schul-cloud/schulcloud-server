@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { setupEntities } from '@shared/testing';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { SchoolFeatures } from '@shared/domain';
 import { SchoolService } from '@src/modules/school';
-import { UserLoginMigrationService } from './user-login-migration.service';
+import { setupEntities } from '@shared/testing';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
+import { UserLoginMigrationService } from './user-login-migration.service';
 
 describe('UserLoginMigrationRevertService', () => {
 	let module: TestingModule;

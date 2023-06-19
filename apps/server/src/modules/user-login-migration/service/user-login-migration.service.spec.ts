@@ -10,7 +10,7 @@ import { SchoolService } from '@src/modules/school';
 import { SystemService } from '@src/modules/system';
 import { SystemDto } from '@src/modules/system/service';
 import { UserService } from '@src/modules/user';
-import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration.factory';
+import { userLoginMigrationDOFactory } from '@shared/testing/factory/domainobject/user-login-migration-do.factory';
 import { UserLoginMigrationService } from './user-login-migration.service';
 import { SchoolMigrationService } from './school-migration.service';
 import { RestartUserLoginMigrationError } from '../error';
