@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
 const { alert, error, info } = require('../src/logger');
@@ -14,39 +15,36 @@ const LtiTool = mongoose.model(
 	new mongoose.Schema(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
-			name: { type: String },
+			name: { type: String, required: true },
 			url: { type: String, required: true },
 			key: { type: String },
-			secret: { type: String, required: true },
+			secret: { type: String, required: true, default: 'none' },
 			logo_url: { type: String },
 			lti_message_type: { type: String },
 			lti_version: { type: String },
 			resource_link_id: { type: String },
 			roles: {
-				type: [
-					{
-						type: String,
-						enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
-					},
-				],
+				type: String,
+				enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
 			},
 			privacy_permission: {
 				type: String,
 				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
+				required: true,
 				default: 'anonymous',
 			},
-			customs: { type: [{ key: { type: String }, value: { type: String } }] },
-			isTemplate: { type: Boolean },
+			customs: [{ type: { key: { type: String }, value: { type: String } } }],
+			isTemplate: { type: Boolean, required: true, default: false },
 			isLocal: { type: Boolean },
-			createdAt: { type: Date, default: Date.now },
-			updatedAt: { type: Date, default: Date.now },
-			originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
+			_originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 			oAuthClientId: { type: String },
 			friendlyUrl: { type: String, unique: true, sparse: true },
 			skipConsent: { type: Boolean },
-			openNewTab: { type: Boolean, default: false },
+			openNewTab: { type: Boolean, required: true, default: false },
 			frontchannel_logout_uri: { type: String },
-			isHidden: { type: Boolean, default: false },
+			isHidden: { type: Boolean, required: true, default: false },
+			createdAt: { type: Date, default: Date.now },
+			updatedAt: { type: Date, default: Date.now },
 		},
 		{
 			timestamps: true,
@@ -60,20 +58,63 @@ const ExternalTool = mongoose.model(
 	new mongoose.Schema(
 		{
 			_id: { type: Schema.Types.ObjectId, required: true },
-			name: { type: String },
+			name: { type: String, unique: true },
 			url: { type: String },
 			logoUrl: { type: String },
+
+			// basic Config
 			config_type: { type: String },
 			config_baseUrl: { type: String },
+			// Outh Config
 			config_clientId: { type: String },
 			config_skipConsent: { type: Boolean },
-			parameters: { type: [{ key: { type: String }, value: { type: String } }] },
-			isHidden: { type: Boolean },
-			openNewTab: { type: Boolean },
+			// Lti Config
+			key: { type: String, required: true },
+			secret: { type: String },
+			resource_link_id: { type: String },
+			lti_message_type: { type: String },
+			privacy_permission: {
+				type: String,
+				enum: ['anonymous', 'e-mail', 'name', 'public', 'pseudonymous'],
+				required: true,
+				default: 'anonymous',
+			},
+			// config: { type: mongoose.Schema.Types.Mixed }
+
+			parameters: [
+				{
+					type: {
+						name: { type: String, required: true },
+						displayName: { type: String, required: true },
+						description: { type: String },
+						default: { type: String },
+						regex: { type: String },
+						regexComment: { type: String },
+						scope: {
+							type: String,
+							enum: ['global', 'school', 'context'],
+							required: true,
+						},
+						location: {
+							type: String,
+							enum: ['path', 'body', 'query'],
+							required: true,
+						},
+						type: {
+							type: String,
+							enum: ['string', 'number', 'boolean', 'auto_courseid', 'auto_coursename', 'auto_schoolid'],
+							required: true,
+						},
+						isOptional: { type: Boolean, required: true },
+					},
+				},
+			],
+
+			isHidden: { type: Boolean, required: true },
+			openNewTab: { type: Boolean, required: true },
+			version: { type: Number, required: true },
 			createdAt: { type: Date, default: Date.now },
-			$date: { type: Date },
 			updatedAt: { type: Date, default: Date.now },
-			version: { type: Number },
 		},
 		{
 			timestamps: true,
@@ -86,12 +127,13 @@ const SchoolExternalTool = mongoose.model(
 	'school_external_tool0906202311483',
 	new mongoose.Schema(
 		{
+			_id: { type: Schema.Types.ObjectId, required: true },
 			tool: { type: Schema.Types.ObjectId, ref: 'externalTool', required: true },
 			school: { type: Schema.Types.ObjectId, ref: 'school', required: true },
-			schoolParameters: { type: [{ key: { type: String }, value: { type: String } }] },
+			schoolParameters: [{ type: { key: { type: String }, value: { type: String } } }],
+			toolVersion: { type: Number, required: true },
 			createdAt: { type: Date, default: Date.now },
 			updatedAt: { type: Date, default: Date.now },
-			toolVersion: { type: Number },
 		},
 		{
 			timestamps: true,
@@ -104,14 +146,15 @@ const ContextExternalTool = mongoose.model(
 	'context_external_tool0906202311484',
 	new mongoose.Schema(
 		{
-			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolTool', required: true },
-			contextId: { type: Schema.Types.ObjectId, ref: 'context', required: true },
-			contextType: { type: [{ key: { type: String }, value: { type: String } }] },
+			_id: { type: Schema.Types.ObjectId, required: true },
+			schoolTool: { type: Schema.Types.ObjectId, ref: 'schoolExternalTool', required: true },
+			contextId: { type: Schema.Types.ObjectId, required: true },
+			contextType: { type: String, enum: ['course'], required: true },
 			contextToolName: { type: String },
-			parameters: { type: [{ key: { type: String }, value: { type: String } }] },
+			parameters: [{ type: { key: { type: String }, value: { type: String } } }],
+			toolVersion: { type: Number, required: true },
 			createdAt: { type: Date, default: Date.now },
 			updatedAt: { type: Date, default: Date.now },
-			toolVersion: { type: Number },
 		},
 		{
 			timestamps: true,
@@ -120,66 +163,89 @@ const ContextExternalTool = mongoose.model(
 	'context_external_tools'
 );
 
-function mapToExternalToolWithOauthConfig(ltiTool) {
+function mapToExternalToolParameter(ltiToolTemplate, scope, location) {
+	return ltiToolTemplate.customs.map((parameter) => {
+		return {
+			name: parameter.key,
+			displayName: parameter.key,
+			description: '',
+			default: parameter.value,
+			regex: '',
+			regexComment: '',
+			scope,
+			location,
+			type: 'string',
+			isOptional: true,
+		};
+	});
+}
+
+function mapToCustomParameterEntry(externalToolParameters, ltiToolCustomes) {
+	return externalToolParameters.map((parameter, index) => {
+		return {
+			name: parameter.name,
+			value: ltiToolCustomes[index].value,
+		};
+	});
+}
+
+function mapToExternalTool(ltiToolTemplate) {
+	let toolConfig = {};
+
+	if (ltiToolTemplate.oAuthClientId) {
+		toolConfig = {
+			config_type: 'oauth2',
+			config_baseUrl: ltiToolTemplate.url,
+			config_clientId: ltiToolTemplate.oAuthClientId,
+			config_skipConsent: ltiToolTemplate.skipConsent,
+		};
+	} else if (ltiToolTemplate.key || ltiToolTemplate.key !== 'none') {
+		toolConfig = {
+			config_type: 'lti11',
+			config_baseUrl: ltiToolTemplate.url,
+			key: ltiToolTemplate.key,
+			secret: ltiToolTemplate.secret,
+			ressource_link_id: ltiToolTemplate.ressource_link_id,
+			lti_message_type: ltiToolTemplate.lti_message_type,
+			privacy_permission: ltiToolTemplate.privacy_permission,
+		};
+	} else {
+		toolConfig = {
+			config_type: 'basic',
+			config_baseUrl: ltiToolTemplate.url,
+		};
+	}
+
 	return {
-		name: ltiTool.name,
-		url: ltiTool.url,
-		logoUrl: ltiTool.logo_url,
-		config_type: 'oauth2',
-		config_baseUrl: ltiTool.url,
-		config_clientId: ltiTool.oAuthClientId,
-		config_skipConsent: ltiTool.skipConsent,
-		parameters: mapToExternalToolParameter(ltiTool.customs, 'global', 'query'), //
-		isHidden: ltiTool.isHidden,
-		openNewTab: ltiTool.openNewTab,
-		createdAt: ltiTool.createdAt,
-		$date: ltiTool.createdAt,
-		updatedAt: ltiTool.updatedAt,
+		name: ltiToolTemplate.name,
+		url: ltiToolTemplate.url,
+		logoUrl: ltiToolTemplate.logo_url,
+		parameters: mapToExternalToolParameter(ltiToolTemplate.customs, 'course', 'body'),
+		isHidden: ltiToolTemplate.isHidden,
+		openNewTab: ltiToolTemplate.openNewTab,
 		version: 1,
+		...toolConfig,
 	};
 }
 
-function mapToSchoolExternalTool(externalTool) {
+function mapToSchoolExternalTool(externalTool, ltiToolTemplate, context) {
 	return {
 		tool: externalTool._id,
-		school: externalTool.school,
-		schoolParameters: externalTool.parameters,
-		createdAt: externalTool.createdAt,
-		updatedAt: externalTool.updatedAt,
+		school: context.schoolId,
+		schoolParameters: mapToCustomParameterEntry(externalTool.parameters, ltiToolTemplate.customes),
 		toolVersion: externalTool.version,
 	};
 }
 
-function mapToContextExternalTool(schoolTool, context) {
+function mapToContextExternalTool(schoolExternalTool, externalTool, context) {
 	return {
-		schoolTool: schoolTool._id,
+		schoolTool: schoolExternalTool._id,
 		contextId: context.id,
-		contextType: context.type,
-		contextToolName: context.name,
-		parameters: schoolTool.parameters,
-		createdAt: schoolTool.createdAt,
-		updatedAt: schoolTool.updatedAt,
-		toolVersion: schoolTool.version,
+		contextType: 'course',
+		contextToolName: externalTool.name,
+		parameters: schoolExternalTool.parameters,
+		toolVersion: schoolExternalTool.version,
 	};
-}
-
-// no documantation about parameter mapping of ltitool customs to external tool parameters https://docs.dbildungscloud.de/display/N21P/Migration+from+LTI+to+CTL
-function mapToExternalToolParameter(ltiTool, scope, location) {
-	return ltiTool.customs.map((parameter) => {
-		return {
-			name: ltiTool.key,
-			displayName: ltiTool.key,
-			description: ltiTool.key,
-			default: ltiTool.value,
-			regex: '',
-			regexDescription: '',
-			scope,
-			location,
-			type: 'string',
-			createdAt: ltiTool.createdAt,
-			updatedAt: ltiTool.updatedAt,
-		};
-	});
 }
 
 // How to use more than one schema per collection on mongodb
@@ -206,41 +272,87 @@ module.exports = {
 			.exec();
 
 		if ((ltiToolTemplates || []).length === 0) {
-			alert('No LtiTool Template found. Nothing to migrate.');
+			alert('No LtiTool Template found.');
 			return;
 		}
 
-		alert(`Found ${ltiToolTemplates.length} LtiToolTemplate for update.`);
+		const ltiTools = await LtiTool.find({
+			$or: [{ name: { $regex: `Bettermarks` } }, { name: { $regex: `Nextcloud` } }],
+			isTemplate: false,
+		})
+			.lean()
+			.exec();
 
-		//
-		//
-		// MAP TO EXTERNAL TOOL WITH OAUTH CONFIG
-		const externalTools = ltiToolTemplates.map((ltitool) => {
-			// Find oauthTools
-			if (ltitool.oAuthClientId) {
-				return mapToExternalToolWithOauthConfig(ltitool);
+		// ITERATE OVER ALL LTITOOLS
+		for (const ltiTool of ltiTools) {
+			// GET TOOLTEMPLATE
+			let toolTemplate = await LtiTool.findOne({
+				id: ltiTool.originTool,
+			})
+				.lean()
+				.exec();
+
+			if (toolTemplate === undefined) {
+				// toolTemplate = createTemplate(ltiTool);
 			}
 
-			alert(`LtiToolTemplate ${ltitool.name} has no oAuthClientId. Nothing to migrate.`);
-			return null;
-		});
+			// GET COURSE
+			const course = await Course.findOne({
+				ltiToolIds: { $in: [ltiTool.id] },
+			})
+				.lean()
+				.exec();
 
-		alert(externalTools);
+			// GET EXTERNALTOOL
+			let externalTool = await ExternalTool.findOne({
+				name: ltiTool.name,
+				url: ltiTool.url,
+			})
+				.lean()
+				.exec();
 
-		//
-		//
-		// SAVE EXTERNAL TOOLS
-		await ExternalTool.insertMany(externalTools);
-
-		// FOR SCHOOLEXTERNALTOOL CREATION WE NEED TO FIND THE SCHOOLS, ExternalTool AND LtiTool with originalId
-		const schoolExternalTools = externalTools.map((externalTool) => {
-			if (externalTool) {
-				return mapToSchoolExternalTool(externalTool);
+			// CHECK IF EXTERNALTOOL EXISTS, IF NOT, CREATE ONE
+			if (externalTool === undefined) {
+				externalTool = mapToExternalTool(toolTemplate);
+				externalTool = await ExternalTool.save(externalTool);
 			}
-			return null;
-		});
 
-		alert(`Created ${externalTools.length} ExternalTool(s)`);
+			// GET/CREATE SCHOOLEXTERNALTOOL
+			let schoolExternalTool;
+
+			const schoolExternalTools = await SchoolExternalTool.find({
+				tool: externalTool._id,
+				school: course.schoolId,
+				name: externalTool.name,
+				url: externalTool.url,
+			})
+				.lean()
+				.exec();
+
+			if ((schoolExternalTools || []).length === 0) {
+				schoolExternalTool = mapToSchoolExternalTool(externalTool, course);
+
+				schoolExternalTool = await SchoolExternalTool.save(schoolExternalTool);
+			} else {
+				schoolExternalTool = schoolExternalTools.filter((tool) => tool.name === externalTool.name); // filter with more parameter?
+			}
+
+			// ----------- ContextExternalTool -----------
+
+			const contextExternalTools = await ContextExternalTool.find({
+				schoolTool: schoolExternalTool.id,
+				contextId: context.Id,
+				contextType: 'course',
+			})
+				.lean()
+				.exec();
+
+			if ((contextExternalTools || []).length === 0) {
+				const contextExternalTool = mapToContextExternalTool(schoolExternalTool, course);
+
+				await ContextExternalTool.save(contextExternalTool);
+			}
+		}
 
 		await close();
 	},
