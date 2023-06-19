@@ -14,7 +14,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
-import { ICurrentUser } from '@src/modules/authentication';
 import { Response } from 'supertest';
 import {
 	Account,
@@ -59,9 +58,9 @@ describe('VideoConferenceController (API)', () => {
 		axiosMock = new MockAdapter(axios);
 	});
 
-	const mockBbbMeetingInfoFailed = () => {
+	const mockBbbMeetingInfoFailed = (meetingId: string) => {
 		axiosMock
-			.onGet(/.*\/api\/getMeetingInfo*/)
+			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
 			.replyOnce<string>(
 				HttpStatus.INTERNAL_SERVER_ERROR,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
@@ -73,16 +72,16 @@ describe('VideoConferenceController (API)', () => {
 			);
 	};
 
-	const mockBbbMeetingInfoSuccess = () => {
+	const mockBbbMeetingInfoSuccess = (meetingId: string) => {
 		axiosMock
-			.onGet(/.*\/api\/getMeetingInfo*/)
+			.onGet(new RegExp(`.*/bigbluebutton/api/getMeetingInfo?.*meetingID=${meetingId}.*`))
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
 					'<response>\n' +
 					'<returncode>SUCCESS</returncode>\n' +
 					'<meetingName>Mathe</meetingName>\n' +
-					'<meetingID>0000dcfbfb5c7a3f00bf21ab</meetingID>\n' +
+					`<meetingID>${meetingId}</meetingID>\n` +
 					'<internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686648423698</internalMeetingID>\n' +
 					'<createTime>1686648423698</createTime>\n' +
 					'<createDate>Tue Jun 13 11:27:03 CEST 2023</createDate>\n' +
@@ -113,15 +112,15 @@ describe('VideoConferenceController (API)', () => {
 			);
 	};
 
-	const mockBbbCreateSuccess = () => {
+	const mockBbbCreateSuccess = (meetingId: string) => {
 		axiosMock
-			.onPost(/.*\/api\/create/)
+			.onPost(new RegExp(`.*/bigbluebutton/api/create?.*meetingID=${meetingId}.*`))
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0" encoding="UTF-8" ?>\n' +
 					'<response>\n' +
 					'  <returncode>SUCCESS</returncode>\n' +
-					'  <meetingID>0000dcfbfb5c7a3f00bf21ab</meetingID>\n' +
+					`  <meetingID>${meetingId}</meetingID>\n` +
 					'  <internalMeetingID>c7ae0ac13ace99c8b2239ce3919c28e47d5bbd2a-1686646947283</internalMeetingID>\n' +
 					'  <parentMeetingID>bbb-none</parentMeetingID>\n' +
 					'  <createTime>1686646947283</createTime>\n' +
@@ -137,9 +136,9 @@ describe('VideoConferenceController (API)', () => {
 			);
 	};
 
-	const mockBbbEndSuccess = () => {
+	const mockBbbEndSuccess = (meetingId: string) => {
 		axiosMock
-			.onGet(/.*\/api\/end/)
+			.onGet(new RegExp(`.*/bigbluebutton/api/end?.*meetingID=${meetingId}.*`))
 			.replyOnce<string>(
 				HttpStatus.OK,
 				'<?xml version="1.0"?>\n' +
@@ -186,7 +185,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -228,7 +227,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
 
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -266,8 +265,8 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					mockBbbMeetingInfoFailed();
-					mockBbbCreateSuccess();
+					mockBbbMeetingInfoFailed(scopeId);
+					mockBbbCreateSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -305,7 +304,7 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					mockBbbMeetingInfoSuccess();
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId, params };
 				};
@@ -353,7 +352,7 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -390,7 +389,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoSuccess();
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -430,7 +429,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -478,7 +477,7 @@ describe('VideoConferenceController (API)', () => {
 					const scopeId: string = course.id;
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -515,7 +514,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoSuccess();
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -556,7 +555,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
 
-					mockBbbMeetingInfoSuccess();
+					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -593,7 +592,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -642,7 +641,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbMeetingInfoFailed();
+					mockBbbMeetingInfoFailed(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
@@ -713,7 +712,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-					mockBbbEndSuccess();
+					mockBbbEndSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
